@@ -1,4 +1,4 @@
-import { sql } from './sql.js';
+import { postgresEnvKeys, sql } from './sql.js';
 
 /**
  * Schema creation is idempotent and cached per process, so a cold-started
@@ -46,6 +46,8 @@ export async function pingDatabase() {
   await sql`SELECT 1`;
   return true;
 }
+
+export { postgresEnvKeys };
 
 const iso = (value) => (value instanceof Date ? value.toISOString() : value);
 const num = (value) => (value === null || value === undefined ? null : Number(value));

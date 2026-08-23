@@ -14,6 +14,31 @@ import { neon } from '@neondatabase/serverless';
  */
 let driverPromise;
 
+// Vercel's Postgres integrations inject under several different names
+// depending on the store and whether a custom prefix was chosen.
+const URL_VARS = [
+  'DATABASE_URL',
+  'POSTGRES_URL',
+  'DATABASE_URL_UNPOOLED',
+  'POSTGRES_URL_NON_POOLING',
+  'POSTGRES_PRISMA_URL',
+];
+
+export function connectionUrl() {
+  for (const name of URL_VARS) {
+    const value = process.env[name];
+    if (value) return value;
+  }
+  return '';
+}
+
+/** Names only, never values — safe to surface on /healthz. */
+export function postgresEnvKeys() {
+  return Object.keys(process.env)
+    .filter((k) => /^(.*_)?(DATABASE_URL|POSTGRES_)/.test(k) || /^PG(HOST|USER|DATABASE)$/.test(k))
+    .sort();
+}
+
 async function createDriver() {
   if (process.env.NEWSWORTHY_SQL_DRIVER === 'pglite') {
     const { PGlite } = await import('@electric-sql/pglite');
@@ -22,11 +47,16 @@ async function createDriver() {
     return async (strings, ...values) => (await db.sql(strings, ...values)).rows;
   }
 
-  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL || '';
+  const url = connectionUrl();
   if (!url) {
+    const seen = postgresEnvKeys();
     throw new Error(
-      'DATABASE_URL is not set. On Vercel: Storage → add a Neon Postgres database ' +
-        'and it is injected automatically. Locally: `vercel env pull .env`.',
+      'No Postgres connection string in the environment. On Vercel: Storage → ' +
+        'create a Neon database and connect it to this project, then redeploy. ' +
+        (seen.length
+          ? `Postgres-looking variables present: ${seen.join(', ')} — if the store used a ` +
+            'custom prefix, add DATABASE_URL pointing at the same value.'
+          : 'No Postgres-looking variables are present at all.'),
     );
   }
   return neon(url);

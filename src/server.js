@@ -4,7 +4,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { history, latestAttempt, latestRating, pingDatabase, recentAttempts, stats } from './db.js';
+import { history, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats } from './db.js';
 import { allPrompts } from './prompts.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { DEFAULT_MODEL, INTERVAL_MINUTES, slotFor } from './rate.js';
@@ -105,6 +105,7 @@ const server = createServer(async (req, res) => {
         platform: ON_VERCEL ? 'vercel' : 'node',
         anthropic_key: Boolean(process.env.ANTHROPIC_API_KEY),
         cron_secret: Boolean(CRON_SECRET),
+        postgres_env_keys: postgresEnvKeys(), // names only, never values
       });
     }
 
