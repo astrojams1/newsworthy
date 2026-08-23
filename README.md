@@ -114,7 +114,7 @@ Set four environment variables in **Settings → Environment Variables**:
 |---|---|
 | `ANTHROPIC_API_KEY` | Your key. Without it every rating fails. |
 | `DATABASE_URL` | Added for you by **Storage → Neon Postgres**. Nothing to type. |
-| `CRON_SECRET` | Any random string ≥16 chars. Vercel sends it as `Authorization: Bearer …` on every cron call, and `/api/cron` rejects anything else. |
+| `CRON_SECRET` | Any random string ≥16 chars. Vercel sends it as `Authorization: Bearer …` on every cron call, and `/api/cron` rejects anything else. **Required on Vercel** — with neither this nor `ADMIN_TOKEN` set, `/api/cron` refuses to run rather than leave an unauthenticated endpoint spending your API budget. |
 | `ADMIN_TOKEN` | Locks `/admin`. |
 
 Then redeploy. Confirm with `/healthz`, and watch the job under

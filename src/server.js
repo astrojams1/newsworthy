@@ -49,8 +49,11 @@ function authorized(url, req) {
  */
 function cronAuthorized(url, req) {
   if (CRON_SECRET && secretMatches(req.headers.authorization, `Bearer ${CRON_SECRET}`)) return true;
-  if (ADMIN_TOKEN) return authorized(url, req);
-  return !CRON_SECRET;
+  if (ADMIN_TOKEN && authorized(url, req)) return true;
+  if (CRON_SECRET || ADMIN_TOKEN) return false;
+  // Nothing configured: open locally for convenience, never on a public
+  // deployment — an open /api/cron is an open tab on someone's API bill.
+  return !ON_VERCEL;
 }
 
 async function serveStatic(res, name) {
@@ -108,7 +111,14 @@ const server = createServer(async (req, res) => {
     // ---- the 15-minute job ----------------------------------------------
     // Vercel Cron issues a GET; the admin button issues a POST.
     if (path === '/api/cron') {
-      if (!cronAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
+      if (!cronAuthorized(url, req)) {
+        const unconfigured = ON_VERCEL && !CRON_SECRET && !ADMIN_TOKEN;
+        return json(res, unconfigured ? 503 : 401, {
+          error: unconfigured
+            ? 'CRON_SECRET is not set — refusing to run an unauthenticated rating on a public deployment'
+            : 'unauthorized',
+        });
+      }
       if (isRunning()) return json(res, 409, { error: 'a rating is already in flight' });
       const force = url.searchParams.get('force') === '1';
       const row = await tick(req.headers['x-vercel-cron-schedule'] ? 'vercel-cron' : 'manual', {
