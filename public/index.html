@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Newsworthy</title>
+<meta name="description" content="The news anti-app. Not the news — a number out of 10.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26' font-family='system-ui'>7</text></svg>">
+<style>
+  :root {
+    --surface: #ffffff;
+    --ink: #16161a;
+    --ink-muted: #6b6b76;
+    --ink-faint: #a8a8b3;
+    --rule: #e6e6ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #101014;
+      --ink: #f2f2f5;
+      --ink-muted: #9a9aa6;
+      --ink-faint: #5c5c68;
+      --rule: #26262e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--surface);
+    color: var(--ink);
+    font: 400 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100dvh;
+  }
+  header, footer { padding: 1.75rem clamp(1.25rem, 5vw, 3rem); }
+  .wordmark {
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-decoration: none;
+  }
+  main {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    text-align: center;
+    padding: 0 clamp(1.25rem, 5vw, 3rem);
+  }
+  .score {
+    display: flex;
+    align-items: baseline;
+    gap: 0.06em;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+  }
+  .score b { font-size: clamp(6rem, 30vw, 14rem); font-weight: 300; }
+  .score span { font-size: clamp(1.25rem, 4vw, 2rem); color: var(--ink-faint); }
+  .explanation {
+    margin: clamp(1.5rem, 4vw, 2.5rem) 0 0;
+    max-width: 34ch;
+    font-size: clamp(1.0625rem, 2.6vw, 1.375rem);
+    line-height: 1.45;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .meta {
+    margin-top: 1.5rem;
+    font-size: 0.8125rem;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--rule);
+  }
+  footer a { color: inherit; }
+  [data-state="loading"] .score, [data-state="loading"] .explanation { opacity: 0.25; }
+  [data-state="error"] .score b { color: var(--ink-faint); }
+  @media (prefers-reduced-motion: no-preference) {
+    .score, .explanation { transition: opacity 240ms ease; }
+  }
+</style>
+</head>
+<body data-state="loading">
+  <header><a class="wordmark" href="/">Newsworthy</a></header>
+
+  <main>
+    <p class="score" aria-live="polite"><b id="score">–</b><span>/10</span></p>
+    <p class="explanation" id="explanation">Checking how much the world needs you today.</p>
+    <p class="meta" id="meta"></p>
+  </main>
+
+  <footer>
+    <span>Not the news. A number.</span>
+    <span id="cadence">Updated every 15 minutes</span>
+  </footer>
+
+<script type="module">
+  const $score = document.getElementById('score');
+  const $explanation = document.getElementById('explanation');
+  const $meta = document.getElementById('meta');
+  const $cadence = document.getElementById('cadence');
+  let updatedAt = null;
+  let intervalMinutes = 15;
+
+  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+
+  function ago(date) {
+    const minutes = Math.round((Date.now() - date.getTime()) / 60000);
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return rtf.format(-minutes, 'minute');
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return rtf.format(-hours, 'hour');
+    return rtf.format(-Math.round(hours / 24), 'day');
+  }
+
+  function renderMeta() {
+    if (!updatedAt) return;
+    const elapsed = (Date.now() - updatedAt.getTime()) / 60000;
+    const due = Math.max(0, Math.ceil(intervalMinutes - (elapsed % intervalMinutes)));
+    $meta.textContent = `Rated ${ago(updatedAt)} · next in ${due} min`;
+  }
+
+  async function load() {
+    document.body.dataset.state = 'loading';
+    try {
+      const res = await fetch('/api/current', { cache: 'no-store' });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? res.statusText);
+      const data = await res.json();
+      $score.textContent = data.score;
+      $explanation.textContent = data.explanation;
+      updatedAt = new Date(data.created_at);
+      intervalMinutes = data.next_update_minutes ?? 15;
+      $cadence.textContent = `Updated every ${intervalMinutes} minutes`;
+      document.title = `${data.score}/10 · Newsworthy`;
+      document.body.dataset.state = 'ready';
+      renderMeta();
+    } catch (err) {
+      $score.textContent = '–';
+      $explanation.textContent = 'No rating yet. The first one lands within 15 minutes.';
+      $meta.textContent = '';
+      document.body.dataset.state = 'error';
+    }
+  }
+
+  load();
+  setInterval(renderMeta, 30_000);
+  setInterval(load, 60_000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+</script>
+</body>
+</html>
