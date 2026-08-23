@@ -1,8 +1,15 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { insertRating } from './db.js';
+import { insertRating, ratingForSlot } from './db.js';
 import { latestVersion, renderPrompt } from './prompts.js';
 
 export const DEFAULT_MODEL = process.env.NEWSWORTHY_MODEL || 'claude-opus-5';
+export const INTERVAL_MINUTES = Number(process.env.NEWSWORTHY_INTERVAL_MINUTES) || 15;
+
+/** The scheduled slot a moment belongs to, floored to the interval. */
+export function slotFor(date = new Date(), minutes = INTERVAL_MINUTES) {
+  const ms = minutes * 60_000;
+  return new Date(Math.floor(date.getTime() / ms) * ms).toISOString();
+}
 
 /**
  * Pull the {score, explanation} out of the model's final text.
@@ -115,15 +122,24 @@ export async function runRating({
   model = DEFAULT_MODEL,
   promptVersion = Number(process.env.NEWSWORTHY_PROMPT_VERSION) || latestVersion(),
   mock = process.env.NEWSWORTHY_MOCK === '1',
+  slot = null,
 } = {}) {
   const prompt = renderPrompt(promptVersion);
   const base = {
+    slot,
     prompt_version: prompt.version,
     prompt_hash: prompt.hash,
     prompt_text: prompt.text,
     model: mock ? 'mock-model' : model,
   };
   const startedAt = Date.now();
+
+  // Cheap pre-check: if this slot already has a reading, don't spend an API
+  // call on a duplicate cron delivery. The unique index is the real guarantee.
+  if (slot) {
+    const existing = await ratingForSlot(slot);
+    if (existing) return { ...existing, deduped: true };
+  }
 
   try {
     const response = mock ? mockResponse() : await callClaude({ model, prompt: prompt.text });
@@ -149,6 +165,7 @@ export async function runRating({
   } catch (err) {
     return insertRating({
       ...base,
+      slot: null, // failures never occupy a slot, so the next delivery can retry it
       status: 'error',
       error: String(err?.message ?? err).slice(0, 1000),
       latency_ms: Date.now() - startedAt,
@@ -158,7 +175,7 @@ export async function runRating({
 
 // `npm run rate` — one-shot, useful for cron-based deployments.
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const row = await runRating();
+  const row = await runRating({ slot: slotFor() });
   console.log(JSON.stringify(row, null, 2));
   process.exit(row.status === 'ok' ? 0 : 1);
 }

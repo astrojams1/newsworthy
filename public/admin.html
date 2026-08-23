@@ -361,7 +361,9 @@
     button.disabled = true;
     button.textContent = 'Rating…';
     try {
-      await fetch('/api/admin/refresh', { method: 'POST', headers: token ? { 'x-admin-token': token } : {} });
+      // Same endpoint Vercel Cron calls; force=1 bypasses the slot guard so a
+      // manual run is never swallowed as a duplicate.
+      await fetch('/api/cron?force=1', { method: 'POST', headers: token ? { 'x-admin-token': token } : {} });
       await load();
     } finally {
       button.disabled = false;

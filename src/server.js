@@ -4,13 +4,15 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { history, latestAttempt, latestRating, recentAttempts, stats } from './db.js';
+import { history, latestAttempt, latestRating, pingDatabase, recentAttempts, stats } from './db.js';
 import { allPrompts } from './prompts.js';
-import { INTERVAL_MINUTES, isRunning, start, tick } from './scheduler.js';
-import { DEFAULT_MODEL } from './rate.js';
+import { isRunning, start, tick } from './scheduler.js';
+import { DEFAULT_MODEL, INTERVAL_MINUTES, slotFor } from './rate.js';
 
 const PORT = Number(process.env.PORT) || 3000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
+const CRON_SECRET = process.env.CRON_SECRET || '';
+const ON_VERCEL = Boolean(process.env.VERCEL);
 const PUBLIC_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
 const MIME = {
@@ -22,28 +24,39 @@ const MIME = {
 };
 
 function json(res, status, body) {
-  const payload = JSON.stringify(body);
   res.writeHead(status, {
     'content-type': 'application/json; charset=utf-8',
     'cache-control': 'no-store',
   });
-  res.end(payload);
+  res.end(JSON.stringify(body));
+}
+
+function secretMatches(supplied, expected) {
+  const a = Buffer.from(String(supplied ?? ''));
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 function authorized(url, req) {
   if (!ADMIN_TOKEN) return true;
-  const supplied = url.searchParams.get('token') || req.headers['x-admin-token'] || '';
-  const a = Buffer.from(String(supplied));
-  const b = Buffer.from(ADMIN_TOKEN);
-  return a.length === b.length && timingSafeEqual(a, b);
+  return secretMatches(url.searchParams.get('token') || req.headers['x-admin-token'], ADMIN_TOKEN);
+}
+
+/**
+ * Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when CRON_SECRET is
+ * set on the project. The admin token is also accepted so /admin's "Rate now"
+ * button can reach the same endpoint.
+ */
+function cronAuthorized(url, req) {
+  if (CRON_SECRET && secretMatches(req.headers.authorization, `Bearer ${CRON_SECRET}`)) return true;
+  if (ADMIN_TOKEN) return authorized(url, req);
+  return !CRON_SECRET;
 }
 
 async function serveStatic(res, name) {
   const safe = normalize(name).replace(/^(\.\.[/\\])+/, '');
   const path = join(PUBLIC_DIR, safe);
-  if (!path.startsWith(PUBLIC_DIR)) {
-    return json(res, 403, { error: 'forbidden' });
-  }
+  if (!path.startsWith(PUBLIC_DIR)) return json(res, 403, { error: 'forbidden' });
   try {
     const body = await readFile(path);
     const ext = safe.slice(safe.lastIndexOf('.'));
@@ -55,7 +68,7 @@ async function serveStatic(res, name) {
   }
 }
 
-const server = createServer(async (req, res) => {
+export const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
   const path = url.pathname.replace(/\/+$/, '') || '/';
 
@@ -64,9 +77,9 @@ const server = createServer(async (req, res) => {
     if (path === '/' && req.method === 'GET') return serveStatic(res, 'index.html');
 
     if (path === '/api/current' && req.method === 'GET') {
-      const row = latestRating();
+      const row = await latestRating();
       if (!row) {
-        const attempt = latestAttempt();
+        const attempt = await latestAttempt();
         return json(res, 503, {
           error: attempt ? 'no successful rating yet' : 'no rating yet',
           detail: attempt?.error ?? null,
@@ -81,7 +94,35 @@ const server = createServer(async (req, res) => {
     }
 
     if (path === '/healthz' && req.method === 'GET') {
-      return json(res, 200, { ok: true, running: isRunning() });
+      const db = await pingDatabase().then(() => 'ok', (err) => String(err?.message ?? err));
+      return json(res, db === 'ok' ? 200 : 503, {
+        ok: db === 'ok',
+        database: db,
+        running: isRunning(),
+        platform: ON_VERCEL ? 'vercel' : 'node',
+        anthropic_key: Boolean(process.env.ANTHROPIC_API_KEY),
+        cron_secret: Boolean(CRON_SECRET),
+      });
+    }
+
+    // ---- the 15-minute job ----------------------------------------------
+    // Vercel Cron issues a GET; the admin button issues a POST.
+    if (path === '/api/cron') {
+      if (!cronAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
+      if (isRunning()) return json(res, 409, { error: 'a rating is already in flight' });
+      const force = url.searchParams.get('force') === '1';
+      const row = await tick(req.headers['x-vercel-cron-schedule'] ? 'vercel-cron' : 'manual', {
+        slot: slotFor(),
+        force,
+      });
+      if (!row) return json(res, 409, { error: 'busy' });
+      return json(res, row.status === 'ok' ? 200 : 500, {
+        status: row.status,
+        score: row.score ?? null,
+        explanation: row.explanation ?? null,
+        deduped: Boolean(row.deduped),
+        error: row.error ?? null,
+      });
     }
 
     // ---- admin -----------------------------------------------------------
@@ -95,13 +136,18 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/admin/history' && req.method === 'GET') {
       const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
+      const [statsRow, points, attempts] = await Promise.all([
+        stats({ hours }),
+        history({ hours }),
+        recentAttempts(25),
+      ]);
       return json(res, 200, {
         hours,
         interval_minutes: INTERVAL_MINUTES,
         model: DEFAULT_MODEL,
-        stats: stats({ hours }),
-        points: history({ hours }),
-        attempts: recentAttempts(25),
+        stats: statsRow,
+        points,
+        attempts,
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });
     }
@@ -110,21 +156,22 @@ const server = createServer(async (req, res) => {
       return json(res, 200, { prompts: allPrompts() });
     }
 
-    if (path === '/api/admin/refresh' && req.method === 'POST') {
-      if (isRunning()) return json(res, 409, { error: 'a rating is already in flight' });
-      const row = await tick('manual');
-      return json(res, row?.status === 'ok' ? 200 : 500, row ?? { error: 'busy' });
-    }
-
     return serveStatic(res, path.slice(1));
   } catch (err) {
     console.error('request failed', err);
-    return json(res, 500, { error: 'internal error' });
+    return json(res, 500, { error: 'internal error', detail: String(err?.message ?? err) });
   }
 });
 
 server.listen(PORT, () => {
   console.log(`Newsworthy on http://localhost:${PORT}  (admin: /admin)`);
   if (!ADMIN_TOKEN) console.warn('ADMIN_TOKEN is unset — the admin view is open to anyone.');
-  if (process.env.NEWSWORTHY_NO_SCHEDULER !== '1') start();
+
+  // On Vercel the process is frozen between requests, so an in-process timer
+  // would never fire reliably. Vercel Cron calls /api/cron instead.
+  if (ON_VERCEL) {
+    console.log('Running on Vercel — ratings come from Vercel Cron hitting /api/cron.');
+  } else if (process.env.NEWSWORTHY_NO_SCHEDULER !== '1') {
+    start();
+  }
 });
