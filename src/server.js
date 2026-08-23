@@ -68,7 +68,7 @@ async function serveStatic(res, name) {
   }
 }
 
-export const server = createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
   const path = url.pathname.replace(/\/+$/, '') || '/';
 
@@ -162,6 +162,11 @@ export const server = createServer(async (req, res) => {
     return json(res, 500, { error: 'internal error', detail: String(err?.message ?? err) });
   }
 });
+
+// Vercel's Node runtime reads the default export and requires it to be a
+// function or a server; a named export alone makes it reject the module.
+// Locally, listen() below is what actually runs the app.
+export default server;
 
 server.listen(PORT, () => {
   console.log(`Newsworthy on http://localhost:${PORT}  (admin: /admin)`);
