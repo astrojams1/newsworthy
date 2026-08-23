@@ -163,11 +163,11 @@ const server = createServer(async (req, res) => {
   }
 });
 
-// Vercel's Node runtime reads the default export and requires it to be a
-// function or a server; a named export alone makes it reject the module.
-// Locally, listen() below is what actually runs the app.
-export default server;
-
+// No exports: Vercel's Node runtime validates the entrypoint module's exports
+// and captures the listen() call below to serve it. A named-only export is
+// rejected outright ("The default export must be a function or server"), and
+// exporting the Server instance fails at boot — the documented shape is a
+// side-effect-only module.
 server.listen(PORT, () => {
   console.log(`Newsworthy on http://localhost:${PORT}  (admin: /admin)`);
   if (!ADMIN_TOKEN) console.warn('ADMIN_TOKEN is unset — the admin view is open to anyone.');
