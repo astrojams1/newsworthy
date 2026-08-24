@@ -56,3 +56,39 @@ test('slotFor floors to the interval boundary', async () => {
   assert.equal(slotFor(new Date('2026-08-23T04:15:00.000Z'), 15), '2026-08-23T04:15:00.000Z');
   assert.equal(slotFor(new Date('2026-08-23T04:59:00.000Z'), 15), '2026-08-23T04:45:00.000Z');
 });
+
+test('a rating produced without news is rejected, not stored', async () => {
+  const { assessSearch } = await import('../src/rate.js');
+  const searchBlock = (content) => ({ type: 'web_search_tool_result', tool_use_id: 'x', content });
+
+  // The real incident: search unavailable, model answered anyway with 1/10 and
+  // "News search was unavailable, so no current top story could be retrieved".
+  const failed = assessSearch([
+    searchBlock({ type: 'web_search_tool_result_error', error_code: 'unavailable' }),
+    { type: 'text', text: '{"score":1,"explanation":"News search was unavailable..."}' },
+  ]);
+  assert.equal(failed.productive, 0, 'nothing was read');
+  assert.deepEqual(failed.errors, ['unavailable']);
+
+  // A search that succeeds but matches nothing is also not news.
+  assert.equal(assessSearch([searchBlock([])]).productive, 0);
+
+  // A model that never searched at all.
+  assert.equal(assessSearch([{ type: 'text', text: '{"score":2}' }]).productive, 0);
+
+  // The healthy case.
+  const ok = assessSearch([
+    searchBlock([{ type: 'web_search_result', url: 'https://example.com', title: 'A' }]),
+    searchBlock([{ type: 'web_search_result', url: 'https://example.org', title: 'B' }]),
+  ]);
+  assert.equal(ok.productive, 2);
+  assert.deepEqual(ok.errors, []);
+
+  // Mixed: one search failed, another returned results — still ratable.
+  const mixed = assessSearch([
+    searchBlock({ error_code: 'too_many_requests' }),
+    searchBlock([{ type: 'web_search_result', url: 'https://example.com', title: 'A' }]),
+  ]);
+  assert.equal(mixed.productive, 1);
+  assert.deepEqual(mixed.errors, ['too_many_requests']);
+});
