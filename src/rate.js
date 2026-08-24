@@ -73,6 +73,33 @@ function cleanExplanation(value) {
   return text.length > 400 ? `${text.slice(0, 397)}...` : text;
 }
 
+/**
+ * A rating is only meaningful if the model actually read some news.
+ *
+ * When web search is unavailable the API still returns HTTP 200: the
+ * web_search_tool_result block carries an error object instead of a list, and
+ * the model answers anyway — in practice with a low score and an explanation
+ * describing its own tooling ("News search was unavailable, so no current top
+ * story could be retrieved"). That is not a reading, and must not be stored as
+ * one, so inspect the search blocks rather than trusting the prose.
+ */
+export function assessSearch(content = []) {
+  let productive = 0;
+  const errors = [];
+  for (const block of content) {
+    if (block?.type !== 'web_search_tool_result') continue;
+    const result = block.content;
+    if (Array.isArray(result)) {
+      if (result.length > 0) productive += 1; // a search returning nothing is not news
+    } else if (result?.error_code) {
+      errors.push(result.error_code);
+    } else if (result?.type === 'web_search_tool_result_error') {
+      errors.push(result.error_code ?? 'unknown');
+    }
+  }
+  return { productive, errors };
+}
+
 function finalText(content) {
   return content
     .filter((block) => block.type === 'text')
@@ -164,6 +191,15 @@ export async function runRating({
 
     if (response.stop_reason === 'refusal') {
       throw new Error(`Model refused: ${response.stop_details?.category ?? 'unknown'}`);
+    }
+
+    const search = assessSearch(response.content);
+    if (!mock && search.productive === 0) {
+      throw new Error(
+        search.errors.length
+          ? `Web search failed (${[...new Set(search.errors)].join(', ')}) — no news to rate`
+          : 'No web search results returned — no news to rate',
+      );
     }
 
     const raw = finalText(response.content);
