@@ -63,6 +63,15 @@
   .tile dd { margin: 0.25rem 0 0; font-size: 1.5rem; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
   .tile dd small { font-size: 0.8125rem; color: var(--ink-faint); }
 
+  .settings { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .settings label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.75rem;
+                    letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
+  .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; min-width: 190px; }
+  .settings small { text-transform: none; letter-spacing: normal; font-size: 0.75rem; color: var(--ink-faint); }
+  .settings button { padding: 0.44rem 1rem; }
+  #save-msg { font-size: 0.8125rem; color: var(--ink-muted); align-self: center; }
+  .note { font-size: 0.75rem; color: var(--ink-faint); margin: 0.75rem 0 0; max-width: 70ch; }
+
   figure { margin: 0; }
   figcaption { font-size: 0.8125rem; color: var(--ink-muted); margin-bottom: 0.75rem; }
   .chart { position: relative; }
@@ -123,6 +132,21 @@
 
   <dl class="tiles" id="tiles"></dl>
 
+  <h2>Settings</h2>
+  <div class="settings">
+    <label>Model
+      <select id="model"></select>
+      <small id="model-cost"></small>
+    </label>
+    <label>Rate the news every
+      <select id="interval"></select>
+      <small id="interval-cost"></small>
+    </label>
+    <button id="save" type="button">Save</button>
+    <span id="save-msg"></span>
+  </div>
+  <p class="note" id="cron-note"></p>
+
   <h2>Score over time</h2>
   <figure>
     <figcaption id="caption">Newsworthiness, 1–10 — one reading every 15 minutes.</figcaption>
@@ -134,7 +158,7 @@
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th>When</th><th>Score</th><th>Why</th><th>Model</th><th>Prompt</th><th>ms</th></tr></thead>
+    <thead><tr><th>When</th><th>Score</th><th>Why</th><th>Model</th><th>Tokens</th><th>Cost</th><th>ms</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
@@ -190,6 +214,9 @@
       ['Range', s.min_score != null ? `${s.min_score}–${s.max_score}` : '–'],
       ['Readings', s.ok ?? 0],
       ['Failures', s.errors ?? 0],
+      ['Spend', usd(s.spend_usd)],
+      ['Per run', usd(s.avg_cost_usd)],
+      ['Monthly est.', usdRounded(data.projected_monthly_usd)],
     ];
     $('tiles').innerHTML = tiles
       .map(([k, v]) => `<div class="tile"><dt>${k}</dt><dd>${v}</dd></div>`)
@@ -307,6 +334,10 @@
   }
 
   const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const fmtInt = (n) => (n == null ? '' : Number(n).toLocaleString());
+  const shortModel = (m) => String(m).replace(/^claude-/, '');
+  const usd = (n) => (n == null ? '–' : n < 1 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`);
+  const usdRounded = (n) => (n == null ? '–' : `$${Math.round(n).toLocaleString()}`);
 
   function renderRuns(rows) {
     $('runs').querySelector('tbody').innerHTML = rows.map((r) => `
@@ -314,10 +345,11 @@
         <td>${fmtTime.format(new Date(r.created_at))}</td>
         <td>${r.status === 'ok' ? `${r.score}/10` : '<span class="pill err">failed</span>'}</td>
         <td class="why">${escapeHtml(r.status === 'ok' ? r.explanation ?? '' : r.error ?? '')}</td>
-        <td>${escapeHtml(r.served_by ?? r.model)}</td>
-        <td><span class="pill">v${r.prompt_version} · ${escapeHtml(String(r.prompt_hash).slice(0, 8))}</span></td>
+        <td>${escapeHtml(shortModel(r.served_by ?? r.model))}</td>
+        <td>${r.input_tokens != null ? `${fmtInt(r.input_tokens)} / ${fmtInt(r.output_tokens)}` : ''}</td>
+        <td>${r.cost_usd != null ? usd(r.cost_usd) : ''}</td>
         <td>${r.latency_ms ?? ''}</td>
-      </tr>`).join('') || '<tr><td colspan="6" class="empty">Nothing logged yet.</td></tr>';
+      </tr>`).join('') || '<tr><td colspan="7" class="empty">Nothing logged yet.</td></tr>';
   }
 
   async function renderPrompts() {
@@ -341,7 +373,7 @@
     renderChart();
     renderRuns(data.attempts);
     $('caption').textContent =
-      `Newsworthiness, 1–10 — one reading every ${data.interval_minutes} minutes. ` +
+      `Newsworthiness, 1–10 — one reading every ${data.cadence ?? `${data.interval_minutes} minutes`}. ` +
       `${points.length} reading${points.length === 1 ? '' : 's'} shown.`;
     $('status').textContent = `updated ${fmtClock.format(new Date())}`;
   }
@@ -356,12 +388,69 @@
     });
   }
 
+  let settings = null;
+
+  async function loadSettings() {
+    const res = await api('/api/admin/settings');
+    if (!res.ok) return;
+    settings = await res.json();
+
+    $('model').innerHTML = settings.models
+      .map((m) => `<option value="${m.id}"${m.id === settings.model ? ' selected' : ''}>${escapeHtml(m.label)}</option>`)
+      .join('');
+    $('interval').innerHTML = settings.intervals
+      .map((i) => `<option value="${i.minutes}"${i.minutes === settings.interval_minutes ? ' selected' : ''}>${escapeHtml(i.label)}</option>`)
+      .join('');
+    $('cron-note').textContent =
+      `Vercel Cron ticks every ${settings.cron_tick_minutes} minutes; ticks inside an interval find the slot ` +
+      `already rated and skip without calling the model. To rate more often than every ` +
+      `${settings.cron_tick_minutes} minutes, change the schedule in vercel.json.`;
+    renderEstimates();
+  }
+
+  /** Live cost preview as the dropdowns change, before anything is saved. */
+  function renderEstimates() {
+    if (!settings) return;
+    const model = settings.models.find((m) => m.id === $('model').value);
+    const minutes = Number($('interval').value);
+    if (!model) return;
+    const perMonth = model.typical_run_usd * (60 / minutes) * 24 * 30.44;
+    $('model-cost').textContent =
+      `${usd(model.typical_run_usd)}/run · $${model.input_usd_per_mtok}/$${model.output_usd_per_mtok} per Mtok`;
+    $('interval-cost').textContent = `≈ ${usdRounded(perMonth)}/month at this pairing`;
+  }
+
+  $('model').addEventListener('change', renderEstimates);
+  $('interval').addEventListener('change', renderEstimates);
+
+  $('save').addEventListener('click', async () => {
+    const button = $('save');
+    button.disabled = true;
+    $('save-msg').textContent = 'Saving…';
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...(token ? { 'x-admin-token': token } : {}) },
+        body: JSON.stringify({ model: $('model').value, intervalMinutes: Number($('interval').value) }),
+      });
+      const body = await res.json();
+      $('save-msg').textContent = res.ok
+        ? `Saved — ${shortModel(body.model)} every ${body.interval_minutes} min. Takes effect on the next tick.`
+        : `Failed: ${body.error ?? res.statusText}`;
+      if (res.ok) await load();
+    } finally {
+      button.disabled = false;
+    }
+  });
+
   $('refresh').addEventListener('click', async () => {
     const button = $('refresh');
     button.disabled = true;
     button.textContent = 'Rating…';
     try {
-      await fetch('/api/admin/refresh', { method: 'POST', headers: token ? { 'x-admin-token': token } : {} });
+      // Same endpoint Vercel Cron calls; force=1 bypasses the slot guard so a
+      // manual run is never swallowed as a duplicate.
+      await fetch('/api/cron?force=1', { method: 'POST', headers: token ? { 'x-admin-token': token } : {} });
       await load();
     } finally {
       button.disabled = false;
@@ -370,6 +459,7 @@
   });
 
   await load();
+  await loadSettings();
   await renderPrompts();
   setInterval(load, 60_000);
   window.addEventListener('resize', renderChart);

@@ -5,16 +5,20 @@
   "description": "The news anti-app. It does not give you the news. It gives you a number out of 10.",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env src/server.js",
     "rate": "node --env-file-if-exists=.env src/rate.js",
     "rate:mock": "NEWSWORTHY_MOCK=1 node src/rate.js",
-    "test": "node --test test/*.test.js"
+    "test": "NEWSWORTHY_SQL_DRIVER=pglite node --test test/*.test.js",
+    "migrate": "node --env-file-if-exists=.env -e \"import('./src/db.js').then(m=>m.ensureSchema()).then(()=>console.log('schema ready'))\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.0",
-    "better-sqlite3": "^12.2.0"
+    "@neondatabase/serverless": "^1.1.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.6"
   }
 }

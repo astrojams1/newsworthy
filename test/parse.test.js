@@ -42,3 +42,11 @@ test('prompt v1 is versioned, hashed and stable', () => {
   assert.equal(allPrompts().length, 1);
   assert.throws(() => renderPrompt(99), /Unknown prompt version/);
 });
+
+test('slotFor floors to the interval boundary', async () => {
+  const { slotFor } = await import('../src/rate.js');
+  assert.equal(slotFor(new Date('2026-08-23T04:07:31.000Z'), 15), '2026-08-23T04:00:00.000Z');
+  assert.equal(slotFor(new Date('2026-08-23T04:14:59.999Z'), 15), '2026-08-23T04:00:00.000Z');
+  assert.equal(slotFor(new Date('2026-08-23T04:15:00.000Z'), 15), '2026-08-23T04:15:00.000Z');
+  assert.equal(slotFor(new Date('2026-08-23T04:59:00.000Z'), 15), '2026-08-23T04:45:00.000Z');
+});
