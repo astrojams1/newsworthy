@@ -117,8 +117,26 @@ Set four environment variables in **Settings → Environment Variables**:
 | `CRON_SECRET` | Any random string ≥16 chars. Vercel sends it as `Authorization: Bearer …` on every cron call, and `/api/cron` rejects anything else. **Required on Vercel** — with neither this nor `ADMIN_TOKEN` set, `/api/cron` refuses to run rather than leave an unauthenticated endpoint spending your API budget. |
 | `ADMIN_TOKEN` | Locks `/admin`. |
 
-Then redeploy. Confirm with `/healthz`, and watch the job under
-**Settings → Cron Jobs → View Logs**.
+`DATABASE_URL` is not an ordinary variable you type — it comes from
+**Storage → Create Database → Neon**. On its *Connect a Project* page:
+
+| Field | Value | Why |
+|---|---|---|
+| Environments | Production ✓, Preview ✓, Development ✗ | Production runs the cron. Development would point a laptop at the live timeseries. |
+| Create database branch → Production | unchecked | Production belongs on the main branch. |
+| Create database branch → Preview | checked | Preview deploys get an isolated copy and cannot write junk scores into the real chart. |
+| Custom Prefix | **leave empty** | Empty yields `DATABASE_URL`. Typing the placeholder `STORAGE` yields `STORAGE_URL`, which nothing reads. |
+| Sensitive | on | Runtime is unaffected; it only stops `vercel env pull` from fetching the value. |
+
+**Every one of these only takes effect on a deployment built after it is set.**
+Environment variables are baked in at build time, not read live, so adding a
+variable or connecting a store to a project that is already deployed changes
+nothing until you redeploy.
+
+Then confirm with `/healthz` — it names anything still missing, and lists the
+Postgres variable names it can see, which distinguishes "no database" from
+"database under a name we don't read". Watch the job under **Settings → Cron
+Jobs → View Logs**.
 
 ### Why the cron endpoint, and not a timer
 
