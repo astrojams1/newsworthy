@@ -112,7 +112,9 @@
   const $meta = document.getElementById('meta');
   const $cadence = document.getElementById('cadence');
   let updatedAt = null;
-  let intervalMinutes = 15;
+  let nextRunAt = null;
+  let retrying = false;
+  let intervalMinutes = 240;
 
   const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
 
@@ -127,10 +129,16 @@
 
   function renderMeta() {
     if (!updatedAt) return;
-    const elapsed = (Date.now() - updatedAt.getTime()) / 60000;
-    const due = Math.max(0, Math.ceil(intervalMinutes - (elapsed % intervalMinutes)));
-    const when = due >= 90 ? `${Math.round(due / 60)} h` : `${due} min`;
-    $meta.textContent = `Rated ${ago(updatedAt)} · next in ${when}`;
+    // Count down to the real scheduled slot. Deriving it from the reading's own
+    // age made a stale reading look freshly scheduled.
+    const minutesAway = nextRunAt ? (nextRunAt.getTime() - Date.now()) / 60000 : null;
+    let next;
+    if (minutesAway === null) next = '';
+    else if (minutesAway <= 0.5) next = ' · next reading due now';
+    else if (minutesAway < 90) next = ` · next in ${Math.ceil(minutesAway)} min`;
+    else next = ` · next in ${Math.round(minutesAway / 60)} h`;
+    const overdue = retrying ? ' · last run failed, retrying' : '';
+    $meta.textContent = `Rated ${ago(updatedAt)}${next}${overdue}`;
   }
 
   async function load() {
@@ -142,6 +150,8 @@
       $score.textContent = data.score;
       $explanation.textContent = data.explanation;
       updatedAt = new Date(data.created_at);
+      nextRunAt = data.next_run_at ? new Date(data.next_run_at) : null;
+      retrying = Boolean(data.retrying);
       intervalMinutes = data.next_update_minutes ?? 240;
       $cadence.textContent = `Updated every ${data.cadence ?? `${intervalMinutes} minutes`}`;
       document.title = `${data.score}/10 · Newsworthy`;
@@ -156,7 +166,7 @@
   }
 
   load();
-  setInterval(renderMeta, 30_000);
+  setInterval(renderMeta, 20_000);
   setInterval(load, 60_000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 </script>
