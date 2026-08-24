@@ -144,6 +144,20 @@ export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
   return rows.map(shape);
 }
 
+/** Failed runs in the chart window, so the chart can mark them rather than
+ *  silently drawing a straight line across the gap. */
+export async function failures({ hours = 24 * 7, limit = 500 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT id, created_at, error
+      FROM ratings
+     WHERE status = 'error' AND created_at >= ${since}
+     ORDER BY created_at ASC
+     LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
 export async function recentAttempts(limit = 25) {
   await ensureSchema();
   const rows = await sql`
