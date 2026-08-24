@@ -415,8 +415,11 @@
     const minutes = Number($('interval').value);
     if (!model) return;
     const perMonth = model.typical_run_usd * (60 / minutes) * 24 * 30.44;
+    const basis = settings.usage_basis?.observed
+      ? `from your last ${settings.usage_basis.runs} run${settings.usage_basis.runs === 1 ? '' : 's'}`
+      : 'estimated';
     $('model-cost').textContent =
-      `${usd(model.typical_run_usd)}/run · $${model.input_usd_per_mtok}/$${model.output_usd_per_mtok} per Mtok`;
+      `${usd(model.typical_run_usd)}/run (${basis}) · $${model.input_usd_per_mtok}/$${model.output_usd_per_mtok} per Mtok`;
     $('interval-cost').textContent = `≈ ${usdRounded(perMonth)}/month at this pairing`;
   }
 

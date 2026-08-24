@@ -180,6 +180,39 @@ export async function stats({ hours = 24 * 7 } = {}) {
   };
 }
 
+/**
+ * Average real usage over recent successful runs, for cost estimates.
+ *
+ * The static fallback was measured once and proved optimistic — the first
+ * production run used 65k input tokens and 8 searches, not the 40k/4 assumed.
+ * Estimates now correct themselves as runs accumulate.
+ */
+export async function usageBaseline({ limit = 20 } = {}) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT AVG(input_tokens)        AS input_tokens,
+           AVG(output_tokens)       AS output_tokens,
+           AVG(web_search_requests) AS web_search_requests,
+           COUNT(*)                 AS runs
+      FROM (
+        SELECT input_tokens, output_tokens, web_search_requests
+          FROM ratings
+         WHERE status = 'ok' AND input_tokens IS NOT NULL
+         ORDER BY created_at DESC
+         LIMIT ${limit}
+      ) recent`;
+  const r = rows[0] ?? {};
+  const runs = num(r.runs) ?? 0;
+  if (runs === 0) return { runs: 0, observed: false };
+  return {
+    runs,
+    observed: true,
+    inputTokens: Math.round(num(r.input_tokens) ?? 0),
+    outputTokens: Math.round(num(r.output_tokens) ?? 0),
+    webSearchRequests: Math.round(num(r.web_search_requests) ?? 0),
+  };
+}
+
 // ---- settings -------------------------------------------------------------
 // Runtime configuration the admin page can change without a redeploy.
 

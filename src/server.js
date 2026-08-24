@@ -4,7 +4,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { history, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats } from './db.js';
+import { history, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline } from './db.js';
 import { allPrompts } from './prompts.js';
 import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
 import { modelCatalogue, projectMonthlyUsd } from './pricing.js';
@@ -190,11 +190,14 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/admin/settings') {
       if (req.method === 'GET') {
-        const config = await effectiveConfig();
+        const [config, baseline] = await Promise.all([effectiveConfig(), usageBaseline()]);
         return json(res, 200, {
           model: config.model,
           interval_minutes: config.intervalMinutes,
-          models: modelCatalogue(),
+          // Priced from this deployment's own recent runs where possible, so
+          // the preview reflects reality rather than a one-off measurement.
+          usage_basis: baseline,
+          models: modelCatalogue(baseline.observed ? baseline : undefined),
           intervals: INTERVAL_CHOICES.map((m) => ({ minutes: m, label: intervalLabel(m) })),
           cron_tick_minutes: 15,
         });
