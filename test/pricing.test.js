@@ -103,3 +103,39 @@ test('cost estimates fall back to a measured profile, not an optimistic guess', 
     estimateCostUsd({ model: 'claude-opus-5', inputTokens: 20_000, outputTokens: 500, webSearchRequests: 2 }),
   );
 });
+
+test('the next run is the next slot boundary, not one interval after the reading', async () => {
+  const { slotFor } = await import('../src/rate.js');
+  const nextRunAfter = (nowIso, minutes) =>
+    new Date(Date.parse(slotFor(new Date(nowIso), minutes)) + minutes * 60_000).toISOString();
+
+  // Once a slot is filled, the next run is the following boundary.
+  assert.equal(nextRunAfter('2026-08-24T16:06:00Z', 240), '2026-08-24T20:00:00.000Z');
+  assert.equal(nextRunAfter('2026-08-24T12:00:01Z', 240), '2026-08-24T16:00:00.000Z');
+
+  // Boundaries land on the clock, independent of when the last run happened.
+  for (const [now, want] of [
+    ['2026-08-24T00:00:00Z', '2026-08-24T04:00:00.000Z'],
+    ['2026-08-24T03:59:59Z', '2026-08-24T04:00:00.000Z'],
+    ['2026-08-24T23:30:00Z', '2026-08-25T00:00:00.000Z'],
+  ]) {
+    assert.equal(nextRunAfter(now, 240), want, `from ${now}`);
+  }
+  assert.equal(nextRunAfter('2026-08-24T16:06:00Z', 15), '2026-08-24T16:15:00.000Z');
+});
+
+test('an unfilled slot is retried by the next cron tick, not the next interval', () => {
+  // The reported case: last successful reading 12:01, the 16:00 run failed,
+  // observed at 16:06 on a 4-hourly cadence. The 16:00 slot is unfilled, so a
+  // retry is ~9 minutes away — not the 4 hours the old label claimed.
+  const TICK = 15 * 60_000;
+  const nextTick = (nowIso) => new Date(Math.ceil(Date.parse(nowIso) / TICK) * TICK).toISOString();
+
+  assert.equal(nextTick('2026-08-24T16:06:00Z'), '2026-08-24T16:15:00.000Z');
+  assert.equal(nextTick('2026-08-24T16:15:00Z'), '2026-08-24T16:15:00.000Z');
+  assert.equal(nextTick('2026-08-24T16:59:30Z'), '2026-08-24T17:00:00.000Z');
+
+  const minutesAway =
+    (Date.parse(nextTick('2026-08-24T16:06:00Z')) - Date.parse('2026-08-24T16:06:00Z')) / 60_000;
+  assert.equal(minutesAway, 9, 'retry is minutes away, not hours');
+});

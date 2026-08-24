@@ -15,6 +15,9 @@ const PORT = Number(process.env.PORT) || 3000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const ON_VERCEL = Boolean(process.env.VERCEL);
+// vercel.json fires /api/cron on this cadence; the configured interval is
+// enforced by the slot on top of it.
+const CRON_TICK_MINUTES = 15;
 const PUBLIC_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
 const MIME = {
@@ -103,12 +106,27 @@ const server = createServer(async (req, res) => {
         });
       }
       const { intervalMinutes } = await effectiveConfig();
+      const attempt = await latestAttempt();
+
+      // When the next run happens depends on whether the current slot is
+      // already filled — not on the reading's own age. An unfilled slot is
+      // retried by the very next cron tick, because a failure writes
+      // slot = NULL and so never claims the slot.
+      const slotStart = Date.parse(slotFor(new Date(), intervalMinutes));
+      const slotFilled = Date.parse(row.created_at) >= slotStart;
+      const tickMs = CRON_TICK_MINUTES * 60_000;
+      const nextRunAt = new Date(
+        slotFilled ? slotStart + intervalMinutes * 60_000 : Math.ceil(Date.now() / tickMs) * tickMs,
+      ).toISOString();
+
       return json(res, 200, {
         score: row.score,
         explanation: row.explanation,
         created_at: row.created_at,
+        next_run_at: nextRunAt,
         next_update_minutes: intervalMinutes,
         cadence: intervalLabel(intervalMinutes),
+        retrying: !slotFilled && attempt?.status === 'error',
       });
     }
 
