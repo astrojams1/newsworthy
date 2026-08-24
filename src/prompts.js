@@ -29,6 +29,22 @@ Reply with a single JSON object and nothing else — no prose, no markdown fence
 
 The explanation names the one story that drove the score, or says plainly that nothing did. Write it for someone who will read no other news today. No preamble, no hedging, no "the news today".`;
 
+// v2 keeps v1's rating instructions byte-for-byte and replaces only the output
+// contract. v1's explanations kept justifying the score rather than reporting
+// the news — "but it's a threat, not yet an event", "everything else is
+// incremental". The score already carries that judgement; the sentence should
+// not repeat it.
+const V2_OUTPUT_CONTRACT = `Output format overrides the instruction above to print only a number.
+
+Reply with a single JSON object and nothing else — no prose, no markdown fences:
+{"score": <integer 1-10>, "explanation": "<one sentence, at most 25 words>"}
+
+The explanation reports what happened. Name the single most consequential development and its concrete effect: who or what is affected, and how.
+
+Do not explain or defend the rating. Do not characterise the news as a whole, and do not compare the main story to the rest of the day. Never write clauses like "routine", "incremental", "nothing major", "otherwise quiet", "everything else is minor", "but it is only a threat", or "not yet an event".
+
+If little of consequence happened, state the day's biggest story plainly in the same way. The number already says how much it matters.`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -36,6 +52,13 @@ const REGISTRY = {
     added: '2026-08-23',
     instructions: V1_INSTRUCTIONS,
     outputContract: V1_OUTPUT_CONTRACT,
+  },
+  2: {
+    version: 2,
+    label: 'report-not-justify-v2',
+    added: '2026-08-24',
+    instructions: V1_INSTRUCTIONS,
+    outputContract: V2_OUTPUT_CONTRACT,
   },
 };
 

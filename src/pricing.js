@@ -60,8 +60,19 @@ export function projectMonthlyUsd(avgCostUsd, intervalMinutes) {
   return avgCostUsd * runsPerMonth;
 }
 
-/** Model list for the admin picker, with a per-run estimate at typical usage. */
-export function modelCatalogue({ inputTokens = 40_000, outputTokens = 900, webSearchRequests = 4 } = {}) {
+/**
+ * Fallback usage profile, used only until real runs exist. Deliberately set
+ * from a measured production run rather than a guess: the first estimate here
+ * assumed 40k/900/4 and understated the real cost by ~40%.
+ */
+export const ASSUMED_USAGE = { inputTokens: 65_000, outputTokens: 1_300, webSearchRequests: 8 };
+
+/** Model list for the admin picker, with a per-run estimate at the given usage. */
+export function modelCatalogue({
+  inputTokens = ASSUMED_USAGE.inputTokens,
+  outputTokens = ASSUMED_USAGE.outputTokens,
+  webSearchRequests = ASSUMED_USAGE.webSearchRequests,
+} = {}) {
   return Object.entries(MODELS).map(([id, m]) => ({
     id,
     label: m.label,

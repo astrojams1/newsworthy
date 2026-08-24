@@ -96,3 +96,21 @@ test('cost and token usage survive a round-trip', async () => {
   assert.ok(s.spend_usd > 0);
   assert.ok(s.avg_cost_usd > 0);
 });
+
+test('usage baseline averages real runs and reports when there are none', async () => {
+  const { usageBaseline } = await import('../src/db.js');
+  const before = await usageBaseline();
+  assert.equal(typeof before.observed, 'boolean');
+
+  await insertRating({ ...base, slot: null, status: 'ok', score: 5, explanation: 'a',
+    input_tokens: 60_000, output_tokens: 1000, web_search_requests: 8, cost_usd: 0.4 });
+  await insertRating({ ...base, slot: null, status: 'ok', score: 5, explanation: 'b',
+    input_tokens: 70_000, output_tokens: 1200, web_search_requests: 8, cost_usd: 0.5 });
+
+  const after = await usageBaseline({ limit: 2 });
+  assert.equal(after.observed, true);
+  assert.equal(after.runs, 2);
+  assert.equal(after.inputTokens, 65_000, 'averages the two runs');
+  assert.equal(after.outputTokens, 1100);
+  assert.equal(after.webSearchRequests, 8);
+});

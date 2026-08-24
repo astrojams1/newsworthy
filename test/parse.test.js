@@ -32,15 +32,21 @@ test('supplies an explanation when the model omits one', () => {
   assert.equal(parseVerdict('{"score": 4}').explanation, 'No explanation given.');
 });
 
-test('prompt v1 is versioned, hashed and stable', () => {
+test('published prompts are frozen — v1 must never change', () => {
   const p = renderPrompt(1);
   assert.equal(p.version, 1);
-  assert.equal(p.hash.length, 16);
-  assert.equal(p.hash, renderPrompt(1).hash);
   assert.match(p.text, /rate from 1–10 how worthwhile/);
-  assert.equal(latestVersion(), 1);
-  assert.equal(allPrompts().length, 1);
+  // Pinned deliberately: rows in the database reference this hash. If editing
+  // a published prompt breaks this, add a new version instead of changing v1.
+  assert.equal(p.hash, '7ebe2d68813f1487');
   assert.throws(() => renderPrompt(99), /Unknown prompt version/);
+});
+
+test('the registry grows and the newest version is the active one', () => {
+  const versions = allPrompts().map((p) => p.version);
+  assert.deepEqual(versions, [...versions].sort((a, b) => a - b), 'listed in order');
+  assert.equal(latestVersion(), Math.max(...versions));
+  assert.equal(new Set(allPrompts().map((p) => p.hash)).size, versions.length, 'hashes are distinct');
 });
 
 test('slotFor floors to the interval boundary', async () => {
