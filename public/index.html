@@ -103,7 +103,7 @@
 
   <footer>
     <span>Not the news. A number.</span>
-    <span id="cadence">Updated every 15 minutes</span>
+    <span id="cadence">Updated periodically</span>
   </footer>
 
 <script type="module">
@@ -129,7 +129,8 @@
     if (!updatedAt) return;
     const elapsed = (Date.now() - updatedAt.getTime()) / 60000;
     const due = Math.max(0, Math.ceil(intervalMinutes - (elapsed % intervalMinutes)));
-    $meta.textContent = `Rated ${ago(updatedAt)} · next in ${due} min`;
+    const when = due >= 90 ? `${Math.round(due / 60)} h` : `${due} min`;
+    $meta.textContent = `Rated ${ago(updatedAt)} · next in ${when}`;
   }
 
   async function load() {
@@ -141,8 +142,8 @@
       $score.textContent = data.score;
       $explanation.textContent = data.explanation;
       updatedAt = new Date(data.created_at);
-      intervalMinutes = data.next_update_minutes ?? 15;
-      $cadence.textContent = `Updated every ${intervalMinutes} minutes`;
+      intervalMinutes = data.next_update_minutes ?? 240;
+      $cadence.textContent = `Updated every ${data.cadence ?? `${intervalMinutes} minutes`}`;
       document.title = `${data.score}/10 · Newsworthy`;
       document.body.dataset.state = 'ready';
       renderMeta();

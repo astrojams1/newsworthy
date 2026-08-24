@@ -6,8 +6,10 @@ import { timingSafeEqual } from 'node:crypto';
 
 import { history, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats } from './db.js';
 import { allPrompts } from './prompts.js';
+import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
+import { modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
-import { DEFAULT_MODEL, INTERVAL_MINUTES, slotFor } from './rate.js';
+import { slotFor } from './rate.js';
 
 const PORT = Number(process.env.PORT) || 3000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
@@ -56,6 +58,18 @@ function cronAuthorized(url, req) {
   return !ON_VERCEL;
 }
 
+async function readJsonBody(req, limitBytes = 8_192) {
+  const chunks = [];
+  let size = 0;
+  for await (const chunk of req) {
+    size += chunk.length;
+    if (size > limitBytes) throw new Error('request body too large');
+    chunks.push(chunk);
+  }
+  if (size === 0) return {};
+  return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+}
+
 async function serveStatic(res, name) {
   const safe = normalize(name).replace(/^(\.\.[/\\])+/, '');
   const path = join(PUBLIC_DIR, safe);
@@ -88,11 +102,13 @@ const server = createServer(async (req, res) => {
           detail: attempt?.error ?? null,
         });
       }
+      const { intervalMinutes } = await effectiveConfig();
       return json(res, 200, {
         score: row.score,
         explanation: row.explanation,
         created_at: row.created_at,
-        next_update_minutes: INTERVAL_MINUTES,
+        next_update_minutes: intervalMinutes,
+        cadence: intervalLabel(intervalMinutes),
       });
     }
 
@@ -122,8 +138,9 @@ const server = createServer(async (req, res) => {
       }
       if (isRunning()) return json(res, 409, { error: 'a rating is already in flight' });
       const force = url.searchParams.get('force') === '1';
+      const { intervalMinutes } = await effectiveConfig();
       const row = await tick(req.headers['x-vercel-cron-schedule'] ? 'vercel-cron' : 'manual', {
-        slot: slotFor(),
+        slot: slotFor(new Date(), intervalMinutes),
         force,
       });
       if (!row) return json(res, 409, { error: 'busy' });
@@ -132,6 +149,7 @@ const server = createServer(async (req, res) => {
         score: row.score ?? null,
         explanation: row.explanation ?? null,
         deduped: Boolean(row.deduped),
+        cost_usd: row.cost_usd ?? null,
         error: row.error ?? null,
       });
     }
@@ -147,20 +165,46 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/admin/history' && req.method === 'GET') {
       const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
-      const [statsRow, points, attempts] = await Promise.all([
+      const [statsRow, points, attempts, config] = await Promise.all([
         stats({ hours }),
         history({ hours }),
         recentAttempts(25),
+        effectiveConfig(),
       ]);
       return json(res, 200, {
         hours,
-        interval_minutes: INTERVAL_MINUTES,
-        model: DEFAULT_MODEL,
+        interval_minutes: config.intervalMinutes,
+        cadence: intervalLabel(config.intervalMinutes),
+        model: config.model,
+        projected_monthly_usd: projectMonthlyUsd(statsRow.avg_cost_usd, config.intervalMinutes),
         stats: statsRow,
         points,
         attempts,
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });
+    }
+
+    if (path === '/api/admin/settings') {
+      if (req.method === 'GET') {
+        const config = await effectiveConfig();
+        return json(res, 200, {
+          model: config.model,
+          interval_minutes: config.intervalMinutes,
+          models: modelCatalogue(),
+          intervals: INTERVAL_CHOICES.map((m) => ({ minutes: m, label: intervalLabel(m) })),
+          cron_tick_minutes: 15,
+        });
+      }
+      if (req.method === 'POST') {
+        const body = await readJsonBody(req);
+        try {
+          const config = await updateConfig(body);
+          console.log(`settings updated: model=${config.model} interval=${config.intervalMinutes}m`);
+          return json(res, 200, { model: config.model, interval_minutes: config.intervalMinutes });
+        } catch (err) {
+          return json(res, 400, { error: String(err?.message ?? err) });
+        }
+      }
     }
 
     if (path === '/api/admin/prompts' && req.method === 'GET') {

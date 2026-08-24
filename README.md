@@ -45,6 +45,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/current` | `{ score, explanation, created_at, next_update_minutes }` |
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, prompt versions |
 | `/api/admin/prompts` | Every prompt version, full text |
+| `/api/admin/settings` | `GET` the model/cadence and the priced options; `POST` to change them |
 | `/api/cron` | The 15-minute job. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
 | `/healthz` | Liveness, plus whether the database, API key and cron secret are wired up |
 
@@ -64,10 +65,47 @@ visible rather than silent. Each row carries:
 | `model`, `served_by` | The model requested, and the model that actually answered |
 | `raw_output` | The model's verbatim final text, before parsing |
 | `status`, `error`, `latency_ms`, `input_tokens`, `output_tokens` | Run health |
-| `slot` | The 15-minute window this reading claims — the dedup key (see Deploying) |
+| `slot` | The interval window this reading claims — the dedup key (see Deploying) |
+| `cost_usd` | Estimated cost, priced at write time from this run's own usage |
+| `cache_read_tokens`, `cache_write_tokens`, `web_search_requests` | The rest of the billable usage |
 
 Storing the hash *and* the text means a historical reading stays traceable even if
 `src/prompts.js` is later edited by mistake.
+
+## What a run costs
+
+Every run is priced from its own token usage and stored on the row, so a
+historical reading keeps the price that actually applied. Web search is billed
+on top of tokens at **$10 per 1,000 searches**; a typical run does 2–6.
+
+A measured production run on Opus 5 — 40,163 input tokens, 863 output, 4
+searches — cost **$0.2624**. Roughly:
+
+| Model | Per run | Every 15 min | Every 4 hours |
+|---|---|---|---|
+| Opus 5 | ~$0.26 | ~$767/mo | **~$48/mo** |
+| Sonnet 5 | ~$0.17 | ~$507/mo | ~$32/mo |
+| Haiku 4.5 | ~$0.08 | ~$247/mo | ~$15/mo |
+
+Input dominates, because search results land in the context window. **The
+default is four-hourly** for that reason. The admin page shows spend for the
+selected range, cost per run, and a projected monthly figure; these are
+estimates, and your invoice is the source of truth.
+
+## Changing the model and cadence
+
+`/admin` → **Settings**. Both are stored in the database and take effect on the
+next tick — no redeploy. The picker shows the cost of each pairing before you
+commit to it.
+
+Vercel Cron ticks every 15 minutes (`vercel.json`); the configured interval is
+enforced by the slot, so ticks inside an interval find the slot already rated
+and return without calling the model. Intervals are therefore multiples of 15
+minutes, from 15 up to a day. To rate *more* often than every 15 minutes,
+change the cron schedule itself.
+
+Only models in `src/pricing.js` are selectable — an allowlist, so a typo in a
+request body cannot point the job at an arbitrary or unpriced model.
 
 ## Changing the prompt
 
@@ -165,9 +203,9 @@ scheduler runs, and only `ANTHROPIC_API_KEY` and `DATABASE_URL` are required.
 | `ANTHROPIC_API_KEY` | — | Required for live ratings |
 | `PORT` | `3000` | |
 | `DATABASE_URL` | — | Postgres connection string (`POSTGRES_URL` also accepted) |
-| `NEWSWORTHY_MODEL` | `claude-opus-5` | |
+| `NEWSWORTHY_MODEL` | `claude-opus-5` | Fallback only — the admin setting wins |
 | `NEWSWORTHY_PROMPT_VERSION` | latest | Pin a prompt version |
-| `NEWSWORTHY_INTERVAL_MINUTES` | `15` | |
+| `NEWSWORTHY_INTERVAL_MINUTES` | `240` | Fallback only — the admin setting wins |
 | `NEWSWORTHY_NO_SCHEDULER` | — | `1` to serve without the in-process scheduler (automatic on Vercel) |
 | `CRON_SECRET` | — | Required bearer token for `/api/cron`; set automatically by Vercel Cron |
 | `NEWSWORTHY_MOCK` | — | `1` to fake readings without calling the API |

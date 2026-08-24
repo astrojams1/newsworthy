@@ -1,9 +1,22 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { insertRating, ratingForSlot } from './db.js';
+import { effectiveConfig } from './config.js';
+import { estimateCostUsd } from './pricing.js';
 import { latestVersion, renderPrompt } from './prompts.js';
 
 export const DEFAULT_MODEL = process.env.NEWSWORTHY_MODEL || 'claude-opus-5';
 export const INTERVAL_MINUTES = Number(process.env.NEWSWORTHY_INTERVAL_MINUTES) || 15;
+
+/** Usage counters, defaulted — a field absent from the response means zero. */
+export function readUsage(usage = {}) {
+  return {
+    inputTokens: usage.input_tokens ?? 0,
+    outputTokens: usage.output_tokens ?? 0,
+    cacheReadTokens: usage.cache_read_input_tokens ?? 0,
+    cacheWriteTokens: usage.cache_creation_input_tokens ?? 0,
+    webSearchRequests: usage.server_tool_use?.web_search_requests ?? 0,
+  };
+}
 
 /** The scheduled slot a moment belongs to, floored to the interval. */
 export function slotFor(date = new Date(), minutes = INTERVAL_MINUTES) {
@@ -101,7 +114,11 @@ function mockResponse() {
   return {
     model: 'mock-model',
     stop_reason: 'end_turn',
-    usage: { input_tokens: 0, output_tokens: 0 },
+    usage: {
+      input_tokens: 40_000,
+      output_tokens: 900,
+      server_tool_use: { web_search_requests: 4 },
+    },
     content: [
       {
         type: 'text',
@@ -119,11 +136,12 @@ function mockResponse() {
  * failures are logged as status='error' so gaps in the timeseries are visible.
  */
 export async function runRating({
-  model = DEFAULT_MODEL,
+  model,
   promptVersion = Number(process.env.NEWSWORTHY_PROMPT_VERSION) || latestVersion(),
   mock = process.env.NEWSWORTHY_MOCK === '1',
   slot = null,
 } = {}) {
+  model ??= (await effectiveConfig()).model;
   const prompt = renderPrompt(promptVersion);
   const base = {
     slot,
@@ -151,6 +169,7 @@ export async function runRating({
     const raw = finalText(response.content);
     const { score, explanation } = parseVerdict(raw);
 
+    const usage = readUsage(response.usage);
     return insertRating({
       ...base,
       status: 'ok',
@@ -159,8 +178,18 @@ export async function runRating({
       served_by: response.model,
       raw_output: raw,
       latency_ms: Date.now() - startedAt,
-      input_tokens: response.usage?.input_tokens ?? null,
-      output_tokens: response.usage?.output_tokens ?? null,
+      input_tokens: usage.inputTokens,
+      output_tokens: usage.outputTokens,
+      cache_read_tokens: usage.cacheReadTokens,
+      cache_write_tokens: usage.cacheWriteTokens,
+      web_search_requests: usage.webSearchRequests,
+      // Price against the model that actually answered — it can differ from the
+      // one requested when a refusal fallback kicks in. If the served name is
+      // not in the rate card (a dated variant, an unlisted fallback), fall back
+      // to the requested model rather than silently dropping the cost.
+      cost_usd:
+        estimateCostUsd({ model: response.model, ...usage }) ??
+        estimateCostUsd({ model: base.model, ...usage }),
     });
   } catch (err) {
     return insertRating({
@@ -175,7 +204,7 @@ export async function runRating({
 
 // `npm run rate` — one-shot, useful for cron-based deployments.
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const row = await runRating({ slot: slotFor() });
+  const row = await runRating({ slot: slotFor(new Date(), (await effectiveConfig()).intervalMinutes) });
   console.log(JSON.stringify(row, null, 2));
   process.exit(row.status === 'ok' ? 0 : 1);
 }

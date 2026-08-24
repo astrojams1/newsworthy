@@ -65,3 +65,34 @@ test('manual runs carry no slot and never collide', async () => {
   assert.ok(!a.deduped && !b.deduped);
   assert.notEqual(a.id, b.id);
 });
+
+test('settings round-trip and validation', async () => {
+  const { effectiveConfig, updateConfig } = await import('../src/config.js');
+  const before = await effectiveConfig();
+  assert.equal(before.intervalMinutes, 240, 'defaults to four-hourly');
+
+  await updateConfig({ model: 'claude-haiku-4-5', intervalMinutes: 60 });
+  const after = await effectiveConfig();
+  assert.equal(after.model, 'claude-haiku-4-5');
+  assert.equal(after.intervalMinutes, 60);
+
+  await assert.rejects(() => updateConfig({ model: 'not-a-model' }), /Unknown model/);
+  await assert.rejects(() => updateConfig({ intervalMinutes: 7 }), /Interval must be one of/);
+
+  const unchanged = await effectiveConfig();
+  assert.equal(unchanged.model, 'claude-haiku-4-5', 'a rejected write changes nothing');
+});
+
+test('cost and token usage survive a round-trip', async () => {
+  const row = await insertRating({
+    ...base, slot: null, status: 'ok', score: 6, explanation: 'costed',
+    input_tokens: 40163, output_tokens: 863, web_search_requests: 4, cost_usd: 0.2624,
+  });
+  assert.equal(row.input_tokens, 40163);
+  assert.equal(row.web_search_requests, 4);
+  assert.equal(row.cost_usd, 0.2624, 'NUMERIC comes back as a number, not a string');
+
+  const s = await stats({ hours: 1 });
+  assert.ok(s.spend_usd > 0);
+  assert.ok(s.avg_cost_usd > 0);
+});

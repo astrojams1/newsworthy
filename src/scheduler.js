@@ -1,7 +1,10 @@
 import { latestAttempt } from './db.js';
-import { INTERVAL_MINUTES, runRating, slotFor } from './rate.js';
+import { effectiveConfig } from './config.js';
+import { runRating, slotFor } from './rate.js';
 
-const INTERVAL_MS = INTERVAL_MINUTES * 60_000;
+// The in-process scheduler ticks at the finest supported cadence; the
+// configured interval is enforced by the slot, exactly as on Vercel Cron.
+const TICK_MS = 15 * 60_000;
 
 let running = false;
 
@@ -9,7 +12,8 @@ let running = false;
  * One rating. Safe to call from the cron endpoint and the local scheduler
  * alike: the slot makes a duplicate delivery a no-op rather than a second row.
  */
-export async function tick(reason = 'scheduled', { slot = slotFor(), force = false } = {}) {
+export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
+  slot ??= slotFor(new Date(), (await effectiveConfig()).intervalMinutes);
   if (running) return null;
   running = true;
   try {
@@ -38,17 +42,17 @@ export function isRunning() {
  * instead — so server.js does not start this there.
  */
 export function start() {
-  latestAttempt()
-    .then((last) => {
+  Promise.all([latestAttempt(), effectiveConfig()])
+    .then(([last, config]) => {
       const staleness = last ? Date.now() - Date.parse(last.created_at) : Infinity;
-      if (staleness >= INTERVAL_MS) return tick('startup');
+      if (staleness >= config.intervalMinutes * 60_000) return tick('startup');
       console.log(`Last rating is ${Math.round(staleness / 60_000)}m old — waiting for the next slot.`);
       return null;
     })
     .catch((err) => console.error('startup tick failed', err));
 
   const schedule = () => {
-    const delay = INTERVAL_MS - (Date.now() % INTERVAL_MS);
+    const delay = TICK_MS - (Date.now() % TICK_MS);
     setTimeout(() => {
       tick().catch((err) => console.error('tick failed', err));
       schedule();
@@ -56,5 +60,5 @@ export function start() {
   };
   schedule();
 
-  console.log(`Scheduler running every ${INTERVAL_MINUTES} minutes.`);
+  console.log('Scheduler ticking every 15 minutes; cadence enforced by the configured interval.');
 }
