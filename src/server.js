@@ -122,6 +122,10 @@ const server = createServer(async (req, res) => {
         anthropic_key: Boolean(process.env.ANTHROPIC_API_KEY),
         cron_secret: Boolean(CRON_SECRET),
         postgres_env_keys: postgresEnvKeys(), // names only, never values
+        // Which commit is actually serving. Vercel injects these; locally they
+        // are absent. Answers "is my push live yet?" without reading logs.
+        git_branch: process.env.VERCEL_GIT_COMMIT_REF ?? null,
+        git_commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? null
       });
     }
 

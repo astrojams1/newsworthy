@@ -171,6 +171,18 @@ Environment variables are baked in at build time, not read live, so adding a
 variable or connecting a store to a project that is already deployed changes
 nothing until you redeploy.
 
+### Which branch deploys
+
+Vercel picks the production branch when the project is imported: `main` first,
+then `master`, then the repository default. A repo whose only branch is a
+feature branch gets that one, and it does not follow along when `main` appears
+later. Change it under **Settings → Environments → Production → Branch
+Tracking** — not Settings → Git, where it used to live. Every other branch
+still builds, as a preview deployment.
+
+`/healthz` reports `git_branch` and `git_commit`, so you can see which commit
+is actually serving rather than inferring it from the deployment list.
+
 Then confirm with `/healthz` — it names anything still missing, and lists the
 Postgres variable names it can see, which distinguishes "no database" from
 "database under a name we don't read". Watch the job under **Settings → Cron
