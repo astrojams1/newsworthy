@@ -4,7 +4,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { history, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline } from './db.js';
+import { failures, history, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline } from './db.js';
 import { allPrompts } from './prompts.js';
 import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
 import { modelCatalogue, projectMonthlyUsd } from './pricing.js';
@@ -106,7 +106,6 @@ const server = createServer(async (req, res) => {
         });
       }
       const { intervalMinutes } = await effectiveConfig();
-      const attempt = await latestAttempt();
 
       // When the next run happens depends on whether the current slot is
       // already filled — not on the reading's own age. An unfilled slot is
@@ -126,7 +125,6 @@ const server = createServer(async (req, res) => {
         next_run_at: nextRunAt,
         next_update_minutes: intervalMinutes,
         cadence: intervalLabel(intervalMinutes),
-        retrying: !slotFilled && attempt?.status === 'error',
       });
     }
 
@@ -187,9 +185,10 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/admin/history' && req.method === 'GET') {
       const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
-      const [statsRow, points, attempts, config] = await Promise.all([
+      const [statsRow, points, failedRuns, attempts, config] = await Promise.all([
         stats({ hours }),
         history({ hours }),
+        failures({ hours }),
         recentAttempts(25),
         effectiveConfig(),
       ]);
@@ -201,6 +200,7 @@ const server = createServer(async (req, res) => {
         projected_monthly_usd: projectMonthlyUsd(statsRow.avg_cost_usd, config.intervalMinutes),
         stats: statsRow,
         points,
+        failures: failedRuns,
         attempts,
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });

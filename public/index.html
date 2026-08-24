@@ -113,7 +113,6 @@
   const $cadence = document.getElementById('cadence');
   let updatedAt = null;
   let nextRunAt = null;
-  let retrying = false;
   let intervalMinutes = 240;
 
   const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
@@ -137,8 +136,10 @@
     else if (minutesAway <= 0.5) next = ' · next reading due now';
     else if (minutesAway < 90) next = ` · next in ${Math.ceil(minutesAway)} min`;
     else next = ` · next in ${Math.round(minutesAway / 60)} h`;
-    const overdue = retrying ? ' · last run failed, retrying' : '';
-    $meta.textContent = `Rated ${ago(updatedAt)}${next}${overdue}`;
+    // Deliberately silent about failures: the front page is a number and a
+    // sentence. A failed run just means the next reading is due sooner, which
+    // the countdown already says. Failures are surfaced in /admin.
+    $meta.textContent = `Rated ${ago(updatedAt)}${next}`;
   }
 
   async function load() {
@@ -151,7 +152,6 @@
       $explanation.textContent = data.explanation;
       updatedAt = new Date(data.created_at);
       nextRunAt = data.next_run_at ? new Date(data.next_run_at) : null;
-      retrying = Boolean(data.retrying);
       intervalMinutes = data.next_update_minutes ?? 240;
       $cadence.textContent = `Updated every ${data.cadence ?? `${intervalMinutes} minutes`}`;
       document.title = `${data.score}/10 · Newsworthy`;

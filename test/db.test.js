@@ -114,3 +114,22 @@ test('usage baseline averages real runs and reports when there are none', async 
   assert.equal(after.outputTokens, 1100);
   assert.equal(after.webSearchRequests, 8);
 });
+
+test('failures are queryable for the chart, separately from readings', async () => {
+  const { failures, history } = await import('../src/db.js');
+  const at = (iso) => ({ ...base, slot: null, created_at: iso });
+
+  await insertRating({ ...at('2026-08-24T16:01:05.000Z'), status: 'error', error: '503 overloaded_error' });
+  await insertRating({ ...at('2026-08-24T16:16:02.000Z'), status: 'ok', score: 5, explanation: 'recovered' });
+
+  const failed = await failures({ hours: 24 * 365 });
+  assert.ok(failed.length >= 1);
+  const one = failed.find((f) => f.created_at.startsWith('2026-08-24T16:01'));
+  assert.ok(one, 'the failed run is returned');
+  assert.match(one.error, /overloaded_error/, 'with its error text, for the tooltip');
+
+  // And it stays out of the plotted series, which is readings only.
+  const plotted = await history({ hours: 24 * 365 });
+  assert.ok(!plotted.some((p) => p.created_at.startsWith('2026-08-24T16:01')));
+  assert.ok(plotted.every((p) => p.score != null));
+});
