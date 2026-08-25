@@ -112,7 +112,6 @@
   const $meta = document.getElementById('meta');
   const $cadence = document.getElementById('cadence');
   let updatedAt = null;
-  let nextRunAt = null;
   let intervalMinutes = 240;
 
   const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
@@ -128,18 +127,10 @@
 
   function renderMeta() {
     if (!updatedAt) return;
-    // Count down to the real scheduled slot. Deriving it from the reading's own
-    // age made a stale reading look freshly scheduled.
-    const minutesAway = nextRunAt ? (nextRunAt.getTime() - Date.now()) / 60000 : null;
-    let next;
-    if (minutesAway === null) next = '';
-    else if (minutesAway <= 0.5) next = ' · next reading due now';
-    else if (minutesAway < 90) next = ` · next in ${Math.ceil(minutesAway)} min`;
-    else next = ` · next in ${Math.round(minutesAway / 60)} h`;
-    // Deliberately silent about failures: the front page is a number and a
-    // sentence. A failed run just means the next reading is due sooner, which
-    // the countdown already says. Failures are surfaced in /admin.
-    $meta.textContent = `Rated ${ago(updatedAt)}${next}`;
+    // Freshness only. A countdown would restate the cadence in the footer, and
+    // the page should use one word for one idea — "updated", not "rated" here
+    // and "updated" there. Failures stay in /admin.
+    $meta.textContent = `Updated ${ago(updatedAt)}`;
   }
 
   async function load() {
@@ -151,7 +142,6 @@
       $score.textContent = data.score;
       $explanation.textContent = data.explanation;
       updatedAt = new Date(data.created_at);
-      nextRunAt = data.next_run_at ? new Date(data.next_run_at) : null;
       intervalMinutes = data.next_update_minutes ?? 240;
       $cadence.textContent = `Updated every ${data.cadence ?? `${intervalMinutes} minutes`}`;
       document.title = `${data.score}/10 · Newsworthy`;
@@ -166,7 +156,7 @@
   }
 
   load();
-  setInterval(renderMeta, 20_000);
+  setInterval(renderMeta, 30_000);
   setInterval(load, 60_000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 </script>
