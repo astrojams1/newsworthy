@@ -45,6 +45,24 @@ Do not explain or defend the rating. Do not characterise the news as a whole, an
 
 If little of consequence happened, state the day's biggest story plainly in the same way. The number already says how much it matters.`;
 
+// v3 adds prediction markets as a source. The rating scale from v1 is preserved
+// byte-for-byte and the output contract from v2 is reused unchanged; only the
+// sourcing paragraph is new.
+//
+// Markets are a check on headline inflation, which is exactly what the harsh
+// calibration asks for: coverage volume is a poor proxy for consequence, but a
+// repricing is a costly signal. The search budget is capped rather than raised
+// so this does not increase cost — max_uses is already saturated at 8.
+const V3_SOURCES = `Sources: search current top news, and also check liquid prediction markets — Polymarket, Kalshi, and Metaculus — for what they price now and, more importantly, how those prices have moved in the last day.
+
+Use markets as a check on headline volume. A story dominating coverage that has not moved any market is usually not consequential. A sharp repricing — a move of roughly ten percentage points or more, or a new market opening on a live risk — usually means something real happened. Weight a large move more heavily than a high but stable level: a long-running risk sitting at 90% is already priced in and is not news, while 20% to 60% in a day is.
+
+Spend at most two searches on markets and the rest on news. If markets are unavailable or show nothing notable, rate on the news alone and do not mention the markets.`;
+
+const V3_INSTRUCTIONS = `${V1_INSTRUCTIONS}
+
+${V3_SOURCES}`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -58,6 +76,13 @@ const REGISTRY = {
     label: 'report-not-justify-v2',
     added: '2026-08-24',
     instructions: V1_INSTRUCTIONS,
+    outputContract: V2_OUTPUT_CONTRACT,
+  },
+  3: {
+    version: 3,
+    label: 'prediction-markets-v3',
+    added: '2026-08-24',
+    instructions: V3_INSTRUCTIONS,
     outputContract: V2_OUTPUT_CONTRACT,
   },
 };

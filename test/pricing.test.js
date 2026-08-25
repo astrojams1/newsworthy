@@ -66,13 +66,14 @@ test('interval choices divide evenly into the 15-minute cron tick', () => {
 });
 
 test('prompt v2 reports instead of justifying, and keeps v1 rating scale intact', async () => {
-  const { renderPrompt, latestVersion, allPrompts } = await import('../src/prompts.js');
+  const { renderPrompt, allPrompts } = await import('../src/prompts.js');
   const v1 = renderPrompt(1);
   const v2 = renderPrompt(2);
 
-  assert.equal(latestVersion(), 2, 'new runs use v2');
-  assert.equal(allPrompts().length, 2, 'v1 is retained, not replaced');
+  // Which version is newest is asserted once, in the v3 test — repeating it
+  // here made every new prompt version break an unrelated test.
   assert.notEqual(v1.hash, v2.hash);
+  assert.ok(allPrompts().some((p) => p.version === 1), 'v1 is retained, not replaced');
 
   const scaleOf = (p) => p.text.split('Output format')[0];
   assert.equal(scaleOf(v1), scaleOf(v2), 'the rating instructions are byte-identical');
@@ -138,4 +139,31 @@ test('an unfilled slot is retried by the next cron tick, not the next interval',
   const minutesAway =
     (Date.parse(nextTick('2026-08-24T16:06:00Z')) - Date.parse('2026-08-24T16:06:00Z')) / 60_000;
   assert.equal(minutesAway, 9, 'retry is minutes away, not hours');
+});
+
+test('prompt v3 adds prediction markets without disturbing the scale or the contract', async () => {
+  const { renderPrompt, latestVersion, allPrompts } = await import('../src/prompts.js');
+  const [v1, v2, v3] = [1, 2, 3].map(renderPrompt);
+
+  assert.equal(latestVersion(), 3, 'new runs use v3');
+  assert.equal(allPrompts().length, 3, 'earlier versions are retained');
+
+  // Published prompts are frozen: rows in the database reference these hashes.
+  assert.equal(v1.hash, '7ebe2d68813f1487');
+  assert.equal(v2.hash, 'da972d2621c7f461');
+
+  // The harsh calibration scale carries through untouched.
+  const scale = v1.text.split('Output format')[0].trim();
+  assert.ok(v3.text.includes(scale), 'v1 calibration is verbatim inside v3');
+
+  // And v3 reuses v2's reporting contract rather than inventing a new one.
+  assert.equal(v3.text.split('Output format')[1], v2.text.split('Output format')[1]);
+
+  // The new sourcing guidance.
+  for (const venue of ['Polymarket', 'Kalshi', 'Metaculus']) {
+    assert.ok(v3.text.includes(venue), `v3 names ${venue}`);
+  }
+  assert.match(v3.text, /at most two searches on markets/, 'the search budget is capped, not raised');
+  assert.match(v3.text, /moved in the last day/, 'movement matters more than level');
+  assert.match(v3.text, /rate on the news alone/, 'markets are optional, not required');
 });
