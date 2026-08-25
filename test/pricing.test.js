@@ -66,13 +66,14 @@ test('interval choices divide evenly into the 15-minute cron tick', () => {
 });
 
 test('prompt v2 reports instead of justifying, and keeps v1 rating scale intact', async () => {
-  const { renderPrompt, latestVersion, allPrompts } = await import('../src/prompts.js');
+  const { renderPrompt, allPrompts } = await import('../src/prompts.js');
   const v1 = renderPrompt(1);
   const v2 = renderPrompt(2);
 
-  assert.equal(latestVersion(), 2, 'new runs use v2');
-  assert.equal(allPrompts().length, 2, 'v1 is retained, not replaced');
+  // Which version is newest is asserted once, in the v3 test — repeating it
+  // here made every new prompt version break an unrelated test.
   assert.notEqual(v1.hash, v2.hash);
+  assert.ok(allPrompts().some((p) => p.version === 1), 'v1 is retained, not replaced');
 
   const scaleOf = (p) => p.text.split('Output format')[0];
   assert.equal(scaleOf(v1), scaleOf(v2), 'the rating instructions are byte-identical');
