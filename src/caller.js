@@ -78,10 +78,17 @@ GET ${baseUrl}/api/readings?token=<TOKEN>&score=<1-10>
 \`201\` means it was stored. \`422\` means it was rejected and the message says
 why — read it and fix the field rather than retrying unchanged.
 
-**If your own client refuses to send either request** — some sandboxes block a
-URL a model assembled, especially one carrying a token — do not silently drop
-the reading and do not report success. Print the JSON payload and say it was not
-submitted. It can be pasted into the app's admin page by hand.
+**If your own client refuses to send either request**, do not silently drop the
+reading and do not report success. Two sandbox limits cause this and neither is
+something you can talk your way past: an interpreter with no network (\`curl\`
+fails to resolve the host) and a browser that will not fetch a URL the model
+assembled. Both are deliberate.
+
+When that happens, end your reply with the payload on its own, as a JSON object
+and nothing else, and state that it was **not** submitted and needs pasting into
+${baseUrl}/admin — the "Paste a reading" box takes it verbatim. A verdict a
+human can paste in ten seconds is not a failed run; a verdict reported as
+submitted when it was not is.
 
 Only \`score\` and \`explanation\` are required. Reporting \`usage\` is what lets
 this app price your run and show it separately from its own spend.
