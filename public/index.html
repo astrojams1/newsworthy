@@ -6,7 +6,7 @@
 <title>Newsworthy</title>
 <meta name="description" content="The news anti-app: a number out of 10 and one sentence.">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26' font-family='system-ui'>7</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='16' y='25' text-anchor='middle' font-size='27' font-family='system-ui'%3E%E2%80%93%3C/text%3E%3C/svg%3E">
 <style>
   :root {
     --surface: #ffffff;
@@ -119,6 +119,29 @@
   const $meta = document.getElementById('meta');
   let updatedAt = null;
 
+
+  /**
+   * The favicon carries the current score, so a pinned tab reads at a glance
+   * without opening it. Theme-aware: the digit is invisible against matching
+   * browser chrome otherwise, and a favicon gets no CSS from the page.
+   */
+  function setFavicon(score) {
+    const text = score == null ? '\u2013' : String(score);
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+      '<style>text{fill:#16161a}@media(prefers-color-scheme:dark){text{fill:#f2f2f5}}</style>' +
+      '<text x="16" y="25" text-anchor="middle" font-size="27" font-weight="500" ' +
+      'font-family="system-ui,-apple-system,sans-serif">' + text + '</text></svg>';
+    let link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.type = 'image/svg+xml';
+    link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+
   const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
 
   function ago(date) {
@@ -150,12 +173,14 @@
       $explanation.textContent = data.explanation;
       updatedAt = new Date(data.created_at);
       document.title = `${data.score}/10 · Newsworthy`;
+      setFavicon(data.score);
       document.body.dataset.state = 'ready';
       renderMeta();
     } catch (err) {
       $score.textContent = '–';
       $explanation.textContent = 'No rating yet. The first one lands within 15 minutes.';
       $meta.textContent = '';
+      setFavicon(null);
       document.body.dataset.state = 'error';
     }
   }

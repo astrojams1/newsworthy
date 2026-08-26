@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Newsworthy · admin</title>
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26' font-family='system-ui'>7</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='16' y='25' text-anchor='middle' font-size='27' font-family='system-ui'%3E%E2%80%93%3C/text%3E%3C/svg%3E">
 <style>
   :root {
     --surface: #ffffff;
@@ -113,10 +113,22 @@
   th, td { text-align: left; padding: 0.5rem 0.75rem 0.5rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
   th { font-weight: 600; color: var(--ink-muted); font-size: 0.75rem; }
   td.why { font-variant-numeric: normal; color: var(--ink-muted); }
+  /* nowrap: a wrapped pill renders as a tall lozenge with the name split
+     across two lines, which is how every caller name longer than the column
+     was being drawn. */
   .pill { display: inline-block; padding: 0.05rem 0.4rem; border-radius: 999px; font-size: 0.6875rem;
-          border: 1px solid var(--rule); color: var(--ink-muted); }
+          border: 1px solid var(--rule); color: var(--ink-muted); white-space: nowrap; }
   .pill.err { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
   .pill.ext { color: var(--series); border-color: color-mix(in srgb, var(--series) 40%, transparent); }
+  /* A voided row is not a failed run — it is one that should never have
+     counted, and stats exclude it for that reason. Labelling it "failed" said
+     the model had errored when nothing had. */
+  .pill.void { color: var(--ink-faint); border-style: dashed; }
+  /* Figures line up only when they are right-aligned and unwrapped. */
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  td.model { white-space: nowrap; }
+  td.when { white-space: nowrap; }
+  td .none { color: var(--ink-faint); }
   td .muted { color: var(--ink-faint); }
   .scroll { overflow-x: auto; }
   /* Narrow screens: title on its own line so the controls stay on one row. */
@@ -189,7 +201,7 @@
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th>When</th><th>Score</th><th>Why</th><th>Source</th><th>Model</th><th>Tokens</th><th>Cost</th><th>ms</th></tr></thead>
+    <thead><tr><th class="when">When</th><th>Score</th><th>Why</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">ms</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
@@ -207,6 +219,29 @@
   const $ = (id) => document.getElementById(id);
   const chart = $('chart');
   const tooltip = $('tooltip');
+
+  /**
+   * The favicon carries the current score, so a pinned tab reads at a glance
+   * without opening it. Theme-aware: the digit is invisible against matching
+   * browser chrome otherwise, and a favicon gets no CSS from the page.
+   */
+  function setFavicon(score) {
+    const text = score == null ? '\u2013' : String(score);
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+      '<style>text{fill:#16161a}@media(prefers-color-scheme:dark){text{fill:#f2f2f5}}</style>' +
+      '<text x="16" y="25" text-anchor="middle" font-size="27" font-weight="500" ' +
+      'font-family="system-ui,-apple-system,sans-serif">' + text + '</text></svg>';
+    let link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.type = 'image/svg+xml';
+    link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+
   const fmtTime = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   const fmtShort = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
   const fmtClock = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
@@ -399,17 +434,35 @@
       ? `<span class="pill ext" title="${escapeHtml(JSON.stringify(r.caller_meta ?? {}))}">${escapeHtml(r.caller ?? 'external')}</span>`
       : `<span class="muted">${escapeHtml(r.source ?? 'cron')}</span>`;
 
+  const isVoided = (r) => r.status !== 'ok' && /^voided:/.test(r.error ?? '');
+  /** An absent figure reads as a rendering gap when the cell is simply blank. */
+  const none = '<span class="none">–</span>';
+
+  function statusCell(r) {
+    if (r.status === 'ok') return `${r.score}/10`;
+    return isVoided(r)
+      ? '<span class="pill void">voided</span>'
+      : '<span class="pill err">failed</span>';
+  }
+
+  function whyCell(r) {
+    if (r.status === 'ok') return escapeHtml(r.explanation ?? '');
+    // The pill already says "voided"; repeating the prefix wasted the column.
+    const text = r.error ?? '';
+    return escapeHtml(isVoided(r) ? text.replace(/^voided:\s*/, '') : text);
+  }
+
   function renderRuns(rows) {
     $('runs').querySelector('tbody').innerHTML = rows.map((r) => `
       <tr>
-        <td>${fmtTime.format(new Date(r.created_at))}</td>
-        <td>${r.status === 'ok' ? `${r.score}/10` : '<span class="pill err">failed</span>'}</td>
-        <td class="why">${escapeHtml(r.status === 'ok' ? r.explanation ?? '' : r.error ?? '')}</td>
+        <td class="when">${fmtTime.format(new Date(r.created_at))}</td>
+        <td>${statusCell(r)}</td>
+        <td class="why">${whyCell(r)}</td>
         <td>${sourceCell(r)}</td>
-        <td>${escapeHtml(shortModel(r.served_by ?? r.model))}</td>
-        <td>${r.input_tokens != null ? `${fmtInt(r.input_tokens)} / ${fmtInt(r.output_tokens)}` : ''}</td>
-        <td>${r.cost_usd != null ? usd(r.cost_usd) : ''}</td>
-        <td>${r.latency_ms ?? ''}</td>
+        <td class="model">${escapeHtml(shortModel(r.served_by ?? r.model))}</td>
+        <td class="num">${r.input_tokens != null ? `${fmtInt(r.input_tokens)} / ${fmtInt(r.output_tokens)}` : none}</td>
+        <td class="num">${r.cost_usd != null ? usd(r.cost_usd) : none}</td>
+        <td class="num">${r.latency_ms != null ? fmtInt(r.latency_ms) : none}</td>
       </tr>`).join('') || '<tr><td colspan="8" class="empty">Nothing logged yet.</td></tr>';
   }
 
@@ -434,9 +487,12 @@
     renderTiles(data);
     renderChart();
     renderRuns(data.attempts);
+    // Same badge as the front page: the newest reading, not the newest attempt.
+    setFavicon(points.length ? points[points.length - 1].score : null);
+    // The reading count lives in the tiles above; repeating it here said the
+    // same number twice on one screen.
     $('caption').textContent =
-      `Newsworthiness 1–10 · ${points.length} reading${points.length === 1 ? '' : 's'}` +
-      (failures.length ? ' · ✕ marks a failed run' : '');
+      'Newsworthiness 1–10' + (failures.length ? ' · ✕ marks a failed run' : '');
     $('status').textContent = `updated ${fmtClock.format(new Date())}`;
   }
 
