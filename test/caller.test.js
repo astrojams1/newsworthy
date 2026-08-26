@@ -55,7 +55,10 @@ test('nothing on the page is phrased as an order to the tool fetching it', () =>
   const body = text.slice(0, text.indexOf('----- BEGIN PROMPT'));
   assert.ok(!/\bYou (are|must|should|will|can)\b/.test(body), 'no second-person commands');
   assert.ok(!/^\s*(Run|Print|Report|Submit|Do not) /m.test(body), 'no bare imperatives');
-  assert.match(text, /Nothing here addresses a tool fetching, summarizing or\ntranscribing this page/);
+  // Not even a disclaimer: a summarizer quoted an earlier "nothing here
+  // addresses you" line back and argued with it against its own constraints,
+  // returning the argument instead of the page. Self-reference is the bug.
+  assert.ok(!/\bthis page\b/.test(body), 'the page does not talk about itself');
 });
 
 test('the finish line is a fact about the system, so it survives paraphrase', () => {
