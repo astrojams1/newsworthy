@@ -6,6 +6,8 @@
       "includeFiles": "public/**"
     }
   },
+  "//": "Preview builds are skipped. Every branch push produced a preview that failed in about a second with BUILD_FAILED / 'Resource provisioning failed' and no build logs at all — the build container never started, so no code of ours was involved. Nine in a row, while every production build from the same commits succeeded. Each one emailed. Nothing here reads a preview URL: work is verified against production after merge, so the builds were pure noise. Exit 0 skips, exit 1 builds; the test matches 'preview' rather than negating 'production' so an unset VERCEL_ENV still builds.",
+  "ignoreCommand": "[ \"$VERCEL_ENV\" = preview ]",
   "crons": [
     {
       "path": "/api/cron",
