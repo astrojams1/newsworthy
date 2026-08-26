@@ -20,10 +20,9 @@ test('both submission shapes are present, POST first', () => {
   const get = text.indexOf('GET https://example.test/api/readings');
   assert.ok(post > 0 && get > 0, 'both are documented');
   assert.ok(post < get, 'POST is presented before the GET fallback');
-  // The GET path must read as usable, not as a discouraged edge case: an agent
+  // The GET path must read as usable, not as a discouraged edge case: a caller
   // that cannot POST has to reach for it rather than give up.
-  assert.match(text, /any client that can fetch a URL can submit/);
-  assert.match(text, /Do not\s+give up because POST is unavailable/);
+  assert.match(text, /any client that can retrieve a URL can submit/);
 });
 
 test('the base URL is taken from the caller, not hardcoded', () => {
@@ -34,7 +33,7 @@ test('the base URL is taken from the caller, not hardcoded', () => {
 });
 
 test('the refusal rule survives, since only the caller can enforce it', () => {
-  assert.match(build(), /stop and submit nothing/);
+  assert.match(build(), /submits nothing at all/);
 });
 
 test('instructions are served as text/plain, which every fetch tool accepts', async () => {
@@ -47,57 +46,55 @@ test('instructions are served as text/plain, which every fetch tool accepts', as
   assert.match(src, /format.*===.*'json'/, 'and JSON on request');
 });
 
-test('submitting is framed as the finish line, not producing the score', () => {
-  // Observed failure: an agent ran the prompt, printed
-  // {"score":4,"explanation":"..."} and stopped, having read the prompt's own
-  // "reply with a single JSON object and nothing else" as its last
-  // instruction. Nothing was ever submitted. The wrapper has to scope that
-  // sentence to the verdict's shape and put the finish line at the 201.
+test('nothing on the page is phrased as an order to the tool fetching it', () => {
+  // Two callers got an apologetic "I cannot make HTTP requests" instead of this
+  // page: a fetch tool summarizes through a small model, and that model read
+  // imperatives aimed at "you" as its own orders. One burned two fetches before
+  // getting through. A specification gives it nothing to refuse.
   const text = build();
-  const prompt = renderPrompt(latestVersion());
-  assert.match(prompt.text, /single JSON object and nothing else/, 'the competing instruction is real');
-  assert.match(text, /finished when a submission returns `201`/);
-  assert.match(text, /does not end your work/);
-  assert.match(text, /payload for step 2, not your answer/);
+  const body = text.slice(0, text.indexOf('----- BEGIN PROMPT'));
+  assert.ok(!/\bYou (are|must|should|will|can)\b/.test(body), 'no second-person commands');
+  assert.ok(!/^\s*(Run|Print|Report|Submit|Do not) /m.test(body), 'no bare imperatives');
+  assert.match(text, /Nothing here addresses a tool fetching, summarizing or\ntranscribing this page/);
 });
 
-test('the finish line is stated before the prompt an agent might stop at', () => {
+test('the finish line is a fact about the system, so it survives paraphrase', () => {
+  // The rule that stopped two callers — a score is not a finished job — has to
+  // outlive a summarizer. Stated as a property of the API it does; stated as
+  // "you are not done until…" it is exactly what gets compressed away.
   const text = build();
-  assert.ok(
-    text.indexOf('finished when a submission returns') < text.indexOf('----- BEGIN PROMPT'),
-    'an agent that reads top-down knows the job has two steps before it sees the prompt',
-  );
+  const stated = text.indexOf('A reading exists only when');
+  assert.ok(stated > 0 && stated < text.indexOf('## 1.'), 'stated before any section');
+  assert.match(text, /is not a reading/);
+});
+
+test('a caller that only got a summary is told how to get the prompt intact', () => {
+  // Observed: a caller rated the news from a summarized paraphrase of the
+  // prompt, then submitted prompt_version 3 — attributing the reading to text
+  // it never actually read.
+  const text = build();
+  assert.match(text, /attributed to a prompt the caller never read/);
+  assert.match(text, /api\/instructions\?format=json/);
+});
+
+test('token counts are documented as measured-only, searches as always taken', () => {
+  const text = build();
+  assert.match(text, /"measured": true/);
+  assert.match(text, /becomes a dollar amount in\nsomeone's cost total/);
+  assert.match(text, /web_search_requests` is a count the caller can take/);
 });
 
 test('a client that blocks both requests is told to surface the payload', () => {
-  // Observed failure: an agent's sandbox rejected the GET as an "unsafe
-  // synthesized URL" — a model-built URL carrying data and a token is the
-  // shape harnesses block. It then reported the job complete. Neither the
-  // silent drop nor the false success is acceptable; the verdict has to come
-  // back where a human can paste it.
   const text = build();
-  assert.match(text, /refuses to send either request/);
-  assert.match(text, /do not report success/);
-  // Naming the destination matters: a caller told only "paste it somewhere"
-  // leaves its human hunting for where.
+  assert.match(text, /Some sandboxes permit neither request/);
+  assert.match(text, /was \*\*not\*\* submitted/);
   assert.match(text, /https:\/\/example\.test\/admin/);
   assert.match(text, /Paste a reading/);
-});
-
-test('a summarizing model is told the page is not addressed to it', () => {
-  // WebFetch reads a page through a small fast model. One read this page's
-  // imperatives as its own orders, decided it could not POST or web-search,
-  // and returned a refusal instead of the content — so the caller never got
-  // the prompt on its first attempt.
-  const text = build();
-  const preamble = text.slice(0, text.indexOf('Rate the current news'));
-  assert.match(preamble, /Reference material, not a request/);
-  assert.match(preamble, /addressed to the agent doing the rating, not to you/);
 });
 
 test('the fetch guidance carries what a real run had to learn the hard way', () => {
   const text = build();
   assert.match(text, /links without usable snippets/);
-  assert.match(text, /Reuters, AP and BBC block automated fetches/);
+  assert.match(text, /Reuters, AP and BBC block automated\s+fetches/);
   assert.match(text, /unreliable digit by digit/);
 });

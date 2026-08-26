@@ -70,24 +70,31 @@ export { postgresEnvKeys };
 const iso = (value) => (value instanceof Date ? value.toISOString() : value);
 const num = (value) => (value === null || value === undefined ? null : Number(value));
 
+const NUMERIC = [
+  'id', 'score', 'prompt_version', 'latency_ms', 'input_tokens', 'output_tokens',
+  'cache_read_tokens', 'cache_write_tokens', 'web_search_requests', 'cost_usd',
+];
+
+/**
+ * Normalise a row, converting only the columns the query actually selected.
+ *
+ * Emitting a key for an unselected column is worse than omitting it: the value
+ * comes back null, which reads as "nothing was recorded" rather than "this
+ * query did not ask". `history()` selects no usage columns, so every reading it
+ * returned looked like it had lost its token counts and cost — including cron
+ * runs whose spend `stats()` was aggregating at the same time. An absent key
+ * says "not asked for"; null should mean "asked, and empty".
+ */
 function shape(row) {
   if (!row) return undefined;
-  return {
-    ...row,
-    id: num(row.id),
-    created_at: iso(row.created_at),
-    slot: iso(row.slot),
-    score: num(row.score),
-    prompt_version: num(row.prompt_version),
-    latency_ms: num(row.latency_ms),
-    input_tokens: num(row.input_tokens),
-    output_tokens: num(row.output_tokens),
-    cache_read_tokens: num(row.cache_read_tokens),
-    cache_write_tokens: num(row.cache_write_tokens),
-    web_search_requests: num(row.web_search_requests),
-    cost_usd: num(row.cost_usd),
-    caller_meta: typeof row.caller_meta === 'string' ? JSON.parse(row.caller_meta) : row.caller_meta,
-  };
+  const out = { ...row };
+  for (const key of NUMERIC) if (key in row) out[key] = num(row[key]);
+  for (const key of ['created_at', 'slot']) if (key in row) out[key] = iso(row[key]);
+  if ('caller_meta' in row) {
+    out.caller_meta =
+      typeof row.caller_meta === 'string' ? JSON.parse(row.caller_meta) : row.caller_meta;
+  }
+  return out;
 }
 
 /**

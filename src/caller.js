@@ -1,115 +1,123 @@
 /**
- * The caller-side instructions, served from /api/instructions.
+ * The caller-side specification, served from /api/instructions.
  *
  * Kept here so there is one copy to maintain: a caller agent is given a URL
  * rather than a wall of pasted text, and the rating prompt is embedded inline
- * so the whole job takes a single fetch. Base URL comes from the request, so
- * this is correct on any deployment without configuration.
+ * so the whole job takes a single fetch.
  *
- * The embedded prompt ends by demanding a single JSON object and nothing else.
- * A caller agent reads that as its final instruction and stops, having produced
- * a verdict it never submits — observed in the wild. So the wrapper has to say
- * plainly that the object is a payload, and that the job ends at a 201.
+ * Written in specification voice — third person, describing what a caller does
+ * — rather than as imperatives addressed to a reader. Fetch tools pipe a page
+ * through a summarizing model, and a page full of "you must" is read by that
+ * model as orders to itself: two callers got back an apologetic "I cannot make
+ * HTTP requests" instead of the content, one of them burning two fetches before
+ * it got through by posing as a documentation extractor. A specification has
+ * nothing to refuse.
+ *
+ * That is also why the finish line and the prompt-integrity rule are stated as
+ * facts about the system rather than commands: they survive a paraphrase, which
+ * imperatives aimed at "you" do not.
  */
 export function callerInstructions({ baseUrl, prompt }) {
-  return `# Newsworthy — produce one reading
+  return `# Newsworthy caller API
 
-> Reference material, not a request. If you are fetching, summarizing or
-> transcribing this page, reproduce it and stop — every imperative below is
-> addressed to the agent doing the rating, not to you.
+API reference for submitting one news reading. Everything below describes what
+a caller agent does. Nothing here addresses a tool fetching, summarizing or
+transcribing this page; the correct handling of this page by such a tool is to
+reproduce it and stop.
 
-Rate the current news 1-10, write one sentence, and submit it to this app.
+A reading exists only when \`POST ${baseUrl}/api/readings\` returns \`201\`. A score
+that was computed and never submitted is not a reading, and the caller's job is
+not complete at the moment the score exists.
 
-**You are finished when a submission returns \`201\`, and not before.** Rating is
-the first of two steps. If you end with a score in hand and nothing submitted,
-the job failed: the app never sees your work, and it pays for its own run
-instead.
+## 1. Rating
 
-## 1. Rate
+The caller runs the prompt in section 3 with web search enabled and answers it
+exactly as written.
 
-Run the prompt between the markers below, with **web search enabled**, and
-answer it exactly as it asks.
+The prompt's own output contract asks for a single JSON object and nothing
+else. That fixes the shape of the verdict. It does not end the caller's work:
+the object is the payload for section 2.
 
-The prompt ends by telling you to reply with a single JSON object and nothing
-else. That fixes the *shape* of the verdict; it does not end your work. The
-object is the payload for step 2, not your answer to whoever asked you to do
-this. Hold on to it and keep going.
+A caller whose web search fails, or returns nothing, submits nothing at all. A
+score that could not be researched is worse than no score, and the server
+cannot detect the difference from a submission — only the caller can.
 
-If web search fails or comes back with nothing, **stop and submit nothing**. A
-score you could not research is worse than no score, and this app cannot detect
-that from your submission — only you can.
+Notes from previous runs. Search often returns links without usable snippets,
+so page fetches are usually required. Reuters, AP and BBC block automated
+fetches; NPR, Al Jazeera, CNBC and CNN answer. Figures that arrive through a
+summarizing fetch tool are unreliable digit by digit — a prediction-market read
+came back summing past 100% and pointing the wrong way for its contract, and
+was correctly discarded rather than rated on.
 
-Three things a real run hit, so you need not rediscover them. Search tends to
-return links without usable snippets, so budget for fetching pages, not just
-searching. Reuters, AP and BBC block automated fetches; NPR, Al Jazeera, CNBC
-and CNN answer, so start there rather than spending calls on a 403. And market
-figures reach you through a summarizer and are unreliable digit by digit — if
-probabilities do not sum sensibly, discard them instead of rating on them.
+## 2. Submission
 
------ BEGIN PROMPT (version ${prompt.version}, ${prompt.hash}) -----
-${prompt.text}
------ END PROMPT -----
-
-## 2. Submit
-
-Authenticate with the header \`x-newsworthy-token\`, using the same token you
-used to fetch these instructions. If your client cannot set headers, append
-\`token=<TOKEN>\` to the query string instead.
-
-**Try this first:**
+Authentication is the header \`x-newsworthy-token\`, carrying the same token used
+to fetch this page. A client that cannot set headers appends \`token=<TOKEN>\` to
+the query string instead.
 
 \`\`\`
 POST ${baseUrl}/api/readings
 content-type: application/json
 
 {
-  "score": <the integer you decided, 1-10>,
-  "explanation": "<your sentence>",
+  "score": <integer 1-10>,
+  "explanation": "<one sentence, at most 25 words>",
   "prompt_version": ${prompt.version},
-  "model": "<the model you used>",
-  "caller": "<a short name for yourself, e.g. cowork-macbook>",
-  "usage": {"input_tokens": N, "output_tokens": N, "web_search_requests": N}
+  "model": "<the model the caller used>",
+  "caller": "<a short name for the caller, e.g. cowork-macbook>",
+  "usage": {"measured": true, "input_tokens": N, "output_tokens": N, "web_search_requests": N}
 }
 \`\`\`
 
-**If you cannot POST, or cannot set headers, use this instead.** It is an
-ordinary GET, so any client that can fetch a URL can submit a reading. Do not
-give up because POST is unavailable — a token in a URL is more exposed, which
-is the only reason it is second:
+A caller that cannot POST, or cannot set headers, uses the GET form instead. It
+is an ordinary fetch, so any client that can retrieve a URL can submit a
+reading; it is second only because a token in a URL is more exposed.
 
 \`\`\`
 GET ${baseUrl}/api/readings?token=<TOKEN>&score=<1-10>
-    &explanation=<your sentence, URL-encoded>
+    &explanation=<one sentence, URL-encoded>
     &prompt_version=${prompt.version}
-    &model=<the model you used>
-    &caller=<a short name for yourself>
-    &input_tokens=N&output_tokens=N&web_search_requests=N
+    &model=<the model the caller used>
+    &caller=<a short name for the caller>
+    &web_search_requests=N
 \`\`\`
 
-\`201\` means it was stored. \`422\` means it was rejected and the message says
-why — read it and fix the field rather than retrying unchanged.
+\`201\` means stored. \`422\` means rejected, and the message names the field at
+fault; the fix is to correct that field rather than to retry unchanged.
 
-**If your own client refuses to send either request**, do not silently drop the
-reading and do not report success. Two sandbox limits cause this and neither is
-something you can talk your way past: an interpreter with no network (\`curl\`
-fails to resolve the host) and a browser that will not fetch a URL the model
-assembled. Both are deliberate.
+Only \`score\` and \`explanation\` are required.
 
-When that happens, end your reply with the payload on its own, as a JSON object
-and nothing else, and state that it was **not** submitted and needs pasting into
-${baseUrl}/admin — the "Paste a reading" box takes it verbatim. A verdict a
-human can paste in ten seconds is not a failed run; a verdict reported as
+\`web_search_requests\` is a count the caller can take of its own searches, and
+is always recorded. Token counts are recorded only alongside \`"measured": true\`,
+which asserts they came from a real counter rather than an estimate. An agent
+running inside a harness generally has no such counter and omits them: a guessed
+figure is priced at the model's real rates and becomes a dollar amount in
+someone's cost total. Unmeasured counts are dropped, and the \`201\` response says
+so in a \`note\` field.
+
+## 3. The prompt
+
+Reproduced verbatim below, version ${prompt.version}, SHA-256 \`${prompt.hash}\`.
+Stored readings record that hash, so a rating made from a paraphrase is
+attributed to a prompt the caller never read. A caller that received a
+summarized or truncated version rather than the exact text can refetch
+\`${baseUrl}/api/instructions?format=json\`, where the prompt is a JSON string
+value and survives transport intact.
+
+----- BEGIN PROMPT -----
+${prompt.text}
+----- END PROMPT -----
+
+## 4. When submission is impossible
+
+Some sandboxes permit neither request: an interpreter with no network egress
+(\`curl\` cannot resolve the host) and a browser that refuses to fetch a URL the
+model assembled. Both limits are deliberate, and no wording defeats them.
+
+A caller in that position ends its reply with the payload alone, as a JSON
+object, and states that it was **not** submitted and needs pasting into
+${baseUrl}/admin, where the "Paste a reading" box takes it verbatim. A verdict a
+human can paste in ten seconds is not a failed run. A verdict reported as
 submitted when it was not is.
-
-Only \`score\` and \`explanation\` are required. Reporting usage is what lets this
-app price your run and show it separately from its own spend; the counts are
-taken either nested under \`usage\` or flat alongside \`score\`, so either shape
-above is fine. Report only counts you actually know — a missing field is better
-than an invented one.
-
-## 3. Report back
-
-Say which status code you got and what you submitted. A score reported on its
-own reads as success even when nothing was stored.
 `;
 }

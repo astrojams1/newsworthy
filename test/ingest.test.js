@@ -79,6 +79,7 @@ test('a query-string submission maps onto the same validation as a body', async 
     caller: 'header-less-agent',
     model: 'claude-opus-5',
     prompt_version: '3',
+    measured: 'true',
     input_tokens: '51000',
     output_tokens: '900',
     web_search_requests: '6',
@@ -115,7 +116,7 @@ test('usage counts are taken flat as well as nested', () => {
   // body documents a nested object, so a caller mixing them is following a
   // shape this app publishes. Accept both.
   const flat = validateSubmission({
-    score: 5, explanation: 'x', model: 'claude-opus-5',
+    score: 5, explanation: 'x', model: 'claude-opus-5', measured: true,
     input_tokens: 40_000, output_tokens: 1_000, web_search_requests: 4,
   });
   assert.equal(flat.web_search_requests, 4);
@@ -124,7 +125,7 @@ test('usage counts are taken flat as well as nested', () => {
 
   const nested = validateSubmission({
     score: 5, explanation: 'x', model: 'claude-opus-5',
-    usage: { input_tokens: 40_000, output_tokens: 1_000, web_search_requests: 4 },
+    usage: { measured: true, input_tokens: 40_000, output_tokens: 1_000, web_search_requests: 4 },
   });
   assert.equal(nested.cost_usd, flat.cost_usd, 'both shapes price identically');
 });

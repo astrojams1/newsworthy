@@ -50,7 +50,7 @@ export function submissionFromQuery(params) {
     if (value !== null) body[field] = value;
   }
   const usage = {};
-  for (const field of ['input_tokens', 'output_tokens', 'web_search_requests']) {
+  for (const field of ['input_tokens', 'output_tokens', 'web_search_requests', 'measured']) {
     const value = params.get(field);
     if (value !== null) usage[field] = value;
   }
@@ -97,7 +97,7 @@ export function validateSubmission(body = {}) {
   const nested = body.usage ?? {};
   if (typeof nested !== 'object' || Array.isArray(nested)) fail('usage must be an object');
   const usage = { ...nested };
-  for (const field of ['input_tokens', 'output_tokens', 'web_search_requests']) {
+  for (const field of ['input_tokens', 'output_tokens', 'web_search_requests', 'measured']) {
     if (usage[field] === undefined && body[field] !== undefined) usage[field] = body[field];
   }
   const counter = (value, field) => {
@@ -108,9 +108,30 @@ export function validateSubmission(body = {}) {
   };
 
   const model = cleanString(body.model, { field: 'model', max: 120 });
-  const inputTokens = counter(usage.input_tokens, 'input_tokens');
-  const outputTokens = counter(usage.output_tokens, 'output_tokens');
   const webSearchRequests = counter(usage.web_search_requests, 'web_search_requests');
+
+  // Token counts are taken only when the caller says it measured them.
+  //
+  // An agent running inside a harness has no token counter, and one of them
+  // said so plainly after reporting 85,000 input tokens: the number was a
+  // guess. Priced at Opus rates that guess becomes $0.48 of fabricated spend
+  // sitting in a real cost total. Search count is different — a caller counts
+  // its own searches — so that is always taken.
+  //
+  // Silently dropping the guess would repeat the mistake this app just made in
+  // the other direction, so the response says what was ignored.
+  const measured = usage.measured === true || usage.measured === 'true';
+  const offered = usage.input_tokens !== undefined || usage.output_tokens !== undefined;
+  // Validate whatever was sent even when it will not be stored — a malformed
+  // count is a bug in the caller worth reporting either way.
+  const offeredInput = counter(usage.input_tokens, 'input_tokens');
+  const offeredOutput = counter(usage.output_tokens, 'output_tokens');
+  const inputTokens = measured ? offeredInput : null;
+  const outputTokens = measured ? offeredOutput : null;
+  const usageNote =
+    offered && !measured
+      ? 'token counts ignored: set usage.measured true only for counts from a real counter'
+      : undefined;
 
   let meta = null;
   if (body.meta !== undefined && body.meta !== null) {
@@ -123,6 +144,8 @@ export function validateSubmission(body = {}) {
   }
 
   return {
+    usage_note: usageNote,
+
     status: 'ok',
     source: 'external',
     caller: cleanString(body.caller, { field: 'caller', max: MAX_CALLER }) ?? 'unnamed-agent',
