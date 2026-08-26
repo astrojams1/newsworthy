@@ -85,11 +85,16 @@ test('a caller that only got a summary is told how to get the prompt intact', ()
   assert.ok(!/received a\s+summarized/.test(text), 'not phrased as a condition the caller must detect');
 });
 
-test('token counts are documented as measured-only, searches as always taken', () => {
+test('the submission is three fields, and says so', () => {
+  // Model, caller name and token counts were all self-reported and all stored
+  // as fact. One caller estimated 85,000 input tokens with no counter; priced
+  // at Opus rates that was $0.48 of invented spend in a real total.
   const text = build();
-  assert.match(text, /"measured": true/);
-  assert.match(text, /becomes a dollar amount in\nsomeone's cost total/);
-  assert.match(text, /web_search_requests` is a count the caller can take/);
+  assert.match(text, /Those are the whole submission/);
+  assert.match(text, /cannot verify any of it/);
+  for (const gone of ['input_tokens', 'output_tokens', 'web_search_requests', '"measured"', '"caller"']) {
+    assert.ok(!text.includes(gone), `${gone} is no longer asked for`);
+  }
 });
 
 test('a client that blocks both requests is told to surface the payload', () => {

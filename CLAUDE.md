@@ -35,7 +35,7 @@ side-effect-only module.
 
 **Readings can come from elsewhere.** An external agent can rate the news with
 its own model and `POST /api/readings`; the row is stored with `source =
-'external'` plus the caller's name, self-reported model and usage. Its prompt
+'external'` and nothing about the caller. Its prompt
 hash and text always come from our registry, never from the request, so a
 reading stays traceable. `/api/instructions` serves the whole caller workflow with the
 prompt embedded, so a caller agent is configured with a URL rather than pasted
@@ -59,11 +59,13 @@ as orders to itself — two callers got back "I cannot make HTTP requests" inste
 of the content. Third-person description gives it nothing to refuse, and rules
 stated as facts about the system survive the paraphrase that commands do not.
 
-**A caller's token counts are only as good as its counter.** An agent inside a
-harness has none and will estimate if asked; at Opus rates a guessed 85k input
-tokens is $0.48 of invented spend in a real total. Token counts are stored only
-with `usage.measured: true`. Search counts are always taken — a caller can count
-its own searches.
+**A submission is three fields: score, explanation, prompt version.** Model,
+caller name and token counts were all asked for once and all self-reported, so
+all of it was stored as fact without being checkable. An agent inside a harness
+has no token counter and will estimate if asked — a guessed 85k input tokens is
+$0.48 of invented spend at Opus rates. Model, usage and cost are recorded only
+for runs this app makes itself. `source` is set server-side and is `cron`,
+`manual` or `external`; a caller cannot name itself.
 
 **`shape()` in `src/db.js` converts only the columns a query selected.** Emitting
 a key for an unselected column yields a null that reads as "nothing recorded"

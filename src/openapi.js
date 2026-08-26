@@ -73,7 +73,9 @@ export function openapiDocument({ baseUrl }) {
           description:
             'Call this after rating. The job is not finished until this returns 201 — ' +
             'producing a score without submitting it accomplishes nothing. ' +
-            'If web search failed or returned nothing, submit nothing at all.',
+            'If web search failed or returned nothing, submit nothing at all. ' +
+            'These three fields are the whole submission; no model name, caller name ' +
+            'or token count is asked for, since this app cannot verify any of it.',
           requestBody: {
             required: true,
             content: {
@@ -86,7 +88,7 @@ export function openapiDocument({ baseUrl }) {
                       type: 'integer',
                       minimum: 1,
                       maximum: 10,
-                      description: 'How worthwhile the news is right now, on the prompt’s harsh scale.',
+                      description: 'How worthwhile the news is right now, on the prompt\u2019s harsh scale.',
                     },
                     explanation: {
                       type: 'string',
@@ -95,17 +97,6 @@ export function openapiDocument({ baseUrl }) {
                     prompt_version: {
                       type: 'integer',
                       description: 'The version returned by getInstructions.',
-                    },
-                    model: { type: 'string', description: 'The model you used, e.g. gpt-5.' },
-                    caller: { type: 'string', description: 'A short name for yourself, e.g. chatgpt.' },
-                    usage: {
-                      type: 'object',
-                      description: 'Your token and search usage, so this app can price your run.',
-                      properties: {
-                        input_tokens: { type: 'integer' },
-                        output_tokens: { type: 'integer' },
-                        web_search_requests: { type: 'integer' },
-                      },
                     },
                   },
                 },
@@ -123,7 +114,7 @@ export function openapiDocument({ baseUrl }) {
                       id: { type: 'integer' },
                       created_at: { type: 'string' },
                       score: { type: 'integer' },
-                      source: { type: 'string' },
+                      source: { type: 'string', description: "'external' for every caller submission." },
                     },
                   },
                 },

@@ -180,12 +180,6 @@
     <label class="field" style="flex:1 1 100%">Verdict JSON
       <textarea id="paste" rows="3" placeholder='{"score": 4, "explanation": "..."}'></textarea>
     </label>
-    <label class="field">From
-      <input id="paste-caller" placeholder="chatgpt-agent">
-    </label>
-    <label class="field">Model
-      <input id="paste-model" placeholder="gpt-5">
-    </label>
     <button id="paste-save" type="button">Store</button>
   </div>
   <p class="note" id="paste-note">For agents whose sandbox blocks the network. Stored as an external reading.</p>
@@ -282,7 +276,8 @@
       ['Readings', s.ok ?? 0],
       ['Failures', s.errors ?? 0],
       ['Spend', usd(s.spend_usd)],
-      ...(s.external_runs ? [['By callers', `${s.external_runs}<small> · ${usd(s.external_spend_usd)}</small>`]] : []),
+      // Cost, not count: an external reading is one this app did not pay for.
+      ...(s.external_runs ? [['By agents', `${s.external_runs}<small> · unpriced</small>`]] : []),
       ['Per run', usd(s.avg_cost_usd)],
       ['Monthly est.', usdRounded(data.projected_monthly_usd)],
     ];
@@ -428,10 +423,15 @@
   const shortModel = (m) => String(m).replace(/^claude-/, '');
   const usd = (n) => (n == null ? '–' : n < 1 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`);
   const usdRounded = (n) => (n == null ? '–' : `$${Math.round(n).toLocaleString()}`);
-  /** External readings name their caller; ours just say how they were triggered. */
+  /**
+   * Two possibilities, both decided by the server: this app ran the model, or
+   * an agent elsewhere did. Callers used to name themselves, so the column read
+   * 'unnamed-agent' one run and 'cowork-cloud-scheduled' the next for what was
+   * the same kind of event.
+   */
   const sourceCell = (r) =>
     r.source === 'external'
-      ? `<span class="pill ext" title="${escapeHtml(JSON.stringify(r.caller_meta ?? {}))}">${escapeHtml(r.caller ?? 'external')}</span>`
+      ? '<span class="pill ext">external agent</span>'
       : `<span class="muted">${escapeHtml(r.source ?? 'cron')}</span>`;
 
   const isVoided = (r) => r.status !== 'ok' && /^voided:/.test(r.error ?? '');
@@ -585,11 +585,6 @@
       note.textContent = 'That is not valid JSON.';
       return;
     }
-    const caller = $('paste-caller').value.trim();
-    const model = $('paste-model').value.trim();
-    if (caller) payload.caller = caller;
-    if (model) payload.model = model;
-
     button.disabled = true;
     note.textContent = 'Storing…';
     try {
