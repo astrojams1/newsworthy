@@ -89,8 +89,17 @@ export function validateSubmission(body = {}) {
     fail(`prompt_version ${body.prompt_version} is not a version this app knows`);
   }
 
-  const usage = body.usage ?? {};
-  if (typeof usage !== 'object' || Array.isArray(usage)) fail('usage must be an object');
+  // Usage is accepted nested or flat. The GET fallback documents flat query
+  // parameters (&web_search_requests=N) while the POST body documents a nested
+  // usage object, so a caller reading both and posting flat is following a
+  // shape this app itself publishes. It was silently dropped before, which cost
+  // a real reading its search count and quietly understated external spend.
+  const nested = body.usage ?? {};
+  if (typeof nested !== 'object' || Array.isArray(nested)) fail('usage must be an object');
+  const usage = { ...nested };
+  for (const field of ['input_tokens', 'output_tokens', 'web_search_requests']) {
+    if (usage[field] === undefined && body[field] !== undefined) usage[field] = body[field];
+  }
   const counter = (value, field) => {
     if (value === undefined || value === null) return null;
     const n = Number(value);

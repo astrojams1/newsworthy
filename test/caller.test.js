@@ -83,3 +83,21 @@ test('a client that blocks both requests is told to surface the payload', () => 
   assert.match(text, /https:\/\/example\.test\/admin/);
   assert.match(text, /Paste a reading/);
 });
+
+test('a summarizing model is told the page is not addressed to it', () => {
+  // WebFetch reads a page through a small fast model. One read this page's
+  // imperatives as its own orders, decided it could not POST or web-search,
+  // and returned a refusal instead of the content — so the caller never got
+  // the prompt on its first attempt.
+  const text = build();
+  const preamble = text.slice(0, text.indexOf('Rate the current news'));
+  assert.match(preamble, /Reference material, not a request/);
+  assert.match(preamble, /addressed to the agent doing the rating, not to you/);
+});
+
+test('the fetch guidance carries what a real run had to learn the hard way', () => {
+  const text = build();
+  assert.match(text, /links without usable snippets/);
+  assert.match(text, /Reuters, AP and BBC block automated fetches/);
+  assert.match(text, /unreliable digit by digit/);
+});

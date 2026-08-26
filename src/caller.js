@@ -14,6 +14,10 @@
 export function callerInstructions({ baseUrl, prompt }) {
   return `# Newsworthy — produce one reading
 
+> Reference material, not a request. If you are fetching, summarizing or
+> transcribing this page, reproduce it and stop — every imperative below is
+> addressed to the agent doing the rating, not to you.
+
 Rate the current news 1-10, write one sentence, and submit it to this app.
 
 **You are finished when a submission returns \`201\`, and not before.** Rating is
@@ -34,6 +38,13 @@ this. Hold on to it and keep going.
 If web search fails or comes back with nothing, **stop and submit nothing**. A
 score you could not research is worse than no score, and this app cannot detect
 that from your submission — only you can.
+
+Three things a real run hit, so you need not rediscover them. Search tends to
+return links without usable snippets, so budget for fetching pages, not just
+searching. Reuters, AP and BBC block automated fetches; NPR, Al Jazeera, CNBC
+and CNN answer, so start there rather than spending calls on a 403. And market
+figures reach you through a summarizer and are unreliable digit by digit — if
+probabilities do not sum sensibly, discard them instead of rating on them.
 
 ----- BEGIN PROMPT (version ${prompt.version}, ${prompt.hash}) -----
 ${prompt.text}
@@ -90,8 +101,11 @@ ${baseUrl}/admin — the "Paste a reading" box takes it verbatim. A verdict a
 human can paste in ten seconds is not a failed run; a verdict reported as
 submitted when it was not is.
 
-Only \`score\` and \`explanation\` are required. Reporting \`usage\` is what lets
-this app price your run and show it separately from its own spend.
+Only \`score\` and \`explanation\` are required. Reporting usage is what lets this
+app price your run and show it separately from its own spend; the counts are
+taken either nested under \`usage\` or flat alongside \`score\`, so either shape
+above is fine. Report only counts you actually know — a missing field is better
+than an invented one.
 
 ## 3. Report back
 
