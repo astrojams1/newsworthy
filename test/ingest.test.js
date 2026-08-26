@@ -107,3 +107,31 @@ test('a query submission is validated exactly as strictly', async () => {
   assert.equal(minimal.caller, 'unnamed-agent');
   assert.equal(minimal.model, 'unreported');
 });
+
+test('usage counts are taken flat as well as nested', () => {
+  // A real caller POSTed {"score":5,...,"web_search_requests":4} and the count
+  // was silently dropped: the row stored 201 with no usage, understating
+  // external spend. The GET fallback documents flat parameters and the POST
+  // body documents a nested object, so a caller mixing them is following a
+  // shape this app publishes. Accept both.
+  const flat = validateSubmission({
+    score: 5, explanation: 'x', model: 'claude-opus-5',
+    input_tokens: 40_000, output_tokens: 1_000, web_search_requests: 4,
+  });
+  assert.equal(flat.web_search_requests, 4);
+  assert.equal(flat.input_tokens, 40_000);
+  assert.ok(flat.cost_usd > 0, 'a flat report still prices the run');
+
+  const nested = validateSubmission({
+    score: 5, explanation: 'x', model: 'claude-opus-5',
+    usage: { input_tokens: 40_000, output_tokens: 1_000, web_search_requests: 4 },
+  });
+  assert.equal(nested.cost_usd, flat.cost_usd, 'both shapes price identically');
+});
+
+test('an explicit nested usage wins over a flat field of the same name', () => {
+  const both = validateSubmission({
+    score: 5, explanation: 'x', web_search_requests: 9, usage: { web_search_requests: 4 },
+  });
+  assert.equal(both.web_search_requests, 4);
+});
