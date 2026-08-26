@@ -222,6 +222,14 @@ export async function recentAttempts(limit = 25) {
   return rows.map(shape);
 }
 
+/**
+ * Aggregates for the admin tiles.
+ *
+ * Voided rows are excluded throughout: a voided reading is by definition one
+ * that should never have counted, so leaving it in the run counts and the spend
+ * totals reports probes and bug-written rows as real work. A genuine failure
+ * stays in — it cost money and it happened.
+ */
 export async function stats({ hours = 24 * 7 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
@@ -236,7 +244,9 @@ export async function stats({ hours = 24 * 7 } = {}) {
            COALESCE(SUM(cost_usd) FILTER (WHERE source = 'external'), 0)  AS external_spend_usd,
            AVG(cost_usd) FILTER (WHERE source <> 'external')  AS avg_cost_usd,
            COUNT(*) FILTER (WHERE source = 'external')        AS external_runs
-      FROM ratings WHERE created_at >= ${since}`;
+      FROM ratings
+     WHERE created_at >= ${since}
+       AND (error IS NULL OR error NOT LIKE 'voided:%')`;
   const r = rows[0] ?? {};
   return {
     total: num(r.total) ?? 0,
