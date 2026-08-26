@@ -38,6 +38,34 @@ function cleanString(value, { field, max, required = false }) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
+/**
+ * Some agents have only a plain GET fetch — no custom headers, no request
+ * body. Their submission arrives as query parameters instead, which this maps
+ * onto the same shape so it goes through exactly the same validation.
+ */
+export function submissionFromQuery(params) {
+  const body = {};
+  for (const field of ['score', 'explanation', 'caller', 'model', 'prompt_version']) {
+    const value = params.get(field);
+    if (value !== null) body[field] = value;
+  }
+  const usage = {};
+  for (const field of ['input_tokens', 'output_tokens', 'web_search_requests']) {
+    const value = params.get(field);
+    if (value !== null) usage[field] = value;
+  }
+  if (Object.keys(usage).length) body.usage = usage;
+  const meta = params.get('meta');
+  if (meta !== null) {
+    try {
+      body.meta = JSON.parse(meta);
+    } catch {
+      fail('meta must be valid JSON');
+    }
+  }
+  return body;
+}
+
 export function validateSubmission(body = {}) {
   if (typeof body !== 'object' || Array.isArray(body)) fail('body must be a JSON object');
 

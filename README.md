@@ -120,6 +120,10 @@ has arrived within the configured interval, so a reading posted by an agent is
 one this app does not pay for. `skills/newsworthy-rating/SKILL.md` is the
 caller-side skill, ready to install in another agent.
 
+Both endpoints also accept `?token=`, and a reading can be submitted by `GET`
+with query parameters, for agents whose HTTP client cannot set headers or send
+a body. Validation is identical either way.
+
 Nothing in the request is trusted: the score is range-checked, strings are
 trimmed and capped, and the prompt hash and text are taken from this app's own
 registry rather than the payload.

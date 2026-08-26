@@ -120,6 +120,21 @@ export async function insertRating(row) {
   return { ...(await ratingForSlot(row.slot)), deduped: true };
 }
 
+/**
+ * Retire a reading that should never have counted — a probe, or a row written
+ * by a bug. Marked rather than deleted: it leaves the series and stops being
+ * "latest", but stays visible in the run log as a record of what happened.
+ */
+export async function voidRating(id, reason = 'voided') {
+  await ensureSchema();
+  const rows = await sql`
+    UPDATE ratings
+       SET status = 'error', slot = NULL, error = ${`voided: ${reason}`}
+     WHERE id = ${id}
+     RETURNING *`;
+  return shape(rows[0]);
+}
+
 export async function ratingForSlot(slot) {
   await ensureSchema();
   const rows = await sql`SELECT * FROM ratings WHERE slot = ${slot} AND status = 'ok' LIMIT 1`;
