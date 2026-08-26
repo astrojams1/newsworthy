@@ -72,6 +72,12 @@
            letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
   .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; min-width: 170px; }
   .settings button { padding: 0.45rem 1.1rem; }
+  .settings textarea, .settings input {
+    font: inherit; font-size: 0.875rem; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 7px; padding: 0.45rem 0.6rem; min-width: 170px;
+  }
+  .settings textarea { width: 100%; resize: vertical; font-family: ui-monospace, monospace; font-size: 0.8125rem; }
   #run-status { font-size: 0.8125rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
   .note { font-size: 0.75rem; color: var(--ink-faint); margin: 0.75rem 0 0; max-width: 70ch; }
 
@@ -156,6 +162,21 @@
     <button id="save" type="button">Save</button>
   </div>
   <p class="note" id="settings-note"></p>
+
+  <h2>Paste a reading</h2>
+  <div class="settings">
+    <label class="field" style="flex:1 1 100%">Verdict JSON
+      <textarea id="paste" rows="3" placeholder='{"score": 4, "explanation": "..."}'></textarea>
+    </label>
+    <label class="field">From
+      <input id="paste-caller" placeholder="chatgpt-agent">
+    </label>
+    <label class="field">Model
+      <input id="paste-model" placeholder="gpt-5">
+    </label>
+    <button id="paste-save" type="button">Store</button>
+  </div>
+  <p class="note" id="paste-note">For agents whose sandbox blocks the network. Stored as an external reading.</p>
 
   <h2>Score over time</h2>
   <figure>
@@ -486,6 +507,48 @@
         await load();
       } else {
         $('settings-note').textContent = `Failed: ${body.error ?? res.statusText}`;
+      }
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  /**
+   * Some agents can produce a verdict but cannot submit it: their sandbox
+   * refuses a model-synthesized URL carrying a token, or blocks the network
+   * outright. Rather than lose the reading, take the JSON they printed and
+   * submit it here. It is stored as external, like any other caller reading.
+   */
+  $('paste-save').addEventListener('click', async () => {
+    const button = $('paste-save');
+    const note = $('paste-note');
+    let payload;
+    try {
+      payload = JSON.parse($('paste').value);
+    } catch {
+      note.textContent = 'That is not valid JSON.';
+      return;
+    }
+    const caller = $('paste-caller').value.trim();
+    const model = $('paste-model').value.trim();
+    if (caller) payload.caller = caller;
+    if (model) payload.model = model;
+
+    button.disabled = true;
+    note.textContent = 'Storing…';
+    try {
+      const res = await fetch('/api/readings', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...(token ? { 'x-admin-token': token } : {}) },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json();
+      if (res.ok) {
+        note.textContent = `Stored as reading ${body.id ?? ''}.`.trim();
+        $('paste').value = '';
+        await load();
+      } else {
+        note.textContent = `Rejected: ${body.error ?? res.statusText}`;
       }
     } finally {
       button.disabled = false;
