@@ -34,6 +34,12 @@ export function ensureSchema() {
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS cache_write_tokens INTEGER`;
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS web_search_requests INTEGER`;
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS cost_usd NUMERIC(12, 6)`;
+    // Who produced this reading: 'cron' (this app's schedule), 'manual' (the
+    // admin button) or 'external' (an agent elsewhere that did the rating with
+    // its own model and posted the result).
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'cron'`;
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS caller TEXT`;
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS caller_meta JSONB`;
     await sql`
       CREATE TABLE IF NOT EXISTS settings (
         key        TEXT PRIMARY KEY,
@@ -80,6 +86,7 @@ function shape(row) {
     cache_write_tokens: num(row.cache_write_tokens),
     web_search_requests: num(row.web_search_requests),
     cost_usd: num(row.cost_usd),
+    caller_meta: typeof row.caller_meta === 'string' ? JSON.parse(row.caller_meta) : row.caller_meta,
   };
 }
 
@@ -94,7 +101,7 @@ export async function insertRating(row) {
       created_at, slot, status, score, explanation, prompt_version, prompt_hash,
       prompt_text, model, served_by, raw_output, error, latency_ms,
       input_tokens, output_tokens, cache_read_tokens, cache_write_tokens,
-      web_search_requests, cost_usd
+      web_search_requests, cost_usd, source, caller, caller_meta
     ) VALUES (
       ${row.created_at ?? new Date().toISOString()}, ${row.slot ?? null}, ${row.status},
       ${row.score ?? null}, ${row.explanation ?? null}, ${row.prompt_version},
@@ -102,7 +109,9 @@ export async function insertRating(row) {
       ${row.raw_output ?? null}, ${row.error ?? null}, ${row.latency_ms ?? null},
       ${row.input_tokens ?? null}, ${row.output_tokens ?? null},
       ${row.cache_read_tokens ?? null}, ${row.cache_write_tokens ?? null},
-      ${row.web_search_requests ?? null}, ${row.cost_usd ?? null}
+      ${row.web_search_requests ?? null}, ${row.cost_usd ?? null},
+      ${row.source ?? 'cron'}, ${row.caller ?? null},
+      ${row.caller_meta ? JSON.stringify(row.caller_meta) : null}::jsonb
     )
     ON CONFLICT DO NOTHING
     RETURNING *`;
@@ -136,7 +145,8 @@ export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, score, explanation, prompt_version, prompt_hash, model, served_by
+    SELECT id, created_at, score, explanation, prompt_version, prompt_hash, model, served_by,
+           source, caller
       FROM ratings
      WHERE status = 'ok' AND created_at >= ${since}
      ORDER BY created_at ASC
@@ -163,7 +173,7 @@ export async function recentAttempts(limit = 25) {
   const rows = await sql`
     SELECT id, created_at, status, score, explanation, prompt_version, prompt_hash,
            model, served_by, error, latency_ms, input_tokens, output_tokens,
-           web_search_requests, cost_usd
+           web_search_requests, cost_usd, source, caller, caller_meta
       FROM ratings ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
@@ -178,8 +188,10 @@ export async function stats({ hours = 24 * 7 } = {}) {
            AVG(score) FILTER (WHERE status = 'ok')           AS avg_score,
            MAX(score) FILTER (WHERE status = 'ok')           AS max_score,
            MIN(score) FILTER (WHERE status = 'ok')           AS min_score,
-           COALESCE(SUM(cost_usd), 0)                        AS spend_usd,
-           AVG(cost_usd)                                     AS avg_cost_usd
+           COALESCE(SUM(cost_usd) FILTER (WHERE source <> 'external'), 0) AS spend_usd,
+           COALESCE(SUM(cost_usd) FILTER (WHERE source = 'external'), 0)  AS external_spend_usd,
+           AVG(cost_usd) FILTER (WHERE source <> 'external')  AS avg_cost_usd,
+           COUNT(*) FILTER (WHERE source = 'external')        AS external_runs
       FROM ratings WHERE created_at >= ${since}`;
   const r = rows[0] ?? {};
   return {
@@ -190,6 +202,8 @@ export async function stats({ hours = 24 * 7 } = {}) {
     max_score: num(r.max_score),
     min_score: num(r.min_score),
     spend_usd: num(r.spend_usd) ?? 0,
+    external_spend_usd: num(r.external_spend_usd) ?? 0,
+    external_runs: num(r.external_runs) ?? 0,
     avg_cost_usd: r.avg_cost_usd === null ? null : num(r.avg_cost_usd),
   };
 }
