@@ -78,6 +78,11 @@ test('a caller that only got a summary is told how to get the prompt intact', ()
   const text = build();
   assert.match(text, /attributed to a prompt the caller never read/);
   assert.match(text, /api\/instructions\?format=json/);
+  // Unconditional, not "if you notice you got a summary" — a caller cannot
+  // tell. A live fetch returned the scale reworded closely enough to look
+  // right and rate differently.
+  assert.match(text, /no\s+way to tell from the result that this happened/);
+  assert.ok(!/received a\s+summarized/.test(text), 'not phrased as a condition the caller must detect');
 });
 
 test('token counts are documented as measured-only, searches as always taken', () => {
