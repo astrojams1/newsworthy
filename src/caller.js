@@ -46,9 +46,10 @@ content-type: application/json
 }
 \`\`\`
 
-**Only if you cannot send a body or set headers**, submit the same reading as a
-plain GET — a token in a URL is exposed in logs and history, so this is a
-fallback, not a preference:
+**If you cannot POST, or cannot set headers, use this instead.** It is an
+ordinary GET, so any client that can fetch a URL can submit a reading. Do not
+give up because POST is unavailable — a token in a URL is more exposed, which
+is the only reason it is second:
 
 \`\`\`
 GET ${baseUrl}/api/readings?token=<TOKEN>&score=<1-10>
