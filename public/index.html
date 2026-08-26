@@ -33,10 +33,17 @@
     font: 400 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     display: grid;
-    grid-template-rows: auto 1fr auto;
     min-height: 100dvh;
   }
-  header, footer { padding: 1.75rem clamp(1.25rem, 5vw, 3rem); }
+  /* Out of flow deliberately. With the footer gone the header was the only
+     thing occupying a row, which pushed the score below the optical centre;
+     lifting it out lets main centre against the viewport itself. */
+  header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1.75rem clamp(1.25rem, 5vw, 3rem);
+  }
   .wordmark {
     font-size: 0.6875rem;
     letter-spacing: 0.18em;
@@ -79,25 +86,15 @@
     color: var(--ink-faint);
     font-variant-numeric: tabular-nums;
   }
-  footer {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    font-size: 0.75rem;
-    color: var(--ink-faint);
-    border-top: 1px solid var(--rule);
-  }
-  footer a { color: inherit; }
-  /* A landscape phone is ~390px tall. Header and footer padding plus the
-     meta line cost more than a third of that, so they shrink here. */
+  /* A landscape phone is ~390px tall. The header and the meta line cost a
+     sizeable share of that, so they tighten here. */
   @media (max-height: 520px) {
-    header, footer { padding: 0.75rem clamp(1.25rem, 5vw, 3rem); }
+    header { padding: 0.875rem clamp(1.25rem, 5vw, 3rem); }
     .score b { font-size: min(26vh, 14rem); }
     /* Landscape has width to spare and height to save: a wider column costs
        nothing horizontally and buys back two lines vertically. */
     .explanation { margin-top: 0.75rem; max-width: 60ch; font-size: 1rem; }
     .meta { margin-top: 0.625rem; }
-    footer { border-top: none; }
   }
   [data-state="loading"] .score, [data-state="loading"] .explanation { opacity: 0.25; }
   [data-state="error"] .score b { color: var(--ink-faint); }
@@ -115,9 +112,6 @@
     <p class="meta" id="meta"></p>
   </main>
 
-  <footer>
-    <span>The news anti-app.</span>
-  </footer>
 
 <script type="module">
   const $score = document.getElementById('score');
