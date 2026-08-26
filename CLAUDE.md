@@ -97,6 +97,19 @@ commit. Check it before debugging anything else.
 **Vercel's production branch lives under Settings → Environments → Production →
 Branch Tracking**, not Settings → Git.
 
+**`vercel.json` takes no comments.** The schema sets `additionalProperties:
+false`, so a `"//"` key fails the deploy outright — `should NOT have additional
+property //` — before any build runs. Rationale for anything in that file
+belongs here instead.
+
+**Preview builds are skipped** via `ignoreCommand`. Every branch push produced a
+preview that failed in about a second with `BUILD_FAILED` / "Resource
+provisioning failed" and no build logs, while production built fine from the
+same commit; each one emailed. Exit 0 skips and exit 1 builds, and the test
+matches `preview` rather than negating `production` so an unset `VERCEL_ENV`
+still builds. Nothing here reads a preview URL — work is verified against
+production after merge.
+
 **Avoid native dependencies.** `better-sqlite3` broke the first deploy: npm
 skipped its install script, so the binding was missing and the import threw at
 cold start. Prefer pure-JS or HTTP-based drivers.
