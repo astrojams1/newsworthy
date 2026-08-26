@@ -78,5 +78,8 @@ test('a client that blocks both requests is told to surface the payload', () => 
   const text = build();
   assert.match(text, /refuses to send either request/);
   assert.match(text, /do not report success/);
-  assert.match(text, /pasted into the app's admin page/);
+  // Naming the destination matters: a caller told only "paste it somewhere"
+  // leaves its human hunting for where.
+  assert.match(text, /https:\/\/example\.test\/admin/);
+  assert.match(text, /Paste a reading/);
 });
