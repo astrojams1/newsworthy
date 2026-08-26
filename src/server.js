@@ -7,6 +7,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline, voidRating } from './db.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
+import { callerInstructions } from './caller.js';
 import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
 import { modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
@@ -186,6 +187,26 @@ const server = createServer(async (req, res) => {
     }
 
     // ---- external caller agents -----------------------------------------
+    // One fetch that tells a caller agent everything, with the rating prompt
+    // embedded — so a caller is configured with a URL, not pasted instructions.
+    if (path === '/api/instructions' && req.method === 'GET') {
+      if (!callerAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
+      const version = Number(url.searchParams.get('version')) || latestVersion();
+      let prompt;
+      try {
+        prompt = renderPrompt(version);
+      } catch (err) {
+        return json(res, 404, { error: String(err?.message ?? err) });
+      }
+      const proto = req.headers['x-forwarded-proto'] ?? (ON_VERCEL ? 'https' : 'http');
+      const baseUrl = `${proto}://${req.headers.host ?? 'localhost'}`;
+      res.writeHead(200, {
+        'content-type': 'text/markdown; charset=utf-8',
+        'cache-control': 'no-store',
+      });
+      return res.end(callerInstructions({ baseUrl, prompt }));
+    }
+
     if (path === '/api/prompt' && req.method === 'GET') {
       if (!callerAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
       const version = Number(url.searchParams.get('version')) || latestVersion();

@@ -37,8 +37,9 @@ side-effect-only module.
 its own model and `POST /api/readings`; the row is stored with `source =
 'external'` plus the caller's name, self-reported model and usage. Its prompt
 hash and text always come from our registry, never from the request, so a
-reading stays traceable. `skills/newsworthy-rating/SKILL.md` is the caller-side
-skill; `CALLER_TOKEN` gates it and `/api/prompt`.
+reading stays traceable. `/api/instructions` serves the whole caller workflow with the
+prompt embedded, so a caller agent is configured with a URL rather than pasted
+text — `src/caller.js` is the single copy. `CALLER_TOKEN` gates it.
 
 **The cron only fires if nothing arrived within the interval.** A rolling
 window from the newest reading, not the slot boundary — an external reading at

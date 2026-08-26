@@ -46,7 +46,8 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, prompt versions |
 | `/api/admin/prompts` | Every prompt version, full text |
 | `/api/admin/settings` | `GET` the model/cadence and the priced options; `POST` to change them |
-| `/api/prompt` | The current versioned prompt, for an external caller (needs `CALLER_TOKEN`) |
+| `/api/instructions` | The whole caller workflow, rating prompt embedded — hand an agent this URL |
+| `/api/prompt` | Just the current versioned prompt, as JSON |
 | `/api/readings` | `POST` a reading from an external caller agent |
 | `/api/cron` | The scheduled job — runs only if nothing arrived within the interval. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
 | `/healthz` | Liveness, plus whether the database, API key and cron secret are wired up |
