@@ -98,19 +98,25 @@ estimates, and your invoice is the source of truth.
 ## Letting another agent do the rating
 
 A run costs real money, and the work is not specific to this app. Any agent can
-do the rating with its own model and post the result:
+do the rating with its own model and post the result. Hand it one URL:
 
-```bash
-# 1. fetch the current, versioned prompt
-curl -s -H "x-newsworthy-token: $CALLER_TOKEN" "$URL/api/prompt"
-
-# 2. rate the news with it, then submit
-curl -s -X POST "$URL/api/readings" \
-  -H "x-newsworthy-token: $CALLER_TOKEN" -H 'content-type: application/json' \
-  -d '{"score":5,"explanation":"One sentence.","model":"claude-opus-5",
-       "caller":"cowork-macbook","usage":{"input_tokens":52000,"output_tokens":900,
-       "web_search_requests":6},"meta":{"agent":"cs-tick"}}'
 ```
+Follow https://your-deployment.vercel.app/api/instructions?token=$CALLER_TOKEN
+```
+
+`/api/instructions` returns the whole workflow as plain text with the current
+rating prompt embedded, so there is nothing to paste into the agent and nothing
+to keep in sync. It is generated from the live prompt registry, so a new prompt
+version updates every caller automatically.
+
+Deliberately `text/plain`, not `text/markdown` — an agent's fetch tool rejected
+the markdown MIME type before exposing the body, and then, never having read the
+instructions, could not discover the submission path it was capable of.
+`?format=json` returns the same text in a JSON envelope.
+
+Submission is `POST /api/readings`, or the same fields as a query string on a
+plain `GET` for a client that cannot send a body or set headers.
+
 
 The reading is stored like any other, tagged `source = 'external'` with the
 caller's name, model and usage, and shown that way in `/admin` — with the
@@ -257,7 +263,7 @@ scheduler runs, and only `ANTHROPIC_API_KEY` and `DATABASE_URL` are required.
 | `NEWSWORTHY_INTERVAL_MINUTES` | `240` | Fallback only — the admin setting wins |
 | `NEWSWORTHY_NO_SCHEDULER` | — | `1` to serve without the in-process scheduler (automatic on Vercel) |
 | `CRON_SECRET` | — | Required bearer token for `/api/cron`; set automatically by Vercel Cron |
-| `CALLER_TOKEN` | — | Lets an external agent use `/api/prompt` and `/api/readings` without the admin token |
+| `CALLER_TOKEN` | — | Lets an external agent use `/api/instructions`, `/api/prompt` and `/api/readings` without the admin token |
 | `NEWSWORTHY_MOCK` | — | `1` to fake readings without calling the API |
 | `ADMIN_TOKEN` | — | Locks `/admin` and `/api/admin/*` |
 

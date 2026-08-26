@@ -40,6 +40,8 @@ hash and text always come from our registry, never from the request, so a
 reading stays traceable. `/api/instructions` serves the whole caller workflow with the
 prompt embedded, so a caller agent is configured with a URL rather than pasted
 text — `src/caller.js` is the single copy. `CALLER_TOKEN` gates it.
+Serve it as `text/plain`: an agent's fetch tool rejected `text/markdown` before
+exposing the body.
 
 **The cron only fires if nothing arrived within the interval.** A rolling
 window from the newest reading, not the slot boundary — an external reading at
