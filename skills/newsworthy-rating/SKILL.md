@@ -1,107 +1,31 @@
 ---
 name: newsworthy-rating
-description: Rate the current top news 1-10 for Newsworthy and submit the reading, using this agent's own model and tokens. Use when asked to "rate the news", "update newsworthy", "run the newsworthy rating", or on a schedule that feeds the Newsworthy app. Submitting a reading also suppresses Newsworthy's own cron run for that interval, so the rating is paid for here rather than there.
+description: Rate the current top news 1-10 for Newsworthy and submit the reading, using this agent's own model and tokens. Use when asked to "rate the news", "update newsworthy", "run the newsworthy rating", or on a schedule that feeds the Newsworthy app. Submitting a reading also suppresses Newsworthy's own scheduled run for that interval, so the rating is paid for here rather than there.
 ---
 
 # Newsworthy rating
 
-Produce one reading — a score out of 10 and one sentence — and POST it to the
-Newsworthy app. The app records it as a normal data point, tagged with the fact
-that it came from an external caller and with whichever model you used.
+Fetch the instructions and follow them. They include the current rating prompt
+inline, so this is the only thing you need to know:
 
-Because Newsworthy only runs its own cron job when nothing has arrived within
-the configured interval, a reading submitted here means the app does **not**
-spend its own tokens for that window.
-
-## Setup
-
-Two values, from whoever runs the Newsworthy instance:
+```bash
+curl -s -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" "$NEWSWORTHY_URL/api/instructions"
+```
 
 | | |
 |---|---|
 | `NEWSWORTHY_URL` | e.g. `https://newsworthy-indol.vercel.app` |
 | `NEWSWORTHY_TOKEN` | the caller token (`CALLER_TOKEN` on the app) |
 
-Send the token as the header `x-newsworthy-token`. If your HTTP client cannot
-set headers, append `token=<TOKEN>` to the query string instead — every
-endpoint accepts either.
+If your HTTP client cannot set headers, use `?token=$NEWSWORTHY_TOKEN` instead —
+every endpoint accepts either.
 
-## Steps
+The instructions are generated from the app's own prompt registry, so they are
+never stale: the prompt version and hash in them are whatever is live. Do not
+cache them between runs.
 
-**1. Fetch the current prompt.** Always fetch it rather than hardcoding it —
-the prompt is versioned in the app and changes without notice.
+## Why this exists
 
-```bash
-curl -s -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" "$NEWSWORTHY_URL/api/prompt"
-```
-
-Returns `{version, label, hash, text, submit_to}`.
-
-**2. Do the rating.** Run the returned `text` as the prompt, with web search
-enabled. It asks you to check current top news and liquid prediction markets,
-and to answer with a single JSON object:
-
-```json
-{"score": 5, "explanation": "One sentence, at most 25 words."}
-```
-
-Follow it exactly. In particular the explanation reports *what happened* — it
-never justifies the score, characterises the news as a whole, or compares the
-main story to the rest of the day.
-
-**Do not submit a reading you could not actually research.** If web search
-fails or returns nothing, stop: no reading is better than a score that means
-"I couldn't check". The app rejects its own runs on this basis and cannot
-detect it on yours.
-
-**3. Submit it.**
-
-```bash
-curl -s -X POST "$NEWSWORTHY_URL/api/readings" \
-  -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" \
-  -H 'content-type: application/json' \
-  -d '{
-    "score": 5,
-    "explanation": "One sentence about what happened.",
-    "prompt_version": 3,
-    "model": "claude-opus-5",
-    "caller": "cowork-macbook",
-    "usage": { "input_tokens": 52000, "output_tokens": 900, "web_search_requests": 6 },
-    "meta": { "agent": "cs-tick", "host": "mbp" }
-  }'
-```
-
-`201` returns the stored row. `422` means the body was rejected — the message
-says why. Only `score` and `explanation` are required; everything else is
-self-reported context, and reporting `usage` is what lets the app price your
-run and show it separately from its own spend.
-
-`prompt_version` should be the version you fetched in step 1. The app supplies
-the hash and text itself from its own registry, so a reading always traces back
-to a prompt it can reproduce.
-
-## Fallback: when you cannot POST or set headers
-
-Try the POST above first. If your client cannot send a body or set headers,
-submit the same reading as a plain GET instead:
-
-```
-GET /api/readings?token=TOKEN
-    &score=5
-    &explanation=One%20sentence%20about%20what%20happened.
-    &prompt_version=3
-    &model=claude-opus-5
-    &caller=my-agent
-    &input_tokens=51000&output_tokens=900&web_search_requests=6
-```
-
-Validation is identical — the query is mapped onto the same shape and checked
-the same way. Use this only as a fallback: a token in a URL lands in logs and
-browser history, where a header does not, so prefer a `CALLER_TOKEN` over the
-admin token if you submit this way.
-
-## Notes
-
-- One reading per interval is enough. Submitting more often is harmless but
-  wasteful — the app shows the most recent one.
-- The token is not the admin token and grants only these two endpoints.
+The rating costs real money and the work is not specific to that app. A reading
+submitted here is one Newsworthy does not pay for — its scheduled run only fires
+when nothing has arrived within the configured interval.
