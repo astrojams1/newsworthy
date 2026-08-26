@@ -175,3 +175,26 @@ test('usage can be corrected without discarding the reading', async () => {
   assert.equal(fixed.score, 7, 'the reading itself is untouched');
   assert.equal(fixed.status, 'ok', 'and it stays in the series');
 });
+
+test('voided readings drop out of the counts and the spend', async () => {
+  // A voided row is one that should never have counted. Leaving it in reported
+  // two test probes as real external runs and their cost as real spend.
+  const { insertRating, stats, voidRating } = await import('../src/db.js');
+  const before = await stats({ hours: 24 });
+  const probe = await insertRating({
+    status: 'ok', score: 5, explanation: 'probe', prompt_version: 3,
+    prompt_hash: 'h', prompt_text: 't', model: 'claude-opus-5', slot: null,
+    source: 'external', caller: 'probe', cost_usd: 0.5,
+  });
+  const during = await stats({ hours: 24 });
+  assert.equal(during.external_runs, before.external_runs + 1);
+
+  await voidRating(probe.id, 'accidental probe');
+  const after = await stats({ hours: 24 });
+  assert.equal(after.external_runs, before.external_runs, 'the probe stops being a run');
+  assert.ok(
+    Math.abs(after.external_spend_usd - before.external_spend_usd) < 1e-9,
+    'and its cost stops being spend',
+  );
+  assert.equal(after.errors, before.errors, 'a void is not a failure either');
+});
