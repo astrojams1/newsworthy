@@ -1,22 +1,23 @@
 import { latestVersion, renderPrompt } from './prompts.js';
-import { estimateCostUsd } from './pricing.js';
 
 /**
  * Validation for readings submitted by an external caller agent.
  *
- * The body comes from outside this app, so nothing in it is trusted: the score
- * is range-checked, strings are trimmed and capped, and the prompt version has
- * to be one this app actually knows — its hash and text are then taken from
- * our own registry rather than from the caller, so a stored reading stays
- * traceable to a prompt we can reproduce.
+ * A submission carries a score, a sentence, and which prompt version produced
+ * them. Nothing else. The prompt's hash and text come from our own registry
+ * rather than the request, so a stored reading stays traceable to a prompt we
+ * can reproduce.
  *
- * What the caller reports about itself (model, usage, arbitrary metadata) is
- * kept as self-reported context and marked source='external'. It is never
- * mistaken for a run this app made.
+ * Everything a caller could once report about itself — model, name, token
+ * counts — is gone, because none of it was verifiable and all of it was
+ * treated as fact. A caller with no counter estimated 85,000 input tokens,
+ * which priced at Opus rates put $0.48 of invented spend in a real total, and a
+ * self-chosen name meant the source column read 'unnamed-agent' one run and
+ * 'cowork-cloud-scheduled' the next. Model, usage and cost are recorded only
+ * for runs this app made itself, where they are measured. Source is set here,
+ * never sent.
  */
 const MAX_EXPLANATION = 400;
-const MAX_CALLER = 120;
-const MAX_META_BYTES = 4096;
 
 class SubmissionError extends Error {}
 
@@ -45,23 +46,9 @@ function cleanString(value, { field, max, required = false }) {
  */
 export function submissionFromQuery(params) {
   const body = {};
-  for (const field of ['score', 'explanation', 'caller', 'model', 'prompt_version']) {
+  for (const field of ['score', 'explanation', 'prompt_version']) {
     const value = params.get(field);
     if (value !== null) body[field] = value;
-  }
-  const usage = {};
-  for (const field of ['input_tokens', 'output_tokens', 'web_search_requests', 'measured']) {
-    const value = params.get(field);
-    if (value !== null) usage[field] = value;
-  }
-  if (Object.keys(usage).length) body.usage = usage;
-  const meta = params.get('meta');
-  if (meta !== null) {
-    try {
-      body.meta = JSON.parse(meta);
-    } catch {
-      fail('meta must be valid JSON');
-    }
   }
   return body;
 }
@@ -94,80 +81,36 @@ export function validateSubmission(body = {}) {
   // usage object, so a caller reading both and posting flat is following a
   // shape this app itself publishes. It was silently dropped before, which cost
   // a real reading its search count and quietly understated external spend.
-  const nested = body.usage ?? {};
-  if (typeof nested !== 'object' || Array.isArray(nested)) fail('usage must be an object');
-  const usage = { ...nested };
-  for (const field of ['input_tokens', 'output_tokens', 'web_search_requests', 'measured']) {
-    if (usage[field] === undefined && body[field] !== undefined) usage[field] = body[field];
-  }
-  const counter = (value, field) => {
-    if (value === undefined || value === null) return null;
-    const n = Number(value);
-    if (!Number.isFinite(n) || n < 0 || n > 100_000_000) fail(`usage.${field} is out of range`);
-    return Math.round(n);
-  };
-
-  const model = cleanString(body.model, { field: 'model', max: 120 });
-  const webSearchRequests = counter(usage.web_search_requests, 'web_search_requests');
-
-  // Token counts are taken only when the caller says it measured them.
-  //
-  // An agent running inside a harness has no token counter, and one of them
-  // said so plainly after reporting 85,000 input tokens: the number was a
-  // guess. Priced at Opus rates that guess becomes $0.48 of fabricated spend
-  // sitting in a real cost total. Search count is different — a caller counts
-  // its own searches — so that is always taken.
-  //
-  // Silently dropping the guess would repeat the mistake this app just made in
-  // the other direction, so the response says what was ignored.
-  const measured = usage.measured === true || usage.measured === 'true';
-  const offered = usage.input_tokens !== undefined || usage.output_tokens !== undefined;
-  // Validate whatever was sent even when it will not be stored — a malformed
-  // count is a bug in the caller worth reporting either way.
-  const offeredInput = counter(usage.input_tokens, 'input_tokens');
-  const offeredOutput = counter(usage.output_tokens, 'output_tokens');
-  const inputTokens = measured ? offeredInput : null;
-  const outputTokens = measured ? offeredOutput : null;
-  const usageNote =
-    offered && !measured
-      ? 'token counts ignored: set usage.measured true only for counts from a real counter'
-      : undefined;
-
-  let meta = null;
-  if (body.meta !== undefined && body.meta !== null) {
-    if (typeof body.meta !== 'object' || Array.isArray(body.meta)) fail('meta must be an object');
-    const encoded = JSON.stringify(body.meta);
-    if (Buffer.byteLength(encoded, 'utf8') > MAX_META_BYTES) {
-      fail(`meta must be under ${MAX_META_BYTES} bytes`);
-    }
-    meta = body.meta;
-  }
+  // Anything else a caller sends is ignored rather than stored. Saying so
+  // beats dropping it silently: a caller following an older copy of the spec
+  // should learn its model and token counts went nowhere.
+  const ignored = ['model', 'caller', 'usage', 'input_tokens', 'output_tokens',
+    'web_search_requests', 'measured', 'meta'].filter((f) => body[f] !== undefined);
+  const note = ignored.length
+    ? `ignored (not recorded for external readings): ${ignored.join(', ')}`
+    : undefined;
 
   return {
-    usage_note: usageNote,
+    note,
 
     status: 'ok',
     source: 'external',
-    caller: cleanString(body.caller, { field: 'caller', max: MAX_CALLER }) ?? 'unnamed-agent',
     score,
     explanation,
     prompt_version: prompt.version,
     prompt_hash: prompt.hash,
     prompt_text: prompt.text,
-    model: model ?? 'unreported',
-    served_by: model,
-    input_tokens: inputTokens,
-    output_tokens: outputTokens,
-    web_search_requests: webSearchRequests,
-    // Priced only when the caller names a model we hold rates for; their spend,
-    // reported separately from ours in the admin.
-    cost_usd: estimateCostUsd({
-      model,
-      inputTokens: inputTokens ?? 0,
-      outputTokens: outputTokens ?? 0,
-      webSearchRequests: webSearchRequests ?? 0,
-    }),
-    caller_meta: meta,
+    // Model, usage and cost stay null. This app did not run the model and
+    // cannot measure what the caller spent, so it records nothing rather than
+    // recording a guess.
+    model: null,
+    served_by: null,
+    input_tokens: null,
+    output_tokens: null,
+    web_search_requests: null,
+    cost_usd: null,
+    caller: null,
+    caller_meta: null,
   };
 }
 

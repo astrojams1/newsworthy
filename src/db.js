@@ -40,6 +40,10 @@ export function ensureSchema() {
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'cron'`;
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS caller TEXT`;
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS caller_meta JSONB`;
+    // External readings record no model: this app did not run one, and what a
+    // caller reported about itself was never verifiable. NULL says "unknown"
+    // where the old placeholder string said "unreported" as if it were data.
+    await sql`ALTER TABLE ratings ALTER COLUMN model DROP NOT NULL`;
     await sql`
       CREATE TABLE IF NOT EXISTS settings (
         key        TEXT PRIMARY KEY,

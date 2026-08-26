@@ -17,6 +17,9 @@
  * facts about the system rather than commands: they survive a paraphrase, which
  * imperatives aimed at "you" do not.
  *
+ * The submission is three fields because everything else a caller could report
+ * about itself was unverifiable and was being stored as fact.
+ *
  * And why there is no sentence here telling a fetcher how to handle the page. A
  * first attempt carried one; a summarizer then quoted it back and argued with it
  * against its own harness's constraints, returning that argument instead of the
@@ -66,10 +69,7 @@ content-type: application/json
 {
   "score": <integer 1-10>,
   "explanation": "<one sentence, at most 25 words>",
-  "prompt_version": ${prompt.version},
-  "model": "<the model the caller used>",
-  "caller": "<a short name for the caller, e.g. cowork-macbook>",
-  "usage": {"measured": true, "input_tokens": N, "output_tokens": N, "web_search_requests": N}
+  "prompt_version": ${prompt.version}
 }
 \`\`\`
 
@@ -81,23 +81,17 @@ reading; it is second only because a token in a URL is more exposed.
 GET ${baseUrl}/api/readings?token=<TOKEN>&score=<1-10>
     &explanation=<one sentence, URL-encoded>
     &prompt_version=${prompt.version}
-    &model=<the model the caller used>
-    &caller=<a short name for the caller>
-    &web_search_requests=N
 \`\`\`
+
+Those are the whole submission. \`score\` and \`explanation\` are required;
+\`prompt_version\` defaults to the current one. No model name, caller name, token
+count or search count is asked for or recorded: this app did not run the model
+and cannot verify any of it, so it stores none of it rather than storing a
+guess. A caller that sends those fields anyway gets them named back in a
+\`note\` on the response, and they go nowhere.
 
 \`201\` means stored. \`422\` means rejected, and the message names the field at
 fault; the fix is to correct that field rather than to retry unchanged.
-
-Only \`score\` and \`explanation\` are required.
-
-\`web_search_requests\` is a count the caller can take of its own searches, and
-is always recorded. Token counts are recorded only alongside \`"measured": true\`,
-which asserts they came from a real counter rather than an estimate. An agent
-running inside a harness generally has no such counter and omits them: a guessed
-figure is priced at the model's real rates and becomes a dollar amount in
-someone's cost total. Unmeasured counts are dropped, and the \`201\` response says
-so in a \`note\` field.
 
 ## 3. The prompt
 

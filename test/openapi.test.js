@@ -47,3 +47,11 @@ test('every operation declares a 4XX, so a failed call is not read as success', 
     }
   }
 });
+
+test('the schema asks for nothing the app cannot verify', () => {
+  // A Custom GPT builds its request from these properties, so leaving model or
+  // usage in the schema would keep ChatGPT sending figures nobody measured.
+  const body = doc().paths['/api/readings'].post.requestBody.content['application/json'].schema;
+  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'prompt_version', 'score']);
+  assert.deepEqual(body.required, ['score', 'explanation']);
+});
