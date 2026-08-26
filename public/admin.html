@@ -65,13 +65,14 @@
   .tile dd { margin: 0.25rem 0 0; font-size: 1.5rem; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
   .tile dd small { font-size: 0.8125rem; color: var(--ink-faint); }
 
-  .settings { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
-  .settings label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.75rem;
-                    letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
-  .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; min-width: 190px; }
-  .settings small { text-transform: none; letter-spacing: normal; font-size: 0.75rem; color: var(--ink-faint); }
-  .settings button { padding: 0.44rem 1rem; }
-  #save-msg { font-size: 0.8125rem; color: var(--ink-muted); align-self: center; }
+  /* align-items:end lines the button up with the selects — it drifted when the
+     labels carried helper text of their own, so that moved to .note below. */
+  .settings { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: end; }
+  .field { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.75rem;
+           letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
+  .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; min-width: 170px; }
+  .settings button { padding: 0.45rem 1.1rem; }
+  #run-status { font-size: 0.8125rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
   .note { font-size: 0.75rem; color: var(--ink-faint); margin: 0.75rem 0 0; max-width: 70ch; }
 
   figure { margin: 0; }
@@ -110,6 +111,11 @@
           border: 1px solid var(--rule); color: var(--ink-muted); }
   .pill.err { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
   .scroll { overflow-x: auto; }
+  /* Narrow screens: title on its own line so the controls stay on one row. */
+  @media (max-width: 560px) {
+    header h1 { flex: 1 0 100%; }
+    header .spacer { display: none; }
+  }
   .empty { color: var(--ink-muted); font-size: 0.875rem; padding: 2rem 0; }
   details summary { cursor: pointer; font-size: 0.8125rem; color: var(--ink-muted); }
   pre { white-space: pre-wrap; font-size: 0.75rem; background: var(--surface-2);
@@ -121,6 +127,7 @@
   <header>
     <h1>Newsworthy · admin</h1>
     <span class="spacer"></span>
+    <span id="run-status"></span>
     <button id="refresh" type="button">Rate now</button>
     <a href="/">← app</a>
   </header>
@@ -138,18 +145,15 @@
 
   <h2>Settings</h2>
   <div class="settings">
-    <label>Model
+    <label class="field">Model
       <select id="model"></select>
-      <small id="model-cost"></small>
     </label>
-    <label>Rate the news every
+    <label class="field">Rate every
       <select id="interval"></select>
-      <small id="interval-cost"></small>
     </label>
     <button id="save" type="button">Save</button>
-    <span id="save-msg"></span>
   </div>
-  <p class="note" id="cron-note"></p>
+  <p class="note" id="settings-note"></p>
 
   <h2>Score over time</h2>
   <figure>
@@ -400,12 +404,9 @@
     renderTiles(data);
     renderChart();
     renderRuns(data.attempts);
-    const failureNote = failures.length
-      ? ` ✕ marks a failed run (${failures.length}); hover it for the error.`
-      : '';
     $('caption').textContent =
-      `Newsworthiness, 1–10 — one reading every ${data.cadence ?? `${data.interval_minutes} minutes`}. ` +
-      `${points.length} reading${points.length === 1 ? '' : 's'} shown.${failureNote}`;
+      `Newsworthiness 1–10 · ${points.length} reading${points.length === 1 ? '' : 's'}` +
+      (failures.length ? ' · ✕ marks a failed run' : '');
     $('status').textContent = `updated ${fmtClock.format(new Date())}`;
   }
 
@@ -432,26 +433,27 @@
     $('interval').innerHTML = settings.intervals
       .map((i) => `<option value="${i.minutes}"${i.minutes === settings.interval_minutes ? ' selected' : ''}>${escapeHtml(i.label)}</option>`)
       .join('');
-    $('cron-note').textContent =
-      `Vercel Cron ticks every ${settings.cron_tick_minutes} minutes; ticks inside an interval find the slot ` +
-      `already rated and skip without calling the model. To rate more often than every ` +
-      `${settings.cron_tick_minutes} minutes, change the schedule in vercel.json.`;
     renderEstimates();
   }
 
-  /** Live cost preview as the dropdowns change, before anything is saved. */
+  /**
+   * Preview the cost of a *pending* change only. When the dropdowns match what
+   * is saved, the tiles above already show per-run and monthly spend, so
+   * repeating them here was noise.
+   */
   function renderEstimates() {
     if (!settings) return;
     const model = settings.models.find((m) => m.id === $('model').value);
     const minutes = Number($('interval').value);
     if (!model) return;
+    if (model.id === settings.model && minutes === settings.interval_minutes) {
+      $('settings-note').textContent = '';
+      return;
+    }
     const perMonth = model.typical_run_usd * (60 / minutes) * 24 * 30.44;
-    const basis = settings.usage_basis?.observed
-      ? `from your last ${settings.usage_basis.runs} run${settings.usage_basis.runs === 1 ? '' : 's'}`
-      : 'estimated';
-    $('model-cost').textContent =
-      `${usd(model.typical_run_usd)}/run (${basis}) · $${model.input_usd_per_mtok}/$${model.output_usd_per_mtok} per Mtok`;
-    $('interval-cost').textContent = `≈ ${usdRounded(perMonth)}/month at this pairing`;
+    const every = settings.intervals.find((i) => i.minutes === minutes)?.label ?? `${minutes} min`;
+    $('settings-note').textContent =
+      `${model.label} every ${every} ≈ ${usdRounded(perMonth)}/month — Save to apply.`;
   }
 
   $('model').addEventListener('change', renderEstimates);
@@ -460,7 +462,7 @@
   $('save').addEventListener('click', async () => {
     const button = $('save');
     button.disabled = true;
-    $('save-msg').textContent = 'Saving…';
+    $('settings-note').textContent = 'Saving…';
     try {
       const res = await fetch('/api/admin/settings', {
         method: 'POST',
@@ -468,27 +470,56 @@
         body: JSON.stringify({ model: $('model').value, intervalMinutes: Number($('interval').value) }),
       });
       const body = await res.json();
-      $('save-msg').textContent = res.ok
-        ? `Saved — ${shortModel(body.model)} every ${body.interval_minutes} min. Takes effect on the next tick.`
-        : `Failed: ${body.error ?? res.statusText}`;
-      if (res.ok) await load();
+      if (res.ok) {
+        settings.model = body.model;
+        settings.interval_minutes = body.interval_minutes;
+        $('settings-note').textContent = 'Saved. Takes effect on the next reading.';
+        await load();
+      } else {
+        $('settings-note').textContent = `Failed: ${body.error ?? res.statusText}`;
+      }
     } finally {
       button.disabled = false;
     }
   });
 
+  /**
+   * A real rating takes about a minute — it searches the web and calls Opus.
+   * Without a running counter the button looked dead, so show elapsed time and
+   * report the outcome, including failures.
+   */
   $('refresh').addEventListener('click', async () => {
     const button = $('refresh');
-    button.disabled = true;
-    button.textContent = 'Rating…';
+    const status = $('run-status');
+    const startedAt = Date.now();
+    const ticker = setInterval(() => {
+      status.textContent = `Rating… ${Math.round((Date.now() - startedAt) / 1000)}s`;
+    }, 1000);
+    status.textContent = 'Rating… 0s';
+    button.disabled = true; // the status carries the message; the label stays put
     try {
       // Same endpoint Vercel Cron calls; force=1 bypasses the slot guard so a
       // manual run is never swallowed as a duplicate.
-      await fetch('/api/cron?force=1', { method: 'POST', headers: token ? { 'x-admin-token': token } : {} });
+      const res = await fetch('/api/cron?force=1', {
+        method: 'POST',
+        headers: token ? { 'x-admin-token': token } : {},
+      });
+      const body = await res.json().catch(() => ({}));
+      clearInterval(ticker);
+      if (!res.ok) {
+        status.textContent = `Failed: ${body.error ?? res.statusText}`;
+      } else if (body.status === 'ok') {
+        const cost = body.cost_usd != null ? ` · ${usd(body.cost_usd)}` : '';
+        status.textContent = `${body.score}/10${cost}`;
+      } else {
+        status.textContent = 'Run failed — see Recent runs';
+      }
       await load();
+    } catch {
+      status.textContent = 'Interrupted — the run may still finish; reload shortly.';
     } finally {
+      clearInterval(ticker);
       button.disabled = false;
-      button.textContent = 'Rate now';
     }
   });
 
