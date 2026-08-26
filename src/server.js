@@ -276,6 +276,10 @@ const server = createServer(async (req, res) => {
           caller: saved.caller,
           prompt_version: saved.prompt_version,
           prompt_hash: saved.prompt_hash,
+          // Say what was not stored. A caller that reported guessed token
+          // counts should learn they were dropped rather than assume the
+          // figures it invented are now in someone's cost total.
+          ...(submission.usage_note ? { note: submission.usage_note } : {}),
         });
       } catch (err) {
         if (err instanceof SubmissionError) return json(res, 422, { error: err.message });

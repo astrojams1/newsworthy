@@ -53,6 +53,23 @@ and a schema importer cannot present one.
 Serve it as `text/plain`: an agent's fetch tool rejected `text/markdown` before
 exposing the body.
 
+Write that page as a specification, never as imperatives. A fetch tool
+summarizes through a small model, and a page of "you must" is read by that model
+as orders to itself — two callers got back "I cannot make HTTP requests" instead
+of the content. Third-person description gives it nothing to refuse, and rules
+stated as facts about the system survive the paraphrase that commands do not.
+
+**A caller's token counts are only as good as its counter.** An agent inside a
+harness has none and will estimate if asked; at Opus rates a guessed 85k input
+tokens is $0.48 of invented spend in a real total. Token counts are stored only
+with `usage.measured: true`. Search counts are always taken — a caller can count
+its own searches.
+
+**`shape()` in `src/db.js` converts only the columns a query selected.** Emitting
+a key for an unselected column yields a null that reads as "nothing recorded"
+rather than "not asked for"; `history()` selects no usage columns, and that null
+was misread as data loss.
+
 **The cron only fires if nothing arrived within the interval.** A rolling
 window from the newest reading, not the slot boundary — an external reading at
 03:59 must suppress an 04:00 run, which slot alignment alone would not do. That
