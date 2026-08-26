@@ -60,10 +60,13 @@
     letter-spacing: -0.04em;
     line-height: 0.9;
   }
-  .score b { font-size: clamp(6rem, 30vw, 14rem); font-weight: 300; }
-  .score span { font-size: clamp(1.25rem, 4vw, 2rem); color: var(--ink-faint); }
+  /* Sized against whichever axis is scarcer. Width alone made the number 224px
+     tall in a 393px-tall landscape phone, pushing the sentence off screen —
+     and the sentence is the half worth reading. */
+  .score b { font-size: clamp(4rem, min(30vw, 30vh), 14rem); font-weight: 300; }
+  .score span { font-size: clamp(1.125rem, min(4vw, 4vh), 2rem); color: var(--ink-faint); }
   .explanation {
-    margin: clamp(1.5rem, 4vw, 2.5rem) 0 0;
+    margin: clamp(1rem, min(4vw, 3vh), 2.5rem) 0 0;
     max-width: 34ch;
     font-size: clamp(1.0625rem, 2.6vw, 1.375rem);
     line-height: 1.45;
@@ -85,6 +88,17 @@
     border-top: 1px solid var(--rule);
   }
   footer a { color: inherit; }
+  /* A landscape phone is ~390px tall. Header and footer padding plus the
+     meta line cost more than a third of that, so they shrink here. */
+  @media (max-height: 520px) {
+    header, footer { padding: 0.75rem clamp(1.25rem, 5vw, 3rem); }
+    .score b { font-size: min(26vh, 14rem); }
+    /* Landscape has width to spare and height to save: a wider column costs
+       nothing horizontally and buys back two lines vertically. */
+    .explanation { margin-top: 0.75rem; max-width: 60ch; font-size: 1rem; }
+    .meta { margin-top: 0.625rem; }
+    footer { border-top: none; }
+  }
   [data-state="loading"] .score, [data-state="loading"] .explanation { opacity: 0.25; }
   [data-state="error"] .score b { color: var(--ink-faint); }
   @media (prefers-reduced-motion: no-preference) {
