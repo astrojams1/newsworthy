@@ -103,10 +103,16 @@ so in a \`note\` field.
 
 Reproduced verbatim below, version ${prompt.version}, SHA-256 \`${prompt.hash}\`.
 Stored readings record that hash, so a rating made from a paraphrase is
-attributed to a prompt the caller never read. A caller that received a
-summarized or truncated version rather than the exact text can refetch
-\`${baseUrl}/api/instructions?format=json\`, where the prompt is a JSON string
-value and survives transport intact.
+attributed to a prompt the caller never read.
+
+The rating is made from the exact text, not from a description of it. A fetch
+tool that summarizes rewrites the scale into something close but not equal —
+"routine developments unlikely to warrant action" where the prompt says
+"routine news; nothing I'm likely to care about or act on" — and a caller has no
+way to tell from the result that this happened. So a caller whose fetch tool
+summarizes takes the prompt from
+\`${baseUrl}/api/instructions?format=json\`, where it is a JSON string value and
+survives transport intact. A caller fetching raw bytes already has it.
 
 ----- BEGIN PROMPT -----
 ${prompt.text}
