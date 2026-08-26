@@ -142,6 +142,28 @@ export async function voidRating(id, reason = 'voided') {
   return shape(rows[0]);
 }
 
+/**
+ * Correct or clear a reading's usage, recomputing its cost.
+ *
+ * A reading can be sound while its usage is not: a caller with no token counter
+ * reported 85,000 input tokens and said afterwards the figure was a guess, which
+ * priced at Opus rates put $0.48 of invented spend in a real total. Voiding
+ * would have thrown away a good rating to remove a bad number. Pass null for a
+ * count to clear it; the row keeps everything else.
+ */
+export async function correctUsage(id, { input_tokens, output_tokens, web_search_requests, cost_usd }) {
+  await ensureSchema();
+  const rows = await sql`
+    UPDATE ratings
+       SET input_tokens = ${input_tokens ?? null},
+           output_tokens = ${output_tokens ?? null},
+           web_search_requests = ${web_search_requests ?? null},
+           cost_usd = ${cost_usd ?? null}
+     WHERE id = ${id}
+     RETURNING *`;
+  return shape(rows[0]);
+}
+
 export async function ratingForSlot(slot) {
   await ensureSchema();
   const rows = await sql`SELECT * FROM ratings WHERE slot = ${slot} AND status = 'ok' LIMIT 1`;

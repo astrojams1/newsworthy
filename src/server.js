@@ -4,13 +4,13 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline, voidRating } from './db.js';
+import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline, voidRating } from './db.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
 import { openapiDocument } from './openapi.js';
 import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
-import { modelCatalogue, projectMonthlyUsd } from './pricing.js';
+import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
 
@@ -352,6 +352,48 @@ const server = createServer(async (req, res) => {
       if (!row) return json(res, 404, { error: 'no such reading' });
       console.log(`voided reading ${row.id}: ${reason}`);
       return json(res, 200, { id: row.id, status: row.status, error: row.error });
+    }
+
+    // Correct a reading whose usage was wrong without discarding the reading.
+    // Body fields are optional; anything omitted is cleared. Cost is recomputed
+    // from what survives rather than carried over, so a cleared token count
+    // cannot leave its price behind.
+    const usageMatch = path.match(/^\/api\/admin\/readings\/(\d+)\/usage$/);
+    if (usageMatch && req.method === 'POST') {
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (err) {
+        return json(res, 400, { error: String(err?.message ?? err) });
+      }
+      const count = (value) => (value === undefined || value === null ? null : Math.round(Number(value)));
+      const usage = {
+        input_tokens: count(body.input_tokens),
+        output_tokens: count(body.output_tokens),
+        web_search_requests: count(body.web_search_requests),
+      };
+      for (const [field, value] of Object.entries(usage)) {
+        if (value !== null && (!Number.isFinite(value) || value < 0)) {
+          return json(res, 422, { error: `${field} must be a non-negative number or null` });
+        }
+      }
+      const existing = (await recentAttempts(200)).find((r) => r.id === Number(usageMatch[1]));
+      if (!existing) return json(res, 404, { error: 'no such reading' });
+      const cost = estimateCostUsd({
+        model: existing.model,
+        inputTokens: usage.input_tokens ?? 0,
+        outputTokens: usage.output_tokens ?? 0,
+        webSearchRequests: usage.web_search_requests ?? 0,
+      });
+      const row = await correctUsage(Number(usageMatch[1]), { ...usage, cost_usd: cost });
+      console.log(`corrected usage on reading ${row.id}: cost now ${row.cost_usd}`);
+      return json(res, 200, {
+        id: row.id,
+        input_tokens: row.input_tokens,
+        output_tokens: row.output_tokens,
+        web_search_requests: row.web_search_requests,
+        cost_usd: row.cost_usd,
+      });
     }
 
     if (path === '/api/admin/prompts' && req.method === 'GET') {

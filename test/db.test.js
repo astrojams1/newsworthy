@@ -150,3 +150,28 @@ test('voiding a reading retires it without erasing the record', async () => {
 
   assert.equal(await voidRating(999_999, 'nope'), undefined, 'unknown id is a no-op');
 });
+
+test('usage can be corrected without discarding the reading', async () => {
+  // A reading can be sound while its usage is not: a caller with no token
+  // counter reported 85,000 input tokens and later said the figure was a
+  // guess. Voiding would have thrown away a good rating to remove a bad
+  // number, so usage is correctable in place.
+  const { correctUsage, insertRating } = await import('../src/db.js');
+  const saved = await insertRating({
+    status: 'ok', score: 7, explanation: 'A thing happened.',
+    prompt_version: 3, prompt_hash: 'h', prompt_text: 't', model: 'claude-opus-5',
+    slot: null, source: 'external', caller: 'guesser',
+    input_tokens: 85_000, output_tokens: 1_500, web_search_requests: 2, cost_usd: 0.4825,
+  });
+  assert.equal(saved.cost_usd, 0.4825);
+
+  const fixed = await correctUsage(saved.id, {
+    input_tokens: null, output_tokens: null, web_search_requests: 2, cost_usd: 0.02,
+  });
+  assert.equal(fixed.input_tokens, null, 'the guessed count is gone');
+  assert.equal(fixed.output_tokens, null);
+  assert.equal(fixed.web_search_requests, 2, 'a count the caller could actually take survives');
+  assert.equal(fixed.cost_usd, 0.02, 'and the price no longer reflects the guess');
+  assert.equal(fixed.score, 7, 'the reading itself is untouched');
+  assert.equal(fixed.status, 'ok', 'and it stays in the series');
+});
