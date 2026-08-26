@@ -200,11 +200,24 @@ const server = createServer(async (req, res) => {
       }
       const proto = req.headers['x-forwarded-proto'] ?? (ON_VERCEL ? 'https' : 'http');
       const baseUrl = `${proto}://${req.headers.host ?? 'localhost'}`;
+      const text = callerInstructions({ baseUrl, prompt });
+
+      // JSON on request, for a client that only accepts JSON.
+      const wantsJson =
+        url.searchParams.get('format') === 'json' ||
+        (req.headers.accept ?? '').includes('application/json');
+      if (wantsJson) {
+        return json(res, 200, { version: prompt.version, hash: prompt.hash, instructions: text });
+      }
+
+      // text/plain, not text/markdown: agent fetch tools reject unfamiliar MIME
+      // types before exposing the body, and one did. The content is markdown
+      // either way — the header just has to be something every client accepts.
       res.writeHead(200, {
-        'content-type': 'text/markdown; charset=utf-8',
+        'content-type': 'text/plain; charset=utf-8',
         'cache-control': 'no-store',
       });
-      return res.end(callerInstructions({ baseUrl, prompt }));
+      return res.end(text);
     }
 
     if (path === '/api/prompt' && req.method === 'GET') {
