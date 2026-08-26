@@ -46,7 +46,9 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, prompt versions |
 | `/api/admin/prompts` | Every prompt version, full text |
 | `/api/admin/settings` | `GET` the model/cadence and the priced options; `POST` to change them |
-| `/api/cron` | The 15-minute job. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
+| `/api/prompt` | The current versioned prompt, for an external caller (needs `CALLER_TOKEN`) |
+| `/api/readings` | `POST` a reading from an external caller agent |
+| `/api/cron` | The scheduled job — runs only if nothing arrived within the interval. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
 | `/healthz` | Liveness, plus whether the database, API key and cron secret are wired up |
 
 Set `ADMIN_TOKEN` to lock the admin routes. Pass it as `?token=…` once (the page
@@ -91,6 +93,36 @@ Input dominates, because search results land in the context window. **The
 default is four-hourly** for that reason. The admin page shows spend for the
 selected range, cost per run, and a projected monthly figure; these are
 estimates, and your invoice is the source of truth.
+
+## Letting another agent do the rating
+
+A run costs real money, and the work is not specific to this app. Any agent can
+do the rating with its own model and post the result:
+
+```bash
+# 1. fetch the current, versioned prompt
+curl -s -H "x-newsworthy-token: $CALLER_TOKEN" "$URL/api/prompt"
+
+# 2. rate the news with it, then submit
+curl -s -X POST "$URL/api/readings" \
+  -H "x-newsworthy-token: $CALLER_TOKEN" -H 'content-type: application/json' \
+  -d '{"score":5,"explanation":"One sentence.","model":"claude-opus-5",
+       "caller":"cowork-macbook","usage":{"input_tokens":52000,"output_tokens":900,
+       "web_search_requests":6},"meta":{"agent":"cs-tick"}}'
+```
+
+The reading is stored like any other, tagged `source = 'external'` with the
+caller's name, model and usage, and shown that way in `/admin` — with the
+caller's spend counted separately from this app's.
+
+**And it suppresses the next cron run.** The scheduler only rates when nothing
+has arrived within the configured interval, so a reading posted by an agent is
+one this app does not pay for. `skills/newsworthy-rating/SKILL.md` is the
+caller-side skill, ready to install in another agent.
+
+Nothing in the request is trusted: the score is range-checked, strings are
+trimmed and capped, and the prompt hash and text are taken from this app's own
+registry rather than the payload.
 
 ## Changing the model and cadence
 
@@ -220,6 +252,7 @@ scheduler runs, and only `ANTHROPIC_API_KEY` and `DATABASE_URL` are required.
 | `NEWSWORTHY_INTERVAL_MINUTES` | `240` | Fallback only — the admin setting wins |
 | `NEWSWORTHY_NO_SCHEDULER` | — | `1` to serve without the in-process scheduler (automatic on Vercel) |
 | `CRON_SECRET` | — | Required bearer token for `/api/cron`; set automatically by Vercel Cron |
+| `CALLER_TOKEN` | — | Lets an external agent use `/api/prompt` and `/api/readings` without the admin token |
 | `NEWSWORTHY_MOCK` | — | `1` to fake readings without calling the API |
 | `ADMIN_TOKEN` | — | Locks `/admin` and `/api/admin/*` |
 

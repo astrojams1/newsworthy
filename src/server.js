@@ -4,8 +4,9 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { failures, history, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline } from './db.js';
-import { allPrompts } from './prompts.js';
+import { failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline } from './db.js';
+import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
+import { SubmissionError, validateSubmission } from './ingest.js';
 import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
 import { modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
@@ -14,6 +15,7 @@ import { slotFor } from './rate.js';
 const PORT = Number(process.env.PORT) || 3000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const CRON_SECRET = process.env.CRON_SECRET || '';
+const CALLER_TOKEN = process.env.CALLER_TOKEN || '';
 const ON_VERCEL = Boolean(process.env.VERCEL);
 // vercel.json fires /api/cron on this cadence; the configured interval is
 // enforced by the slot on top of it.
@@ -61,6 +63,19 @@ function cronAuthorized(url, req) {
   return !ON_VERCEL;
 }
 
+/**
+ * External callers get their own token, so an agent can submit readings
+ * without being handed the admin token. ADMIN_TOKEN also works.
+ */
+function callerAuthorized(url, req) {
+  const supplied =
+    url.searchParams.get('token') || req.headers['x-newsworthy-token'] || req.headers['x-admin-token'];
+  if (CALLER_TOKEN && secretMatches(supplied, CALLER_TOKEN)) return true;
+  if (ADMIN_TOKEN && secretMatches(supplied, ADMIN_TOKEN)) return true;
+  if (CALLER_TOKEN || ADMIN_TOKEN) return false;
+  return !ON_VERCEL; // open only when self-hosted with nothing configured
+}
+
 async function readJsonBody(req, limitBytes = 8_192) {
   const chunks = [];
   let size = 0;
@@ -105,26 +120,14 @@ const server = createServer(async (req, res) => {
           detail: attempt?.error ?? null,
         });
       }
-      const { intervalMinutes } = await effectiveConfig();
-
-      // When the next run happens depends on whether the current slot is
-      // already filled — not on the reading's own age. An unfilled slot is
-      // retried by the very next cron tick, because a failure writes
-      // slot = NULL and so never claims the slot.
-      const slotStart = Date.parse(slotFor(new Date(), intervalMinutes));
-      const slotFilled = Date.parse(row.created_at) >= slotStart;
-      const tickMs = CRON_TICK_MINUTES * 60_000;
-      const nextRunAt = new Date(
-        slotFilled ? slotStart + intervalMinutes * 60_000 : Math.ceil(Date.now() / tickMs) * tickMs,
-      ).toISOString();
-
+      // No countdown: an external caller can post a reading at any moment, so
+      // the next update is genuinely not predictable. The page states when the
+      // current reading arrived and nothing more.
       return json(res, 200, {
         score: row.score,
         explanation: row.explanation,
         created_at: row.created_at,
-        next_run_at: nextRunAt,
-        next_update_minutes: intervalMinutes,
-        cadence: intervalLabel(intervalMinutes),
+        source: row.source ?? 'cron',
       });
     }
 
@@ -164,6 +167,14 @@ const server = createServer(async (req, res) => {
         force,
       });
       if (!row) return json(res, 409, { error: 'busy' });
+      if (row.skipped) {
+        return json(res, 200, {
+          status: 'skipped',
+          reason: row.reason,
+          age_minutes: row.age_minutes,
+          last_source: row.source,
+        });
+      }
       return json(res, row.status === 'ok' ? 200 : 500, {
         status: row.status,
         score: row.score ?? null,
@@ -172,6 +183,53 @@ const server = createServer(async (req, res) => {
         cost_usd: row.cost_usd ?? null,
         error: row.error ?? null,
       });
+    }
+
+    // ---- external caller agents -----------------------------------------
+    if (path === '/api/prompt' && req.method === 'GET') {
+      if (!callerAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
+      const version = Number(url.searchParams.get('version')) || latestVersion();
+      try {
+        const prompt = renderPrompt(version);
+        return json(res, 200, {
+          version: prompt.version,
+          label: prompt.label,
+          hash: prompt.hash,
+          text: prompt.text,
+          submit_to: '/api/readings',
+        });
+      } catch (err) {
+        return json(res, 404, { error: String(err?.message ?? err) });
+      }
+    }
+
+    if (path === '/api/readings' && req.method === 'POST') {
+      if (!callerAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (err) {
+        return json(res, 400, { error: String(err?.message ?? err) });
+      }
+      try {
+        const submission = validateSubmission(body);
+        // slot = NULL: an external reading never competes for a cron slot. It
+        // suppresses the next cron run by being recent, not by claiming a slot.
+        const saved = await insertRating({ ...submission, slot: null });
+        console.log(`external reading from ${saved.caller}: ${saved.score}/10 (${saved.model})`);
+        return json(res, 201, {
+          id: saved.id,
+          created_at: saved.created_at,
+          score: saved.score,
+          source: saved.source,
+          caller: saved.caller,
+          prompt_version: saved.prompt_version,
+          prompt_hash: saved.prompt_hash,
+        });
+      } catch (err) {
+        if (err instanceof SubmissionError) return json(res, 422, { error: err.message });
+        throw err;
+      }
     }
 
     // ---- admin -----------------------------------------------------------

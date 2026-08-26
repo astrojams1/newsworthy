@@ -1,4 +1,4 @@
-import { latestAttempt } from './db.js';
+import { latestAttempt, latestRating } from './db.js';
 import { effectiveConfig } from './config.js';
 import { runRating, slotFor } from './rate.js';
 
@@ -13,7 +13,27 @@ let running = false;
  * alike: the slot makes a duplicate delivery a no-op rather than a second row.
  */
 export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
-  slot ??= slotFor(new Date(), (await effectiveConfig()).intervalMinutes);
+  const { intervalMinutes } = await effectiveConfig();
+  slot ??= slotFor(new Date(), intervalMinutes);
+
+  // Only rate if nothing has arrived within the interval — a rolling window
+  // from the last reading, not the fixed slot boundary. An external caller
+  // posting at 03:59 must suppress the 04:00 run, which slot-alignment alone
+  // would not do. The slot is still claimed below, as the guard against a
+  // duplicate cron delivery.
+  if (!force) {
+    const latest = await latestRating();
+    const ageMinutes = latest ? (Date.now() - Date.parse(latest.created_at)) / 60_000 : Infinity;
+    if (ageMinutes < intervalMinutes) {
+      return {
+        skipped: true,
+        reason: 'a reading already arrived within the interval',
+        age_minutes: Math.round(ageMinutes),
+        source: latest?.source ?? null,
+      };
+    }
+  }
+
   if (running) return null;
   running = true;
   try {

@@ -33,13 +33,28 @@ is rejected (`The default export must be a function or server`); exporting the
 `Server` instance as default fails at boot. Both were tried. Leave it as a
 side-effect-only module.
 
+**Readings can come from elsewhere.** An external agent can rate the news with
+its own model and `POST /api/readings`; the row is stored with `source =
+'external'` plus the caller's name, self-reported model and usage. Its prompt
+hash and text always come from our registry, never from the request, so a
+reading stays traceable. `skills/newsworthy-rating/SKILL.md` is the caller-side
+skill; `CALLER_TOKEN` gates it and `/api/prompt`.
+
+**The cron only fires if nothing arrived within the interval.** A rolling
+window from the newest reading, not the slot boundary — an external reading at
+03:59 must suppress an 04:00 run, which slot alignment alone would not do. That
+is what keeps this cheap: a reading submitted elsewhere is a reading this app
+does not pay for.
+
 **Cadence is enforced by the slot, not the cron schedule.** `vercel.json` ticks
 every 15 minutes. Each reading claims a `slot` floored to the configured
 interval, guarded by a partial unique index (`ratings (slot) WHERE status =
 'ok'`). Ticks inside an interval find the slot filled and return without calling
 the model. So cadence is changeable from `/admin` with no redeploy — but it
 cannot go finer than the cron tick, and intervals must be multiples of it.
-Failures and manual runs carry `slot = NULL` so they neither block nor collide.
+Failures, manual runs and external readings carry `slot = NULL` so they neither
+block nor collide; external readings suppress the cron by being recent, not by
+claiming a slot.
 
 **Environment variables are baked in at build time.** Adding a variable, or
 connecting a storage integration, changes nothing until you redeploy. `/healthz`

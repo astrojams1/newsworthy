@@ -109,27 +109,27 @@
   const $score = document.getElementById('score');
   const $explanation = document.getElementById('explanation');
   const $meta = document.getElementById('meta');
-  let nextRunAt = null;
+  let updatedAt = null;
 
-  // numeric:'always' so this reads "in 1 hour", never "next hour".
-  const until = new Intl.RelativeTimeFormat(undefined, { numeric: 'always' });
+  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+
+  function ago(date) {
+    const minutes = Math.round((Date.now() - date.getTime()) / 60000);
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return rtf.format(-minutes, 'minute');
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return rtf.format(-hours, 'hour');
+    return rtf.format(-Math.round(hours / 24), 'day');
+  }
 
   function renderMeta() {
-    if (!nextRunAt) {
+    if (!updatedAt) {
       $meta.textContent = '';
       return;
     }
-    // Forward-looking only. This states the cadence by implication, so the
-    // footer no longer repeats it, and it answers the question a reader
-    // actually has: is it worth coming back yet.
-    const minutes = (nextRunAt.getTime() - Date.now()) / 60000;
-    if (minutes <= 0.5) {
-      $meta.textContent = 'Next update due now';
-    } else if (minutes < 60) {
-      $meta.textContent = `Next update ${until.format(Math.ceil(minutes), 'minute')}`;
-    } else {
-      $meta.textContent = `Next update ${until.format(Math.round(minutes / 60), 'hour')}`;
-    }
+    // Freshness, not a countdown: an external caller agent can post a reading
+    // at any moment, so when the next one lands is not predictable.
+    $meta.textContent = `Updated ${ago(updatedAt)}`;
   }
 
   async function load() {
@@ -140,7 +140,7 @@
       const data = await res.json();
       $score.textContent = data.score;
       $explanation.textContent = data.explanation;
-      nextRunAt = data.next_run_at ? new Date(data.next_run_at) : null;
+      updatedAt = new Date(data.created_at);
       document.title = `${data.score}/10 · Newsworthy`;
       document.body.dataset.state = 'ready';
       renderMeta();
