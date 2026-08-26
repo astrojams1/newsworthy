@@ -4,9 +4,9 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline } from './db.js';
+import { failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline, voidRating } from './db.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
-import { SubmissionError, validateSubmission } from './ingest.js';
+import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
 import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
 import { modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
@@ -203,12 +203,16 @@ const server = createServer(async (req, res) => {
       }
     }
 
-    if (path === '/api/readings' && req.method === 'POST') {
+    // GET is accepted alongside POST because some agents can only issue a
+    // plain fetch: no custom headers, no request body. Those carry the token
+    // and the reading in the query string instead.
+    if (path === '/api/readings' && (req.method === 'POST' || req.method === 'GET')) {
       if (!callerAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
       let body;
       try {
-        body = await readJsonBody(req);
+        body = req.method === 'GET' ? submissionFromQuery(url.searchParams) : await readJsonBody(req);
       } catch (err) {
+        if (err instanceof SubmissionError) return json(res, 422, { error: err.message });
         return json(res, 400, { error: String(err?.message ?? err) });
       }
       try {
@@ -288,6 +292,15 @@ const server = createServer(async (req, res) => {
           return json(res, 400, { error: String(err?.message ?? err) });
         }
       }
+    }
+
+    const voidMatch = path.match(/^\/api\/admin\/readings\/(\d+)\/void$/);
+    if (voidMatch && req.method === 'POST') {
+      const reason = url.searchParams.get('reason') || 'voided by admin';
+      const row = await voidRating(Number(voidMatch[1]), reason);
+      if (!row) return json(res, 404, { error: 'no such reading' });
+      console.log(`voided reading ${row.id}: ${reason}`);
+      return json(res, 200, { id: row.id, status: row.status, error: row.error });
     }
 
     if (path === '/api/admin/prompts' && req.method === 'GET') {

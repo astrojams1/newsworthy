@@ -76,6 +76,27 @@ run and show it separately from its own spend.
 the hash and text itself from its own registry, so a reading always traces back
 to a prompt it can reproduce.
 
+## If your client cannot send headers
+
+Some agents have only a plain GET fetch. Both endpoints accept the token as a
+`token=` query parameter, and a reading can be submitted by GET:
+
+```
+GET /api/prompt?token=TOKEN
+
+GET /api/readings?token=TOKEN
+    &score=5
+    &explanation=One%20sentence%20about%20what%20happened.
+    &prompt_version=3
+    &model=claude-opus-5
+    &caller=my-agent
+    &input_tokens=51000&output_tokens=900&web_search_requests=6
+```
+
+Validation is identical. Note that a token in a URL is more exposed than one in
+a header — it lands in logs and history — so prefer a `CALLER_TOKEN` over the
+admin token when submitting this way.
+
 ## Notes
 
 - One reading per interval is enough. Submitting more often is harmless but

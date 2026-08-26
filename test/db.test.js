@@ -133,3 +133,20 @@ test('failures are queryable for the chart, separately from readings', async () 
   assert.ok(!plotted.some((p) => p.created_at.startsWith('2026-08-24T16:01')));
   assert.ok(plotted.every((p) => p.score != null));
 });
+
+test('voiding a reading retires it without erasing the record', async () => {
+  const { voidRating, latestRating } = await import('../src/db.js');
+  const bad = await insertRating({ ...base, slot: null, status: 'ok', score: 3, explanation: 'header-less probe' });
+  assert.equal((await latestRating()).id, bad.id, 'it is the current reading');
+
+  const voided = await voidRating(bad.id, 'test probe');
+  assert.equal(voided.status, 'error');
+  assert.match(voided.error, /voided: test probe/);
+  assert.equal(voided.slot, null);
+  assert.equal(voided.explanation, 'header-less probe', 'the record survives');
+
+  assert.notEqual((await latestRating())?.id, bad.id, 'no longer the current reading');
+  assert.ok(!(await history({ hours: 24 * 365 })).some((p) => p.id === bad.id), 'and out of the chart');
+
+  assert.equal(await voidRating(999_999, 'nope'), undefined, 'unknown id is a no-op');
+});

@@ -70,3 +70,40 @@ test('an unnamed caller and an unknown model still store cleanly', () => {
   assert.equal(r.model, 'unreported');
   assert.equal(r.cost_usd, null, 'no rate card, so no invented cost');
 });
+
+test('a query-string submission maps onto the same validation as a body', async () => {
+  const { submissionFromQuery } = await import('../src/ingest.js');
+  const q = new URLSearchParams({
+    score: '7',
+    explanation: 'Reported via a plain GET, no headers available.',
+    caller: 'header-less-agent',
+    model: 'claude-opus-5',
+    prompt_version: '3',
+    input_tokens: '51000',
+    output_tokens: '900',
+    web_search_requests: '6',
+    meta: JSON.stringify({ why: 'client cannot set headers' }),
+  });
+  const r = validateSubmission(submissionFromQuery(q));
+  assert.equal(r.score, 7);
+  assert.equal(r.caller, 'header-less-agent');
+  assert.equal(r.model, 'claude-opus-5');
+  assert.equal(r.prompt_version, 3);
+  assert.equal(r.input_tokens, 51_000);
+  assert.equal(r.web_search_requests, 6);
+  assert.deepEqual(r.caller_meta, { why: 'client cannot set headers' });
+  assert.ok(r.cost_usd > 0);
+});
+
+test('a query submission is validated exactly as strictly', async () => {
+  const { submissionFromQuery } = await import('../src/ingest.js');
+  const q = (o) => submissionFromQuery(new URLSearchParams(o));
+  assert.throws(() => validateSubmission(q({ score: '11', explanation: 'x' })), /1 to 10/);
+  assert.throws(() => validateSubmission(q({ score: '5' })), /explanation is required/);
+  assert.throws(() => validateSubmission(q({ score: '5', explanation: 'x', prompt_version: '99' })), /not a version/);
+  assert.throws(() => submissionFromQuery(new URLSearchParams({ meta: 'not json' })), /meta must be valid JSON/);
+  // Absent optional fields stay absent rather than becoming empty strings.
+  const minimal = validateSubmission(q({ score: '4', explanation: 'Just the essentials.' }));
+  assert.equal(minimal.caller, 'unnamed-agent');
+  assert.equal(minimal.model, 'unreported');
+});
