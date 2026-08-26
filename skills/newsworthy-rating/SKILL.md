@@ -22,6 +22,10 @@ Two values, from whoever runs the Newsworthy instance:
 | `NEWSWORTHY_URL` | e.g. `https://newsworthy-indol.vercel.app` |
 | `NEWSWORTHY_TOKEN` | the caller token (`CALLER_TOKEN` on the app) |
 
+Send the token as the header `x-newsworthy-token`. If your HTTP client cannot
+set headers, append `token=<TOKEN>` to the query string instead — every
+endpoint accepts either.
+
 ## Steps
 
 **1. Fetch the current prompt.** Always fetch it rather than hardcoding it —
@@ -76,14 +80,12 @@ run and show it separately from its own spend.
 the hash and text itself from its own registry, so a reading always traces back
 to a prompt it can reproduce.
 
-## If your client cannot send headers
+## Fallback: when you cannot POST or set headers
 
-Some agents have only a plain GET fetch. Both endpoints accept the token as a
-`token=` query parameter, and a reading can be submitted by GET:
+Try the POST above first. If your client cannot send a body or set headers,
+submit the same reading as a plain GET instead:
 
 ```
-GET /api/prompt?token=TOKEN
-
 GET /api/readings?token=TOKEN
     &score=5
     &explanation=One%20sentence%20about%20what%20happened.
@@ -93,9 +95,10 @@ GET /api/readings?token=TOKEN
     &input_tokens=51000&output_tokens=900&web_search_requests=6
 ```
 
-Validation is identical. Note that a token in a URL is more exposed than one in
-a header — it lands in logs and history — so prefer a `CALLER_TOKEN` over the
-admin token when submitting this way.
+Validation is identical — the query is mapped onto the same shape and checked
+the same way. Use this only as a fallback: a token in a URL lands in logs and
+browser history, where a header does not, so prefer a `CALLER_TOKEN` over the
+admin token if you submit this way.
 
 ## Notes
 
