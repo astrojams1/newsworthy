@@ -40,6 +40,16 @@ hash and text always come from our registry, never from the request, so a
 reading stays traceable. `/api/instructions` serves the whole caller workflow with the
 prompt embedded, so a caller agent is configured with a URL rather than pasted
 text — `src/caller.js` is the single copy. `CALLER_TOKEN` gates it.
+
+Not every agent can submit, and the ones that cannot are blocked by design.
+ChatGPT's interpreter has no network (`curl` cannot resolve the host) and its
+browser refuses to fetch a URL the model assembled — a model-built URL carrying
+a token is the exfiltration shape that guard exists to stop, so no wording gets
+around it. Two routes exist for those: `/api/openapi.json` describes the caller
+API for a ChatGPT Custom GPT Action, which sends real headers; and `/admin` has
+a paste box for a verdict that could not be transmitted at all. The schema is
+served unauthenticated — it describes a gated API without containing a token,
+and a schema importer cannot present one.
 Serve it as `text/plain`: an agent's fetch tool rejected `text/markdown` before
 exposing the body.
 

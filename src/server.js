@@ -8,6 +8,7 @@ import { failures, history, insertRating, latestAttempt, latestRating, pingDatab
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
+import { openapiDocument } from './openapi.js';
 import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
 import { modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
@@ -218,6 +219,18 @@ const server = createServer(async (req, res) => {
         'cache-control': 'no-store',
       });
       return res.end(text);
+    }
+
+    // A machine-readable description of the two caller endpoints, for an agent
+    // that can only reach the network through a declared tool — a ChatGPT
+    // Custom GPT Action being the case that forced this. Unauthenticated on
+    // purpose: it describes a token-gated API without containing a token, and
+    // the schema importer that fetches it cannot present one. The prompt stays
+    // behind /api/instructions.
+    if (path === '/api/openapi.json' && req.method === 'GET') {
+      const proto = req.headers['x-forwarded-proto'] ?? (ON_VERCEL ? 'https' : 'http');
+      const baseUrl = `${proto}://${req.headers.host ?? 'localhost'}`;
+      return json(res, 200, openapiDocument({ baseUrl }));
     }
 
     if (path === '/api/prompt' && req.method === 'GET') {
