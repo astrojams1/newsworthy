@@ -3,10 +3,14 @@ import { latestVersion, renderPrompt } from './prompts.js';
 /**
  * Validation for readings submitted by an external caller agent.
  *
- * A submission carries a score, a sentence, and which prompt version produced
- * them. Nothing else. The prompt's hash and text come from our own registry
- * rather than the request, so a stored reading stays traceable to a prompt we
- * can reproduce.
+ * A submission carries a score and a sentence. Nothing else. The prompt version,
+ * hash and text are stamped here from our own registry, so a stored reading
+ * stays traceable to a prompt we can reproduce.
+ *
+ * The version is not a field a caller can set, because a caller that can name a
+ * version can pin one: after v4 shipped, every submission kept arriving as v3,
+ * so the new prompt was live and inert at the same time. The prompt a caller
+ * fetches and the version stamped on its reading now come from the same place.
  *
  * Everything a caller could once report about itself — model, name, token
  * counts — is gone, because none of it was verifiable and all of it was
@@ -46,7 +50,7 @@ function cleanString(value, { field, max, required = false }) {
  */
 export function submissionFromQuery(params) {
   const body = {};
-  for (const field of ['score', 'explanation', 'prompt_version']) {
+  for (const field of ['score', 'explanation']) {
     const value = params.get(field);
     if (value !== null) body[field] = value;
   }
@@ -67,14 +71,8 @@ export function validateSubmission(body = {}) {
     required: true,
   });
 
-  // Default to the version the caller would get from /api/prompt.
-  const promptVersion = body.prompt_version === undefined ? latestVersion() : Number(body.prompt_version);
-  let prompt;
-  try {
-    prompt = renderPrompt(promptVersion);
-  } catch {
-    fail(`prompt_version ${body.prompt_version} is not a version this app knows`);
-  }
+  // Always the current prompt. Never the caller's claim about it.
+  const prompt = renderPrompt(latestVersion());
 
   // Usage is accepted nested or flat. The GET fallback documents flat query
   // parameters (&web_search_requests=N) while the POST body documents a nested
@@ -84,8 +82,9 @@ export function validateSubmission(body = {}) {
   // Anything else a caller sends is ignored rather than stored. Saying so
   // beats dropping it silently: a caller following an older copy of the spec
   // should learn its model and token counts went nowhere.
-  const ignored = ['model', 'caller', 'usage', 'input_tokens', 'output_tokens',
-    'web_search_requests', 'measured', 'meta'].filter((f) => body[f] !== undefined);
+  const ignored = ['prompt_version', 'model', 'caller', 'usage', 'input_tokens',
+    'output_tokens', 'web_search_requests', 'measured', 'meta']
+    .filter((f) => body[f] !== undefined);
   const note = ignored.length
     ? `ignored (not recorded for external readings): ${ignored.join(', ')}`
     : undefined;

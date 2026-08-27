@@ -74,8 +74,10 @@ export function openapiDocument({ baseUrl }) {
             'Call this after rating. The job is not finished until this returns 201 — ' +
             'producing a score without submitting it accomplishes nothing. ' +
             'If web search failed or returned nothing, submit nothing at all. ' +
-            'These three fields are the whole submission; no model name, caller name ' +
-            'or token count is asked for, since this app cannot verify any of it.',
+            'These two fields are the whole submission. The prompt version is stamped ' +
+            'by the server and is not sent: a caller that can name a version can pin ' +
+            'one. No model name, caller name or token count is asked for either, ' +
+            'since this app cannot verify any of it.',
           requestBody: {
             required: true,
             content: {
@@ -93,10 +95,6 @@ export function openapiDocument({ baseUrl }) {
                     explanation: {
                       type: 'string',
                       description: 'One sentence, at most 25 words, reporting what happened.',
-                    },
-                    prompt_version: {
-                      type: 'integer',
-                      description: 'The version returned by getInstructions.',
                     },
                   },
                 },
