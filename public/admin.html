@@ -113,16 +113,6 @@
   th, td { text-align: left; padding: 0.5rem 0.75rem 0.5rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
   th { font-weight: 600; color: var(--ink-muted); font-size: 0.75rem; }
   td.why { font-variant-numeric: normal; color: var(--ink-muted); }
-  /* nowrap: a wrapped pill renders as a tall lozenge with the name split
-     across two lines, which is how every caller name longer than the column
-     was being drawn. */
-  .pill { display: inline-block; padding: 0.05rem 0.4rem; border-radius: 999px; font-size: 0.6875rem;
-          border: 1px solid var(--rule); color: var(--ink-muted); white-space: nowrap; }
-  .pill.err { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
-  /* A voided row is not a failed run — it is one that should never have
-     counted, and stats exclude it for that reason. Labelling it "failed" said
-     the model had errored when nothing had. */
-  .pill.void { color: var(--ink-faint); border-style: dashed; }
   /* Figures line up only when they are right-aligned and unwrapped. */
   td.num, th.num { text-align: right; white-space: nowrap; }
   td.model { white-space: nowrap; }
@@ -131,7 +121,6 @@
   /* Most rows are ordinary readings and leave this empty, so the column costs
      nothing until something actually went wrong. */
   td.status { white-space: normal; }
-  td.status .reason { display: block; margin-top: 0.2rem; color: var(--ink-faint); font-size: 0.75rem; }
   td .muted { color: var(--ink-faint); }
   .scroll { overflow-x: auto; }
   /* Narrow screens: title on its own line so the controls stay on one row. */
@@ -440,10 +429,8 @@
    * name themselves, so the column read 'unnamed-agent' one run and
    * 'cowork-cloud-scheduled' the next for the same kind of event.
    *
-   * All three render alike. External carried a blue pill while the other two
-   * were plain text, which made one ordinary value look like a status — and on
-   * this page a pill means something went wrong (failed, voided). Source is an
-   * attribute every row has, so it gets no emphasis.
+   * All three render alike, as plain text. Source is an attribute every row
+   * has, so it gets no emphasis.
    */
   const sourceCell = (r) =>
     `<span class="muted">${r.source === 'external' ? 'external agent' : escapeHtml(r.source ?? 'cron')}</span>`;
@@ -463,11 +450,13 @@
    */
   function statusCell(r) {
     if (r.status === 'ok') return ''; // an ordinary reading needs no label
-    const reason = (r.error ?? '').replace(/^voided:\s*/, '');
-    const pill = isVoided(r)
-      ? '<span class="pill void">voided</span>'
-      : '<span class="pill err">failed</span>';
-    return reason ? `${pill}<span class="reason">${escapeHtml(reason)}</span>` : pill;
+    const state = isVoided(r) ? 'voided' : 'failed';
+    const reason = (r.error ?? '').replace(/^voided:\s*/, '').trim();
+    // The stored reason for a hand-voided row is "voided by admin", so printing
+    // both the state and the reason said "voided" twice. Keep a reason only
+    // when it adds something the state does not.
+    const adds = reason && !new RegExp(`^${state}\\b`, 'i').test(reason);
+    return `<span class="muted">${escapeHtml(adds ? `${state} — ${reason}` : state)}</span>`;
   }
 
   function renderRuns(rows) {
