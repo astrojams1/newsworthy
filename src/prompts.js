@@ -96,6 +96,48 @@ const V4_INSTRUCTIONS = `${V1_INSTRUCTIONS}
 
 ${V4_SOURCES}`;
 
+// v5 is a rewrite rather than another paragraph bolted on. v4 had grown to four
+// long sections — v1's calibration, v3's market reasoning, v4's Hacker News
+// caveats, v2's output contract — each defensible on its own and collectively a
+// wall of prose for a model to hold while it searches.
+//
+// The scale is also a different instrument. v1 asked whether the news was worth
+// the reader's attention across money, career, technology, safety, travel and
+// daily life; every rung here is market risk, so a story with no market
+// confirmation has no route above roughly 4. That is the point — it pushes
+// ratings down — but it is a change in what is measured, not a rewording.
+//
+// Four sections, no rung of the scale reworded from the author's text.
+const V5_SCALE = `1. No credible market-risk signal; news can wait.
+2. Weak isolated signal; low expected informational value.
+3. Minor corroborated movement; routine monitoring suffices.
+4. Noticeable anomaly, but limited market confirmation.
+5. Meaningful confirmed change; checking may now pay.
+6. Material stress; news likely provides useful context.
+7. Sharp repricing; likely market-moving news underway.
+8. Severe multi-asset stress or major shock unfolding.
+9. Systemic-risk indicators flashing; check news immediately.
+10. Extreme global market threat; continuous news warranted.`;
+
+const V5_INSTRUCTIONS = `Summary
+
+Rate how much the current news warrants attention right now, 1-10, on the scale below. Most days sit near the bottom of it.
+
+Sources
+
+Current top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.
+
+Scale
+
+${V5_SCALE}`;
+
+const V5_OUTPUT_CONTRACT = `Output
+
+Reply with a single JSON object and nothing else — no prose, no markdown fences:
+{"score": <integer 1-10>, "explanation": "<one sentence, at most 25 words>"}
+
+The explanation names the single most consequential development and its concrete effect. Report what happened; do not justify the score or characterise the day as a whole.`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -124,6 +166,13 @@ const REGISTRY = {
     added: '2026-08-26',
     instructions: V4_INSTRUCTIONS,
     outputContract: V2_OUTPUT_CONTRACT,
+  },
+  5: {
+    version: 5,
+    label: 'market-risk-v5',
+    added: '2026-08-27',
+    instructions: V5_INSTRUCTIONS,
+    outputContract: V5_OUTPUT_CONTRACT,
   },
 };
 

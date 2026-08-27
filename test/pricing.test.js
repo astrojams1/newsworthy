@@ -193,3 +193,37 @@ test('the search budget grew to pay for the Hacker News check', async () => {
   const src = await import('node:fs/promises').then((fs) => fs.readFile('src/rate.js', 'utf8'));
   assert.match(src, /max_uses: 9/);
 });
+
+test('prompt v5 is four sections and leaves the author’s scale alone', async () => {
+  const { renderPrompt } = await import('../src/prompts.js');
+  const [v4, v5] = [4, 5].map(renderPrompt);
+
+  assert.equal(v4.hash, 'cce0a516da847bf4', 'v4 is untouched by v5');
+
+  // Summary, Sources, Scale, Output — in that order, and nothing else.
+  const headings = v5.text.split('\n').filter((l) => /^(Summary|Sources|Scale|Output)$/.test(l));
+  assert.deepEqual(headings, ['Summary', 'Sources', 'Scale', 'Output']);
+
+  // Every rung is the author's wording. A prompt that quietly rephrases the
+  // scale is measuring something the author did not write.
+  const rungs = [
+    '1. No credible market-risk signal; news can wait.',
+    '5. Meaningful confirmed change; checking may now pay.',
+    '7. Sharp repricing; likely market-moving news underway.',
+    '10. Extreme global market threat; continuous news warranted.',
+  ];
+  for (const rung of rungs) assert.ok(v5.text.includes(rung), rung);
+
+  // v5 is a rewrite, not v4 plus a paragraph: it should be markedly shorter.
+  assert.ok(v5.text.length < v4.text.length / 2, 'less than half of v4');
+});
+
+test('v5 keeps the two rules that were learned the hard way', async () => {
+  const { renderPrompt } = await import('../src/prompts.js');
+  const v5 = renderPrompt(5);
+  // v1 produced explanations that argued with their own score.
+  assert.match(v5.text, /do not justify the score/);
+  // And the JSON contract that every caller and the parser depend on.
+  assert.match(v5.text, /single JSON object and nothing else/);
+  assert.match(v5.text, /at most 25 words/);
+});
