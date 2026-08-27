@@ -251,15 +251,15 @@ test('prompt v6 guards against market lag without spending the word budget', asy
   assert.ok(!/market confirmation/.test(v6.text), 'no rung waits on the tape');
 });
 
-test('every v6 rung stays inside the eight-word budget', async () => {
-  const { renderPrompt } = await import('../src/prompts.js');
-  // Asserted mechanically rather than by pinning ten strings: the budget is the
-  // rule, and a later edit that overruns it should fail here rather than ship.
-  const rungs = renderPrompt(6).text
-    .split('Scale')[1]
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => /^\d+\./.test(l));
+const rungsOf = (text) =>
+  text.split('Scale')[1].split('\n').map((l) => l.trim()).filter((l) => /^\d+\./.test(l));
+
+test('every rung of the active scale stays inside the eight-word budget', async () => {
+  const { renderPrompt, latestVersion } = await import('../src/prompts.js');
+  // Asserted mechanically against whichever version is live rather than by
+  // pinning ten strings: the budget is the rule, and a later edit that overruns
+  // it should fail here rather than ship.
+  const rungs = rungsOf(renderPrompt(latestVersion()).text);
 
   assert.equal(rungs.length, 10, 'all ten rungs are present');
   assert.deepEqual(rungs.map((l) => parseInt(l, 10)), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
@@ -267,4 +267,31 @@ test('every v6 rung stays inside the eight-word budget', async () => {
     const words = rung.replace(/^\d+\.\s*/, '').split(/\s+/).length;
     assert.ok(words <= 8, `"${rung}" is ${words} words, over the 8-word budget`);
   }
+});
+
+test('v7 tightens the scale and changes nothing else', async () => {
+  const { renderPrompt } = await import('../src/prompts.js');
+  const [v6, v7] = [6, 7].map(renderPrompt);
+
+  assert.equal(v6.hash, 'cb27cb79f8f78ac2', 'v6 is untouched by v7');
+
+  // Everything above Scale — Summary, Sources, the lag guard — is byte-identical.
+  // v7 is a rewording of the ten rungs, not a change of instrument.
+  assert.equal(v6.text.split('Scale')[0], v7.text.split('Scale')[0]);
+  assert.match(v7.text, /rate the event, not the tape/);
+
+  // The author's exact wording. A prompt that quietly rephrases the scale is
+  // measuring something the author did not write.
+  assert.deepEqual(rungsOf(v7.text), [
+    '1. No credible risk; news can wait.',
+    '2. Weak isolated signal; low informational value.',
+    '3. Minor corroborated development; routine monitoring sufficient.',
+    '4. Notable development; consequences still unclear.',
+    '5. Meaningful confirmed change; worth checking.',
+    '6. Significant event or material stress underway.',
+    '7. Major shock or sharp repricing underway.',
+    '8. Severe shock or broad market stress.',
+    '9. Systemic risk flashing; check immediately.',
+    '10. Extreme global threat; continuous attention warranted.',
+  ]);
 });

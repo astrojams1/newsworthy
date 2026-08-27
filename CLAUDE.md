@@ -158,6 +158,12 @@ itself, with one sentence in Sources saying market silence is not evidence
 against an event. Every rung is eight words or fewer, and a test enforces that
 mechanically rather than pinning the ten strings.
 
+**v7 is v6 with the ten rungs tightened.** Everything above Scale is
+byte-identical; only the wording of the rungs changed, so the two are the same
+instrument and their readings are comparable. The rung text is the author's
+verbatim — a test pins all ten strings, because a prompt that quietly rephrases
+the scale measures something nobody wrote.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.
