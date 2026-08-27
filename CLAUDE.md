@@ -72,12 +72,14 @@ caller that can name a version can name the wrong one. Two readings arrived
 stamped v3 in the hours after v4 went live, each carrying an explicit
 `prompt_version` — a submission that omitted the field would have defaulted to
 the current version, so the caller was sending it — while `/api/instructions` had
-been serving v4 the whole time. A caller reading fresh instructions still
-reported a version that did not match what it had just been served, which is what
-you would expect when the page reaches it through a summarizer. What a caller
-believes about the prompt version is not evidence about the prompt it ran. The
-prompt a caller fetches and the version stamped on its reading now come from the
-same place.
+been serving v4 the whole time. A caller reading fresh instructions on Opus 5,
+with no stored copy to be pinned to, still reported a version that did not match
+what it had just been served. Why is not established — a remembered value from
+an earlier run is the likeliest candidate, but nothing here proves it. The point
+does not depend on the cause: what a caller reports about the prompt version is
+not evidence about the prompt it ran, however capable the caller. The prompt a
+caller fetches and the version stamped on its reading now come from the same
+place.
 
 Note the two effects compound: external readings suppress the cron by being
 recent, so a prompt change reaches nothing until a caller picks it up. No cron
