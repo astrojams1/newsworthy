@@ -143,6 +143,13 @@ production after merge.
 skipped its install script, so the binding was missing and the import threw at
 cold start. Prefer pure-JS or HTTP-based drivers.
 
+**v5 changed what is measured, not just the wording.** v1 through v4 asked
+whether the news was worth the reader's attention across money, career,
+technology, safety, travel and daily life. Every rung of v5 is market risk, so a
+development with no market confirmation has no route above roughly 4. Scores sit
+lower by design. Comparing a v5 reading against a v4 one is comparing two
+instruments.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.
