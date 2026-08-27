@@ -187,7 +187,7 @@
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th class="when">When</th><th>Status</th><th class="num">Score</th><th>Why</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">ms</th></tr></thead>
+    <thead><tr><th class="when">When</th><th>Status</th><th class="num">Score</th><th>Why</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
@@ -412,6 +412,21 @@
 
   const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const fmtInt = (n) => (n == null ? '' : Number(n).toLocaleString());
+  /**
+   * The runs table is scanned, not audited. Exact figures made every numeric
+   * column wide enough to push the explanation into a narrow ribbon —
+   * "91,373 / 1,109" and "45,904" carry digits nobody reads across 25 rows.
+   * The tiles keep full precision; this is for the log.
+   */
+  const fmtCompact = (n) => {
+    if (n < 1000) return String(Math.round(n));
+    // A decimal earns its place only where it changes the magnitude you read:
+    // 1.1K against 2.8K is worth distinguishing, 91.4K against 91K is not.
+    const k = n / 1000;
+    return `${k < 10 ? k.toFixed(1) : Math.round(k)}K`;
+  };
+  /** Latency in seconds. 45,904 is unreadable; 46s is the same fact. */
+  const fmtDuration = (ms) => (ms < 1000 ? `${Math.round(ms)}ms` : `${Math.round(ms / 1000)}s`);
   const shortModel = (m) => String(m).replace(/^claude-/, '');
   /**
    * External readings record no model — this app did not run one and could not
@@ -422,7 +437,9 @@
     const m = r.served_by ?? r.model;
     return m == null ? none : escapeHtml(shortModel(m));
   };
-  const usd = (n) => (n == null ? '–' : n < 1 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`);
+  // Two decimals throughout. The fourth decimal of a run's cost is a hundredth
+  // of a cent and was only ever noise in a column being compared row to row.
+  const usd = (n) => (n == null ? '–' : `$${n.toFixed(2)}`);
   const usdRounded = (n) => (n == null ? '–' : `$${Math.round(n).toLocaleString()}`);
   /**
    * Server-decided, one of three: cron, manual, external agent. Callers used to
@@ -468,9 +485,9 @@
         <td class="why">${r.status === 'ok' ? escapeHtml(r.explanation ?? '') : none}</td>
         <td>${sourceCell(r)}</td>
         <td class="model">${modelCell(r)}</td>
-        <td class="num">${r.input_tokens != null ? `${fmtInt(r.input_tokens)} / ${fmtInt(r.output_tokens)}` : none}</td>
+        <td class="num">${r.input_tokens != null ? `${fmtCompact(r.input_tokens)} / ${fmtCompact(r.output_tokens)}` : none}</td>
         <td class="num">${r.cost_usd != null ? usd(r.cost_usd) : none}</td>
-        <td class="num">${r.latency_ms != null ? fmtInt(r.latency_ms) : none}</td>
+        <td class="num">${r.latency_ms != null ? fmtDuration(r.latency_ms) : none}</td>
       </tr>`).join('') || '<tr><td colspan="9" class="empty">Nothing logged yet.</td></tr>';
   }
 
