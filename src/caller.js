@@ -68,8 +68,7 @@ content-type: application/json
 
 {
   "score": <integer 1-10>,
-  "explanation": "<one sentence, at most 25 words>",
-  "prompt_version": ${prompt.version}
+  "explanation": "<one sentence, at most 25 words>"
 }
 \`\`\`
 
@@ -80,15 +79,17 @@ reading; it is second only because a token in a URL is more exposed.
 \`\`\`
 GET ${baseUrl}/api/readings?token=<TOKEN>&score=<1-10>
     &explanation=<one sentence, URL-encoded>
-    &prompt_version=${prompt.version}
 \`\`\`
 
-Those are the whole submission. \`score\` and \`explanation\` are required;
-\`prompt_version\` defaults to the current one. No model name, caller name, token
-count or search count is asked for or recorded: this app did not run the model
-and cannot verify any of it, so it stores none of it rather than storing a
-guess. A caller that sends those fields anyway gets them named back in a
-\`note\` on the response, and they go nowhere.
+Those two fields are the whole submission. The prompt version is stamped by the
+server from whatever is current, and is not a field a caller sets: a caller that
+can name a version can pin one, and one did — every submission kept arriving as
+v3 for hours after v4 went live, so the new prompt was simultaneously live and
+inert. No model name, caller name, token count or search count is asked for or
+recorded either: this app did not run the model and cannot verify any of it, so
+it stores none of it rather than storing a guess. A caller that sends any of
+those fields gets them named back in a \`note\` on the response, and they go
+nowhere.
 
 \`201\` means stored. \`422\` means rejected, and the message names the field at
 fault; the fix is to correct that field rather than to retry unchanged.
@@ -96,6 +97,7 @@ fault; the fix is to correct that field rather than to retry unchanged.
 ## 3. The prompt
 
 Reproduced verbatim below, version ${prompt.version}, SHA-256 \`${prompt.hash}\`.
+Those two identify what this response served; they are not values to send back.
 Stored readings record that hash, so a rating made from a paraphrase is
 attributed to a prompt the caller never read.
 

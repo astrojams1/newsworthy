@@ -85,14 +85,16 @@ test('a caller that only got a summary is told how to get the prompt intact', ()
   assert.ok(!/received a\s+summarized/.test(text), 'not phrased as a condition the caller must detect');
 });
 
-test('the submission is three fields, and says so', () => {
-  // Model, caller name and token counts were all self-reported and all stored
-  // as fact. One caller estimated 85,000 input tokens with no counter; priced
-  // at Opus rates that was $0.48 of invented spend in a real total.
+test('the submission is two fields, and says so', () => {
+  // Model, caller name and token counts were self-reported and unverifiable.
+  // prompt_version was worse: a caller that can name a version can pin one, and
+  // one did — submissions kept arriving as v3 for hours after v4 went live.
   const text = build();
-  assert.match(text, /Those are the whole submission/);
-  assert.match(text, /cannot verify any of it/);
-  for (const gone of ['input_tokens', 'output_tokens', 'web_search_requests', '"measured"', '"caller"']) {
+  assert.match(text, /Those two fields are the whole submission/);
+  assert.match(text, /stamped by the\s+server/);
+  assert.match(text, /not a field a caller\s+sets/);
+  for (const gone of ['"prompt_version"', 'input_tokens', 'output_tokens',
+    'web_search_requests', '"measured"', '"caller"']) {
     assert.ok(!text.includes(gone), `${gone} is no longer asked for`);
   }
 });

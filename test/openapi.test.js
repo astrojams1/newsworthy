@@ -52,6 +52,6 @@ test('the schema asks for nothing the app cannot verify', () => {
   // A Custom GPT builds its request from these properties, so leaving model or
   // usage in the schema would keep ChatGPT sending figures nobody measured.
   const body = doc().paths['/api/readings'].post.requestBody.content['application/json'].schema;
-  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'prompt_version', 'score']);
+  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'score']);
   assert.deepEqual(body.required, ['score', 'explanation']);
 });

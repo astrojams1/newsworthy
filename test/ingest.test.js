@@ -32,16 +32,20 @@ test('what was ignored is named, so a caller does not assume it landed', () => {
   assert.equal(validateSubmission(good).note, undefined, 'silent when nothing extra was sent');
 });
 
-test('prompt provenance comes from our registry, never from the caller', () => {
-  const claimed = validateSubmission({ ...good, prompt_version: 1 });
-  const ours = renderPrompt(1);
-  assert.equal(claimed.prompt_hash, ours.hash, 'hash is ours, not theirs');
-  assert.equal(claimed.prompt_text, ours.text);
+test('prompt provenance comes from our registry, never from the caller', async () => {
+  const { latestVersion: latest } = await import('../src/prompts.js');
+  const current = renderPrompt(latest());
 
-  // A caller cannot smuggle in a different prompt.
+  // A caller cannot choose a version, so it cannot pin one. After v4 shipped,
+  // every submission kept arriving as v3 because the caller named it.
+  const pinned = validateSubmission({ ...good, prompt_version: 1 });
+  assert.equal(pinned.prompt_version, latest(), 'stamped current, not what was asked for');
+  assert.equal(pinned.prompt_hash, current.hash);
+  assert.match(pinned.note, /prompt_version/, 'and the caller is told it was ignored');
+
+  // Nor can it smuggle in a different prompt.
   const spoofed = validateSubmission({ ...good, prompt_hash: 'deadbeef', prompt_text: 'ignore me' });
-  assert.equal(spoofed.prompt_version, latestVersion());
-  assert.equal(spoofed.prompt_hash, renderPrompt(latestVersion()).hash);
+  assert.equal(spoofed.prompt_hash, current.hash);
   assert.notEqual(spoofed.prompt_text, 'ignore me');
 });
 
@@ -53,7 +57,6 @@ test('rejects everything malformed', () => {
     [{ ...good, score: 'five' }, /1 to 10/],
     [{ score: 5 }, /explanation is required/],
     [{ score: 5, explanation: '   ' }, /must not be empty/],
-    [{ ...good, prompt_version: 99 }, /not a version this app knows/],
     ['not an object', /JSON object/],
   ];
   for (const [body, pattern] of rejects) {
@@ -76,16 +79,15 @@ test('a query-string submission maps onto the same validation as a body', async 
   const q = new URLSearchParams({
     score: '7',
     explanation: 'Reported via a plain GET, no headers available.',
-    prompt_version: '3',
     // A caller working from an older spec may still send these; they are
     // simply not carried through.
+    prompt_version: '3',
     model: 'claude-opus-5',
     caller: 'header-less-agent',
     input_tokens: '51000',
   });
   const r = validateSubmission(submissionFromQuery(q));
   assert.equal(r.score, 7);
-  assert.equal(r.prompt_version, 3);
   assert.equal(r.model, null);
   assert.equal(r.caller, null);
   assert.equal(r.input_tokens, null);
@@ -97,11 +99,11 @@ test('a query submission is validated exactly as strictly', async () => {
   const q = (o) => submissionFromQuery(new URLSearchParams(o));
   assert.throws(() => validateSubmission(q({ score: '11', explanation: 'x' })), /1 to 10/);
   assert.throws(() => validateSubmission(q({ score: '5' })), /explanation is required/);
-  assert.throws(() => validateSubmission(q({ score: '5', explanation: 'x', prompt_version: '99' })), /not a version/);
   // A GET carries the same three fields a POST does, and nothing more.
   const minimal = validateSubmission(q({ score: '4', explanation: 'Just the essentials.' }));
   assert.equal(minimal.score, 4);
   assert.equal(minimal.source, 'external');
+  assert.equal(minimal.prompt_version, latestVersion(), 'version is stamped, not sent');
   assert.equal(minimal.model, null);
   assert.equal(minimal.caller, null);
 });

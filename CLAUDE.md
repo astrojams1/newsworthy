@@ -59,13 +59,20 @@ as orders to itself — two callers got back "I cannot make HTTP requests" inste
 of the content. Third-person description gives it nothing to refuse, and rules
 stated as facts about the system survive the paraphrase that commands do not.
 
-**A submission is three fields: score, explanation, prompt version.** Model,
+**A submission is two fields: score and explanation.** Model,
 caller name and token counts were all asked for once and all self-reported, so
 all of it was stored as fact without being checkable. An agent inside a harness
 has no token counter and will estimate if asked — a guessed 85k input tokens is
 $0.48 of invented spend at Opus rates. Model, usage and cost are recorded only
 for runs this app makes itself. `source` is set server-side and is `cron`,
 `manual` or `external`; a caller cannot name itself.
+
+The prompt version is stamped server-side too, and for a sharper reason: a
+caller that can name a version can pin one. After v4 shipped, every external
+submission kept arriving as v3 — the caller was sending it explicitly — so the
+new prompt was live and inert at once, and external callers had suppressed the
+cron for a day, meaning nothing ran v4 at all. The prompt a caller fetches and
+the version stamped on its reading now come from the same place.
 
 **`shape()` in `src/db.js` converts only the columns a query selected.** Emitting
 a key for an unselected column yields a null that reads as "nothing recorded"
