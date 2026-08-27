@@ -120,6 +120,11 @@ and that text, so a reading stays traceable.
 
 ## Cost
 
+A search is the marginal cost, not the model. Measured across this deployment's
+own runs, going from 7 to 8 searches added ~19k input tokens and ~$0.12 — the
+$0.01 search fee is a twelfth of that, the rest is results landing in the context
+window. Adding a source to the prompt is a cost decision, not just a wording one.
+
 Roughly **$0.26 per run** on Opus 5: ~40k input tokens (search results land in
 the context window) plus web search at $10/1,000 searches. That is ~$767/month
 at 15-minute cadence, so **the default is every 4 hours (~$48/month)**. Model
