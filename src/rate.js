@@ -172,11 +172,17 @@ export async function runRating({
   promptVersion = Number(process.env.NEWSWORTHY_PROMPT_VERSION) || latestVersion(),
   mock = process.env.NEWSWORTHY_MOCK === '1',
   slot = null,
+  // Carried through to the row. Without it every run this app made was stored
+  // as 'cron', including a click on "Rate now" — the schema defaults the column
+  // and nothing was overriding it, so the admin table reported a scheduled run
+  // where a person had pressed a button.
+  source = 'cron',
 } = {}) {
   model ??= (await effectiveConfig()).model;
   const prompt = renderPrompt(promptVersion);
   const base = {
     slot,
+    source,
     prompt_version: prompt.version,
     prompt_hash: prompt.hash,
     prompt_text: prompt.text,
