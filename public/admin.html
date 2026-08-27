@@ -129,6 +129,10 @@
   td.model { white-space: nowrap; }
   td.when { white-space: nowrap; }
   td .none { color: var(--ink-faint); }
+  /* Most rows are ordinary readings and leave this empty, so the column costs
+     nothing until something actually went wrong. */
+  td.status { white-space: normal; }
+  td.status .reason { display: block; margin-top: 0.2rem; color: var(--ink-faint); font-size: 0.75rem; }
   td .muted { color: var(--ink-faint); }
   .scroll { overflow-x: auto; }
   /* Narrow screens: title on its own line so the controls stay on one row. */
@@ -195,7 +199,7 @@
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th class="when">When</th><th>Score</th><th>Why</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">ms</th></tr></thead>
+    <thead><tr><th class="when">When</th><th>Status</th><th class="num">Score</th><th>Why</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">ms</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
@@ -421,6 +425,15 @@
   const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const fmtInt = (n) => (n == null ? '' : Number(n).toLocaleString());
   const shortModel = (m) => String(m).replace(/^claude-/, '');
+  /**
+   * External readings record no model — this app did not run one and could not
+   * verify what the caller claimed. That is an absent value like any other, but
+   * String(null) rendered it as the word "null" in the middle of the table.
+   */
+  const modelCell = (r) => {
+    const m = r.served_by ?? r.model;
+    return m == null ? none : escapeHtml(shortModel(m));
+  };
   const usd = (n) => (n == null ? '–' : n < 1 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`);
   const usdRounded = (n) => (n == null ? '–' : `$${Math.round(n).toLocaleString()}`);
   /**
@@ -438,32 +451,37 @@
   /** An absent figure reads as a rendering gap when the cell is simply blank. */
   const none = '<span class="none">–</span>';
 
+  /**
+   * Status and its reason live together in one column, because they are one
+   * fact about the run. They used to be spread across Score and Why: a voided
+   * row put "voided" where the number goes and "voided by admin" where the
+   * sentence goes, so two data columns were describing the row's state instead
+   * of holding their own values. A run that failed has no score and no
+   * explanation, and now says so with the same dash every other absent value
+   * uses.
+   */
   function statusCell(r) {
-    if (r.status === 'ok') return `${r.score}/10`;
-    return isVoided(r)
+    if (r.status === 'ok') return ''; // an ordinary reading needs no label
+    const reason = (r.error ?? '').replace(/^voided:\s*/, '');
+    const pill = isVoided(r)
       ? '<span class="pill void">voided</span>'
       : '<span class="pill err">failed</span>';
-  }
-
-  function whyCell(r) {
-    if (r.status === 'ok') return escapeHtml(r.explanation ?? '');
-    // The pill already says "voided"; repeating the prefix wasted the column.
-    const text = r.error ?? '';
-    return escapeHtml(isVoided(r) ? text.replace(/^voided:\s*/, '') : text);
+    return reason ? `${pill}<span class="reason">${escapeHtml(reason)}</span>` : pill;
   }
 
   function renderRuns(rows) {
     $('runs').querySelector('tbody').innerHTML = rows.map((r) => `
       <tr>
         <td class="when">${fmtTime.format(new Date(r.created_at))}</td>
-        <td>${statusCell(r)}</td>
-        <td class="why">${whyCell(r)}</td>
+        <td class="status">${statusCell(r)}</td>
+        <td class="num">${r.status === 'ok' ? `${r.score}/10` : none}</td>
+        <td class="why">${r.status === 'ok' ? escapeHtml(r.explanation ?? '') : none}</td>
         <td>${sourceCell(r)}</td>
-        <td class="model">${escapeHtml(shortModel(r.served_by ?? r.model))}</td>
+        <td class="model">${modelCell(r)}</td>
         <td class="num">${r.input_tokens != null ? `${fmtInt(r.input_tokens)} / ${fmtInt(r.output_tokens)}` : none}</td>
         <td class="num">${r.cost_usd != null ? usd(r.cost_usd) : none}</td>
         <td class="num">${r.latency_ms != null ? fmtInt(r.latency_ms) : none}</td>
-      </tr>`).join('') || '<tr><td colspan="8" class="empty">Nothing logged yet.</td></tr>';
+      </tr>`).join('') || '<tr><td colspan="9" class="empty">Nothing logged yet.</td></tr>';
   }
 
   async function renderPrompts() {
