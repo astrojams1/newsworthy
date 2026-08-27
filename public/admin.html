@@ -131,6 +131,9 @@
    * single dotted line. Absent values drop out of that line entirely rather
    * than printing five dashes for a caller reading that records no usage.
    */
+  /* 'external agent' wrapped to two lines once Prompt took a share of the
+     width; it is a fixed vocabulary of three short values, so it never needs to. */
+  #runs td.source, #runs td.prompt { white-space: nowrap; }
   @media (max-width: 720px) {
     #runs, #runs tbody, #runs tr, #runs td { display: block; }
     #runs thead { display: none; }
@@ -145,7 +148,8 @@
     #runs td.notes { margin: 0.375rem 0 0; font-size: 0.8125rem; }
     #runs td.explanation.absent { display: none; } /* the note already says why */
 
-    #runs td.source, #runs td.model, #runs td.tokens, #runs td.cost, #runs td.time {
+    #runs td.source, #runs td.prompt, #runs td.model, #runs td.tokens,
+    #runs td.cost, #runs td.time {
       display: inline; font-size: 0.75rem; color: var(--ink-faint);
     }
     /* Source opens the strip on its own line. Inline, it joined the timestamp
@@ -153,7 +157,10 @@
        box does nothing. */
     #runs td.source { display: block; margin-top: 0.375rem; }
     /* A leading separator on everything but the first field means a hidden
-       field takes its separator with it, and no chain of dots is left behind. */
+       field takes its separator with it, and no chain of dots is left behind.
+       Prompt is the first: prompt_version is NOT NULL, so every row has one,
+       and it opens the strip. When model opened it the line began with a stray
+       dot, because source sits on its own line above rather than beside it. */
     #runs td.model::before, #runs td.tokens::before,
     #runs td.cost::before, #runs td.time::before { content: ' · '; }
     #runs td.absent:not(.explanation) { display: none; }
@@ -223,7 +230,7 @@
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th class="when">When</th><th class="num">Score</th><th>Explanation</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th><th>Notes</th></tr></thead>
+    <thead><tr><th class="when">When</th><th class="num">Score</th><th>Explanation</th><th>Source</th><th>Prompt</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th><th>Notes</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
@@ -527,6 +534,7 @@
         ${cell('score num', ok ? `${r.score}/10` : null)}
         ${cell('explanation', ok ? escapeHtml(r.explanation ?? '') : null)}
         ${cell('source', sourceCell(r))}
+        ${cell('prompt', r.prompt_version != null ? `v${escapeHtml(String(r.prompt_version))}` : null)}
         ${cell('model', modelCell(r))}
         ${cell('tokens num', r.input_tokens != null
           ? `${fmtCompact(r.input_tokens)} / ${fmtCompact(r.output_tokens)}` : null)}
@@ -534,7 +542,7 @@
         ${cell('time num', r.latency_ms != null ? fmtDuration(r.latency_ms) : null)}
         ${cell('notes', noteCell(r))}
       </tr>`;
-    }).join('') || '<tr><td colspan="9" class="empty">Nothing logged yet.</td></tr>';
+    }).join('') || '<tr><td colspan="10" class="empty">Nothing logged yet.</td></tr>';
   }
 
   async function renderPrompts() {
