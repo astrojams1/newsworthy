@@ -632,8 +632,10 @@
       if (!res.ok) {
         status.textContent = `Failed: ${body.error ?? res.statusText}`;
       } else if (body.status === 'ok') {
-        const cost = body.cost_usd != null ? ` · ${usd(body.cost_usd)}` : '';
-        status.textContent = `${body.score}/10${cost}`;
+        // Nothing to say. load() below refreshes the tiles and the runs table,
+        // which already show the score and what it cost; repeating them beside
+        // the button said the same two numbers a third time.
+        status.textContent = '';
       } else {
         status.textContent = 'Run failed — see Recent runs';
       }

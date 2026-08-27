@@ -67,3 +67,20 @@ test('force overrides the gate, so the admin button always runs', async () => {
   assert.ok(!result.skipped);
   assert.equal(result.status, 'ok');
 });
+
+test('a manual run is stored as manual, not cron', async () => {
+  // "Rate now" was landing in the runs table labelled cron. tick() took a
+  // reason but only logged it, so nothing overrode the column default and every
+  // run this app made claimed to be scheduled.
+  const { tick } = await import('../src/scheduler.js');
+  const { latestRating } = await import('../src/db.js');
+  const { sql } = await import('../src/sql.js');
+
+  await sql`DELETE FROM ratings`;
+  await tick('manual', { force: true });
+  assert.equal((await latestRating()).source, 'manual', 'a button press is manual');
+
+  await sql`DELETE FROM ratings`;
+  await tick('vercel-cron', { force: true });
+  assert.equal((await latestRating()).source, 'cron', 'only the scheduler is cron');
+});

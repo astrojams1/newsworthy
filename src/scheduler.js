@@ -12,6 +12,11 @@ let running = false;
  * One rating. Safe to call from the cron endpoint and the local scheduler
  * alike: the slot makes a duplicate delivery a no-op rather than a second row.
  */
+/**
+ * `reason` names the trigger and now reaches the stored row, not just the log.
+ * Vercel's scheduler is the only thing that produces a 'cron' reading; anything
+ * else that reaches /api/cron is a person pressing "Rate now".
+ */
 export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
   const { intervalMinutes } = await effectiveConfig();
   slot ??= slotFor(new Date(), intervalMinutes);
@@ -37,7 +42,7 @@ export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
   if (running) return null;
   running = true;
   try {
-    const row = await runRating({ slot: force ? null : slot });
+    const row = await runRating({ slot: force ? null : slot, source: reason === 'vercel-cron' ? 'cron' : 'manual' });
     const when = new Date().toISOString();
     if (row.deduped) {
       console.log(`[${when}] ${reason}: slot ${slot} already rated ${row.score}/10 — skipped`);

@@ -65,7 +65,10 @@ all of it was stored as fact without being checkable. An agent inside a harness
 has no token counter and will estimate if asked — a guessed 85k input tokens is
 $0.48 of invented spend at Opus rates. Model, usage and cost are recorded only
 for runs this app makes itself. `source` is set server-side and is `cron`,
-`manual` or `external`; a caller cannot name itself.
+`manual` or `external`; a caller cannot name itself. `runRating` takes that
+source as an argument — the column defaults to `cron`, so a run that does not
+pass one is silently recorded as scheduled, which is how every "Rate now" click
+came to be labelled a cron run.
 
 The prompt version is stamped server-side too, and for a sharper reason: a
 caller that can name a version can name the wrong one. Two readings arrived
