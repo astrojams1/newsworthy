@@ -119,7 +119,6 @@
   .pill { display: inline-block; padding: 0.05rem 0.4rem; border-radius: 999px; font-size: 0.6875rem;
           border: 1px solid var(--rule); color: var(--ink-muted); white-space: nowrap; }
   .pill.err { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
-  .pill.ext { color: var(--series); border-color: color-mix(in srgb, var(--series) 40%, transparent); }
   /* A voided row is not a failed run — it is one that should never have
      counted, and stats exclude it for that reason. Labelling it "failed" said
      the model had errored when nothing had. */
@@ -437,15 +436,17 @@
   const usd = (n) => (n == null ? '–' : n < 1 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`);
   const usdRounded = (n) => (n == null ? '–' : `$${Math.round(n).toLocaleString()}`);
   /**
-   * Two possibilities, both decided by the server: this app ran the model, or
-   * an agent elsewhere did. Callers used to name themselves, so the column read
-   * 'unnamed-agent' one run and 'cowork-cloud-scheduled' the next for what was
-   * the same kind of event.
+   * Server-decided, one of three: cron, manual, external agent. Callers used to
+   * name themselves, so the column read 'unnamed-agent' one run and
+   * 'cowork-cloud-scheduled' the next for the same kind of event.
+   *
+   * All three render alike. External carried a blue pill while the other two
+   * were plain text, which made one ordinary value look like a status — and on
+   * this page a pill means something went wrong (failed, voided). Source is an
+   * attribute every row has, so it gets no emphasis.
    */
   const sourceCell = (r) =>
-    r.source === 'external'
-      ? '<span class="pill ext">external agent</span>'
-      : `<span class="muted">${escapeHtml(r.source ?? 'cron')}</span>`;
+    `<span class="muted">${r.source === 'external' ? 'external agent' : escapeHtml(r.source ?? 'cron')}</span>`;
 
   const isVoided = (r) => r.status !== 'ok' && /^voided:/.test(r.error ?? '');
   /** An absent figure reads as a rendering gap when the cell is simply blank. */
