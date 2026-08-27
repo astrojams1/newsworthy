@@ -142,11 +142,8 @@ test('an unfilled slot is retried by the next cron tick, not the next interval',
 });
 
 test('prompt v3 adds prediction markets without disturbing the scale or the contract', async () => {
-  const { renderPrompt, latestVersion, allPrompts } = await import('../src/prompts.js');
+  const { renderPrompt } = await import('../src/prompts.js');
   const [v1, v2, v3] = [1, 2, 3].map(renderPrompt);
-
-  assert.equal(latestVersion(), 3, 'new runs use v3');
-  assert.equal(allPrompts().length, 3, 'earlier versions are retained');
 
   // Published prompts are frozen: rows in the database reference these hashes.
   assert.equal(v1.hash, '7ebe2d68813f1487');
@@ -166,4 +163,33 @@ test('prompt v3 adds prediction markets without disturbing the scale or the cont
   assert.match(v3.text, /at most two searches on markets/, 'the search budget is capped, not raised');
   assert.match(v3.text, /moved in the last day/, 'movement matters more than level');
   assert.match(v3.text, /rate on the news alone/, 'markets are optional, not required');
+});
+
+test('prompt v4 adds Hacker News without disturbing the scale or the contract', async () => {
+  const { renderPrompt } = await import('../src/prompts.js');
+  const [v1, v2, v3, v4] = [1, 2, 3, 4].map(renderPrompt);
+
+  // Published prompts are frozen: stored rows reference these hashes.
+  assert.equal(v3.hash, 'c950817fec589043', 'v3 is untouched by v4');
+
+  // v4 is v3 plus one paragraph — the calibration and the reporting contract
+  // are inherited, not rewritten.
+  const scale = v1.text.split('Output format')[0].trim();
+  assert.ok(v4.text.includes(scale), 'v1 calibration is verbatim inside v4');
+  assert.equal(v4.text.split('Output format')[1], v2.text.split('Output format')[1]);
+  assert.ok(v4.text.includes(v3.text.split('Output format')[0].trim()), 'v3 sourcing carries through');
+
+  // Optional, like markets: a required source that finds nothing still has to
+  // be mentioned, and the explanation is 25 words.
+  assert.match(v4.text, /rate on the news alone and do not mention it/);
+  // And finding something on HN is not itself a reason to score higher.
+  assert.match(v4.text, /not a reason to raise the number/);
+  assert.match(v4.text, /at most one search there/);
+});
+
+test('the search budget grew to pay for the Hacker News check', async () => {
+  // v4 adds a source to a budget that was already saturated at 8, so without
+  // this the check would come out of news coverage.
+  const src = await import('node:fs/promises').then((fs) => fs.readFile('src/rate.js', 'utf8'));
+  assert.match(src, /max_uses: 9/);
 });

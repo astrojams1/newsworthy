@@ -116,7 +116,12 @@ async function callClaude({ model, prompt }) {
     // Adaptive thinking is the default on Opus 5; keep the effort modest — this
     // is a search-and-judge task, not a reasoning marathon.
     output_config: { effort: 'medium' },
-    tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 8 }],
+    // 9, not 8: v4 adds a Hacker News check and the budget was already
+    // saturated, so without this it would come out of news coverage. Measured
+    // on this deployment's own runs, one more search is ~19k input tokens and
+    // ~$0.12 — the search fee is a cent of that, the rest is results landing in
+    // the context window.
+    tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 9 }],
     messages: [{ role: 'user', content: prompt }],
   };
 

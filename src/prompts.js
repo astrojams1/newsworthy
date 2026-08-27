@@ -63,6 +63,39 @@ const V3_INSTRUCTIONS = `${V1_INSTRUCTIONS}
 
 ${V3_SOURCES}`;
 
+// v4 adds Hacker News, and adds it the same way v3 added markets: as a ranked
+// crowd signal rather than another outlet to read. Points and comment count
+// measure salience within a domain, which is the same instrument as a market
+// price, so the existing "movement over level" logic carries over.
+//
+// Scoped to technology because that is the only domain on v1's scale where wire
+// services reliably miss things — a CVE, an outage, a licensing change — and
+// because an unscoped HN check drifts the score toward whatever the front page
+// is arguing about that day.
+//
+// Optional, like markets, and for the same reason: a required source that finds
+// nothing still has to be mentioned, and the explanation is 25 words. max_uses
+// goes 8 -> 9 to pay for it; each search costs roughly $0.12 all-in, almost all
+// of it search results entering the context window rather than the $0.01 fee.
+const V4_SOURCES = `${V3_SOURCES}
+
+Also check the Hacker News front page for technology developments the wires
+under-report — a widely exploited vulnerability, a major outage, a significant
+model or licensing change. Read its ranking the way you read a market: position
+and comment volume measure how much the technical community thinks something
+matters, and a story climbing fast says more than one sitting high all week.
+
+Spend at most one search there. Most of that front page is product launches,
+company gossip and technical curiosities that score 1-2 on the scale above, and
+finding something there is not a reason to raise the number. It counts only when
+it reaches the bar the scale already sets: a concrete effect on money, career,
+technology, safety, travel or daily life. If it shows nothing that clears that
+bar, rate on the news alone and do not mention it.`;
+
+const V4_INSTRUCTIONS = `${V1_INSTRUCTIONS}
+
+${V4_SOURCES}`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -83,6 +116,13 @@ const REGISTRY = {
     label: 'prediction-markets-v3',
     added: '2026-08-24',
     instructions: V3_INSTRUCTIONS,
+    outputContract: V2_OUTPUT_CONTRACT,
+  },
+  4: {
+    version: 4,
+    label: 'hacker-news-v4',
+    added: '2026-08-26',
+    instructions: V4_INSTRUCTIONS,
     outputContract: V2_OUTPUT_CONTRACT,
   },
 };
