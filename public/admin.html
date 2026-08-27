@@ -105,14 +105,14 @@
   }
   .tooltip b { font-size: 0.9375rem; font-weight: 600; }
   .tooltip .t-time { color: var(--ink-muted); display: block; }
-  .tooltip .t-why { color: var(--ink); display: block; margin-top: 0.25rem; }
+  .tooltip .t-explanation { color: var(--ink); display: block; margin-top: 0.25rem; }
   .tooltip[hidden] { display: none; }
   #focus[hidden] { display: none; }   /* SVG ignores the bare `hidden` attribute */
 
   table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
   th, td { text-align: left; padding: 0.5rem 0.75rem 0.5rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
   th { font-weight: 600; color: var(--ink-muted); font-size: 0.75rem; }
-  td.why { font-variant-numeric: normal; color: var(--ink-muted); }
+  td.explanation { font-variant-numeric: normal; color: var(--ink-muted); }
   /* Figures line up only when they are right-aligned and unwrapped. */
   td.num, th.num { text-align: right; white-space: nowrap; }
   td.model { white-space: nowrap; }
@@ -187,7 +187,7 @@
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th class="when">When</th><th>Status</th><th class="num">Score</th><th>Why</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th></tr></thead>
+    <thead><tr><th class="when">When</th><th>Status</th><th class="num">Score</th><th>Explanation</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
@@ -395,7 +395,7 @@
       tooltip.hidden = false;
       tooltip.innerHTML =
         `<b>${nearest.score}/10</b> <span class="t-time">${fmtTime.format(nearest.t)}</span>` +
-        `<span class="t-why">${escapeHtml(nearest.explanation ?? '')}</span>`;
+        `<span class="t-explanation">${escapeHtml(nearest.explanation ?? '')}</span>`;
       // Keep the card inside the figure at both ends of the series.
       const left = (nearest.cx / W) * box.width;
       const half = tooltip.offsetWidth / 2 + 4;
@@ -458,7 +458,7 @@
 
   /**
    * Status and its reason live together in one column, because they are one
-   * fact about the run. They used to be spread across Score and Why: a voided
+   * fact about the run. They used to be spread across Score and Explanation: a voided
    * row put "voided" where the number goes and "voided by admin" where the
    * sentence goes, so two data columns were describing the row's state instead
    * of holding their own values. A run that failed has no score and no
@@ -482,7 +482,7 @@
         <td class="when">${fmtTime.format(new Date(r.created_at))}</td>
         <td class="status">${statusCell(r)}</td>
         <td class="num">${r.status === 'ok' ? `${r.score}/10` : none}</td>
-        <td class="why">${r.status === 'ok' ? escapeHtml(r.explanation ?? '') : none}</td>
+        <td class="explanation">${r.status === 'ok' ? escapeHtml(r.explanation ?? '') : none}</td>
         <td>${sourceCell(r)}</td>
         <td class="model">${modelCell(r)}</td>
         <td class="num">${r.input_tokens != null ? `${fmtCompact(r.input_tokens)} / ${fmtCompact(r.output_tokens)}` : none}</td>
