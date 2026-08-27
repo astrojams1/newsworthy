@@ -120,9 +120,45 @@
   td .none { color: var(--ink-faint); }
   /* Most rows are ordinary readings and leave this empty, so the column costs
      nothing until something actually went wrong. */
-  td.status { white-space: normal; }
+  td.notes { white-space: normal; color: var(--ink-muted); }
   td .muted { color: var(--ink-faint); }
   .scroll { overflow-x: auto; }
+
+  /**
+   * A nine-column table on a phone is a horizontal scroll with three words
+   * visible at a time. Below this width each row becomes a card: the timestamp
+   * and score on one line, the explanation beneath, then the small fields as a
+   * single dotted line. Absent values drop out of that line entirely rather
+   * than printing five dashes for a caller reading that records no usage.
+   */
+  @media (max-width: 720px) {
+    #runs, #runs tbody, #runs tr, #runs td { display: block; }
+    #runs thead { display: none; }
+    #runs { font-size: 0.875rem; }
+    #runs tr { border-bottom: 1px solid var(--rule); padding: 0.875rem 0; }
+    #runs td { border: none; padding: 0; text-align: left; }
+    .scroll { overflow-x: visible; }
+
+    #runs td.when { display: inline; font-size: 0.8125rem; color: var(--ink-muted); }
+    #runs td.score { display: inline; float: right; font-weight: 500; }
+    #runs td.explanation { margin: 0.375rem 0 0; color: var(--ink); }
+    #runs td.notes { margin: 0.375rem 0 0; font-size: 0.8125rem; }
+    #runs td.explanation.absent { display: none; } /* the note already says why */
+
+    #runs td.source, #runs td.model, #runs td.tokens, #runs td.cost, #runs td.time {
+      display: inline; font-size: 0.75rem; color: var(--ink-faint);
+    }
+    /* Source opens the strip on its own line. Inline, it joined the timestamp
+       whenever the explanation above it was hidden, and margin-top on an inline
+       box does nothing. */
+    #runs td.source { display: block; margin-top: 0.375rem; }
+    /* A leading separator on everything but the first field means a hidden
+       field takes its separator with it, and no chain of dots is left behind. */
+    #runs td.model::before, #runs td.tokens::before,
+    #runs td.cost::before, #runs td.time::before { content: ' · '; }
+    #runs td.absent:not(.explanation) { display: none; }
+    #runs td.empty { display: block; }
+  }
   /* Narrow screens: title on its own line so the controls stay on one row. */
   @media (max-width: 560px) {
     header h1 { flex: 1 0 100%; }
@@ -187,7 +223,7 @@
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th class="when">When</th><th>Status</th><th class="num">Score</th><th>Explanation</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th></tr></thead>
+    <thead><tr><th class="when">When</th><th class="num">Score</th><th>Explanation</th><th>Source</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th><th>Notes</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
@@ -435,7 +471,7 @@
    */
   const modelCell = (r) => {
     const m = r.served_by ?? r.model;
-    return m == null ? none : escapeHtml(shortModel(m));
+    return m == null ? null : escapeHtml(shortModel(m));
   };
   // Two decimals throughout. The fourth decimal of a run's cost is a hundredth
   // of a cent and was only ever noise in a column being compared row to row.
@@ -457,38 +493,48 @@
   const none = '<span class="none">–</span>';
 
   /**
-   * Status and its reason live together in one column, because they are one
-   * fact about the run. They used to be spread across Score and Explanation: a voided
-   * row put "voided" where the number goes and "voided by admin" where the
-   * sentence goes, so two data columns were describing the row's state instead
-   * of holding their own values. A run that failed has no score and no
-   * explanation, and now says so with the same dash every other absent value
-   * uses.
+   * A note about the run, not a status: most rows have none, and the ones that
+   * do are saying why the reading is absent rather than classifying it. It sits
+   * last for the same reason — an annotation on the exception belongs after the
+   * data, not in front of it.
    */
-  function statusCell(r) {
-    if (r.status === 'ok') return ''; // an ordinary reading needs no label
+  function noteCell(r) {
+    if (r.status === 'ok') return null; // an ordinary reading needs no note
     const state = isVoided(r) ? 'voided' : 'failed';
     const reason = (r.error ?? '').replace(/^voided:\s*/, '').trim();
     // The stored reason for a hand-voided row is "voided by admin", so printing
     // both the state and the reason said "voided" twice. Keep a reason only
     // when it adds something the state does not.
     const adds = reason && !new RegExp(`^${state}\\b`, 'i').test(reason);
-    return `<span class="muted">${escapeHtml(adds ? `${state} — ${reason}` : state)}</span>`;
+    return escapeHtml(adds ? `${state} — ${reason}` : state);
   }
 
+  /**
+   * Absent values carry a class as well as a dash. On a phone the row becomes a
+   * card and the small fields run together as one line, where five dashes for a
+   * caller reading that records no model, tokens or cost is noise — the class
+   * lets that line drop them instead of printing them.
+   */
+  const cell = (cls, value) =>
+    value == null ? `<td class="${cls} absent">${none}</td>` : `<td class="${cls}">${value}</td>`;
+
   function renderRuns(rows) {
-    $('runs').querySelector('tbody').innerHTML = rows.map((r) => `
+    $('runs').querySelector('tbody').innerHTML = rows.map((r) => {
+      const ok = r.status === 'ok';
+      return `
       <tr>
-        <td class="when">${fmtTime.format(new Date(r.created_at))}</td>
-        <td class="status">${statusCell(r)}</td>
-        <td class="num">${r.status === 'ok' ? `${r.score}/10` : none}</td>
-        <td class="explanation">${r.status === 'ok' ? escapeHtml(r.explanation ?? '') : none}</td>
-        <td>${sourceCell(r)}</td>
-        <td class="model">${modelCell(r)}</td>
-        <td class="num">${r.input_tokens != null ? `${fmtCompact(r.input_tokens)} / ${fmtCompact(r.output_tokens)}` : none}</td>
-        <td class="num">${r.cost_usd != null ? usd(r.cost_usd) : none}</td>
-        <td class="num">${r.latency_ms != null ? fmtDuration(r.latency_ms) : none}</td>
-      </tr>`).join('') || '<tr><td colspan="9" class="empty">Nothing logged yet.</td></tr>';
+        ${cell('when', fmtTime.format(new Date(r.created_at)))}
+        ${cell('score num', ok ? `${r.score}/10` : null)}
+        ${cell('explanation', ok ? escapeHtml(r.explanation ?? '') : null)}
+        ${cell('source', sourceCell(r))}
+        ${cell('model', modelCell(r))}
+        ${cell('tokens num', r.input_tokens != null
+          ? `${fmtCompact(r.input_tokens)} / ${fmtCompact(r.output_tokens)}` : null)}
+        ${cell('cost num', r.cost_usd != null ? usd(r.cost_usd) : null)}
+        ${cell('time num', r.latency_ms != null ? fmtDuration(r.latency_ms) : null)}
+        ${cell('notes', noteCell(r))}
+      </tr>`;
+    }).join('') || '<tr><td colspan="9" class="empty">Nothing logged yet.</td></tr>';
   }
 
   async function renderPrompts() {

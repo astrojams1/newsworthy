@@ -88,6 +88,14 @@ Note the two effects compound: external readings suppress the cron by being
 recent, so a prompt change reaches nothing until a caller picks it up. No cron
 run has executed v4.
 
+**The runs table becomes cards below 720px.** Nine columns on a phone is a
+horizontal scroll showing three words at a time. Each row reflows to timestamp
+and score, then the explanation, then the small fields as one dotted line — and
+absent values leave that line entirely rather than printing five dashes, which
+is why every cell carries a class and an `absent` marker. The separator is a
+`::before` on each field but the first, so a hidden field takes its separator
+with it.
+
 **`shape()` in `src/db.js` converts only the columns a query selected.** Emitting
 a key for an unselected column yields a null that reads as "nothing recorded"
 rather than "not asked for"; `history()` selects no usage columns, and that null
