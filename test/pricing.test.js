@@ -227,3 +227,44 @@ test('v5 keeps the two rules that were learned the hard way', async () => {
   assert.match(v5.text, /single JSON object and nothing else/);
   assert.match(v5.text, /at most 25 words/);
 });
+
+test('prompt v6 guards against market lag without spending the word budget', async () => {
+  const { renderPrompt } = await import('../src/prompts.js');
+  const [v5, v6] = [5, 6].map(renderPrompt);
+
+  assert.equal(v5.hash, '6470f557ee94563d', 'v5 is untouched by v6');
+  assert.deepEqual(
+    v6.text.split('\n').filter((l) => /^(Summary|Sources|Scale|Output)$/.test(l)),
+    ['Summary', 'Sources', 'Scale', 'Output'],
+    'the four-section shape survives',
+  );
+
+  // The lag guard lives in Sources, as one sentence. Markets confirm late and
+  // are closed most of the hour, so their silence was reading as evidence
+  // against events that had already happened.
+  const sources = v6.text.split('Sources')[1].split('Scale')[0];
+  assert.match(sources, /shut two thirds of the time/);
+  assert.match(sources, /rate the event, not the tape/);
+
+  // Which is why the rungs say what happened rather than what a market has
+  // confirmed — v5's rung 4 required "market confirmation" to score at all.
+  assert.ok(!/market confirmation/.test(v6.text), 'no rung waits on the tape');
+});
+
+test('every v6 rung stays inside the eight-word budget', async () => {
+  const { renderPrompt } = await import('../src/prompts.js');
+  // Asserted mechanically rather than by pinning ten strings: the budget is the
+  // rule, and a later edit that overruns it should fail here rather than ship.
+  const rungs = renderPrompt(6).text
+    .split('Scale')[1]
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => /^\d+\./.test(l));
+
+  assert.equal(rungs.length, 10, 'all ten rungs are present');
+  assert.deepEqual(rungs.map((l) => parseInt(l, 10)), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  for (const rung of rungs) {
+    const words = rung.replace(/^\d+\.\s*/, '').split(/\s+/).length;
+    assert.ok(words <= 8, `"${rung}" is ${words} words, over the 8-word budget`);
+  }
+});

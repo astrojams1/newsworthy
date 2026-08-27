@@ -131,6 +131,42 @@ Scale
 
 ${V5_SCALE}`;
 
+// v6 guards the lag in v5's scale. Markets price consequence after it becomes
+// legible, and v5 made confirmation the route upward — rung 4 was "noticeable
+// anomaly, but limited market confirmation" — so a developing shock was capped
+// at 4 precisely while being early was worth most. COVID in January 2020 scores
+// 3 on v5; markets did not move until late February. Equities are also shut two
+// thirds of the time, and overnight prediction-market liquidity is thin, so a
+// 3am event has no confirmation for hours.
+//
+// The fix is one line in Sources rather than ten reworded rungs: market silence
+// stops being evidence of absence. The rungs then say what happened rather than
+// what has been confirmed, and stay inside the author's eight-word budget.
+const V6_SCALE = `1. No credible risk signal; news can wait.
+2. Weak isolated signal; low informational value.
+3. Minor corroborated development; routine monitoring suffices.
+4. Notable development; consequence not yet clear.
+5. Meaningful change, confirmed or credibly reported.
+6. Material stress or significant event underway.
+7. Sharp repricing, or major shock breaking now.
+8. Severe multi-asset stress, or grave shock unfolding.
+9. Systemic risk flashing; check news immediately.
+10. Extreme global threat; continuous news warranted.`;
+
+const V6_INSTRUCTIONS = `Summary
+
+Rate how much the current news warrants attention right now, 1-10, on the scale below. Most days sit near the bottom of it.
+
+Sources
+
+Current top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.
+
+Markets confirm late and are shut two thirds of the time. Their silence is not evidence against an event that is hours old or that broke while they were closed: rate the event, not the tape.
+
+Scale
+
+${V6_SCALE}`;
+
 const V5_OUTPUT_CONTRACT = `Output
 
 Reply with a single JSON object and nothing else — no prose, no markdown fences:
@@ -172,6 +208,13 @@ const REGISTRY = {
     label: 'market-risk-v5',
     added: '2026-08-27',
     instructions: V5_INSTRUCTIONS,
+    outputContract: V5_OUTPUT_CONTRACT,
+  },
+  6: {
+    version: 6,
+    label: 'lag-guard-v6',
+    added: '2026-08-27',
+    instructions: V6_INSTRUCTIONS,
     outputContract: V5_OUTPUT_CONTRACT,
   },
 };

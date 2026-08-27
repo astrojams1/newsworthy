@@ -150,6 +150,14 @@ development with no market confirmation has no route above roughly 4. Scores sit
 lower by design. Comparing a v5 reading against a v4 one is comparing two
 instruments.
 
+**v6 rates the event, not the tape.** v5's rungs asked what markets had
+confirmed, and markets confirm late and are closed roughly two thirds of the
+hours in a week — so a shock that broke overnight scored as if it had not
+happened. v6 keeps v5's scale and shifts the rungs to describe the development
+itself, with one sentence in Sources saying market silence is not evidence
+against an event. Every rung is eight words or fewer, and a test enforces that
+mechanically rather than pinning the ten strings.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.
