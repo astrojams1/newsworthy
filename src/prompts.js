@@ -167,6 +167,33 @@ Scale
 
 ${V6_SCALE}`;
 
+const V7_SCALE = `1. No credible risk; news can wait.
+2. Weak isolated signal; low informational value.
+3. Minor corroborated development; routine monitoring sufficient.
+4. Notable development; consequences still unclear.
+5. Meaningful confirmed change; worth checking.
+6. Significant event or material stress underway.
+7. Major shock or sharp repricing underway.
+8. Severe shock or broad market stress.
+9. Systemic risk flashing; check immediately.
+10. Extreme global threat; continuous attention warranted.`;
+
+// Spelled out rather than derived from V6_INSTRUCTIONS: published prompts are
+// frozen, and a derived one would take its hash from a version it does not own.
+const V7_INSTRUCTIONS = `Summary
+
+Rate how much the current news warrants attention right now, 1-10, on the scale below. Most days sit near the bottom of it.
+
+Sources
+
+Current top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.
+
+Markets confirm late and are shut two thirds of the time. Their silence is not evidence against an event that is hours old or that broke while they were closed: rate the event, not the tape.
+
+Scale
+
+${V7_SCALE}`;
+
 const V5_OUTPUT_CONTRACT = `Output
 
 Reply with a single JSON object and nothing else — no prose, no markdown fences:
@@ -215,6 +242,13 @@ const REGISTRY = {
     label: 'lag-guard-v6',
     added: '2026-08-27',
     instructions: V6_INSTRUCTIONS,
+    outputContract: V5_OUTPUT_CONTRACT,
+  },
+  7: {
+    version: 7,
+    label: 'tightened-scale-v7',
+    added: '2026-08-27',
+    instructions: V7_INSTRUCTIONS,
     outputContract: V5_OUTPUT_CONTRACT,
   },
 };
