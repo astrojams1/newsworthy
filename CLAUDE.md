@@ -68,11 +68,20 @@ for runs this app makes itself. `source` is set server-side and is `cron`,
 `manual` or `external`; a caller cannot name itself.
 
 The prompt version is stamped server-side too, and for a sharper reason: a
-caller that can name a version can pin one. After v4 shipped, every external
-submission kept arriving as v3 — the caller was sending it explicitly — so the
-new prompt was live and inert at once, and external callers had suppressed the
-cron for a day, meaning nothing ran v4 at all. The prompt a caller fetches and
-the version stamped on its reading now come from the same place.
+caller that can name a version can name the wrong one. Two readings arrived
+stamped v3 in the hours after v4 went live, each carrying an explicit
+`prompt_version` — a submission that omitted the field would have defaulted to
+the current version, so the caller was sending it — while `/api/instructions` had
+been serving v4 the whole time. A caller reading fresh instructions still
+reported a version that did not match what it had just been served, which is what
+you would expect when the page reaches it through a summarizer. What a caller
+believes about the prompt version is not evidence about the prompt it ran. The
+prompt a caller fetches and the version stamped on its reading now come from the
+same place.
+
+Note the two effects compound: external readings suppress the cron by being
+recent, so a prompt change reaches nothing until a caller picks it up. No cron
+run has executed v4.
 
 **`shape()` in `src/db.js` converts only the columns a query selected.** Emitting
 a key for an unselected column yields a null that reads as "nothing recorded"
