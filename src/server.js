@@ -32,13 +32,25 @@ const MIME = {
   '.ico': 'image/x-icon',
 };
 
-function json(res, status, body) {
+function json(res, status, body, headers = {}) {
   res.writeHead(status, {
     'content-type': 'application/json; charset=utf-8',
     'cache-control': 'no-store',
+    ...headers,
   });
   res.end(JSON.stringify(body));
 }
+
+/**
+ * A rejection a body-blind client can read. A caller agent's fetch tool
+ * surfaces the response body only on 2xx: on a 422 it returns the status code
+ * and nothing else, so the message naming the field at fault — the whole point
+ * of a 422 here — never reaches the caller. One run burned four attempts
+ * against that wall and settled for a worse explanation than the one it had.
+ * The reason goes in a header as well as the body, and headers survive where
+ * bodies do not.
+ */
+const because = (message) => ({ 'x-newsworthy-error': message });
 
 function secretMatches(supplied, expected) {
   const a = Buffer.from(String(supplied ?? ''));
@@ -254,13 +266,18 @@ const server = createServer(async (req, res) => {
     // plain fetch: no custom headers, no request body. Those carry the token
     // and the reading in the query string instead.
     if (path === '/api/readings' && (req.method === 'POST' || req.method === 'GET')) {
-      if (!callerAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
+      if (!callerAuthorized(url, req)) {
+        console.warn('reading rejected 401: bad or missing token');
+        return json(res, 401, { error: 'unauthorized' }, because('unauthorized'));
+      }
       let body;
       try {
         body = req.method === 'GET' ? submissionFromQuery(url.searchParams) : await readJsonBody(req);
       } catch (err) {
-        if (err instanceof SubmissionError) return json(res, 422, { error: err.message });
-        return json(res, 400, { error: String(err?.message ?? err) });
+        const message = String(err?.message ?? err);
+        console.warn(`reading rejected ${err instanceof SubmissionError ? 422 : 400}: ${message}`);
+        if (err instanceof SubmissionError) return json(res, 422, { error: message }, because(message));
+        return json(res, 400, { error: message }, because(message));
       }
       try {
         const submission = validateSubmission(body);
@@ -281,7 +298,13 @@ const server = createServer(async (req, res) => {
           ...(submission.note ? { note: submission.note } : {}),
         });
       } catch (err) {
-        if (err instanceof SubmissionError) return json(res, 422, { error: err.message });
+        // Logged, not just returned. Nothing was recorded about the two 422s
+        // that cost a caller its explanation on 2026-08-28, so which of the
+        // four rules fired could not be established afterwards from anything.
+        if (err instanceof SubmissionError) {
+          console.warn(`reading rejected 422: ${err.message}`);
+          return json(res, 422, { error: err.message }, because(err.message));
+        }
         throw err;
       }
     }

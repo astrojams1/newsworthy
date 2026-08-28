@@ -17,7 +17,7 @@
  * facts about the system rather than commands: they survive a paraphrase, which
  * imperatives aimed at "you" do not.
  *
- * The submission is three fields because everything else a caller could report
+ * The submission is two fields because everything else a caller could report
  * about itself was unverifiable and was being stored as fact.
  *
  * And why there is no sentence here telling a fetcher how to handle the page. A
@@ -35,6 +35,13 @@ a caller agent does.
 A reading exists only when \`POST ${baseUrl}/api/readings\` returns \`201\`. A score
 that was computed and never submitted is not a reading, and the caller's job is
 not complete at the moment the score exists.
+
+This same reference is served as JSON from
+\`${baseUrl}/api/instructions?format=json&token=<TOKEN>\`, where every part of it
+is a string value. A client whose fetch tool rewrites or summarizes what it
+retrieves gets the text intact from there and nowhere else — including the
+rating prompt in section 3, which a reading is attributed to whether or not the
+caller read it verbatim.
 
 ## 1. Rating
 
@@ -78,8 +85,14 @@ reading; it is second only because a token in a URL is more exposed.
 
 \`\`\`
 GET ${baseUrl}/api/readings?token=<TOKEN>&score=<1-10>
-    &explanation=<one sentence, URL-encoded>
+    &explanation=Iran+war+de-escalating+as+Washington+shifts+to+economic+pressure
 \`\`\`
+
+Spaces are \`+\` in that query string. A proxying fetch layer rejected every URL
+carrying \`%20\` with a 403 before it left the client, while the same URL with
+\`+\` went through; both are valid, so the example uses the one that survives
+more clients. Other reserved characters are still percent-encoded — a comma is
+\`%2C\`, a semicolon \`%3B\`, an ampersand \`%26\`.
 
 Those two fields are the whole submission. The prompt version is stamped by the
 server from whatever is current, and is not a field a caller sets: a caller that
@@ -91,8 +104,33 @@ it stores none of it rather than storing a guess. A caller that sends any of
 those fields gets them named back in a \`note\` on the response, and they go
 nowhere.
 
-\`201\` means stored. \`422\` means rejected, and the message names the field at
-fault; the fix is to correct that field rather than to retry unchanged.
+\`201\` means stored. \`422\` means rejected and nothing was written, so a
+corrected retry replaces the attempt rather than duplicating it — a rejected
+submission cannot leave a stray row. Only a \`201\` creates one.
+
+The reason is in the response body and in the \`x-newsworthy-error\` header. The
+header exists because some fetch tools surface a body only on 2xx and return a
+bare status code otherwise; a caller reading that header learns which field was
+at fault where a caller reading only the body learns nothing.
+
+There are four rejections, and all four are about a field being absent or
+malformed:
+
+\`\`\`
+score must be an integer from 1 to 10
+explanation is required
+explanation must not be empty
+body must be a JSON object
+\`\`\`
+
+Length is not among them. The explanation has no maximum a caller can trip: text
+beyond 400 characters is truncated and stored, never rejected, and the 25-word
+guidance in the prompt is a style instruction rather than a limit the server
+enforces. So a 422 on a submission whose score and sentence are both well formed
+means the request did not arrive as it was sent — a query string truncated or
+rewritten in transit, most often — and the answer is to send it again, not to
+shorten the sentence. A caller that shortens its explanation in response to a
+422 degrades the reading while leaving the actual fault in place.
 
 ## 3. The prompt
 
@@ -107,8 +145,11 @@ tool that summarizes rewrites the scale into something close but not equal —
 "routine news; nothing I'm likely to care about or act on" — and a caller has no
 way to tell from the result that this happened. So a caller whose fetch tool
 summarizes takes the prompt from
-\`${baseUrl}/api/instructions?format=json\`, where it is a JSON string value and
-survives transport intact. A caller fetching raw bytes already has it.
+\`${baseUrl}/api/instructions?format=json&token=<TOKEN>\`, where it is a JSON
+string value and survives transport intact. The token is required there exactly
+as it is here — printed without it, that URL answers 401, which is how one
+caller spent a fetch on the wrong thing. A caller fetching raw bytes already has
+the prompt.
 
 ----- BEGIN PROMPT -----
 ${prompt.text}
