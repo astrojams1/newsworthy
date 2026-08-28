@@ -112,3 +112,55 @@ test('v9 keeps what earlier versions were written to fix', () => {
   assert.match(text, /single JSON object and nothing else/, 'the parser contract');
   assert.match(text, /do not justify the score/, 'v2');
 });
+
+test('the caller surface serves the current prompt and nothing else', async () => {
+  // A reading stamped v9 was rated against v7's rungs. /api/instructions
+  // honoured ?version=N, so a caller could be served v7's text and told
+  // "version 7" in the page, while ingest stamped its submission with
+  // latestVersion() regardless. The database then recorded a reading rated on
+  // a retired scale as one rated on the current scale — the exact thing
+  // server-side stamping exists to prevent.
+  const { spawn } = await import('node:child_process');
+  const child = spawn(process.execPath, ['src/server.js'], {
+    env: {
+      ...process.env,
+      PORT: '8821',
+      CALLER_TOKEN: 'test-caller-token',
+      NEWSWORTHY_SQL_DRIVER: 'pglite',
+      NEWSWORTHY_MOCK: '1',
+    },
+    stdio: 'ignore',
+  });
+  try {
+    const base = 'http://127.0.0.1:8821';
+    for (let i = 0; i < 100; i++) {
+      try { await fetch(`${base}/healthz`); break; } catch { await new Promise((r) => setTimeout(r, 100)); }
+    }
+    const token = 'token=test-caller-token';
+    const current = renderPrompt(latestVersion());
+
+    for (const query of ['', '&version=7', '&version=1', '&version=99', '&version=abc']) {
+      const asJson = await (await fetch(`${base}/api/instructions?${token}&format=json${query}`)).json();
+      assert.equal(asJson.version, current.version, `?${query || 'none'} served v${asJson.version}`);
+      assert.equal(asJson.hash, current.hash);
+      // The page states its own version inline; that has to agree too, since
+      // that line is what the caller reports back.
+      assert.match(asJson.instructions, new RegExp(`version ${current.version}, SHA-256`));
+
+      const plain = await (await fetch(`${base}/api/instructions?${token}${query}`)).text();
+      assert.match(plain, new RegExp(`version ${current.version}, SHA-256`));
+
+      const prompt = await (await fetch(`${base}/api/prompt?${token}${query}`)).json();
+      assert.equal(prompt.version, current.version, `/api/prompt?${query} served v${prompt.version}`);
+    }
+
+    // And what the page says matches what a submission gets stamped with,
+    // which is the invariant the parameter broke.
+    const stored = await (await fetch(
+      `${base}/api/readings?${token}&score=4&explanation=A+thing+happened`)).json();
+    assert.equal(stored.prompt_version, current.version);
+    assert.equal(stored.prompt_hash, current.hash);
+  } finally {
+    child.kill();
+  }
+});
