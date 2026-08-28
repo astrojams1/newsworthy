@@ -75,6 +75,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
   for (const [version, hash] of [
     [1, '7ebe2d68813f1487'], [4, 'cce0a516da847bf4'], [5, '6470f557ee94563d'],
     [6, 'cb27cb79f8f78ac2'], [7, 'e760cfdc6c2106ee'], [8, 'e841c5d77cd6bb33'],
+    [9, '994b299f1c979f97'],
   ]) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
   }
@@ -163,4 +164,28 @@ test('the caller surface serves the current prompt and nothing else', async () =
   } finally {
     child.kill();
   }
+});
+
+test('v10 changes the sentence contract and nothing about rating', () => {
+  // A v9 reading ended "; distant from US readers." — the rater reciting the
+  // reach criterion from rung 3 back into the sentence. v9's contract already
+  // said "do not justify the score", so the rule was there; adding reach to the
+  // Scale simply gave the rater something new to justify with.
+  const [v9, v10] = [9, 10].map(renderPrompt);
+
+  // Everything above Output is byte-identical, so v9 and v10 rate the same way
+  // and their readings stay comparable.
+  assert.equal(v9.text.split('\nOutput')[0], v10.text.split('\nOutput')[0]);
+  assert.deepEqual(rungsOf(v10.text), rungsOf(v9.text));
+  assert.deepEqual(examplesOf(v10.text), examplesOf(v9.text));
+
+  // The rule is now stated as what the sentence may contain, not what it may
+  // not do — "do not justify" left "distant from US readers" feeling allowed.
+  const output = v10.text.split('\nOutput')[1];
+  assert.match(output, /the development and its concrete effect, and nothing else/);
+  assert.match(output, /who the news reaches or fails to reach/);
+  assert.match(output, /how near or far it is/);
+  assert.match(output, /The score carries all of that already/);
+  assert.match(output, /single JSON object and nothing else/, 'the parser contract survives');
+  assert.match(output, /at most 25 words/);
 });
