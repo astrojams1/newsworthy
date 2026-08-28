@@ -222,3 +222,29 @@ test('score_from is omitted when the score is the newest reading anyway', async 
     child.kill();
   }
 });
+
+test('history carries prompt_verified, so the chart cannot misread a missing key', async () => {
+  // shape() converts only the columns a query selected, so an unselected column
+  // is an absent key rather than null. history() omitted prompt_verified and a
+  // reading that had verified read as "no digest sent" — twice.
+  const { insertRating, history } = await import('../src/db.js');
+  const { renderPrompt, latestVersion } = await import('../src/prompts.js');
+  const prompt = renderPrompt(latestVersion());
+  const base = {
+    status: 'ok', slot: null, source: 'external', model: null,
+    prompt_version: prompt.version, prompt_hash: prompt.hash, prompt_text: prompt.text,
+  };
+  await insertRating({ ...base, score: 5, explanation: 'verified row', prompt_verified: true });
+  await insertRating({ ...base, score: 5, explanation: 'unverified row', prompt_verified: false });
+  await insertRating({ ...base, score: 5, explanation: 'no digest row' });
+
+  const rows = await history({ hours: 1 });
+  const find = (text) => rows.find((r) => r.explanation === text);
+  assert.equal(find('verified row').prompt_verified, true);
+  assert.equal(find('unverified row').prompt_verified, false);
+  assert.equal(find('no digest row').prompt_verified, null);
+  // The key has to be present in every case, or absent reads as "not verified".
+  for (const text of ['verified row', 'unverified row', 'no digest row']) {
+    assert.ok('prompt_verified' in find(text), `${text} is missing the key`);
+  }
+});

@@ -215,8 +215,8 @@ export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, score, explanation, prompt_version, prompt_hash, model, served_by,
-           source, caller
+    SELECT id, created_at, score, explanation, prompt_version, prompt_hash,
+           prompt_verified, model, served_by, source, caller
       FROM ratings
      WHERE status = 'ok' AND created_at >= ${since}
      ORDER BY created_at ASC
