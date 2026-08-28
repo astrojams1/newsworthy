@@ -112,6 +112,12 @@ and readings of 7 or more are three in 46, so noise and shocks live in different
 places; the override fires about 5% of the time. Drops are never treated as
 shocks — being slow to report calm costs nothing.
 
+The page is dated from `updated_at`, the newest reading in the window, not from
+`created_at`, which belongs to the row the median landed on. Those differ by up
+to a few hours on most hours, and dating the page from the row made one that had
+just been updated read as stale — which looks exactly like the app having
+stopped.
+
 The window is time-bounded as well as counted, and an empty window means the
 newest reading is older than it, not that nothing is stored. `/api/current`
 falls back to `latestRating()` there and reports `basis: 'stale'`; reading the
