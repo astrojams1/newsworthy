@@ -86,9 +86,21 @@ with no stored copy to be pinned to, still reported a version that did not match
 what it had just been served. Why is not established — a remembered value from
 an earlier run is the likeliest candidate, but nothing here proves it. The point
 does not depend on the cause: what a caller reports about the prompt version is
-not evidence about the prompt it ran, however capable the caller. The prompt a
-caller fetches and the version stamped on its reading now come from the same
-place.
+not evidence about the prompt it ran, however capable the caller.
+
+That claim — the prompt a caller fetches and the version stamped on its reading
+come from the same place — was not true until 2026-08-28. `/api/instructions`
+honoured an undocumented `?version=N`, so a caller passing `version=7` was
+served v7's text and told "version 7" in the page, while `validateSubmission`
+stamped `latestVersion()` regardless. A reading rated against a retired scale
+was recorded as one rated against the current scale, and the caller's report of
+the mismatch looked like a caller error rather than a server one. Reading 81 is
+the confirmed case: it quoted three v7 rungs verbatim thirty minutes after v9
+went live, and `?version=7` reproduces those rungs exactly. The parameter was
+undocumented, unused by this app, its tests and its OpenAPI schema, and is
+removed from both caller-facing endpoints. The full history stays at
+`/api/admin/prompts`, behind the admin token, where reading an old version
+cannot be confused with rating against one.
 
 Note the two effects compound: external readings suppress the cron by being
 recent, so a prompt change reaches nothing until a caller picks it up. No cron

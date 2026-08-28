@@ -250,13 +250,14 @@ const server = createServer(async (req, res) => {
     // embedded — so a caller is configured with a URL, not pasted instructions.
     if (path === '/api/instructions' && req.method === 'GET') {
       if (!callerAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
-      const version = Number(url.searchParams.get('version')) || latestVersion();
-      let prompt;
-      try {
-        prompt = renderPrompt(version);
-      } catch (err) {
-        return json(res, 404, { error: String(err?.message ?? err) });
-      }
+      // Always the current prompt. This used to honour ?version=N, which broke
+      // the one guarantee the caller surface makes: a caller passing version=7
+      // was served v7's text and told "version 7" in the page, while its
+      // submission was stamped v9, because ingest always stamps latestVersion().
+      // A reading rated on a retired scale then looked, in the database, like a
+      // reading rated on the current one. Nothing documented the parameter and
+      // nothing used it; it existed only to be got wrong.
+      const prompt = renderPrompt(latestVersion());
       const proto = req.headers['x-forwarded-proto'] ?? (ON_VERCEL ? 'https' : 'http');
       const baseUrl = `${proto}://${req.headers.host ?? 'localhost'}`;
       const text = callerInstructions({ baseUrl, prompt });
@@ -293,9 +294,11 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/prompt' && req.method === 'GET') {
       if (!callerAuthorized(url, req)) return json(res, 401, { error: 'unauthorized' });
-      const version = Number(url.searchParams.get('version')) || latestVersion();
+      // Current only, for the same reason as /api/instructions above. The full
+      // history stays at /api/admin/prompts, behind the admin token, where
+      // reading an old version cannot be mistaken for rating against one.
       try {
-        const prompt = renderPrompt(version);
+        const prompt = renderPrompt(latestVersion());
         return json(res, 200, {
           version: prompt.version,
           label: prompt.label,
