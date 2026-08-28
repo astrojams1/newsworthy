@@ -142,10 +142,10 @@ test('the replay window is time-bounded, not just counted', async () => {
   assert.equal(out.at(-1).basis, 'latest');
 });
 
-test('the page is dated from the newest reading, not the row the median landed on', async () => {
-  // Shipped broken: /api/current returned the median row's created_at, so a
-  // page updated minutes ago read "Updated an hour ago" whenever the median
-  // landed on an older row — which is most hours.
+test('the score is smoothed, the sentence is not', async () => {
+  // Two questions, two rows. The number is a level and a median estimates it
+  // better; the sentence is what happened and goes stale, so a median row's
+  // sentence sitting beside a current number reads as an app that has stopped.
   const { spawn } = await import('node:child_process');
   const child = spawn(process.execPath, ['src/server.js'], {
     env: {
@@ -165,8 +165,8 @@ test('the page is dated from the newest reading, not the row the median landed o
     const submit = (score, explanation) =>
       fetch(`${base}/api/readings?token=test-caller-token&score=${score}&explanation=${explanation}`);
 
-    // Enough readings for a median, with the newest deliberately off the level
-    // so the median lands on an earlier row.
+    // A window whose median lands on an earlier row, with the newest reading
+    // deliberately off the level so the two rows are distinguishable.
     for (const [score, text] of [[5, 'five+a'], [5, 'five+b'], [4, 'four'], [6, 'six+newest']]) {
       await submit(score, text);
     }
@@ -174,16 +174,42 @@ test('the page is dated from the newest reading, not the row the median landed o
 
     assert.equal(body.basis, 'median');
     assert.equal(body.score, 5, 'the median of the window');
-    assert.ok(body.explanation.startsWith('five'), 'with the sentence from a row that scored it');
-    // created_at belongs to that row; updated_at is the newest reading.
-    assert.ok(body.updated_at >= body.created_at, 'updated_at is never older');
-    assert.notEqual(body.updated_at, body.created_at, 'and here they genuinely differ');
+    assert.equal(body.explanation, 'six newest', 'but the newest sentence');
+    assert.equal(body.score_from !== undefined, true, 'and the score row is named for debugging');
+    assert.ok(body.created_at > body.score_from, 'the page is dated from the newer of the two');
+  } finally {
+    child.kill();
+  }
+});
 
-    const newest = await (await fetch(`${base}/api/admin/history?hours=1`)).json()
-      .catch(() => null);
-    if (newest?.points?.length) {
-      assert.equal(body.updated_at, newest.points.at(-1).created_at, 'it is the newest reading');
+test('score_from is omitted when the score is the newest reading anyway', async () => {
+  // Most of the time there is nothing to explain, and a key that always
+  // repeats created_at is noise in a response read by one page.
+  const { spawn } = await import('node:child_process');
+  const child = spawn(process.execPath, ['src/server.js'], {
+    env: {
+      ...process.env,
+      PORT: '8819',
+      CALLER_TOKEN: 'test-caller-token',
+      NEWSWORTHY_SQL_DRIVER: 'pglite',
+      NEWSWORTHY_MOCK: '1',
+    },
+    stdio: 'ignore',
+  });
+  try {
+    const base = 'http://127.0.0.1:8819';
+    for (let i = 0; i < 100; i++) {
+      try { await fetch(`${base}/healthz`); break; } catch { await new Promise((r) => setTimeout(r, 100)); }
     }
+    // A shock: the newest reading is the displayed one, so both come from it.
+    for (const [s, t] of [[4, 'four'], [4, 'four+again'], [9, 'nine+breaking']]) {
+      await fetch(`${base}/api/readings?token=test-caller-token&score=${s}&explanation=${t}`);
+    }
+    const body = await (await fetch(`${base}/api/current`)).json();
+    assert.equal(body.basis, 'shock');
+    assert.equal(body.score, 9);
+    assert.equal(body.explanation, 'nine breaking');
+    assert.equal(body.score_from, undefined);
   } finally {
     child.kill();
   }

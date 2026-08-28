@@ -99,10 +99,17 @@ better with.
 
 `currentReading()` in `src/current.js` takes the median of the last five
 readings within six hours. Five rather than four because an odd window makes the
-median an actual observed reading, so the score and the sentence beside it come
-from one row rather than a computed number sitting next to a mismatched
-explanation. Replayed over the stored series it cuts the mean hour-to-hour
-change from 1.10 to 0.39.
+median an actual observed score rather than a computed midpoint — this is a
+number out of ten and a front page reading 4.5 is not the product. Replayed over
+the stored series it cuts the mean hour-to-hour change from 1.10 to 0.39.
+
+**Only the score is smoothed.** The sentence always comes from the newest
+reading, and the two answer different questions: the number is a level, which a
+median estimates better, and the sentence is what happened, which goes stale.
+Pairing the median row's sentence with the number was the first cut and it read
+as an app that had stopped — the text and the timestamp were both hours behind
+while the page was current. `score_from` names the row the score came from when
+that is not the newest reading, and is never displayed.
 
 Smoothing costs lag, which is what v6 was written to remove, so the median
 governs the quiet band only: a reading two or more above it is shown
@@ -111,12 +118,6 @@ about 0.6 and a one-point gap is inside it. 83% of readings sit between 4 and 6
 and readings of 7 or more are three in 46, so noise and shocks live in different
 places; the override fires about 5% of the time. Drops are never treated as
 shocks — being slow to report calm costs nothing.
-
-The page is dated from `updated_at`, the newest reading in the window, not from
-`created_at`, which belongs to the row the median landed on. Those differ by up
-to a few hours on most hours, and dating the page from the row made one that had
-just been updated read as stale — which looks exactly like the app having
-stopped.
 
 The window is time-bounded as well as counted, and an empty window means the
 newest reading is older than it, not that nothing is stored. `/api/current`
