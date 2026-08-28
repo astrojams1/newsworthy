@@ -101,9 +101,9 @@ its own tooling reports before any request goes out is looking at a limit on its
 side, and the POST form, which carries the sentence in a body instead of a URL,
 is not subject to one.
 
-Those two fields are the whole reading. A third, \`prompt_sha256\`, is optional
-and says nothing about the news — it reports what text this caller received, and
-section 3 defines it. The prompt version is stamped by the
+Those two fields are the whole reading. A third, \`prompt_sha256\`, accompanies
+every submission from a caller that can run code, and says nothing about the
+news — it reports which text this caller received. Section 3 defines it. The prompt version is stamped by the
 server from whatever is current, and is not a field a caller sets: a caller that
 can name a version can pin one, and one did — every submission kept arriving as
 v3 for hours after v4 went live, so the new prompt was simultaneously live and
@@ -190,12 +190,18 @@ unverified, because the remaining 48 characters exist only for a caller that
 hashed the bytes it actually holds. The digest is computed with a tool, not by
 hand; a value produced any other way will not match.
 
-The server compares it against the text it sent. A mismatch is never a
-rejection: the reading stores normally and the row is marked unverified.
-Omitting the field is also fine and marks the row the same way. What this
-distinguishes is a scale that rates wrongly from a scale the rater never
-received — for months those were indistinguishable, and five revisions of one
-instruction were made without knowing which was being fixed.
+The server compares it against the text it sent and answers with
+\`prompt_verified\` on the 201, so a caller learns within the same request
+whether it rated against the text this app published.
+
+A mismatch is never a rejection: the reading stores normally and the row is
+marked unverified. A submission with no digest at all is recorded the same way
+and is indistinguishable, afterwards, from one whose text arrived mangled —
+which is why a caller able to hash sends one every time rather than only when
+something seems wrong. What this distinguishes is a scale that rates wrongly
+from a scale the rater never received. For months those were indistinguishable,
+and five revisions of one instruction were made without knowing which was being
+fixed.
 
 ## 4. When submission is impossible
 

@@ -190,3 +190,16 @@ test('the JSON form is stated up front, where a summary still carries it', () =>
   assert.ok(text.indexOf('/api/instructions?format=json') < text.indexOf('## 1.'),
     'named before the first section');
 });
+
+test('the digest is expected, not offered as optional', () => {
+  // First wording said "is optional" and "Omitting the field is also fine",
+  // then treated omission as a finding. The one reading taken under it carried
+  // no digest, which proved nothing — the page had invited exactly that.
+  const text = build();
+  assert.match(text, /accompanies\s+every submission from a caller that can run code/);
+  assert.match(text, /sends one every time/);
+  assert.ok(!/`prompt_sha256`, is optional/.test(text), 'not framed as optional');
+  assert.ok(!/Omitting the field is also fine/.test(text));
+  // And still never a rejection, so the four rules stay four.
+  assert.match(text, /A mismatch is never a rejection/);
+});
