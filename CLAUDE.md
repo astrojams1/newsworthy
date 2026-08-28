@@ -88,6 +88,37 @@ Note the two effects compound: external readings suppress the cron by being
 recent, so a prompt change reaches nothing until a caller picks it up. No cron
 run has executed v4.
 
+**The front page shows a median, not the newest reading.** Measured over 46
+readings: the rater disagrees with itself by about 0.6 points on near-identical
+material, the series standard deviation is 1.12, and lag-1 autocorrelation is
+-0.11. Consecutive readings are statistically indistinguishable from independent
+draws around a slowly moving level, so hour-to-hour movement is mostly noise —
+and the newest reading, which is what the page used to show, is the noisiest
+estimator available. The hourly caller was already supplying the samples to do
+better with.
+
+`currentReading()` in `src/current.js` takes the median of the last five
+readings within six hours. Five rather than four because an odd window makes the
+median an actual observed reading, so the score and the sentence beside it come
+from one row rather than a computed number sitting next to a mismatched
+explanation. Replayed over the stored series it cuts the mean hour-to-hour
+change from 1.10 to 0.39.
+
+Smoothing costs lag, which is what v6 was written to remove, so the median
+governs the quiet band only: a reading two or more above it is shown
+immediately, with its own sentence. Two because the rater's own disagreement is
+about 0.6 and a one-point gap is inside it. 83% of readings sit between 4 and 6
+and readings of 7 or more are three in 46, so noise and shocks live in different
+places; the override fires about 5% of the time. Drops are never treated as
+shocks — being slow to report calm costs nothing.
+
+The window is time-bounded as well as counted, and an empty window means the
+newest reading is older than it, not that nothing is stored. `/api/current`
+falls back to `latestRating()` there and reports `basis: 'stale'`; reading the
+empty window as "nothing stored" and answering 503 was a bug in the first cut.
+`basis` is in the response and never displayed — which rule produced the number
+is the first thing anyone debugging a surprising front page wants.
+
 **The runs table becomes cards below 720px.** Ten columns on a phone is a
 horizontal scroll showing three words at a time. Each row reflows to timestamp
 and score, then the explanation, then the small fields as one dotted line — and

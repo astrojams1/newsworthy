@@ -4,7 +4,8 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, stats, usageBaseline, voidRating } from './db.js';
+import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, stats, usageBaseline, voidRating } from './db.js';
+import { currentReading } from './current.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
@@ -149,14 +150,22 @@ const server = createServer(async (req, res) => {
     if (path === '/' && req.method === 'GET') return serveStatic(res, 'index.html');
 
     if (path === '/api/current' && req.method === 'GET') {
-      const row = await latestRating();
-      if (!row) {
+      // The window is time-bounded, so it comes back empty whenever the newest
+      // reading is older than it — a stalled caller, or a cron cadence wider
+      // than the window. That is a stale reading, not a missing one, and it is
+      // still the best answer available.
+      const recent = await recentRatings();
+      const fallback = recent.length ? null : await latestRating();
+      if (!recent.length && !fallback) {
         const attempt = await latestAttempt();
         return json(res, 503, {
           error: attempt ? 'no successful rating yet' : 'no rating yet',
           detail: attempt?.error ?? null,
         });
       }
+      const { row, basis } = recent.length
+        ? currentReading(recent)
+        : { row: fallback, basis: 'stale' };
       // No countdown: an external caller can post a reading at any moment, so
       // the next update is genuinely not predictable. The page states when the
       // current reading arrived and nothing more.
@@ -165,6 +174,10 @@ const server = createServer(async (req, res) => {
         explanation: row.explanation,
         created_at: row.created_at,
         source: row.source ?? 'cron',
+        // Not displayed. Which rule produced the number is the first thing
+        // anyone debugging a surprising front page will want.
+        basis,
+        window: recent.length,
       });
     }
 

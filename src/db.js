@@ -182,6 +182,24 @@ export async function latestRating() {
   return shape(rows[0]);
 }
 
+/**
+ * The newest readings, for the smoothed current score. Time-bounded as well as
+ * counted: five readings is five hours while the hourly caller runs, but twenty
+ * hours if it stops and the cron takes over at its own cadence, and a median
+ * across twenty hours is not a current reading.
+ */
+export async function recentRatings({ limit = 5, hours = 6 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT id, created_at, score, explanation, source
+      FROM ratings
+     WHERE status = 'ok' AND created_at >= ${since}
+     ORDER BY created_at DESC, id DESC
+     LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
 export async function latestAttempt() {
   await ensureSchema();
   const rows = await sql`SELECT * FROM ratings ORDER BY created_at DESC, id DESC LIMIT 1`;
