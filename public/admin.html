@@ -72,6 +72,15 @@
            letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
   .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; min-width: 170px; }
   .settings button { padding: 0.45rem 1.1rem; }
+  /* Below the fields, not beside them: a button and a labelled select are
+     different heights, so aligning them on one row leaves one of the two
+     visibly off. */
+  .settings-actions { margin-top: 0.875rem; }
+  .settings-actions[hidden] { display: none; }
+  .settings-actions button { padding: 0.45rem 1.1rem; }
+  /* An empty note still claims its top margin, which left a gap under the
+     fields on the common case where nothing has been changed. */
+  .note:empty { display: none; }
   .settings textarea, .settings input {
     font: inherit; font-size: 0.875rem; color: var(--ink);
     background: var(--surface); border: 1px solid var(--rule);
@@ -223,9 +232,11 @@
     <label class="field">Rate every
       <select id="interval"></select>
     </label>
-    <button id="save" type="button">Save</button>
   </div>
   <p class="note" id="settings-note"></p>
+  <div class="settings-actions" id="settings-actions" hidden>
+    <button id="save" type="button">Save</button>
+  </div>
 
   <h2>Paste a reading</h2>
   <div class="settings">
@@ -636,24 +647,36 @@
     renderEstimates();
   }
 
+  /** Whether the dropdowns hold anything the server has not been told. */
+  const pendingChange = () =>
+    Boolean(settings)
+    && ($('model').value !== settings.model
+      || Number($('interval').value) !== settings.interval_minutes);
+
   /**
-   * Preview the cost of a *pending* change only. When the dropdowns match what
-   * is saved, the tiles above already show per-run and monthly spend, so
-   * repeating them here was noise.
+   * Preview the cost of a *pending* change, and offer Save only when there is
+   * one. When the dropdowns match what is saved, the tiles above already show
+   * per-run and monthly spend, so repeating them here was noise — and a Save
+   * button that is always present says a change is waiting when none is.
    */
   function renderEstimates() {
     if (!settings) return;
-    const model = settings.models.find((m) => m.id === $('model').value);
-    const minutes = Number($('interval').value);
-    if (!model) return;
-    if (model.id === settings.model && minutes === settings.interval_minutes) {
+    const dirty = pendingChange();
+    // The container, not the button: hiding the button alone left its margin
+    // behind as a gap under the fields.
+    $('settings-actions').hidden = !dirty;
+    if (!dirty) {
       $('settings-note').textContent = '';
       return;
     }
+    const model = settings.models.find((m) => m.id === $('model').value);
+    const minutes = Number($('interval').value);
+    if (!model) return;
     const perMonth = model.typical_run_usd * (60 / minutes) * 24 * 30.44;
     const every = settings.intervals.find((i) => i.minutes === minutes)?.label ?? `${minutes} min`;
+    // No "Save to apply": the button below says that by existing.
     $('settings-note').textContent =
-      `${model.label} every ${every} ≈ ${usdRounded(perMonth)}/month — Save to apply.`;
+      `${model.label} every ${every} ≈ ${usdRounded(perMonth)}/month`;
   }
 
   $('model').addEventListener('change', renderEstimates);
@@ -674,6 +697,9 @@
         settings.model = body.model;
         settings.interval_minutes = body.interval_minutes;
         $('settings-note').textContent = 'Saved. Takes effect on the next reading.';
+        // Nothing pending now, so the button goes; the note above stays, since
+        // hiding both would leave no sign the save happened.
+        $('settings-actions').hidden = true;
         await load();
       } else {
         $('settings-note').textContent = `Failed: ${body.error ?? res.statusText}`;
