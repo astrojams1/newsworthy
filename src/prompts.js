@@ -194,6 +194,33 @@ Scale
 
 ${V7_SCALE}`;
 
+const V8_SCALE = `1. Nothing new; the news can wait.
+2. Ongoing story, no change today.
+3. Real development, no bearing on you.
+4. Notable shift; consequences not yet clear.
+5. Confirmed change that affects your decisions.
+6. Significant event; plans may need adjusting.
+7. Major shock breaking now.
+8. Severe disruption, broad and immediate.
+9. Systemic risk flashing; check immediately.
+10. Extreme global threat; continuous attention warranted.`;
+
+const V8_INSTRUCTIONS = `Summary
+
+Rate how much the current news warrants attention right now, 1-10, on the scale below. A normal day is a 3.
+
+Two things pull a score down. Severity that has not changed since yesterday is not a development: an ongoing war on its 181st day, a ceasefire still holding, a dispute escalating by one more round. And a grave event with no bearing on the reader stays low however serious it is elsewhere. The middle of the scale is for what changes a decision; the top is for a shock.
+
+Sources
+
+Current top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.
+
+Markets confirm late and are shut two thirds of the time. Their silence is not evidence against an event that is hours old or that broke while they were closed: rate the event, not the tape.
+
+Scale
+
+${V8_SCALE}`;
+
 const V5_OUTPUT_CONTRACT = `Output
 
 Reply with a single JSON object and nothing else — no prose, no markdown fences:
@@ -249,6 +276,13 @@ const REGISTRY = {
     label: 'tightened-scale-v7',
     added: '2026-08-27',
     instructions: V7_INSTRUCTIONS,
+    outputContract: V5_OUTPUT_CONTRACT,
+  },
+  8: {
+    version: 8,
+    label: 'novelty-and-reach-v8',
+    added: '2026-08-28',
+    instructions: V8_INSTRUCTIONS,
     outputContract: V5_OUTPUT_CONTRACT,
   },
 };
