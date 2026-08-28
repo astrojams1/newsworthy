@@ -171,7 +171,11 @@
       const data = await res.json();
       $score.textContent = data.score;
       $explanation.textContent = data.explanation;
-      updatedAt = new Date(data.created_at);
+      // The newest reading, not the row the score came from. The score is a
+      // median over a window, so the row carrying it can be hours old while
+      // the page is perfectly current — and dating the page from that row made
+      // it look like the app had stopped.
+      updatedAt = new Date(data.updated_at ?? data.created_at);
       document.title = `${data.score}/10 · Newsworthy`;
       setFavicon(data.score);
       document.body.dataset.state = 'ready';

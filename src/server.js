@@ -173,6 +173,11 @@ const server = createServer(async (req, res) => {
         score: row.score,
         explanation: row.explanation,
         created_at: row.created_at,
+        // When the page was last told anything, which is the newest reading in
+        // the window — not the row the median happened to land on. Those differ
+        // by up to a few hours, and reporting the row's own time made a page
+        // that had just been updated read as hours stale.
+        updated_at: (recent[0] ?? row).created_at,
         source: row.source ?? 'cron',
         // Not displayed. Which rule produced the number is the first thing
         // anyone debugging a surprising front page will want.
