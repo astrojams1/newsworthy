@@ -282,6 +282,29 @@ The explanation is the development and its concrete effect, and nothing else. It
 // may contain, not how a story is rated, so v9 and v10 readings are comparable.
 const V10_INSTRUCTIONS = V9_INSTRUCTIONS;
 
+// Every version so far forbade the trailing clause — v2 banned specific
+// phrases, v5 banned justification, v10 restated it as what the sentence may
+// contain — and the rate did not move: 15% across 73 readings, 27% on scores of
+// 4 or below. Forbidding it does not remove what produces it.
+//
+// What produces it is a conflict. Rung 3 says "Significant elsewhere; changes
+// nothing for you", and Output then asks for a development and its concrete
+// effect. On a day scored 3 the rater has just concluded nothing matters, so it
+// names something and appends that conclusion. v11 removes the conflict instead
+// of policing its output: the sentence does not depend on the score.
+const V11_OUTPUT_CONTRACT = `Output
+
+Reply with a single JSON object and nothing else — no prose, no markdown fences:
+{"score": <integer 1-10>, "explanation": "<one sentence, at most 25 words>"}
+
+The explanation is the development and its concrete effect, and nothing else. It does not say who the news reaches or fails to reach, how near or far it is, or why it scored what it did. The score carries all of that already.
+
+The sentence is the same on a quiet day as on a busy one: the biggest thing that happened, stated plainly. Only the number changes.`;
+
+// Scale and Examples byte-identical to v9 and v10, so nothing about how a story
+// is rated changes and readings stay comparable across all three.
+const V11_INSTRUCTIONS = V9_INSTRUCTIONS;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -352,6 +375,13 @@ const REGISTRY = {
     added: '2026-08-28',
     instructions: V10_INSTRUCTIONS,
     outputContract: V10_OUTPUT_CONTRACT,
+  },
+  11: {
+    version: 11,
+    label: 'sentence-independent-of-score-v11',
+    added: '2026-08-28',
+    instructions: V11_INSTRUCTIONS,
+    outputContract: V11_OUTPUT_CONTRACT,
   },
 };
 

@@ -75,7 +75,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
   for (const [version, hash] of [
     [1, '7ebe2d68813f1487'], [4, 'cce0a516da847bf4'], [5, '6470f557ee94563d'],
     [6, 'cb27cb79f8f78ac2'], [7, 'e760cfdc6c2106ee'], [8, 'e841c5d77cd6bb33'],
-    [9, '994b299f1c979f97'],
+    [9, '994b299f1c979f97'], [10, 'dad2824d4df0cb4e'],
   ]) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
   }
@@ -188,4 +188,25 @@ test('v10 changes the sentence contract and nothing about rating', () => {
   assert.match(output, /The score carries all of that already/);
   assert.match(output, /single JSON object and nothing else/, 'the parser contract survives');
   assert.match(output, /at most 25 words/);
+});
+
+test('v11 removes the conflict rather than forbidding its symptom', () => {
+  // Rung 3 says "Significant elsewhere; changes nothing for you"; Output then
+  // asks for a development and its concrete effect. On a day scored 3 the rater
+  // has just concluded nothing matters, so it names something and appends that
+  // conclusion. Three versions forbade the appended clause and the rate held at
+  // 15% — 27% on scores of 4 or below. This states the two are independent.
+  const [v9, v10, v11] = [9, 10, 11].map(renderPrompt);
+
+  assert.match(v11.text, /The sentence is the same on a quiet day as on a busy one/);
+  assert.match(v11.text, /Only the number changes\./);
+  // v10's rule survives; v11 adds to it rather than replacing it.
+  assert.match(v11.text, /and nothing else/);
+  assert.match(v11.text, /The score carries all of that already/);
+
+  // Nothing about how a story is rated changes, across all three versions.
+  assert.equal(v9.text.split('\nOutput')[0], v11.text.split('\nOutput')[0]);
+  assert.equal(v10.text.split('\nOutput')[0], v11.text.split('\nOutput')[0]);
+  assert.deepEqual(rungsOf(v11.text), rungsOf(v9.text));
+  assert.deepEqual(examplesOf(v11.text), examplesOf(v9.text));
 });

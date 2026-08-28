@@ -332,6 +332,21 @@ A mismatch is never a rejection. A rejected reading says nothing about the
 delivery path; a stored reading carrying a false flag says everything, and the
 rejection rules stay four.
 
+**The trailing clause was a conflict, not sloppiness.** Rung 3 says
+"Significant elsewhere; changes nothing for you"; Output then asks for a
+development and its concrete effect. On a day scored 3 the rater has just
+concluded nothing matters, names something anyway, and appends the conclusion it
+reached — "distant from US readers", "nothing requiring personal action". Three
+versions forbade the clause (v2 by listing phrases, v5 generally, v10 as what
+the sentence may contain) and the rate held at 15% across 73 readings, 27% on
+scores of 4 or below. Forbidding a symptom does not remove what produces it.
+
+v11 states that the sentence does not depend on the score: the same on a quiet
+day as on a busy one, only the number changes. Scale and Examples stay
+byte-identical to v9, so nothing about rating changes and readings stay
+comparable across v9, v10 and v11. Whether it worked is now answerable, because
+readings carry `prompt_verified`.
+
 **Adding a criterion to the Scale gives the rater something to narrate.** v9
 put reach in rung 3 — "Significant elsewhere; changes nothing for you" — and a
 reading came back ending "; distant from US readers." The Output contract
