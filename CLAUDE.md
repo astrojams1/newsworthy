@@ -24,6 +24,8 @@ score and the reason.
 | `src/config.js` | Effective model/cadence: database settings over env. |
 | `src/db.js`, `src/sql.js` | Postgres access and schema. |
 | `public/` | Two static pages, no build step. |
+| `PROMPT-RULES.md` | Constraints on every prompt version. Tests enforce each. |
+| `CALIBRATION.md` | What the author says a reading should score. |
 
 ## Things that are not obvious
 
@@ -269,6 +271,24 @@ byte-identical; only the wording of the rungs changed, so the two are the same
 instrument and their readings are comparable. The rung text is the author's
 verbatim — a test pins all ten strings, because a prompt that quietly rephrases
 the scale measures something nobody wrote.
+
+**v8 was calibrated against the author, and moved a normal day from 5 to 3.**
+Every story type measured over 72 hours had a median of 5 — humanitarian
+disaster, standing war, corporate settlement, trade policy, military escalation
+— so the rater was not discriminating between them at all. Asked what four real
+readings should have scored, the answer was lower in all four cases, for two
+reasons that became v8's Summary: severity that has not changed since yesterday
+is not a development, and a grave event with no bearing on the reader stays low
+however serious it is elsewhere. Novelty is judged intrinsically — "day 181",
+"ceasefire holds" — because readings are isolated and a caller cannot know what
+was rated before. `CALIBRATION.md` holds the readings and the answers; a new
+version is checked against them.
+
+**Prompt construction rules live in `PROMPT-RULES.md`**, and every one of the
+six is enforced by a test in `test/prompt-rules.test.js` against whichever
+version is live, so they cannot go stale as versions accumulate. A rule in prose
+alone is a rule that gets forgotten on the version where it matters. A seventh
+rule needs a seventh test — a count check fails otherwise.
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
