@@ -100,11 +100,14 @@ test('the submission is two fields, and says so', () => {
 });
 
 test('a client that blocks both requests is told to surface the payload', () => {
+  // The admin paste box this used to point at is gone. The rule that matters
+  // survives it: a verdict reported as submitted when it was not is the one
+  // failure nobody can recover from, because nobody knows to.
   const text = build();
   assert.match(text, /Some sandboxes permit neither request/);
   assert.match(text, /was \*\*not\*\* submitted/);
-  assert.match(text, /https:\/\/example\.test\/admin/);
-  assert.match(text, /Paste a reading/);
+  assert.match(text, /can still be sent by whoever reads it/);
+  assert.ok(!/Paste a reading/.test(text), 'no longer points at a box that exists');
 });
 
 test('the fetch guidance carries what a real run had to learn the hard way', () => {
