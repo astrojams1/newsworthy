@@ -165,9 +165,14 @@ test('the score is smoothed, the sentence is not', async () => {
     const submit = (score, explanation) =>
       fetch(`${base}/api/readings?token=test-caller-token&score=${score}&explanation=${explanation}`);
 
-    // A window whose median lands on an earlier row, with the newest reading
-    // deliberately off the level so the two rows are distinguishable.
-    for (const [score, text] of [[5, 'five+a'], [5, 'five+b'], [4, 'four'], [6, 'six+newest']]) {
+    // Five readings, which is the whole window: the server seeds one mock
+    // reading at startup with a RANDOM score, so anything short of five leaves
+    // that value inside the window and makes this test pass or fail by luck.
+    // The median lands on an earlier row, with the newest deliberately off the
+    // level so the two rows stay distinguishable.
+    for (const [score, text] of [
+      [5, 'five+a'], [5, 'five+b'], [5, 'five+c'], [4, 'four'], [6, 'six+newest'],
+    ]) {
       await submit(score, text);
     }
     const body = await (await fetch(`${base}/api/current`)).json();
@@ -202,7 +207,10 @@ test('score_from is omitted when the score is the newest reading anyway', async 
       try { await fetch(`${base}/healthz`); break; } catch { await new Promise((r) => setTimeout(r, 100)); }
     }
     // A shock: the newest reading is the displayed one, so both come from it.
-    for (const [s, t] of [[4, 'four'], [4, 'four+again'], [9, 'nine+breaking']]) {
+    // Five again, to push the random startup reading out of the window.
+    for (const [s, t] of [
+      [4, 'four'], [4, 'four+b'], [4, 'four+c'], [4, 'four+d'], [9, 'nine+breaking'],
+    ]) {
       await fetch(`${base}/api/readings?token=test-caller-token&score=${s}&explanation=${t}`);
     }
     const body = await (await fetch(`${base}/api/current`)).json();
