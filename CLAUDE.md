@@ -308,6 +308,30 @@ version is live, so they cannot go stale as versions accumulate. A rule in prose
 alone is a rule that gets forgotten on the version where it matters. An eighth
 rule needs an eighth test — a count check fails otherwise.
 
+**A prompt edit was unfalsifiable until callers started returning a digest.**
+Five wordings of the same instruction — v2's banned-phrase list, v5's "do not
+justify the score", v10's restatement as what the sentence may contain —
+produced the same rate of score-justifying sentences: 15% overall across 73
+readings, 27% on scores of 4 or below. That is what a rule that never arrives
+looks like, and nothing in a stored row distinguished "the scale is wrong" from
+"the scale never reached the rater".
+
+`prompt_sha256` on a submission settles it. The server compares it against the
+digest of the text it sent, so unlike the model and token counts that were
+removed as unverifiable claims, this is a proof. `prompt_verified` is `true`,
+`false`, or `NULL` when no digest came — three distinct findings, and the admin
+table marks the first two beside the version.
+
+The 16-character hash printed in the instructions is deliberately a *prefix* of
+the 64-character digest. A caller that echoes the printed value, or any prefix,
+is recorded unverified: the remaining 48 characters exist only for a caller that
+hashed the bytes it holds. Without that, the check would pass most reliably for
+a caller that merely skimmed the page — the exact case it exists to catch.
+
+A mismatch is never a rejection. A rejected reading says nothing about the
+delivery path; a stored reading carrying a false flag says everything, and the
+rejection rules stay four.
+
 **Adding a criterion to the Scale gives the rater something to narrate.** v9
 put reach in rung 3 — "Significant elsewhere; changes nothing for you" — and a
 reading came back ending "; distant from US readers." The Output contract

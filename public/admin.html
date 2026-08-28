@@ -145,6 +145,8 @@
      nothing until something actually went wrong. */
   td.notes { white-space: normal; color: var(--ink-muted); }
   td .muted { color: var(--ink-faint); }
+  td .verified { color: var(--ink-faint); }
+  td .unverified { color: var(--danger, #c0392b); font-weight: 600; }
   .scroll { overflow-x: auto; }
 
   /**
@@ -525,6 +527,21 @@
   const sourceCell = (r) =>
     `<span class="muted">${r.source === 'external' ? 'external agent' : escapeHtml(r.source ?? 'cron')}</span>`;
 
+  /**
+   * The version, and whether the caller proved it received that version's text.
+   * A tick is a returned SHA-256 that matched what the server sent; a warning
+   * is one that did not. Most rows carry neither, which is its own finding —
+   * the digest is what separates a scale that rates wrongly from a scale the
+   * rater never received.
+   */
+  function promptCell(r) {
+    if (r.prompt_version == null) return null;
+    const v = `v${escapeHtml(String(r.prompt_version))}`;
+    if (r.prompt_verified === true) return `${v} <span class="verified" title="Caller returned a matching SHA-256">✓</span>`;
+    if (r.prompt_verified === false) return `${v} <span class="unverified" title="Caller returned a SHA-256 that did not match the text served">✕</span>`;
+    return v;
+  }
+
   const isVoided = (r) => r.status !== 'ok' && /^voided:/.test(r.error ?? '');
   /** An absent figure reads as a rendering gap when the cell is simply blank. */
   const none = '<span class="none">–</span>';
@@ -564,7 +581,7 @@
         ${cell('score num', ok ? `${r.score}/10` : null)}
         ${cell('explanation', ok ? escapeHtml(r.explanation ?? '') : null)}
         ${cell('source', sourceCell(r))}
-        ${cell('prompt', r.prompt_version != null ? `v${escapeHtml(String(r.prompt_version))}` : null)}
+        ${cell('prompt', promptCell(r))}
         ${cell('model', modelCell(r))}
         ${cell('tokens num', r.input_tokens != null
           ? `${fmtCompact(r.input_tokens)} / ${fmtCompact(r.output_tokens)}` : null)}

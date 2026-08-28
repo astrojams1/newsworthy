@@ -40,6 +40,9 @@ export function ensureSchema() {
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'cron'`;
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS caller TEXT`;
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS caller_meta JSONB`;
+    // NULL means the caller returned no digest, false means it returned one
+    // that did not match the text we served. The two are different findings.
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS prompt_verified BOOLEAN`;
     // External readings record no model: this app did not run one, and what a
     // caller reported about itself was never verifiable. NULL says "unknown"
     // where the old placeholder string said "unreported" as if it were data.
@@ -112,7 +115,7 @@ export async function insertRating(row) {
       created_at, slot, status, score, explanation, prompt_version, prompt_hash,
       prompt_text, model, served_by, raw_output, error, latency_ms,
       input_tokens, output_tokens, cache_read_tokens, cache_write_tokens,
-      web_search_requests, cost_usd, source, caller, caller_meta
+      web_search_requests, cost_usd, source, caller, caller_meta, prompt_verified
     ) VALUES (
       ${row.created_at ?? new Date().toISOString()}, ${row.slot ?? null}, ${row.status},
       ${row.score ?? null}, ${row.explanation ?? null}, ${row.prompt_version},
@@ -122,7 +125,8 @@ export async function insertRating(row) {
       ${row.cache_read_tokens ?? null}, ${row.cache_write_tokens ?? null},
       ${row.web_search_requests ?? null}, ${row.cost_usd ?? null},
       ${row.source ?? 'cron'}, ${row.caller ?? null},
-      ${row.caller_meta ? JSON.stringify(row.caller_meta) : null}::jsonb
+      ${row.caller_meta ? JSON.stringify(row.caller_meta) : null}::jsonb,
+      ${row.prompt_verified ?? null}
     )
     ON CONFLICT DO NOTHING
     RETURNING *`;
@@ -238,8 +242,8 @@ export async function recentAttempts(limit = 25) {
   await ensureSchema();
   const rows = await sql`
     SELECT id, created_at, status, score, explanation, prompt_version, prompt_hash,
-           model, served_by, error, latency_ms, input_tokens, output_tokens,
-           web_search_requests, cost_usd, source, caller, caller_meta
+           prompt_verified, model, served_by, error, latency_ms, input_tokens,
+           output_tokens, web_search_requests, cost_usd, source, caller, caller_meta
       FROM ratings ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
