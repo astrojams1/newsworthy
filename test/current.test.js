@@ -101,3 +101,43 @@ test('recentRatings is time-bounded, so an old reading falls out of the window',
   assert.equal(window.length, 1);
   assert.equal(window[0].explanation, 'one hour ago', 'newest first');
 });
+
+test('displayedSeries replays the same rule the front page runs', async () => {
+  // Computed on the server rather than in admin.html: a second implementation
+  // in the page would be free to drift, and a chart that disagrees with the
+  // front page about the front page is worse than no chart.
+  const { displayedSeries, currentReading } = await import('../src/current.js');
+  const hour = 3600_000;
+  const series = [5, 4, 6, 5, 4, 3, 8].map((score, i) => ({ t: i * hour, score }));
+  const out = displayedSeries(series);
+
+  assert.equal(out.length, series.length);
+  assert.ok(out.every((p, i) => p.score === series[i].score), 'raw scores are untouched');
+
+  // The newest point of the replay must equal what the live route would say
+  // given the same window, or the chart's right edge contradicts the page.
+  const live = currentReading(series.slice(-5).reverse());
+  assert.equal(out.at(-1).displayed, live.row.score);
+  assert.equal(out.at(-1).basis, live.basis);
+
+  // 8 against a level of 4-5 is a shock and passes through unsmoothed.
+  assert.equal(out.at(-1).displayed, 8);
+  assert.equal(out.at(-1).basis, 'shock');
+  // The early points have too short a window to take a median of.
+  assert.deepEqual(out.slice(0, 2).map((p) => p.basis), ['latest', 'latest']);
+});
+
+test('the replay window is time-bounded, not just counted', async () => {
+  const { displayedSeries } = await import('../src/current.js');
+  const hour = 3600_000;
+  // Four readings around 5, then a gap of a day, then a lone 2. The old
+  // readings are outside the six-hour window, so the 2 stands alone as the
+  // only estimate rather than being median-ed against stale company.
+  const series = [
+    { t: 0, score: 5 }, { t: hour, score: 5 }, { t: 2 * hour, score: 5 },
+    { t: 3 * hour, score: 5 }, { t: 27 * hour, score: 2 },
+  ];
+  const out = displayedSeries(series);
+  assert.equal(out.at(-1).displayed, 2, 'not dragged up by day-old readings');
+  assert.equal(out.at(-1).basis, 'latest');
+});

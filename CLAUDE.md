@@ -119,6 +119,14 @@ empty window as "nothing stored" and answering 503 was a bug in the first cut.
 `basis` is in the response and never displayed — which rule produced the number
 is the first thing anyone debugging a surprising front page wants.
 
+The admin chart draws both: the displayed value as the line, the stored
+readings as scatter. Scatter rather than a second line because their lag-1
+autocorrelation is about -0.11 — joining them would draw a continuity the
+numbers do not have. `displayedSeries()` replays the rule server-side and each
+history point carries `displayed` and `basis`, so the page never reimplements
+it; a chart free to drift from the front page about the front page is worse than
+no chart.
+
 **The runs table becomes cards below 720px.** Ten columns on a phone is a
 horizontal scroll showing three words at a time. Each row reflows to timestamp
 and score, then the explanation, then the small fields as one dotted line — and

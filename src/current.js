@@ -52,3 +52,29 @@ export function currentReading(recent) {
 }
 
 export { SHOCK_MARGIN, MIN_WINDOW };
+
+/**
+ * The same rule applied backwards over a stored series, so the admin chart can
+ * draw what the front page would have shown at each point beside what was
+ * actually recorded.
+ *
+ * Computed here rather than in the page: a second implementation in admin.html
+ * would be free to drift from this one, and a chart that disagrees with the
+ * front page about the front page is worse than no chart.
+ *
+ * @param {Array<{t: number, score: number}>} ascending oldest first, `t` in ms
+ */
+export function displayedSeries(ascending, { limit = 5, hours = 6 } = {}) {
+  const span = hours * 3600_000;
+  return ascending.map((point, i) => {
+    // The window as recentRatings() would have returned it at that moment:
+    // inside the time bound, newest first, at most `limit`.
+    const window = [];
+    for (let j = i; j >= 0 && window.length < limit; j--) {
+      if (point.t - ascending[j].t > span) break;
+      window.push(ascending[j]);
+    }
+    const { row, basis } = currentReading(window);
+    return { ...point, displayed: row.score, basis };
+  });
+}
