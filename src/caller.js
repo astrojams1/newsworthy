@@ -182,9 +182,8 @@ Some sandboxes permit neither request: an interpreter with no network egress
 model assembled. Both limits are deliberate, and no wording defeats them.
 
 A caller in that position ends its reply with the payload alone, as a JSON
-object, and states that it was **not** submitted and needs pasting into
-${baseUrl}/admin, where the "Paste a reading" box takes it verbatim. A verdict a
-human can paste in ten seconds is not a failed run. A verdict reported as
-submitted when it was not is.
+object, and states that it was **not** submitted. A verdict surfaced as
+unsubmitted can still be sent by whoever reads it. A verdict reported as
+submitted when it was not cannot be, because nobody knows to.
 `;
 }

@@ -46,11 +46,16 @@ Not every agent can submit, and the ones that cannot are blocked by design.
 ChatGPT's interpreter has no network (`curl` cannot resolve the host) and its
 browser refuses to fetch a URL the model assembled — a model-built URL carrying
 a token is the exfiltration shape that guard exists to stop, so no wording gets
-around it. Two routes exist for those: `/api/openapi.json` describes the caller
-API for a ChatGPT Custom GPT Action, which sends real headers; and `/admin` has
-a paste box for a verdict that could not be transmitted at all. The schema is
-served unauthenticated — it describes a gated API without containing a token,
-and a schema importer cannot present one.
+around it. `/api/openapi.json` exists for those: it describes the caller API for
+a ChatGPT Custom GPT Action, which sends real headers. The schema is served
+unauthenticated — it describes a gated API without containing a token, and a
+schema importer cannot present one.
+
+A caller that can do neither ends its reply with the payload and states that it
+was not submitted. `/admin` carried a paste box for exactly that and no longer
+does; the rule it served survives it, because the part that matters is the one
+only the caller can enforce — never report a verdict as submitted when it was
+not.
 Serve it as `text/plain`: an agent's fetch tool rejected `text/markdown` before
 exposing the body.
 

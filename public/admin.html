@@ -224,29 +224,6 @@
 
   <dl class="tiles" id="tiles"></dl>
 
-  <h2>Settings</h2>
-  <div class="settings">
-    <label class="field">Model
-      <select id="model"></select>
-    </label>
-    <label class="field">Rate every
-      <select id="interval"></select>
-    </label>
-  </div>
-  <p class="note" id="settings-note"></p>
-  <div class="settings-actions" id="settings-actions" hidden>
-    <button id="save" type="button">Save</button>
-  </div>
-
-  <h2>Paste a reading</h2>
-  <div class="settings">
-    <label class="field" style="flex:1 1 100%">Verdict JSON
-      <textarea id="paste" rows="3" placeholder='{"score": 4, "explanation": "..."}'></textarea>
-    </label>
-    <button id="paste-save" type="button">Store</button>
-  </div>
-  <p class="note" id="paste-note">For agents whose sandbox blocks the network. Stored as an external reading.</p>
-
   <h2>Score over time</h2>
   <figure>
     <figcaption id="caption">Newsworthiness, 1–10.</figcaption>
@@ -264,6 +241,20 @@
 
   <h2>Prompt versions</h2>
   <div id="prompts"></div>
+
+  <h2>Settings</h2>
+  <div class="settings">
+    <label class="field">Model
+      <select id="model"></select>
+    </label>
+    <label class="field">Rate every
+      <select id="interval"></select>
+    </label>
+  </div>
+  <p class="note" id="settings-note"></p>
+  <div class="settings-actions" id="settings-actions" hidden>
+    <button id="save" type="button">Save</button>
+  </div>
 </div>
 
 <script type="module">
@@ -590,7 +581,7 @@
     const { prompts } = await res.json();
     $('prompts').innerHTML = prompts.map((p) => `
       <details>
-        <summary>v${p.version} · ${escapeHtml(p.label)} · ${escapeHtml(p.hash)} · added ${escapeHtml(p.added)}</summary>
+        <summary>v${p.version} · ${escapeHtml(p.added)}</summary>
         <pre>${escapeHtml(p.text)}</pre>
       </details>`).join('');
   }
@@ -703,43 +694,6 @@
         await load();
       } else {
         $('settings-note').textContent = `Failed: ${body.error ?? res.statusText}`;
-      }
-    } finally {
-      button.disabled = false;
-    }
-  });
-
-  /**
-   * Some agents can produce a verdict but cannot submit it: their sandbox
-   * refuses a model-synthesized URL carrying a token, or blocks the network
-   * outright. Rather than lose the reading, take the JSON they printed and
-   * submit it here. It is stored as external, like any other caller reading.
-   */
-  $('paste-save').addEventListener('click', async () => {
-    const button = $('paste-save');
-    const note = $('paste-note');
-    let payload;
-    try {
-      payload = JSON.parse($('paste').value);
-    } catch {
-      note.textContent = 'That is not valid JSON.';
-      return;
-    }
-    button.disabled = true;
-    note.textContent = 'Storing…';
-    try {
-      const res = await fetch('/api/readings', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', ...(token ? { 'x-admin-token': token } : {}) },
-        body: JSON.stringify(payload),
-      });
-      const body = await res.json();
-      if (res.ok) {
-        note.textContent = `Stored as reading ${body.id ?? ''}.`.trim();
-        $('paste').value = '';
-        await load();
-      } else {
-        note.textContent = `Rejected: ${body.error ?? res.statusText}`;
       }
     } finally {
       button.disabled = false;
