@@ -332,7 +332,10 @@ const server = createServer(async (req, res) => {
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
         const saved = await insertRating({ ...submission, slot: null });
-        console.log(`external reading: ${saved.score}/10 (prompt v${saved.prompt_version})`);
+        const verified = saved.prompt_verified === true ? 'verified'
+          : saved.prompt_verified === false ? 'DIGEST MISMATCH' : 'no digest';
+        console.log(
+          `external reading: ${saved.score}/10 (prompt v${saved.prompt_version}, ${verified})`);
         return json(res, 201, {
           // Paired with the rejection shape, so a soft-error caller branches on
           // one field rather than on a status line it may not be able to read.
@@ -344,6 +347,9 @@ const server = createServer(async (req, res) => {
           source: saved.source,
           prompt_version: saved.prompt_version,
           prompt_hash: saved.prompt_hash,
+          // So a caller learns immediately whether the text it rated against
+          // was the text this server sent, rather than finding out never.
+          prompt_verified: saved.prompt_verified ?? null,
           // Name anything the caller sent that was not stored, so a caller
           // working from an older spec learns its model and token counts went
           // nowhere rather than assuming they landed.

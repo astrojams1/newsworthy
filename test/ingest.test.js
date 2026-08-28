@@ -195,3 +195,54 @@ test('the soft flag is transport, not content', async () => {
   // request a soft-error caller ever makes.
   assert.equal(soft.note, undefined);
 });
+
+test('a returned digest proves the caller received the text we sent', async () => {
+  // Five rewordings of "do not justify the score" produced the same rate of
+  // score-justifying sentences. Nothing distinguished "the prompt is wrong"
+  // from "the prompt never arrived", so every prompt edit was unfalsifiable.
+  const { renderPrompt, latestVersion } = await import('../src/prompts.js');
+  const prompt = renderPrompt(latestVersion());
+
+  await withServer(8823, async (get) => {
+    const base = 'token=test-caller-token&score=4&explanation=A+thing+happened';
+
+    const none = await get(base);
+    assert.equal(none.body.prompt_verified, null, 'absent is neither pass nor fail');
+
+    const ok = await get(`${base}&prompt_sha256=${prompt.digest}`);
+    assert.equal(ok.body.prompt_verified, true);
+
+    // The published 16-character hash is a prefix of the digest and is printed
+    // in the instructions beside the prompt. If it satisfied the check, the
+    // check would pass most reliably for a caller that only skimmed the page —
+    // exactly the case it exists to catch.
+    const echoed = await get(`${base}&prompt_sha256=${prompt.hash}`);
+    assert.equal(echoed.body.prompt_verified, false, 'echoing the printed prefix is not proof');
+    assert.equal(echoed.status, 201, 'and it still stores');
+
+    // A digest for a different version fails, which is the v7-rated-as-v9 case.
+    const stale = await get(`${base}&prompt_sha256=${renderPrompt(7).digest}`);
+    assert.equal(stale.body.prompt_verified, false);
+
+    for (const bogus of ['a'.repeat(64), 'not-a-digest', '']) {
+      const r = await get(`${base}&prompt_sha256=${encodeURIComponent(bogus)}`);
+      assert.equal(r.status, 201, 'a bad digest is never a rejection');
+      assert.notEqual(r.body.prompt_verified, true, `${bogus || '(empty)'} must not verify`);
+    }
+  });
+});
+
+test('the digest is a proof, not a self-report, and is never echoed as ignored', async () => {
+  const { validateSubmission, submissionFromQuery } = await import('../src/ingest.js');
+  const { renderPrompt, latestVersion } = await import('../src/prompts.js');
+  const digest = renderPrompt(latestVersion()).digest;
+  const of = (qs) => validateSubmission(submissionFromQuery(new URL(`http://x/?${qs}`).searchParams));
+
+  const v = of(`score=4&explanation=A+thing&prompt_sha256=${digest}`);
+  assert.equal(v.prompt_verified, true);
+  // Unlike model and token counts, which were removed because they were
+  // unverifiable claims, this one is checked against what the server sent.
+  assert.equal(v.note, undefined, 'not reported back as an ignored field');
+  assert.equal(v.score, 4, 'and it changes nothing about the reading');
+  assert.equal(of('score=4&explanation=A+thing').prompt_verified, null);
+});

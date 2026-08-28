@@ -101,7 +101,9 @@ its own tooling reports before any request goes out is looking at a limit on its
 side, and the POST form, which carries the sentence in a body instead of a URL,
 is not subject to one.
 
-Those two fields are the whole submission. The prompt version is stamped by the
+Those two fields are the whole reading. A third, \`prompt_sha256\`, is optional
+and says nothing about the news — it reports what text this caller received, and
+section 3 defines it. The prompt version is stamped by the
 server from whatever is current, and is not a field a caller sets: a caller that
 can name a version can pin one, and one did — every submission kept arriving as
 v3 for hours after v4 went live, so the new prompt was simultaneously live and
@@ -174,6 +176,26 @@ the prompt.
 ----- BEGIN PROMPT -----
 ${prompt.text}
 ----- END PROMPT -----
+
+### Verifying the text arrived intact
+
+\`prompt_sha256\` on a submission is the SHA-256 of the prompt exactly as
+delivered: the bytes between the two marker lines above, excluding the marker
+lines themselves and the newline directly after \`BEGIN\` and directly before
+\`END\`. Lowercase hex, all 64 characters.
+
+The 16 characters printed above are the first 16 of that digest. They are not
+the answer — a caller that returns them, or any prefix, is recorded as
+unverified, because the remaining 48 characters exist only for a caller that
+hashed the bytes it actually holds. The digest is computed with a tool, not by
+hand; a value produced any other way will not match.
+
+The server compares it against the text it sent. A mismatch is never a
+rejection: the reading stores normally and the row is marked unverified.
+Omitting the field is also fine and marks the row the same way. What this
+distinguishes is a scale that rates wrongly from a scale the rater never
+received — for months those were indistinguishable, and five revisions of one
+instruction were made without knowing which was being fixed.
 
 ## 4. When submission is impossible
 

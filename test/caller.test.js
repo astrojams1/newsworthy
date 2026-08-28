@@ -90,7 +90,7 @@ test('the submission is two fields, and says so', () => {
   // prompt_version was worse: a caller that can name a version can pin one, and
   // one did — submissions kept arriving as v3 for hours after v4 went live.
   const text = build();
-  assert.match(text, /Those two fields are the whole submission/);
+  assert.match(text, /Those two fields are the whole reading/);
   assert.match(text, /stamped by the\s+server/);
   assert.match(text, /not a field a caller\s+sets/);
   for (const gone of ['"prompt_version"', 'input_tokens', 'output_tokens',

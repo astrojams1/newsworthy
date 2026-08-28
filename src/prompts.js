@@ -362,11 +362,18 @@ export function renderPrompt(version) {
     throw new Error(`Unknown prompt version: ${version}. Known: ${Object.keys(REGISTRY).join(', ')}`);
   }
   const text = `${entry.instructions}\n\n${entry.outputContract}`;
+  const digest = createHash('sha256').update(text, 'utf8').digest('hex');
   return {
     version: entry.version,
     label: entry.label,
     text,
-    hash: createHash('sha256').update(text, 'utf8').digest('hex').slice(0, 16),
+    // Published as a 16-character prefix, which is what rows store and what the
+    // instructions page prints. The full digest is what a caller has to return
+    // to prove it received the text: a caller holding only the printed prefix
+    // cannot produce the remaining 48 characters without hashing the bytes, so
+    // echoing what it read off the page fails the check.
+    hash: digest.slice(0, 16),
+    digest,
   };
 }
 
