@@ -113,3 +113,63 @@ test('the fetch guidance carries what a real run had to learn the hard way', () 
   assert.match(text, /Reuters, AP and BBC block automated\s+fetches/);
   assert.match(text, /unreliable digit by digit/);
 });
+
+test('the GET example uses + for spaces, which more clients let through', () => {
+  // A proxying fetch layer 403'd every URL carrying %20 before it left the
+  // client, while the same URL with + went through. Both are valid; the
+  // example shows the one that survives more callers.
+  const text = build();
+  // The code block only — the prose after it names %20 to explain the choice.
+  const start = text.indexOf('GET https://example.test/api/readings');
+  const example = text.slice(start, text.indexOf('```', start));
+  assert.ok(!example.includes('%20'), 'no %20 in the GET example');
+  assert.match(example, /explanation=\w+\+\w+/, 'spaces shown as +');
+  assert.match(text, /Spaces are `\+` in that query string/);
+  assert.match(text, /a comma is\s+`%2C`/);
+});
+
+test('a 422 is documented as storing nothing, so a retry cannot duplicate', () => {
+  // A caller hit two 422s, assumed a retry would leave a stray row, and
+  // submitted a deliberately worse explanation to avoid one. Nothing had been
+  // stored either time.
+  const text = build();
+  assert.match(text, /nothing was written/);
+  assert.match(text, /Only a `201` creates one/);
+});
+
+test('the four rejections are named, and length is not one of them', () => {
+  // The caller's leading hypothesis for its 422s was an undocumented length
+  // cap on the explanation. There is none: past 400 characters the text is
+  // truncated and stored, never rejected.
+  const text = build();
+  for (const rule of ['score must be an integer from 1 to 10', 'explanation is required',
+    'explanation must not be empty', 'body must be a JSON object']) {
+    assert.ok(text.includes(rule), rule);
+  }
+  assert.match(text, /Length is not among them/);
+  assert.match(text, /truncated and stored, never rejected/);
+  // And what a 422 on a well-formed submission actually means, since that is
+  // the case the caller was in and guessed wrong about.
+  assert.match(text, /did not arrive as it was sent/);
+});
+
+test('the header is documented, for clients that only see a body on 2xx', () => {
+  assert.match(build(), /`x-newsworthy-error` header/);
+});
+
+test('every URL that needs the token is printed with it', () => {
+  // /api/instructions?format=json was printed bare. It answers 401 without a
+  // token, and a caller followed it into exactly that.
+  const text = build();
+  for (const [, url] of text.matchAll(/`(https:\/\/example\.test\/api\/instructions[^`]*)`/g)) {
+    assert.match(url, /token=/, `${url} is printed without a token`);
+  }
+});
+
+test('the JSON form is stated up front, where a summary still carries it', () => {
+  // Section 3 already said it, but a caller that summarizes has paraphrased
+  // the prompt long before reaching section 3.
+  const text = build();
+  assert.ok(text.indexOf('/api/instructions?format=json') < text.indexOf('## 1.'),
+    'named before the first section');
+});
