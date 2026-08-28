@@ -109,3 +109,89 @@ test('a query submission is validated exactly as strictly', async () => {
 });
 
 
+
+/**
+ * These drive the real route over HTTP. src/server.js has no exports and calls
+ * listen() as a side effect of import, so it is spawned as a child process
+ * rather than imported: importing it would exercise the real handler but leave
+ * a listener open that never lets `node --test` exit.
+ */
+const withServer = async (port, run) => {
+  const { spawn } = await import('node:child_process');
+  const child = spawn(process.execPath, ['src/server.js'], {
+    env: {
+      ...process.env,
+      PORT: String(port),
+      CALLER_TOKEN: 'test-caller-token',
+      NEWSWORTHY_SQL_DRIVER: 'pglite',
+      NEWSWORTHY_MOCK: '1',
+    },
+    stdio: 'ignore',
+  });
+  try {
+    const base = `http://127.0.0.1:${port}`;
+    for (let i = 0; i < 100; i++) {
+      try {
+        await fetch(`${base}/healthz`);
+        break;
+      } catch {
+        await new Promise((r) => setTimeout(r, 100));
+      }
+    }
+    await run(async (qs) => {
+      const res = await fetch(`${base}/api/readings?${qs}`);
+      return { status: res.status, body: await res.json() };
+    });
+  } finally {
+    child.kill();
+  }
+};
+
+test('soft_errors=1 puts a rejection where a body-blind client can read it', async () => {
+  // The x-newsworthy-error header was the first attempt at this and it missed:
+  // the caller it was built for cannot read headers on a non-2xx either. Its
+  // fetch tool collapses every failure into a single envelope carrying no
+  // headers, no body and no status text, so a 2xx is the only channel left.
+  await withServer(8811, async (get) => {
+    const token = 'token=test-caller-token';
+
+    // Unchanged for every client that can read a status code.
+    const hard = await get(`${token}&score=3`);
+    assert.equal(hard.status, 422);
+    assert.equal(hard.body.error, 'explanation is required');
+
+    const soft = await get(`${token}&score=3&soft_errors=1`);
+    assert.equal(soft.status, 200, 'readable by a client that only sees 2xx');
+    assert.deepEqual(soft.body, {
+      ok: false, stored: false, status: 422, error: 'explanation is required',
+    });
+
+    // Auth is softened too: a caller that cannot read a 401 is stuck silently
+    // and permanently, which is the worst failure of the set.
+    const unauth = await get('score=3&explanation=Quiet+day&soft_errors=1');
+    assert.equal(unauth.status, 200);
+    assert.equal(unauth.body.status, 401);
+    assert.equal(unauth.body.stored, false);
+
+    // A stored reading answers in the same two fields, so the caller branches
+    // on `ok` rather than on a status line it cannot see. `stored` is not
+    // decoration: a 200 meaning "rejected" is a trap for anything reading only
+    // the status line, so the body says it outright.
+    const ok = await get(`${token}&score=3&explanation=Quiet+day&soft_errors=1`);
+    assert.equal(ok.status, 201);
+    assert.equal(ok.body.ok, true);
+    assert.equal(ok.body.stored, true);
+    assert.ok(ok.body.id > 0);
+  });
+});
+
+test('the soft flag is transport, not content', async () => {
+  const { validateSubmission, submissionFromQuery } = await import('../src/ingest.js');
+  const of = (qs) => validateSubmission(submissionFromQuery(new URL(`http://x/?${qs}`).searchParams));
+  const plain = of('score=4&explanation=A+thing+happened');
+  const soft = of('score=4&explanation=A+thing+happened&soft_errors=1');
+  assert.deepEqual(soft, plain, 'it changes how a result is reported, never what is stored');
+  // And it is not echoed as an ignored field, which would put a note on every
+  // request a soft-error caller ever makes.
+  assert.equal(soft.note, undefined);
+});

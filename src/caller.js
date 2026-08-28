@@ -88,11 +88,18 @@ GET ${baseUrl}/api/readings?token=<TOKEN>&score=<1-10>
     &explanation=Iran+war+de-escalating+as+Washington+shifts+to+economic+pressure
 \`\`\`
 
-Spaces are \`+\` in that query string. A proxying fetch layer rejected every URL
-carrying \`%20\` with a 403 before it left the client, while the same URL with
-\`+\` went through; both are valid, so the example uses the one that survives
-more clients. Other reserved characters are still percent-encoded — a comma is
-\`%2C\`, a semicolon \`%3B\`, an ampersand \`%26\`.
+Spaces are \`+\` in that query string, because \`+\` costs one character where
+\`%20\` costs three. Other reserved characters are still percent-encoded — a
+comma is \`%2C\`, a semicolon \`%3B\`, an ampersand \`%26\`.
+
+That the encoding is worth a sentence at all is a length matter. One client
+refuses to send any URL over 250 characters, rejecting it locally with a 403
+that never reaches this API, and the fixed part of a submission — host, path,
+token, score — is already about 95 of those. An explanation encoded with \`%20\`
+instead of \`+\` can cross that line on spaces alone. A caller seeing a failure
+its own tooling reports before any request goes out is looking at a limit on its
+side, and the POST form, which carries the sentence in a body instead of a URL,
+is not subject to one.
 
 Those two fields are the whole submission. The prompt version is stamped by the
 server from whatever is current, and is not a field a caller sets: a caller that
@@ -108,10 +115,23 @@ nowhere.
 corrected retry replaces the attempt rather than duplicating it — a rejected
 submission cannot leave a stray row. Only a \`201\` creates one.
 
-The reason is in the response body and in the \`x-newsworthy-error\` header. The
-header exists because some fetch tools surface a body only on 2xx and return a
-bare status code otherwise; a caller reading that header learns which field was
-at fault where a caller reading only the body learns nothing.
+The reason is in the response body and in the \`x-newsworthy-error\` header.
+
+Some fetch tools surface neither on a non-2xx: one collapses every failure into
+\`{"error_type":"CLIENT_ERROR","message":"The page returned a 422 client
+error"}\` with no headers, no body and no status text, which leaves the reason
+unreachable however it is sent. Appending \`&soft_errors=1\` serves rejections as
+\`200\` with the real status inside the body instead:
+
+\`\`\`
+{"ok": false, "stored": false, "status": 422, "error": "explanation is required"}
+\`\`\`
+
+A stored reading answers \`{"ok": true, "stored": true, ...}\`, so a caller that
+sets the flag branches on \`ok\` rather than on a status line it cannot see.
+\`stored\` says outright whether a row exists, because a \`200\` that means
+rejected would otherwise read as success. Clients that can see status codes omit
+the flag and get ordinary ones.
 
 There are four rejections, and all four are about a field being absent or
 malformed:

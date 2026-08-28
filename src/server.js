@@ -52,6 +52,29 @@ function json(res, status, body, headers = {}) {
  */
 const because = (message) => ({ 'x-newsworthy-error': message });
 
+/**
+ * A rejection some clients can actually read.
+ *
+ * The header above was the first attempt and it failed: the caller it was built
+ * for cannot see headers either. Its fetch tool collapses every non-2xx into
+ * one envelope — `{"error_type":"CLIENT_ERROR","message":"The page returned a
+ * 422 client error"}` — with no headers, no body and no status text. For that
+ * client the only readable channel is a 2xx.
+ *
+ * So `soft_errors=1` is opt-in: a caller that sets it gets 200 with the real
+ * status in the body, and every other client keeps ordinary status codes. The
+ * body always carries `ok` and `stored`, because a 200 that means "rejected" is
+ * a trap for anything that reads only the status line — a caller asking for
+ * this has to be told plainly that nothing was written.
+ */
+function rejection(res, url, status, message) {
+  console.warn(`reading rejected ${status}: ${message}`);
+  if (url.searchParams.get('soft_errors') === '1') {
+    return json(res, 200, { ok: false, stored: false, status, error: message }, because(message));
+  }
+  return json(res, status, { error: message }, because(message));
+}
+
 function secretMatches(supplied, expected) {
   const a = Buffer.from(String(supplied ?? ''));
   const b = Buffer.from(expected);
@@ -266,18 +289,17 @@ const server = createServer(async (req, res) => {
     // plain fetch: no custom headers, no request body. Those carry the token
     // and the reading in the query string instead.
     if (path === '/api/readings' && (req.method === 'POST' || req.method === 'GET')) {
-      if (!callerAuthorized(url, req)) {
-        console.warn('reading rejected 401: bad or missing token');
-        return json(res, 401, { error: 'unauthorized' }, because('unauthorized'));
-      }
+      // Auth is softened too. A caller that cannot read a 401 is stuck
+      // permanently and silently, which is the worst of the failures here, and
+      // nothing is disclosed: this route and its token requirement are
+      // published in the instructions.
+      if (!callerAuthorized(url, req)) return rejection(res, url, 401, 'unauthorized');
       let body;
       try {
         body = req.method === 'GET' ? submissionFromQuery(url.searchParams) : await readJsonBody(req);
       } catch (err) {
         const message = String(err?.message ?? err);
-        console.warn(`reading rejected ${err instanceof SubmissionError ? 422 : 400}: ${message}`);
-        if (err instanceof SubmissionError) return json(res, 422, { error: message }, because(message));
-        return json(res, 400, { error: message }, because(message));
+        return rejection(res, url, err instanceof SubmissionError ? 422 : 400, message);
       }
       try {
         const submission = validateSubmission(body);
@@ -286,6 +308,10 @@ const server = createServer(async (req, res) => {
         const saved = await insertRating({ ...submission, slot: null });
         console.log(`external reading: ${saved.score}/10 (prompt v${saved.prompt_version})`);
         return json(res, 201, {
+          // Paired with the rejection shape, so a soft-error caller branches on
+          // one field rather than on a status line it may not be able to read.
+          ok: true,
+          stored: true,
           id: saved.id,
           created_at: saved.created_at,
           score: saved.score,
@@ -301,10 +327,7 @@ const server = createServer(async (req, res) => {
         // Logged, not just returned. Nothing was recorded about the two 422s
         // that cost a caller its explanation on 2026-08-28, so which of the
         // four rules fired could not be established afterwards from anything.
-        if (err instanceof SubmissionError) {
-          console.warn(`reading rejected 422: ${err.message}`);
-          return json(res, 422, { error: err.message }, because(err.message));
-        }
+        if (err instanceof SubmissionError) return rejection(res, url, 422, err.message);
         throw err;
       }
     }
