@@ -221,6 +221,45 @@ Scale
 
 ${V8_SCALE}`;
 
+// The rungs themselves place a normal day at 3. v8 left v7's rungs alone and
+// bolted the recalibration onto Summary as prose, which is why v8 kept rating
+// high: the scale still described the same bands.
+const V9_SCALE = `1. Nothing new; skip the news.
+2. Ongoing story; nothing changed today.
+3. Significant elsewhere; changes nothing for you.
+4. Touches you indirectly; no action yet.
+5. Changes a decision you'll make soon.
+6. Act today; plans need adjusting.
+7. Major shock breaking right now.
+8. Severe disruption, broad and immediate.
+9. Systemic crisis; check news constantly.
+10. Extreme global threat; drop everything.`;
+
+// The author's own calibration, verbatim. Never invented: an example nobody
+// scored is this app's opinion dressed up as the author's.
+const V9_EXAMPLES = `2 — Standing war continues, ceasefire holding, nothing new.
+3 — Foreign flood kills hundreds; no domestic effect.
+3 — Corporate settlement, billions, no user action needed.
+3 — Trade dispute escalates by one more round.`;
+
+const V9_INSTRUCTIONS = `Summary
+
+Rate how much the current news warrants attention right now, 1-10.
+
+Sources
+
+Current top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.
+
+Markets confirm late and are shut two thirds of the time. Their silence is not evidence against an event.
+
+Scale
+
+${V9_SCALE}
+
+Examples
+
+${V9_EXAMPLES}`;
+
 const V5_OUTPUT_CONTRACT = `Output
 
 Reply with a single JSON object and nothing else — no prose, no markdown fences:
@@ -283,6 +322,13 @@ const REGISTRY = {
     label: 'novelty-and-reach-v8',
     added: '2026-08-28',
     instructions: V8_INSTRUCTIONS,
+    outputContract: V5_OUTPUT_CONTRACT,
+  },
+  9: {
+    version: 9,
+    label: 'examples-v9',
+    added: '2026-08-28',
+    instructions: V9_INSTRUCTIONS,
     outputContract: V5_OUTPUT_CONTRACT,
   },
 };
