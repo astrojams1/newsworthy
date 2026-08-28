@@ -308,6 +308,16 @@ version is live, so they cannot go stale as versions accumulate. A rule in prose
 alone is a rule that gets forgotten on the version where it matters. An eighth
 rule needs an eighth test — a count check fails otherwise.
 
+**Adding a criterion to the Scale gives the rater something to narrate.** v9
+put reach in rung 3 — "Significant elsewhere; changes nothing for you" — and a
+reading came back ending "; distant from US readers." The Output contract
+already said "do not justify the score", and had since v2; the rule was there
+and the clause appeared anyway. v10 restates it as what the sentence may
+contain rather than what it may not do, and leaves Scale and Examples
+byte-identical, so v9 and v10 rate the same way and their readings stay
+comparable. Watch the same thing after any future scale change: whatever the
+rungs measure is what the sentences start explaining.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.

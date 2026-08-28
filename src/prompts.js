@@ -267,6 +267,21 @@ Reply with a single JSON object and nothing else — no prose, no markdown fence
 
 The explanation names the single most consequential development and its concrete effect. Report what happened; do not justify the score or characterise the day as a whole.`;
 
+// v9's Output contract said "do not justify the score" and a reading still
+// ended "; distant from US readers." Adding reach to the Scale gave the rater a
+// criterion to narrate, and it narrated it. The rule is the same rule, stated
+// in terms of what the sentence may contain rather than what it may not do.
+const V10_OUTPUT_CONTRACT = `Output
+
+Reply with a single JSON object and nothing else — no prose, no markdown fences:
+{"score": <integer 1-10>, "explanation": "<one sentence, at most 25 words>"}
+
+The explanation is the development and its concrete effect, and nothing else. It does not say who the news reaches or fails to reach, how near or far it is, or why it scored what it did. The score carries all of that already.`;
+
+// Scale and Examples are byte-identical to v9: this changes what the sentence
+// may contain, not how a story is rated, so v9 and v10 readings are comparable.
+const V10_INSTRUCTIONS = V9_INSTRUCTIONS;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -330,6 +345,13 @@ const REGISTRY = {
     added: '2026-08-28',
     instructions: V9_INSTRUCTIONS,
     outputContract: V5_OUTPUT_CONTRACT,
+  },
+  10: {
+    version: 10,
+    label: 'sentence-is-the-development-v10',
+    added: '2026-08-28',
+    instructions: V10_INSTRUCTIONS,
+    outputContract: V10_OUTPUT_CONTRACT,
   },
 };
 
