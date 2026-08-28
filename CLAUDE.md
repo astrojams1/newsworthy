@@ -99,14 +99,28 @@ it is the one small field always present, which is what makes leaving the
 separator off it safe. While model led that line it began with a stray dot,
 because source sits on its own line above rather than beside it.
 
-**A rejection has to travel in a header.** A caller agent's fetch tool surfaces
-the response body only on 2xx; on anything else it returns the bare status code.
-So a 422 whose whole purpose is to name the field at fault told one caller
-nothing, and it spent four attempts guessing — settling on a deliberately worse
-explanation to avoid a duplicate row that a 422 never creates. Rejections now
-carry `x-newsworthy-error` as well as the body, and every rejection is
-`console.warn`ed: nothing was recorded about those two 422s, so which of the four
-rules fired could not be established afterwards from anything.
+**A rejection some clients can only read as a 200.** A caller agent's fetch tool
+surfaces nothing on a non-2xx — one collapses every failure into
+`{"error_type":"CLIENT_ERROR","message":"The page returned a 422 client error"}`
+with no headers, no body and no status text. So a 422 whose whole purpose is to
+name the field at fault told one caller nothing, and it spent four attempts
+guessing before settling on a deliberately worse explanation to avoid a
+duplicate row that a 422 never creates.
+
+`x-newsworthy-error` was the first fix and it missed: that client cannot read
+headers either. `&soft_errors=1` is the one that works — rejections come back as
+`200` with `{"ok": false, "stored": false, "status": 422, "error": …}`, and a
+stored reading answers `{"ok": true, "stored": true, …}`, so such a caller
+branches on `ok`. `stored` is not decoration: a 200 meaning rejected is a trap
+for anything reading only the status line. Omitting the flag keeps ordinary
+status codes, so nothing changes for clients that can read them. Auth is
+softened too — a caller that cannot read a 401 is stuck silently and
+permanently, and nothing is disclosed that the instructions do not already
+publish.
+
+Every rejection is `console.warn`ed. Nothing was recorded about the original
+422s, so which of the four rules fired could not be established afterwards from
+anything.
 
 There are only four, and all are about a field being absent or malformed. There
 is no length rule: past 400 characters `explanation` is truncated and stored,
@@ -115,15 +129,37 @@ and the prompt's 25-word guidance is style, not a limit the server enforces. A
 the request did not arrive as it was sent — so the fix is to send it again, not
 to shorten the sentence.
 
-**Spaces in the GET form are `+`.** A caller's proxying fetch layer 403'd every
-URL carrying `%20` before it left the client; the same URL with `+` went through.
-Both are valid, so the documented example uses the one that survives more
-clients. Other reserved characters are still percent-encoded.
+**Spaces in the GET form are `+` because the URL has a length budget.** One
+client refuses to send any URL over 250 characters, rejecting it locally with a
+403 that never reaches this API, and the fixed part of a submission — host,
+path, token, score — is already about 95 of those. `%20` costs three characters
+per space where `+` costs one, which on a median 140-character explanation is
+the difference between fitting and not. Other reserved characters are still
+percent-encoded.
+
+This was first reported as an encoding-compatibility problem — `%20` rejected,
+`+` accepted — and that was wrong: the two attempts that failed were simply the
+two that were longest, because percent-encoding their spaces pushed them over.
+A 107-character URL containing `%20` goes through fine. The recommendation did
+not change; the reason it is right did.
+
+The budget does not explain everything. Six of the last 48 stored readings would
+have needed a URL over 250 characters, one of them 285, so the limit is not the
+flat wall a single bisection made it look like. The POST form carries the
+sentence in a body and is subject to none of this.
 
 **`shape()` in `src/db.js` converts only the columns a query selected.** Emitting
 a key for an unselected column yields a null that reads as "nothing recorded"
 rather than "not asked for"; `history()` selects no usage columns, and that null
 was misread as data loss.
+
+**The external caller runs hourly, not on this app's cadence.** A scheduled
+Cowork task fires at `2 * * * *` — 48 of the last 48 readings are external, one
+per hour, clustered at :03–:05. Each is an independent session with no memory of
+the others. That is why no cron run has executed anything since v4: the rolling
+staleness window is suppressed continuously, so this app's own cadence setting
+is inert while the caller keeps running, and its model spend is near zero
+because the caller is paying instead.
 
 **The cron only fires if nothing arrived within the interval.** A rolling
 window from the newest reading, not the slot boundary — an external reading at

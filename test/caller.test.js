@@ -114,10 +114,10 @@ test('the fetch guidance carries what a real run had to learn the hard way', () 
   assert.match(text, /unreliable digit by digit/);
 });
 
-test('the GET example uses + for spaces, which more clients let through', () => {
-  // A proxying fetch layer 403'd every URL carrying %20 before it left the
-  // client, while the same URL with + went through. Both are valid; the
-  // example shows the one that survives more callers.
+test('the GET example uses + for spaces, which is shorter than %20', () => {
+  // Not an encoding-compatibility matter, though it was first reported as one:
+  // a client refuses URLs over 250 characters, and %20 costs three characters
+  // per space where + costs one.
   const text = build();
   // The code block only — the prose after it names %20 to explain the choice.
   const start = text.indexOf('GET https://example.test/api/readings');
@@ -125,7 +125,21 @@ test('the GET example uses + for spaces, which more clients let through', () => 
   assert.ok(!example.includes('%20'), 'no %20 in the GET example');
   assert.match(example, /explanation=\w+\+\w+/, 'spaces shown as +');
   assert.match(text, /Spaces are `\+` in that query string/);
-  assert.match(text, /a comma is\s+`%2C`/);
+  assert.match(text, /a\s+comma is `%2C`/);
+  assert.match(text, /refuses to send any URL over 250 characters/);
+  assert.match(text, /POST form, which carries the sentence in a body/);
+});
+
+test('a body-blind client is offered a 2xx channel for rejections', () => {
+  // The x-newsworthy-error header was the first attempt and it missed: the
+  // caller it was built for cannot read headers on a non-2xx either. Its tool
+  // collapses every failure into one envelope with no headers and no body.
+  const text = build();
+  assert.match(text, /&soft_errors=1/);
+  assert.match(text, /"ok": false, "stored": false, "status": 422/);
+  assert.match(text, /branches on `ok`/);
+  // And the trap it has to name: a 200 that means rejected.
+  assert.match(text, /would otherwise read as success/);
 });
 
 test('a 422 is documented as storing nothing, so a retry cannot duplicate', () => {
