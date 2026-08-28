@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
 import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, stats, usageBaseline, voidRating } from './db.js';
-import { currentReading } from './current.js';
+import { currentReading, displayedSeries } from './current.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
@@ -365,12 +365,16 @@ const server = createServer(async (req, res) => {
       ]);
       return json(res, 200, {
         hours,
+        // Each point carries what the front page would have shown at that
+        // moment, so the chart can draw the displayed value against the raw
+        // readings without reimplementing the rule.
+        points: displayedSeries(points.map((p) => ({ ...p, t: Date.parse(p.created_at) })))
+          .map(({ t, ...rest }) => rest),
         interval_minutes: config.intervalMinutes,
         cadence: intervalLabel(config.intervalMinutes),
         model: config.model,
         projected_monthly_usd: projectMonthlyUsd(statsRow.avg_cost_usd, config.intervalMinutes),
         stats: statsRow,
-        points,
         failures: failedRuns,
         attempts,
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),

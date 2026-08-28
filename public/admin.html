@@ -90,6 +90,19 @@
   .series-line { fill: none; stroke: var(--series); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
   .series-area { fill: var(--series-soft); stroke: none; }
   .series-dot { fill: var(--series); stroke: var(--surface); stroke-width: 2; }
+  /* Raw readings are drawn as scatter, not as a line. Their lag-1
+     autocorrelation is about -0.11, so joining them up would draw a continuity
+     the numbers do not have. Hollow so the displayed line reads on top. */
+  .raw-dot { fill: none; stroke: var(--ink-faint); stroke-width: 1.25; }
+  /* A reading far enough above the recent level to bypass the median. */
+  .raw-dot.shock { fill: var(--series); stroke: var(--series); }
+  .legend { font-size: 0.75rem; color: var(--ink-faint); display: flex; gap: 0.25rem 1rem;
+            align-items: center; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .legend b { font-weight: 500; color: var(--ink-muted); }
+  .legend .swatch { display: inline-block; width: 1.25rem; height: 0; vertical-align: middle;
+                    border-top: 2px solid var(--series); margin-right: 0.375rem; }
+  .legend .swatch.raw { border: 1.25px solid var(--ink-faint); width: .5rem; height: .5rem;
+                        border-radius: 50%; }
   .crosshair { stroke: var(--ink-faint); stroke-width: 1; stroke-dasharray: 3 3; }
   /* Failures carry a glyph as well as colour — never colour alone. */
   .failure-mark { stroke: var(--danger); stroke-width: 1.75; stroke-linecap: round; }
@@ -106,6 +119,7 @@
   .tooltip b { font-size: 0.9375rem; font-weight: 600; }
   .tooltip .t-time { color: var(--ink-muted); display: block; }
   .tooltip .t-explanation { color: var(--ink); display: block; margin-top: 0.25rem; }
+  .tooltip .t-shown { color: var(--series); }
   .tooltip[hidden] { display: none; }
   #focus[hidden] { display: none; }   /* SVG ignores the bare `hidden` attribute */
 
@@ -170,6 +184,9 @@
   @media (max-width: 560px) {
     header h1 { flex: 1 0 100%; }
     header .spacer { display: none; }
+    /* Four legend lines pushed the chart off a phone screen. The two series
+       have to be named; the counts are readable off the chart itself. */
+    .legend-extra { display: none; }
   }
   .empty { color: var(--ink-muted); font-size: 0.875rem; padding: 2rem 0; }
   details summary { cursor: pointer; font-size: 0.8125rem; color: var(--ink-muted); }
@@ -360,7 +377,9 @@
       return;
     }
     const x = xScale(points);
-    const coords = points.map((p) => ({ ...p, cx: x(p.t), cy: yOf(p.score) }));
+    const coords = points.map((p) => ({
+      ...p, cx: x(p.t), cy: yOf(p.score), dy: yOf(p.displayed ?? p.score),
+    }));
 
     const gridRows = [1, 4, 7, 10].map((v) => {
       const y = yOf(v);
@@ -373,15 +392,19 @@
       return `<text class="axis-label" x="${cx.toFixed(1)}" y="${H - 8}" text-anchor="middle">${label}</text>`;
     });
 
-    const line = coords.map((p, i) => `${i ? 'L' : 'M'}${p.cx.toFixed(1)} ${p.cy.toFixed(1)}`).join(' ');
+    // The line is what the front page shows; the scatter is what was recorded.
+    const line = coords.map((p, i) => `${i ? 'L' : 'M'}${p.cx.toFixed(1)} ${p.dy.toFixed(1)}`).join(' ');
     const area = `${line} L${coords.at(-1).cx.toFixed(1)} ${PAD.t + plotH} L${coords[0].cx.toFixed(1)} ${PAD.t + plotH} Z`;
-    const dots = coords.length <= 120
-      ? coords.map((p) => `<circle class="series-dot" cx="${p.cx.toFixed(1)}" cy="${p.cy.toFixed(1)}" r="3.5"></circle>`).join('')
-      : `<circle class="series-dot" cx="${coords.at(-1).cx.toFixed(1)}" cy="${coords.at(-1).cy.toFixed(1)}" r="4"></circle>`;
+    const raw = coords.length <= 400
+      ? coords.map((p) => `<circle class="raw-dot${p.basis === 'shock' ? ' shock' : ''}" `
+          + `cx="${p.cx.toFixed(1)}" cy="${p.cy.toFixed(1)}" r="2.75"></circle>`).join('')
+      : '';
+    const dots = `<circle class="series-dot" cx="${coords.at(-1).cx.toFixed(1)}" cy="${coords.at(-1).dy.toFixed(1)}" r="4"></circle>`;
 
     chart.innerHTML = `
       ${gridRows}${ticks.join('')}
       <path class="series-area" d="${area}"></path>
+      ${raw}
       <path class="series-line" d="${line}"></path>
       ${dots}
       ${renderFailures(x)}
@@ -436,8 +459,13 @@
       focusDot.setAttribute('cy', nearest.cy);
 
       tooltip.hidden = false;
+      // Both numbers, and only when they differ — repeating "5/10 · shown 5"
+      // on the 40% of points where the reading is the displayed value is noise.
+      const shown = nearest.displayed != null && nearest.displayed !== nearest.score
+        ? ` <span class="t-shown">shown ${nearest.displayed}${nearest.basis === 'shock' ? '' : ' (median)'}</span>`
+        : (nearest.basis === 'shock' ? ' <span class="t-shown">shown, above the level</span>' : '');
       tooltip.innerHTML =
-        `<b>${nearest.score}/10</b> <span class="t-time">${fmtTime.format(nearest.t)}</span>` +
+        `<b>${nearest.score}/10</b>${shown} <span class="t-time">${fmtTime.format(nearest.t)}</span>` +
         `<span class="t-explanation">${escapeHtml(nearest.explanation ?? '')}</span>`;
       // Keep the card inside the figure at both ends of the series.
       const left = (nearest.cx / W) * box.width;
@@ -566,12 +594,19 @@
     renderTiles(data);
     renderChart();
     renderRuns(data.attempts);
-    // Same badge as the front page: the newest reading, not the newest attempt.
-    setFavicon(points.length ? points[points.length - 1].score : null);
+    // Same badge as the front page, which means the displayed value rather
+    // than the newest reading — those differ on about 60% of hours.
+    setFavicon(points.length ? points.at(-1).displayed ?? points.at(-1).score : null);
     // The reading count lives in the tiles above; repeating it here said the
     // same number twice on one screen.
-    $('caption').textContent =
-      'Newsworthiness 1–10' + (failures.length ? ' · ✕ marks a failed run' : '');
+    const shocks = points.filter((p) => p.basis === 'shock').length;
+    $('caption').innerHTML =
+      '<span class="legend">'
+      + '<span><b><span class="swatch"></span>Displayed</b> — median of the last 5</span>'
+      + '<span><b><span class="swatch raw"></span>Readings</b> — as submitted</span>'
+      + (shocks ? `<span class="legend-extra">${shocks} clear of the level, unsmoothed</span>` : '')
+      + (failures.length ? '<span class="legend-extra">✕ failed run</span>' : '')
+      + '</span>';
     $('status').textContent = `updated ${fmtClock.format(new Date())}`;
   }
 
