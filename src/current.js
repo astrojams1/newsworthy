@@ -11,9 +11,15 @@
  * better with.
  *
  * A median of five cuts the standard deviation to 0.43. Five rather than four
- * because an odd window makes the median an actual observed reading: the score
- * and the sentence beside it then come from one real row, instead of a computed
- * number sitting next to somebody else's explanation.
+ * because an odd window makes the median an actual observed score rather than a
+ * computed midpoint: this is a number out of ten, and a front page reading 4.5
+ * is not the product.
+ *
+ * Only the score is smoothed. The route pairs it with the newest reading's
+ * sentence, because the two answer different questions: the number is a level,
+ * which a median estimates better, and the sentence is what happened, which
+ * goes stale. This returns the row the score came from; the caller decides what
+ * to show beside it.
  *
  * The cost of any smoothing is lag, which is what v6 was written to remove — a
  * shock would take five readings to register. So the median governs the quiet

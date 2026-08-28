@@ -169,16 +169,21 @@ const server = createServer(async (req, res) => {
       // No countdown: an external caller can post a reading at any moment, so
       // the next update is genuinely not predictable. The page states when the
       // current reading arrived and nothing more.
+      // The score is smoothed; the sentence is not. The number answers "how
+      // newsworthy is it", which is a level and benefits from a median. The
+      // sentence answers "what happened", which is a fact about right now and
+      // gets stale — a median row's sentence can be hours behind the news it
+      // sits beside. So they come from different rows on purpose, and the page
+      // is dated from the sentence's row, which is always the newest reading.
+      const newest = recent[0] ?? row;
       return json(res, 200, {
         score: row.score,
-        explanation: row.explanation,
-        created_at: row.created_at,
-        // When the page was last told anything, which is the newest reading in
-        // the window — not the row the median happened to land on. Those differ
-        // by up to a few hours, and reporting the row's own time made a page
-        // that had just been updated read as hours stale.
-        updated_at: (recent[0] ?? row).created_at,
-        source: row.source ?? 'cron',
+        explanation: newest.explanation,
+        created_at: newest.created_at,
+        // Which row the score came from, when it is not the newest. Never
+        // displayed; the first thing wanted when a number looks wrong.
+        score_from: row.created_at === newest.created_at ? undefined : row.created_at,
+        source: newest.source ?? 'cron',
         // Not displayed. Which rule produced the number is the first thing
         // anyone debugging a surprising front page will want.
         basis,
