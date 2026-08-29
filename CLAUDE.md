@@ -182,9 +182,30 @@ softened too — a caller that cannot read a 401 is stuck silently and
 permanently, and nothing is disclosed that the instructions do not already
 publish.
 
-Every rejection is `console.warn`ed. Nothing was recorded about the original
-422s, so which of the four rules fired could not be established afterwards from
-anything.
+Every rejection is `console.warn`ed and leaves a row in `rejections`. Nothing
+was recorded about the original 422s, so which of the four rules fired could
+not be established afterwards — a log answers a question asked the same day,
+and function logs are ephemeral. The row carries the status, reason, method and
+whether `soft_errors` was set, and nothing from the request body: each reason
+names the field at fault, so the reason is the whole finding. They surface at
+`/api/admin/history`, behind the admin token, over the range that page asks
+for — a fixed newest-25 would put an old incident's rows out of reach of every
+endpoint as soon as 25 newer ones arrived.
+
+A rejection is not a reading and lives in its own table, so "a 422 stores
+nothing" stays true of `ratings` and everything computed from it.
+
+The write is awaited, and the first cut was not. A serverless function may be
+frozen the moment its response ends, so an unawaited insert races the freeze
+and loses — the row would have existed everywhere except the deployment it was
+built for. No test here can see that: a long-lived local server always drains
+an in-flight insert, so both versions pass identically, and it is asserted
+against the source the way `max_uses` already is.
+
+The 401 is deliberately not recorded. It is raised before the token is checked,
+so it is the one refusal an unauthenticated request can provoke, and a row for
+it would turn a public URL into an unbounded database write. All four rules are
+raised after auth has passed, so nothing the table exists for is lost.
 
 There are only four, and all are about a field being absent or malformed. There
 is no length rule: past 400 characters `explanation` is truncated and stored,
@@ -425,7 +446,14 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ## Testing
 
 ```bash
-npm test        # 22 tests; database tests run against PGlite, real Postgres
-                # in-process, so the SQL is exercised rather than mocked
+npm test        # eleven files under test/; database tests run against PGlite,
+                # real Postgres in-process, so the SQL is exercised not mocked
+                # test/with-server.js is the shared harness, not a suite
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
+
+The eleven are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
+`parse`, `pricing`, `prompt-rules`, `rejections` and `scheduler`. A count of
+individual tests
+is not kept here: it is wrong again after the next PR, and a stale number in a
+document read as authoritative is worse than no number.

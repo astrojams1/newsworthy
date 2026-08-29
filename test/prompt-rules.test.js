@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { renderPrompt, latestVersion, allPrompts } from '../src/prompts.js';
+import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
 
 /**
  * PROMPT-RULES.md is the list; this file is its enforcement. Prompts are tweaked
@@ -72,15 +73,27 @@ test('rule 5 — examples are the author\'s calibration, verbatim', () => {
 test('rule 6 — append-only: published versions are frozen', () => {
   // Rows reference these hashes, so a reading stays traceable to a prompt that
   // can be reproduced exactly.
-  for (const [version, hash] of [
-    [1, '7ebe2d68813f1487'], [4, 'cce0a516da847bf4'], [5, '6470f557ee94563d'],
-    [6, 'cb27cb79f8f78ac2'], [7, 'e760cfdc6c2106ee'], [8, 'e841c5d77cd6bb33'],
-    [9, '994b299f1c979f97'], [10, 'dad2824d4df0cb4e'],
-  ]) {
+  const pinned = [
+    [1, '7ebe2d68813f1487'], [2, 'da972d2621c7f461'], [3, 'c950817fec589043'],
+    [4, 'cce0a516da847bf4'], [5, '6470f557ee94563d'], [6, 'cb27cb79f8f78ac2'],
+    [7, 'e760cfdc6c2106ee'], [8, 'e841c5d77cd6bb33'], [9, '994b299f1c979f97'],
+    [10, 'dad2824d4df0cb4e'], [11, 'b07394a17c224513'],
+  ];
+  for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
   }
   const versions = allPrompts().map((p) => p.version);
   assert.deepEqual(versions, [...versions].sort((a, b) => a - b), 'listed in order');
+
+  // The table used to skip whichever version was live: v11 was already stamped
+  // on stored readings while nothing here would have caught an edit to its
+  // text — the one case rule 6 exists for. Requiring the table to cover the
+  // registry makes pinning part of appending a version rather than something
+  // remembered.
+  assert.deepEqual([...pinned.map(([v]) => v)].sort((a, b) => a - b), [...versions].sort((a, b) => a - b),
+    `every published version must be pinned above; for each missing one add `
+    + `[version, hash] using: node -e "import('./src/prompts.js').then(m=>console.log(m.renderPrompt(N).hash))" `
+    + `— and if a pin no longer matches, a published prompt was edited: report it, never update the pin`);
   assert.equal(new Set(allPrompts().map((p) => p.hash)).size, versions.length, 'hashes distinct');
 });
 
@@ -121,23 +134,8 @@ test('the caller surface serves the current prompt and nothing else', async () =
   // latestVersion() regardless. The database then recorded a reading rated on
   // a retired scale as one rated on the current scale — the exact thing
   // server-side stamping exists to prevent.
-  const { spawn } = await import('node:child_process');
-  const child = spawn(process.execPath, ['src/server.js'], {
-    env: {
-      ...process.env,
-      PORT: '8821',
-      CALLER_TOKEN: 'test-caller-token',
-      NEWSWORTHY_SQL_DRIVER: 'pglite',
-      NEWSWORTHY_MOCK: '1',
-    },
-    stdio: 'ignore',
-  });
-  try {
-    const base = 'http://127.0.0.1:8821';
-    for (let i = 0; i < 100; i++) {
-      try { await fetch(`${base}/healthz`); break; } catch { await new Promise((r) => setTimeout(r, 100)); }
-    }
-    const token = 'token=test-caller-token';
+  await withServer({ port: PORTS.promptVersionSurface }, async (base) => {
+    const token = `token=${CALLER_TOKEN}`;
     const current = renderPrompt(latestVersion());
 
     for (const query of ['', '&version=7', '&version=1', '&version=99', '&version=abc']) {
@@ -161,9 +159,7 @@ test('the caller surface serves the current prompt and nothing else', async () =
       `${base}/api/readings?${token}&score=4&explanation=A+thing+happened`)).json();
     assert.equal(stored.prompt_version, current.version);
     assert.equal(stored.prompt_hash, current.hash);
-  } finally {
-    child.kill();
-  }
+  });
 });
 
 test('v10 changes the sentence contract and nothing about rating', () => {

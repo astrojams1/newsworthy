@@ -82,5 +82,37 @@ test('a manual run is stored as manual, not cron', async () => {
 
   await sql`DELETE FROM ratings`;
   await tick('vercel-cron', { force: true });
-  assert.equal((await latestRating()).source, 'cron', 'only the scheduler is cron');
+  assert.equal((await latestRating()).source, 'cron', 'a scheduled run is cron');
+});
+
+test('an unrecognised reason is stored as manual, not silently as cron', async () => {
+  // Which way this fails is the point. Mapping everything-but-'manual' to 'cron'
+  // is the silent default CLAUDE.md records as the original bug: a new trigger,
+  // or a typo, becomes the schedule without a word. An unknown reason should
+  // land on the merely-imprecise label, not invent a run nobody scheduled.
+  const { tick } = await import('../src/scheduler.js');
+  const { latestRating } = await import('../src/db.js');
+  const { sql } = await import('../src/sql.js');
+
+  for (const reason of ['admin', 'retry', 'vercel-crn']) {
+    await sql`DELETE FROM ratings`;
+    await tick(reason, { force: true });
+    assert.equal((await latestRating()).source, 'manual', `${reason} is not the schedule`);
+  }
+});
+
+test('the in-process scheduler is this app\'s schedule, so its runs are cron', async () => {
+  // The mapping was written around Vercel Cron and treated it as the only
+  // producer of a 'cron' reading, so on a self-hosted deployment — where
+  // start() below is the schedule — every 'scheduled' and 'startup' run was
+  // stored as a person pressing "Rate now".
+  const { tick } = await import('../src/scheduler.js');
+  const { latestRating } = await import('../src/db.js');
+  const { sql } = await import('../src/sql.js');
+
+  for (const reason of ['scheduled', 'startup']) {
+    await sql`DELETE FROM ratings`;
+    await tick(reason, { force: true });
+    assert.equal((await latestRating()).source, 'cron', `${reason} is this app's schedule`);
+  }
 });

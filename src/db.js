@@ -53,7 +53,22 @@ export function ensureSchema() {
         value      TEXT NOT NULL,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`;
+    // Rejected submissions leave a row, not only a log line: function logs are
+    // ephemeral, which is why the 2026-08-28 422s could not be attributed to any
+    // of the four rules afterwards. No request payload is stored — each reason
+    // names the field at fault, so the reason is the whole finding, and keeping
+    // bodies posted to this endpoint would be a junk magnet.
+    await sql`
+      CREATE TABLE IF NOT EXISTS rejections (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        status      SMALLINT    NOT NULL,  -- the status the caller was given
+        reason      TEXT        NOT NULL,  -- which rule fired, in its own words
+        method      TEXT,                  -- 'GET' or 'POST'
+        soft_errors BOOLEAN     NOT NULL DEFAULT false -- was the 200-shaped form on
+      )`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_created_at ON ratings (created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS rejections_created_at ON rejections (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_ok_created_at ON ratings (created_at DESC) WHERE status = 'ok'`;
     // Cron delivery can duplicate a scheduled run. One successful reading per
     // slot, enforced by the database rather than by hoping it doesn't happen.
@@ -210,31 +225,53 @@ export async function latestAttempt() {
   return shape(rows[0]);
 }
 
-/** Timeseries for the admin view. */
+/**
+ * Timeseries for the admin view.
+ *
+ * `ORDER BY created_at ASC LIMIT n` keeps the OLDEST n rows of the window, so
+ * once a window exceeds the limit the chart silently drops everything recent —
+ * and the admin page's right edge, its "Now" tile and its favicon are all
+ * `points.at(-1)`. The inner query takes the newest rows; the outer one puts
+ * them back ascending, which every consumer depends on. Both carry the `id`
+ * tiebreaker, so rows sharing a timestamp neither straddle the cut nor swap.
+ */
 export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, score, explanation, prompt_version, prompt_hash,
-           prompt_verified, model, served_by, source, caller
-      FROM ratings
-     WHERE status = 'ok' AND created_at >= ${since}
-     ORDER BY created_at ASC
-     LIMIT ${limit}`;
+    SELECT * FROM (
+      SELECT id, created_at, score, explanation, prompt_version, prompt_hash,
+             prompt_verified, model, served_by, source, caller
+        FROM ratings
+       WHERE status = 'ok' AND created_at >= ${since}
+       ORDER BY created_at DESC, id DESC
+       LIMIT ${limit}
+    ) recent
+     ORDER BY created_at ASC, id ASC`;
   return rows.map(shape);
 }
 
-/** Failed runs in the chart window, so the chart can mark them rather than
- *  silently drawing a straight line across the gap. */
+/**
+ * Failed runs in the chart window, so the chart can mark them rather than
+ * silently drawing a straight line across the gap.
+ *
+ * Windowed like history() above, and for the same reason — worse here, since
+ * failures cluster: a bad key on a 15-minute cron writes ~96 rows a day, so the
+ * window fills with the start of an outage while the operator looks for its
+ * current edge.
+ */
 export async function failures({ hours = 24 * 7, limit = 500 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, error
-      FROM ratings
-     WHERE status = 'error' AND created_at >= ${since}
-     ORDER BY created_at ASC
-     LIMIT ${limit}`;
+    SELECT * FROM (
+      SELECT id, created_at, error
+        FROM ratings
+       WHERE status = 'error' AND created_at >= ${since}
+       ORDER BY created_at DESC, id DESC
+       LIMIT ${limit}
+    ) recent
+     ORDER BY created_at ASC, id ASC`;
   return rows.map(shape);
 }
 
@@ -319,6 +356,52 @@ export async function usageBaseline({ limit = 20 } = {}) {
     outputTokens: Math.round(num(r.output_tokens) ?? 0),
     webSearchRequests: Math.round(num(r.web_search_requests) ?? 0),
   };
+}
+
+// ---- rejections -----------------------------------------------------------
+// What was refused and why, so the next 422 incident is answerable from stored
+// data rather than from logs that have since expired.
+
+/**
+ * Record one rejection. Never throws, and the promise it returns never rejects.
+ *
+ * Never throws: a failure writing the audit row must not replace the answer
+ * naming the field at fault. That is what makes it safe for the handler to
+ * await it, which it must — a serverless function may be frozen the moment its
+ * response ends, dropping an insert still in flight.
+ */
+export async function logRejection(row) {
+  try {
+    await ensureSchema();
+    await sql`
+      INSERT INTO rejections (status, reason, method, soft_errors)
+      VALUES (${row.status}, ${row.reason}, ${row.method ?? null}, ${row.soft_errors ?? false})`;
+  } catch (err) {
+    // Deliberately console.error and nothing else: a rejection that could not
+    // be recorded is still a rejection the caller has to be told about.
+    console.error('could not record rejection', err);
+  }
+}
+
+/**
+ * The recorded rejections, newest first, within the window the admin page asked
+ * for — an incident is diagnosed by widening the range to reach it, so a fixed
+ * newest-25 would put the rows the table exists for out of reach of every
+ * endpoint as soon as 25 newer ones arrived.
+ *
+ * `status` needs no NUMERIC entry: it is a SMALLINT, which both drivers parse
+ * natively, and that list is for types returned as strings.
+ */
+export async function recentRejections({ hours = 24 * 7, limit = 100 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT id, created_at, status, reason, method, soft_errors
+      FROM rejections
+     WHERE created_at >= ${since}
+     ORDER BY created_at DESC, id DESC
+     LIMIT ${limit}`;
+  return rows.map(shape);
 }
 
 // ---- settings -------------------------------------------------------------

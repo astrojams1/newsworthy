@@ -4,7 +4,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, stats, usageBaseline, voidRating } from './db.js';
+import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, stats, usageBaseline, voidRating } from './db.js';
 import { currentReading, displayedSeries } from './current.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
@@ -85,9 +85,23 @@ const because = (message) => ({ 'x-newsworthy-error': message });
  * a trap for anything that reads only the status line — a caller asking for
  * this has to be told plainly that nothing was written.
  */
-function rejection(res, url, status, message) {
+async function rejection(res, url, status, message, { method, record = true } = {}) {
+  const soft = url.searchParams.get('soft_errors') === '1';
   console.warn(`reading rejected ${status}: ${message}`);
-  if (url.searchParams.get('soft_errors') === '1') {
+  // Stored as well as logged: the 422s of 2026-08-28 could not be attributed to
+  // any of the four rules afterwards, because the logs were long gone.
+  //
+  // Awaited, which the first cut was not. A serverless function may be frozen
+  // the moment its response ends, so an unawaited insert races the freeze and
+  // loses on the one platform this table was built for. logRejection cannot
+  // throw, so waiting can delay the answer but never replace it.
+  //
+  // `record` is false only for the 401, because that is the one refusal an
+  // unauthenticated request can provoke — recording it would hand anyone who
+  // can reach the host an unbounded database write. All four rules are raised
+  // after callerAuthorized has passed, so none of them is lost.
+  if (record) await logRejection({ status, reason: message, method, soft_errors: soft });
+  if (soft) {
     return json(res, 200, { ok: false, stored: false, status, error: message }, because(message));
   }
   return json(res, status, { error: message }, because(message));
@@ -108,14 +122,24 @@ function authorized(url, req) {
  * Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when CRON_SECRET is
  * set on the project. The admin token is also accepted so /admin's "Rate now"
  * button can reach the same endpoint.
+ *
+ * Returns which credential matched, not just whether one did, because the
+ * caller also has to label the row: the bearer is the only thing that Vercel
+ * Cron sends and the only thing the button does not, so it is the sole
+ * evidence available that a request was scheduled rather than pressed. The
+ * comparison happens here once — an `x-vercel-cron-schedule` header was
+ * sniffed for this at the route instead, which nothing establishes Vercel
+ * sends, and every production run would have been filed as a button press.
  */
 function cronAuthorized(url, req) {
-  if (CRON_SECRET && secretMatches(req.headers.authorization, `Bearer ${CRON_SECRET}`)) return true;
-  if (ADMIN_TOKEN && authorized(url, req)) return true;
-  if (CRON_SECRET || ADMIN_TOKEN) return false;
+  if (CRON_SECRET && secretMatches(req.headers.authorization, `Bearer ${CRON_SECRET}`)) {
+    return 'cron-secret';
+  }
+  if (ADMIN_TOKEN && authorized(url, req)) return 'admin-token';
+  if (CRON_SECRET || ADMIN_TOKEN) return null;
   // Nothing configured: open locally for convenience, never on a public
   // deployment — an open /api/cron is an open tab on someone's API bill.
-  return !ON_VERCEL;
+  return ON_VERCEL ? null : 'open';
 }
 
 /**
@@ -228,7 +252,8 @@ const server = createServer(async (req, res) => {
     // ---- the 15-minute job ----------------------------------------------
     // Vercel Cron issues a GET; the admin button issues a POST.
     if (path === '/api/cron') {
-      if (!cronAuthorized(url, req)) {
+      const credential = cronAuthorized(url, req);
+      if (!credential) {
         const unconfigured = ON_VERCEL && !CRON_SECRET && !ADMIN_TOKEN;
         return json(res, unconfigured ? 503 : 401, {
           error: unconfigured
@@ -239,7 +264,9 @@ const server = createServer(async (req, res) => {
       if (isRunning()) return json(res, 409, { error: 'a rating is already in flight' });
       const force = url.searchParams.get('force') === '1';
       const { intervalMinutes } = await effectiveConfig();
-      const row = await tick(req.headers['x-vercel-cron-schedule'] ? 'vercel-cron' : 'manual', {
+      // The bearer identifies the scheduler; anything else reaching this route
+      // is a hand — the admin button, or a local curl on an open deployment.
+      const row = await tick(credential === 'cron-secret' ? 'vercel-cron' : 'manual', {
         slot: slotFor(new Date(), intervalMinutes),
         force,
       });
@@ -333,13 +360,20 @@ const server = createServer(async (req, res) => {
       // permanently and silently, which is the worst of the failures here, and
       // nothing is disclosed: this route and its token requirement are
       // published in the instructions.
-      if (!callerAuthorized(url, req)) return rejection(res, url, 401, 'unauthorized');
+      // Not recorded: see `record` in rejection(). This is the one refusal an
+      // unauthenticated request can provoke, so writing a row for it would
+      // hand anyone who can reach the host an unbounded database write.
+      if (!callerAuthorized(url, req)) {
+        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+      }
       let body;
       try {
         body = req.method === 'GET' ? submissionFromQuery(url.searchParams) : await readJsonBody(req);
       } catch (err) {
         const message = String(err?.message ?? err);
-        return rejection(res, url, err instanceof SubmissionError ? 422 : 400, message);
+        return rejection(res, url, err instanceof SubmissionError ? 422 : 400, message, {
+          method: req.method,
+        });
       }
       try {
         const submission = validateSubmission(body);
@@ -370,10 +404,13 @@ const server = createServer(async (req, res) => {
           ...(submission.note ? { note: submission.note } : {}),
         });
       } catch (err) {
-        // Logged, not just returned. Nothing was recorded about the two 422s
-        // that cost a caller its explanation on 2026-08-28, so which of the
-        // four rules fired could not be established afterwards from anything.
-        if (err instanceof SubmissionError) return rejection(res, url, 422, err.message);
+        // Stored and logged, not just returned. Nothing was recorded about the
+        // two 422s that cost a caller its explanation on 2026-08-28, so which
+        // of the four rules fired could not be established afterwards from
+        // anything; rejections now leave a row that outlives the log.
+        if (err instanceof SubmissionError) {
+          return rejection(res, url, 422, err.message, { method: req.method });
+        }
         throw err;
       }
     }
@@ -389,11 +426,12 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/admin/history' && req.method === 'GET') {
       const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
-      const [statsRow, points, failedRuns, attempts, config] = await Promise.all([
+      const [statsRow, points, failedRuns, attempts, refused, config] = await Promise.all([
         stats({ hours }),
         history({ hours }),
         failures({ hours }),
         recentAttempts(25),
+        recentRejections({ hours }),
         effectiveConfig(),
       ]);
       return json(res, 200, {
@@ -410,6 +448,9 @@ const server = createServer(async (req, res) => {
         stats: statsRow,
         failures: failedRuns,
         attempts,
+        // Refused submissions. A rejection is not a reading and lives in its
+        // own table, so nothing here can enter the series.
+        rejections: refused,
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });
     }

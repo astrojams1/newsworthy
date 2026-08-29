@@ -13,9 +13,21 @@ let running = false;
  * alike: the slot makes a duplicate delivery a no-op rather than a second row.
  */
 /**
- * `reason` names the trigger and now reaches the stored row, not just the log.
- * Vercel's scheduler is the only thing that produces a 'cron' reading; anything
- * else that reaches /api/cron is a person pressing "Rate now".
+ * The reasons that are this app's own schedule: Vercel Cron drives the first,
+ * the in-process scheduler the other two — and it is the schedule on every
+ * self-hosted deployment, where treating Vercel as the only producer of a
+ * 'cron' reading filed each of its runs as a button press.
+ *
+ * An allowlist rather than a test for 'manual', because of which way each
+ * fails. Mapping unknown reasons to 'cron' is the silent default CLAUDE.md
+ * records as the original bug: a new trigger, or a typo, becomes the schedule
+ * without a word. Unknown means a person or a new call site, which is what
+ * 'manual' already means.
+ */
+const SCHEDULED_REASONS = new Set(['vercel-cron', 'scheduled', 'startup']);
+
+/**
+ * `reason` names the trigger and reaches the stored row, not just the log.
  */
 export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
   const { intervalMinutes } = await effectiveConfig();
@@ -42,7 +54,10 @@ export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
   if (running) return null;
   running = true;
   try {
-    const row = await runRating({ slot: force ? null : slot, source: reason === 'vercel-cron' ? 'cron' : 'manual' });
+    const row = await runRating({
+      slot: force ? null : slot,
+      source: SCHEDULED_REASONS.has(reason) ? 'cron' : 'manual',
+    });
     const when = new Date().toISOString();
     if (row.deduped) {
       console.log(`[${when}] ${reason}: slot ${slot} already rated ${row.score}/10 — skipped`);

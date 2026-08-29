@@ -3,9 +3,9 @@
 The news anti-app. It does not give you the news. It gives you a number out of 10
 and one sentence saying why.
 
-A model checks the current top headlines every 15 minutes, rates how worthwhile it
-is to look at the news right now on a deliberately harsh 1–10 scale, and writes one
-line of justification. That is the entire product surface.
+A model checks the current top headlines every four hours by default, rates how
+worthwhile it is to look at the news right now on a deliberately harsh 1–10 scale,
+and writes one line of justification. That is the entire product surface.
 
 ```
                               4
@@ -14,7 +14,7 @@ line of justification. That is the entire product surface.
            Major chipmaker halted a fab; expect
               hardware price moves within weeks.
 
-                Rated 3 minutes ago · next in 12 min
+                    Updated 3 minutes ago
 ```
 
 ## Run it
@@ -42,13 +42,16 @@ actually wired up. Start there when a deploy misbehaves.
 |---|---|
 | `/` | The number, the sentence, nothing else |
 | `/admin` | Timeseries of the score, run log, prompt versions, "rate now" |
-| `/api/current` | `{ score, explanation, created_at, next_update_minutes }` |
-| `/api/admin/history?hours=168` | Points, stats, recent attempts, prompt versions |
+| `/api/current` | `{ score, explanation, created_at, source, basis, window }`, plus `score_from` when the score is not the newest reading's. No countdown: an external caller can post at any moment, so the next update is not predictable |
+| `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions |
 | `/api/admin/prompts` | Every prompt version, full text |
 | `/api/admin/settings` | `GET` the model/cadence and the priced options; `POST` to change them |
+| `/api/admin/readings/:id/void` | `POST` to retire a reading — status becomes `error`, the slot is released, and `?reason=` is recorded |
+| `/api/admin/readings/:id/usage` | `POST` corrected token counts to reprice a reading whose rating is sound but whose usage was not; omitted fields are cleared and the cost is recomputed from what survives |
 | `/api/instructions` | The whole caller workflow, rating prompt embedded — hand an agent this URL |
 | `/api/prompt` | Just the current versioned prompt, as JSON |
 | `/api/readings` | `POST` a reading from an external caller agent |
+| `/api/openapi.json` | The two caller endpoints as an OpenAPI schema, for a ChatGPT Custom GPT Action. Unauthenticated on purpose — it describes a token-gated API without containing a token, and a schema importer cannot present one |
 | `/api/cron` | The scheduled job — runs only if nothing arrived within the interval. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
 | `/healthz` | Liveness, plus whether the database, API key and cron secret are wired up |
 
@@ -118,9 +121,20 @@ Submission is `POST /api/readings`, or the same fields as a query string on a
 plain `GET` for a client that cannot send a body or set headers.
 
 
-The reading is stored like any other, tagged `source = 'external'` with the
-caller's name, model and usage, and shown that way in `/admin` — with the
-caller's spend counted separately from this app's.
+A submission is two fields: score and explanation. `source` is set server-side
+to `external`; a caller cannot name itself, and neither model, caller name nor
+token counts are stored. All of those were asked for once and all were
+self-reported, so all of it was recorded as fact without being checkable — an
+agent inside a harness has no token counter and will estimate if asked, and a
+guessed 85,000 input tokens is $0.48 of invented spend at Opus rates. Model,
+usage and cost are recorded only for runs this app makes itself. Anything else
+the request carries is ignored, and the response names the fields that went
+nowhere.
+
+`/admin` still separates the two: `stats()` sums `spend_usd` over this app's own
+runs only, and counts external readings alongside it as `external_runs`, shown
+as a count marked *unpriced* rather than a second spend figure — there is no
+external spend to report, by the same design.
 
 **And it suppresses the next cron run.** The scheduler only rates when nothing
 has arrived within the configured interval, so a reading posted by an agent is

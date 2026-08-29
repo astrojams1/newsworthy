@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { SubmissionError, validateSubmission } from '../src/ingest.js';
 import { latestVersion, renderPrompt } from '../src/prompts.js';
+import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
 
 const good = { score: 6, explanation: 'A thing happened.' };
 
@@ -111,49 +112,27 @@ test('a query submission is validated exactly as strictly', async () => {
 
 
 /**
- * These drive the real route over HTTP. src/server.js has no exports and calls
- * listen() as a side effect of import, so it is spawned as a child process
- * rather than imported: importing it would exercise the real handler but leave
- * a listener open that never lets `node --test` exit.
+ * These drive the real route over HTTP, through the shared harness in
+ * ./with-server.js — which spawns src/server.js rather than importing it,
+ * because it has no exports and calls listen() as a side effect.
+ *
+ * The local wrapper adds what only this file wants: a `get` that speaks
+ * /api/readings and hands back the status and the parsed body together.
  */
-const withServer = async (port, run) => {
-  const { spawn } = await import('node:child_process');
-  const child = spawn(process.execPath, ['src/server.js'], {
-    env: {
-      ...process.env,
-      PORT: String(port),
-      CALLER_TOKEN: 'test-caller-token',
-      NEWSWORTHY_SQL_DRIVER: 'pglite',
-      NEWSWORTHY_MOCK: '1',
-    },
-    stdio: 'ignore',
-  });
-  try {
-    const base = `http://127.0.0.1:${port}`;
-    for (let i = 0; i < 100; i++) {
-      try {
-        await fetch(`${base}/healthz`);
-        break;
-      } catch {
-        await new Promise((r) => setTimeout(r, 100));
-      }
-    }
-    await run(async (qs) => {
+const submitting = (port, run) =>
+  withServer({ port }, (base) =>
+    run(async (qs) => {
       const res = await fetch(`${base}/api/readings?${qs}`);
       return { status: res.status, body: await res.json() };
-    });
-  } finally {
-    child.kill();
-  }
-};
+    }));
 
 test('soft_errors=1 puts a rejection where a body-blind client can read it', async () => {
   // The x-newsworthy-error header was the first attempt at this and it missed:
   // the caller it was built for cannot read headers on a non-2xx either. Its
   // fetch tool collapses every failure into a single envelope carrying no
   // headers, no body and no status text, so a 2xx is the only channel left.
-  await withServer(8811, async (get) => {
-    const token = 'token=test-caller-token';
+  await submitting(PORTS.ingestSoftErrors, async (get) => {
+    const token = `token=${CALLER_TOKEN}`;
 
     // Unchanged for every client that can read a status code.
     const hard = await get(`${token}&score=3`);
@@ -203,8 +182,8 @@ test('a returned digest proves the caller received the text we sent', async () =
   const { renderPrompt, latestVersion } = await import('../src/prompts.js');
   const prompt = renderPrompt(latestVersion());
 
-  await withServer(8823, async (get) => {
-    const base = 'token=test-caller-token&score=4&explanation=A+thing+happened';
+  await submitting(PORTS.ingestDigest, async (get) => {
+    const base = `token=${CALLER_TOKEN}&score=4&explanation=A+thing+happened`;
 
     const none = await get(base);
     assert.equal(none.body.prompt_verified, null, 'absent is neither pass nor fail');

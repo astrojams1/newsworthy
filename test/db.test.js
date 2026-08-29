@@ -134,6 +134,23 @@ test('failures are queryable for the chart, separately from readings', async () 
   assert.ok(plotted.every((p) => p.score != null));
 });
 
+test('failures keeps the newest ones when its limit bites, still ascending', async () => {
+  // The defect history() had, worse here: failures cluster, so the window fills
+  // with the start of an outage and the chart omits every recent failure —
+  // exactly when an operator is looking for the current edge of a problem.
+  const { failures } = await import('../src/db.js');
+  const at = (h) => `2027-02-0${h}T00:00:00.000Z`; // past every other row in this file
+  for (const h of [1, 2, 3, 4, 5]) {
+    await insertRating({ ...base, slot: null, status: 'error', error: `outage-${h}`, created_at: at(h) });
+  }
+
+  const recent = await failures({ hours: 24 * 365 * 10, limit: 3 });
+  assert.deepEqual(recent.map((f) => f.error), ['outage-3', 'outage-4', 'outage-5'],
+    'the three newest, not the three oldest');
+  assert.ok(recent[0].created_at < recent[1].created_at, 'and still oldest-first for the chart');
+  assert.ok(recent[1].created_at < recent[2].created_at);
+});
+
 test('voiding a reading retires it without erasing the record', async () => {
   const { voidRating, latestRating } = await import('../src/db.js');
   const bad = await insertRating({ ...base, slot: null, status: 'ok', score: 3, explanation: 'header-less probe' });
@@ -197,4 +214,32 @@ test('voided readings drop out of the counts and the spend', async () => {
     'and its cost stops being spend',
   );
   assert.equal(after.errors, before.errors, 'a void is not a failure either');
+});
+
+test('history keeps the newest readings when the limit bites, still ascending', async () => {
+  // `ORDER BY created_at ASC LIMIT n` kept the OLDEST n rows and discarded the
+  // newest, so a full window would have drawn a chart whose right edge — and
+  // the admin page's "Now" tile and favicon, both `points.at(-1)` — were stale
+  // while looking current. Timestamps sit past every other row in this file so
+  // the assertion holds whatever those tests left behind.
+  const at = (iso, explanation, score) => ({
+    ...base, slot: null, status: 'ok', score, explanation, created_at: iso,
+  });
+  await insertRating(at('2027-01-01T00:00:00.000Z', 'window-oldest', 1));
+  await insertRating(at('2027-01-01T01:00:00.000Z', 'window-second', 2));
+  await insertRating(at('2027-01-01T02:00:00.000Z', 'window-third', 3));
+  await insertRating(at('2027-01-01T03:00:00.000Z', 'window-fourth', 4));
+  await insertRating(at('2027-01-01T04:00:00.000Z', 'window-newest', 5));
+
+  const points = await history({ hours: 24 * 365 * 10, limit: 3 });
+  assert.equal(points.length, 3);
+  assert.deepEqual(
+    points.map((p) => p.explanation),
+    ['window-third', 'window-fourth', 'window-newest'],
+    'the three newest rows in the window, oldest-first',
+  );
+  assert.ok(
+    points[0].created_at < points[1].created_at && points[1].created_at < points[2].created_at,
+    'ascending order survives the limit',
+  );
 });
