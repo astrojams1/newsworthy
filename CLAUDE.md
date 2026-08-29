@@ -293,11 +293,18 @@ type measured over 72 hours had a median of 5, so the rater was not
 discriminating between them at all. Asked what four real readings should have
 scored, the author said lower in all four cases. v8 answered that by leaving
 v7's rungs untouched and adding a paragraph to Summary explaining that scores
-should be lower — and kept rating high, because the rungs still described the
-same bands. Prose about a scale does not move a scale.
+should be lower, which is the wrong half of the job: prose about a scale does
+not move a scale.
+
+v8 was live for seventeen minutes and produced **no readings at all** —
+readings run v2, v3, v4, v7, v9, v10, v11 and skip it entirely. An earlier
+version of this note said v8 "kept rating high", which it cannot have done. The
+objection to it stands on reading the diff, not on evidence.
 
 v9 rewrote the rungs so a normal day sits at 3, and added **Examples**: the
-author's own scored readings, each headlined in eight words or fewer. Examples
+author's own scored readings, each headlined in eight words or fewer. Whether v9
+moved the scores is unestablished — of its four readings none carried a digest,
+so none can be attributed to v9's text. Examples
 are never invented — one nobody scored is this app's opinion wearing the
 author's clothes. Calibration is stored there rather than in a separate file, so
 the thing that rates and the evidence it was calibrated against travel together.
@@ -359,30 +366,42 @@ A mismatch is never a rejection. A rejected reading says nothing about the
 delivery path; a stored reading carrying a false flag says everything, and the
 rejection rules stay four.
 
-**The trailing clause was a conflict, not sloppiness.** Rung 3 says
-"Significant elsewhere; changes nothing for you"; Output then asks for a
-development and its concrete effect. On a day scored 3 the rater has just
-concluded nothing matters, names something anyway, and appends the conclusion it
-reached — "distant from US readers", "nothing requiring personal action". Three
-versions forbade the clause (v2 by listing phrases, v5 generally, v10 as what
-the sentence may contain) and the rate held at 15% across 73 readings, 27% on
-scores of 4 or below. Forbidding a symptom does not remove what produces it.
+**What the digest showed, immediately.** The first verified readings split the
+series in a way no prompt edit had:
 
-v11 states that the sentence does not depend on the score: the same on a quiet
-day as on a busy one, only the number changes. Scale and Examples stay
-byte-identical to v9, so nothing about rating changes and readings stay
-comparable across v9, v10 and v11. Whether it worked is now answerable, because
-readings carry `prompt_verified`.
+| | readings | with a score-justifying clause | of those scoring 4 or below |
+|---|---|---|---|
+| verified | 3 | 0 | 0 of 2 |
+| unverified | 22 | 8 | 6 of 11 |
 
-**Adding a criterion to the Scale gives the rater something to narrate.** v9
-put reach in rung 3 — "Significant elsewhere; changes nothing for you" — and a
-reading came back ending "; distant from US readers." The Output contract
-already said "do not justify the score", and had since v2; the rule was there
-and the clause appeared anyway. v10 restates it as what the sentence may
-contain rather than what it may not do, and leaves Scale and Examples
-byte-identical, so v9 and v10 rate the same way and their readings stay
-comparable. Watch the same thing after any future scale change: whatever the
-rungs measure is what the sentences start explaining.
+Every reading carrying the clause was unverified. The one that had prompted v10
+— a flood story ending "; distant from US readers" — reappeared as the same
+story, verified, at the same score, as "Glacier collapse floods on the
+Nepal-Tibet border killed more than 500 people, with roughly 1,500 still
+missing as searches continue." No clause.
+
+Three verified readings is not a result, and two of them are six minutes apart
+on the same news. But the direction is the opposite of what four prompt
+versions assumed, and it is the first evidence in the series that separates a
+scale that rates wrongly from a scale the rater never received.
+
+**v10 and v11 were written against evidence that has not survived.** Both
+answered the trailing clause — "distant from US readers", "nothing requiring
+personal action" — and each had a theory. v10: adding reach to rung 3 gave the
+rater a criterion to narrate. v11: rung 3 and the Output contract contradict
+each other, because on a day scored 3 the rater has just concluded nothing
+matters and is then asked to name a development and its effect.
+
+Both theories were built on readings the rater produced from **v9's text**,
+while the server stamped them v10 and v11. Neither has verified evidence behind
+it, and the verified readings so far carry no clause at all. They are kept
+because they are published and readings reference them, and because neither is
+disproved — only unsupported. They are not a basis for the next version.
+
+The reusable part is the method, not the conclusions: five wordings of one
+prohibition were shipped across nine months of versions, each judged by a rate
+measured on readings nobody could attribute to the text being judged. A prompt
+change is not evaluable until the readings answering it are verified.
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
