@@ -425,7 +425,12 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ## Testing
 
 ```bash
-npm test        # 22 tests; database tests run against PGlite, real Postgres
-                # in-process, so the SQL is exercised rather than mocked
+npm test        # ten files under test/; database tests run against PGlite, real
+                # Postgres in-process, so the SQL is exercised rather than mocked
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
+
+The ten are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
+`parse`, `pricing`, `prompt-rules` and `scheduler`. A count of individual tests
+is not kept here: it is wrong again after the next PR, and a stale number in a
+document read as authoritative is worse than no number.

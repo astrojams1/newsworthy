@@ -9,8 +9,13 @@ Fetch the instructions and follow them. They include the current rating prompt
 inline, so this is the only thing you need to know:
 
 ```bash
-curl -s -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" "$NEWSWORTHY_URL/api/instructions"
+curl -s -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" "$NEWSWORTHY_URL/api/instructions?cb=$(date +%s)"
 ```
+
+The `cb` value is a cache-buster and differs on every run. The origin already
+answers `no-store` with a zero age, so a stale copy comes from a cache on the
+caller's side, which only a distinct URL per run defeats — one caller spent six
+hours rating against a prompt three versions behind the one being served.
 
 | | |
 |---|---|
