@@ -72,15 +72,27 @@ test('rule 5 — examples are the author\'s calibration, verbatim', () => {
 test('rule 6 — append-only: published versions are frozen', () => {
   // Rows reference these hashes, so a reading stays traceable to a prompt that
   // can be reproduced exactly.
-  for (const [version, hash] of [
-    [1, '7ebe2d68813f1487'], [4, 'cce0a516da847bf4'], [5, '6470f557ee94563d'],
-    [6, 'cb27cb79f8f78ac2'], [7, 'e760cfdc6c2106ee'], [8, 'e841c5d77cd6bb33'],
-    [9, '994b299f1c979f97'], [10, 'dad2824d4df0cb4e'],
-  ]) {
+  const pinned = [
+    [1, '7ebe2d68813f1487'], [2, 'da972d2621c7f461'], [3, 'c950817fec589043'],
+    [4, 'cce0a516da847bf4'], [5, '6470f557ee94563d'], [6, 'cb27cb79f8f78ac2'],
+    [7, 'e760cfdc6c2106ee'], [8, 'e841c5d77cd6bb33'], [9, '994b299f1c979f97'],
+    [10, 'dad2824d4df0cb4e'], [11, 'b07394a17c224513'],
+  ];
+  for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
   }
   const versions = allPrompts().map((p) => p.version);
   assert.deepEqual(versions, [...versions].sort((a, b) => a - b), 'listed in order');
+
+  // The table used to skip whichever version was live: v11 was already stamped
+  // on stored readings while nothing here would have caught an edit to its
+  // text — the one case rule 6 exists for. Requiring the table to cover the
+  // registry makes pinning part of appending a version rather than something
+  // remembered.
+  assert.deepEqual([...pinned.map(([v]) => v)].sort((a, b) => a - b), [...versions].sort((a, b) => a - b),
+    `every published version must be pinned above; for each missing one add `
+    + `[version, hash] using: node -e "import('./src/prompts.js').then(m=>console.log(m.renderPrompt(N).hash))" `
+    + `— and if a pin no longer matches, a published prompt was edited: report it, never update the pin`);
   assert.equal(new Set(allPrompts().map((p) => p.hash)).size, versions.length, 'hashes distinct');
 });
 
