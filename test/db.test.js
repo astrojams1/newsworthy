@@ -198,3 +198,31 @@ test('voided readings drop out of the counts and the spend', async () => {
   );
   assert.equal(after.errors, before.errors, 'a void is not a failure either');
 });
+
+test('history keeps the newest readings when the limit bites, still ascending', async () => {
+  // `ORDER BY created_at ASC LIMIT n` kept the OLDEST n rows and discarded the
+  // newest, so a full window would have drawn a chart whose right edge — and
+  // the admin page's "Now" tile and favicon, both `points.at(-1)` — were stale
+  // while looking current. Timestamps sit past every other row in this file so
+  // the assertion holds whatever those tests left behind.
+  const at = (iso, explanation, score) => ({
+    ...base, slot: null, status: 'ok', score, explanation, created_at: iso,
+  });
+  await insertRating(at('2027-01-01T00:00:00.000Z', 'window-oldest', 1));
+  await insertRating(at('2027-01-01T01:00:00.000Z', 'window-second', 2));
+  await insertRating(at('2027-01-01T02:00:00.000Z', 'window-third', 3));
+  await insertRating(at('2027-01-01T03:00:00.000Z', 'window-fourth', 4));
+  await insertRating(at('2027-01-01T04:00:00.000Z', 'window-newest', 5));
+
+  const points = await history({ hours: 24 * 365 * 10, limit: 3 });
+  assert.equal(points.length, 3);
+  assert.deepEqual(
+    points.map((p) => p.explanation),
+    ['window-third', 'window-fourth', 'window-newest'],
+    'the three newest rows in the window, oldest-first',
+  );
+  assert.ok(
+    points[0].created_at < points[1].created_at && points[1].created_at < points[2].created_at,
+    'ascending order survives the limit',
+  );
+});

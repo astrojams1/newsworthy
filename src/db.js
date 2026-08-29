@@ -210,17 +210,33 @@ export async function latestAttempt() {
   return shape(rows[0]);
 }
 
-/** Timeseries for the admin view. */
+/**
+ * Timeseries for the admin view.
+ *
+ * The limit has to bite at the newest end, not the oldest. `ORDER BY created_at
+ * ASC LIMIT n` keeps the first n rows of the window, so once a window holds more
+ * than the limit the chart silently drops everything recent — and the admin
+ * page's right edge, its "Now" tile and its favicon are all `points.at(-1)`, so
+ * it would have shown months-stale numbers while looking current. The inner
+ * query takes the newest rows; the outer one puts them back in ascending order,
+ * which every consumer depends on (`displayedSeries()` replays the front-page
+ * rule over them, and the chart path is drawn in array order). Both orderings
+ * carry the `id` tiebreaker used elsewhere in this file, so rows sharing a
+ * timestamp neither straddle the cut nor swap places between calls.
+ */
 export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, score, explanation, prompt_version, prompt_hash,
-           prompt_verified, model, served_by, source, caller
-      FROM ratings
-     WHERE status = 'ok' AND created_at >= ${since}
-     ORDER BY created_at ASC
-     LIMIT ${limit}`;
+    SELECT * FROM (
+      SELECT id, created_at, score, explanation, prompt_version, prompt_hash,
+             prompt_verified, model, served_by, source, caller
+        FROM ratings
+       WHERE status = 'ok' AND created_at >= ${since}
+       ORDER BY created_at DESC, id DESC
+       LIMIT ${limit}
+    ) recent
+     ORDER BY created_at ASC, id ASC`;
   return rows.map(shape);
 }
 
