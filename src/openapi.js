@@ -135,24 +135,14 @@ export function openapiDocument({ baseUrl }) {
                   schema: {
                     type: 'object',
                     properties: {
-                      // ok and stored are the pair a client that cannot read a
-                      // status line branches on. Listing them here means an
-                      // Action-driven caller sees the outcome rather than
-                      // inferring it.
+                      // The pair a client that cannot read a status line
+                      // branches on.
                       ok: { type: 'boolean' },
                       stored: { type: 'boolean', description: 'True when the reading was written.' },
                       id: { type: 'integer' },
                       created_at: { type: 'string' },
                       score: { type: 'integer' },
                       source: { type: 'string', description: "'external' for every caller submission." },
-                      prompt_version: {
-                        type: 'integer',
-                        description: 'The version the server stamped on this reading.',
-                      },
-                      prompt_hash: {
-                        type: 'string',
-                        description: 'The first 16 characters of the digest of the text the server sent.',
-                      },
                       prompt_verified: {
                         type: ['boolean', 'null'],
                         description:
@@ -160,11 +150,6 @@ export function openapiDocument({ baseUrl }) {
                           'served; false, it did not; null, no digest was sent. Without this a ' +
                           'caller never learns whether it verified.',
                       },
-                      // Present only when the request carried fields this app
-                      // does not record, so a caller working from an older
-                      // spec learns they went nowhere rather than assuming
-                      // they landed.
-                      note: { type: 'string', description: 'Names any sent field that was not stored.' },
                     },
                   },
                 },

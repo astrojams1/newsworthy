@@ -135,10 +135,8 @@ test('failures are queryable for the chart, separately from readings', async () 
 });
 
 test('failures keeps the newest ones when its limit bites, still ascending', async () => {
-  // The same defect history() had, and worse on this query: failures cluster,
-  // so a bad key on a 15-minute cron writes ~96 rows a day and the window fills
-  // with the beginning of an outage. Ordering ascending before the limit would
-  // have marked stale failures on the chart and omitted every recent one —
+  // The defect history() had, worse here: failures cluster, so the window fills
+  // with the start of an outage and the chart omits every recent failure —
   // exactly when an operator is looking for the current edge of a problem.
   const { failures } = await import('../src/db.js');
   const at = (h) => `2027-02-0${h}T00:00:00.000Z`; // past every other row in this file

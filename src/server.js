@@ -88,29 +88,18 @@ const because = (message) => ({ 'x-newsworthy-error': message });
 async function rejection(res, url, status, message, { method, record = true } = {}) {
   const soft = url.searchParams.get('soft_errors') === '1';
   console.warn(`reading rejected ${status}: ${message}`);
-  // Stored as well as logged. A log line answers a question asked the same day;
-  // the 422s that cost a caller its explanation on 2026-08-28 could not be
-  // attributed to any of the four rules afterwards, because Vercel's function
-  // logs were long gone by the time anyone asked.
+  // Stored as well as logged: the 422s of 2026-08-28 could not be attributed to
+  // any of the four rules afterwards, because the logs were long gone.
   //
-  // Awaited, which the first cut of this was not. A serverless function is
-  // considered finished when the response ends and may be frozen or reclaimed
-  // immediately, so an unawaited insert races the freeze and loses on the exact
-  // platform this table was built for — and because rejections are rare, no
-  // follow-up request reliably thaws the instance to let it finish. That is a
-  // row that exists locally, where a long-lived server always drains it, and
-  // not in production. The cost is one round trip on a path that is already an
-  // error, and logRejection cannot throw, so awaiting it can delay the response
-  // but never replace it with a failure to write the row.
+  // Awaited, which the first cut was not. A serverless function may be frozen
+  // the moment its response ends, so an unawaited insert races the freeze and
+  // loses on the one platform this table was built for. logRejection cannot
+  // throw, so waiting can delay the answer but never replace it.
   //
-  // `record` is false on exactly one path, and the reason is that this route is
-  // reachable without a token. Every rejection worth a row — all four rules —
-  // is raised after callerAuthorized has passed, so recording them costs an
-  // authenticated request. Recording the 401 instead would let anyone who can
-  // reach the host write unbounded rows to the database by fetching a URL,
-  // which is a worse thing to have built than the diagnosis is worth: a caller
-  // stuck on auth already learns it from the softened 401 itself, and the log
-  // line still answers it on the day.
+  // `record` is false only for the 401, because that is the one refusal an
+  // unauthenticated request can provoke — recording it would hand anyone who
+  // can reach the host an unbounded database write. All four rules are raised
+  // after callerAuthorized has passed, so none of them is lost.
   if (record) await logRejection({ status, reason: message, method, soft_errors: soft });
   if (soft) {
     return json(res, 200, { ok: false, stored: false, status, error: message }, because(message));
@@ -442,7 +431,7 @@ const server = createServer(async (req, res) => {
         history({ hours }),
         failures({ hours }),
         recentAttempts(25),
-        recentRejections(25),
+        recentRejections({ hours }),
         effectiveConfig(),
       ]);
       return json(res, 200, {
@@ -459,9 +448,8 @@ const server = createServer(async (req, res) => {
         stats: statsRow,
         failures: failedRuns,
         attempts,
-        // Submissions that were refused. A rejection is not a reading and lives
-        // in its own table, so nothing here can enter the series — this is the
-        // only place the rows surface, and reading them needs the admin token.
+        // Refused submissions. A rejection is not a reading and lives in its
+        // own table, so nothing here can enter the series.
         rejections: refused,
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });

@@ -86,14 +86,10 @@ test('a manual run is stored as manual, not cron', async () => {
 });
 
 test('an unrecognised reason is stored as manual, not silently as cron', async () => {
-  // Which way this fails is the whole point. CLAUDE.md records the original bug
-  // as a silent default: the column defaults to 'cron', so a run that passed no
-  // source was recorded as scheduled, and every "Rate now" click was filed as a
-  // cron run. Mapping everything-but-'manual' to 'cron' restores that shape — a
-  // new trigger, or a typo in an existing one, becomes the schedule without a
-  // word. The scheduled reasons are an allowlist so an unknown one lands on the
-  // label that is merely imprecise rather than the one that invents a run this
-  // app never scheduled.
+  // Which way this fails is the point. Mapping everything-but-'manual' to 'cron'
+  // is the silent default CLAUDE.md records as the original bug: a new trigger,
+  // or a typo, becomes the schedule without a word. An unknown reason should
+  // land on the merely-imprecise label, not invent a run nobody scheduled.
   const { tick } = await import('../src/scheduler.js');
   const { latestRating } = await import('../src/db.js');
   const { sql } = await import('../src/sql.js');

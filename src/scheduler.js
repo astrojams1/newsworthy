@@ -13,19 +13,16 @@ let running = false;
  * alike: the slot makes a duplicate delivery a no-op rather than a second row.
  */
 /**
- * The three reasons that are this app's own schedule. Vercel Cron drives the
- * first; the in-process scheduler drives the other two, and it is the schedule
- * on every self-hosted deployment — treating Vercel as the only producer of a
+ * The reasons that are this app's own schedule: Vercel Cron drives the first,
+ * the in-process scheduler the other two — and it is the schedule on every
+ * self-hosted deployment, where treating Vercel as the only producer of a
  * 'cron' reading filed each of its runs as a button press.
  *
- * An allowlist rather than a test for 'manual', because of which way each fails.
- * CLAUDE.md records the original bug as a silent default: the column defaults to
- * 'cron', so a run that passed no source was recorded as scheduled, which is how
- * every "Rate now" click came to be labelled a cron run. Anything that maps
- * unrecognised reasons to 'cron' has that shape again — a new trigger, or a typo
- * in an existing one, is filed as the schedule without a word. Failing the other
- * way costs nothing: an unrecognised reason is something a person or a new call
- * site did, and 'manual' is exactly what the column means by that.
+ * An allowlist rather than a test for 'manual', because of which way each
+ * fails. Mapping unknown reasons to 'cron' is the silent default CLAUDE.md
+ * records as the original bug: a new trigger, or a typo, becomes the schedule
+ * without a word. Unknown means a person or a new call site, which is what
+ * 'manual' already means.
  */
 const SCHEDULED_REASONS = new Set(['vercel-cron', 'scheduled', 'startup']);
 

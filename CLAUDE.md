@@ -182,39 +182,30 @@ softened too — a caller that cannot read a 401 is stuck silently and
 permanently, and nothing is disclosed that the instructions do not already
 publish.
 
-Every rejection is `console.warn`ed, and now also leaves a row in `rejections`.
-Nothing was recorded about the original 422s, so which of the four rules fired
-could not be established afterwards from anything — a log line answers a
-question asked the same day, and Vercel's function logs are ephemeral and not
-queryable months later, which is exactly the position that investigation was
-in. The row carries the status, the reason, the method and whether
-`soft_errors` was set, and nothing from the request body: each of the four
-reasons names the field at fault, so the reason is the whole finding, and
-keeping payloads posted to this endpoint would be a junk magnet. They surface
-at `/api/admin/history`, behind the admin token.
+Every rejection is `console.warn`ed and leaves a row in `rejections`. Nothing
+was recorded about the original 422s, so which of the four rules fired could
+not be established afterwards — a log answers a question asked the same day,
+and function logs are ephemeral. The row carries the status, reason, method and
+whether `soft_errors` was set, and nothing from the request body: each reason
+names the field at fault, so the reason is the whole finding. They surface at
+`/api/admin/history`, behind the admin token, over the range that page asks
+for — a fixed newest-25 would put an old incident's rows out of reach of every
+endpoint as soon as 25 newer ones arrived.
 
 A rejection is not a reading and lives in its own table, so "a 422 stores
-nothing" stays true of `ratings` and of every series, chart and total computed
-from it — no query in `src/db.js` reads across the two.
+nothing" stays true of `ratings` and everything computed from it.
 
-The write is awaited, and the first cut of it was not. A serverless function is
-finished when its response ends and may be frozen immediately, so an unawaited
-insert races the freeze and loses — and because rejections are rare, no
-follow-up request reliably thaws the instance to let it finish. The row would
-have existed everywhere except the deployment it was built for. Nothing in the
-test suite could see that: a long-lived local server always drains an
-in-flight insert before the next request arrives, so both versions pass
-identically here. `test/rejections.test.js` therefore asserts it against the
-source, the way `max_uses` and the instructions' content-type already are.
-`logRejection` cannot throw, so awaiting it can delay the response but never
-replace it with a failure to write the row.
+The write is awaited, and the first cut was not. A serverless function may be
+frozen the moment its response ends, so an unawaited insert races the freeze
+and loses — the row would have existed everywhere except the deployment it was
+built for. No test here can see that: a long-lived local server always drains
+an in-flight insert, so both versions pass identically, and it is asserted
+against the source the way `max_uses` already is.
 
-The 401 is the exception, and deliberately: it is raised before the token is
-checked, so it is the one refusal an unauthenticated request can provoke.
-Recording it would turn a public URL into an unbounded database write for
-anyone who can reach the host, which is a worse thing to have built than the
-diagnosis is worth. All four rules are raised after auth has passed, so none of
-what the table exists for is lost.
+The 401 is deliberately not recorded. It is raised before the token is checked,
+so it is the one refusal an unauthenticated request can provoke, and a row for
+it would turn a public URL into an unbounded database write. All four rules are
+raised after auth has passed, so nothing the table exists for is lost.
 
 There are only four, and all are about a field being absent or malformed. There
 is no length rule: past 400 characters `explanation` is truncated and stored,

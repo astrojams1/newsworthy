@@ -53,18 +53,11 @@ export function ensureSchema() {
         value      TEXT NOT NULL,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`;
-    // Rejected submissions leave a row, not only a log line. Every rejection is
-    // still console.warn'ed, which answers a question asked the same day — but
-    // Vercel's function logs are ephemeral and not queryable months later, which
-    // is exactly the position the 2026-08-28 investigation was in: two 422s cost
-    // a caller its explanation and nothing stored said which of the four rules
-    // had fired.
-    //
-    // No request payload is stored, deliberately. Each of the four rejection
-    // reasons names the field at fault — that is what the rules are — so the
-    // reason string is the whole finding, and keeping bodies posted to an
-    // endpoint reachable with a caller token would be a junk magnet and a
-    // disclosure risk for whatever is mistakenly sent to it.
+    // Rejected submissions leave a row, not only a log line: function logs are
+    // ephemeral, which is why the 2026-08-28 422s could not be attributed to any
+    // of the four rules afterwards. No request payload is stored — each reason
+    // names the field at fault, so the reason is the whole finding, and keeping
+    // bodies posted to this endpoint would be a junk magnet.
     await sql`
       CREATE TABLE IF NOT EXISTS rejections (
         id          BIGSERIAL   PRIMARY KEY,
@@ -235,16 +228,12 @@ export async function latestAttempt() {
 /**
  * Timeseries for the admin view.
  *
- * The limit has to bite at the newest end, not the oldest. `ORDER BY created_at
- * ASC LIMIT n` keeps the first n rows of the window, so once a window holds more
- * than the limit the chart silently drops everything recent — and the admin
- * page's right edge, its "Now" tile and its favicon are all `points.at(-1)`, so
- * it would have shown months-stale numbers while looking current. The inner
- * query takes the newest rows; the outer one puts them back in ascending order,
- * which every consumer depends on (`displayedSeries()` replays the front-page
- * rule over them, and the chart path is drawn in array order). Both orderings
- * carry the `id` tiebreaker used elsewhere in this file, so rows sharing a
- * timestamp neither straddle the cut nor swap places between calls.
+ * `ORDER BY created_at ASC LIMIT n` keeps the OLDEST n rows of the window, so
+ * once a window exceeds the limit the chart silently drops everything recent —
+ * and the admin page's right edge, its "Now" tile and its favicon are all
+ * `points.at(-1)`. The inner query takes the newest rows; the outer one puts
+ * them back ascending, which every consumer depends on. Both carry the `id`
+ * tiebreaker, so rows sharing a timestamp neither straddle the cut nor swap.
  */
 export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
   await ensureSchema();
@@ -266,12 +255,10 @@ export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
  * Failed runs in the chart window, so the chart can mark them rather than
  * silently drawing a straight line across the gap.
  *
- * Windowed the same way as history() above, and for the same reason: ordering
- * ascending before the limit keeps the oldest rows and drops the recent ones,
- * which on this query is worse than on that one. Failures cluster — a bad API
- * key on a 15-minute cron writes ~96 rows a day — so the window fills with the
- * beginning of an outage while the operator is looking for its current edge,
- * and the chart marks stale failures and omits every fresh one.
+ * Windowed like history() above, and for the same reason — worse here, since
+ * failures cluster: a bad key on a 15-minute cron writes ~96 rows a day, so the
+ * window fills with the start of an outage while the operator looks for its
+ * current edge.
  */
 export async function failures({ hours = 24 * 7, limit = 500 } = {}) {
   await ensureSchema();
@@ -378,17 +365,10 @@ export async function usageBaseline({ limit = 20 } = {}) {
 /**
  * Record one rejection. Never throws, and the promise it returns never rejects.
  *
- * The whole purpose of the 422 path is telling a caller which field is wrong. A
- * schema or connection failure while writing the audit row must not replace
- * that answer with a 500, so the failure is swallowed here — logged and
- * dropped. That is what makes it safe for the handler to await this: the row
- * can be lost, but the answer naming the field at fault cannot.
- *
- * It is awaited rather than left in flight because a serverless function may be
- * frozen the moment its response ends, which would drop the insert on the one
- * platform this table exists for.
- *
- * No shape() on the way out: nothing reads the inserted row.
+ * Never throws: a failure writing the audit row must not replace the answer
+ * naming the field at fault. That is what makes it safe for the handler to
+ * await it, which it must — a serverless function may be frozen the moment its
+ * response ends, dropping an insert still in flight.
  */
 export async function logRejection(row) {
   try {
@@ -404,19 +384,21 @@ export async function logRejection(row) {
 }
 
 /**
- * The recorded rejections, newest first.
+ * The recorded rejections, newest first, within the window the admin page asked
+ * for — an incident is diagnosed by widening the range to reach it, so a fixed
+ * newest-25 would put the rows the table exists for out of reach of every
+ * endpoint as soon as 25 newer ones arrived.
  *
- * `status` needs no entry in NUMERIC: it is a SMALLINT, and both drivers parse
- * int2/int4 to a JavaScript number natively — the NUMERIC list exists for the
- * types that come back as strings (BIGSERIAL ids, NUMERIC costs). Adding
- * `status` to it would also break `ratings`, whose `status` column is the text
- * 'ok' or 'error'.
+ * `status` needs no NUMERIC entry: it is a SMALLINT, which both drivers parse
+ * natively, and that list is for types returned as strings.
  */
-export async function recentRejections(limit = 25) {
+export async function recentRejections({ hours = 24 * 7, limit = 100 } = {}) {
   await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
     SELECT id, created_at, status, reason, method, soft_errors
       FROM rejections
+     WHERE created_at >= ${since}
      ORDER BY created_at DESC, id DESC
      LIMIT ${limit}`;
   return rows.map(shape);
