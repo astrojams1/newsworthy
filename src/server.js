@@ -108,14 +108,24 @@ function authorized(url, req) {
  * Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when CRON_SECRET is
  * set on the project. The admin token is also accepted so /admin's "Rate now"
  * button can reach the same endpoint.
+ *
+ * Returns which credential matched, not just whether one did, because the
+ * caller also has to label the row: the bearer is the only thing that Vercel
+ * Cron sends and the only thing the button does not, so it is the sole
+ * evidence available that a request was scheduled rather than pressed. The
+ * comparison happens here once — an `x-vercel-cron-schedule` header was
+ * sniffed for this at the route instead, which nothing establishes Vercel
+ * sends, and every production run would have been filed as a button press.
  */
 function cronAuthorized(url, req) {
-  if (CRON_SECRET && secretMatches(req.headers.authorization, `Bearer ${CRON_SECRET}`)) return true;
-  if (ADMIN_TOKEN && authorized(url, req)) return true;
-  if (CRON_SECRET || ADMIN_TOKEN) return false;
+  if (CRON_SECRET && secretMatches(req.headers.authorization, `Bearer ${CRON_SECRET}`)) {
+    return 'cron-secret';
+  }
+  if (ADMIN_TOKEN && authorized(url, req)) return 'admin-token';
+  if (CRON_SECRET || ADMIN_TOKEN) return null;
   // Nothing configured: open locally for convenience, never on a public
   // deployment — an open /api/cron is an open tab on someone's API bill.
-  return !ON_VERCEL;
+  return ON_VERCEL ? null : 'open';
 }
 
 /**
@@ -228,7 +238,8 @@ const server = createServer(async (req, res) => {
     // ---- the 15-minute job ----------------------------------------------
     // Vercel Cron issues a GET; the admin button issues a POST.
     if (path === '/api/cron') {
-      if (!cronAuthorized(url, req)) {
+      const credential = cronAuthorized(url, req);
+      if (!credential) {
         const unconfigured = ON_VERCEL && !CRON_SECRET && !ADMIN_TOKEN;
         return json(res, unconfigured ? 503 : 401, {
           error: unconfigured
@@ -239,7 +250,9 @@ const server = createServer(async (req, res) => {
       if (isRunning()) return json(res, 409, { error: 'a rating is already in flight' });
       const force = url.searchParams.get('force') === '1';
       const { intervalMinutes } = await effectiveConfig();
-      const row = await tick(req.headers['x-vercel-cron-schedule'] ? 'vercel-cron' : 'manual', {
+      // The bearer identifies the scheduler; anything else reaching this route
+      // is a hand — the admin button, or a local curl on an open deployment.
+      const row = await tick(credential === 'cron-secret' ? 'vercel-cron' : 'manual', {
         slot: slotFor(new Date(), intervalMinutes),
         force,
       });

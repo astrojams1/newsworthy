@@ -13,9 +13,12 @@ let running = false;
  * alike: the slot makes a duplicate delivery a no-op rather than a second row.
  */
 /**
- * `reason` names the trigger and now reaches the stored row, not just the log.
- * Vercel's scheduler is the only thing that produces a 'cron' reading; anything
- * else that reaches /api/cron is a person pressing "Rate now".
+ * `reason` names the trigger and reaches the stored row, not just the log.
+ * 'manual' is the specific case — a person pressing "Rate now" — and every
+ * other reason is this app's own schedule, so 'cron' is the default. Vercel
+ * Cron was treated as the only producer of a 'cron' reading, which filed each
+ * run of the in-process scheduler ('scheduled', 'startup') as a button press
+ * on every self-hosted deployment, where that scheduler is the schedule.
  */
 export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
   const { intervalMinutes } = await effectiveConfig();
@@ -42,7 +45,7 @@ export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
   if (running) return null;
   running = true;
   try {
-    const row = await runRating({ slot: force ? null : slot, source: reason === 'vercel-cron' ? 'cron' : 'manual' });
+    const row = await runRating({ slot: force ? null : slot, source: reason === 'manual' ? 'manual' : 'cron' });
     const when = new Date().toISOString();
     if (row.deduped) {
       console.log(`[${when}] ${reason}: slot ${slot} already rated ${row.score}/10 — skipped`);
