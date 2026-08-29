@@ -196,10 +196,44 @@ test('the digest is expected, not offered as optional', () => {
   // then treated omission as a finding. The one reading taken under it carried
   // no digest, which proved nothing — the page had invited exactly that.
   const text = build();
-  assert.match(text, /accompanies\s+every submission from a caller that can run code/);
+  assert.match(text, /A complete submission carries three things/);
   assert.match(text, /sends one every time/);
   assert.ok(!/`prompt_sha256`, is optional/.test(text), 'not framed as optional');
   assert.ok(!/Omitting the field is also fine/.test(text));
   // And still never a rejection, so the four rules stay four.
   assert.match(text, /A mismatch is never a rejection/);
+});
+
+test('the digest is required where the rules that get followed live', () => {
+  // Compliance tracked position, not wording. The one instruction followed by
+  // every run — a reading exists only on a 201 — sits in the opening lines. The
+  // digest sat at 31% and 82% through a 10,892-character page and was returned
+  // by one run in two. This puts it beside the rule that works.
+  const text = build();
+  const opening = text.slice(0, text.indexOf('## 1.'));
+  assert.match(opening, /A complete submission carries three things/);
+  assert.match(opening, /all 64 characters, computed with a code tool/);
+  assert.ok(opening.includes('prompt_sha256'), 'named before the first section');
+  // And the definition still lives with the prompt it is a digest of.
+  assert.match(text, /Verifying the text arrived intact/);
+});
+
+test('both request examples carry the digest field', () => {
+  // Asked for in prose, absent from the two shapes a caller copies. A caller
+  // following the example exactly produced a submission without it, which is
+  // the most mechanical explanation available for why it arrived once in two.
+  const text = build();
+  // The code block, not the opening line that also names POST /api/readings.
+  const block = text.indexOf('POST https://example.test/api/readings\ncontent-type');
+  assert.ok(block > 0, 'the POST example block is present');
+  assert.match(text.slice(block, text.indexOf('```', block)),
+    /"prompt_sha256": "<64 lowercase hex characters/);
+
+  const start = text.indexOf('GET https://example.test/api/readings');
+  assert.match(text.slice(start, text.indexOf('```', start)), /&prompt_sha256=/);
+
+  // And the conflict the digest creates with a tight URL budget is named,
+  // since 79 more characters does not fit inside 250 beside a real sentence.
+  assert.match(text, /adds 79 characters to that URL/);
+  assert.match(text, /a reason to use the POST form/);
 });

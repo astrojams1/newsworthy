@@ -36,6 +36,14 @@ A reading exists only when \`POST ${baseUrl}/api/readings\` returns \`201\`. A s
 that was computed and never submitted is not a reading, and the caller's job is
 not complete at the moment the score exists.
 
+A complete submission carries three things: the score, the sentence, and
+\`prompt_sha256\` — the SHA-256 of the rating prompt as this caller received it,
+all 64 characters, computed with a code tool. Section 3 defines the exact bytes.
+Without it a reading is stored but unattributable: nothing afterwards can tell
+whether it was rated against the scale this app published or against something
+that arrived altered, and five revisions of one instruction were made without
+knowing which was being fixed.
+
 This same reference is served as JSON from
 \`${baseUrl}/api/instructions?format=json&token=<TOKEN>\`, where every part of it
 is a string value. A client whose fetch tool rewrites or summarizes what it
@@ -75,7 +83,8 @@ content-type: application/json
 
 {
   "score": <integer 1-10>,
-  "explanation": "<one sentence, at most 25 words>"
+  "explanation": "<one sentence, at most 25 words>",
+  "prompt_sha256": "<64 lowercase hex characters, defined in section 3>"
 }
 \`\`\`
 
@@ -86,7 +95,14 @@ reading; it is second only because a token in a URL is more exposed.
 \`\`\`
 GET ${baseUrl}/api/readings?token=<TOKEN>&score=<1-10>
     &explanation=Iran+war+de-escalating+as+Washington+shifts+to+economic+pressure
+    &prompt_sha256=<64 lowercase hex characters>
 \`\`\`
+
+\`prompt_sha256\` adds 79 characters to that URL. A client with a URL length
+limit therefore cannot carry both a full-length sentence and the digest in one
+GET, which is a reason to use the POST form: a body has no such budget, and a
+reading that arrives without a digest cannot afterwards be attributed to the
+scale it was rated against.
 
 Spaces are \`+\` in that query string, because \`+\` costs one character where
 \`%20\` costs three. Other reserved characters are still percent-encoded — a
@@ -101,10 +117,10 @@ its own tooling reports before any request goes out is looking at a limit on its
 side, and the POST form, which carries the sentence in a body instead of a URL,
 is not subject to one.
 
-Those two fields are the whole reading. A third, \`prompt_sha256\`, accompanies
-every submission from a caller that can run code, and says nothing about the
-news — it reports which text this caller received. Section 3 defines it. The prompt version is stamped by the
-server from whatever is current, and is not a field a caller sets: a caller that
+Those two fields are the whole reading. \`prompt_sha256\` says nothing about the
+news — it reports which text this caller received, and section 3 defines it.
+
+The prompt version is stamped by the server from whatever is current, and is not a field a caller sets: a caller that
 can name a version can pin one, and one did — every submission kept arriving as
 v3 for hours after v4 went live, so the new prompt was simultaneously live and
 inert. No model name, caller name, token count or search count is asked for or
