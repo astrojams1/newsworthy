@@ -53,7 +53,29 @@ export function ensureSchema() {
         value      TEXT NOT NULL,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`;
+    // Rejected submissions leave a row, not only a log line. Every rejection is
+    // still console.warn'ed, which answers a question asked the same day — but
+    // Vercel's function logs are ephemeral and not queryable months later, which
+    // is exactly the position the 2026-08-28 investigation was in: two 422s cost
+    // a caller its explanation and nothing stored said which of the four rules
+    // had fired.
+    //
+    // No request payload is stored, deliberately. Each of the four rejection
+    // reasons names the field at fault — that is what the rules are — so the
+    // reason string is the whole finding, and keeping bodies posted to an
+    // endpoint reachable with a caller token would be a junk magnet and a
+    // disclosure risk for whatever is mistakenly sent to it.
+    await sql`
+      CREATE TABLE IF NOT EXISTS rejections (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        status      SMALLINT    NOT NULL,  -- the status the caller was given
+        reason      TEXT        NOT NULL,  -- which rule fired, in its own words
+        method      TEXT,                  -- 'GET' or 'POST'
+        soft_errors BOOLEAN     NOT NULL DEFAULT false -- was the 200-shaped form on
+      )`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_created_at ON ratings (created_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS rejections_created_at ON rejections (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_ok_created_at ON ratings (created_at DESC) WHERE status = 'ok'`;
     // Cron delivery can duplicate a scheduled run. One successful reading per
     // slot, enforced by the database rather than by hoping it doesn't happen.
@@ -335,6 +357,53 @@ export async function usageBaseline({ limit = 20 } = {}) {
     outputTokens: Math.round(num(r.output_tokens) ?? 0),
     webSearchRequests: Math.round(num(r.web_search_requests) ?? 0),
   };
+}
+
+// ---- rejections -----------------------------------------------------------
+// What was refused and why, so the next 422 incident is answerable from stored
+// data rather than from logs that have since expired.
+
+/**
+ * Record one rejection. Never throws, and the promise it returns never rejects.
+ *
+ * The whole purpose of the 422 path is telling a caller which field is wrong. A
+ * schema or connection failure while writing the audit row must not replace
+ * that answer with a 500, and must not surface as an unhandled rejection
+ * either, so the failure is swallowed here — logged and dropped. That is what
+ * makes it safe for the request handler to call this without awaiting it.
+ *
+ * No shape() on the way out: nothing reads the inserted row.
+ */
+export async function logRejection(row) {
+  try {
+    await ensureSchema();
+    await sql`
+      INSERT INTO rejections (status, reason, method, soft_errors)
+      VALUES (${row.status}, ${row.reason}, ${row.method ?? null}, ${row.soft_errors ?? false})`;
+  } catch (err) {
+    // Deliberately console.error and nothing else: a rejection that could not
+    // be recorded is still a rejection the caller has to be told about.
+    console.error('could not record rejection', err);
+  }
+}
+
+/**
+ * The recorded rejections, newest first.
+ *
+ * `status` needs no entry in NUMERIC: it is a SMALLINT, and both drivers parse
+ * int2/int4 to a JavaScript number natively — the NUMERIC list exists for the
+ * types that come back as strings (BIGSERIAL ids, NUMERIC costs). Adding
+ * `status` to it would also break `ratings`, whose `status` column is the text
+ * 'ok' or 'error'.
+ */
+export async function recentRejections(limit = 25) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT id, created_at, status, reason, method, soft_errors
+      FROM rejections
+     ORDER BY created_at DESC, id DESC
+     LIMIT ${limit}`;
+  return rows.map(shape);
 }
 
 // ---- settings -------------------------------------------------------------

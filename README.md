@@ -43,7 +43,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/` | The number, the sentence, nothing else |
 | `/admin` | Timeseries of the score, run log, prompt versions, "rate now" |
 | `/api/current` | `{ score, explanation, created_at, source, basis, window }`, plus `score_from` when the score is not the newest reading's. No countdown: an external caller can post at any moment, so the next update is not predictable |
-| `/api/admin/history?hours=168` | Points, stats, recent attempts, prompt versions |
+| `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions |
 | `/api/admin/prompts` | Every prompt version, full text |
 | `/api/admin/settings` | `GET` the model/cadence and the priced options; `POST` to change them |
 | `/api/admin/readings/:id/void` | `POST` to retire a reading — status becomes `error`, the slot is released, and `?reason=` is recorded |

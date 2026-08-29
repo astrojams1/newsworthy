@@ -182,9 +182,27 @@ softened too — a caller that cannot read a 401 is stuck silently and
 permanently, and nothing is disclosed that the instructions do not already
 publish.
 
-Every rejection is `console.warn`ed. Nothing was recorded about the original
-422s, so which of the four rules fired could not be established afterwards from
-anything.
+Every rejection is `console.warn`ed, and now also leaves a row in `rejections`.
+Nothing was recorded about the original 422s, so which of the four rules fired
+could not be established afterwards from anything — a log line answers a
+question asked the same day, and Vercel's function logs are ephemeral and not
+queryable months later, which is exactly the position that investigation was
+in. The row carries the status, the reason, the method and whether
+`soft_errors` was set, and nothing from the request body: each of the four
+reasons names the field at fault, so the reason is the whole finding, and
+keeping payloads posted to this endpoint would be a junk magnet. They surface
+at `/api/admin/history`, behind the admin token.
+
+A rejection is not a reading and lives in its own table, so "a 422 stores
+nothing" stays true of `ratings` and of every series, chart and total computed
+from it — no query in `src/db.js` reads across the two.
+
+The 401 is the exception, and deliberately: it is raised before the token is
+checked, so it is the one refusal an unauthenticated request can provoke.
+Recording it would turn a public URL into an unbounded database write for
+anyone who can reach the host, which is a worse thing to have built than the
+diagnosis is worth. All four rules are raised after auth has passed, so none of
+what the table exists for is lost.
 
 There are only four, and all are about a field being absent or malformed. There
 is no length rule: past 400 characters `explanation` is truncated and stored,
@@ -425,12 +443,13 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ## Testing
 
 ```bash
-npm test        # ten files under test/; database tests run against PGlite, real
-                # Postgres in-process, so the SQL is exercised rather than mocked
+npm test        # eleven files under test/; database tests run against PGlite,
+                # real Postgres in-process, so the SQL is exercised not mocked
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
 
-The ten are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
-`parse`, `pricing`, `prompt-rules` and `scheduler`. A count of individual tests
+The eleven are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
+`parse`, `pricing`, `prompt-rules`, `rejections` and `scheduler`. A count of
+individual tests
 is not kept here: it is wrong again after the next PR, and a stale number in a
 document read as authoritative is worse than no number.

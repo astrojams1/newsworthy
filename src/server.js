@@ -4,7 +4,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, stats, usageBaseline, voidRating } from './db.js';
+import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, stats, usageBaseline, voidRating } from './db.js';
 import { currentReading, displayedSeries } from './current.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
@@ -85,9 +85,27 @@ const because = (message) => ({ 'x-newsworthy-error': message });
  * a trap for anything that reads only the status line — a caller asking for
  * this has to be told plainly that nothing was written.
  */
-function rejection(res, url, status, message) {
+function rejection(res, url, status, message, { method, record = true } = {}) {
+  const soft = url.searchParams.get('soft_errors') === '1';
   console.warn(`reading rejected ${status}: ${message}`);
-  if (url.searchParams.get('soft_errors') === '1') {
+  // Stored as well as logged. A log line answers a question asked the same day;
+  // the 422s that cost a caller its explanation on 2026-08-28 could not be
+  // attributed to any of the four rules afterwards, because Vercel's function
+  // logs were long gone by the time anyone asked. Deliberately not awaited, and
+  // logRejection's promise never rejects: the response naming the field at
+  // fault must not wait on the audit row, and must never be replaced by a
+  // failure to write it.
+  //
+  // `record` is false on exactly one path, and the reason is that this route is
+  // reachable without a token. Every rejection worth a row — all four rules —
+  // is raised after callerAuthorized has passed, so recording them costs an
+  // authenticated request. Recording the 401 instead would let anyone who can
+  // reach the host write unbounded rows to the database by fetching a URL,
+  // which is a worse thing to have built than the diagnosis is worth: a caller
+  // stuck on auth already learns it from the softened 401 itself, and the log
+  // line still answers it on the day.
+  if (record) void logRejection({ status, reason: message, method, soft_errors: soft });
+  if (soft) {
     return json(res, 200, { ok: false, stored: false, status, error: message }, because(message));
   }
   return json(res, status, { error: message }, because(message));
@@ -346,13 +364,20 @@ const server = createServer(async (req, res) => {
       // permanently and silently, which is the worst of the failures here, and
       // nothing is disclosed: this route and its token requirement are
       // published in the instructions.
-      if (!callerAuthorized(url, req)) return rejection(res, url, 401, 'unauthorized');
+      // Not recorded: see `record` in rejection(). This is the one refusal an
+      // unauthenticated request can provoke, so writing a row for it would
+      // hand anyone who can reach the host an unbounded database write.
+      if (!callerAuthorized(url, req)) {
+        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+      }
       let body;
       try {
         body = req.method === 'GET' ? submissionFromQuery(url.searchParams) : await readJsonBody(req);
       } catch (err) {
         const message = String(err?.message ?? err);
-        return rejection(res, url, err instanceof SubmissionError ? 422 : 400, message);
+        return rejection(res, url, err instanceof SubmissionError ? 422 : 400, message, {
+          method: req.method,
+        });
       }
       try {
         const submission = validateSubmission(body);
@@ -383,10 +408,13 @@ const server = createServer(async (req, res) => {
           ...(submission.note ? { note: submission.note } : {}),
         });
       } catch (err) {
-        // Logged, not just returned. Nothing was recorded about the two 422s
-        // that cost a caller its explanation on 2026-08-28, so which of the
-        // four rules fired could not be established afterwards from anything.
-        if (err instanceof SubmissionError) return rejection(res, url, 422, err.message);
+        // Stored and logged, not just returned. Nothing was recorded about the
+        // two 422s that cost a caller its explanation on 2026-08-28, so which
+        // of the four rules fired could not be established afterwards from
+        // anything; rejections now leave a row that outlives the log.
+        if (err instanceof SubmissionError) {
+          return rejection(res, url, 422, err.message, { method: req.method });
+        }
         throw err;
       }
     }
@@ -402,11 +430,12 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/admin/history' && req.method === 'GET') {
       const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
-      const [statsRow, points, failedRuns, attempts, config] = await Promise.all([
+      const [statsRow, points, failedRuns, attempts, refused, config] = await Promise.all([
         stats({ hours }),
         history({ hours }),
         failures({ hours }),
         recentAttempts(25),
+        recentRejections(25),
         effectiveConfig(),
       ]);
       return json(res, 200, {
@@ -423,6 +452,10 @@ const server = createServer(async (req, res) => {
         stats: statsRow,
         failures: failedRuns,
         attempts,
+        // Submissions that were refused. A rejection is not a reading and lives
+        // in its own table, so nothing here can enter the series — this is the
+        // only place the rows surface, and reading them needs the admin token.
+        rejections: refused,
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });
     }
