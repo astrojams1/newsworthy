@@ -51,7 +51,38 @@ test('every operation declares a 4XX, so a failed call is not read as success', 
 test('the schema asks for nothing the app cannot verify', () => {
   // A Custom GPT builds its request from these properties, so leaving model or
   // usage in the schema would keep ChatGPT sending figures nobody measured.
+  // The line is verifiability, not field count: model, caller name and token
+  // counts went because they were self-reported claims stored as fact, while
+  // prompt_sha256 is checked against the bytes this server sent — a proof, and
+  // the only evidence there is that a prompt edit ever reached the rater. It
+  // stays optional, because a missing or mismatched digest is never a
+  // rejection.
   const body = doc().paths['/api/readings'].post.requestBody.content['application/json'].schema;
-  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'score']);
+  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'prompt_sha256', 'score']);
   assert.deepEqual(body.required, ['score', 'explanation']);
+  assert.equal(body.properties.prompt_sha256.type, 'string');
+  assert.equal(body.properties.prompt_sha256.pattern, '^[0-9a-f]{64}$');
+});
+
+test('nothing in the document tells the caller to send a version back', () => {
+  // Two readings arrived stamped v3 in the hours after v4 went live, each
+  // carrying an explicit prompt_version: a caller that can name a version can
+  // name the wrong one. The version is stamped server-side now, and this
+  // schema is the only text an Action-driven caller reads — it said "Pass this
+  // back as prompt_version" long after the server stopped honouring it.
+  const serialised = JSON.stringify(doc());
+  assert.ok(!/[Pp]ass this back/.test(serialised), 'no property is described as something to pass back');
+  assert.ok(!/version number to report back/.test(serialised), 'no operation promises a version to report back');
+  assert.ok(!/report back|send (?:it |this )?back/i.test(serialised), 'nothing is described as reported back');
+});
+
+test('the 201 schema names prompt_verified, so a caller learns whether it verified', () => {
+  // The response has always carried it; the schema listed only id, created_at,
+  // score and source, so an Action-driven caller could send a digest and never
+  // find out whether it matched.
+  const ok = doc().paths['/api/readings'].post.responses[201]
+    .content['application/json'].schema.properties;
+  assert.ok(ok.prompt_verified, 'prompt_verified is documented');
+  assert.deepEqual(ok.prompt_verified.type, ['boolean', 'null']);
+  assert.ok(ok.ok && ok.stored, 'the ok/stored pair a soft-error caller branches on is documented');
 });

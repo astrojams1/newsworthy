@@ -35,8 +35,9 @@ export function openapiDocument({ baseUrl }) {
           operationId: 'getInstructions',
           summary: 'Get the rating prompt and the workflow',
           description:
-            'Call this first. Returns the rating prompt to run with web search enabled, ' +
-            'and the version number to report back when submitting.',
+            'Call this first. Returns the rating prompt to run with web search enabled. ' +
+            'The version and hash identify what this response served; neither is a field ' +
+            'a caller sends. The version is stamped by the server at submission time.',
           parameters: [
             {
               name: 'format',
@@ -54,8 +55,16 @@ export function openapiDocument({ baseUrl }) {
                   schema: {
                     type: 'object',
                     properties: {
-                      version: { type: 'integer', description: 'Pass this back as prompt_version.' },
-                      hash: { type: 'string' },
+                      version: {
+                        type: 'integer',
+                        description: 'Which prompt version this response served. Not a field a caller sends.',
+                      },
+                      hash: {
+                        type: 'string',
+                        description:
+                          'The first 16 characters of the prompt’s SHA-256. An identifier for ' +
+                          'this text, not the digest a submission carries.',
+                      },
                       instructions: { type: 'string', description: 'The workflow, prompt included.' },
                     },
                   },
@@ -74,10 +83,11 @@ export function openapiDocument({ baseUrl }) {
             'Call this after rating. The job is not finished until this returns 201 — ' +
             'producing a score without submitting it accomplishes nothing. ' +
             'If web search failed or returned nothing, submit nothing at all. ' +
-            'These two fields are the whole submission. The prompt version is stamped ' +
-            'by the server and is not sent: a caller that can name a version can pin ' +
-            'one. No model name, caller name or token count is asked for either, ' +
-            'since this app cannot verify any of it.',
+            'The score and the sentence are the reading; prompt_sha256 reports which ' +
+            'text this caller received and is sent whenever the caller can hash. The ' +
+            'prompt version is stamped by the server and is not sent: a caller that can ' +
+            'name a version can pin one. No model name, caller name or token count is ' +
+            'asked for either, since this app cannot verify any of it.',
           requestBody: {
             required: true,
             content: {
@@ -96,6 +106,22 @@ export function openapiDocument({ baseUrl }) {
                       type: 'string',
                       description: 'One sentence, at most 25 words, reporting what happened.',
                     },
+                    // Optional, and never a rejection: a mismatch stores a
+                    // reading flagged unverified rather than refusing one.
+                    // This is the one caller-supplied field the server checks
+                    // instead of trusting, which is why it survived when the
+                    // model name and token counts were removed.
+                    prompt_sha256: {
+                      type: 'string',
+                      pattern: '^[0-9a-f]{64}$',
+                      description:
+                        'Optional. The SHA-256 of the rating prompt’s exact text as this ' +
+                        'caller received it: all 64 characters, lowercase hex, computed with a ' +
+                        'tool rather than by hand. The instructions define the exact bytes. The ' +
+                        '16-character hash printed there is a prefix of that digest, not the ' +
+                        'answer — a caller returning it, or any prefix, is recorded ' +
+                        'unverified. A mismatch is never a rejection.',
+                    },
                   },
                 },
               },
@@ -109,10 +135,36 @@ export function openapiDocument({ baseUrl }) {
                   schema: {
                     type: 'object',
                     properties: {
+                      // ok and stored are the pair a client that cannot read a
+                      // status line branches on. Listing them here means an
+                      // Action-driven caller sees the outcome rather than
+                      // inferring it.
+                      ok: { type: 'boolean' },
+                      stored: { type: 'boolean', description: 'True when the reading was written.' },
                       id: { type: 'integer' },
                       created_at: { type: 'string' },
                       score: { type: 'integer' },
                       source: { type: 'string', description: "'external' for every caller submission." },
+                      prompt_version: {
+                        type: 'integer',
+                        description: 'The version the server stamped on this reading.',
+                      },
+                      prompt_hash: {
+                        type: 'string',
+                        description: 'The first 16 characters of the digest of the text the server sent.',
+                      },
+                      prompt_verified: {
+                        type: ['boolean', 'null'],
+                        description:
+                          'Three states: true, the digest sent matched the text this server ' +
+                          'served; false, it did not; null, no digest was sent. Without this a ' +
+                          'caller never learns whether it verified.',
+                      },
+                      // Present only when the request carried fields this app
+                      // does not record, so a caller working from an older
+                      // spec learns they went nowhere rather than assuming
+                      // they landed.
+                      note: { type: 'string', description: 'Names any sent field that was not stored.' },
                     },
                   },
                 },
