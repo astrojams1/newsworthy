@@ -179,8 +179,16 @@
       document.body.dataset.state = 'ready';
       renderMeta();
     } catch (err) {
+      // A reading already on screen outlives a failed poll. This runs every 60
+      // seconds, so one dropped request used to wipe a page that had been
+      // correct for hours. The meta line keeps ageing on its own interval and
+      // says so — "Updated 3 hours ago" is honest where a blank score is not.
+      if (updatedAt) {
+        document.body.dataset.state = 'ready';
+        return;
+      }
       $score.textContent = '–';
-      $explanation.textContent = 'No rating yet. The first one lands within 15 minutes.';
+      $explanation.textContent = 'No rating yet. The page updates itself when one lands.';
       $meta.textContent = '';
       setFavicon(null);
       document.body.dataset.state = 'error';
