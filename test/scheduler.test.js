@@ -85,6 +85,26 @@ test('a manual run is stored as manual, not cron', async () => {
   assert.equal((await latestRating()).source, 'cron', 'a scheduled run is cron');
 });
 
+test('an unrecognised reason is stored as manual, not silently as cron', async () => {
+  // Which way this fails is the whole point. CLAUDE.md records the original bug
+  // as a silent default: the column defaults to 'cron', so a run that passed no
+  // source was recorded as scheduled, and every "Rate now" click was filed as a
+  // cron run. Mapping everything-but-'manual' to 'cron' restores that shape — a
+  // new trigger, or a typo in an existing one, becomes the schedule without a
+  // word. The scheduled reasons are an allowlist so an unknown one lands on the
+  // label that is merely imprecise rather than the one that invents a run this
+  // app never scheduled.
+  const { tick } = await import('../src/scheduler.js');
+  const { latestRating } = await import('../src/db.js');
+  const { sql } = await import('../src/sql.js');
+
+  for (const reason of ['admin', 'retry', 'vercel-crn']) {
+    await sql`DELETE FROM ratings`;
+    await tick(reason, { force: true });
+    assert.equal((await latestRating()).source, 'manual', `${reason} is not the schedule`);
+  }
+});
+
 test('the in-process scheduler is this app\'s schedule, so its runs are cron', async () => {
   // The mapping was written around Vercel Cron and treated it as the only
   // producer of a 'cron' reading, so on a self-hosted deployment — where

@@ -197,6 +197,18 @@ A rejection is not a reading and lives in its own table, so "a 422 stores
 nothing" stays true of `ratings` and of every series, chart and total computed
 from it — no query in `src/db.js` reads across the two.
 
+The write is awaited, and the first cut of it was not. A serverless function is
+finished when its response ends and may be frozen immediately, so an unawaited
+insert races the freeze and loses — and because rejections are rare, no
+follow-up request reliably thaws the instance to let it finish. The row would
+have existed everywhere except the deployment it was built for. Nothing in the
+test suite could see that: a long-lived local server always drains an
+in-flight insert before the next request arrives, so both versions pass
+identically here. `test/rejections.test.js` therefore asserts it against the
+source, the way `max_uses` and the instructions' content-type already are.
+`logRejection` cannot throw, so awaiting it can delay the response but never
+replace it with a failure to write the row.
+
 The 401 is the exception, and deliberately: it is raised before the token is
 checked, so it is the one refusal an unauthenticated request can provoke.
 Recording it would turn a public URL into an unbounded database write for
@@ -445,6 +457,7 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ```bash
 npm test        # eleven files under test/; database tests run against PGlite,
                 # real Postgres in-process, so the SQL is exercised not mocked
+                # test/with-server.js is the shared harness, not a suite
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
 

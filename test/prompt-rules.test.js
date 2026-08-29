@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { renderPrompt, latestVersion, allPrompts } from '../src/prompts.js';
+import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
 
 /**
  * PROMPT-RULES.md is the list; this file is its enforcement. Prompts are tweaked
@@ -133,23 +134,8 @@ test('the caller surface serves the current prompt and nothing else', async () =
   // latestVersion() regardless. The database then recorded a reading rated on
   // a retired scale as one rated on the current scale — the exact thing
   // server-side stamping exists to prevent.
-  const { spawn } = await import('node:child_process');
-  const child = spawn(process.execPath, ['src/server.js'], {
-    env: {
-      ...process.env,
-      PORT: '8821',
-      CALLER_TOKEN: 'test-caller-token',
-      NEWSWORTHY_SQL_DRIVER: 'pglite',
-      NEWSWORTHY_MOCK: '1',
-    },
-    stdio: 'ignore',
-  });
-  try {
-    const base = 'http://127.0.0.1:8821';
-    for (let i = 0; i < 100; i++) {
-      try { await fetch(`${base}/healthz`); break; } catch { await new Promise((r) => setTimeout(r, 100)); }
-    }
-    const token = 'token=test-caller-token';
+  await withServer({ port: PORTS.promptVersionSurface }, async (base) => {
+    const token = `token=${CALLER_TOKEN}`;
     const current = renderPrompt(latestVersion());
 
     for (const query of ['', '&version=7', '&version=1', '&version=99', '&version=abc']) {
@@ -173,9 +159,7 @@ test('the caller surface serves the current prompt and nothing else', async () =
       `${base}/api/readings?${token}&score=4&explanation=A+thing+happened`)).json();
     assert.equal(stored.prompt_version, current.version);
     assert.equal(stored.prompt_hash, current.hash);
-  } finally {
-    child.kill();
-  }
+  });
 });
 
 test('v10 changes the sentence contract and nothing about rating', () => {

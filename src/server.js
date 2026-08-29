@@ -85,16 +85,23 @@ const because = (message) => ({ 'x-newsworthy-error': message });
  * a trap for anything that reads only the status line — a caller asking for
  * this has to be told plainly that nothing was written.
  */
-function rejection(res, url, status, message, { method, record = true } = {}) {
+async function rejection(res, url, status, message, { method, record = true } = {}) {
   const soft = url.searchParams.get('soft_errors') === '1';
   console.warn(`reading rejected ${status}: ${message}`);
   // Stored as well as logged. A log line answers a question asked the same day;
   // the 422s that cost a caller its explanation on 2026-08-28 could not be
   // attributed to any of the four rules afterwards, because Vercel's function
-  // logs were long gone by the time anyone asked. Deliberately not awaited, and
-  // logRejection's promise never rejects: the response naming the field at
-  // fault must not wait on the audit row, and must never be replaced by a
-  // failure to write it.
+  // logs were long gone by the time anyone asked.
+  //
+  // Awaited, which the first cut of this was not. A serverless function is
+  // considered finished when the response ends and may be frozen or reclaimed
+  // immediately, so an unawaited insert races the freeze and loses on the exact
+  // platform this table was built for — and because rejections are rare, no
+  // follow-up request reliably thaws the instance to let it finish. That is a
+  // row that exists locally, where a long-lived server always drains it, and
+  // not in production. The cost is one round trip on a path that is already an
+  // error, and logRejection cannot throw, so awaiting it can delay the response
+  // but never replace it with a failure to write the row.
   //
   // `record` is false on exactly one path, and the reason is that this route is
   // reachable without a token. Every rejection worth a row — all four rules —
@@ -104,7 +111,7 @@ function rejection(res, url, status, message, { method, record = true } = {}) {
   // which is a worse thing to have built than the diagnosis is worth: a caller
   // stuck on auth already learns it from the softened 401 itself, and the log
   // line still answers it on the day.
-  if (record) void logRejection({ status, reason: message, method, soft_errors: soft });
+  if (record) await logRejection({ status, reason: message, method, soft_errors: soft });
   if (soft) {
     return json(res, 200, { ok: false, stored: false, status, error: message }, because(message));
   }

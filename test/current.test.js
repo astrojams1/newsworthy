@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { currentReading } from '../src/current.js';
+import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
 
 // newest first, as recentRatings() returns them
 const readings = (...scores) =>
@@ -146,24 +147,9 @@ test('the score is smoothed, the sentence is not', async () => {
   // Two questions, two rows. The number is a level and a median estimates it
   // better; the sentence is what happened and goes stale, so a median row's
   // sentence sitting beside a current number reads as an app that has stopped.
-  const { spawn } = await import('node:child_process');
-  const child = spawn(process.execPath, ['src/server.js'], {
-    env: {
-      ...process.env,
-      PORT: '8817',
-      CALLER_TOKEN: 'test-caller-token',
-      NEWSWORTHY_SQL_DRIVER: 'pglite',
-      NEWSWORTHY_MOCK: '1',
-    },
-    stdio: 'ignore',
-  });
-  try {
-    const base = 'http://127.0.0.1:8817';
-    for (let i = 0; i < 100; i++) {
-      try { await fetch(`${base}/healthz`); break; } catch { await new Promise((r) => setTimeout(r, 100)); }
-    }
+  await withServer({ port: PORTS.currentSmoothing }, async (base) => {
     const submit = (score, explanation) =>
-      fetch(`${base}/api/readings?token=test-caller-token&score=${score}&explanation=${explanation}`);
+      fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=${score}&explanation=${explanation}`);
 
     // Five readings, which is the whole window: the server seeds one mock
     // reading at startup with a RANDOM score, so anything short of five leaves
@@ -182,45 +168,26 @@ test('the score is smoothed, the sentence is not', async () => {
     assert.equal(body.explanation, 'six newest', 'but the newest sentence');
     assert.equal(body.score_from !== undefined, true, 'and the score row is named for debugging');
     assert.ok(body.created_at > body.score_from, 'the page is dated from the newer of the two');
-  } finally {
-    child.kill();
-  }
+  });
 });
 
 test('score_from is omitted when the score is the newest reading anyway', async () => {
   // Most of the time there is nothing to explain, and a key that always
   // repeats created_at is noise in a response read by one page.
-  const { spawn } = await import('node:child_process');
-  const child = spawn(process.execPath, ['src/server.js'], {
-    env: {
-      ...process.env,
-      PORT: '8819',
-      CALLER_TOKEN: 'test-caller-token',
-      NEWSWORTHY_SQL_DRIVER: 'pglite',
-      NEWSWORTHY_MOCK: '1',
-    },
-    stdio: 'ignore',
-  });
-  try {
-    const base = 'http://127.0.0.1:8819';
-    for (let i = 0; i < 100; i++) {
-      try { await fetch(`${base}/healthz`); break; } catch { await new Promise((r) => setTimeout(r, 100)); }
-    }
+  await withServer({ port: PORTS.currentScoreFrom }, async (base) => {
     // A shock: the newest reading is the displayed one, so both come from it.
     // Five again, to push the random startup reading out of the window.
     for (const [s, t] of [
       [4, 'four'], [4, 'four+b'], [4, 'four+c'], [4, 'four+d'], [9, 'nine+breaking'],
     ]) {
-      await fetch(`${base}/api/readings?token=test-caller-token&score=${s}&explanation=${t}`);
+      await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=${s}&explanation=${t}`);
     }
     const body = await (await fetch(`${base}/api/current`)).json();
     assert.equal(body.basis, 'shock');
     assert.equal(body.score, 9);
     assert.equal(body.explanation, 'nine breaking');
     assert.equal(body.score_from, undefined);
-  } finally {
-    child.kill();
-  }
+  });
 });
 
 test('history carries prompt_verified, so the chart cannot misread a missing key', async () => {

@@ -262,17 +262,29 @@ export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
   return rows.map(shape);
 }
 
-/** Failed runs in the chart window, so the chart can mark them rather than
- *  silently drawing a straight line across the gap. */
+/**
+ * Failed runs in the chart window, so the chart can mark them rather than
+ * silently drawing a straight line across the gap.
+ *
+ * Windowed the same way as history() above, and for the same reason: ordering
+ * ascending before the limit keeps the oldest rows and drops the recent ones,
+ * which on this query is worse than on that one. Failures cluster — a bad API
+ * key on a 15-minute cron writes ~96 rows a day — so the window fills with the
+ * beginning of an outage while the operator is looking for its current edge,
+ * and the chart marks stale failures and omits every fresh one.
+ */
 export async function failures({ hours = 24 * 7, limit = 500 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, error
-      FROM ratings
-     WHERE status = 'error' AND created_at >= ${since}
-     ORDER BY created_at ASC
-     LIMIT ${limit}`;
+    SELECT * FROM (
+      SELECT id, created_at, error
+        FROM ratings
+       WHERE status = 'error' AND created_at >= ${since}
+       ORDER BY created_at DESC, id DESC
+       LIMIT ${limit}
+    ) recent
+     ORDER BY created_at ASC, id ASC`;
   return rows.map(shape);
 }
 
@@ -368,9 +380,13 @@ export async function usageBaseline({ limit = 20 } = {}) {
  *
  * The whole purpose of the 422 path is telling a caller which field is wrong. A
  * schema or connection failure while writing the audit row must not replace
- * that answer with a 500, and must not surface as an unhandled rejection
- * either, so the failure is swallowed here — logged and dropped. That is what
- * makes it safe for the request handler to call this without awaiting it.
+ * that answer with a 500, so the failure is swallowed here — logged and
+ * dropped. That is what makes it safe for the handler to await this: the row
+ * can be lost, but the answer naming the field at fault cannot.
+ *
+ * It is awaited rather than left in flight because a serverless function may be
+ * frozen the moment its response ends, which would drop the insert on the one
+ * platform this table exists for.
  *
  * No shape() on the way out: nothing reads the inserted row.
  */

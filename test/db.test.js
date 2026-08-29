@@ -134,6 +134,25 @@ test('failures are queryable for the chart, separately from readings', async () 
   assert.ok(plotted.every((p) => p.score != null));
 });
 
+test('failures keeps the newest ones when its limit bites, still ascending', async () => {
+  // The same defect history() had, and worse on this query: failures cluster,
+  // so a bad key on a 15-minute cron writes ~96 rows a day and the window fills
+  // with the beginning of an outage. Ordering ascending before the limit would
+  // have marked stale failures on the chart and omitted every recent one —
+  // exactly when an operator is looking for the current edge of a problem.
+  const { failures } = await import('../src/db.js');
+  const at = (h) => `2027-02-0${h}T00:00:00.000Z`; // past every other row in this file
+  for (const h of [1, 2, 3, 4, 5]) {
+    await insertRating({ ...base, slot: null, status: 'error', error: `outage-${h}`, created_at: at(h) });
+  }
+
+  const recent = await failures({ hours: 24 * 365 * 10, limit: 3 });
+  assert.deepEqual(recent.map((f) => f.error), ['outage-3', 'outage-4', 'outage-5'],
+    'the three newest, not the three oldest');
+  assert.ok(recent[0].created_at < recent[1].created_at, 'and still oldest-first for the chart');
+  assert.ok(recent[1].created_at < recent[2].created_at);
+});
+
 test('voiding a reading retires it without erasing the record', async () => {
   const { voidRating, latestRating } = await import('../src/db.js');
   const bad = await insertRating({ ...base, slot: null, status: 'ok', score: 3, explanation: 'header-less probe' });

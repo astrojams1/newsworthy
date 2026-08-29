@@ -10,43 +10,13 @@ import assert from 'node:assert/strict';
  * be established afterwards from anything: the only record was a console.warn,
  * and Vercel's function logs are ephemeral and not queryable months later. So
  * every rejection now leaves a row, and these drive the real route to prove it.
- *
- * Spawned rather than imported, for the reason src/server.js states: it has no
- * exports and calls listen() as a side effect, so importing it would leave a
- * listener open that never lets `node --test` exit. Port 8825 — every
- * server-spawning file here uses its own.
  */
-const PORT = 8825;
-const CALLER = 'test-caller-token';
-const ADMIN = 'test-admin-token';
+import { ADMIN_TOKEN as ADMIN, CALLER_TOKEN as CALLER, PORTS, withServer } from './with-server.js';
 
-const withServer = async (run) => {
-  const { spawn } = await import('node:child_process');
-  const child = spawn(process.execPath, ['src/server.js'], {
-    env: {
-      ...process.env,
-      PORT: String(PORT),
-      CALLER_TOKEN: CALLER,
-      ADMIN_TOKEN: ADMIN,
-      NEWSWORTHY_SQL_DRIVER: 'pglite',
-      NEWSWORTHY_MOCK: '1',
-      NEWSWORTHY_NO_SCHEDULER: '1',
-    },
-    stdio: 'ignore',
-  });
-  try {
-    const base = `http://127.0.0.1:${PORT}`;
-    for (let i = 0; i < 100; i++) {
-      try { await fetch(`${base}/healthz`); break; } catch { await new Promise((r) => setTimeout(r, 100)); }
-    }
-    await run(base);
-  } finally {
-    child.kill();
-  }
-};
+const env = { ADMIN_TOKEN: ADMIN, NEWSWORTHY_NO_SCHEDULER: '1' };
 
 test('a rejected submission leaves a row saying which rule fired', async () => {
-  await withServer(async (base) => {
+  await withServer({ port: PORTS.rejectionsRecorded, env }, async (base) => {
     const get = async (qs) => {
       const res = await fetch(`${base}/api/readings?${qs}`);
       return { status: res.status, body: await res.json() };
@@ -81,18 +51,14 @@ test('a rejected submission leaves a row saying which rule fired', async () => {
     // second database handle: the child server owns its own in-memory PGlite,
     // so this process could not see the rows any other way, and going through
     // the route checks the surfacing at the same time.
-    const rejections = await (async () => {
-      // The write is deliberately not awaited by the handler, so it can land
-      // just after the response. Poll rather than sleep.
-      for (let i = 0; i < 50; i++) {
-        const res = await fetch(`${base}/api/admin/history?token=${ADMIN}`);
-        assert.equal(res.status, 200);
-        const body = await res.json();
-        if ((body.rejections ?? []).length >= 3) return body.rejections;
-        await new Promise((r) => setTimeout(r, 100));
-      }
-      return assert.fail('no rejections were recorded');
-    })();
+    // No polling: the handler awaits the write, so a returned response means
+    // the row is already there. It used to be left in flight, which forced a
+    // retry loop here — and that loop was the reason the production defect
+    // stayed invisible, since a long-lived local server always drains an
+    // unawaited insert eventually and a frozen serverless one does not.
+    const res = await fetch(`${base}/api/admin/history?token=${ADMIN}`);
+    assert.equal(res.status, 200);
+    const { rejections } = await res.json();
 
     assert.equal(rejections.length, 3, 'three refusals, and the stored reading is not one');
     // Newest first, like every other query in db.js.
@@ -124,7 +90,7 @@ test('an unauthenticated refusal is logged but never stored', async () => {
   // a public URL into an unbounded database write — a worse thing to have built
   // than the diagnosis is worth. Every rejection the table exists for, all four
   // rules, is raised after auth has passed, so none of them is lost by this.
-  await withServer(async (base) => {
+  await withServer({ port: PORTS.rejectionsUnauthenticated, env }, async (base) => {
     const unauth = await fetch(`${base}/api/readings?score=3&explanation=Quiet+day`);
     assert.equal(unauth.status, 401, 'still refused, and still says so');
 
@@ -134,21 +100,29 @@ test('an unauthenticated refusal is logged but never stored', async () => {
     assert.equal(soft.status, 200);
     assert.equal((await soft.json()).status, 401);
 
-    // A real rejection afterwards, so this cannot pass by the write simply
-    // being slow: once the authenticated one has landed, the 401s have had
-    // strictly longer to land and have not.
+    // An authenticated rejection afterwards, so the assertion cannot pass just
+    // by nothing having been written yet: the writes are awaited, so this row
+    // exists by the time its response returns, and the two 401s had strictly
+    // longer to produce one.
     await fetch(`${base}/api/readings?token=${CALLER}&score=3`);
-    for (let i = 0; i < 50; i++) {
-      const body = await (await fetch(`${base}/api/admin/history?token=${ADMIN}`)).json();
-      if ((body.rejections ?? []).length >= 1) {
-        assert.deepEqual(body.rejections.map((r) => r.status), [422],
-          'the authenticated 422 is recorded and neither 401 is');
-        return;
-      }
-      await new Promise((r) => setTimeout(r, 100));
-    }
-    assert.fail('the authenticated rejection was never recorded');
+    const { rejections } = await (await fetch(`${base}/api/admin/history?token=${ADMIN}`)).json();
+    assert.deepEqual(rejections.map((r) => r.status), [422],
+      'the authenticated 422 is recorded and neither 401 is');
   });
+});
+
+test('the rejection write is awaited, not left in flight', async () => {
+  // Asserted against the source, like the max_uses check in pricing.test.js and
+  // the content-type check in caller.test.js, because no test running here can
+  // see the difference. A local server lives on after the response and always
+  // drains an unawaited insert before the next request arrives; a serverless
+  // function may be frozen the moment the response ends and never resume. So
+  // the runtime behaviour is identical in this suite and divergent in the only
+  // deployment that matters — which is precisely how the first cut of this
+  // shipped green with the row it exists to write going missing in production.
+  const src = await import('node:fs/promises').then((fs) => fs.readFile('src/server.js', 'utf8'));
+  assert.match(src, /await logRejection\(/, 'the handler waits for the row');
+  assert.ok(!/void logRejection\(/.test(src), 'and does not leave it racing the freeze');
 });
 
 test('a rejection carries no request payload', async () => {
