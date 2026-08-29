@@ -46,7 +46,12 @@ knowing which was being fixed.
 
 This same reference is served as JSON from
 \`${baseUrl}/api/instructions?format=json&token=<TOKEN>\`, where every part of it
-is a string value. A client whose fetch tool rewrites or summarizes what it
+is a string value. Every response here is sent \`no-store\`, but a caller whose
+own fetch layer caches by URL will keep reading whatever copy it holds: one such
+caller spent six hours rating against a version three releases old while its
+submissions were stamped with the current one. A distinct query parameter per
+run — any unused name, any changing value — defeats that, and costs nothing when
+no cache is in the way. A client whose fetch tool rewrites or summarizes what it
 retrieves gets the text intact from there and nowhere else — including the
 rating prompt in section 3, which a reading is attributed to whether or not the
 caller read it verbatim.
@@ -195,13 +200,20 @@ ${prompt.text}
 
 ### Verifying the text arrived intact
 
-\`prompt_sha256\` on a submission is the SHA-256 of the prompt exactly as
-delivered: the bytes between the two marker lines above, excluding the marker
-lines themselves and the newline directly after \`BEGIN\` and directly before
-\`END\`. Lowercase hex, all 64 characters.
+\`prompt_sha256\` on a submission is the SHA-256 of the rating prompt, lowercase
+hex, all 64 characters.
 
-The 16 characters printed above are the first 16 of that digest. They are not
-the answer — a caller that returns them, or any prefix, is recorded as
+The bytes to hash come from \`${baseUrl}/api/prompt?token=<TOKEN>\`, whose
+\`text\` field is that prompt as a JSON string — exactly the bytes this server
+hashes, with no markers to strip and no whitespace to guess at. A caller whose
+fetch tool paraphrases pages still receives a JSON string value intact, which is
+why the digest is defined against that endpoint rather than against the prompt
+block printed above. Hashing the printed block works too, for a caller holding
+real bytes: it is the text between the two marker lines, excluding the marker
+lines and the newline directly after \`BEGIN\` and directly before \`END\`.
+
+The 16 characters printed above, and the \`hash\` field on that endpoint, are the
+first 16 of that digest. They are not the answer — a caller that returns them, or any prefix, is recorded as
 unverified, because the remaining 48 characters exist only for a caller that
 hashed the bytes it actually holds. The digest is computed with a tool, not by
 hand; a value produced any other way will not match.

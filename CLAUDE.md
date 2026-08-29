@@ -308,6 +308,25 @@ version is live, so they cannot go stale as versions accumulate. A rule in prose
 alone is a rule that gets forgotten on the version where it matters. An eighth
 rule needs an eighth test — a count check fails otherwise.
 
+**A caller can be reading a version you retired hours ago.** On 2026-08-29 the
+hourly caller fetched `/api/instructions` and received v9 while the server
+stamped its submission v11 — three releases apart, six hours stale. It reported
+this as a Vercel edge cache. It is not: eight consecutive fetches of the
+canonical URL from outside return the current version with `cache-control:
+no-store`, `x-vercel-cache: MISS` and `age: 0`, and a cache-busted URL returns
+byte-identical content in the same second. That a novel query string changes
+what a *caller* sees, while the origin says MISS, is positive evidence the cache
+sits on the caller's side — an origin cache would answer HIT with a non-zero
+age.
+
+Which matters because the fix differs. Nothing more can be done here beyond what
+already is: responses now also carry `Pragma: no-cache` and `Expires: 0` for an
+intermediary that ignores `Cache-Control`, and neither reaches a client that
+caches by URL regardless. Only the caller can defeat that, with a distinct query
+parameter per run. So the instructions describe it, and a stale-copy explanation
+is the first thing to check whenever a prompt change appears to have had no
+effect.
+
 **A prompt edit was unfalsifiable until callers started returning a digest.**
 Five wordings of the same instruction — v2's banned-phrase list, v5's "do not
 justify the score", v10's restatement as what the sentence may contain —
@@ -321,6 +340,14 @@ digest of the text it sent, so unlike the model and token counts that were
 removed as unverifiable claims, this is a proof. `prompt_verified` is `true`,
 `false`, or `NULL` when no digest came — three distinct findings, and the admin
 table marks the first two beside the version.
+
+The bytes to hash are defined as the `text` field of `/api/prompt`, not the
+prompt block printed in the page. A caller whose fetch tool paraphrases pages
+still receives a JSON string value intact, and that field is byte-identical to
+what the server hashes — no markers to strip, no trailing-newline ambiguity. A
+caller asked for the digest itself to be published as a field instead; that
+would make the check vacuous, since echoing a published value proves nothing
+about what was read. Publishing the bytes is safe, publishing the answer is not.
 
 The 16-character hash printed in the instructions is deliberately a *prefix* of
 the 64-character digest. A caller that echoes the printed value, or any prefix,

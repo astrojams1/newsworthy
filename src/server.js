@@ -33,10 +33,27 @@ const MIME = {
   '.ico': 'image/x-icon',
 };
 
+/**
+ * Caches between here and a caller are the reason five prompt versions went
+ * unevaluated: a caller kept reading a copy of /api/instructions six hours
+ * stale while the server stamped its submissions with the current version. The
+ * origin was already sending no-store — verified, eight consecutive fetches of
+ * the canonical URL returning the current version with `x-vercel-cache: MISS`
+ * and `age: 0` — so the stale copy was held by something on the caller's side.
+ * Pragma and Expires are here for an intermediary that predates or ignores
+ * Cache-Control; neither can fix a client that caches regardless, which is why
+ * the instructions also describe a per-request cache-buster.
+ */
+const NO_STORE = {
+  'cache-control': 'no-store, no-cache, must-revalidate, max-age=0',
+  pragma: 'no-cache',
+  expires: '0',
+};
+
 function json(res, status, body, headers = {}) {
   res.writeHead(status, {
     'content-type': 'application/json; charset=utf-8',
-    'cache-control': 'no-store',
+    ...NO_STORE,
     ...headers,
   });
   res.end(JSON.stringify(body));
@@ -273,10 +290,7 @@ const server = createServer(async (req, res) => {
       // text/plain, not text/markdown: agent fetch tools reject unfamiliar MIME
       // types before exposing the body, and one did. The content is markdown
       // either way — the header just has to be something every client accepts.
-      res.writeHead(200, {
-        'content-type': 'text/plain; charset=utf-8',
-        'cache-control': 'no-store',
-      });
+      res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8', ...NO_STORE });
       return res.end(text);
     }
 

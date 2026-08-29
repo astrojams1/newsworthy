@@ -237,3 +237,23 @@ test('both request examples carry the digest field', () => {
   assert.match(text, /adds 79 characters to that URL/);
   assert.match(text, /a reason to use the POST form/);
 });
+
+test('the digest is defined against bytes a paraphrasing fetch cannot mangle', () => {
+  // A caller reported it could not reconstruct the exact bytes to hash, because
+  // its fetch tool paraphrases pages and refuses verbatim reproduction. The
+  // /api/prompt endpoint already returns the prompt as a JSON string value,
+  // which survives that layer — and hashing it yields exactly the digest the
+  // server checks against, with no markers to strip.
+  const text = build();
+  assert.match(text, /https:\/\/example\.test\/api\/prompt\?token=<TOKEN>/);
+  assert.match(text, /`text` field is that prompt as a JSON string/);
+  assert.match(text, /no markers to strip and no whitespace to guess at/);
+  // And the answer is still not published anywhere: only the 16-char prefix is.
+  assert.match(text, /are the\s+first 16 of that digest\. They are not the answer/);
+});
+
+test('a caller-side cache is named, since no-store cannot reach one', () => {
+  const text = build();
+  assert.match(text, /own fetch layer caches by URL/);
+  assert.match(text, /A distinct query parameter per\s+run/);
+});
