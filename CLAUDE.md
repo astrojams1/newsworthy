@@ -377,6 +377,19 @@ caller asked for the digest itself to be published as a field instead; that
 would make the check vacuous, since echoing a published value proves nothing
 about what was read. Publishing the bytes is safe, publishing the answer is not.
 
+The instructions' first wording of that definition opened with "the bytes to
+hash come from `/api/prompt`", with the `text`-field qualifier trailing behind a
+dash — readable as "hash the response body", and read that way: a caller
+reported doing exactly that, storing a reading flagged `prompt_verified: false`
+on an otherwise correct-looking 201 before hashing the field value and
+resubmitting. The check worked — a wrong-input digest recorded as unverified is
+the check working — but the page taught the wrong input, and a false flag from a
+doc-following caller looked like a delivery failure rather than a docs bug. The
+definition now leads with the field's decoded value, names the two wrong inputs
+(the response body, the field's escaped form), and says what a false flag means
+for a caller that followed it. A test pins all of that, including that the old
+opening phrase stays gone.
+
 The 16-character hash printed in the instructions is deliberately a *prefix* of
 the 64-character digest. A caller that echoes the printed value, or any prefix,
 is recorded unverified: the remaining 48 characters exist only for a caller that

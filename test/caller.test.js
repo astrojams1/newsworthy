@@ -252,6 +252,23 @@ test('the digest is defined against bytes a paraphrasing fetch cannot mangle', (
   assert.match(text, /are the\s+first 16 of that digest\. They are not the answer/);
 });
 
+test('the digest is defined as the text field value, not the endpoint response', () => {
+  // The first wording opened with "The bytes to hash come from /api/prompt",
+  // which reads as the response body; the text-field qualifier trailed behind a
+  // dash. A caller followed it, hashed the whole JSON body, and its reading
+  // stored with prompt_verified: false — a correct-looking 201 whose only
+  // failure signal was a flag the caller had no reason to distrust its own
+  // hashing over. The definition now leads with the field's decoded value and
+  // names both wrong inputs, and what a false flag means for a caller that
+  // followed this section.
+  const text = build();
+  assert.match(text, /bytes to hash are the decoded value of one field/);
+  assert.match(text, /Not the whole response body/);
+  assert.match(text, /not\s+the field as it sits escaped/);
+  assert.match(text, /means the wrong bytes were hashed, not that\s+the text arrived altered/);
+  assert.ok(!/bytes to hash come from/.test(text), 'the old opening is gone');
+});
+
 test('a caller-side cache is named, since no-store cannot reach one', () => {
   const text = build();
   assert.match(text, /own fetch layer caches by URL/);
