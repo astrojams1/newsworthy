@@ -203,14 +203,23 @@ ${prompt.text}
 \`prompt_sha256\` on a submission is the SHA-256 of the rating prompt, lowercase
 hex, all 64 characters.
 
-The bytes to hash come from \`${baseUrl}/api/prompt?token=<TOKEN>\`, whose
-\`text\` field is that prompt as a JSON string — exactly the bytes this server
-hashes, with no markers to strip and no whitespace to guess at. A caller whose
-fetch tool paraphrases pages still receives a JSON string value intact, which is
-why the digest is defined against that endpoint rather than against the prompt
-block printed above. Hashing the printed block works too, for a caller holding
-real bytes: it is the text between the two marker lines, excluding the marker
-lines and the newline directly after \`BEGIN\` and directly before \`END\`.
+The bytes to hash are the decoded value of one field of
+\`${baseUrl}/api/prompt?token=<TOKEN>\`: its \`text\` field, parsed out of the
+JSON, UTF-8 encoded. Not the whole response body that endpoint returns, and not
+the field as it sits escaped inside that body — a \`\\n\` in transit is a real
+newline in the bytes hashed. A digest of the body, or of the escaped form,
+stores normally and comes back \`prompt_verified: false\` on the 201, which on a
+submission built from this section means the wrong bytes were hashed, not that
+the text arrived altered.
+
+That \`text\` field is that prompt as a JSON string — exactly the bytes this
+server hashes, with no markers to strip and no whitespace to guess at. A caller
+whose fetch tool paraphrases pages still receives a JSON string value intact,
+which is why the digest is defined against that endpoint rather than against
+the prompt block printed above. Hashing the printed block works too, for a
+caller holding real bytes: it is the text between the two marker lines,
+excluding the marker lines and the newline directly after \`BEGIN\` and directly
+before \`END\`.
 
 The 16 characters printed above, and the \`hash\` field on that endpoint, are the
 first 16 of that digest. They are not the answer — a caller that returns them, or any prefix, is recorded as
