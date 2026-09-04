@@ -1,20 +1,45 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { currentReading } from '../src/current.js';
+import { agedScore, currentDisplay, currentReading, displayedSeries } from '../src/current.js';
 import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
 
 // newest first, as recentRatings() returns them
 const readings = (...scores) =>
   scores.map((score, i) => ({ score, explanation: `reading ${i}`, created_at: `t${i}` }));
 
-test('the number shown is always an actual reading, never a computed value', () => {
-  // An odd window is the whole reason for five rather than four: the median is
-  // one of the observations, so the score and the sentence beside it come from
-  // the same row. A computed 4.5 would have to borrow somebody's explanation.
+const HOUR = 3600_000;
+
+/**
+ * An ascending series of judged readings. `spec` entries are [score, root],
+ * where root is the index of the reading that first reported this development
+ * and an entry equal to its own index opens one.
+ */
+const judged = (...spec) =>
+  spec.map(([score, root], i) => ({
+    id: i,
+    t: i * HOUR,
+    score,
+    explanation: `reading ${i}`,
+    created_at: new Date(i * HOUR).toISOString(),
+    judge_version: 1,
+    development_of: root === i ? null : root,
+  }));
+
+test('the level is always an actual reading; the number shown is an integer no higher', () => {
+  // The level rule still returns one of the observations — an odd window is the
+  // whole reason for five rather than four, so the level and the sentence come
+  // from the same row. What the page shows is that level aged, which is an
+  // integer but need not be a score anyone gave.
   for (const scores of [[4, 5, 6, 5, 4], [3, 7, 5, 2, 6], [5, 5, 5, 5, 5]]) {
     const window = readings(...scores);
     const { row } = currentReading(window);
     assert.ok(window.includes(row), `${scores} returned a row from the window`);
+  }
+  const series = displayedSeries(judged([5, 0], [5, 0], [5, 0], [5, 0], [5, 0]));
+  for (const point of series) {
+    assert.ok(Number.isInteger(point.displayed), 'a number out of ten, never a computed 4.5');
+    assert.ok(point.displayed <= point.level, 'and never above what the rater said');
+    assert.ok(point.displayed >= 1, 'nor below the bottom of the scale');
   }
 });
 
@@ -107,40 +132,206 @@ test('displayedSeries replays the same rule the front page runs', async () => {
   // Computed on the server rather than in admin.html: a second implementation
   // in the page would be free to drift, and a chart that disagrees with the
   // front page about the front page is worse than no chart.
-  const { displayedSeries, currentReading } = await import('../src/current.js');
-  const hour = 3600_000;
-  const series = [5, 4, 6, 5, 4, 3, 8].map((score, i) => ({ t: i * hour, score }));
+  const series = judged([5, 0], [4, 0], [6, 0], [5, 0], [4, 0], [3, 0], [8, 6]);
   const out = displayedSeries(series);
 
   assert.equal(out.length, series.length);
   assert.ok(out.every((p, i) => p.score === series[i].score), 'raw scores are untouched');
 
   // The newest point of the replay must equal what the live route would say
-  // given the same window, or the chart's right edge contradicts the page.
-  const live = currentReading(series.slice(-5).reverse());
-  assert.equal(out.at(-1).displayed, live.row.score);
+  // given the same series, or the chart's right edge contradicts the page.
+  const live = currentDisplay(series, { now: series.at(-1).t });
+  assert.equal(out.at(-1).displayed, live.score);
   assert.equal(out.at(-1).basis, live.basis);
 
-  // 8 against a level of 4-5 is a shock and passes through unsmoothed.
+  // The 8 opens a development of its own, so it is shown whole and at once.
   assert.equal(out.at(-1).displayed, 8);
-  assert.equal(out.at(-1).basis, 'shock');
-  // The early points have too short a window to take a median of.
-  assert.deepEqual(out.slice(0, 2).map((p) => p.basis), ['latest', 'latest']);
+  assert.equal(out.at(-1).basis, 'new');
+  // The early points have too short a window to take a median of, and the
+  // first opens the series' only other development.
+  assert.equal(out[0].basis, 'new');
+  assert.equal(out[1].basis, 'latest');
 });
 
-test('the replay window is time-bounded, not just counted', async () => {
-  const { displayedSeries } = await import('../src/current.js');
-  const hour = 3600_000;
-  // Four readings around 5, then a gap of a day, then a lone 2. The old
-  // readings are outside the six-hour window, so the 2 stands alone as the
-  // only estimate rather than being median-ed against stale company.
+test('the replay window is time-bounded, not just counted', () => {
+  // Four readings around 5, then a gap of a day, then a lone 2 restating the
+  // same development. The old readings are outside the six-hour level window,
+  // so the 2 stands alone as the only estimate rather than being median-ed
+  // against stale company — and a day of ageing has taken the level below it.
   const series = [
-    { t: 0, score: 5 }, { t: hour, score: 5 }, { t: 2 * hour, score: 5 },
-    { t: 3 * hour, score: 5 }, { t: 27 * hour, score: 2 },
-  ];
+    { id: 0, t: 0, score: 5 }, { id: 1, t: HOUR, score: 5 }, { id: 2, t: 2 * HOUR, score: 5 },
+    { id: 3, t: 3 * HOUR, score: 5 }, { id: 4, t: 27 * HOUR, score: 2 },
+  ].map((r) => ({ ...r, judge_version: 1, development_of: r.id === 0 ? null : 0 }));
   const out = displayedSeries(series);
-  assert.equal(out.at(-1).displayed, 2, 'not dragged up by day-old readings');
-  assert.equal(out.at(-1).basis, 'latest');
+  assert.equal(out.at(-1).level, 2, 'not dragged up by day-old readings');
+  assert.equal(out.at(-1).displayed, 1, 'and a day-old development is at the floor');
+  assert.equal(out.at(-1).basis, 'aged');
+});
+
+test('a development breaks at its own score and decays from there', () => {
+  // What the whole change is for: a story that breaks is reported at once, and
+  // a story still being re-reported twelve hours later is reported smaller.
+  const quiet = [[4, 0], [4, 0], [4, 0], [4, 0]];
+  const held = Array.from({ length: 13 }, () => [8, 4]);
+  const out = displayedSeries(judged(...quiet, [8, 4], ...held.slice(1)));
+
+  const breakPoint = out[4];
+  assert.equal(breakPoint.displayed, 8, 'the break is shown the hour it lands');
+  assert.equal(breakPoint.basis, 'new');
+
+  const halved = out.find((p) => p.t === breakPoint.t + 12 * HOUR);
+  assert.equal(halved.displayed, 4, 'and reads half that after one half-life');
+  assert.equal(halved.basis, 'aged');
+  assert.equal(halved.level, 8, 'while the rater is still saying 8');
+
+  // Never back up on unchanged readings: a sawtooth would be worse than a
+  // number that does not move at all.
+  const after = out.slice(4).map((p) => p.displayed);
+  for (let i = 1; i < after.length; i += 1) {
+    assert.ok(after[i] <= after[i - 1], `rose from ${after[i - 1]} to ${after[i]}`);
+  }
+});
+
+test('a story superseded and returning ages from its own first report', () => {
+  // The case the score-only rule could not answer: X breaks at 08:00, Y takes
+  // the top slot at midday, X is top again by evening. X is ten hours old when
+  // it returns, and shows ten hours old.
+  const series = [
+    { id: 1, t: 0, score: 7, development_of: null },              // X breaks
+    { id: 2, t: HOUR, score: 5, development_of: 1 },
+    { id: 3, t: 2 * HOUR, score: 5, development_of: 1 },
+    { id: 4, t: 4 * HOUR, score: 8, development_of: null },       // Y breaks
+    { id: 5, t: 5 * HOUR, score: 6, development_of: 4 },
+    { id: 6, t: 10 * HOUR, score: 6, development_of: 1 },         // X is back
+  ].map((r) => ({ ...r, judge_version: 1, explanation: `reading ${r.id}` }));
+  const out = displayedSeries(series);
+
+  assert.equal(out[0].displayed, 7, 'X is shown whole when it breaks');
+  assert.equal(out[3].displayed, 8, 'and so is Y');
+  const back = out.at(-1);
+  assert.equal(back.root, 1, 'the evening reading reports X');
+  assert.equal(back.since, 0, 'dated from this morning, not from its return');
+  assert.equal(back.displayed, 4, '7 aged ten hours, not 7 again');
+  assert.equal(back.basis, 'aged');
+});
+
+test('noise on a running development never rejuvenates it', () => {
+  // A 9 an hour after an 8, on the same development, is the rater disagreeing
+  // with itself — it is not a second break, and the judge is what says so.
+  const series = judged([4, 0], [4, 0], [4, 0], [8, 3], [7, 3], [9, 3], [8, 3], [7, 3]);
+  const out = displayedSeries(series);
+  const shown = out.slice(3).map((p) => p.displayed);
+  assert.deepEqual(shown, [8, 7, 7, 7, 6], 'the 9 goes on decaying, it does not restart the clock');
+  assert.ok(out.slice(4).every((p) => p.basis !== 'new'), 'nor open a development');
+  const nine = out[5];
+  assert.equal(nine.score, 9, 'the reading is stored as it was rated');
+  assert.ok(nine.displayed < 9, 'and shown as the development it restates');
+});
+
+test('a development that escalates is news again, even if the judge does not say so', () => {
+  // The safety net under the judge. A story it keeps calling one development
+  // must not sit at the floor however far it escalates: replayed over the
+  // stored series with story identity stood in by keywords, four days of
+  // intensifying US-Iran strikes showed 1 on the day the rater said 7.
+  const quiet = Array.from({ length: 14 }, () => [4, 0]);
+  const risen = Array.from({ length: 5 }, () => [6, 0]);
+  const out = displayedSeries(judged([4, 0], ...quiet.slice(1), ...risen));
+
+  const faded = out[13];
+  assert.ok(faded.displayed < 4, `half a day of 4s faded to ${faded.displayed}`);
+  const after = out.slice(14).map((p) => p.displayed);
+  assert.ok(after.includes(6), 'and a two-point rise in the level is reported');
+  assert.equal(out.at(-1).displayed < 6, true, 'then ages again from there');
+});
+
+test('a one-point drift never restarts the clock', () => {
+  // The same margin the shock rule uses, for the same reason: the rater's
+  // disagreement with itself is about 0.6, so a single point is inside the
+  // error bar. A page that sprang back up on that would saw back and forth,
+  // which is worse than not ageing at all.
+  const drift = [[4, 0], [4, 0], [4, 0], [4, 0], [4, 0], [5, 0], [5, 0], [5, 0], [5, 0]];
+  const out = displayedSeries(judged(...drift));
+  const shown = out.map((p) => p.displayed);
+  for (let i = 1; i < shown.length; i += 1) {
+    assert.ok(shown[i] <= shown[i - 1], `rose from ${shown[i - 1]} to ${shown[i]}`);
+  }
+});
+
+test('a new development on a faded story is shown at once', () => {
+  // Ageing must not swallow the next break. An 8 that has decayed for a day is
+  // at 2; a genuinely new development scored 6 shows 6 the hour it arrives.
+  const held = Array.from({ length: 24 }, (_, i) => [i === 0 ? 8 : 4, 0]);
+  const out = displayedSeries(judged(...held, [6, 24]));
+  const before = out.at(-2);
+  const fresh = out.at(-1);
+  assert.ok(before.displayed <= 2, `faded to ${before.displayed}`);
+  assert.equal(fresh.displayed, 6);
+  assert.equal(fresh.basis, 'new');
+});
+
+test('an unjudged reading inherits rather than starting a development', () => {
+  // A judge outage must not look like a story breaking afresh every hour. The
+  // score-only fallback still applies: two clear of the development's level is
+  // a break by the same margin the shock rule uses.
+  const series = [
+    { id: 1, t: 0, score: 7, judge_version: 1, development_of: null },
+    { id: 2, t: HOUR, score: 6 },              // unjudged
+    { id: 3, t: 2 * HOUR, score: 6 },          // unjudged
+    { id: 4, t: 3 * HOUR, score: 6 },          // unjudged
+  ].map((r) => ({ ...r, explanation: `reading ${r.id}` }));
+  const out = displayedSeries(series);
+  assert.ok(out.every((p) => p.root === 1), 'all one development');
+  assert.ok(out.at(-1).displayed < 7, 'so the clock kept running');
+
+  const withBreak = displayedSeries([
+    ...series,
+    { id: 5, t: 4 * HOUR, score: 9, explanation: 'reading 5' },
+    { id: 6, t: 5 * HOUR, score: 9, explanation: 'reading 6' },
+    { id: 7, t: 6 * HOUR, score: 9, explanation: 'reading 7' },
+  ]);
+  assert.equal(withBreak.at(-1).root, 5, 'a level two clear still registers unjudged');
+});
+
+test('the page ages while the caller is silent', () => {
+  // Ten hours after an 8 is not an 8, whatever the last stored row says. The
+  // window is empty by then, so the basis says stale — and the number has still
+  // moved, which is what a page that has not stopped looks like.
+  const series = judged([8, 0], [8, 0], [8, 0]);
+  const last = series.at(-1).t;
+  const atLast = currentDisplay(series, { now: last });
+  assert.equal(atLast.score, 7, 'two hours in, an 8 already reads 7');
+  assert.equal(atLast.window, 3, 'and all three readings are inside the level window');
+
+  const later = currentDisplay(series, { now: last + 10 * HOUR });
+  assert.equal(later.basis, 'stale');
+  assert.equal(later.window, 0);
+  assert.ok(later.score < 8 && later.score >= 1, `aged to ${later.score}`);
+});
+
+test('a development older than the replay window keeps its real age', () => {
+  // The chart pads its fetch and trims the result for exactly this reason: a
+  // point at the left edge must age from the first report the front page used,
+  // not from the edge of whatever range the page asked for.
+  const series = [
+    { id: 9, t: 30 * HOUR, score: 6, judge_version: 1, development_of: 1, explanation: 'x' },
+  ];
+  const roots = new Map([[1, { t: 0 }]]);
+  const withRoot = displayedSeries(series, { roots });
+  assert.equal(withRoot[0].since, 0, 'dated from the real first report');
+  assert.ok(withRoot[0].displayed < displayedSeries(series)[0].displayed,
+    'and reads lower than it would dated from the window edge');
+});
+
+test('the quiet band tracks the rater, then falls to the floor', () => {
+  // Nothing dramatic is happening and the rater keeps saying 3. The page says 3
+  // for the first hours and 1 after a day: the scale's own bottom rung is
+  // "Nothing new; skip the news", which is what a day-old unchanged story is.
+  const day = Array.from({ length: 25 }, (_, i) => [i === 0 ? 3 : 3, 0]);
+  const out = displayedSeries(judged(...day));
+  assert.equal(out[0].displayed, 3);
+  assert.equal(out[2].displayed, 3, 'the first hours read what the rater said');
+  assert.equal(out.at(-1).displayed, 1);
+  assert.equal(agedScore(3, 24 * HOUR) < 1, true, 'three halvings of 3 is under 1');
 });
 
 test('the score is smoothed, the sentence is not', async () => {
@@ -155,9 +346,13 @@ test('the score is smoothed, the sentence is not', async () => {
     // reading at startup with a RANDOM score, so anything short of five leaves
     // that value inside the window and makes this test pass or fail by luck.
     // The median lands on an earlier row, with the newest deliberately off the
-    // level so the two rows stay distinguishable.
+    // level so the two rows stay distinguishable. They share a stem so the mock
+    // judge groups them as one development — which is what puts the median
+    // rule, rather than the break rule, in charge of the number.
     for (const [score, text] of [
-      [5, 'five+a'], [5, 'five+b'], [5, 'five+c'], [4, 'four'], [6, 'six+newest'],
+      [5, 'hormuz+tanker+strike+alpha'], [5, 'hormuz+tanker+strike+bravo'],
+      [5, 'hormuz+tanker+strike+charlie'], [4, 'hormuz+tanker+strike+delta'],
+      [6, 'hormuz+tanker+strike+newest'],
     ]) {
       await submit(score, text);
     }
@@ -165,7 +360,9 @@ test('the score is smoothed, the sentence is not', async () => {
 
     assert.equal(body.basis, 'median');
     assert.equal(body.score, 5, 'the median of the window');
-    assert.equal(body.explanation, 'six newest', 'but the newest sentence');
+    assert.equal(body.explanation, 'hormuz tanker strike newest', 'but the newest sentence');
+    assert.equal(body.level, 5);
+    assert.ok(body.since, 'and the development it reports is dated');
     assert.equal(body.score_from !== undefined, true, 'and the score row is named for debugging');
     assert.ok(body.created_at > body.score_from, 'the page is dated from the newer of the two');
   });
@@ -175,17 +372,20 @@ test('score_from is omitted when the score is the newest reading anyway', async 
   // Most of the time there is nothing to explain, and a key that always
   // repeats created_at is noise in a response read by one page.
   await withServer({ port: PORTS.currentScoreFrom }, async (base) => {
-    // A shock: the newest reading is the displayed one, so both come from it.
-    // Five again, to push the random startup reading out of the window.
+    // A new development: the newest reading is the displayed one, so both come
+    // from it. Five again, to push the random startup reading out of the
+    // window, and the last shares no words with the rest so the mock judge
+    // opens a development for it.
     for (const [s, t] of [
-      [4, 'four'], [4, 'four+b'], [4, 'four+c'], [4, 'four+d'], [9, 'nine+breaking'],
+      [4, 'tariff+round+alpha'], [4, 'tariff+round+bravo'], [4, 'tariff+round+charlie'],
+      [4, 'tariff+round+delta'], [9, 'volcano+erupts+overnight'],
     ]) {
       await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=${s}&explanation=${t}`);
     }
     const body = await (await fetch(`${base}/api/current`)).json();
-    assert.equal(body.basis, 'shock');
+    assert.equal(body.basis, 'new');
     assert.equal(body.score, 9);
-    assert.equal(body.explanation, 'nine breaking');
+    assert.equal(body.explanation, 'volcano erupts overnight');
     assert.equal(body.score_from, undefined);
   });
 });

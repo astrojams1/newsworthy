@@ -21,7 +21,8 @@ score and the reason.
 | `src/rate.js` | Calls Claude, parses the verdict, writes the row. |
 | `src/prompts.js` | Append-only prompt registry. |
 | `src/pricing.js` | Model rate card and cost estimation. |
-| `src/config.js` | Effective model/cadence: database settings over env. |
+| `src/config.js` | Effective model/cadence/half-life: database settings over env. |
+| `src/story.js` | Judges which development a reading reports. Append-only prompts. |
 | `src/db.js`, `src/sql.js` | Postgres access and schema. |
 | `public/` | Two static pages, no build step. |
 | `PROMPT-RULES.md` | Constraints on every prompt version. Tests enforce each. |
@@ -106,51 +107,129 @@ Note the two effects compound: external readings suppress the cron by being
 recent, so a prompt change reaches nothing until a caller picks it up. No cron
 run has executed v4.
 
-**The front page shows a median, not the newest reading.** Measured over 46
-readings: the rater disagrees with itself by about 0.6 points on near-identical
-material, the series standard deviation is 1.12, and lag-1 autocorrelation is
--0.11. Consecutive readings are statistically indistinguishable from independent
-draws around a slowly moving level, so hour-to-hour movement is mostly noise —
-and the newest reading, which is what the page used to show, is the noisiest
-estimator available. The hourly caller was already supplying the samples to do
-better with.
+**The front page shows a development's level, aged.** Two rules, in order.
 
-`currentReading()` in `src/current.js` takes the median of the last five
-readings within six hours. Five rather than four because an odd window makes the
-median an actual observed score rather than a computed midpoint — this is a
-number out of ten and a front page reading 4.5 is not the product. Replayed over
-the stored series it cuts the mean hour-to-hour change from 1.10 to 0.39.
+The level rule is unchanged and answers "how newsworthy is it". Measured over
+46 readings: the rater disagrees with itself by about 0.6 points on
+near-identical material, the series standard deviation is 1.12, and lag-1
+autocorrelation is -0.11. Consecutive readings are statistically
+indistinguishable from independent draws around a slowly moving level, so
+hour-to-hour movement is mostly noise, and the newest reading is the noisiest
+estimator available. `currentReading()` in `src/current.js` takes the median of
+the last five readings within six hours; a median of five cuts the standard
+deviation to 0.43, and five rather than four because an odd window makes the
+median an observed score. A reading two or more above that median is a break
+rather than noise and passes straight through, because smoothing costs lag and
+lag is what v6 was written to remove.
 
-**Only the score is smoothed.** The sentence always comes from the newest
-reading, and the two answer different questions: the number is a level, which a
-median estimates better, and the sentence is what happened, which goes stale.
-Pairing the median row's sentence with the number was the first cut and it read
-as an app that had stopped — the text and the timestamp were both hours behind
-while the page was current. `score_from` names the row the score came from when
-that is not the newest reading, and is never displayed.
+The level alone could not age anything. Every run is independent and rates the
+current top news, so a story that dominates for days is re-rated at about the
+same number hour after hour: the median of five 5s is 5 forever. The renewed
+US-Iran strikes held the page between 4 and 6 for four days. So the number shown
+is the level of the development the newest reading reports, decayed from when
+that development was first reported — halving every 12 hours by default,
+floored at 1, and never above what the rater just said.
 
-Smoothing costs lag, which is what v6 was written to remove, so the median
-governs the quiet band only: a reading two or more above it is shown
-immediately, with its own sentence. Two because the rater's own disagreement is
-about 0.6 and a one-point gap is inside it. 83% of readings sit between 4 and 6
-and readings of 7 or more are three in 46, so noise and shocks live in different
-places; the override fires about 5% of the time. Drops are never treated as
-shocks — being slow to report calm costs nothing.
+**Two doctrines ended there, and both were load-bearing.** The displayed number
+is no longer always an observed reading: it is an integer, never a computed 4.5,
+but it can be a number no run produced. And a shock passes through only when it
+reports a *new* development — a 7 on a story the judge says has been running
+since morning is that story's noise, not a break. Drops are still never treated
+as shocks, and being slow to report calm still costs nothing.
 
-The window is time-bounded as well as counted, and an empty window means the
-newest reading is older than it, not that nothing is stored. `/api/current`
-falls back to `latestRating()` there and reports `basis: 'stale'`; reading the
-empty window as "nothing stored" and answering 503 was a bug in the first cut.
-`basis` is in the response and never displayed — which rule produced the number
-is the first thing anyone debugging a surprising front page wants.
+**Which development a reading reports is judged once, on arrival, and stored.**
+Text similarity was tried first, replayed over the stored series: it finds the
+coarse story well enough (134 of 155 readings matched their neighbour's story)
+but it cannot tell a re-report from a new development inside a running story. It
+chained six days of Iran readings into one, so the resumption of strikes on 31
+August — which the rater scored 4 to 7 — would have displayed as 1. That
+distinction is a judgement about the news, not about the words, so a model makes
+it: `src/story.js` shows the last 48 hours grouped into developments and asks
+which one the new sentence reports, or none. The answer lands in `story`,
+`development_of`, `judge_version`, `judge_model`, `judge_note` and
+`judge_cost_usd`, and `src/current.js` replays it. The judgement is never
+recomputed, so the front page and the chart cannot disagree, and re-reading
+history cannot re-interpret it.
 
-The admin chart draws both: the displayed value as the line, the stored
-readings as scatter. Scatter rather than a second line because their lag-1
+The rater does not change and does not know. The judge runs after a reading
+exists, sees only stored sentences, and cannot alter a score or reject a
+submission — the four rejection rules stay four. Its prompts are append-only and
+pinned by hash for the same reason the rating prompts are: a stored judgement
+names the version that made it. Its spend is `judge_spend_usd`, counted apart
+from rating spend, because it makes no reading and does no search. Roughly $11 a
+month on Opus 5 at hourly cadence.
+
+**The case that shaped it: X, then Y, then X again.** X breaks at 08:00 scoring
+7 and shows 7. Y takes the top slot at midday and shows its own score. X is top
+again at 18:00 scoring 6 — and shows 4, because X is ten hours old, not new.
+Without stored identity the page had no way to know that, and either forgot the
+morning or never aged at all.
+
+**A development that escalates is news again, whatever the judge says.** The
+level rule and the judge between them would leave one hole, and it is the worst
+one: a story the judge keeps calling a single development sits at the floor
+however far it escalates. Replayed over the stored series with story identity
+stood in by keywords — the crudest judge there is — four days of intensifying
+US-Iran strikes showed 1 on the day the rater said 7. So a development whose
+level climbs two clear of its own recent low re-anchors there and its clock
+restarts.
+
+Two points, against the development's own low, and only on a level the median
+confirms. Two because that is the margin the shock rule already uses and the
+rater's self-disagreement is about 0.6. Against the low rather than the anchor,
+because measuring against an all-time maximum lets one early peak lock a
+development at the floor for as long as it runs — that was the first fix and it
+changed nothing. Against the level rather than the decayed value, because a rise
+the news did not make is a sawtooth: the number would fall for half a day and
+spring back on unchanged readings. And not on shock levels: letting those anchor
+doubled the upward steps over the stored series (23 rises against 12, 18 of them
+two points or more) and took hour-to-hour movement back to 0.75 against the raw
+0.88 — a page bouncing as much as the readings it was smoothing. The cost is
+about an hour of lag on a sharp escalation, until the median confirms it, and a
+sharp escalation is the judge's case rather than this one's.
+
+**A judge outage is "inherit", not "new".** A reading with `judge_version` null
+takes the previous reading's development rather than opening one, because an
+outage that reset the clock hourly would look exactly like a story that never
+ages. The score-only fallback still applies on top: a level two clear of the
+development's own level starts one. History from before the judge existed reads
+the same way until `/api/admin/judge` backfills it.
+
+**Only the score is smoothed and aged.** The sentence always comes from the
+newest reading, and the two answer different questions: the number is a level,
+and the sentence is what happened. Pairing the median row's sentence with the
+number was an early cut and it read as an app that had stopped. So a story still
+on top in the evening is still named in the evening, with a smaller number
+beside it — never "nothing new". `score_from` names the row the score came from
+when the number is one row rather than a decayed level, and is never displayed.
+
+`/api/current` replays 72 hours (`LOOKBACK_HOURS`), which is three halvings at
+the longest half-life — past that a development is at the floor and its exact
+age stops mattering. A root whose first report is older than that is fetched by
+id, so `since` is the real first report rather than the edge of the window. The
+score is re-aged at request time, not at the last reading's timestamp: ten hours
+of silence after an 8 is not an 8. An empty six-hour window means the newest
+reading is older than it, not that nothing is stored — `basis` reports `stale`
+there and the number still ages. Reading the empty window as "nothing stored"
+and answering 503 was a bug in the first cut. `basis`, `level`, `story` and
+`since` are all in the response and none are displayed; which rule produced the
+number is the first thing anyone debugging a surprising front page wants.
+
+**The half-life is a setting, not a constant.** It sits beside model and cadence
+at `/admin` (`half_life_hours`, one of 4, 6, 8, 12, 24) because the right value
+is a matter of taste about the front page, and the chart replays whatever is set
+over readings already stored — so a change is visible against real history
+immediately rather than after a week of new readings.
+
+The admin chart draws both: the displayed value as the line, the stored readings
+as scatter. Scatter rather than a second line because their lag-1
 autocorrelation is about -0.11 — joining them would draw a continuity the
 numbers do not have. `displayedSeries()` replays the rule server-side and each
-history point carries `displayed` and `basis`, so the page never reimplements
-it; a chart free to drift from the front page about the front page is worse than
-no chart.
+history point carries `displayed`, `basis`, `level`, `root` and `since`, so the
+page never reimplements it; a chart free to drift from the front page about the
+front page is worse than no chart. The range is fetched padded by the lookback
+and trimmed after the replay, so a point at the left edge ages from the first
+report the page actually used rather than from the edge of the range.
 
 **The runs table becomes cards below 720px.** Ten columns on a phone is a
 horizontal scroll showing three words at a time. Each row reflows to timestamp
@@ -459,14 +538,14 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ## Testing
 
 ```bash
-npm test        # eleven files under test/; database tests run against PGlite,
+npm test        # twelve files under test/; database tests run against PGlite,
                 # real Postgres in-process, so the SQL is exercised not mocked
                 # test/with-server.js is the shared harness, not a suite
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
 
-The eleven are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
-`parse`, `pricing`, `prompt-rules`, `rejections` and `scheduler`. A count of
+The twelve are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
+`parse`, `pricing`, `prompt-rules`, `rejections`, `scheduler` and `story`. A count of
 individual tests
 is not kept here: it is wrong again after the next PR, and a stale number in a
 document read as authoritative is worse than no number.

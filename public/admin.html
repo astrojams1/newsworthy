@@ -103,7 +103,7 @@
      autocorrelation is about -0.11, so joining them up would draw a continuity
      the numbers do not have. Hollow so the displayed line reads on top. */
   .raw-dot { fill: none; stroke: var(--ink-faint); stroke-width: 1.25; }
-  /* A reading far enough above the recent level to bypass the median. */
+  /* A reading that opened a development: shown whole, the hour it arrived. */
   .raw-dot.shock { fill: var(--series); stroke: var(--series); }
   .legend { font-size: 0.75rem; color: var(--ink-faint); display: flex; gap: 0.25rem 1rem;
             align-items: center; flex-wrap: wrap; margin-bottom: 0.5rem; }
@@ -158,7 +158,8 @@
    */
   /* 'external agent' wrapped to two lines once Prompt took a share of the
      width; it is a fixed vocabulary of three short values, so it never needs to. */
-  #runs td.source, #runs td.prompt { white-space: nowrap; }
+  #runs td.source, #runs td.prompt, #runs td.story { white-space: nowrap; }
+  td.story .opened { color: var(--series); }
   @media (max-width: 720px) {
     #runs, #runs tbody, #runs tr, #runs td { display: block; }
     #runs thead { display: none; }
@@ -173,7 +174,7 @@
     #runs td.notes { margin: 0.375rem 0 0; font-size: 0.8125rem; }
     #runs td.explanation.absent { display: none; } /* the note already says why */
 
-    #runs td.source, #runs td.prompt, #runs td.model, #runs td.tokens,
+    #runs td.source, #runs td.story, #runs td.prompt, #runs td.model, #runs td.tokens,
     #runs td.cost, #runs td.time {
       display: inline; font-size: 0.75rem; color: var(--ink-faint);
     }
@@ -186,7 +187,7 @@
        Prompt is the first: prompt_version is NOT NULL, so every row has one,
        and it opens the strip. When model opened it the line began with a stray
        dot, because source sits on its own line above rather than beside it. */
-    #runs td.model::before, #runs td.tokens::before,
+    #runs td.story::before, #runs td.model::before, #runs td.tokens::before,
     #runs td.cost::before, #runs td.time::before { content: ' · '; }
     #runs td.absent:not(.explanation) { display: none; }
     #runs td.empty { display: block; }
@@ -237,7 +238,7 @@
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th class="when">When</th><th class="num">Score</th><th>Explanation</th><th>Source</th><th>Prompt</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th><th>Notes</th></tr></thead>
+    <thead><tr><th class="when">When</th><th class="num">Score</th><th>Explanation</th><th>Source</th><th>Story</th><th>Prompt</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th><th>Notes</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
@@ -252,10 +253,26 @@
     <label class="field">Rate every
       <select id="interval"></select>
     </label>
+    <label class="field">Score halves every
+      <select id="half-life"></select>
+    </label>
+    <label class="field">Story judge
+      <select id="judge-model"></select>
+    </label>
   </div>
   <p class="note" id="settings-note"></p>
   <div class="settings-actions" id="settings-actions" hidden>
     <button id="save" type="button">Save</button>
+  </div>
+
+  <h2>Story judge</h2>
+  <p class="note" id="judge-note">Each reading is judged once, on arrival, against the last
+    two days: does it report a development already recorded, or a new one? The number on the
+    front page is that development's level, aged from when it was first reported. Readings
+    stored before the judge existed carry no judgement and inherit the reading before them.</p>
+  <div class="settings-actions">
+    <button id="judge" type="button">Judge stored readings</button>
+    <span id="judge-status" style="font-size:.8125rem;color:var(--ink-muted);margin-left:.5rem"></span>
   </div>
 </div>
 
@@ -326,7 +343,10 @@
     const s = data.stats ?? {};
     const current = points.at(-1);
     const tiles = [
-      ['Now', current ? `${current.score}<small>/10</small>` : '–'],
+      // The displayed value, which is what the front page and the favicon show.
+      // This read the raw newest reading, so the tile could disagree with the
+      // badge three hundred lines below it and with the page itself.
+      ['Now', current ? `${current.displayed ?? current.score}<small>/10</small>` : '–'],
       ['Average', s.avg_score != null ? s.avg_score.toFixed(1) : '–'],
       ['Range', s.min_score != null ? `${s.min_score}–${s.max_score}` : '–'],
       ['Readings', s.ok ?? 0],
@@ -335,6 +355,9 @@
       // Cost, not count: an external reading is one this app did not pay for.
       ...(s.external_runs ? [['By agents', `${s.external_runs}<small> · unpriced</small>`]] : []),
       ['Per run', usd(s.avg_cost_usd)],
+      // The judge makes no reading and does no search, so its spend is counted
+      // apart: "spend" stays a glance at what rating cost.
+      ...(s.judge_spend_usd ? [['Judging', usd(s.judge_spend_usd)]] : []),
       ['Monthly est.', usdRounded(data.projected_monthly_usd)],
     ];
     $('tiles').innerHTML = tiles
@@ -400,7 +423,7 @@
     const line = coords.map((p, i) => `${i ? 'L' : 'M'}${p.cx.toFixed(1)} ${p.dy.toFixed(1)}`).join(' ');
     const area = `${line} L${coords.at(-1).cx.toFixed(1)} ${PAD.t + plotH} L${coords[0].cx.toFixed(1)} ${PAD.t + plotH} Z`;
     const raw = coords.length <= 400
-      ? coords.map((p) => `<circle class="raw-dot${p.basis === 'shock' ? ' shock' : ''}" `
+      ? coords.map((p) => `<circle class="raw-dot${p.basis === 'new' || p.basis === 'shock' ? ' shock' : ''}" `
           + `cx="${p.cx.toFixed(1)}" cy="${p.cy.toFixed(1)}" r="2.75"></circle>`).join('')
       : '';
     const dots = `<circle class="series-dot" cx="${coords.at(-1).cx.toFixed(1)}" cy="${coords.at(-1).dy.toFixed(1)}" r="4"></circle>`;
@@ -465,9 +488,19 @@
       tooltip.hidden = false;
       // Both numbers, and only when they differ — repeating "5/10 · shown 5"
       // on the 40% of points where the reading is the displayed value is noise.
+      // Both numbers, and only when they differ, plus what made them differ:
+      // an aged point is the whole reason the two can disagree by a lot, and
+      // "shown 2" with no explanation reads as a bug.
+      const age = nearest.since != null
+        ? Math.round((nearest.t - nearest.since) / 3600_000) : null;
+      const why = nearest.basis === 'aged'
+        ? ` (level ${nearest.level}${age ? `, ${age}h old` : ''})`
+        : nearest.basis === 'new' ? ' (new development)'
+        : nearest.basis === 'shock' ? '' : ' (median)';
       const shown = nearest.displayed != null && nearest.displayed !== nearest.score
-        ? ` <span class="t-shown">shown ${nearest.displayed}${nearest.basis === 'shock' ? '' : ' (median)'}</span>`
-        : (nearest.basis === 'shock' ? ' <span class="t-shown">shown, above the level</span>' : '');
+        ? ` <span class="t-shown">shown ${nearest.displayed}${why}</span>`
+        : (nearest.basis === 'new' ? ' <span class="t-shown">new development</span>'
+          : nearest.basis === 'shock' ? ' <span class="t-shown">shown, above the level</span>' : '');
       tooltip.innerHTML =
         `<b>${nearest.score}/10</b>${shown} <span class="t-time">${fmtTime.format(nearest.t)}</span>` +
         `<span class="t-explanation">${escapeHtml(nearest.explanation ?? '')}</span>`;
@@ -542,6 +575,20 @@
     return v;
   }
 
+  /**
+   * Which development the reading reported, and whether it opened one. A row
+   * with no judgement leaves the cell empty rather than claiming anything: an
+   * unjudged reading inherits the one before it, which is not the same as being
+   * part of it by a judgement nobody made.
+   */
+  function storyCell(r) {
+    if (r.judge_version == null) return null;
+    const slug = r.story ? escapeHtml(r.story) : '—';
+    const opened = r.development_of == null;
+    const title = r.judge_note ? ` title="${escapeHtml(r.judge_note)}"` : '';
+    return `<span${title}>${slug}${opened ? ' <span class="opened">new</span>' : ''}</span>`;
+  }
+
   const isVoided = (r) => r.status !== 'ok' && /^voided:/.test(r.error ?? '');
   /** An absent figure reads as a rendering gap when the cell is simply blank. */
   const none = '<span class="none">–</span>';
@@ -581,6 +628,7 @@
         ${cell('score num', ok ? `${r.score}/10` : null)}
         ${cell('explanation', ok ? escapeHtml(r.explanation ?? '') : null)}
         ${cell('source', sourceCell(r))}
+        ${cell('story', storyCell(r))}
         ${cell('prompt', promptCell(r))}
         ${cell('model', modelCell(r))}
         ${cell('tokens num', r.input_tokens != null
@@ -589,7 +637,7 @@
         ${cell('time num', r.latency_ms != null ? fmtDuration(r.latency_ms) : null)}
         ${cell('notes', noteCell(r))}
       </tr>`;
-    }).join('') || '<tr><td colspan="10" class="empty">Nothing logged yet.</td></tr>';
+    }).join('') || '<tr><td colspan="11" class="empty">Nothing logged yet.</td></tr>';
   }
 
   async function renderPrompts() {
@@ -618,12 +666,13 @@
     setFavicon(points.length ? points.at(-1).displayed ?? points.at(-1).score : null);
     // The reading count lives in the tiles above; repeating it here said the
     // same number twice on one screen.
-    const shocks = points.filter((p) => p.basis === 'shock').length;
+    const breaks = points.filter((p) => p.basis === 'new').length;
+    const halfLife = data.half_life_hours;
     $('caption').innerHTML =
       '<span class="legend">'
-      + '<span><b><span class="swatch"></span>Displayed</b> — median of the last 5</span>'
+      + `<span><b><span class="swatch"></span>Displayed</b> — the development's level, halving every ${halfLife}h</span>`
       + '<span><b><span class="swatch raw"></span>Readings</b> — as submitted</span>'
-      + (shocks ? `<span class="legend-extra">${shocks} clear of the level, unsmoothed</span>` : '')
+      + (breaks ? `<span class="legend-extra">${breaks} new development${breaks === 1 ? '' : 's'}</span>` : '')
       + (failures.length ? '<span class="legend-extra">✕ failed run</span>' : '')
       + '</span>';
     $('status').textContent = `updated ${fmtClock.format(new Date())}`;
@@ -652,6 +701,12 @@
     $('interval').innerHTML = settings.intervals
       .map((i) => `<option value="${i.minutes}"${i.minutes === settings.interval_minutes ? ' selected' : ''}>${escapeHtml(i.label)}</option>`)
       .join('');
+    $('half-life').innerHTML = settings.half_lives
+      .map((h) => `<option value="${h.hours}"${h.hours === settings.half_life_hours ? ' selected' : ''}>${escapeHtml(h.label)}</option>`)
+      .join('');
+    $('judge-model').innerHTML = settings.models
+      .map((m) => `<option value="${m.id}"${m.id === settings.judge_model ? ' selected' : ''}>${escapeHtml(m.label)}</option>`)
+      .join('');
     renderEstimates();
   }
 
@@ -659,7 +714,9 @@
   const pendingChange = () =>
     Boolean(settings)
     && ($('model').value !== settings.model
-      || Number($('interval').value) !== settings.interval_minutes);
+      || Number($('interval').value) !== settings.interval_minutes
+      || Number($('half-life').value) !== settings.half_life_hours
+      || $('judge-model').value !== settings.judge_model);
 
   /**
    * Preview the cost of a *pending* change, and offer Save only when there is
@@ -680,6 +737,8 @@
     const model = settings.models.find((m) => m.id === $('model').value);
     const minutes = Number($('interval').value);
     if (!model) return;
+    // Only the rating model and cadence carry a running cost worth previewing;
+    // the half-life costs nothing and the judge is a fraction of a run.
     const perMonth = model.typical_run_usd * (60 / minutes) * 24 * 30.44;
     const every = settings.intervals.find((i) => i.minutes === minutes)?.label ?? `${minutes} min`;
     // No "Save to apply": the button below says that by existing.
@@ -687,8 +746,9 @@
       `${model.label} every ${every} ≈ ${usdRounded(perMonth)}/month`;
   }
 
-  $('model').addEventListener('change', renderEstimates);
-  $('interval').addEventListener('change', renderEstimates);
+  for (const id of ['model', 'interval', 'half-life', 'judge-model']) {
+    $(id).addEventListener('change', renderEstimates);
+  }
 
   $('save').addEventListener('click', async () => {
     const button = $('save');
@@ -698,13 +758,23 @@
       const res = await fetch('/api/admin/settings', {
         method: 'POST',
         headers: { 'content-type': 'application/json', ...(token ? { 'x-admin-token': token } : {}) },
-        body: JSON.stringify({ model: $('model').value, intervalMinutes: Number($('interval').value) }),
+        body: JSON.stringify({
+          model: $('model').value,
+          intervalMinutes: Number($('interval').value),
+          halfLifeHours: Number($('half-life').value),
+          judgeModel: $('judge-model').value,
+        }),
       });
       const body = await res.json();
       if (res.ok) {
         settings.model = body.model;
         settings.interval_minutes = body.interval_minutes;
-        $('settings-note').textContent = 'Saved. Takes effect on the next reading.';
+        settings.half_life_hours = body.half_life_hours;
+        settings.judge_model = body.judge_model;
+        // The half-life is not a next-reading setting: the chart and the front
+        // page replay it over readings already stored, so a save is visible
+        // immediately in the load() below.
+        $('settings-note').textContent = 'Saved.';
         // Nothing pending now, so the button goes; the note above stays, since
         // hiding both would leave no sign the save happened.
         $('settings-actions').hidden = true;
@@ -712,6 +782,46 @@
       } else {
         $('settings-note').textContent = `Failed: ${body.error ?? res.statusText}`;
       }
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  /**
+   * Judge every stored reading that has none, in batches until there are none
+   * left. Batched rather than one call because a backfill over months of
+   * readings is minutes of model calls, and a request that long dies on a
+   * serverless platform half way through — leaving, harmlessly, the rows it had
+   * already judged.
+   */
+  $('judge').addEventListener('click', async () => {
+    const button = $('judge');
+    const status = $('judge-status');
+    button.disabled = true;
+    let judged = 0;
+    let spend = 0;
+    try {
+      for (let batch = 0; batch < 200; batch += 1) {
+        status.textContent = `Judging… ${judged} so far`;
+        const res = await fetch('/api/admin/judge?limit=20', {
+          method: 'POST',
+          headers: token ? { 'x-admin-token': token } : {},
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          status.textContent = `Failed: ${body.error ?? res.statusText}`;
+          return;
+        }
+        judged += body.judged ?? 0;
+        spend += body.spend_usd ?? 0;
+        if (!body.remaining) break;
+      }
+      status.textContent = judged
+        ? `Judged ${judged} reading${judged === 1 ? '' : 's'} · ${usd(spend)}`
+        : 'Every stored reading already has a judgement.';
+      await load();
+    } catch {
+      status.textContent = 'Interrupted — anything already judged is saved; run it again.';
     } finally {
       button.disabled = false;
     }

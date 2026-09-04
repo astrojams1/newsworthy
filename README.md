@@ -40,12 +40,13 @@ actually wired up. Start there when a deploy misbehaves.
 
 | Route | What's there |
 |---|---|
-| `/` | The number, the sentence, nothing else |
+| `/` | The number, the sentence, nothing else. The number is the level of the development the newest reading reports, aged from when it was first reported |
 | `/admin` | Timeseries of the score, run log, prompt versions, "rate now" |
-| `/api/current` | `{ score, explanation, created_at, source, basis, window }`, plus `score_from` when the score is not the newest reading's. No countdown: an external caller can post at any moment, so the next update is not predictable |
+| `/api/current` | `{ score, explanation, created_at, source, basis, level, story, since, window }`, plus `score_from` when the score is one row rather than a decayed level. `basis` is `latest`, `median`, `shock`, `new`, `aged` or `stale`. No countdown: an external caller can post at any moment, so the next update is not predictable |
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions |
 | `/api/admin/prompts` | Every prompt version, full text |
-| `/api/admin/settings` | `GET` the model/cadence and the priced options; `POST` to change them |
+| `/api/admin/settings` | `GET` the model, cadence, score half-life and judge model with the priced options; `POST` to change them |
+| `/api/admin/judge` | `POST` to judge stored readings that carry no judgement, oldest first, in batches — for history from before the judge existed. Idempotent; `remaining` says whether to call again |
 | `/api/admin/readings/:id/void` | `POST` to retire a reading — status becomes `error`, the slot is released, and `?reason=` is recorded |
 | `/api/admin/readings/:id/usage` | `POST` corrected token counts to reprice a reading whose rating is sound but whose usage was not; omitted fields are cleared and the cost is recomputed from what survives |
 | `/api/instructions` | The whole caller workflow, rating prompt embedded — hand an agent this URL |
@@ -74,6 +75,8 @@ visible rather than silent. Each row carries:
 | `slot` | The interval window this reading claims — the dedup key (see Deploying) |
 | `cost_usd` | Estimated cost, priced at write time from this run's own usage |
 | `cache_read_tokens`, `cache_write_tokens`, `web_search_requests` | The rest of the billable usage |
+| `story`, `development_of` | Which development the reading reports — a slug for the broader story, and the reading that first reported this development (null when this one did) |
+| `judge_version`, `judge_model`, `judge_note`, `judge_cost_usd` | How that was decided, and what it cost. All null when no judgement was made, which the front page reads as "inherit the reading before" |
 
 Storing the hash *and* the text means a historical reading stays traceable even if
 `src/prompts.js` is later edited by mistake.

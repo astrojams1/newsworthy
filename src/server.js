@@ -4,13 +4,14 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, stats, usageBaseline, voidRating } from './db.js';
-import { currentReading, displayedSeries } from './current.js';
+import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { HALF_LIFE_CHOICES, LOOKBACK_HOURS, currentDisplay, displayedSeries } from './current.js';
+import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
 import { openapiDocument } from './openapi.js';
-import { INTERVAL_CHOICES, effectiveConfig, intervalLabel, updateConfig } from './config.js';
+import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, updateConfig } from './config.js';
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
@@ -182,6 +183,23 @@ async function serveStatic(res, name) {
   }
 }
 
+/**
+ * First-report times for developments whose opening reading is older than the
+ * replay window. A story running since Tuesday would otherwise date from the
+ * edge of the window and read as younger than it is.
+ */
+async function rootTimes(ascending) {
+  const present = new Set(ascending.map((r) => r.id));
+  const missing = [...new Set(
+    ascending
+      .filter((r) => r.judge_version != null && r.development_of != null)
+      .map((r) => r.development_of)
+      .filter((id) => !present.has(id)),
+  )];
+  const rows = await ratingsByIds(missing);
+  return new Map(rows.map((r) => [r.id, { t: Date.parse(r.created_at), story: r.story }]));
+}
+
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
   const path = url.pathname.replace(/\/+$/, '') || '/';
@@ -191,44 +209,56 @@ const server = createServer(async (req, res) => {
     if (path === '/' && req.method === 'GET') return serveStatic(res, 'index.html');
 
     if (path === '/api/current' && req.method === 'GET') {
-      // The window is time-bounded, so it comes back empty whenever the newest
-      // reading is older than it — a stalled caller, or a cron cadence wider
-      // than the window. That is a stale reading, not a missing one, and it is
-      // still the best answer available.
-      const recent = await recentRatings();
-      const fallback = recent.length ? null : await latestRating();
-      if (!recent.length && !fallback) {
+      // Three days of readings, not the six-hour level window: the number is a
+      // development's level aged from its first report, so the replay has to
+      // reach back far enough to find that report. The level rule still runs on
+      // the six-hour window inside it.
+      const { halfLifeHours } = await effectiveConfig();
+      const rows = await history({ hours: LOOKBACK_HOURS });
+      const fallback = rows.length ? null : await latestRating();
+      if (!rows.length && !fallback) {
         const attempt = await latestAttempt();
         return json(res, 503, {
           error: attempt ? 'no successful rating yet' : 'no rating yet',
           detail: attempt?.error ?? null,
         });
       }
-      const { row, basis } = recent.length
-        ? currentReading(recent)
-        : { row: fallback, basis: 'stale' };
+      const ascending = (rows.length ? rows : [fallback])
+        .map((r) => ({ ...r, t: Date.parse(r.created_at) }));
+      const current = currentDisplay(ascending, {
+        now: Date.now(),
+        halfLifeHours,
+        roots: await rootTimes(ascending),
+      });
       // No countdown: an external caller can post a reading at any moment, so
       // the next update is genuinely not predictable. The page states when the
       // current reading arrived and nothing more.
-      // The score is smoothed; the sentence is not. The number answers "how
-      // newsworthy is it", which is a level and benefits from a median. The
-      // sentence answers "what happened", which is a fact about right now and
-      // gets stale — a median row's sentence can be hours behind the news it
-      // sits beside. So they come from different rows on purpose, and the page
-      // is dated from the sentence's row, which is always the newest reading.
-      const newest = recent[0] ?? row;
+      // The number is smoothed and aged; the sentence is neither. The number
+      // answers "how newsworthy is it", which is a level that goes stale
+      // slowly; the sentence answers "what happened", which is a fact about
+      // right now — so a story still on top this evening is still named this
+      // evening, with a smaller number beside it.
+      const newest = current.newest;
+      const scoreRow = current.basis === 'aged' || current.basis === 'stale' ? null : current.levelRow;
       return json(res, 200, {
-        score: row.score,
+        score: current.score,
         explanation: newest.explanation,
         created_at: newest.created_at,
-        // Which row the score came from, when it is not the newest. Never
-        // displayed; the first thing wanted when a number looks wrong.
-        score_from: row.created_at === newest.created_at ? undefined : row.created_at,
+        // Which row the score came from, when it is one row rather than a
+        // decayed level. Never displayed; the first thing wanted when a number
+        // looks wrong.
+        score_from: scoreRow && scoreRow.created_at !== newest.created_at
+          ? scoreRow.created_at
+          : undefined,
         source: newest.source ?? 'cron',
-        // Not displayed. Which rule produced the number is the first thing
-        // anyone debugging a surprising front page will want.
-        basis,
-        window: recent.length,
+        // Not displayed. Which rule produced the number, the level it decayed
+        // from, and when the development it reports was first recorded — the
+        // three things anyone debugging a surprising front page will want.
+        basis: current.basis,
+        level: current.level,
+        story: current.story ?? undefined,
+        since: new Date(current.since).toISOString(),
+        window: current.window,
       });
     }
 
@@ -377,9 +407,19 @@ const server = createServer(async (req, res) => {
       }
       try {
         const submission = validateSubmission(body);
+        // Which development this reading reports, decided once here and stored.
+        // It cannot change the score or reject the reading — a judge failure
+        // stores the reading unjudged, carrying the reason — so the four
+        // rejection rules stay four.
+        const judgement = await judgeReading({
+          score: submission.score,
+          explanation: submission.explanation,
+          created_at: new Date().toISOString(),
+          priors: await history({ hours: PRIOR_HOURS }),
+        });
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
-        const saved = await insertRating({ ...submission, slot: null });
+        const saved = await insertRating({ ...submission, ...judgement, slot: null });
         const verified = saved.prompt_verified === true ? 'verified'
           : saved.prompt_verified === false ? 'DIGEST MISMATCH' : 'no digest';
         console.log(
@@ -398,6 +438,13 @@ const server = createServer(async (req, res) => {
           // So a caller learns immediately whether the text it rated against
           // was the text this server sent, rather than finding out never.
           prompt_verified: saved.prompt_verified ?? null,
+          // What the reading was taken to report. 'unjudged' is its own answer:
+          // the reading is stored and displayed, the clock simply carries on
+          // from the reading before it.
+          story: saved.story ?? null,
+          development: saved.judge_version == null
+            ? 'unjudged'
+            : (saved.development_of == null ? 'new' : 'same'),
           // Name anything the caller sent that was not stored, so a caller
           // working from an older spec learns its model and token counts went
           // nowhere rather than assuming they landed.
@@ -426,21 +473,32 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/admin/history' && req.method === 'GET') {
       const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
+      // Padded by the replay lookback and trimmed back below: a point at the
+      // left edge of the range must age from the same first report the front
+      // page used at that moment, not from the edge itself.
       const [statsRow, points, failedRuns, attempts, refused, config] = await Promise.all([
         stats({ hours }),
-        history({ hours }),
+        history({ hours: hours + LOOKBACK_HOURS }),
         failures({ hours }),
         recentAttempts(25),
         recentRejections({ hours }),
         effectiveConfig(),
       ]);
+      const ascending = points.map((p) => ({ ...p, t: Date.parse(p.created_at) }));
+      const from = Date.now() - hours * 3600_000;
       return json(res, 200, {
         hours,
         // Each point carries what the front page would have shown at that
         // moment, so the chart can draw the displayed value against the raw
         // readings without reimplementing the rule.
-        points: displayedSeries(points.map((p) => ({ ...p, t: Date.parse(p.created_at) })))
-          .map(({ t, ...rest }) => rest),
+        points: displayedSeries(ascending, {
+          halfLifeHours: config.halfLifeHours,
+          roots: await rootTimes(ascending),
+        })
+          .filter((p) => p.t >= from)
+          .map(({ t, level_row: _levelRow, ...rest }) => rest),
+        half_life_hours: config.halfLifeHours,
+        judge_model: config.judgeModel,
         interval_minutes: config.intervalMinutes,
         cadence: intervalLabel(config.intervalMinutes),
         model: config.model,
@@ -461,6 +519,9 @@ const server = createServer(async (req, res) => {
         return json(res, 200, {
           model: config.model,
           interval_minutes: config.intervalMinutes,
+          half_life_hours: config.halfLifeHours,
+          half_lives: HALF_LIFE_CHOICES.map((h) => ({ hours: h, label: halfLifeLabel(h) })),
+          judge_model: config.judgeModel,
           // Priced from this deployment's own recent runs where possible, so
           // the preview reflects reality rather than a one-off measurement.
           usage_basis: baseline,
@@ -473,8 +534,14 @@ const server = createServer(async (req, res) => {
         const body = await readJsonBody(req);
         try {
           const config = await updateConfig(body);
-          console.log(`settings updated: model=${config.model} interval=${config.intervalMinutes}m`);
-          return json(res, 200, { model: config.model, interval_minutes: config.intervalMinutes });
+          console.log(`settings updated: model=${config.model} interval=${config.intervalMinutes}m `
+            + `half-life=${config.halfLifeHours}h judge=${config.judgeModel}`);
+          return json(res, 200, {
+            model: config.model,
+            interval_minutes: config.intervalMinutes,
+            half_life_hours: config.halfLifeHours,
+            judge_model: config.judgeModel,
+          });
         } catch (err) {
           return json(res, 400, { error: String(err?.message ?? err) });
         }
@@ -529,6 +596,46 @@ const server = createServer(async (req, res) => {
         output_tokens: row.output_tokens,
         web_search_requests: row.web_search_requests,
         cost_usd: row.cost_usd,
+      });
+    }
+
+    /**
+     * Judge readings stored before the judge existed, oldest first.
+     *
+     * In batches, and idempotent: only rows with no judgement are touched, so
+     * the page can call it until `remaining` reaches zero without risk of
+     * re-judging anything. Oldest first because each reading is judged against
+     * the developments the ones before it established — running it newest first
+     * would ask the judge to match against a future it has not seen.
+     */
+    if (path === '/api/admin/judge' && req.method === 'POST') {
+      const limit = Math.min(Math.max(Number(url.searchParams.get('limit')) || 20, 1), 100);
+      const pending = await unjudgedRatings({ limit });
+      let judged = 0;
+      let spend = 0;
+      for (const row of pending) {
+        const since = new Date(Date.parse(row.created_at) - PRIOR_HOURS * 3600_000).toISOString();
+        // Priors as they stood when this reading arrived: a backfill that saw
+        // later readings would group by hindsight the live path never has.
+        const priors = (await history({ hours: 24 * 365 }))
+          .filter((r) => r.created_at >= since && r.created_at < row.created_at);
+        const judgement = await judgeReading({
+          score: row.score,
+          explanation: row.explanation,
+          created_at: row.created_at,
+          priors,
+        });
+        await setJudgement(row.id, judgement);
+        if (judgement.judge_version != null) judged += 1;
+        spend += judgement.judge_cost_usd ?? 0;
+      }
+      const remaining = (await unjudgedRatings({ limit: 1 })).length;
+      console.log(`judged ${judged} of ${pending.length} readings, ${remaining ? 'more' : 'none'} left`);
+      return json(res, 200, {
+        judged,
+        attempted: pending.length,
+        remaining: remaining > 0,
+        spend_usd: spend,
       });
     }
 

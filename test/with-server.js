@@ -21,6 +21,9 @@ export const PORTS = {
   promptVersionSurface: 8821,
   ingestDigest: 8823,
   rejections: 8825,
+  storyIngest: 8827,
+  storyBackfill: 8829,
+  storySettings: 8831,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall
