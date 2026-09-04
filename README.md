@@ -43,7 +43,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/` | The number, the sentence, nothing else. The number is the loudest development still live — each carries its own level, aged from when it was first reported |
 | `/admin` | Timeseries of the score, run log, prompt versions, "rate now" |
 | `/api/current` | `{ score, explanation, created_at, source, basis, level, story, since, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about), `aged` (a decayed level) or `stale` (nothing recent). `story` and `since` name that development and when it broke. No countdown: an external caller can post at any moment, so the next update is not predictable |
-| `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions |
+| `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions, and `stories` — every story still live with the developments inside it, what each broke at, what that has decayed to, and which one the front page is about. `stories` describes now, not the charted range |
 | `/api/admin/prompts` | Every prompt version, full text |
 | `/api/admin/settings` | `GET` the model, cadence, score half-life and judge model with the priced options; `POST` to change them |
 | `/api/admin/judge` | `POST` to judge stored readings that carry no judgement, oldest first, in batches — for history from before the judge existed. Idempotent; `remaining` says whether to call again |

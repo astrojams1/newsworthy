@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
 import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
-import { HALF_LIFE_CHOICES, LOOKBACK_HOURS, currentDisplay, displayedSeries } from './current.js';
+import { HALF_LIFE_CHOICES, LOOKBACK_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
@@ -480,15 +480,31 @@ const server = createServer(async (req, res) => {
         effectiveConfig(),
       ]);
       const ascending = points.map((p) => ({ ...p, t: Date.parse(p.created_at) }));
+      const developmentRoots = await rootTimes(ascending);
       const from = Date.now() - hours * 3600_000;
       return json(res, 200, {
         hours,
+        // The board behind the front page: every story still live, and the
+        // developments inside it. Computed from the same replay as the points
+        // below, so the two cannot disagree about which development leads.
+        // Unaffected by the range buttons — what is live is a fact about now,
+        // not about the window being charted.
+        stories: activeStories(ascending, {
+          halfLifeHours: config.halfLifeHours,
+          roots: developmentRoots,
+        }).map((story) => ({
+          ...story,
+          developments: story.developments.map(({ since, ...rest }) => ({
+            ...rest,
+            since: new Date(since).toISOString(),
+          })),
+        })),
         // Each point carries what the front page would have shown at that
         // moment, so the chart can draw the displayed value against the raw
         // readings without reimplementing the rule.
         points: displayedSeries(ascending, {
           halfLifeHours: config.halfLifeHours,
-          roots: await rootTimes(ascending),
+          roots: developmentRoots,
         })
           .filter((p) => p.t >= from)
           .map(({ t, level_row: _levelRow, ...rest }) => rest),

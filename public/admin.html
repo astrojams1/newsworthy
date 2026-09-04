@@ -200,6 +200,22 @@
        have to be named; the counts are readable off the chart itself. */
     .legend-extra { display: none; }
   }
+  /* The board behind the front page: one block per live story, its
+     developments beneath it, newest first. */
+  .stories { display: grid; gap: 0.75rem; }
+  .story { border: 1px solid var(--rule); border-radius: 10px; padding: 0.75rem 0.875rem; background: var(--surface-2); }
+  .story.leading { border-color: var(--series); }
+  .story-head { display: flex; align-items: baseline; gap: 0.5rem; }
+  .story-name { font-weight: 600; font-size: 0.9375rem; }
+  .story-score { font-variant-numeric: tabular-nums; font-size: 1.25rem; font-weight: 300; margin-left: auto; }
+  .story-score small { font-size: 0.75rem; color: var(--ink-faint); }
+  .on-page { font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--series); }
+  .dev { display: flex; gap: 0.625rem; padding: 0.5rem 0 0; margin-top: 0.5rem; border-top: 1px solid var(--rule); font-size: 0.8125rem; }
+  .dev:first-of-type { border-top: none; }
+  .dev-score { font-variant-numeric: tabular-nums; color: var(--ink-muted); min-width: 2.25rem; }
+  .dev-body { flex: 1; }
+  .dev-meta { color: var(--ink-faint); font-size: 0.75rem; margin-top: 0.125rem; }
+  .dev-meta span + span::before { content: ' · '; }
   .empty { color: var(--ink-muted); font-size: 0.875rem; padding: 2rem 0; }
   details summary { cursor: pointer; font-size: 0.8125rem; color: var(--ink-muted); }
   pre { white-space: pre-wrap; font-size: 0.75rem; background: var(--surface-2);
@@ -235,6 +251,10 @@
       <div class="tooltip" id="tooltip" hidden></div>
     </div>
   </figure>
+
+  <h2>Live stories</h2>
+  <p class="note" id="stories-note"></p>
+  <div class="stories" id="stories"></div>
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
@@ -493,7 +513,9 @@
       // "shown 2" with no explanation reads as a bug.
       const age = nearest.since != null
         ? Math.round((nearest.t - nearest.since) / 3600_000) : null;
-      const story = nearest.story ? `${nearest.story}, ` : '';
+      // The development the NUMBER is about, which is not always the story this
+      // reading reported.
+      const story = nearest.leading_story ? `${nearest.leading_story}, ` : '';
       const why = nearest.basis === 'new'
         ? ' (new development)'
         : ` (${story}${age}h old)`;
@@ -650,6 +672,58 @@
       </details>`).join('');
   }
 
+  /**
+   * Every story still live, and the developments inside it.
+   *
+   * The front page is one number and one sentence, which is the whole product —
+   * but it says nothing about why an 8 from this morning now reads 4, or which
+   * of two running stories the 4 belongs to. This is that board. It comes from
+   * the server's own replay rather than being regrouped here, so it cannot
+   * disagree with the chart or the page about which development leads.
+   */
+  function renderStories(stories = []) {
+    const note = $('stories-note');
+    if (stories.length === 0) {
+      $('stories').innerHTML = '<p class="empty">No development is live. Every story is older than the lookback.</p>';
+      note.textContent = '';
+      return;
+    }
+    const devs = stories.reduce((n, s) => n + s.developments.length, 0);
+    note.textContent =
+      `${stories.length} ${stories.length === 1 ? 'story' : 'stories'}, ${devs} ${devs === 1 ? 'development' : 'developments'}`
+      + ' — each ageing on its own clock. The front page shows the loudest.';
+
+    $('stories').innerHTML = stories.map((s) => `
+      <div class="story${s.leading ? ' leading' : ''}">
+        <div class="story-head">
+          <span class="story-name">${escapeHtml(s.story ?? 'unfiled')}</span>
+          ${s.leading ? '<span class="on-page">on the front page</span>' : ''}
+          <span class="story-score">${s.displayed}<small>/10</small></span>
+        </div>
+        ${s.developments.map((d) => `
+          <div class="dev">
+            <div class="dev-score">${d.displayed}<small style="color:var(--ink-faint)">/${d.anchor}</small></div>
+            <div class="dev-body">
+              <div>${escapeHtml(d.latest ?? d.first ?? '')}</div>
+              <div class="dev-meta">
+                <span>broke ${ago(d.since)}</span>
+                <span>${d.readings} reading${d.readings === 1 ? '' : 's'}</span>
+                ${d.leading ? '<span>the number above</span>' : ''}
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>`).join('');
+  }
+
+  /** "3 hours ago", for a development's age. The chart uses clock times; a
+   *  development is read as an age, which is what the decay is a function of. */
+  function ago(iso) {
+    const hours = (Date.now() - Date.parse(iso)) / 3600_000;
+    if (hours < 1) return `${Math.max(1, Math.round(hours * 60))} min ago`;
+    if (hours < 24) return `${Math.round(hours)}h ago`;
+    return `${Math.round(hours / 24)}d ago`;
+  }
+
   async function load() {
     $('status').textContent = 'loading…';
     const res = await api(`/api/admin/history?hours=${hours}`);
@@ -658,6 +732,7 @@
     points = data.points.map((p) => ({ ...p, t: Date.parse(p.created_at) }));
     failures = (data.failures ?? []).map((f) => ({ ...f, t: Date.parse(f.created_at) }));
     renderTiles(data);
+    renderStories(data.stories);
     renderChart();
     renderRuns(data.attempts);
     // Same badge as the front page, which means the displayed value rather

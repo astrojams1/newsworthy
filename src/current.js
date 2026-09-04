@@ -228,10 +228,18 @@ function replay(ascending, {
       }
     }
 
+    const loudest = loudestAt(developments, point.t, halfLifeHours);
     return {
       ...point,
       level,
-      ...loudestAt(developments, point.t, halfLifeHours),
+      ...loudest,
+      // The row's own slug survives the spread above. `loudestAt` also returns
+      // a `story` — the loudest development's — and letting it overwrite the
+      // column was a quiet trap: a Ukraine reading came back filed under
+      // `iran-war`, because that was what led at the time. The two are
+      // different facts and now have different names.
+      story: point.story ?? null,
+      leading_story: loudest.story,
       // The development this reading itself reports, which is not always the
       // one the number describes. Never displayed; it is what makes a
       // surprising number traceable to the reading that caused it.
@@ -339,4 +347,95 @@ export function currentDisplay(ascending, {
     story: loudest.story,
     reports: last.reports,
   };
+}
+
+/**
+ * The stories still live, and the developments inside them.
+ *
+ * The front page is one number, and that number is one development's aged
+ * level — but the board behind it is several stories running at once, each
+ * ageing on its own clock, and only the loudest reaches the page. That is what
+ * makes a number surprising: nothing on the front page explains why an 8 from
+ * this morning now reads 4, or which of two running stories the 4 belongs to.
+ *
+ * Built from the same replay the page and the chart use, so it cannot disagree
+ * with either. A second grouping pass over the raw rows would be free to drift,
+ * which is the same reason `displayedSeries()` lives here rather than in
+ * admin.html.
+ *
+ * "Live" is the replay's own window: a development older than `LOOKBACK_HOURS`
+ * is at the floor and no longer competing, so it leaves the board rather than
+ * accumulating there forever.
+ *
+ * @returns {Array<{story: string|null, displayed: number, leading: boolean,
+ *   developments: Array<object>}>} loudest story first
+ */
+export function activeStories(ascending, {
+  now = Date.now(),
+  halfLifeHours = DEFAULT_HALF_LIFE_HOURS,
+  hours = 6,
+  limit = 5,
+  roots = new Map(),
+} = {}) {
+  const { points, developments } = replay(ascending, { limit, hours, halfLifeHours, roots });
+  const loudest = loudestAt(developments, now, halfLifeHours);
+
+  // What each development was first and last heard saying, and how often. The
+  // readings are grouped by `reports` — the development the reading itself
+  // reported — rather than by the row's stored column, so an unjudged reading
+  // lands where the replay put it rather than nowhere.
+  const readings = new Map();
+  for (const point of points) {
+    const seen = readings.get(point.reports);
+    if (seen) {
+      seen.latest = point;
+      seen.count += 1;
+    } else {
+      readings.set(point.reports, { first: point, latest: point, count: 1 });
+    }
+  }
+
+  const byStory = new Map();
+  for (const [root, development] of developments) {
+    const ageMs = now - development.since;
+    if (ageMs > LOOKBACK_HOURS * 3600_000) continue;
+
+    const heard = readings.get(root);
+    const entry = {
+      root,
+      story: development.story ?? null,
+      // The level it was last anchored at, and what that has decayed to.
+      anchor: development.anchor,
+      displayed: Math.max(FLOOR, Math.min(10, Math.round(agedScore(development.anchor, ageMs, halfLifeHours)))),
+      since: development.since,
+      age_hours: Math.round((ageMs / 3600_000) * 10) / 10,
+      readings: heard?.count ?? 0,
+      first: heard?.first?.explanation ?? null,
+      latest: heard?.latest?.explanation ?? null,
+      latest_at: heard?.latest?.created_at ?? null,
+      // The one the front page number is about, right now.
+      leading: root === loudest.root,
+    };
+
+    const key = entry.story ?? '';
+    const story = byStory.get(key);
+    if (story) story.developments.push(entry);
+    else byStory.set(key, { story: entry.story, developments: [entry] });
+  }
+
+  const stories = [...byStory.values()].map((story) => {
+    // Newest development first within a story: a running story is read from
+    // what just happened backwards, not from where it started.
+    story.developments.sort((a, b) => b.since - a.since);
+    return {
+      ...story,
+      displayed: Math.max(...story.developments.map((d) => d.displayed)),
+      leading: story.developments.some((d) => d.leading),
+    };
+  });
+
+  // Loudest first, and the story on the front page always heads the board.
+  stories.sort((a, b) => (b.leading - a.leading) || (b.displayed - a.displayed)
+    || (Math.max(...b.developments.map((d) => d.since)) - Math.max(...a.developments.map((d) => d.since))));
+  return stories;
 }

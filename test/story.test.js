@@ -159,6 +159,36 @@ test('the backfill judges stored readings oldest first, and stops when done', as
   });
 });
 
+test('the admin board carries the live stories, and the runs table their slugs', async () => {
+  await withServer({ port: PORTS.storyBoard, env: { ADMIN_TOKEN, NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
+    for (const [score, text] of [
+      [4, 'Tariff+round+opens+on+steel+imports'],
+      [4, 'Tariff+round+on+steel+widens+again'],
+      [8, 'Volcano+erupts+in+Iceland+closing+airspace'],
+    ]) {
+      await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=${score}&explanation=${text}`);
+    }
+    const body = await (await fetch(`${base}/api/admin/history?hours=24`, {
+      headers: { 'x-admin-token': ADMIN_TOKEN },
+    })).json();
+
+    assert.equal(body.stories.length, 2, 'two stories are live');
+    const [loudest] = body.stories;
+    assert.equal(loudest.displayed, 8);
+    assert.equal(loudest.leading, true, 'and the loudest is the one on the front page');
+    assert.equal(loudest.developments[0].readings, 1);
+    assert.match(loudest.developments[0].latest, /Volcano/);
+    assert.ok(loudest.developments[0].since, 'each development is dated');
+
+    // The runs table reads its story from the reading's own row. It showed an
+    // empty column until recentAttempts() selected the judge's columns.
+    const row = body.attempts.find((r) => /Volcano/.test(r.explanation ?? ''));
+    assert.ok('story' in row, 'the row carries its own slug');
+    assert.equal(row.judge_version, 1);
+    assert.equal(row.development_of, null, 'and says it opened a development');
+  });
+});
+
 test('the half-life is a setting, and the chart replays whichever is set', async () => {
   await withServer({ port: PORTS.storySettings, env: { ADMIN_TOKEN } }, async (base) => {
     const admin = (path, init = {}) =>

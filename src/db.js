@@ -344,7 +344,8 @@ export async function recentAttempts(limit = 25) {
   const rows = await sql`
     SELECT id, created_at, status, score, explanation, prompt_version, prompt_hash,
            prompt_verified, model, served_by, error, latency_ms, input_tokens,
-           output_tokens, web_search_requests, cost_usd, source, caller, caller_meta
+           output_tokens, web_search_requests, cost_usd, source, caller, caller_meta,
+           story, development_of, judge_version, judge_note
       FROM ratings ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
