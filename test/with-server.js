@@ -24,6 +24,7 @@ export const PORTS = {
   storyIngest: 8827,
   storyBackfill: 8829,
   storySettings: 8831,
+  storyBoard: 8833,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall

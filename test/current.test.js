@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { agedScore, currentDisplay, currentReading, displayedSeries } from '../src/current.js';
+import { activeStories, agedScore, currentDisplay, currentReading, displayedSeries } from '../src/current.js';
 import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
 
 // newest first, as recentRatings() returns them
@@ -236,7 +236,8 @@ test('the number is the loudest development, not the one this hour named', () =>
   const mention = out.at(-1);
   assert.equal(mention.reports, 1, 'the reading restates the old flood');
   assert.equal(mention.root, 2, 'but the war is what the number is about');
-  assert.equal(mention.story, 'war');
+  assert.equal(mention.leading_story, 'war');
+  assert.equal(mention.story, 'old-flood', 'while the reading keeps its own slug');
   assert.ok(mention.displayed >= 5, `the page held at ${mention.displayed}, it did not dip`);
 });
 
@@ -345,6 +346,72 @@ test('a development older than the replay window keeps its real age', () => {
   assert.equal(withRoot[0].since, 0, 'dated from the real first report');
   assert.ok(withRoot[0].displayed < displayedSeries(series)[0].displayed,
     'and reads lower than it would dated from the window edge');
+});
+
+test('the board shows every live story, loudest first, the leader marked', () => {
+  // The front page is one number about one development. Everything else that is
+  // still running is invisible there, which is what makes a number surprising —
+  // so the admin board carries the rest, from the same replay.
+  const series = [
+    { id: 1, t: 0, score: 7, story: 'war', development_of: null, explanation: 'war breaks' },
+    { id: 2, t: HOUR, score: 6, story: 'war', development_of: 1, explanation: 'war continues' },
+    { id: 3, t: 4 * HOUR, score: 8, story: 'flood', development_of: null, explanation: 'flood breaks' },
+    { id: 4, t: 9 * HOUR, score: 5, story: 'war', development_of: null, explanation: 'war escalates' },
+  ].map((r) => ({ ...r, judge_version: 1, created_at: new Date(r.t).toISOString() }));
+  const board = activeStories(series, { now: 10 * HOUR });
+
+  assert.deepEqual(board.map((s) => s.story), ['flood', 'war'], 'loudest story first');
+  assert.equal(board[0].leading, true, 'and the front page is about it');
+  assert.equal(board[0].displayed, 6, '8 aged six hours');
+
+  const war = board[1];
+  assert.equal(war.developments.length, 2, 'one story, two developments');
+  assert.deepEqual(war.developments.map((d) => d.root), [4, 1], 'newest development first');
+  assert.equal(war.displayed, 5, 'the story is as loud as its loudest development');
+  assert.equal(war.developments[1].anchor, 7, 'the older one keeps the level it broke at');
+  assert.equal(war.developments[1].displayed, 4, 'and shows that level aged');
+  assert.equal(war.developments[1].readings, 2, 'with the readings that reported it');
+  assert.equal(war.developments[1].latest, 'war continues', 'and its freshest sentence');
+  assert.ok(war.developments.every((d) => d.leading === false));
+});
+
+test('a point keeps its own story, and names the leading one separately', () => {
+  // Letting the loudest development's slug overwrite the row's own was a quiet
+  // trap: a Ukraine reading came back filed under the war that happened to be
+  // leading. The two are different facts.
+  const series = [
+    { id: 1, t: 0, score: 8, story: 'war', development_of: null, explanation: 'war breaks' },
+    { id: 2, t: HOUR, score: 3, story: 'ukraine', development_of: null, explanation: 'kyiv struck' },
+  ].map((r) => ({ ...r, judge_version: 1, created_at: new Date(r.t).toISOString() }));
+  const out = displayedSeries(series);
+
+  assert.equal(out[1].story, 'ukraine', 'the reading reported Ukraine');
+  assert.equal(out[1].leading_story, 'war', 'while the number is still about the war');
+  assert.equal(out[1].reports, 2);
+  assert.equal(out[1].root, 1);
+});
+
+test('a development older than the lookback leaves the board', () => {
+  // What is live is the same set that competes for the front page. A story
+  // nobody has added to in three days is at the floor and no longer competing,
+  // so it stops accumulating there.
+  const series = [
+    { id: 1, t: 0, score: 8, story: 'old', development_of: null, explanation: 'old news' },
+    { id: 2, t: 80 * HOUR, score: 4, story: 'now', development_of: null, explanation: 'todays news' },
+  ].map((r) => ({ ...r, judge_version: 1, created_at: new Date(r.t).toISOString() }));
+  const board = activeStories(series, { now: 80 * HOUR });
+  assert.deepEqual(board.map((s) => s.story), ['now']);
+});
+
+test('the board and the front page name the same leading development', () => {
+  // Two implementations of "which development leads" would be free to drift,
+  // and a board that disagrees with the page about the page is worse than none.
+  const series = judged([4, 0], [4, 0], [4, 0], [8, 3], [7, 3], [7, 3]);
+  const board = activeStories(series, { now: series.at(-1).t });
+  const page = currentDisplay(series, { now: series.at(-1).t });
+  const leader = board.flatMap((s) => s.developments).find((d) => d.leading);
+  assert.equal(leader.root, page.root);
+  assert.equal(leader.displayed, page.score);
 });
 
 test('the quiet band tracks the rater, then falls to the floor', () => {

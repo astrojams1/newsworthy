@@ -258,6 +258,31 @@ front page is worse than no chart. The range is fetched padded by the lookback
 and trimmed after the replay, so a point at the left edge ages from the first
 report the page actually used rather than from the edge of the range.
 
+**The admin page carries the board the front page cannot.** The front page is
+one number about one development, which is the product — but it explains nothing
+about why an 8 from this morning now reads 4, or which of two running stories
+the 4 belongs to. `activeStories()` in `src/current.js` returns every story
+still live and the developments inside it: what each broke at, what that has
+decayed to, when, how many readings reported it, and which one the page is
+currently about. `/admin` renders it under "Live stories".
+
+It comes from the same replay as the chart and the page — `activeStories()` and
+`displayedSeries()` both call `replay()`, and the route calls `rootTimes()` once
+for both — so the board cannot disagree with the page about which development
+leads, and a test pins that. Regrouping the raw rows in the page would have been
+free to drift, which is the reason `displayedSeries()` lives on the server too.
+The board is a fact about now rather than about the charted window, so the range
+buttons do not change it, and a development past `LOOKBACK_HOURS` leaves it
+rather than accumulating there.
+
+`story` on a history point is the **loudest** development's slug, not the
+reading's own — the replay spreads `loudestAt()` over each point. The reading's
+own slug is on its row, which is what the runs table shows. That table's Story
+column was empty for every row until `recentAttempts()` selected `story`,
+`development_of`, `judge_version` and `judge_note`: `shape()` omits a column the
+query did not ask for, so `judge_version` was absent rather than null, and the
+cell read it as "not judged".
+
 **The runs table becomes cards below 720px.** Ten columns on a phone is a
 horizontal scroll showing three words at a time. Each row reflows to timestamp
 and score, then the explanation, then the small fields as one dotted line — and
