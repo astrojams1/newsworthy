@@ -43,6 +43,16 @@ export function ensureSchema() {
     // NULL means the caller returned no digest, false means it returned one
     // that did not match the text we served. The two are different findings.
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS prompt_verified BOOLEAN`;
+    // Which development this reading reports, judged once on arrival and never
+    // recomputed (src/story.js). NULL development_of on a judged row means the
+    // reading opened a development; judge_version NULL means no judgement was
+    // made at all, which the display rule treats as "inherit", not as "new".
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS story TEXT`;
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS development_of BIGINT`;
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS judge_version INTEGER`;
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS judge_model TEXT`;
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS judge_note TEXT`;
+    await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS judge_cost_usd NUMERIC(12, 6)`;
     // External readings record no model: this app did not run one, and what a
     // caller reported about itself was never verifiable. NULL says "unknown"
     // where the old placeholder string said "unreported" as if it were data.
@@ -95,6 +105,7 @@ const num = (value) => (value === null || value === undefined ? null : Number(va
 const NUMERIC = [
   'id', 'score', 'prompt_version', 'latency_ms', 'input_tokens', 'output_tokens',
   'cache_read_tokens', 'cache_write_tokens', 'web_search_requests', 'cost_usd',
+  'development_of', 'judge_version', 'judge_cost_usd',
 ];
 
 /**
@@ -130,7 +141,8 @@ export async function insertRating(row) {
       created_at, slot, status, score, explanation, prompt_version, prompt_hash,
       prompt_text, model, served_by, raw_output, error, latency_ms,
       input_tokens, output_tokens, cache_read_tokens, cache_write_tokens,
-      web_search_requests, cost_usd, source, caller, caller_meta, prompt_verified
+      web_search_requests, cost_usd, source, caller, caller_meta, prompt_verified,
+      story, development_of, judge_version, judge_model, judge_note, judge_cost_usd
     ) VALUES (
       ${row.created_at ?? new Date().toISOString()}, ${row.slot ?? null}, ${row.status},
       ${row.score ?? null}, ${row.explanation ?? null}, ${row.prompt_version},
@@ -141,7 +153,9 @@ export async function insertRating(row) {
       ${row.web_search_requests ?? null}, ${row.cost_usd ?? null},
       ${row.source ?? 'cron'}, ${row.caller ?? null},
       ${row.caller_meta ? JSON.stringify(row.caller_meta) : null}::jsonb,
-      ${row.prompt_verified ?? null}
+      ${row.prompt_verified ?? null},
+      ${row.story ?? null}, ${row.development_of ?? null}, ${row.judge_version ?? null},
+      ${row.judge_model ?? null}, ${row.judge_note ?? null}, ${row.judge_cost_usd ?? null}
     )
     ON CONFLICT DO NOTHING
     RETURNING *`;
@@ -211,12 +225,61 @@ export async function recentRatings({ limit = 5, hours = 6 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, score, explanation, source
+    SELECT id, created_at, score, explanation, source,
+           story, development_of, judge_version, judge_note
       FROM ratings
      WHERE status = 'ok' AND created_at >= ${since}
      ORDER BY created_at DESC, id DESC
      LIMIT ${limit}`;
   return rows.map(shape);
+}
+
+/**
+ * Readings by id, for developments whose first report is older than the replay
+ * window. Without this a story running since Tuesday would date from the edge
+ * of the window and read as younger than it is.
+ */
+export async function ratingsByIds(ids = []) {
+  if (ids.length === 0) return [];
+  await ensureSchema();
+  const rows = await sql`
+    SELECT id, created_at, score, explanation, story
+      FROM ratings
+     WHERE id = ANY(${ids})`;
+  return rows.map(shape);
+}
+
+/**
+ * Readings no judgement was ever made for, oldest first — history from before
+ * the judge existed, and rows a judge outage left behind. Fed to the admin
+ * backfill, which judges them in order so each one sees the developments the
+ * ones before it established.
+ */
+export async function unjudgedRatings({ limit = 20 } = {}) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT id, created_at, score, explanation
+      FROM ratings
+     WHERE status = 'ok' AND judge_version IS NULL
+     ORDER BY created_at ASC, id ASC
+     LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
+/** Attach a judgement to a reading already stored. */
+export async function setJudgement(id, fields = {}) {
+  await ensureSchema();
+  const rows = await sql`
+    UPDATE ratings
+       SET story = ${fields.story ?? null},
+           development_of = ${fields.development_of ?? null},
+           judge_version = ${fields.judge_version ?? null},
+           judge_model = ${fields.judge_model ?? null},
+           judge_note = ${fields.judge_note ?? null},
+           judge_cost_usd = ${fields.judge_cost_usd ?? null}
+     WHERE id = ${id}
+     RETURNING *`;
+  return shape(rows[0]);
 }
 
 export async function latestAttempt() {
@@ -241,7 +304,8 @@ export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
   const rows = await sql`
     SELECT * FROM (
       SELECT id, created_at, score, explanation, prompt_version, prompt_hash,
-             prompt_verified, model, served_by, source, caller
+             prompt_verified, model, served_by, source, caller,
+             story, development_of, judge_version, judge_model, judge_note
         FROM ratings
        WHERE status = 'ok' AND created_at >= ${since}
        ORDER BY created_at DESC, id DESC
@@ -306,7 +370,8 @@ export async function stats({ hours = 24 * 7 } = {}) {
            COALESCE(SUM(cost_usd) FILTER (WHERE source <> 'external'), 0) AS spend_usd,
            COALESCE(SUM(cost_usd) FILTER (WHERE source = 'external'), 0)  AS external_spend_usd,
            AVG(cost_usd) FILTER (WHERE source <> 'external')  AS avg_cost_usd,
-           COUNT(*) FILTER (WHERE source = 'external')        AS external_runs
+           COUNT(*) FILTER (WHERE source = 'external')        AS external_runs,
+           COALESCE(SUM(judge_cost_usd), 0)                   AS judge_spend_usd
       FROM ratings
      WHERE created_at >= ${since}
        AND (error IS NULL OR error NOT LIKE 'voided:%')`;
@@ -321,6 +386,9 @@ export async function stats({ hours = 24 * 7 } = {}) {
     spend_usd: num(r.spend_usd) ?? 0,
     external_spend_usd: num(r.external_spend_usd) ?? 0,
     external_runs: num(r.external_runs) ?? 0,
+    // The judge is not a run: it makes no reading and does no search. Its spend
+    // is counted apart so a glance at "spend" stays a glance at rating cost.
+    judge_spend_usd: num(r.judge_spend_usd) ?? 0,
     avg_cost_usd: r.avg_cost_usd === null ? null : num(r.avg_cost_usd),
   };
 }
