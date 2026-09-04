@@ -39,6 +39,10 @@ export const PRIOR_HOURS = 48;
  *  caller is ~48; the cap is what keeps a backlog from growing the call. */
 const MAX_PRIORS = 60;
 
+/** How many story names the judge is shown. Enough to cover a fortnight of a
+ *  news cycle without turning the vocabulary into a wall to skim past. */
+const MAX_STORIES = 20;
+
 /**
  * Append-only, like the rating prompt registry: a stored judgement names the
  * version that produced it, so a later rewording cannot silently reinterpret
@@ -78,8 +82,37 @@ The id is one of the ids listed under Recorded, or null. The slug names the
 broader story, and reuses the slug already listed for that story when the
 reading belongs to one of them.`;
 
+/**
+ * v2 adds the story vocabulary, and nothing else.
+ *
+ * v1 named the slug rule in one clause at the end — "reuses the slug already
+ * listed for that story" — and left the slugs themselves scattered inline, one
+ * per recorded development. Judged over 231 real readings that produced four
+ * names for one story: `hormuz-threat` (40 readings), then `iran-war` (87),
+ * then `iran-nuclear`, then `hormuz-conflict`. The reading that coined
+ * `iran-war` had `hormuz-threat` developments in front of it at the time, so a
+ * slug seen in passing is demonstrably not enough to get it reused.
+ *
+ * So the names are lifted out into a list of their own and the rule about them
+ * is stated where the list is. Everything above it is byte-identical to v1:
+ * only the naming changed, so which development a reading reports is judged by
+ * the same text and the two versions stay comparable.
+ */
+const V2 = V1.replace(
+  `The id is one of the ids listed under Recorded, or null. The slug names the
+broader story, and reuses the slug already listed for that story when the
+reading belongs to one of them.`,
+  `The id is one of the ids listed under Recorded, or null.
+
+The slug names the broader story the development belongs to. A reading whose
+story appears under "Stories on record" takes that story's slug back verbatim,
+character for character, however differently the new sentence is worded — a war
+reported through a strait one hour and a capital the next is one story with one
+name. A new slug is for a story with nothing on record.`);
+
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
+  2: { label: 'story-vocabulary-v2', added: '2026-09-04', text: V2 },
 };
 
 export function judgeVersion() {
@@ -159,11 +192,29 @@ function renderPriors(groups) {
   return `Recorded developments:\n\n${lines.join('\n\n')}`;
 }
 
+/**
+ * The stories already named, newest first, as a vocabulary to reuse.
+ *
+ * Listed apart from the developments because the two questions are separate:
+ * which event this is, and what the thread it belongs to is called. Drawn from
+ * a wider window than the developments, so a story quiet for two days keeps its
+ * name when it returns rather than being renamed on the way back in.
+ */
+function renderStories(stories = []) {
+  if (stories.length === 0) return 'Stories on record: none yet.';
+  const lines = stories
+    .slice(0, MAX_STORIES)
+    .map((s) => `  ${s.story}${s.latest ? ` — ${s.latest}` : ''}`);
+  return `Stories on record:\n${lines.join('\n')}`;
+}
+
 /** The message the judge is sent, kept out of the call so a test can read it. */
-export function judgeMessage({ score, explanation, created_at, priors = [] }) {
+export function judgeMessage({ score, explanation, created_at, priors = [], stories = [] }) {
   const groups = groupDevelopments(priors).slice(-MAX_PRIORS);
   return [
     renderJudgePrompt().text,
+    '',
+    renderStories(stories),
     '',
     renderPriors(groups),
     '',
@@ -230,7 +281,7 @@ export function similarity(a, b) {
 
 const MOCK_THRESHOLD = 0.12;
 
-export function mockJudgement({ explanation, priors = [] }) {
+export function mockJudgement({ explanation, priors = [], stories = [] }) {
   let best = null;
   let bestSim = 0;
   for (const row of priors) {
@@ -241,8 +292,16 @@ export function mockJudgement({ explanation, priors = [] }) {
     }
   }
   if (!best || bestSim < MOCK_THRESHOLD) {
+    // A new development still takes an existing story's name when it plainly
+    // belongs to one — the same rule the real judge is given, so a test can
+    // exercise it rather than only the prompt wording.
+    const named = stories.find((s) => s.story && similarity(explanation, s.latest) >= MOCK_THRESHOLD);
     const [word] = [...contentWords(explanation)];
-    return { development_of: null, story: word ?? 'story', note: 'mock: no similar prior reading' };
+    return {
+      development_of: null,
+      story: named?.story ?? word ?? 'story',
+      note: named ? `mock: new development in ${named.story}` : 'mock: no similar prior reading',
+    };
   }
   const groups = groupDevelopments(priors);
   const root = groups.find((g) => g.id === best.id)
@@ -281,6 +340,7 @@ export async function judgeReading({
   explanation,
   created_at,
   priors = [],
+  stories = [],
   model,
   mock = process.env.NEWSWORTHY_MOCK === '1',
 } = {}) {
@@ -294,7 +354,7 @@ export async function judgeReading({
   });
 
   if (mock) {
-    const answer = mockJudgement({ explanation, priors });
+    const answer = mockJudgement({ explanation, priors, stories });
     return {
       story: answer.story,
       development_of: answer.development_of,
@@ -306,7 +366,7 @@ export async function judgeReading({
   }
 
   model ??= (await effectiveConfig()).judgeModel;
-  const message = judgeMessage({ score, explanation, created_at, priors });
+  const message = judgeMessage({ score, explanation, created_at, priors, stories });
   let response;
   try {
     response = await callJudge({ model, message });

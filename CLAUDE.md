@@ -168,6 +168,28 @@ which one the new sentence reports, or none. The answer lands in `story`,
 recomputed, so the front page and the chart cannot disagree, and re-reading
 history cannot re-interpret it.
 
+**One story, one name — v2.** The judge names the story as free text, and v1
+let that drift: across 231 readings it coined four names for the US-Iran war —
+`hormuz-threat` (40 readings), `iran-war` (87), `iran-nuclear`, then
+`hormuz-conflict`. The reading that coined the second had `hormuz-threat`
+developments in front of it at the time, so a name seen in passing beside a
+development is demonstrably not enough to get it reused.
+
+The blast radius was narrower than it looked: the number groups developments by
+**id**, never by name, so the front page was right throughout. Only the admin
+board grouped by name, and it showed one story as two.
+
+v2 lifts the names out into a "Stories on record" list of their own, drawn from
+fourteen days rather than the developments' 48 hours — a story quiet for two
+days should keep its name when it returns rather than be renamed on the way back
+in — and states the reuse rule where the list is. Everything above that in the
+prompt is byte-identical to v1, so which development a reading reports is judged
+by the same text and the two versions stay comparable; a test pins that.
+
+History was not re-judged. A stored judgement is never recomputed, and the board
+only shows developments from the last 72 hours, so the split names age off it
+within three days on their own.
+
 The rater does not change and does not know. The judge runs after a reading
 exists, sees only stored sentences, and cannot alter a score or reject a
 submission — the four rejection rules stay four. Its prompts are append-only and

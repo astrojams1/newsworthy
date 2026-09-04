@@ -70,7 +70,7 @@ test('the judge prompt is a specification, not a set of orders', () => {
 test('judge prompts are append-only, pinned by hash', () => {
   // A stored judgement names the version that produced it. Editing a published
   // version would reinterpret readings already recorded, silently.
-  const pins = { 1: '7b2971d31e2b3a2b' };
+  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659' };
   const prompts = allJudgePrompts();
   assert.deepEqual(prompts.map((p) => p.version), Object.keys(pins).map(Number),
     'every published version is pinned here');
@@ -78,6 +78,51 @@ test('judge prompts are append-only, pinned by hash', () => {
     assert.equal(prompt.hash, pins[prompt.version],
       `judge prompt v${prompt.version} changed: add the next version, never edit a published one`);
   }
+});
+
+test('the judge is shown the names already in use, and told to reuse them', () => {
+  // v1 mentioned the rule once, at the end, and left the names scattered inline
+  // one per development. Over 231 real readings that produced four names for
+  // one story — hormuz-threat, iran-war, iran-nuclear, hormuz-conflict — and
+  // the reading that coined the second had the first in front of it at the
+  // time, so a name seen in passing is not enough to get it reused.
+  const message = judgeMessage({
+    score: 5,
+    explanation: 'Iran struck Kuwait overnight',
+    created_at: at(0),
+    stories: [{ story: 'iran-war', latest: 'Strikes resume on Larak Island' }],
+    priors: [row(1, 'Strikes resume on Larak Island', { development_of: null, story: 'iran-war' })],
+  });
+  assert.match(message, /Stories on record:/);
+  assert.match(message, /iran-war — Strikes resume on Larak Island/);
+  assert.match(renderJudgePrompt().text, /verbatim/, 'and the rule sits with the list');
+
+  const empty = judgeMessage({ score: 5, explanation: 'x', created_at: at(0) });
+  assert.match(empty, /Stories on record: none yet/, 'an empty vocabulary says so');
+});
+
+test('v2 changed the naming and nothing about the developments', () => {
+  // Which development a reading reports is judged by the same text in both, so
+  // readings judged under either version stay comparable.
+  const [v1, v2] = allJudgePrompts();
+  const upTo = (text) => text.slice(0, text.indexOf('The id is one of the ids'));
+  assert.equal(upTo(v2.text), upTo(v1.text));
+  assert.notEqual(v1.text, v2.text);
+  assert.equal(judgeVersion(), 2, 'and v2 is what new readings are judged by');
+});
+
+test('a new development still takes an existing story name', () => {
+  // The failure this fixes is not about which development a reading reports: it
+  // is a genuinely new development handed a brand-new name for a story already
+  // on record.
+  const answer = mockJudgement({
+    explanation: 'Iran strikes in Kuwait widen the Iran conflict',
+    priors: [],
+    stories: [{ story: 'iran-war', latest: 'US strikes Larak Island in Iran' }],
+  });
+  assert.equal(answer.development_of, null, 'a new development');
+  assert.equal(answer.story, 'iran-war', 'under the name already in use');
+  assert.match(answer.note, /iran-war/);
 });
 
 test('the mock judge groups by shared words, and says so', async () => {
@@ -184,7 +229,7 @@ test('the admin board carries the live stories, and the runs table their slugs',
     // empty column until recentAttempts() selected the judge's columns.
     const row = body.attempts.find((r) => /Volcano/.test(r.explanation ?? ''));
     assert.ok('story' in row, 'the row carries its own slug');
-    assert.equal(row.judge_version, 1);
+    assert.equal(row.judge_version, judgeVersion(), 'judged by the live version');
     assert.equal(row.development_of, null, 'and says it opened a development');
   });
 });

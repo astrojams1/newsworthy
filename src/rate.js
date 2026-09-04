@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { history, insertRating, ratingForSlot } from './db.js';
+import { history, insertRating, ratingForSlot, recentStories } from './db.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { effectiveConfig } from './config.js';
 import { estimateCostUsd } from './pricing.js';
@@ -226,6 +226,7 @@ export async function runRating({
       explanation,
       created_at: new Date().toISOString(),
       priors: await history({ hours: PRIOR_HOURS }),
+      stories: await recentStories(),
     });
     return insertRating({
       ...base,
