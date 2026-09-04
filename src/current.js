@@ -1,44 +1,56 @@
 /**
  * What the front page shows.
  *
- * Two rules, in order. The first answers "what is the news at, right now" and
- * is a level: measured over 46 readings, the rater disagrees with itself by
- * about 0.6 points on near-identical material, the series standard deviation is
- * 1.12 and its lag-1 autocorrelation is -0.11, so consecutive readings are
- * indistinguishable from independent draws around a slowly moving level. The
- * newest reading is the noisiest estimator available; a median of five cuts the
- * standard deviation to 0.43. Five rather than four because an odd window makes
- * the median an observed score rather than a computed midpoint. A reading two
- * or more above that median is a break rather than noise and passes straight
+ * Two rules. The first answers "what is this reading's level" and is unchanged:
+ * measured over 46 readings, the rater disagrees with itself by about 0.6
+ * points on near-identical material, the series standard deviation is 1.12 and
+ * its lag-1 autocorrelation is -0.11, so consecutive readings are
+ * indistinguishable from independent draws around a slowly moving level. A
+ * median of five cuts the standard deviation to 0.43; five rather than four
+ * because an odd window makes the median an observed score. A reading two or
+ * more above that median is a break rather than noise and passes straight
  * through, because smoothing costs lag and lag is what v6 was written to
- * remove.
+ * remove. That level is what anchors a development — it is no longer the
+ * number on the page.
  *
- * The second answers "how long have we been saying this", and is why the level
- * alone was not enough. Every run is independent and rates the current top
- * news, so a story that dominates for four days is re-rated at about the same
- * number hour after hour, and the median of five 5s is 5 forever. Measured over
- * the stored series, the renewed US-Iran strikes held the page between 4 and 6
- * for four days. So the displayed number is the level of the development the
- * newest reading reports, decayed from when that development was first
- * reported, halving every `halfLifeHours` and floored at 1.
+ * The second answers "how newsworthy is the news right now", and is why the
+ * level alone was not enough. Every run is independent and rates the current
+ * top news, so a story that dominates for days is re-rated at about the same
+ * number hour after hour and the median of five 5s is 5 forever: over the
+ * stored series the renewed US-Iran strikes held the page between 4 and 6 for
+ * four days. Each development therefore carries its own level, decaying from
+ * when it was first reported — halving every `halfLifeHours`, floored at 1 —
+ * and the page shows the loudest development still live.
+ *
+ * The loudest, rather than the one this hour's reading named. Reading only the
+ * named development was the first cut, and the judged series made its failure
+ * obvious: on 2026-09-03 the rater mentioned a seven-day-old Nepal flood once
+ * and the page fell from 4 to 1 and back to 3 within two hours, on no news at
+ * all. That shape accounted for 57 of 74 two-point jumps and left the front
+ * page moving more hour to hour (1.10) than the raw readings it was meant to
+ * smooth (1.02). Taking the loudest instead: 0.43, and 7 such jumps.
+ *
+ * The number cannot rise without news. A development's value only decays, so
+ * the maximum across them moves up only when one re-anchors or a new one opens,
+ * and both of those are events rather than arithmetic.
  *
  * Which development a reading reports is judged once, when it arrives, and
  * stored on the row (see src/story.js). This replays that judgement; it never
- * makes it. A reading whose development was first reported this hour shows its
- * own score undecayed — a break is reported immediately, which is the whole
- * point — and one restating a development from this morning shows this
- * morning's level, aged.
+ * makes it.
  *
  * Two earlier doctrines end here, and both were load-bearing. The displayed
- * number is no longer always an observed reading; it is an integer, never a
- * computed 4.5, but it can be a number no run produced. And a shock only passes
- * through when it reports a new development: a 7 on a story the judge says has
- * been running since morning is that story's noise, not a break.
+ * number is no longer always an observed reading: it is an integer, never a
+ * computed 4.5, but it can be a number no run produced. And a shock passes
+ * through only when it reports a new development — a 7 on a story the judge
+ * says has been running since morning is that story's noise, not a break.
  *
  * The sentence is untouched by all of this. It always comes from the newest
  * reading, because the number is a level and the sentence is what happened —
  * so a story still on top in the evening is still named in the evening, with a
- * smaller number beside it.
+ * smaller number beside it. In the hour where the two disagree, the number
+ * describes the loudest story and the sentence names the one just rated; the
+ * alternative is pairing the number with an older story's sentence, which reads
+ * as an app that has stopped.
  */
 
 /** How far above the median a reading must sit to be treated as a break rather
@@ -131,7 +143,16 @@ function rootFor(point, previousRoot, level, anchor) {
  * @param {Map<number, {t: number}>} [options.roots] first-report times for roots
  *   that fall outside `ascending`, keyed by id
  */
-export function displayedSeries(ascending, {
+export function displayedSeries(ascending, options = {}) {
+  return replay(ascending, options).points;
+}
+
+/**
+ * The replay itself: the points, and the state of every development at the end
+ * of the series. `/api/current` needs the second half to re-age at request
+ * time, and both must come from one pass or the page and the chart can differ.
+ */
+function replay(ascending, {
   limit = 5,
   hours = 6,
   halfLifeHours = DEFAULT_HALF_LIFE_HOURS,
@@ -141,7 +162,7 @@ export function displayedSeries(ascending, {
   const developments = new Map();
   let previousRoot = null;
 
-  return ascending.map((point, i) => {
+  const points = ascending.map((point, i) => {
     // The window as recentRatings() would have returned it at that moment:
     // inside the time bound, newest first, at most `limit`.
     const window = [];
@@ -161,13 +182,14 @@ export function displayedSeries(ascending, {
       // A development first seen here starts at this reading's own score, from
       // now — unless its first report is older than the replay window, in which
       // case its real first-report time is carried in `roots`.
-      const since = roots.get(root)?.t ?? point.t;
+      const known = roots.get(root);
       development = {
         anchor: root === id ? point.score : level,
-        since,
+        since: known?.t ?? point.t,
         // The lowest level this development has shown since it was last
         // anchored, which is what a later rise is measured against.
         low: root === id ? point.score : level,
+        story: point.story ?? known?.story ?? null,
       };
       developments.set(root, development);
     } else if (levelBasis !== 'shock') {
@@ -206,25 +228,71 @@ export function displayedSeries(ascending, {
       }
     }
 
-    const aged = agedScore(development.anchor, point.t - development.since, halfLifeHours);
-    const isNew = root === id && point.t === development.since;
-    const displayed = isNew
-      ? point.score
-      : Math.max(FLOOR, Math.min(level, Math.round(aged)));
-    const basis = isNew ? 'new' : (displayed < level ? 'aged' : levelBasis);
-
     return {
       ...point,
       level,
-      displayed,
-      basis,
-      root,
-      anchor: development.anchor,
-      since: development.since,
-      story: point.story ?? null,
+      ...loudestAt(developments, point.t, halfLifeHours),
+      // The development this reading itself reports, which is not always the
+      // one the number describes. Never displayed; it is what makes a
+      // surprising number traceable to the reading that caused it.
+      reports: root,
       level_row: row,
     };
   });
+
+  return { points, developments };
+}
+
+/**
+ * The loudest development still live, and the number it shows.
+ *
+ * The number answers "how newsworthy is the news right now", so it is the
+ * loudest thing on the board rather than the age of whichever story this
+ * hour's reading happened to name. Reading only the named development was the
+ * first cut and it failed in a way the stored series made obvious: on
+ * 2026-09-03 the rater mentioned a seven-day-old Nepal flood once, and the page
+ * fell from 4 to 1 and back to 3 within two hours. Nothing had happened. Across
+ * the judged series that shape accounted for 57 of 74 two-point jumps, and left
+ * the front page moving more hour to hour (1.10) than the raw readings it was
+ * meant to smooth (1.02). Taking the loudest instead: 0.43, with 7 such jumps.
+ *
+ * It cannot rise without news. A development's value only ever decays, so the
+ * maximum across them moves up only when one re-anchors or a new one opens —
+ * both of which are events, not arithmetic.
+ *
+ * The sentence still comes from the newest reading, so in the hour those two
+ * disagree the number describes the loudest story and the sentence names the
+ * one just rated. That is the accepted cost: the alternative is pairing the
+ * number with an older story's sentence, which reads as an app that has
+ * stopped.
+ */
+function loudestAt(developments, now, halfLifeHours, breakAt = now) {
+  let best = null;
+  for (const [id, development] of developments) {
+    // Older than the replay window is older than three halvings at the longest
+    // half-life: at the floor, and no longer competing for the front page.
+    if (now - development.since > LOOKBACK_HOURS * 3600_000) continue;
+    const value = agedScore(development.anchor, now - development.since, halfLifeHours);
+    if (!best || value > best.value) best = { id, development, value };
+  }
+  if (!best) return { displayed: FLOOR, basis: 'aged', root: null, anchor: null, since: now, story: null };
+
+  const { id, development, value } = best;
+  const displayed = Math.max(FLOOR, Math.min(10, Math.round(value)));
+  return {
+    displayed,
+    // 'new' when the loudest development's clock started with the newest
+    // reading — one first reported by it, or one it escalated. Both mean the
+    // same thing on the page: the number is a break, not a decayed level.
+    // Compared against the reading's own timestamp rather than against `now`,
+    // because `/api/current` ages at request time and is always some
+    // milliseconds later, which made 'new' unreachable there.
+    basis: development.since === breakAt ? 'new' : 'aged',
+    root: id,
+    anchor: development.anchor,
+    since: development.since,
+    story: development.story ?? null,
+  };
 }
 
 /**
@@ -241,8 +309,8 @@ export function currentDisplay(ascending, {
   limit = 5,
   roots = new Map(),
 } = {}) {
-  const series = displayedSeries(ascending, { limit, hours, halfLifeHours, roots });
-  const last = series.at(-1);
+  const { points, developments } = replay(ascending, { limit, hours, halfLifeHours, roots });
+  const last = points.at(-1);
   if (!last) return undefined;
 
   // The level window as it stands now, not as it stood at the last reading:
@@ -251,22 +319,24 @@ export function currentDisplay(ascending, {
   const span = hours * 3600_000;
   const windowSize = ascending.filter((p) => now - p.t <= span).length;
 
-  const aged = agedScore(last.anchor, now - last.since, halfLifeHours);
-  const score = Math.max(FLOOR, Math.min(last.level, Math.round(aged)));
+  // Every live development re-aged at request time, not just the one the last
+  // reading named: an hour of silence ages all of them, and which is loudest
+  // can change while nothing new arrives.
+  const loudest = loudestAt(developments, now, halfLifeHours, last.t);
 
-  // 'stale' outranks the rest: when the newest reading has fallen out of the
-  // level window, which rule picked the level matters less than the fact that
-  // nothing recent produced it. The score still ages — that is the point.
-  const basis = windowSize === 0 ? 'stale' : (score < last.level ? 'aged' : last.basis);
   return {
-    score,
+    score: loudest.displayed,
     level: last.level,
     levelRow: last.level_row,
     newest: last,
-    basis,
+    // 'stale' outranks the rest: when the newest reading has fallen out of the
+    // level window, which development is loudest matters less than the fact
+    // that nothing recent produced it. The score still ages — that is the point.
+    basis: windowSize === 0 ? 'stale' : loudest.basis,
     window: windowSize,
-    since: last.since,
-    root: last.root,
-    story: last.story,
+    since: loudest.since,
+    root: loudest.root,
+    story: loudest.story,
+    reports: last.reports,
   };
 }

@@ -239,21 +239,16 @@ const server = createServer(async (req, res) => {
       // right now — so a story still on top this evening is still named this
       // evening, with a smaller number beside it.
       const newest = current.newest;
-      const scoreRow = current.basis === 'aged' || current.basis === 'stale' ? null : current.levelRow;
       return json(res, 200, {
         score: current.score,
         explanation: newest.explanation,
         created_at: newest.created_at,
-        // Which row the score came from, when it is one row rather than a
-        // decayed level. Never displayed; the first thing wanted when a number
-        // looks wrong.
-        score_from: scoreRow && scoreRow.created_at !== newest.created_at
-          ? scoreRow.created_at
-          : undefined,
         source: newest.source ?? 'cron',
-        // Not displayed. Which rule produced the number, the level it decayed
-        // from, and when the development it reports was first recorded — the
-        // three things anyone debugging a surprising front page will want.
+        // None of the rest is displayed; it is what makes a surprising number
+        // answerable. `basis` is which rule produced it, `level` what the rater
+        // just said, `story` and `since` the development the number is about
+        // and when it broke. There is no `score_from`: the number comes from a
+        // development rather than from a row, and `since` already dates it.
         basis: current.basis,
         level: current.level,
         story: current.story ?? undefined,

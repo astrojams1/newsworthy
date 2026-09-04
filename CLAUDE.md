@@ -125,10 +125,27 @@ lag is what v6 was written to remove.
 The level alone could not age anything. Every run is independent and rates the
 current top news, so a story that dominates for days is re-rated at about the
 same number hour after hour: the median of five 5s is 5 forever. The renewed
-US-Iran strikes held the page between 4 and 6 for four days. So the number shown
-is the level of the development the newest reading reports, decayed from when
-that development was first reported — halving every 12 hours by default,
-floored at 1, and never above what the rater just said.
+US-Iran strikes held the page between 4 and 6 for four days. So each development
+carries its own level, decaying from when it was first reported — halving every
+12 hours by default, floored at 1 — and the page shows **the loudest
+development still live**.
+
+**The loudest, not the one this hour's reading named.** Reading only the named
+development was the first cut, and the judged series made its failure obvious:
+on 2026-09-03 the rater mentioned a seven-day-old Nepal flood once and the page
+fell from 4 to 1 and back to 3 within two hours, on no news at all. Across the
+series that shape accounted for 57 of 74 two-point jumps and left the front page
+moving more hour to hour (1.10) than the raw readings it was meant to smooth
+(1.02). Taking the loudest instead: 0.43, with 7 such jumps, and the escalations
+still land the hour they arrive.
+
+The number cannot rise without news: a development's value only decays, so the
+maximum across them moves up only when one re-anchors or a new one opens, and
+both are events rather than arithmetic. The cost is that in the hour where the
+loudest development and the newest reading disagree, the number describes one
+story and the sentence names another. That is accepted: the alternative is
+pairing the number with an older story's sentence, which reads as an app that
+has stopped.
 
 **Two doctrines ended there, and both were load-bearing.** The displayed number
 is no longer always an observed reading: it is an integer, never a computed 4.5,
@@ -161,9 +178,10 @@ month on Opus 5 at hourly cadence.
 
 **The case that shaped it: X, then Y, then X again.** X breaks at 08:00 scoring
 7 and shows 7. Y takes the top slot at midday and shows its own score. X is top
-again at 18:00 scoring 6 — and shows 4, because X is ten hours old, not new.
-Without stored identity the page had no way to know that, and either forgot the
-morning or never aged at all.
+again at 18:00 scoring 6 — and cannot come back as a 6, because X is ten hours
+old: it contributes its aged level and nothing more. Without stored identity the
+page had no way to know that, and either forgot the morning or never aged at
+all. What the page shows that evening is whichever of X and Y is still louder.
 
 **A development that escalates is news again, whatever the judge says.** The
 level rule and the judge between them would leave one hole, and it is the worst
@@ -203,6 +221,13 @@ on top in the evening is still named in the evening, with a smaller number
 beside it — never "nothing new". `score_from` names the row the score came from
 when the number is one row rather than a decayed level, and is never displayed.
 
+`basis` is now three values: `new` (the newest reading opened or escalated the
+development the number is about), `aged` (a decayed level) or `stale`. The level
+rule's own vocabulary — `latest`, `median`, `shock` — no longer appears there,
+because it describes the level rather than the number; `level` carries it
+instead. There is no `score_from`: the number comes from a development rather
+than from a row, and `since` dates it.
+
 `/api/current` replays 72 hours (`LOOKBACK_HOURS`), which is three halvings at
 the longest half-life — past that a development is at the floor and its exact
 age stops mattering. A root whose first report is older than that is fetched by
@@ -225,8 +250,10 @@ The admin chart draws both: the displayed value as the line, the stored readings
 as scatter. Scatter rather than a second line because their lag-1
 autocorrelation is about -0.11 — joining them would draw a continuity the
 numbers do not have. `displayedSeries()` replays the rule server-side and each
-history point carries `displayed`, `basis`, `level`, `root` and `since`, so the
-page never reimplements it; a chart free to drift from the front page about the
+history point carries `displayed`, `basis`, `level`, `story`, `root`, `since`
+and `reports` — the last being the development that reading itself reported,
+which is not always the one the number is about — so the page never
+reimplements it; a chart free to drift from the front page about the
 front page is worse than no chart. The range is fetched padded by the lookback
 and trimmed after the replay, so a point at the left edge ages from the first
 report the page actually used rather than from the edge of the range.
