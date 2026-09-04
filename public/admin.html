@@ -423,7 +423,7 @@
     const line = coords.map((p, i) => `${i ? 'L' : 'M'}${p.cx.toFixed(1)} ${p.dy.toFixed(1)}`).join(' ');
     const area = `${line} L${coords.at(-1).cx.toFixed(1)} ${PAD.t + plotH} L${coords[0].cx.toFixed(1)} ${PAD.t + plotH} Z`;
     const raw = coords.length <= 400
-      ? coords.map((p) => `<circle class="raw-dot${p.basis === 'new' || p.basis === 'shock' ? ' shock' : ''}" `
+      ? coords.map((p) => `<circle class="raw-dot${p.basis === 'new' ? ' shock' : ''}" `
           + `cx="${p.cx.toFixed(1)}" cy="${p.cy.toFixed(1)}" r="2.75"></circle>`).join('')
       : '';
     const dots = `<circle class="series-dot" cx="${coords.at(-1).cx.toFixed(1)}" cy="${coords.at(-1).dy.toFixed(1)}" r="4"></circle>`;
@@ -493,14 +493,13 @@
       // "shown 2" with no explanation reads as a bug.
       const age = nearest.since != null
         ? Math.round((nearest.t - nearest.since) / 3600_000) : null;
-      const why = nearest.basis === 'aged'
-        ? ` (level ${nearest.level}${age ? `, ${age}h old` : ''})`
-        : nearest.basis === 'new' ? ' (new development)'
-        : nearest.basis === 'shock' ? '' : ' (median)';
+      const story = nearest.story ? `${nearest.story}, ` : '';
+      const why = nearest.basis === 'new'
+        ? ' (new development)'
+        : ` (${story}${age}h old)`;
       const shown = nearest.displayed != null && nearest.displayed !== nearest.score
         ? ` <span class="t-shown">shown ${nearest.displayed}${why}</span>`
-        : (nearest.basis === 'new' ? ' <span class="t-shown">new development</span>'
-          : nearest.basis === 'shock' ? ' <span class="t-shown">shown, above the level</span>' : '');
+        : (nearest.basis === 'new' ? ' <span class="t-shown">new development</span>' : '');
       tooltip.innerHTML =
         `<b>${nearest.score}/10</b>${shown} <span class="t-time">${fmtTime.format(nearest.t)}</span>` +
         `<span class="t-explanation">${escapeHtml(nearest.explanation ?? '')}</span>`;
@@ -670,7 +669,7 @@
     const halfLife = data.half_life_hours;
     $('caption').innerHTML =
       '<span class="legend">'
-      + `<span><b><span class="swatch"></span>Displayed</b> — the development's level, halving every ${halfLife}h</span>`
+      + `<span><b><span class="swatch"></span>Displayed</b> — the loudest development, halving every ${halfLife}h</span>`
       + '<span><b><span class="swatch raw"></span>Readings</b> — as submitted</span>'
       + (breaks ? `<span class="legend-extra">${breaks} new development${breaks === 1 ? '' : 's'}</span>` : '')
       + (failures.length ? '<span class="legend-extra">✕ failed run</span>' : '')

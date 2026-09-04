@@ -40,9 +40,9 @@ actually wired up. Start there when a deploy misbehaves.
 
 | Route | What's there |
 |---|---|
-| `/` | The number, the sentence, nothing else. The number is the level of the development the newest reading reports, aged from when it was first reported |
+| `/` | The number, the sentence, nothing else. The number is the loudest development still live — each carries its own level, aged from when it was first reported |
 | `/admin` | Timeseries of the score, run log, prompt versions, "rate now" |
-| `/api/current` | `{ score, explanation, created_at, source, basis, level, story, since, window }`, plus `score_from` when the score is one row rather than a decayed level. `basis` is `latest`, `median`, `shock`, `new`, `aged` or `stale`. No countdown: an external caller can post at any moment, so the next update is not predictable |
+| `/api/current` | `{ score, explanation, created_at, source, basis, level, story, since, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about), `aged` (a decayed level) or `stale` (nothing recent). `story` and `since` name that development and when it broke. No countdown: an external caller can post at any moment, so the next update is not predictable |
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions |
 | `/api/admin/prompts` | Every prompt version, full text |
 | `/api/admin/settings` | `GET` the model, cadence, score half-life and judge model with the priced options; `POST` to change them |
