@@ -4,7 +4,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, recentStories, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, LOOKBACK_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
@@ -411,6 +411,9 @@ const server = createServer(async (req, res) => {
           explanation: submission.explanation,
           created_at: new Date().toISOString(),
           priors: await history({ hours: PRIOR_HOURS }),
+          // The names already in use, so one story keeps one name. Without it
+          // the judge coined four for the US-Iran war across 231 readings.
+          stories: await recentStories(),
         });
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
@@ -635,6 +638,7 @@ const server = createServer(async (req, res) => {
           explanation: row.explanation,
           created_at: row.created_at,
           priors,
+          stories: await recentStories(),
         });
         await setJudgement(row.id, judgement);
         if (judgement.judge_version != null) judged += 1;

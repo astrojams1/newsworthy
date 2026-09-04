@@ -250,6 +250,28 @@ export async function ratingsByIds(ids = []) {
 }
 
 /**
+ * The stories already named, newest first, as a vocabulary for the judge.
+ *
+ * Wider than the 48 hours of developments it is shown beside: a story quiet for
+ * two days should keep its name when it returns rather than be renamed on the
+ * way back in. One row per name, carrying that story's freshest sentence, so
+ * the name is recognisable rather than a bare token.
+ */
+export async function recentStories({ days = 14, limit = 20 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - days * 24 * 3600_000);
+  const rows = await sql`
+    SELECT DISTINCT ON (story) story, explanation AS latest, created_at AS latest_at
+      FROM ratings
+     WHERE status = 'ok' AND story IS NOT NULL AND created_at >= ${since}
+     ORDER BY story, created_at DESC, id DESC`;
+  return rows
+    .map(shape)
+    .sort((a, b) => String(b.latest_at).localeCompare(String(a.latest_at)))
+    .slice(0, limit);
+}
+
+/**
  * Readings no judgement was ever made for, oldest first — history from before
  * the judge existed, and rows a judge outage left behind. Fed to the admin
  * backfill, which judges them in order so each one sees the developments the
