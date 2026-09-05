@@ -84,7 +84,31 @@ const HALF_LIFE_CHOICES = [4, 6, 8, 12, 24];
  *  is the real first report rather than the edge of the window. */
 const LOOKBACK_HOURS = 72;
 
-export { SHOCK_MARGIN, MIN_WINDOW, FLOOR, DEFAULT_HALF_LIFE_HOURS, HALF_LIFE_CHOICES, LOOKBACK_HOURS };
+/** Days for a story's routine developments to lose half their weight.
+ *
+ *  A development's half-life says how fast one event goes stale. This says how
+ *  fast a *thread* does: a war in its sixth month produces a development every
+ *  day, each scored 5 by a rater that has no memory of the previous four
+ *  hundred, and none of them is worth a reader's time. Seven days, so a story
+ *  a fortnight old carries a quarter of the weight and one two months old
+ *  carries almost none — unless it does something it has not done before,
+ *  which is what `SHOCK_MARGIN` below is for. Adjustable from /admin. */
+const DEFAULT_STORY_HALF_LIFE_DAYS = 7;
+
+/** Offered in the admin picker. */
+const STORY_HALF_LIFE_CHOICES = [3, 7, 14, 30];
+
+/** How long a story is remembered: how far back its developments count toward
+ *  its age and its routine level, and how long a silence makes it new again.
+ *  Four weeks, so a story that goes quiet for a month comes back as news, and
+ *  so the replay has enough of a running story's past to know it is routine. */
+const STORY_MEMORY_DAYS = 28;
+const STORY_MEMORY_HOURS = STORY_MEMORY_DAYS * 24;
+
+export {
+  SHOCK_MARGIN, MIN_WINDOW, FLOOR, DEFAULT_HALF_LIFE_HOURS, HALF_LIFE_CHOICES, LOOKBACK_HOURS,
+  DEFAULT_STORY_HALF_LIFE_DAYS, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_DAYS, STORY_MEMORY_HOURS,
+};
 
 /**
  * The level: which reading answers "how newsworthy is it".
@@ -148,6 +172,51 @@ export function displayedSeries(ascending, options = {}) {
 }
 
 /**
+ * What a development in a running story is worth when it opens.
+ *
+ * The rater has no memory, so the four-hundredth development of a war scores
+ * like the first. Here is the memory. A story's developments over the last
+ * `STORY_MEMORY_DAYS` give it an age and a routine level — the median of what
+ * its developments have scored. A new development scoring within the shock
+ * margin of that routine level is what this story does every day, and its
+ * weight halves every `storyHalfLifeDays` of the story's age. One scoring two
+ * or more clear of the routine level is a breakthrough and keeps its full
+ * score: a ceasefire in a war that has been trading strikes, a collapse in a
+ * market that has been drifting.
+ *
+ * Two points, because that is the margin everything else here uses and for the
+ * same reason — the rater disagrees with itself by about 0.6 on identical
+ * material, so a one-point rise above routine is inside the error bar. Against
+ * the median rather than the peak, because a story's worst day must not set
+ * the bar for every day after it; and the median moves when the story does, so
+ * three breakthroughs in a row make the fourth routine.
+ *
+ * A story with nothing on record is fresh and pays nothing. A reading with no
+ * story — a judge outage — cannot be attributed, and pays nothing either.
+ */
+function fatigued(score, thread, t, storyHalfLifeDays) {
+  const full = { anchor: score, raw: score, fatigue: 1, routine: null, breakthrough: false };
+  if (!thread) return full;
+
+  const memory = STORY_MEMORY_DAYS * 86_400_000;
+  thread.opened = thread.opened.filter((o) => t - o.t <= memory);
+  if (thread.opened.length === 0) return full;
+
+  const scores = thread.opened.map((o) => o.score).sort((a, b) => a - b);
+  const routine = scores[Math.floor(scores.length / 2)];
+  const ageDays = (t - thread.opened[0].t) / 86_400_000;
+  const fatigue = 2 ** (-ageDays / storyHalfLifeDays);
+  const breakthrough = score - routine >= SHOCK_MARGIN;
+  return {
+    anchor: breakthrough ? score : score * fatigue,
+    raw: score,
+    fatigue,
+    routine,
+    breakthrough,
+  };
+}
+
+/**
  * The replay itself: the points, and the state of every development at the end
  * of the series. `/api/current` needs the second half to re-age at request
  * time, and both must come from one pass or the page and the chart can differ.
@@ -156,10 +225,19 @@ function replay(ascending, {
   limit = 5,
   hours = 6,
   halfLifeHours = DEFAULT_HALF_LIFE_HOURS,
+  storyHalfLifeDays = DEFAULT_STORY_HALF_LIFE_DAYS,
   roots = new Map(),
 } = {}) {
   const span = hours * 3600_000;
   const developments = new Map();
+  // Per story: the developments it has opened, as (when, raw score), which is
+  // what gives it an age and a routine level.
+  const threads = new Map();
+  const threadFor = (story) => {
+    if (!story) return null;
+    if (!threads.has(story)) threads.set(story, { opened: [] });
+    return threads.get(story);
+  };
   let previousRoot = null;
 
   const points = ascending.map((point, i) => {
@@ -183,13 +261,25 @@ function replay(ascending, {
       // now — unless its first report is older than the replay window, in which
       // case its real first-report time is carried in `roots`.
       const known = roots.get(root);
+      const story = point.story ?? known?.story ?? null;
+      const opening = root === id ? point.score : level;
+      const thread = threadFor(story);
+      // Weighed against the story it belongs to before it is anchored: a
+      // development that is what this story does every day opens at a fraction
+      // of its score, a breakthrough at all of it. See fatigued().
+      const worth = fatigued(opening, thread, point.t, storyHalfLifeDays);
+      if (thread) thread.opened.push({ t: point.t, score: opening });
       development = {
-        anchor: root === id ? point.score : level,
+        anchor: worth.anchor,
+        raw: worth.raw,
+        fatigue: worth.fatigue,
+        routine: worth.routine,
+        breakthrough: worth.breakthrough,
         since: known?.t ?? point.t,
         // The lowest level this development has shown since it was last
         // anchored, which is what a later rise is measured against.
-        low: root === id ? point.score : level,
-        story: point.story ?? known?.story ?? null,
+        low: opening,
+        story,
       };
       developments.set(root, development);
     } else if (levelBasis !== 'shock') {
@@ -220,7 +310,17 @@ function replay(ascending, {
       // about an hour of lag on a sharp escalation, until the median confirms
       // it. A sharp escalation is the judge's case, not this one's.
       if (level - development.low >= SHOCK_MARGIN) {
-        development.anchor = level;
+        // An escalation is weighed against the story the same way an opening
+        // is: two clear of what the story routinely does is a breakthrough at
+        // full value, anything less is the story's daily churn, discounted.
+        const thread = threadFor(development.story);
+        const worth = fatigued(level, thread, point.t, storyHalfLifeDays);
+        if (thread) thread.opened.push({ t: point.t, score: level });
+        development.anchor = worth.anchor;
+        development.raw = worth.raw;
+        development.fatigue = worth.fatigue;
+        development.routine = worth.routine;
+        development.breakthrough = worth.breakthrough;
         development.since = point.t;
         development.low = level;
       } else {
@@ -283,7 +383,7 @@ function loudestAt(developments, now, halfLifeHours, breakAt = now) {
     const value = agedScore(development.anchor, now - development.since, halfLifeHours);
     if (!best || value > best.value) best = { id, development, value };
   }
-  if (!best) return { displayed: FLOOR, basis: 'aged', root: null, anchor: null, since: now, story: null };
+  if (!best) return { displayed: FLOOR, basis: 'aged', root: null, anchor: null, raw: null, fatigue: 1, since: now, story: null };
 
   const { id, development, value } = best;
   const displayed = Math.max(FLOOR, Math.min(10, Math.round(value)));
@@ -295,9 +395,16 @@ function loudestAt(developments, now, halfLifeHours, breakAt = now) {
     // Compared against the reading's own timestamp rather than against `now`,
     // because `/api/current` ages at request time and is always some
     // milliseconds later, which made 'new' unreachable there.
-    basis: development.since === breakAt ? 'new' : 'aged',
+    // 'routine' is the third case: the clock started now, but the development
+    // opened at a fraction of its score because its story has been doing this
+    // for weeks. The number is neither a break nor a decayed level; it is a
+    // fresh development the story's age has already discounted.
+    basis: development.since !== breakAt ? 'aged'
+      : development.anchor < development.raw ? 'routine' : 'new',
     root: id,
     anchor: development.anchor,
+    raw: development.raw,
+    fatigue: development.fatigue,
     since: development.since,
     story: development.story ?? null,
   };
@@ -313,11 +420,12 @@ function loudestAt(developments, now, halfLifeHours, breakAt = now) {
 export function currentDisplay(ascending, {
   now = Date.now(),
   halfLifeHours = DEFAULT_HALF_LIFE_HOURS,
+  storyHalfLifeDays = DEFAULT_STORY_HALF_LIFE_DAYS,
   hours = 6,
   limit = 5,
   roots = new Map(),
 } = {}) {
-  const { points, developments } = replay(ascending, { limit, hours, halfLifeHours, roots });
+  const { points, developments } = replay(ascending, { limit, hours, halfLifeHours, storyHalfLifeDays, roots });
   const last = points.at(-1);
   if (!last) return undefined;
 
@@ -345,6 +453,8 @@ export function currentDisplay(ascending, {
     since: loudest.since,
     root: loudest.root,
     story: loudest.story,
+    raw: loudest.raw,
+    fatigue: loudest.fatigue,
     reports: last.reports,
   };
 }
@@ -373,11 +483,12 @@ export function currentDisplay(ascending, {
 export function activeStories(ascending, {
   now = Date.now(),
   halfLifeHours = DEFAULT_HALF_LIFE_HOURS,
+  storyHalfLifeDays = DEFAULT_STORY_HALF_LIFE_DAYS,
   hours = 6,
   limit = 5,
   roots = new Map(),
 } = {}) {
-  const { points, developments } = replay(ascending, { limit, hours, halfLifeHours, roots });
+  const { points, developments } = replay(ascending, { limit, hours, halfLifeHours, storyHalfLifeDays, roots });
   const loudest = loudestAt(developments, now, halfLifeHours);
 
   // What each development was first and last heard saying, and how often. The
@@ -404,8 +515,12 @@ export function activeStories(ascending, {
     const entry = {
       root,
       story: development.story ?? null,
-      // The level it was last anchored at, and what that has decayed to.
-      anchor: development.anchor,
+      // What the rater said when it opened, what the story's age left of that,
+      // and what time has since decayed it to.
+      raw: development.raw,
+      anchor: Math.round(development.anchor * 10) / 10,
+      fatigue: Math.round(development.fatigue * 100) / 100,
+      breakthrough: development.breakthrough,
       displayed: Math.max(FLOOR, Math.min(10, Math.round(agedScore(development.anchor, ageMs, halfLifeHours)))),
       since: development.since,
       age_hours: Math.round((ageMs / 3600_000) * 10) / 10,

@@ -228,6 +228,49 @@ two points or more) and took hour-to-hour movement back to 0.75 against the raw
 about an hour of lag on a sharp escalation, until the median confirms it, and a
 sharp escalation is the judge's case rather than this one's.
 
+**Stories have a half-life too.** A development's half-life says how fast one
+event goes stale. It says nothing about the thread: a war in its sixth month
+produces a development every day, each scored 5 by a rater with no memory of the
+previous four hundred, and each opened at 5 on the page. None of them is worth a
+reader's time, and the request was exactly that — "these developments happen
+every day, and it's not worth my time."
+
+So the page has the memory the rater lacks. A story's developments over the last
+`STORY_MEMORY_DAYS` (28) give it an age and a routine level, the median of what
+its developments have scored. A development opening within the shock margin of
+that routine level is what the story does every day: it opens at its score times
+`2^(-age / storyHalfLifeDays)`, seven days by default, so a fortnight-old story's
+daily 5 opens at about 1. A story with nothing on record is fresh and pays
+nothing; a reading with no story — a judge outage — cannot be attributed and
+pays nothing either.
+
+**Breakthroughs are the point, and they escape the discount by the same two-point
+margin everything else here uses.** A development scoring two or more clear of
+the story's routine level keeps its full score — a ceasefire in a war trading
+strikes, a collapse in a market that has been drifting. Against the median
+rather than the peak, so one bad day does not set the bar for every day after;
+and the median moves with the story, so three 7s in a row in a story of 4s make
+the fourth 7 routine. Replayed over the real series with the v1 slug drift
+merged: Iran's daily churn — "Escorted convoys resumed", "Diesel hits a record"
+— opens at 1 or 2 instead of 4, while every breakthrough survives whole: the
+broadest strike wave 7→7, the hundred-target strike 6→6, the 3 September
+escalation 7→7. The 4s and 5s thin out; the 7s and the 8 do not move.
+
+The limit is the rater's score. A development the rater scores like the daily
+churn is the daily churn as far as the page can tell — Iranian missiles at two US
+warships scored 5 in a story whose routine was 4 to 5, and opened discounted. The
+signal is the number the rater gave, and only the rater can give a different one.
+
+An escalation inside a development is weighed the same way: two clear of the
+story's routine level is a breakthrough at full value, anything less is churn.
+`basis` gains a third value, `routine`: the clock started with this reading, but
+the development opened at a fraction of its score because its story has been
+doing this for weeks. `/api/current` reports `fatigue`, the fraction kept — 1 for
+a fresh story or a breakthrough. The story half-life is a setting beside the
+development half-life at `/admin` (`story_half_life_days`, one of 3, 7, 14, 30).
+The replay reads four weeks of rows for it, where it read three days before;
+developments themselves still compete for only three days.
+
 **A judge outage is "inherit", not "new".** A reading with `judge_version` null
 takes the previous reading's development rather than opening one, because an
 outage that reset the clock hourly would look exactly like a story that never
@@ -243,16 +286,18 @@ on top in the evening is still named in the evening, with a smaller number
 beside it — never "nothing new". `score_from` names the row the score came from
 when the number is one row rather than a decayed level, and is never displayed.
 
-`basis` is now three values: `new` (the newest reading opened or escalated the
-development the number is about), `aged` (a decayed level) or `stale`. The level
+`basis` is one of `new` (the newest reading opened or escalated the development
+the number is about, at full value), `routine` (it did, but its story's age
+discounted it), `aged` (a decayed level) or `stale`. The level
 rule's own vocabulary — `latest`, `median`, `shock` — no longer appears there,
 because it describes the level rather than the number; `level` carries it
 instead. There is no `score_from`: the number comes from a development rather
 than from a row, and `since` dates it.
 
-`/api/current` replays 72 hours (`LOOKBACK_HOURS`), which is three halvings at
-the longest half-life — past that a development is at the floor and its exact
-age stops mattering. A root whose first report is older than that is fetched by
+`/api/current` reads four weeks of rows (`STORY_MEMORY_HOURS`) so a development
+can be weighed against its story, but a development competes for the page only
+for 72 hours (`LOOKBACK_HOURS`), three halvings at the longest half-life — past
+that it is at the floor and its exact age stops mattering. A root whose first report is older than that is fetched by
 id, so `since` is the real first report rather than the edge of the window. The
 score is re-aged at request time, not at the last reading's timestamp: ten hours
 of silence after an 8 is not an 8. An empty six-hour window means the newest

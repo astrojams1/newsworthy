@@ -1,6 +1,6 @@
 import { getSettings, setSetting } from './db.js';
 import { isKnownModel } from './pricing.js';
-import { DEFAULT_HALF_LIFE_HOURS, HALF_LIFE_CHOICES } from './current.js';
+import { DEFAULT_HALF_LIFE_HOURS, DEFAULT_STORY_HALF_LIFE_DAYS, HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES } from './current.js';
 
 /**
  * Effective runtime configuration: database settings win, environment
@@ -25,6 +25,14 @@ export const INTERVAL_CHOICES = [15, 30, 60, 120, 240, 360, 720, 1440];
 // change what the page shows about readings already stored, never the rating.
 export const ENV_HALF_LIFE = Number(process.env.NEWSWORTHY_HALF_LIFE_HOURS) || DEFAULT_HALF_LIFE_HOURS;
 export const ENV_JUDGE_MODEL = process.env.NEWSWORTHY_JUDGE_MODEL || 'claude-opus-5';
+export const ENV_STORY_HALF_LIFE = Number(process.env.NEWSWORTHY_STORY_HALF_LIFE_DAYS) || DEFAULT_STORY_HALF_LIFE_DAYS;
+
+export function storyHalfLifeLabel(days) {
+  if (days === 7) return 'a week';
+  if (days === 14) return 'two weeks';
+  if (days === 30) return 'a month';
+  return `${days} days`;
+}
 
 export function halfLifeLabel(hours) {
   return hours === 24 ? 'a day' : `${hours} hours`;
@@ -52,17 +60,21 @@ export async function effectiveConfig() {
     ? Number(stored.half_life_hours)
     : ENV_HALF_LIFE;
   const judgeModel = isKnownModel(stored.judge_model) ? stored.judge_model : ENV_JUDGE_MODEL;
+  const storyHalfLife = STORY_HALF_LIFE_CHOICES.includes(Number(stored.story_half_life_days))
+    ? Number(stored.story_half_life_days)
+    : ENV_STORY_HALF_LIFE;
   return {
     model,
     intervalMinutes: interval,
     halfLifeHours: halfLife,
+    storyHalfLifeDays: storyHalfLife,
     judgeModel,
     source: stored,
   };
 }
 
 /** Validate then persist. Throws with a readable message on bad input. */
-export async function updateConfig({ model, intervalMinutes, halfLifeHours, judgeModel }) {
+export async function updateConfig({ model, intervalMinutes, halfLifeHours, storyHalfLifeDays, judgeModel }) {
   if (model !== undefined) {
     if (!isKnownModel(model)) throw new Error(`Unknown model: ${model}`);
     await setSetting('model', model);
@@ -80,6 +92,13 @@ export async function updateConfig({ model, intervalMinutes, halfLifeHours, judg
       throw new Error(`Half-life must be one of ${HALF_LIFE_CHOICES.join(', ')} hours`);
     }
     await setSetting('half_life_hours', hours);
+  }
+  if (storyHalfLifeDays !== undefined) {
+    const days = Number(storyHalfLifeDays);
+    if (!STORY_HALF_LIFE_CHOICES.includes(days)) {
+      throw new Error(`Story half-life must be one of ${STORY_HALF_LIFE_CHOICES.join(', ')} days`);
+    }
+    await setSetting('story_half_life_days', days);
   }
   if (judgeModel !== undefined) {
     if (!isKnownModel(judgeModel)) throw new Error(`Unknown model: ${judgeModel}`);

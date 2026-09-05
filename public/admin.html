@@ -276,6 +276,9 @@
     <label class="field">Score halves every
       <select id="half-life"></select>
     </label>
+    <label class="field">Stories go stale over
+      <select id="story-half-life"></select>
+    </label>
     <label class="field">Story judge
       <select id="judge-model"></select>
     </label>
@@ -518,7 +521,9 @@
       const story = nearest.leading_story ? `${nearest.leading_story}, ` : '';
       const why = nearest.basis === 'new'
         ? ' (new development)'
-        : ` (${story}${age}h old)`;
+        : nearest.basis === 'routine'
+          ? ` (routine for ${nearest.leading_story ?? 'this story'}, ${Math.round((nearest.fatigue ?? 1) * 100)}% weight)`
+          : ` (${story}${age}h old)`;
       const shown = nearest.displayed != null && nearest.displayed !== nearest.score
         ? ` <span class="t-shown">shown ${nearest.displayed}${why}</span>`
         : (nearest.basis === 'new' ? ' <span class="t-shown">new development</span>' : '');
@@ -702,12 +707,14 @@
         </div>
         ${s.developments.map((d) => `
           <div class="dev">
-            <div class="dev-score">${d.displayed}<small style="color:var(--ink-faint)">/${d.anchor}</small></div>
+            <div class="dev-score">${d.displayed}<small style="color:var(--ink-faint)">/${d.raw}</small></div>
             <div class="dev-body">
               <div>${escapeHtml(d.latest ?? d.first ?? '')}</div>
               <div class="dev-meta">
                 <span>broke ${ago(d.since)}</span>
                 <span>${d.readings} reading${d.readings === 1 ? '' : 's'}</span>
+                ${d.breakthrough ? '<span>breakthrough</span>'
+                  : d.fatigue < 1 ? `<span>routine, ${Math.round(d.fatigue * 100)}% weight</span>` : ''}
                 ${d.leading ? '<span>the number above</span>' : ''}
               </div>
             </div>
@@ -744,7 +751,7 @@
     const halfLife = data.half_life_hours;
     $('caption').innerHTML =
       '<span class="legend">'
-      + `<span><b><span class="swatch"></span>Displayed</b> — the loudest development, halving every ${halfLife}h</span>`
+      + `<span><b><span class="swatch"></span>Displayed</b> — the loudest development, halving every ${halfLife}h; a story's routine developments fade over ${escapeHtml(String(data.story_half_life_days))}d</span>`
       + '<span><b><span class="swatch raw"></span>Readings</b> — as submitted</span>'
       + (breaks ? `<span class="legend-extra">${breaks} new development${breaks === 1 ? '' : 's'}</span>` : '')
       + (failures.length ? '<span class="legend-extra">✕ failed run</span>' : '')
@@ -778,6 +785,9 @@
     $('half-life').innerHTML = settings.half_lives
       .map((h) => `<option value="${h.hours}"${h.hours === settings.half_life_hours ? ' selected' : ''}>${escapeHtml(h.label)}</option>`)
       .join('');
+    $('story-half-life').innerHTML = settings.story_half_lives
+      .map((d) => `<option value="${d.days}"${d.days === settings.story_half_life_days ? ' selected' : ''}>${escapeHtml(d.label)}</option>`)
+      .join('');
     $('judge-model').innerHTML = settings.models
       .map((m) => `<option value="${m.id}"${m.id === settings.judge_model ? ' selected' : ''}>${escapeHtml(m.label)}</option>`)
       .join('');
@@ -790,6 +800,7 @@
     && ($('model').value !== settings.model
       || Number($('interval').value) !== settings.interval_minutes
       || Number($('half-life').value) !== settings.half_life_hours
+      || Number($('story-half-life').value) !== settings.story_half_life_days
       || $('judge-model').value !== settings.judge_model);
 
   /**
@@ -820,7 +831,7 @@
       `${model.label} every ${every} ≈ ${usdRounded(perMonth)}/month`;
   }
 
-  for (const id of ['model', 'interval', 'half-life', 'judge-model']) {
+  for (const id of ['model', 'interval', 'half-life', 'story-half-life', 'judge-model']) {
     $(id).addEventListener('change', renderEstimates);
   }
 
@@ -836,6 +847,7 @@
           model: $('model').value,
           intervalMinutes: Number($('interval').value),
           halfLifeHours: Number($('half-life').value),
+          storyHalfLifeDays: Number($('story-half-life').value),
           judgeModel: $('judge-model').value,
         }),
       });
@@ -844,6 +856,7 @@
         settings.model = body.model;
         settings.interval_minutes = body.interval_minutes;
         settings.half_life_hours = body.half_life_hours;
+        settings.story_half_life_days = body.story_half_life_days;
         settings.judge_model = body.judge_model;
         // The half-life is not a next-reading setting: the chart and the front
         // page replay it over readings already stored, so a save is visible

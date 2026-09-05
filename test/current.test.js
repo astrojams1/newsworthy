@@ -414,6 +414,104 @@ test('the board and the front page name the same leading development', () => {
   assert.equal(leader.displayed, page.score);
 });
 
+// A story that has been producing developments for `days`, one a day at `score`,
+// then one more at `last` — the shape of a long war as the rater sees it.
+const longStory = (days, score, last, story = 'war') => {
+  const rows = [];
+  for (let d = 0; d < days; d += 1) {
+    rows.push({ id: d + 1, t: d * 24 * HOUR, score, story, development_of: null, explanation: `day ${d}` });
+  }
+  rows.push({ id: days + 1, t: days * 24 * HOUR, score: last, story, development_of: null, explanation: 'today' });
+  return rows.map((r) => ({ ...r, judge_version: 1, created_at: new Date(r.t).toISOString() }));
+};
+
+test('a story that does the same thing every day fades, however each day scores', () => {
+  // The rater has no memory, so the fourteenth development of a war scores like
+  // the first. The page does have one: a development that is what this story
+  // routinely does opens at a fraction of its score, halving with the story's
+  // age.
+  const series = longStory(14, 5, 5);
+  const out = displayedSeries(series, { storyHalfLifeDays: 7 });
+  const today = out.at(-1);
+  assert.equal(today.basis, 'routine', 'a fresh development, already discounted');
+  assert.equal(today.raw, 5, 'the rater said 5');
+  assert.ok(today.displayed <= 2, `two weeks in, a routine 5 shows ${today.displayed}`);
+  assert.ok(today.fatigue > 0.2 && today.fatigue < 0.3, `a quarter of the weight at two half-lives (${today.fatigue})`);
+
+  // The first day of the same story paid nothing: a story with no record is new.
+  assert.equal(out[0].basis, 'new');
+  assert.equal(out[0].displayed, 5);
+});
+
+test('a breakthrough in a stale story is shown whole', () => {
+  // What keeps the discount honest: a story's age must not hide the day it does
+  // something it has not done before. Two clear of the story's routine level
+  // — the same margin as everywhere else — and the development keeps its score.
+  const series = longStory(14, 5, 7);
+  const out = displayedSeries(series, { storyHalfLifeDays: 7 });
+  const today = out.at(-1);
+  assert.equal(today.basis, 'new');
+  assert.equal(today.displayed, 7, 'a 7 in a story of 5s is a break');
+
+  // One point is not: the rater disagrees with itself by about 0.6.
+  const near = displayedSeries(longStory(14, 5, 6), { storyHalfLifeDays: 7 }).at(-1);
+  assert.equal(near.basis, 'routine');
+  assert.ok(near.displayed < 6);
+});
+
+test('the routine level moves with the story, so breakthroughs do not stay breakthroughs', () => {
+  // Once a story has scored 7 more days than it has scored 4, a 7 is what it
+  // does. The bar is the median of what the story has scored — not its first
+  // day, not its peak — so it moves only when the story's centre does: three
+  // days of 4s and then four of 7s, and the fourth 7 is routine.
+  const rows = longStory(3, 4, 7);
+  const more = [7, 7, 7].map((score, i) => ({
+    id: 100 + i, t: (4 + i) * 24 * HOUR, score, story: 'war', development_of: null,
+    judge_version: 1, explanation: `escalation ${i}`, created_at: new Date((4 + i) * 24 * HOUR).toISOString(),
+  }));
+  const out = displayedSeries([...rows, ...more], { storyHalfLifeDays: 7 });
+  const [first, second, , fourth] = out.slice(-4);
+  assert.equal(first.basis, 'new', 'the first 7 is a break');
+  assert.equal(second.basis, 'new', 'and so is the second: the median is still 4');
+  assert.equal(fourth.basis, 'routine', 'the fourth 7 is what this story does now');
+});
+
+test('a story forgotten for a month comes back as news', () => {
+  // The memory has an edge: a story with nothing on record in four weeks is a
+  // fresh story again, and pays nothing when it returns.
+  const early = longStory(3, 5, 5);
+  const back = {
+    id: 99, t: (3 + 35) * 24 * HOUR, score: 5, story: 'war', development_of: null,
+    judge_version: 1, explanation: 'it is back', created_at: new Date((3 + 35) * 24 * HOUR).toISOString(),
+  };
+  const out = displayedSeries([...early, back], { storyHalfLifeDays: 7 });
+  assert.equal(out.at(-1).basis, 'new');
+  assert.equal(out.at(-1).displayed, 5);
+});
+
+test('a reading with no story pays no story fatigue', () => {
+  // An unjudged reading cannot be attributed to a story, so it cannot be
+  // routine for one. Nothing here changes for the score-only fallback.
+  const series = judged([4, 0], [4, 0], [4, 0], [7, 3]);
+  const out = displayedSeries(series, { storyHalfLifeDays: 7 });
+  assert.equal(out.at(-1).basis, 'new');
+  assert.equal(out.at(-1).displayed, 7);
+  assert.equal(out.at(-1).fatigue, 1);
+});
+
+test("the board says what the story's age left of each development", () => {
+  const series = longStory(14, 5, 7);
+  const [war] = activeStories(series, { now: series.at(-1).t, storyHalfLifeDays: 7 });
+  const [breakthrough, routine] = war.developments;
+  assert.equal(breakthrough.raw, 7);
+  assert.equal(breakthrough.breakthrough, true);
+  assert.equal(breakthrough.anchor, 7, 'kept whole');
+  assert.equal(routine.raw, 5);
+  assert.equal(routine.breakthrough, false);
+  assert.ok(routine.anchor < routine.raw, 'discounted');
+  assert.ok(routine.fatigue < 1);
+});
+
 test('the quiet band tracks the rater, then falls to the floor', () => {
   // Nothing dramatic is happening and the rater keeps saying 3. The page says 3
   // for the first hours and 1 after a day: the scale's own bottom rung is

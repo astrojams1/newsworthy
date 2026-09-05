@@ -5,13 +5,13 @@ import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
 import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, recentStories, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
-import { HALF_LIFE_CHOICES, LOOKBACK_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
+import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
 import { openapiDocument } from './openapi.js';
-import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, updateConfig } from './config.js';
+import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
@@ -209,12 +209,13 @@ const server = createServer(async (req, res) => {
     if (path === '/' && req.method === 'GET') return serveStatic(res, 'index.html');
 
     if (path === '/api/current' && req.method === 'GET') {
-      // Three days of readings, not the six-hour level window: the number is a
-      // development's level aged from its first report, so the replay has to
-      // reach back far enough to find that report. The level rule still runs on
-      // the six-hour window inside it.
-      const { halfLifeHours } = await effectiveConfig();
-      const rows = await history({ hours: LOOKBACK_HOURS });
+      // Four weeks of readings, not the six-hour level window: a development is
+      // weighed against how long its story has been running and what it has
+      // routinely scored, so the replay has to reach back as far as a story is
+      // remembered. Developments themselves still only compete for three days,
+      // and the level rule still runs on the six-hour window inside it.
+      const { halfLifeHours, storyHalfLifeDays } = await effectiveConfig();
+      const rows = await history({ hours: STORY_MEMORY_HOURS });
       const fallback = rows.length ? null : await latestRating();
       if (!rows.length && !fallback) {
         const attempt = await latestAttempt();
@@ -228,6 +229,7 @@ const server = createServer(async (req, res) => {
       const current = currentDisplay(ascending, {
         now: Date.now(),
         halfLifeHours,
+        storyHalfLifeDays,
         roots: await rootTimes(ascending),
       });
       // No countdown: an external caller can post a reading at any moment, so
@@ -253,6 +255,9 @@ const server = createServer(async (req, res) => {
         level: current.level,
         story: current.story ?? undefined,
         since: new Date(current.since).toISOString(),
+        // How much of its score a routine development in this story keeps. 1 is
+        // a fresh story or a breakthrough; the number falls with the story's age.
+        fatigue: current.fatigue,
         window: current.window,
       });
     }
@@ -471,12 +476,12 @@ const server = createServer(async (req, res) => {
 
     if (path === '/api/admin/history' && req.method === 'GET') {
       const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
-      // Padded by the replay lookback and trimmed back below: a point at the
-      // left edge of the range must age from the same first report the front
-      // page used at that moment, not from the edge itself.
+      // Padded by the story memory and trimmed back below: a point at the left
+      // edge of the range must be weighed against the same story history the
+      // front page used at that moment, not against an edge.
       const [statsRow, points, failedRuns, attempts, refused, config] = await Promise.all([
         stats({ hours }),
-        history({ hours: hours + LOOKBACK_HOURS }),
+        history({ hours: hours + STORY_MEMORY_HOURS }),
         failures({ hours }),
         recentAttempts(25),
         recentRejections({ hours }),
@@ -494,6 +499,7 @@ const server = createServer(async (req, res) => {
         // not about the window being charted.
         stories: activeStories(ascending, {
           halfLifeHours: config.halfLifeHours,
+          storyHalfLifeDays: config.storyHalfLifeDays,
           roots: developmentRoots,
         }).map((story) => ({
           ...story,
@@ -507,11 +513,13 @@ const server = createServer(async (req, res) => {
         // readings without reimplementing the rule.
         points: displayedSeries(ascending, {
           halfLifeHours: config.halfLifeHours,
+          storyHalfLifeDays: config.storyHalfLifeDays,
           roots: developmentRoots,
         })
           .filter((p) => p.t >= from)
           .map(({ t, level_row: _levelRow, ...rest }) => rest),
         half_life_hours: config.halfLifeHours,
+        story_half_life_days: config.storyHalfLifeDays,
         judge_model: config.judgeModel,
         interval_minutes: config.intervalMinutes,
         cadence: intervalLabel(config.intervalMinutes),
@@ -535,6 +543,8 @@ const server = createServer(async (req, res) => {
           interval_minutes: config.intervalMinutes,
           half_life_hours: config.halfLifeHours,
           half_lives: HALF_LIFE_CHOICES.map((h) => ({ hours: h, label: halfLifeLabel(h) })),
+          story_half_life_days: config.storyHalfLifeDays,
+          story_half_lives: STORY_HALF_LIFE_CHOICES.map((d) => ({ days: d, label: storyHalfLifeLabel(d) })),
           judge_model: config.judgeModel,
           // Priced from this deployment's own recent runs where possible, so
           // the preview reflects reality rather than a one-off measurement.
@@ -549,11 +559,12 @@ const server = createServer(async (req, res) => {
         try {
           const config = await updateConfig(body);
           console.log(`settings updated: model=${config.model} interval=${config.intervalMinutes}m `
-            + `half-life=${config.halfLifeHours}h judge=${config.judgeModel}`);
+            + `half-life=${config.halfLifeHours}h story-half-life=${config.storyHalfLifeDays}d judge=${config.judgeModel}`);
           return json(res, 200, {
             model: config.model,
             interval_minutes: config.intervalMinutes,
             half_life_hours: config.halfLifeHours,
+            story_half_life_days: config.storyHalfLifeDays,
             judge_model: config.judgeModel,
           });
         } catch (err) {

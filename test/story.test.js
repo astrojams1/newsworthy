@@ -247,14 +247,26 @@ test('the half-life is a setting, and the chart replays whichever is set', async
     assert.ok(before.half_lives.some((h) => h.hours === 24));
     assert.ok(before.judge_model);
 
+    assert.equal(before.story_half_life_days, 7, 'stories fade over a week by default');
+    assert.ok(before.story_half_lives.some((d) => d.days === 30));
+
     const saved = await (await admin('/api/admin/settings', {
-      method: 'POST', body: JSON.stringify({ halfLifeHours: 24, judgeModel: 'claude-sonnet-5' }),
+      method: 'POST',
+      body: JSON.stringify({ halfLifeHours: 24, storyHalfLifeDays: 30, judgeModel: 'claude-sonnet-5' }),
     })).json();
     assert.equal(saved.half_life_hours, 24);
+    assert.equal(saved.story_half_life_days, 30);
     assert.equal(saved.judge_model, 'claude-sonnet-5');
 
     const history = await (await admin('/api/admin/history?hours=24')).json();
     assert.equal(history.half_life_hours, 24, 'the chart draws what is set, not a constant');
+    assert.equal(history.story_half_life_days, 30);
+
+    const badStory = await admin('/api/admin/settings', {
+      method: 'POST', body: JSON.stringify({ storyHalfLifeDays: 5 }),
+    });
+    assert.equal(badStory.status, 400);
+    assert.match((await badStory.json()).error, /Story half-life must be one of/);
 
     const bad = await admin('/api/admin/settings', {
       method: 'POST', body: JSON.stringify({ halfLifeHours: 5 }),

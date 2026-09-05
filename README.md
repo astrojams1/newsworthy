@@ -42,10 +42,10 @@ actually wired up. Start there when a deploy misbehaves.
 |---|---|
 | `/` | The number, the sentence, nothing else. The number is the loudest development still live — each carries its own level, aged from when it was first reported |
 | `/admin` | Timeseries of the score, run log, prompt versions, "rate now" |
-| `/api/current` | `{ score, explanation, created_at, source, basis, level, story, since, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about), `aged` (a decayed level) or `stale` (nothing recent). `story` and `since` name that development and when it broke. No countdown: an external caller can post at any moment, so the next update is not predictable |
+| `/api/current` | `{ score, explanation, created_at, source, basis, level, story, since, fatigue, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about, at full value), `routine` (it did, but its story has been doing this for weeks and the score was discounted), `aged` (a decayed level) or `stale` (nothing recent). `story` and `since` name that development and when it broke; `fatigue` is the fraction of its score a routine development in that story keeps. No countdown: an external caller can post at any moment, so the next update is not predictable |
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions, and `stories` — every story still live with the developments inside it, what each broke at, what that has decayed to, and which one the front page is about. `stories` describes now, not the charted range |
 | `/api/admin/prompts` | Every prompt version, full text |
-| `/api/admin/settings` | `GET` the model, cadence, score half-life and judge model with the priced options; `POST` to change them |
+| `/api/admin/settings` | `GET` the model, cadence, development half-life, story half-life and judge model with the priced options; `POST` to change them |
 | `/api/admin/judge` | `POST` to judge stored readings that carry no judgement, oldest first, in batches — for history from before the judge existed. Idempotent; `remaining` says whether to call again |
 | `/api/admin/readings/:id/void` | `POST` to retire a reading — status becomes `error`, the slot is released, and `?reason=` is recorded |
 | `/api/admin/readings/:id/usage` | `POST` corrected token counts to reprice a reading whose rating is sound but whose usage was not; omitted fields are cleared and the cost is recomputed from what survives |
