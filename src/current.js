@@ -196,24 +196,40 @@ export function displayedSeries(ascending, options = {}) {
  */
 function fatigued(score, thread, t, storyHalfLifeDays) {
   const full = { anchor: score, raw: score, fatigue: 1, routine: null, breakthrough: false };
-  if (!thread) return full;
+  const state = storyState(thread, t, storyHalfLifeDays);
+  if (!state) return full;
+
+  const breakthrough = score - state.routine >= SHOCK_MARGIN;
+  return {
+    anchor: breakthrough ? score : score * state.fatigue,
+    raw: score,
+    fatigue: state.fatigue,
+    routine: state.routine,
+    breakthrough,
+  };
+}
+
+/**
+ * Where a story stands at time `t`: how old it is, what it routinely scores,
+ * and the fraction of its score a routine development would open at.
+ *
+ * Shared by `fatigued()`, which asks it at the moment a development opens, and
+ * by the board, which asks it about now — so the weight printed beside a story
+ * is the one its next development would actually get, from the same arithmetic.
+ * Null for a story with nothing on record inside `STORY_MEMORY_DAYS`, which is
+ * to say a fresh one.
+ */
+function storyState(thread, t, storyHalfLifeDays) {
+  if (!thread) return null;
 
   const memory = STORY_MEMORY_DAYS * 86_400_000;
   thread.opened = thread.opened.filter((o) => t - o.t <= memory);
-  if (thread.opened.length === 0) return full;
+  if (thread.opened.length === 0) return null;
 
   const scores = thread.opened.map((o) => o.score).sort((a, b) => a - b);
   const routine = scores[Math.floor(scores.length / 2)];
   const ageDays = (t - thread.opened[0].t) / 86_400_000;
-  const fatigue = 2 ** (-ageDays / storyHalfLifeDays);
-  const breakthrough = score - routine >= SHOCK_MARGIN;
-  return {
-    anchor: breakthrough ? score : score * fatigue,
-    raw: score,
-    fatigue,
-    routine,
-    breakthrough,
-  };
+  return { routine, ageDays, fatigue: 2 ** (-ageDays / storyHalfLifeDays), opened: thread.opened.length };
 }
 
 /**
@@ -348,7 +364,7 @@ function replay(ascending, {
     };
   });
 
-  return { points, developments };
+  return { points, developments, threads };
 }
 
 /**
@@ -477,7 +493,18 @@ export function currentDisplay(ascending, {
  * is at the floor and no longer competing, so it leaves the board rather than
  * accumulating there forever.
  *
+ * Each story also carries where it stands now, as distinct from where its
+ * developments stood when they opened: `age_days` since its first development
+ * on record, `routine` (the median score of those developments), `fatigue`
+ * (the weight a routine development would open at this minute) and
+ * `breakthrough_at` (the score that would clear the routine level by the shock
+ * margin and open whole). A development's own `fatigue` is the weight it got
+ * when it opened, which may be higher; the story's is what the next one gets.
+ * A fresh story has `fatigue` 1 and the rest null.
+ *
  * @returns {Array<{story: string|null, displayed: number, leading: boolean,
+ *   age_days: number|null, routine: number|null, fatigue: number,
+ *   breakthrough_at: number|null, on_record: number,
  *   developments: Array<object>}>} loudest story first
  */
 export function activeStories(ascending, {
@@ -488,7 +515,7 @@ export function activeStories(ascending, {
   limit = 5,
   roots = new Map(),
 } = {}) {
-  const { points, developments } = replay(ascending, { limit, hours, halfLifeHours, storyHalfLifeDays, roots });
+  const { points, developments, threads } = replay(ascending, { limit, hours, halfLifeHours, storyHalfLifeDays, roots });
   const loudest = loudestAt(developments, now, halfLifeHours);
 
   // What each development was first and last heard saying, and how often. The
@@ -542,10 +569,22 @@ export function activeStories(ascending, {
     // Newest development first within a story: a running story is read from
     // what just happened backwards, not from where it started.
     story.developments.sort((a, b) => b.since - a.since);
+    // Where the story stands now, not where it stood when its newest
+    // development opened: the weight a development opening this minute would
+    // get, the routine level it would be measured against, and the score that
+    // would clear it. Same arithmetic as the replay, asked about `now`.
+    const state = storyState(threads.get(story.story) ?? null, now, storyHalfLifeDays);
     return {
       ...story,
       displayed: Math.max(...story.developments.map((d) => d.displayed)),
       leading: story.developments.some((d) => d.leading),
+      age_days: state ? Math.round(state.ageDays * 10) / 10 : null,
+      routine: state?.routine ?? null,
+      fatigue: state ? Math.round(state.fatigue * 100) / 100 : 1,
+      breakthrough_at: state ? state.routine + SHOCK_MARGIN : null,
+      // How many developments over the memory window set that routine level;
+      // the ones listed above are only the last 72 hours of them.
+      on_record: state?.opened ?? 0,
     };
   });
 
