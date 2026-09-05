@@ -333,6 +333,18 @@ still live and the developments inside it: what each broke at, what that has
 decayed to, when, how many readings reported it, and which one the page is
 currently about. `/admin` renders it under "Live stories".
 
+Each story's header carries where the *story* stands now, which its developments
+cannot: the weight printed beside a development is the one it got when it
+opened, and a story quiet since then has gone on ageing. So the header says how
+long the story has been running, how many developments set its routine level,
+what that level is, the weight a development opening this minute would get, and
+the score that would clear the routine level by the shock margin and open whole.
+It is asked of the same `storyState()` arithmetic that `fatigued()` uses at
+open time, about now — a second implementation in the page would be free to
+drift from the discount it describes. A story's first development is itself on
+record, so a story is never without a routine level; only readings the judge
+could not place have nothing to be weighed against, and the header says so.
+
 It comes from the same replay as the chart and the page — `activeStories()` and
 `displayedSeries()` both call `replay()`, and the route calls `rootTimes()` once
 for both — so the board cannot disagree with the page about which development

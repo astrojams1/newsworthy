@@ -512,6 +512,44 @@ test("the board says what the story's age left of each development", () => {
   assert.ok(routine.fatigue < 1);
 });
 
+test('the board says where each story stands now, not only where its developments opened', () => {
+  // The weight beside a development is the one it got when it opened. A story
+  // quiet since then has gone on ageing, so the header carries what the *next*
+  // development would get — asked of the same arithmetic, about now.
+  const series = longStory(7, 5, 5);
+  // Two days on, so its newest development is still inside the lookback and
+  // the story is still on the board — a story with nothing live leaves it.
+  const later = series.at(-1).t + 2 * 24 * HOUR;
+  const [war] = activeStories(series, { now: later, storyHalfLifeDays: 7 });
+  assert.equal(war.routine, 5, 'the median of eight 5s');
+  assert.equal(war.breakthrough_at, 7, 'two clear of routine, the shock margin');
+  assert.equal(war.age_days, 9);
+  assert.equal(war.on_record, 8);
+  assert.ok(Math.abs(war.fatigue - 2 ** (-9 / 7)) < 0.01, `nine days at a week's half-life: ${war.fatigue}`);
+  // Its newest development opened two days ago, at the weight the story had
+  // then — half — and still says so; the header has moved on.
+  assert.ok(Math.abs(war.developments[0].fatigue - 0.5) < 0.01, war.developments[0].fatigue);
+  assert.ok(war.fatigue < war.developments[0].fatigue);
+
+  // A story that broke this minute is its own record: its one development sets
+  // the routine level, its age is nothing and it pays nothing — yet.
+  const row = (story) => [{ id: 1, t: later, score: 4, story, development_of: null, judge_version: story ? 1 : null,
+    explanation: 'quake', created_at: new Date(later).toISOString() }];
+  const [quake] = activeStories(row('quake'), { now: later });
+  assert.equal(quake.fatigue, 1);
+  assert.equal(quake.routine, 4);
+  assert.equal(quake.breakthrough_at, 6);
+  assert.equal(quake.age_days, 0);
+  assert.equal(quake.on_record, 1);
+
+  // Readings the judge could not place have no story to weigh them against.
+  const [unfiled] = activeStories(row(null), { now: later });
+  assert.equal(unfiled.story, null);
+  assert.equal(unfiled.fatigue, 1);
+  assert.equal(unfiled.routine, null);
+  assert.equal(unfiled.breakthrough_at, null);
+});
+
 test('the quiet band tracks the rater, then falls to the floor', () => {
   // Nothing dramatic is happening and the rater keeps saying 3. The page says 3
   // for the first hours and 1 after a day: the scale's own bottom rung is
