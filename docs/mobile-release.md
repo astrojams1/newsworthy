@@ -143,15 +143,22 @@ access. Internal testing alone does not meet this requirement. See
   Both `com.astrojams.newsworthy` and its `.widget` identifier are registered.
   [Newsworthy: Calm News](https://appstoreconnect.apple.com/apps/6812519450/distribution)
   is created in Prepare for Submission. The shorter name was already taken.
-  Listing copy is filled in the browser, but saving the review details requires
-  a contact phone number.
+  Listing copy, subtitle, privacy-policy URL and News category are saved, but
+  saving the review details still requires a contact phone number.
   The saved Apple Current Price table confirms a US$1.00 base price and local
   prices in the other regions. The Paid Apps Agreement is still New. The
   legal-address correction did not persist after verification; Apple's
   membership-update request is prepared for account-holder approval. The old
   address must not be reused for the paid-app contract.
-  The production iOS build still stops during credential setup:
-  `Newsworthy` and `NewsworthyWidget` need separate provisioning profiles.
+  The supplied App Store Connect API key authenticated successfully. EAS now has
+  an Apple distribution certificate and separate active provisioning profiles
+  for `Newsworthy` and `NewsworthyWidget`.
+  Production build 5 is running:
+  [34e8a094-c122-4770-9bf6-611f70f671ab](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/34e8a094-c122-4770-9bf6-611f70f671ab).
+  Its [App Store Connect upload](https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/4a6398aa-658c-49c0-a909-c09209dd5021)
+  is scheduled to follow the build. This is a binary upload, not an App Review
+  submission or a public release. Build completion and Apple processing still
+  need verification.
 - Google Play developer registration and its fee are complete. Play Console
   disables app creation until account verification is complete: government ID
   and address documents, access to a real Android device through the Play Console
