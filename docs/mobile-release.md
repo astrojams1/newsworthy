@@ -144,6 +144,10 @@ access. Internal testing alone does not meet this requirement. See
 
 - iOS: `targets/widget` contains a SwiftUI/WidgetKit extension configured by
   `@bacons/apple-targets`; prebuild generates and embeds the extension target.
+  On iOS 17 and later, Edit Widget includes **Show app name**, enabled by default
+  and saved per widget. Turning it off hides the heading and enlarges the rating
+  inside either widget size. iOS 16 keeps the heading visible. The footer uses a
+  compact, single-line date and time, retaining the saved-reading label when offline.
 - Android: `plugins/with-rating-widget.js` adds the native widget receiver,
   resources and WorkManager fetcher during prebuild.
 - Both fetch the public API independently, retain a last valid reading and its
