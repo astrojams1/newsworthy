@@ -4,7 +4,7 @@
 body { margin:0; background:var(--surface); color:var(--ink); font:400 16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
 .page { max-width:44rem; margin:auto; padding:2rem 1.5rem 4rem; }
 header { margin-bottom:4rem; }
-.wordmark { font-size:.6875rem; letter-spacing:.18em; text-transform:uppercase; text-decoration:none; color:var(--muted); }
+.wordmark { display:inline-flex; align-items:center; min-height:48px; font-size:.8125rem; letter-spacing:.18em; text-transform:uppercase; text-decoration:none; color:var(--muted); }
 h1 { font-size:clamp(2rem,7vw,3rem); line-height:1.15; font-weight:400; letter-spacing:-.04em; margin:0 0 1rem; }
 h2 { font-size:1.125rem; font-weight:550; line-height:1.4; margin:2.5rem 0 .6rem; }
 p, ul { margin:.75rem 0; }
@@ -16,4 +16,5 @@ a:focus-visible { outline:2px solid var(--ink); outline-offset:4px; }
 .updated { color:var(--muted); font-size:.8125rem; }
 .contact { display:inline-block; padding:.65rem 0; font-size:1.125rem; }
 footer { display:flex; flex-wrap:wrap; gap:1.5rem; border-top:1px solid var(--rule); margin-top:3rem; padding-top:1.5rem; font-size:.8125rem; color:var(--muted); }
+footer a { display:inline-flex; align-items:center; min-height:48px; }
 @media (max-width:480px) { header { margin-bottom:3rem; } .page { padding-top:1.5rem; } }

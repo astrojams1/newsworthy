@@ -7,7 +7,7 @@ export function validReading(data) {
 }
 
 export async function fetchReading(apiBaseUrl, fetcher = fetch) {
-  // AbortSignal.timeout is missing from older supported iOS WebViews.
+  // An explicit controller works across the native and web fetch implementations.
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15_000);
   try {

@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
@@ -24,7 +25,8 @@ const ON_VERCEL = Boolean(process.env.VERCEL);
 // vercel.json fires /api/cron on this cadence; the configured interval is
 // enforced by the slot on top of it.
 const CRON_TICK_MINUTES = 15;
-const PUBLIC_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
+const ROOT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..');
+const PUBLIC_DIR = existsSync(join(ROOT_DIR, 'dist/web/index.html')) ? join(ROOT_DIR, 'dist/web') : join(ROOT_DIR, 'public');
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -32,6 +34,9 @@ const MIME = {
   '.js': 'text/javascript; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
+  '.png': 'image/png',
+  '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
 };
 
 /**
@@ -204,17 +209,23 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
   const path = url.pathname.replace(/\/+$/, '') || '/';
 
+  // Keep operational pages out of search results. Authentication still controls access.
+  if (path === '/admin' || path === '/admin.html' || path.startsWith('/api/') || path === '/healthz') {
+    res.setHeader('X-Robots-Tag', 'noindex');
+  }
+
   try {
     // ---- public ----------------------------------------------------------
     if (path === '/' && req.method === 'GET') return serveStatic(res, 'index.html');
+    if (path === '/about' && req.method === 'GET') return serveStatic(res, 'about.html');
     if (path === '/privacy' && req.method === 'GET') return serveStatic(res, 'privacy.html');
     if (path === '/support' && req.method === 'GET') return serveStatic(res, 'support.html');
 
-    // Packaged apps run on these local origins. Only the public reading is
-    // cross-origin; admin, submission and cron routes retain their boundaries.
+    // Local Expo web development may read the public API. Native networking
+    // does not require browser CORS. Admin and writes remain same-origin.
     if (path === '/api/current') {
       const origin = req.headers.origin;
-      if (origin === 'capacitor://localhost' || origin === 'https://localhost') {
+      if (origin === 'http://localhost:8081' || origin === 'http://127.0.0.1:8081') {
         res.setHeader('Access-Control-Allow-Origin', origin);
       }
       res.setHeader('Vary', 'Origin');

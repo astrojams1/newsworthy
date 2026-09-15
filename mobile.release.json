@@ -1,0 +1,6 @@
+{
+  "appId": "com.astrojams.newsworthy",
+  "apiBaseUrl": "https://newsworthy-indol.vercel.app",
+  "privacyUrl": "https://newsworthy-indol.vercel.app/privacy",
+  "supportUrl": "https://newsworthy-indol.vercel.app/support"
+}

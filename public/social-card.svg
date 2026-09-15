@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#101014"/>
+  <rect x="88" y="90" width="82" height="8" rx="4" fill="#f2f2f5"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#f2f2f5">
+    <text x="88" y="238" font-size="76" font-weight="600">Newsworthy</text>
+    <text x="88" y="314" font-size="36">A calm global status indicator.</text>
+    <text x="88" y="375" font-size="28" fill="#b4b4bf">A number out of 10. One sentence explaining why.</text>
+    <text x="88" y="531" font-size="27" fill="#b4b4bf">Check in, then get on with your day.</text>
+  </g>
+</svg>

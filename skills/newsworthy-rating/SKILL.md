@@ -5,6 +5,10 @@ description: Rate the current top news 1-10 for Newsworthy and submit the readin
 
 # Newsworthy rating
 
+Newsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why.
+No doomscrolling. No subscription. No in-app purchases. No ads. No engagement, addiction or growth-hacking tactics.
+Calm presentation does not change the published rating scale.
+
 Fetch the instructions and follow them. They include the current rating prompt
 inline, so this is the only thing you need to know:
 
@@ -22,12 +26,15 @@ hours rating against a prompt three versions behind the one being served.
 | `NEWSWORTHY_URL` | e.g. `https://newsworthy-indol.vercel.app` |
 | `NEWSWORTHY_TOKEN` | the caller token (`CALLER_TOKEN` on the app) |
 
-If your HTTP client cannot set headers, use `?token=$NEWSWORTHY_TOKEN` instead —
+If your HTTP client cannot set headers, use `?token=$NEWSWORTHY_TOKEN&cb=<unique-run-value>` instead —
 every endpoint accepts either.
 
-The instructions are generated from the app's own prompt registry, so they are
-never stale: the prompt version and hash in them are whatever is live. Do not
-cache them between runs.
+The origin generates instructions from the live prompt registry. Fetch them
+afresh each run with a distinct URL; intermediaries can still cache old copies.
+Do not cache them between runs. A complete submission includes `score`,
+`explanation` and `prompt_sha256`, computed with a code tool from the exact
+received prompt as described in the instructions. A failed search produces no
+submission. Success means the API confirms that the reading was stored.
 
 ## Why this exists
 
