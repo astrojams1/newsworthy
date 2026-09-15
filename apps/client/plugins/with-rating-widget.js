@@ -15,8 +15,10 @@ module.exports = (config) => {
   config = withAppBuildGradle(config, (mod) => {
     const marker = '// Newsworthy widget';
     // Replace only our generated block; preserve any plugins that append after it.
-    mod.modResults.contents = mod.modResults.contents.replace(/\n\/\/ Newsworthy widget\nandroid \{[\s\S]*?\ndependencies \{ implementation 'androidx\.work:work-runtime:[^']+' \}\n/, '');
-    mod.modResults.contents += `\n${marker}\nandroid {\n  buildFeatures { buildConfig true }\n  defaultConfig { buildConfigField 'String', 'NEWSWORTHY_API_URL', '${JSON.stringify(release.apiBaseUrl)}' }\n}\ndependencies { implementation 'androidx.work:work-runtime:2.11.2' }\n`;
+    mod.modResults.contents = mod.modResults.contents.replace(/\n\/\/ Newsworthy widget\nandroid \{[\s\S]*?\ndependencies \{\s*implementation 'androidx\.work:work-runtime:[^']+'[\s\S]*?\}\n/, '');
+    // Worker exposes ListenableFuture in its API. Keep Guava on the app's compile
+    // classpath even when another dependency selects the empty future artifact.
+    mod.modResults.contents += `\n${marker}\nandroid {\n  buildFeatures { buildConfig true }\n  defaultConfig { buildConfigField 'String', 'NEWSWORTHY_API_URL', '${JSON.stringify(release.apiBaseUrl)}' }\n}\ndependencies {\n  implementation 'androidx.work:work-runtime:2.11.2'\n  implementation 'com.google.guava:guava:33.5.0-android'\n}\n`;
     return mod;
   });
   return withDangerousMod(config, ['android', async (mod) => {
