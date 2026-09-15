@@ -207,6 +207,22 @@ const server = createServer(async (req, res) => {
   try {
     // ---- public ----------------------------------------------------------
     if (path === '/' && req.method === 'GET') return serveStatic(res, 'index.html');
+    if (path === '/privacy' && req.method === 'GET') return serveStatic(res, 'privacy.html');
+    if (path === '/support' && req.method === 'GET') return serveStatic(res, 'support.html');
+
+    // Packaged apps run on these local origins. Only the public reading is
+    // cross-origin; admin, submission and cron routes retain their boundaries.
+    if (path === '/api/current') {
+      const origin = req.headers.origin;
+      if (origin === 'capacitor://localhost' || origin === 'https://localhost') {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      res.setHeader('Vary', 'Origin');
+      if (req.method === 'OPTIONS') {
+        res.writeHead(204, { 'Access-Control-Allow-Methods': 'GET, OPTIONS', ...NO_STORE });
+        return res.end();
+      }
+    }
 
     if (path === '/api/current' && req.method === 'GET') {
       // Four weeks of readings, not the six-hour level window: a development is

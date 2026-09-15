@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Newsworthy</title>
-<meta name="description" content="The news anti-app: a number out of 10 and one sentence.">
+<meta name="description" content="A calm global status indicator. A number out of 10 and one sentence. No doomscrolling, subscriptions, in-app purchases or ads.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='16' y='25' text-anchor='middle' font-size='27' font-family='system-ui'%3E%E2%80%93%3C/text%3E%3C/svg%3E">
 <style>
@@ -50,6 +50,11 @@
     text-transform: uppercase;
     color: var(--ink-faint);
     text-decoration: none;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    min-height: 44px;
+    padding: 0;
   }
   main {
     display: grid;
@@ -101,104 +106,65 @@
   @media (prefers-reduced-motion: no-preference) {
     .score, .explanation { transition: opacity 240ms ease; }
   }
+  header {
+    padding-top: calc(1rem + env(safe-area-inset-top, 0px));
+    padding-left: max(clamp(1.25rem, 5vw, 3rem), env(safe-area-inset-left, 0px));
+  }
+  main {
+    padding-top: calc(4rem + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+    padding-left: max(clamp(1.25rem, 5vw, 3rem), env(safe-area-inset-left, 0px));
+    padding-right: max(clamp(1.25rem, 5vw, 3rem), env(safe-area-inset-right, 0px));
+  }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+  .quiet, dialog a {
+    font: inherit; font-size: 0.8125rem; color: var(--ink-muted);
+    background: none; border: 0; padding: 0.75rem 0; min-height: 44px; cursor: pointer;
+  }
+  [hidden] { display: none !important; }
+  dialog {
+    color: var(--ink); background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 1rem; padding: 1.75rem; width: min(32rem, calc(100% - 2.5rem));
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 3rem);
+    overflow-y: auto;
+  }
+  dialog::backdrop { background: #0008; }
+  dialog h1 { font-size: 1.125rem; font-weight: 500; }
+  dialog p { color: var(--ink-muted); }
+  dialog nav { display: flex; flex-direction: column; align-items: flex-start; }
+  @media (max-height: 520px) {
+    header { padding-top: env(safe-area-inset-top, 0px); }
+    main { padding-top: 3rem; padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px)); }
+    .score { margin: 0; }
+  }
 </style>
 </head>
 <body data-state="loading">
-  <header><a class="wordmark" href="/">Newsworthy</a></header>
+  <header><button class="wordmark" id="about-open" aria-haspopup="dialog">Newsworthy</button></header>
 
   <main>
     <p class="score" aria-live="polite"><b id="score">–</b><span>/10</span></p>
     <p class="explanation" id="explanation">Checking how much the world needs you today.</p>
-    <p class="meta" id="meta"></p>
+    <p class="meta" id="meta" role="status"></p>
+    <button class="quiet" id="retry" hidden>Try again</button>
   </main>
 
+  <dialog id="about" aria-labelledby="about-title">
+    <h1 id="about-title">Newsworthy</h1>
+    <p>A calm global status indicator. A number out of 10 and one sentence saying why.</p>
+    <p>Stay connected to the world without getting pulled into the feed. Check in, then get on with your day.</p>
+    <p>No doomscrolling. No subscription. No in-app purchases. No ads. No engagement tricks.</p>
+    <p>An AI model rates how worthwhile it is to check the news. Higher means more consequential; the score fades as developments age.</p>
+    <p>Ratings can be wrong. When a connection is unavailable, the last saved reading is shown with its original update time.</p>
+    <nav aria-label="About Newsworthy">
+      <button class="quiet" id="share" hidden>Share this reading</button>
+      <a id="privacy" target="_blank" rel="noopener noreferrer" hidden>Privacy policy</a>
+      <a id="support" target="_blank" rel="noopener noreferrer" hidden>Support</a>
+    </nav>
+    <form method="dialog"><button class="quiet">Done</button></form>
+  </dialog>
 
-<script type="module">
-  const $score = document.getElementById('score');
-  const $explanation = document.getElementById('explanation');
-  const $meta = document.getElementById('meta');
-  let updatedAt = null;
-
-
-  /**
-   * The favicon carries the current score, so a pinned tab reads at a glance
-   * without opening it. Theme-aware: the digit is invisible against matching
-   * browser chrome otherwise, and a favicon gets no CSS from the page.
-   */
-  function setFavicon(score) {
-    const text = score == null ? '\u2013' : String(score);
-    const svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
-      '<style>text{fill:#16161a}@media(prefers-color-scheme:dark){text{fill:#f2f2f5}}</style>' +
-      '<text x="16" y="25" text-anchor="middle" font-size="27" font-weight="500" ' +
-      'font-family="system-ui,-apple-system,sans-serif">' + text + '</text></svg>';
-    let link = document.querySelector('link[rel="icon"]');
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
-    }
-    link.type = 'image/svg+xml';
-    link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
-  }
-
-  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
-
-  function ago(date) {
-    const minutes = Math.round((Date.now() - date.getTime()) / 60000);
-    if (minutes < 1) return 'just now';
-    if (minutes < 60) return rtf.format(-minutes, 'minute');
-    const hours = Math.round(minutes / 60);
-    if (hours < 24) return rtf.format(-hours, 'hour');
-    return rtf.format(-Math.round(hours / 24), 'day');
-  }
-
-  function renderMeta() {
-    if (!updatedAt) {
-      $meta.textContent = '';
-      return;
-    }
-    // Freshness, not a countdown: an external caller agent can post a reading
-    // at any moment, so when the next one lands is not predictable.
-    $meta.textContent = `Updated ${ago(updatedAt)}`;
-  }
-
-  async function load() {
-    document.body.dataset.state = 'loading';
-    try {
-      const res = await fetch('/api/current', { cache: 'no-store' });
-      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? res.statusText);
-      const data = await res.json();
-      $score.textContent = data.score;
-      $explanation.textContent = data.explanation;
-      // Always the newest reading: the sentence comes from it, and so does
-      // this. The score alone is smoothed.
-      updatedAt = new Date(data.created_at);
-      document.title = `${data.score}/10 · Newsworthy`;
-      setFavicon(data.score);
-      document.body.dataset.state = 'ready';
-      renderMeta();
-    } catch (err) {
-      // A reading already on screen outlives a failed poll. This runs every 60
-      // seconds, so one dropped request used to wipe a page that had been
-      // correct for hours. The meta line keeps ageing on its own interval and
-      // says so — "Updated 3 hours ago" is honest where a blank score is not.
-      if (updatedAt) {
-        document.body.dataset.state = 'ready';
-        return;
-      }
-      $score.textContent = '–';
-      $explanation.textContent = 'No rating yet. The page updates itself when one lands.';
-      $meta.textContent = '';
-      setFavicon(null);
-      document.body.dataset.state = 'error';
-    }
-  }
-
-  load();
-  setInterval(renderMeta, 30_000);
-  setInterval(load, 60_000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
-</script>
+<script type="module" src="/app.js"></script>
 </body>
 </html>
