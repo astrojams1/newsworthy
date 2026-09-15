@@ -1,0 +1,21 @@
+@import url('./tokens.css');
+
+/* The same palette powers page washes, compact badges, and native widgets. */
+.level-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 5% 0%, rgba(var(--level-companion), var(--glow)), transparent 62%),
+    radial-gradient(ellipse at 100% 100%, rgba(var(--level-color), var(--wash)), transparent 72%),
+    radial-gradient(ellipse at 0% 100%, rgba(var(--level-companion), var(--veil)), transparent 60%),
+    linear-gradient(160deg, transparent 25%, rgba(var(--level-color), var(--veil)));
+  opacity: 0;
+}
+[data-level] > .level-gradient, [data-brand] > .level-gradient { opacity: 1; }
+::selection { background: var(--accent); color: var(--surface); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (prefers-reduced-motion: no-preference) {
+  .level-gradient { transition: opacity 600ms ease; }
+}

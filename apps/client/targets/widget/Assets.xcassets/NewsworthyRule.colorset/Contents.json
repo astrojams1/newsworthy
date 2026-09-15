@@ -1,0 +1,38 @@
+{
+  "colors": [
+    {
+      "idiom": "universal",
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0.862745",
+          "green": "0.890196",
+          "blue": "0.874510",
+          "alpha": "1.000000"
+        }
+      }
+    },
+    {
+      "idiom": "universal",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0.203922",
+          "green": "0.231373",
+          "blue": "0.223529",
+          "alpha": "1.000000"
+        }
+      }
+    }
+  ],
+  "info": {
+    "version": 1,
+    "author": "newsworthy"
+  }
+}

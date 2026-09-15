@@ -24,7 +24,7 @@ module.exports = (config) => {
     const main = path.join(mod.modRequest.platformProjectRoot, 'app/src/main');
     const java = path.join(main, 'java', ...mod.android.package.split('.'));
     await fs.mkdir(java, { recursive: true });
-    for (const file of ['RatingWidget.java', 'RatingWidgetWorker.java']) {
+    for (const file of ['RatingWidget.java', 'RatingWidgetWorker.java', 'LevelPalette.java']) {
       const text = (await fs.readFile(path.join(source, file), 'utf8')).replace('package com.example.newsworthy;', `package ${mod.android.package};`);
       await fs.writeFile(path.join(java, file), text);
     }

@@ -83,6 +83,8 @@ public class RatingWidget extends AppWidgetProvider {
         for (int id : manager.getAppWidgetIds(new ComponentName(context, RatingWidget.class))) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.rating_widget);
             views.setOnClickPendingIntent(R.id.widget_root, launch);
+            views.setInt(R.id.widget_root, "setBackgroundResource",
+                LevelPalette.background(reading == null ? 0 : reading.optInt("score")));
             if (reading != null) {
                 views.setTextViewText(R.id.widget_score, reading.optInt("score") + "/10");
                 views.setContentDescription(R.id.widget_score, reading.optInt("score") + " out of 10");

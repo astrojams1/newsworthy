@@ -1,3 +1,6 @@
-import { useColorScheme } from 'react-native';
-import { dark, light } from './palette';
-export function useTheme() { return useColorScheme() === 'dark' ? dark : light; }
+import { useCurrentReading } from '@/components/reading-provider';
+import { themeForLevel } from './palette';
+export function useTheme() {
+  const { reading, dark } = useCurrentReading();
+  return themeForLevel(reading?.score, dark);
+}
