@@ -6,13 +6,14 @@ import { AppIcon } from '@/components/app-icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
 import { useCurrentReading } from '@/components/reading-provider';
-import { Image } from 'expo-image';
-import { gradientImages } from '@/lib/gradient-images';
+import { ReadingGradient } from '@/components/reading-gradient';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import { website } from '@/lib/config';
 
 export default function Home() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
   const dimensions = useWindowDimensions();
   // Static web rendering has no viewport; keep the initial content readable.
   const width = dimensions.width || 390;
@@ -43,14 +44,14 @@ export default function Home() {
   };
   return <>
     <Head><title>Newsworthy — A calm global status indicator</title></Head>
-    <Stack.Screen options={{ headerTransparent: false, headerTitle: () => null,
+    <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: () => null,
       headerRight: () => reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
         <AppIcon name="share" color={theme.accent} />
       </Pressable> : null }} />
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
-    {reading ? <Image source={gradientImages[reading.score - 1][theme.dark ? 'dark' : 'light']} contentFit="fill" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ position: 'absolute', inset: 0 }} /> : null}
-    <ScrollView key={fontScale} contentInsetAdjustmentBehavior="automatic" style={{ flex: 1, backgroundColor: 'transparent' }}
-      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: insets.bottom + (landscape ? 16 : 32), paddingTop: landscape ? 16 : 24 }}>
+    <ReadingGradient score={reading?.score} dark={theme.dark} />
+    <ScrollView key={fontScale} contentInsetAdjustmentBehavior="never" style={{ flex: 1, backgroundColor: 'transparent' }}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: insets.bottom + (landscape ? 16 : 32), paddingTop: headerHeight + (landscape ? 16 : 24) }}>
       <View style={{ maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center' }}>
         <Text selectable accessibilityRole="header" adjustsFontSizeToFit minimumFontScale={0.3} numberOfLines={1} testID="rating-score" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
           style={{ color: theme.ink, fontSize: scoreSize, lineHeight: scoreSize * 1.12, maxWidth: '100%', textAlign: 'center', fontWeight: '300', fontVariant: ['tabular-nums'], letterSpacing: -scoreSize * 0.04 }}>
