@@ -3,6 +3,7 @@
   "build": {
     "development": { "developmentClient": true, "distribution": "internal" },
     "simulator": { "developmentClient": true, "distribution": "internal", "ios": { "simulator": true } },
+    "simulator-release": { "extends": "production", "distribution": "internal", "autoIncrement": false, "ios": { "simulator": true } },
     "preview": { "distribution": "internal", "android": { "buildType": "apk" } },
     "production": { "autoIncrement": true, "android": { "buildType": "app-bundle" } }
   },

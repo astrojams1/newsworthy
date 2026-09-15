@@ -71,6 +71,7 @@ Build profiles in `apps/client/eas.json`:
 |---|---|
 | `development` | Native development client, including widgets |
 | `simulator` | iOS simulator development build, no App Store signing |
+| `simulator-release` | iOS simulator release build with bundled JavaScript, no development menu |
 | `preview` | Internal iOS build / Android APK |
 | `production` | Signed App Store / Google Play build, incremented build number |
 
@@ -112,15 +113,24 @@ access. Internal testing alone does not meet this requirement. See
 
 - EAS project created and linked; Expo CLI authenticated as `astrojams1`.
 - Android upload keystore generated and stored by EAS.
-- Android production AAB build requested:
-  [54eb701e-5878-44f0-8c84-de01c531b057](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/54eb701e-5878-44f0-8c84-de01c531b057).
-- iOS custom simulator build requested:
+- The first Android production AAB build remained queued. A replacement is being
+  prepared with the native launch/header fixes below; no Android binary has been
+  verified yet.
+- iOS custom simulator build compiled successfully, including the widget:
   [a92ddf2a-2b9b-47ca-a343-d588ab38e99d](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/a92ddf2a-2b9b-47ca-a343-d588ab38e99d).
+  Installed on iPhone 16 Pro / iOS 18.3. Native launch exposed an Expo Head
+  Handoff-origin error that Expo Go had not exposed. The page-title component now
+  renders only on web. An empty native header title also prevents a duplicate
+  app name. With those JavaScript fixes, a fresh load displayed the live score,
+  sentence and timestamp. Store-signed builds and full device checks are pending.
+- A simulator release build with bundled JavaScript and the fixes above was requested:
+  [c2bc2fbe-15ce-481e-92ca-dee45455b34c](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/c2bc2fbe-15ce-481e-92ca-dee45455b34c).
 - App Store Connect requires sign-in; Apple team, signing and store app record
   still need setup. The production iOS build stopped during credential setup:
   `Newsworthy` and `NewsworthyWidget` need separate provisioning profiles.
 - Google Play developer registration is in progress under the existing Google
-  account; payments-profile linking, verification and registration remain pending.
+  account. Selecting the existing payments profile returned “Full address
+  required”; payments-profile linking, verification and registration remain pending.
 - Neither store price nor a submission for review is confirmed. Record final
   build results, device checks, store URLs and submission status here as each
   becomes available.
