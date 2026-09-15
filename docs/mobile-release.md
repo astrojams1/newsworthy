@@ -60,8 +60,10 @@ npx eas-cli@latest build --platform android --profile preview
 
 The EAS project ID is saved in `mobile.release.json`; `EXPO_PROJECT_ID` can
 override it for an explicitly chosen EAS project.
-For signed iOS builds set `ios.appleTeamId` via the `APPLE_TEAM_ID` environment
-variable. EAS manages signing credentials interactively during initial setup.
+The renewed James Thompson Apple team (`CWQ9AWJF8T`) is saved in
+`mobile.release.json`; `APPLE_TEAM_ID` can override it for a deliberate team
+change. The production submission profile targets App Store record `6812519450`.
+EAS manages signing credentials interactively during initial setup.
 A physical-iPhone development/preview build requires Apple developer membership
 and device registration. Use a production build and TestFlight for beta testing.
 
@@ -119,9 +121,9 @@ access. Internal testing alone does not meet this requirement. See
   classpath lacked `ListenableFuture`:
   [ab7c5018-129b-4c1c-aa8f-82ff3467067c](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/ab7c5018-129b-4c1c-aa8f-82ff3467067c).
   The widget plugin now explicitly includes Android Guava. A replacement build
-  (version code 4) was requested:
+  (version code 4) finished successfully:
   [12c77b26-8035-469a-ba7a-3ed613cc2ef7](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/12c77b26-8035-469a-ba7a-3ed613cc2ef7).
-  No Android binary has been verified yet.
+  The signed AAB is available; Android device/runtime verification is pending.
 - iOS custom simulator build compiled successfully, including the widget:
   [a92ddf2a-2b9b-47ca-a343-d588ab38e99d](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/a92ddf2a-2b9b-47ca-a343-d588ab38e99d).
   Installed on iPhone 16 Pro / iOS 18.3. Native launch exposed an Expo Head
@@ -133,10 +135,14 @@ access. Internal testing alone does not meet this requirement. See
   [c2bc2fbe-15ce-481e-92ca-dee45455b34c](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/c2bc2fbe-15ce-481e-92ca-dee45455b34c).
   It is installed on the iPhone 16 Pro simulator; the current reading and native
   sharing sheet were verified. Full device and widget checks remain pending.
-- Apple Developer renewal was purchased, but App Store Connect still showed
-  the membership as expired when checked. A refreshed session requires sign-in;
-  Apple signing and the store app record still need setup. The production iOS
-  build stopped during credential setup:
+- Apple confirmed the James Thompson team's renewal through September 15, 2027;
+  App Store Connect recognizes the active membership after refreshing.
+  Both `com.astrojams.newsworthy` and its `.widget` identifier are registered.
+  [Newsworthy: Calm News](https://appstoreconnect.apple.com/apps/6812519450/distribution)
+  is created in Prepare for Submission. The shorter name was already taken.
+  Listing copy is filled in the browser, but saving the review details requires
+  a contact phone number. No store price has been saved.
+  The production iOS build still stops during credential setup:
   `Newsworthy` and `NewsworthyWidget` need separate provisioning profiles.
 - Google Play developer registration and its fee are complete. Play Console
   disables app creation until account verification is complete: government ID
