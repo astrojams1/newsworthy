@@ -1,3 +1,8 @@
-// All foregrounds meet WCAG AA normal-text contrast against their surface.
-export const light = { dark: false, surface: '#ffffff', ink: '#16161a', muted: '#656570', faint: '#656570' };
-export const dark = { dark: true, surface: '#101014', ink: '#f2f2f5', muted: '#a5a5b1', faint: '#a5a5b1' };
+import tokens from '../../../public/tokens.js';
+export function themeForLevel(score, isDark = false) {
+  const palette = Number.isInteger(score) && score >= 1 && score <= 10 ? tokens.levels[score - 1] : tokens.brand;
+  const appearance = palette[isDark ? 'dark' : 'light'];
+  return { ...appearance, dark: isDark, muted: appearance.gradientMuted, faint: appearance.gradientMuted };
+}
+export const light = themeForLevel(null);
+export const dark = themeForLevel(null, true);

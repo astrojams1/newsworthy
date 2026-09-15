@@ -16,7 +16,7 @@ export default function About() {
     <Stack.Screen options={{ headerRight: () => <Pressable accessibilityRole="button" onPress={() => router.canGoBack() ? router.back() : router.replace('/')} style={{ padding: 10, minWidth: 48, minHeight: 48, justifyContent: 'center' }}><Text style={{ color: theme.ink }}>Done</Text></Pressable> }} />
     <ScrollView key={fontScale} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: 28, paddingBottom: 50, gap: 22, maxWidth: 680, width: '100%', alignSelf: 'center' }}>
       {paragraphs.map(text => <Text key={text} selectable style={{ color: theme.ink, fontSize: 17, lineHeight: 27 }}>{text}</Text>)}
-      {[['Privacy policy', privacyUrl], ['Support', supportUrl]].map(([label, url]) => <Link key={label} href={url} asChild><Pressable accessibilityRole="link" style={{ paddingVertical: 12, minHeight: 48 }}><Text style={{ color: theme.muted, fontSize: 16 }}>{label}</Text></Pressable></Link>)}
+      {[['Privacy policy', privacyUrl], ['Support', supportUrl]].map(([label, url]) => <Link key={label} href={url} asChild><Pressable accessibilityRole="link" style={{ paddingVertical: 12, minHeight: 48 }}><Text style={{ color: theme.accent, fontSize: 16 }}>{label}</Text></Pressable></Link>)}
     </ScrollView>
   </>;
 }

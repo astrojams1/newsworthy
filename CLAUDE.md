@@ -11,6 +11,9 @@ release status. Calm presentation must not change the rating calibration.
 
 ## Workflow
 
+- **Fetch before starting a feature.** Run `git fetch origin`, inspect the latest
+  target branch, and start from the fetched `origin/main`. Preserve existing
+  local work; do not assume local `main` is current.
 - **Branch off `main`, open a PR into `main`, merge there.** Do not push
   directly to `main`. `main` is both the GitHub default branch and Vercel's
   production branch.

@@ -342,3 +342,11 @@ explanation), prompt versioning and hash stability, slot arithmetic, and the
 logging layer — including the duplicate-delivery guarantee. Database tests run
 against PGlite, real Postgres in-process, so the SQL is exercised rather than
 mocked. No cloud database needed to run them.
+
+## Shared design tokens
+
+Edit `design/palette.json` and run `npm run design:assets` to regenerate the Expo
+backgrounds, web tokens, favicons, widget resources, and native icon assets.
+Reading surfaces follow their displayed level; app icons remain uncolored and
+switch between a dark dash on white and a white dash on dark.
+See [the design system guide](design/README.md) for integration and verification.

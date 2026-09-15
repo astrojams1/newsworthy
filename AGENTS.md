@@ -3,6 +3,9 @@
 Read `CLAUDE.md` for repository workflow and technical constraints, and
 `docs/product-messaging.md` for product positioning and accurate release claims.
 
+- Before starting any new feature, run `git fetch origin` and inspect the latest
+  target branch. Start from the fetched `origin/main`, preserving existing local
+  work; never assume the local `main` is current.
 - Branch off `main`, open a PR into `main`, and run `npm test` before pushing.
   Do not push directly to `main`. Vercel preview builds are currently skipped.
 - Preserve the calm indicator: a number out of 10 and one sentence explaining why.

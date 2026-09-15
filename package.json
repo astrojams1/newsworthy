@@ -19,7 +19,10 @@
     "mobile:check": "node scripts/check-mobile.js",
     "mobile:ios": "npm run ios --workspace @newsworthy/client",
     "mobile:android": "npm run android --workspace @newsworthy/client",
-    "pretest": "npm run build:web"
+    "pretest": "npm run build:web",
+    "design:generate": "node scripts/generate-design.mjs",
+    "design:check": "node scripts/generate-design.mjs --check",
+    "design:assets": "npm run design:generate && node scripts/generate-brand.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.0",

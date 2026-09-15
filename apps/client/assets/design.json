@@ -1,0 +1,53 @@
+{
+  "identity": {
+    "light": {
+      "surface": "#FFFFFF",
+      "ink": "#16161A"
+    },
+    "dark": {
+      "surface": "#101014",
+      "ink": "#F2F2F5"
+    }
+  },
+  "brand": {
+    "name": "Mint",
+    "primary": "#5BB19D",
+    "companion": "#AFDEBF",
+    "light": {
+      "surface": "#FFFFFF",
+      "ink": "#16161A",
+      "muted": "#52545D",
+      "faint": "#626570",
+      "rule": "#DCE3DF",
+      "danger": "#A32A32",
+      "wash": 0.58,
+      "glow": 0.48,
+      "veil": 0.12,
+      "gradientMuted": "#30303A",
+      "start": "#D9EFE0",
+      "center": "#EBF6F3",
+      "end": "#97CEC1",
+      "accent": "#273B39",
+      "tinted": "#F2F9F7",
+      "elevated": "#FCFEFD"
+    },
+    "dark": {
+      "surface": "#101014",
+      "ink": "#F2F2F5",
+      "muted": "#C0C2CB",
+      "faint": "#B4B7C2",
+      "rule": "#343B39",
+      "danger": "#FFB4B8",
+      "wash": 0.44,
+      "glow": 0.23,
+      "veil": 0.09,
+      "gradientMuted": "#E0E0E6",
+      "start": "#353F3B",
+      "center": "#171E20",
+      "end": "#355F57",
+      "accent": "#BFDCD7",
+      "tinted": "#182022",
+      "elevated": "#1A1C1E"
+    }
+  }
+}

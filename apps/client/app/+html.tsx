@@ -7,6 +7,9 @@ export default function Html({ children }: PropsWithChildren) {
     <meta name="description" content="A calm global status indicator. A number out of 10 and one sentence. No doomscrolling, subscriptions, in-app purchases or ads." />
     <link rel="canonical" href="https://newsworthy-indol.vercel.app/" />
     <ScrollViewStyleReset />
+    <link rel="stylesheet" href="/levels.css" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Newsworthy" />
 <meta property="og:title" content="Newsworthy — A calm global status indicator" />

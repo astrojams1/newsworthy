@@ -1,0 +1,112 @@
+{
+  "brand": {
+    "name": "Mint",
+    "primary": "#5BB19D",
+    "companion": "#AFDEBF"
+  },
+  "levels": [
+    {
+      "score": 1,
+      "name": "Sage",
+      "primary": "#82AE8F",
+      "companion": "#CADBA8"
+    },
+    {
+      "score": 2,
+      "name": "Mint",
+      "primary": "#5BB19D",
+      "companion": "#AFDEBF"
+    },
+    {
+      "score": 3,
+      "name": "Sea glass",
+      "primary": "#75B29F",
+      "companion": "#CDE3A3"
+    },
+    {
+      "score": 4,
+      "name": "Olive",
+      "primary": "#A5B46F",
+      "companion": "#E8E1A5"
+    },
+    {
+      "score": 5,
+      "name": "Soft gold",
+      "primary": "#C7B669",
+      "companion": "#E6DAA3"
+    },
+    {
+      "score": 6,
+      "name": "Honey",
+      "primary": "#D9A65B",
+      "companion": "#EFCD99"
+    },
+    {
+      "score": 7,
+      "name": "Apricot",
+      "primary": "#DF916E",
+      "companion": "#F2C299"
+    },
+    {
+      "score": 8,
+      "name": "Coral",
+      "primary": "#D77D7C",
+      "companion": "#EFB7A0"
+    },
+    {
+      "score": 9,
+      "name": "Rose",
+      "primary": "#CA6477",
+      "companion": "#F0A48F"
+    },
+    {
+      "score": 10,
+      "name": "Deep rose",
+      "primary": "#B74D6D",
+      "companion": "#E88B83"
+    }
+  ],
+  "appearance": {
+    "light": {
+      "surface": "#FFFFFF",
+      "ink": "#16161A",
+      "muted": "#52545D",
+      "faint": "#626570",
+      "rule": "#DCE3DF",
+      "danger": "#A32A32",
+      "wash": 0.58,
+      "glow": 0.48,
+      "veil": 0.12,
+      "gradientMuted": "#30303A"
+    },
+    "dark": {
+      "surface": "#101014",
+      "ink": "#F2F2F5",
+      "muted": "#C0C2CB",
+      "faint": "#B4B7C2",
+      "rule": "#343B39",
+      "danger": "#FFB4B8",
+      "wash": 0.44,
+      "glow": 0.23,
+      "veil": 0.09,
+      "gradientMuted": "#E0E0E6"
+    }
+  },
+  "radius": {
+    "control": 8,
+    "card": 16,
+    "widget": 20,
+    "icon": 9
+  },
+  "font": "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+  "identity": {
+    "light": {
+      "surface": "#FFFFFF",
+      "ink": "#16161A"
+    },
+    "dark": {
+      "surface": "#101014",
+      "ink": "#F2F2F5"
+    }
+  }
+}

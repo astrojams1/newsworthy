@@ -79,11 +79,11 @@ struct ReadingView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("NEWSWORTHY").font(.caption2).tracking(2).foregroundStyle(.secondary)
+            Text("NEWSWORTHY").font(.caption2).tracking(2).foregroundStyle(Color("NewsworthyGradientMuted"))
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(entry.reading.map { String($0.score) } ?? "–")
                     .font(.system(size: family == .systemSmall ? 52 : 44, weight: .light)).minimumScaleFactor(0.7)
-                Text("/10").font(.caption).foregroundStyle(.secondary)
+                Text("/10").font(.caption).foregroundStyle(Color("NewsworthyGradientMuted"))
             }.accessibilityElement(children: .ignore)
                 .accessibilityLabel(entry.reading.map { "\($0.score) out of 10" } ?? "Rating unavailable")
             if family == .systemMedium {
@@ -94,22 +94,28 @@ struct ReadingView: View {
             if let date = entry.reading?.updatedAt {
                 // An absolute date stays truthful even if the OS postpones the next update.
                 Text("\(entry.saved ? "Saved · " : "Updated ")\(date.formatted(.dateTime.month(.abbreviated).day().hour().minute()))")
-                    .font(.caption2).foregroundStyle(.secondary).lineLimit(2)
+                    .font(.caption2).foregroundStyle(Color("NewsworthyGradientMuted")).lineLimit(2)
             } else {
-                Text("Waiting for a reading").font(.caption2).foregroundStyle(.secondary)
+                Text("Waiting for a reading").font(.caption2).foregroundStyle(Color("NewsworthyGradientMuted"))
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .modifier(WidgetSurface())
+        .foregroundStyle(Color("NewsworthyInk"))
+        .modifier(WidgetSurface(score: entry.reading?.score))
     }
 }
 
 struct WidgetSurface: ViewModifier {
+    let score: Int?
+    private var background: LinearGradient {
+        let prefix = score.map { String(format: "Level%02d", $0) } ?? "Brand"
+        return LinearGradient(colors: [Color(prefix + "Start"), Color(prefix + "Center"), Color(prefix + "End")], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
     func body(content: Content) -> some View {
         if #available(iOSApplicationExtension 17.0, *) {
-            content.containerBackground(for: .widget) { Color(uiColor: .systemBackground) }
+            content.containerBackground(for: .widget) { background }
         } else {
-            content.padding().background(Color(uiColor: .systemBackground))
+            content.padding().background(background)
         }
     }
 }
