@@ -43,8 +43,8 @@ export default function Home() {
     }
   };
   return <>
-    <Head><title>Newsworthy — A calm global status indicator</title></Head>
-    <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: () => null,
+    {process.env.EXPO_OS === 'web' && <Head><title>Newsworthy — A calm global status indicator</title></Head>}
+    <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: '',
       headerRight: () => reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
         <AppIcon name="share" color={theme.accent} />
       </Pressable> : null }} />

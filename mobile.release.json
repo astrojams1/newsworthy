@@ -1,5 +1,6 @@
 {
   "appId": "com.astrojams.newsworthy",
+  "easProjectId": "beb4fdb6-4d0a-4824-9b8d-d03933f28012",
   "apiBaseUrl": "https://newsworthy-indol.vercel.app",
   "privacyUrl": "https://newsworthy-indol.vercel.app/privacy",
   "supportUrl": "https://newsworthy-indol.vercel.app/support"

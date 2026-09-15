@@ -49,6 +49,10 @@ performed and remaining device/assistive-technology release checks. EAS account
 setup and signing are still required; this repository is not an App Store or
 Google Play release.
 
+The planned store release is a one-time US$1 download, with local store
+equivalents, to help offset running costs. See [Store listing](docs/store-listing.md)
+for pricing setup and release requirements.
+
 ### Web
 
 ```bash
