@@ -115,8 +115,12 @@ access. Internal testing alone does not meet this requirement. See
 - Android upload keystore generated and stored by EAS.
 - The first Android production AAB build was canceled while queued so the release
   candidate includes the native launch/header fixes below. Its replacement
-  (version code 3) is queued:
+  (version code 3) failed compiling `RatingWidgetWorker` because the app compile
+  classpath lacked `ListenableFuture`:
   [ab7c5018-129b-4c1c-aa8f-82ff3467067c](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/ab7c5018-129b-4c1c-aa8f-82ff3467067c).
+  The widget plugin now explicitly includes Android Guava. A replacement build
+  (version code 4) was requested:
+  [12c77b26-8035-469a-ba7a-3ed613cc2ef7](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/12c77b26-8035-469a-ba7a-3ed613cc2ef7).
   No Android binary has been verified yet.
 - iOS custom simulator build compiled successfully, including the widget:
   [a92ddf2a-2b9b-47ca-a343-d588ab38e99d](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/a92ddf2a-2b9b-47ca-a343-d588ab38e99d).
@@ -125,14 +129,19 @@ access. Internal testing alone does not meet this requirement. See
   renders only on web. An empty native header title also prevents a duplicate
   app name. With those JavaScript fixes, a fresh load displayed the live score,
   sentence and timestamp. Store-signed builds and full device checks are pending.
-- A simulator release build with bundled JavaScript and the fixes above is running:
+- A simulator release build with bundled JavaScript and the fixes above finished:
   [c2bc2fbe-15ce-481e-92ca-dee45455b34c](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/c2bc2fbe-15ce-481e-92ca-dee45455b34c).
-- App Store Connect requires sign-in; Apple team, signing and store app record
-  still need setup. The production iOS build stopped during credential setup:
+  It is installed on the iPhone 16 Pro simulator; the current reading and native
+  sharing sheet were verified. Full device and widget checks remain pending.
+- Apple Developer renewal was purchased, but App Store Connect still showed
+  the membership as expired when checked. A refreshed session requires sign-in;
+  Apple signing and the store app record still need setup. The production iOS
+  build stopped during credential setup:
   `Newsworthy` and `NewsworthyWidget` need separate provisioning profiles.
-- Google Play developer registration is in progress under the existing Google
-  account. Selecting the existing payments profile returned “Full address
-  required”; payments-profile linking, verification and registration remain pending.
+- Google Play developer registration and its fee are complete. Play Console
+  disables app creation until account verification is complete: government ID
+  and address documents, access to a real Android device through the Play Console
+  mobile app, then contact phone verification. These are pending.
 - Neither store price nor a submission for review is confirmed. Record final
   build results, device checks, store URLs and submission status here as each
   becomes available.
