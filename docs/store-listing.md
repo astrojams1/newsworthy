@@ -7,6 +7,9 @@ need compilation and device verification before this copy is submitted.
 
 **Name:** Newsworthy
 
+**Apple store name:** Newsworthy: Calm News (the shorter name is already taken).
+App Store Connect record: `6812519450`, team `CWQ9AWJF8T`.
+
 **Apple subtitle:** A calmer way to check the news
 
 **Google Play short description:** A number out of 10 and one sentence explaining the news.

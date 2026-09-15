@@ -5,7 +5,7 @@ module.exports = {
   orientation: 'default', userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   ios: { icon: { light: './assets/icon.png', dark: './assets/icon-dark.png' }, supportsTablet: true, bundleIdentifier: release.appId,
-    ...(process.env.APPLE_TEAM_ID ? { appleTeamId: process.env.APPLE_TEAM_ID } : {}),
+    appleTeamId: process.env.APPLE_TEAM_ID || release.appleTeamId,
     infoPlist: { ITSAppUsesNonExemptEncryption: false },
     privacyManifests: { NSPrivacyTracking: false, NSPrivacyCollectedDataTypes: [],
       NSPrivacyAccessedAPITypes: [{ NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults', NSPrivacyAccessedAPITypeReasons: ['CA92.1'] }] } },
