@@ -49,7 +49,7 @@ export default function Home() {
   return <>
     <Head><title>Newsworthy — A calm global status indicator</title></Head>
     <Stack.Screen options={{ headerTransparent: false, headerTitle: () => null,
-      headerRight: () => reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
+      headerRight: () => reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
         <AppIcon name="share" color={theme.muted} />
       </Pressable> : null }} />
     <ScrollView key={fontScale} contentInsetAdjustmentBehavior="automatic" style={{ flex: 1, backgroundColor: theme.surface }}
