@@ -116,7 +116,10 @@ struct Provider: TimelineProvider {
 struct ReadingView: View {
     let entry: ReadingEntry
     @Environment(\.widgetFamily) private var family
-    private var scoreSize: CGFloat { family == .systemSmall ? 52 : 44 }
+    private var baseScoreSize: CGFloat { family == .systemSmall ? 52 : 44 }
+    private var scoreSize: CGFloat {
+        entry.showAppName ? baseScoreSize : (family == .systemSmall ? 72 : 56)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -132,7 +135,7 @@ struct ReadingView: View {
                 .font(.system(size: scoreSize, weight: .light)).monospacedDigit()
                 .tracking(-scoreSize * 0.04)
              + Text(" /10")
-                .font(.system(size: 12, weight: .light)).monospacedDigit()
+                .font(.system(size: 12 * scoreSize / baseScoreSize, weight: .light)).monospacedDigit()
                 .tracking(0)
                 .foregroundColor(Color("NewsworthyGradientMuted")))
                 .lineLimit(1).minimumScaleFactor(0.7)
