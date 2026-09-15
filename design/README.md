@@ -50,7 +50,7 @@ The widget target’s `Assets.xcassets` contains generated `Newsworthy*`, `Brand
 
 ## Shared Expo screens
 
-`ReadingProvider` owns one reading subscription for the home screen, navigation header, and About screen. `useTheme` derives the palette from that reading and one shared system appearance. Native uses `useColorScheme`; web uses a hydration-safe system media subscription so static light HTML cannot leave stale text colors on a dark client. Decorative gradient textures are generated from the same tokens and rendered by `expo-image`, so Expo Go, custom native builds, and web do not depend on experimental native gradient APIs. Missing readings keep the canvas neutral.
+`ReadingProvider` owns one reading subscription for the home screen, navigation header, and About screen. `useTheme` derives the palette from that reading and one shared system appearance. Native uses `useColorScheme`; web uses a hydration-safe system media subscription so static light HTML cannot leave stale text colors on a dark client. The reading background renders all four layers from `public/levels.css` as an SVG sized to the actual canvas, using `expo-image` on web and native. The ellipse radii, fade stops, compositing order, and 160-degree diagonal match the approved preview without stretching a square texture. The home header is transparent; explicit header-height padding keeps content clear of its controls. Missing readings keep the canvas neutral.
 
 Source assets and the Android config plugin preserve the design through Expo prebuild. The iOS widget target owns its generated color catalog. Android prebuild and web/TypeScript checks are verified; custom native builds and on-device widgets still need verification with compatible SDKs/signing.
 
@@ -63,3 +63,10 @@ Source assets and the Android config plugin preserve the design through Expo pre
 - [Android RemoteViews](https://developer.android.com/reference/android/widget/RemoteViews)
 - [Apple named colors and Dark Mode](https://developer.apple.com/design/human-interface-guidelines/dark-mode)
 - [Apple app icon asset catalog](https://developer.apple.com/documentation/xcode/configuring-your-app-icon)
+
+The reading-gradient regression fixture captures pixels from Chromium rendering
+`public/levels.css` at 160×280 and 280×160, for all ten levels in both modes.
+`test/reading-gradient.test.js` compares the shared SVG renderer against those
+independent reference pixels with a four-channel-value rasterization tolerance.
+If the approved CSS changes, recapture the CSS reference rather than deriving
+expected pixels from the SVG renderer.

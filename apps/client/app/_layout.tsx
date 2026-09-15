@@ -27,7 +27,7 @@ function ThemedLayout() {
     <StatusBar style={theme.dark ? 'light' : 'dark'} />
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
-      <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: false, headerLeft: () => <BrandLink /> }} />
+      <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerLeft: () => <BrandLink /> }} />
       <Stack.Screen name="about" options={{ title: 'About Newsworthy', presentation: 'modal' }} />
     </Stack>
   </>;
