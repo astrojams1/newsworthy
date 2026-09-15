@@ -1,16 +1,21 @@
 # Newsworthy
 
-The news anti-app: a number out of 10 and one sentence, no headlines. Claude
-rates the current top news on a harsh scale; the front page shows only the
-score and the reason.
+Newsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why.
+
+No doomscrolling. No subscription. No in-app purchases. No ads. No engagement, addiction or growth-hacking tactics.
+
+The product helps people stay connected without constant anxious consumption
+or switching off entirely. Check in, then get on with your day.
+See `docs/product-messaging.md` for shared claims and `README.md` for current
+release status. Calm presentation must not change the rating calibration.
 
 ## Workflow
 
 - **Branch off `main`, open a PR into `main`, merge there.** Do not push
   directly to `main`. `main` is both the GitHub default branch and Vercel's
   production branch.
-- A push to `main` deploys to production. Every other branch deploys as a
-  Vercel preview.
+- A push to `main` deploys to production. Preview builds are currently skipped
+  by `vercel.json`’s `ignoreCommand`; verify production after merge.
 - Run `npm test` before pushing. No cloud database is needed — see Testing.
 
 ## Layout
@@ -24,7 +29,10 @@ score and the reason.
 | `src/config.js` | Effective model/cadence/half-life: database settings over env. |
 | `src/story.js` | Judges which development a reading reports. Append-only prompts. |
 | `src/db.js`, `src/sql.js` | Postgres access and schema. |
-| `public/` | Two static pages, no build step. |
+| `public/` | Web-only admin, privacy/support pages and discovery assets; Expo owns the public rating UI. |
+| `apps/client/` | Shared Expo UI, native widgets and EAS build configuration. |
+| `docs/product-messaging.md` | Shared positioning and limits on product claims. |
+| `docs/mobile-release.md` | Expo cloud-build preparation and remaining release gates. |
 | `PROMPT-RULES.md` | Constraints on every prompt version. Tests enforce each. |
 
 ## Things that are not obvious
@@ -66,7 +74,10 @@ as orders to itself — two callers got back "I cannot make HTTP requests" inste
 of the content. Third-person description gives it nothing to refuse, and rules
 stated as facts about the system survive the paraphrase that commands do not.
 
-**A submission is two fields: score and explanation.** Model,
+**A reading is two fields: score and explanation.** A complete caller submission
+also carries `prompt_sha256`, computed with a code tool from the exact received
+prompt. It is provenance, not a third reading field. The API still accepts a
+missing digest for compatibility, but that reading is unattributable. Model,
 caller name and token counts were all asked for once and all self-reported, so
 all of it was stored as fact without being checkable. An agent inside a harness
 has no token counter and will estimate if asked — a guessed 85k input tokens is
@@ -472,8 +483,9 @@ Failures, manual runs and external readings carry `slot = NULL` so they neither
 block nor collide; external readings suppress the cron by being recent, not by
 claiming a slot.
 
-**Environment variables are baked in at build time.** Adding a variable, or
-connecting a storage integration, changes nothing until you redeploy. `/healthz`
+**Vercel environment changes need a new deployment.** The Node server reads
+its deployment’s environment at runtime. Adding a variable or connecting a
+storage integration changes nothing in an existing deployment until you redeploy. `/healthz`
 reports what the *running* function can see — database reachability, key and
 secret presence, the Postgres variable names found, and the serving branch and
 commit. Check it before debugging anything else.

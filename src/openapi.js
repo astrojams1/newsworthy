@@ -23,6 +23,7 @@ export function openapiDocument({ baseUrl }) {
     info: {
       title: 'Newsworthy',
       description:
+        'Newsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why. ' +
         'Rate how worthwhile the current news is, 1-10, and submit the reading. ' +
         'Fetch the instructions first: they carry the rating prompt and the scale.',
       version: '1.0.0',

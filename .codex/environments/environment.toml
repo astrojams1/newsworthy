@@ -1,0 +1,20 @@
+version = 1
+name = "Newsworthy"
+
+[setup]
+script = "npm ci"
+
+[[actions]]
+name = "Run"
+icon = "run"
+command = "./apps/client/script/build_and_run.sh"
+
+[[actions]]
+name = "Run iOS"
+icon = "run"
+command = "./apps/client/script/build_and_run.sh --ios"
+
+[[actions]]
+name = "Run Web"
+icon = "run"
+command = "./apps/client/script/build_and_run.sh --web"

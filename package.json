@@ -2,7 +2,7 @@
   "name": "newsworthy",
   "version": "1.0.0",
   "private": true,
-  "description": "The news anti-app. It does not give you the news. It gives you a number out of 10.",
+  "description": "Newsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why.",
   "type": "module",
   "engines": {
     "node": "22.x"
@@ -12,13 +12,36 @@
     "rate": "node --env-file-if-exists=.env src/rate.js",
     "rate:mock": "NEWSWORTHY_MOCK=1 node src/rate.js",
     "test": "NEWSWORTHY_SQL_DRIVER=pglite node --test test/*.test.js",
-    "migrate": "node --env-file-if-exists=.env -e \"import('./src/db.js').then(m=>m.ensureSchema()).then(()=>console.log('schema ready'))\""
+    "migrate": "node --env-file-if-exists=.env -e \"import('./src/db.js').then(m=>m.ensureSchema()).then(()=>console.log('schema ready'))\"",
+    "dev": "npm run start --workspace @newsworthy/client",
+    "build:web": "node scripts/build-web.js",
+    "check:app": "npm run typecheck --workspace @newsworthy/client",
+    "mobile:check": "node scripts/check-mobile.js",
+    "mobile:ios": "npm run ios --workspace @newsworthy/client",
+    "mobile:android": "npm run android --workspace @newsworthy/client",
+    "pretest": "npm run build:web"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.0",
     "@neondatabase/serverless": "^1.1.0"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.6"
+    "@electric-sql/pglite": "^0.5.6",
+    "sharp": "0.35.4",
+    "react-native": "0.86.3",
+    "react": "19.2.3",
+    "react-native-worklets": "0.10.1",
+    "react-native-reanimated": "4.5.1"
+  },
+  "workspaces": [
+    "apps/client"
+  ],
+  "overrides": {
+    "react-native": "0.86.3",
+    "react": "19.2.3",
+    "react-native-worklets": "0.10.1",
+    "react-native-reanimated": "4.5.1",
+    "@xmldom/xmldom": "^0.8.15",
+    "uuid": "11.1.1"
   }
 }

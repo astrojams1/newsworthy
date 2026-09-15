@@ -1,0 +1,39 @@
+# Newsworthy
+
+> A calm global status indicator: a number out of 10 and one sentence explaining why.
+
+Newsworthy helps people stay connected to the world without constant anxious
+news consumption or switching off entirely. Check in, then get on with your day.
+
+No doomscrolling. No subscription. No in-app purchases. No ads. No engagement,
+addiction or growth-hacking tactics.
+
+## Product facts
+
+- An AI model assesses public news. Higher scores mean more consequential news;
+  the displayed score fades as developments age.
+- Ratings update periodically and can be wrong. Newsworthy is not an
+  emergency-alert service or a complete account of events.
+- The last reading is saved locally for connection failures, with its original
+  update time. A saved reading is not necessarily current.
+- The web app is available now. iOS and Android apps and home-screen widgets
+  are in preparation; no app-store availability is claimed.
+- The shared web and mobile interface uses Expo / React Native. Admin views are web-only.
+- Contact: astrojams1@gmail.com.
+
+## Public links
+
+- [Web app](https://newsworthy-indol.vercel.app/): The latest displayed rating.
+- [Privacy](https://newsworthy-indol.vercel.app/privacy): Storage, technical information and support messages.
+- [Support](https://newsworthy-indol.vercel.app/support): Help and contact information.
+- [Current rating API](https://newsworthy-indol.vercel.app/api/current): Public read-only JSON.
+
+## Authorized rating agents
+
+- [Caller API schema](https://newsworthy-indol.vercel.app/api/openapi.json): Authentication and submission contract.
+- [Caller instructions](https://newsworthy-indol.vercel.app/api/instructions): Requires a caller token; contains the current prompt and workflow.
+
+This page describes the product. It is not the rating prompt and does not
+change the rating scale. Authorized rating agents fetch current instructions
+each run and follow their prompt-integrity and submission contract. No tokens
+or credentials are published here.

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_name">NEWSWORTHY</string>
+    <string name="widget_description">The news rating and its update time. Tap to open Newsworthy.</string>
+    <string name="widget_empty_score">–/10</string>
+    <string name="widget_waiting">Waiting for a reading</string>
+    <color name="widget_surface">#FFFFFF</color>
+    <color name="widget_ink">#16161A</color>
+    <color name="widget_muted">#6B6B76</color>
+</resources>

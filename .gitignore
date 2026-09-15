@@ -5,3 +5,16 @@ data/*.db-wal
 data/*.db-shm
 .env
 .DS_Store
+dist/
+.env.mobile
+.vercel/
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+*.p8
+artifacts/
+
+.expo/
+apps/client/ios/
+apps/client/android/

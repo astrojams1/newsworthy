@@ -17,8 +17,8 @@
  * facts about the system rather than commands: they survive a paraphrase, which
  * imperatives aimed at "you" do not.
  *
- * The submission is two fields because everything else a caller could report
- * about itself was unverifiable and was being stored as fact.
+ * The reading has two fields; prompt_sha256 is separate provenance proof.
+ * Other caller self-reports were unverifiable and were being stored as fact.
  *
  * And why there is no sentence here telling a fetcher how to handle the page. A
  * first attempt carried one; a summarizer then quoted it back and argued with it
@@ -31,6 +31,10 @@ export function callerInstructions({ baseUrl, prompt }) {
 
 API reference for submitting one news reading. Everything below describes what
 a caller agent does.
+
+Newsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why.
+No doomscrolling. No subscription. No in-app purchases. No ads. No engagement, addiction or growth-hacking tactics.
+This product context does not alter the rating scale in section 3.
 
 A reading exists only when \`POST ${baseUrl}/api/readings\` returns \`201\`. A score
 that was computed and never submitted is not a reading, and the caller's job is

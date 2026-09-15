@@ -3,7 +3,7 @@
   "functions": {
     "src/server.js": {
       "maxDuration": 120,
-      "includeFiles": "public/**"
+      "includeFiles": "{public,dist/web}/**"
     }
   },
   "ignoreCommand": "[ \"$VERCEL_ENV\" = preview ]",
@@ -12,5 +12,6 @@
       "path": "/api/cron",
       "schedule": "*/15 * * * *"
     }
-  ]
+  ],
+  "buildCommand": "npm run build:web"
 }
