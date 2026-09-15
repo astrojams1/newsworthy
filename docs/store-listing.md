@@ -47,9 +47,11 @@ timestamp when a connection is unavailable.
 ## Pricing
 
 The requested launch price is a **one-time US$1 download** on iOS and Android,
-with local store equivalents, to help offset service costs. This is the intended
-price, not a confirmation that either store has been configured. Keep exact
-prices out of the localized description; the store displays its local price.
+with local store equivalents, to help offset service costs. On September 16,
+2026, App Store Connect's saved Current Price table showed United States (USD)
+at **$1.00**, with localized prices in the other regions. Google Play pricing
+is not configured. Keep exact prices out of the localized description; the store
+displays its local price.
 
 - Apple: select United States as the base region and US$1.00 from the available
   price points, including “See Additional Prices” if necessary. If that exact

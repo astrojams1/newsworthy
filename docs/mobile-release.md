@@ -135,20 +135,29 @@ access. Internal testing alone does not meet this requirement. See
   [c2bc2fbe-15ce-481e-92ca-dee45455b34c](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/c2bc2fbe-15ce-481e-92ca-dee45455b34c).
   It is installed on the iPhone 16 Pro simulator; the current reading and native
   sharing sheet were verified. Full device and widget checks remain pending.
+  A newer simulator release build including the configurable widget layout
+  finished successfully: [1a4edab8-6c4c-4133-ab32-62c45fd0a7f9](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/1a4edab8-6c4c-4133-ab32-62c45fd0a7f9).
+  Its runtime checks remain pending.
 - Apple confirmed the James Thompson team's renewal through September 15, 2027;
   App Store Connect recognizes the active membership after refreshing.
   Both `com.astrojams.newsworthy` and its `.widget` identifier are registered.
   [Newsworthy: Calm News](https://appstoreconnect.apple.com/apps/6812519450/distribution)
   is created in Prepare for Submission. The shorter name was already taken.
   Listing copy is filled in the browser, but saving the review details requires
-  a contact phone number. No store price has been saved.
+  a contact phone number.
+  The saved Apple Current Price table confirms a US$1.00 base price and local
+  prices in the other regions. The Paid Apps Agreement is still New. The
+  legal-address correction did not persist after verification; Apple's
+  membership-update request is prepared for account-holder approval. The old
+  address must not be reused for the paid-app contract.
   The production iOS build still stops during credential setup:
   `Newsworthy` and `NewsworthyWidget` need separate provisioning profiles.
 - Google Play developer registration and its fee are complete. Play Console
   disables app creation until account verification is complete: government ID
   and address documents, access to a real Android device through the Play Console
-  mobile app, then contact phone verification. These are pending.
-- Neither store price nor a submission for review is confirmed. Record final
+  mobile app, then contact phone verification. These are pending. The Google
+  developer profile already shows the corrected legal address.
+- Google Play pricing and both submissions for review remain pending. Record final
   build results, device checks, store URLs and submission status here as each
   becomes available.
 - Local release checks passed after updating Expo to 57.0.23: TypeScript,
