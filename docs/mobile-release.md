@@ -32,9 +32,9 @@ builds need a newer supported toolchain; use EAS cloud builds rather than
 upgrading Xcode locally. Expo Go runs a precompiled host in the simulator.
 Widgets require custom builds and cannot be tested in Expo Go.
 
-The local EAS CLI reported “Not logged in” during preparation. Connect your Expo
-account before starting cloud builds. No signed build or store submission has
-been made.
+The EAS project is [@astrojams1/newsworthy](https://expo.dev/accounts/astrojams1/projects/newsworthy).
+The local CLI was connected through Expo browser sign-in on September 16, 2026.
+Store submission and native verification remain separate release gates.
 
 ## Release identity
 
@@ -58,7 +58,8 @@ npx eas-cli@latest build --platform ios --profile simulator
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-Use the EAS project ID as `EXPO_PROJECT_ID`; `app.config.js` reads this variable.
+The EAS project ID is saved in `mobile.release.json`; `EXPO_PROJECT_ID` can
+override it for an explicitly chosen EAS project.
 For signed iOS builds set `ios.appleTeamId` via the `APPLE_TEAM_ID` environment
 variable. EAS manages signing credentials interactively during initial setup.
 A physical-iPhone development/preview build requires Apple developer membership
@@ -83,10 +84,49 @@ npx eas-cli@latest submit --platform ios --profile production
 npx eas-cli@latest submit --platform android --profile production
 ```
 
+The Android `production` submission profile currently targets **internal testing**.
+Uploading there is not a public release. Complete the required testing and promote
+the verified build in Play Console. An iOS EAS submission uploads to App Store
+Connect/TestFlight; selecting a build and submitting it for App Review are separate
+steps. See [Expo's submission guide](https://docs.expo.dev/deploy/submit-to-app-stores/).
+
 The first Google Play upload and store configuration may require console setup.
 Complete store privacy, age-rating, pricing, screenshots and review information
 using `docs/store-listing.md`. Privacy and support are already public at
 `https://newsworthy-indol.vercel.app/privacy` and `/support`.
+
+### Paid launch
+
+The requested mobile launch price is a one-time US$1 download, with local store
+equivalents, to help offset running costs. Configure paid-app pricing in both
+consoles using [the store listing notes](store-listing.md#pricing). Do not offer
+the Google Play app free while setting up testing; it cannot later become paid
+under the same package name.
+
+New personal Google Play accounts must complete a closed test with at least
+12 testers opted in continuously for 14 days before applying for production
+access. Internal testing alone does not meet this requirement. See
+[Google's testing requirements](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en).
+
+### Submission progress — September 16, 2026
+
+- EAS project created and linked; Expo CLI authenticated as `astrojams1`.
+- Android upload keystore generated and stored by EAS.
+- Android production AAB build requested:
+  [54eb701e-5878-44f0-8c84-de01c531b057](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/54eb701e-5878-44f0-8c84-de01c531b057).
+- iOS custom simulator build requested:
+  [a92ddf2a-2b9b-47ca-a343-d588ab38e99d](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/a92ddf2a-2b9b-47ca-a343-d588ab38e99d).
+- App Store Connect requires sign-in; Apple team, signing and store app record
+  still need setup. The production iOS build stopped during credential setup:
+  `Newsworthy` and `NewsworthyWidget` need separate provisioning profiles.
+- Google Play developer registration is in progress under the existing Google
+  account; payments-profile linking, verification and registration remain pending.
+- Neither store price nor a submission for review is confirmed. Record final
+  build results, device checks, store URLs and submission status here as each
+  becomes available.
+- Local release checks passed after updating Expo to 57.0.23: TypeScript,
+  21 Expo Doctor checks, live API/policy/support checks, both native JavaScript
+  exports and 175 repository tests (including the production web export).
 
 ## Widgets
 

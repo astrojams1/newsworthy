@@ -18,6 +18,8 @@ addiction or growth-hacking tactics.
   update time. A saved reading is not necessarily current.
 - The web app is available now. iOS and Android apps and home-screen widgets
   are in preparation; no app-store availability is claimed.
+- The planned mobile store release is a one-time US$1 download, with local store
+  equivalents, to help offset running costs. Store pricing is not yet confirmed.
 - The shared web and mobile interface uses Expo / React Native. Admin views are web-only.
 - Contact: astrojams1@gmail.com.
 

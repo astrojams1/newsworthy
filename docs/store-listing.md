@@ -7,15 +7,19 @@ need compilation and device verification before this copy is submitted.
 
 **Name:** Newsworthy
 
-**Subtitle / short description:** Is the news worth your attention?
+**Apple subtitle:** A calmer way to check the news
+
+**Google Play short description:** A number out of 10 and one sentence explaining the news.
 
 **Description:**
 
 Stay connected to the world without getting pulled into the feed.
 
 Newsworthy is a calm global status indicator: a number out of 10 and one sentence
-explaining why. An AI model checks the headlines and rates how worthwhile it is
-to look at the news. Check in, then get on with your day.
+explaining why. An AI model assesses how consequential the news is. The displayed
+score fades as developments age. Check in, then get on with your day.
+
+A one-time download purchase helps cover the cost of running the service.
 
 No doomscrolling. No subscription. No in-app purchases. No ads. No engagement,
 addiction or growth-hacking tactics.
@@ -29,11 +33,35 @@ depend on your device's background scheduling. Every reading includes its update
 
 **Suggested category:** News
 
-**Review notes:** No account/login or purchases. Tap “Newsworthy” to open About,
-privacy/support links and sharing. Open online, then relaunch without a connection
+**Review notes:** Paid download; no login, subscription or in-app purchases.
+Tap “Newsworthy” (the About icon at large text sizes) to open About and the
+privacy/support links. The Share button opens the system share sheet.
+Open online, then relaunch without a connection
 to test saved readings. Add Newsworthy through the system's widget picker to test
 the home-screen rating. Widgets update independently and retain the original
 timestamp when a connection is unavailable.
+
+## Pricing
+
+The requested launch price is a **one-time US$1 download** on iOS and Android,
+with local store equivalents, to help offset service costs. This is the intended
+price, not a confirmation that either store has been configured. Keep exact
+prices out of the localized description; the store displays its local price.
+
+- Apple: select United States as the base region and US$1.00 from the available
+  price points, including “See Additional Prices” if necessary. If that exact
+  price is unavailable, record the available choices before changing the target.
+  The account holder must have completed the Paid Apps Agreement and required
+  tax/banking setup. Verify the saved price schedule before submitting for review.
+- Google Play: create the app as **paid** and set its US price to US$1.00, then
+  review local prices. Complete the payments profile. Do not launch it free as a
+  temporary workaround: an app offered for free cannot later become paid under
+  the same package name.
+- Store commissions and applicable taxes reduce proceeds; US$1 is the customer
+  price target, not a promise of US$1 in net revenue per download.
+
+References: [Apple app pricing](https://developer.apple.com/help/app-store-connect/manage-app-pricing/set-a-price),
+[Google Play app pricing](https://support.google.com/googleplay/android-developer/answer/6334373?hl=en).
 
 ## Privacy and support pages
 

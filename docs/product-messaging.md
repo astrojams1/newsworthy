@@ -29,8 +29,10 @@ touch. Newsworthy offers a calmer middle ground. Check in, then get on with your
   the app, depending on the operating system. Do not promise real-time updates.
 - The launcher icon is a white dash on near-black. The web favicon can show the
   score; planned home-screen widgets carry a rating and update time.
-- No subscription or in-app purchases does not establish an upfront store price.
-  Do not invent one or claim that hosting processes no technical information.
+- The planned iOS and Android release is a one-time US$1 download to help offset
+  the cost of running the service, with local store equivalents. Pricing must be
+  configured and verified in each store before it is described as live.
+- Do not claim that hosting processes no technical information.
 - Brand positioning must never soften, inflate or otherwise alter the rating
   scale. Published prompts are append-only; see `PROMPT-RULES.md`.
 
