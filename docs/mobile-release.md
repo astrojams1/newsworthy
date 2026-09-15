@@ -113,9 +113,11 @@ access. Internal testing alone does not meet this requirement. See
 
 - EAS project created and linked; Expo CLI authenticated as `astrojams1`.
 - Android upload keystore generated and stored by EAS.
-- The first Android production AAB build remained queued. A replacement is being
-  prepared with the native launch/header fixes below; no Android binary has been
-  verified yet.
+- The first Android production AAB build was canceled while queued so the release
+  candidate includes the native launch/header fixes below. Its replacement
+  (version code 3) is queued:
+  [ab7c5018-129b-4c1c-aa8f-82ff3467067c](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/ab7c5018-129b-4c1c-aa8f-82ff3467067c).
+  No Android binary has been verified yet.
 - iOS custom simulator build compiled successfully, including the widget:
   [a92ddf2a-2b9b-47ca-a343-d588ab38e99d](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/a92ddf2a-2b9b-47ca-a343-d588ab38e99d).
   Installed on iPhone 16 Pro / iOS 18.3. Native launch exposed an Expo Head
@@ -123,7 +125,7 @@ access. Internal testing alone does not meet this requirement. See
   renders only on web. An empty native header title also prevents a duplicate
   app name. With those JavaScript fixes, a fresh load displayed the live score,
   sentence and timestamp. Store-signed builds and full device checks are pending.
-- A simulator release build with bundled JavaScript and the fixes above was requested:
+- A simulator release build with bundled JavaScript and the fixes above is running:
   [c2bc2fbe-15ce-481e-92ca-dee45455b34c](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/c2bc2fbe-15ce-481e-92ca-dee45455b34c).
 - App Store Connect requires sign-in; Apple team, signing and store app record
   still need setup. The production iOS build stopped during credential setup:
