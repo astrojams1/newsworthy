@@ -98,8 +98,45 @@ for (const [family, source, name, headline, caption, dark] of layouts) {
   manifest.push({ file: target, source: `source/${family}/${source}`, width, height, platform: 'ios', displayType: tablet ? 'APP_IPAD_PRO_3GEN_129' : 'APP_IPHONE_67' });
 }
 
+// Android viewports are measured from the corrected native captures. Missing
+// evidence keeps the gallery provisional rather than rendering a mock widget.
+try {
+  const config = JSON.parse(await readFile(resolve(root, 'source/android-phone/widget-frames.json'), 'utf8'));
+  const captures = await Promise.all(config.frames.map(async frame => ({...frame, href:`data:image/png;base64,${(await readFile(resolve(root,frame.file))).toString('base64')}`})));
+  if (captures.length !== 2 || captures.map(x=>x.label).join() !== 'COMPACT,EXPANDED') throw new Error('Expected verified compact and expanded Android frames');
+  const scale = Math.min(936 / Math.max(...captures.map(x=>x.width)), 430 / Math.max(...captures.map(x=>x.height)));
+  const frames = captures.map((frame,i)=>{
+    const y = i ? 1080 : 430;
+    return `<svg x="72" y="${y}" width="${frame.width*scale}" height="${frame.height*scale}" viewBox="${frame.x} ${frame.y} ${frame.width} ${frame.height}"><defs><clipPath id="android-${i}"><rect x="${frame.x}" y="${frame.y}" width="${frame.width}" height="${frame.height}" rx="${frame.radius}"/></clipPath></defs><image width="1080" height="2400" href="${frame.href}" clip-path="url(#android-${i})"/></svg>`;
+  }).join('');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920">
+    <rect width="1080" height="1920" fill="#F4F3EF"/>
+    <rect x="72" y="60" width="34" height="5" fill="#59685F"/>
+    ${text(126,74,24,'NEWSWORTHY','#59685F','letter-spacing="5"')}
+    ${text(72,184,76,'Room for','#172C25','font-weight="500" letter-spacing="-2"')}
+    ${text(72,272,76,'perspective.','#172C25','font-weight="500" letter-spacing="-2"')}
+    ${text(75,339,29,'A widget that fits your day.','#59685F')}
+    ${text(72,395,24,'COMPACT','#59685F','letter-spacing="4"')}
+    ${frames}
+    ${text(72,927,29,'The score, at a glance.','#172C25')}
+    <path d="M72 987 H1008" stroke="#D5D9D0" stroke-width="2"/>
+    ${text(72,1045,24,'EXPANDED','#59685F','letter-spacing="4"')}
+    ${text(72,1582,29,'More room for context.','#172C25')}
+    ${text(72,1725,27,'A quiet check-in, right on your Home Screen.','#59685F')}
+    ${text(72,1850,24,'No feed. No ads. No subscription.','#59685F')}
+  </svg>`;
+  const target='assets/google-play/phone/03-widget-sizes-v8.png';
+  let editable=svg;
+  for(const capture of captures) editable=editable.replaceAll(capture.href,`../../${capture.file}`);
+  await out('source/layouts/android-03-widget-sizes-v8.svg',editable);
+  await out(target,await sharp(Buffer.from(svg)).removeAlpha().png({compressionLevel:9}).toBuffer());
+  manifest.push({file:target,source:'source/android-phone/widget-frames.json',sources:captures.map(x=>x.file),width:1080,height:1920,platform:'android',composition:'Actual native widget viewports on a neutral canvas.'});
+} catch(error) {
+  if(error.code !== 'ENOENT') throw error;
+  console.warn('Pending corrected native Android compact/expanded frames');
+}
+
 const androidLayouts = [
-  ['03-home-widgets-clean.png', '03-widget-sizes.png', ['Room for', 'perspective.'], 'Compact or expanded. Make room for what matters.', false],
   ['01-reading-light.png', '01-at-a-glance.png', ['The world,', 'at a glance.'], 'A number out of 10. One sentence explaining why.', false],
   ['02-reading-dark.png', '02-dark-mode.png', ['A quieter way', 'to stay informed.'], 'Light and dark. The same calm perspective.', true],
 ];

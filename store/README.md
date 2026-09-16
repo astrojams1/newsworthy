@@ -10,7 +10,7 @@ without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
 
 Android version 7 exposed a widget refresh loop that flickers and interrupts
-resizing. Corrected version 8 builds and native regression verification are in
+resizing. Corrected Android builds and native regression verification are in
 progress; the Android preview below is provisional. Google account verification
 still blocks app creation. See the ledger for current gates and exact next actions.
 
@@ -57,7 +57,7 @@ still blocks app creation. See the ledger for current gates and exact next actio
 - **Android binary:** version 7 AAB/APK built and installed. Widget testing
   exposed repeated WorkManager/package-change recreation, unstable resizing, and
   an oversized denominator. Source fixes introduce one persistent periodic job,
-  compact layout and the iOS-style small baseline `/10`. Version 8 build/native
+  compact layout and the iOS-style small baseline `/10`. Replacement build/native
   evidence belongs in `release.json` and the ledger; do not use v7 widget artwork
   as final release art.
 - **Apple review details:** contact information, phone, no-login requirement,

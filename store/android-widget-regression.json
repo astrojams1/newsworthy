@@ -1,0 +1,25 @@
+{
+  "date": "2026-09-16",
+  "runtime": "Android API 35 ARM64 emulator",
+  "versionCode": 7,
+  "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+  "windowStart": "09-16 15:55:13.779",
+  "windowEnd": "09-16 15:55:47.529",
+  "workerStarts": 29,
+  "workerSuccesses": 28,
+  "widgetRecreations": 30,
+  "workManagerReceiverEnabled": 29,
+  "workManagerReceiverDisabled": 28,
+  "observedSequence": [
+    "RatingWidgetWorker succeeds",
+    "WorkManager disables RescheduleReceiver after last one-time job finishes",
+    "AppWidgetService receives PACKAGE_CHANGED and recreates widget",
+    "RatingWidget.onUpdate queues another one-time job"
+  ],
+  "verificationScope": "Native logs and observed flicker/resize reset before fix; not proof of corrected build.",
+  "diagnosticCapture": {
+    "file": "source/android-phone/05-widget-expanded-v7.png",
+    "sha256": "37e9de9d0293cd159c51e54ee8c7913fb13f359a49d82e6a890f1746bb587ef9",
+    "finalArtwork": false
+  }
+}

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T08:07:01+00:00",
+  "updated_at": "2026-09-16T08:12:15+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -445,12 +445,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Corrected preview APK version 8 is IN_PROGRESS in EAS from clean commit 922a9b1. Source fixes periodic scheduling, compact sizing and baseline /10. Production upload attempt is still running; no production v8 build ID returned yet.",
+      "summary": "Corrected preview APK v8 and production AAB v9 are IN_PROGRESS. Initial production upload stalled before build creation; checked remote list, stopped that upload, then retried. Retry incremented production versionCode to 9.",
       "evidence": [
-        "EAS preview c18fb254-3145-4e69-b7f5-906b3c0621e1 readback IN_PROGRESS, appBuildVersion 8, source commit 922a9b19f26a750df0867d0c3e1bdf4b6672ceba. PR92 draft; 175 tests, typecheck, prebuild passed."
+        "Preview c18fb254-3145-4e69-b7f5-906b3c0621e1 source922a9b1; production a55d6cc8-d3cf-41f3-ae88-6b2b29456151 source2bd1179. Source diff affects release docs only, no apps/client changes. store/android-widget-regression.json records 30 widget recreations in 34 seconds before fix."
       ],
-      "next_action": "Download/install corrected APK, verify idle no longer causes worker/package-change loop and actual compact/expanded resize; inspect production upload outcome before any retry.",
-      "updated_at": "2026-09-16T08:07:01+00:00"
+      "next_action": "Install APK v8 and verify stable idle logs plus compact/expanded resizing and small /10; download and validate AAB v9. Then capture corrected Android gallery and finish PR92.",
+      "updated_at": "2026-09-16T08:12:15+00:00"
     }
   },
   "events": [
@@ -1841,6 +1841,22 @@
         ],
         "next_action": "Download/install corrected APK, verify idle no longer causes worker/package-change loop and actual compact/expanded resize; inspect production upload outcome before any retry.",
         "updated_at": "2026-09-16T08:07:01+00:00"
+      }
+    },
+    {
+      "sequence": 87,
+      "at": "2026-09-16T08:12:15+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrected preview APK v8 and production AAB v9 are IN_PROGRESS. Initial production upload stalled before build creation; checked remote list, stopped that upload, then retried. Retry incremented production versionCode to 9.",
+        "evidence": [
+          "Preview c18fb254-3145-4e69-b7f5-906b3c0621e1 source922a9b1; production a55d6cc8-d3cf-41f3-ae88-6b2b29456151 source2bd1179. Source diff affects release docs only, no apps/client changes. store/android-widget-regression.json records 30 widget recreations in 34 seconds before fix."
+        ],
+        "next_action": "Install APK v8 and verify stable idle logs plus compact/expanded resizing and small /10; download and validate AAB v9. Then capture corrected Android gallery and finish PR92.",
+        "updated_at": "2026-09-16T08:12:15+00:00"
       }
     }
   ],
