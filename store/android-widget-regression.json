@@ -71,5 +71,13 @@
       "inference": "The existing launcher item may retain sizing from its earlier installation. New package dimensions alone do not verify resize behavior.",
       "next": "Reopen resize controls; if minimum remains unchanged, remove and add the widget again through the launcher, then inspect compact/expanded layouts."
     }
+  },
+  "themeSwitchRegression": {
+    "versionCode": 8,
+    "observed": "Dark-to-light switch changed widget background and primary text but /10 retained a pale color.",
+    "cause": "ForegroundColorSpan stores the resolved color in RemoteViews instead of a theme resource.",
+    "diagnosticCapture": "source/android-phone/07-widget-theme-switch-v8.png",
+    "fix": "Separate baseline-aligned denominator TextView with theme color in XML.",
+    "verification": "Source fix prepared; replacement native build and theme-switch verification pending."
   }
 }

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T08:42:54+00:00
+Updated: 2026-09-16T08:51:20+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -49,7 +49,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
 | apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
-| google.widget-fix | in_progress | agent | observed | Corrected worker completed SUCCESS at 16:28:57 and jobscheduler retains the next network-constrained refresh with a 30-minute delay. Existing launcher item still reports span/minSpan 3x3 while provider metadata reports 120dp minima; cached launcher sizing is a hypothesis, not verified root cause. | Complete fresh resize test; if still constrained, remove/re-add the existing native widget via launcher before further code changes. Capture corrected Android gallery. Owner instructions now omit obsolete Mac-lock and Apple-resubmission requests. |
+| google.widget-fix | in_progress | agent | observed | Native dark-to-light theme switch exposed pale /10 retaining dark-theme color. Replaced resolved inline color span with separate baseline-aligned TextView using XML theme color. 175 tests and Android prebuild pass; replacement native verification pending. | Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB. |
 
 ## Evidence and history
 
@@ -895,3 +895,13 @@ Corrected worker completed SUCCESS at 16:28:57 and jobscheduler retains the next
 - store/android-widget-regression.json records sanitized worker completion, scheduler and launcher measurements. Both PR92 check workflows passed. Apple version remains WAITING_FOR_REVIEW; live Google Create app remains disabled pending device/contact-phone verification.
 
 Next: Complete fresh resize test; if still constrained, remove/re-add the existing native widget via launcher before further code changes. Capture corrected Android gallery. Owner instructions now omit obsolete Mac-lock and Apple-resubmission requests.
+
+### 90. google.widget-fix — in_progress
+
+2026-09-16T08:51:20+00:00 · observed · agent
+
+Native dark-to-light theme switch exposed pale /10 retaining dark-theme color. Replaced resolved inline color span with separate baseline-aligned TextView using XML theme color. 175 tests and Android prebuild pass; replacement native verification pending.
+
+- source/android-phone/07-widget-theme-switch-v8.png and provenance-v8.json preserve actual capture; android-widget-regression.json records scope. Source fix applies to both compact and expanded layouts.
+
+Next: Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB.

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T08:42:54+00:00",
+  "updated_at": "2026-09-16T08:51:20+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -445,12 +445,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Corrected worker completed SUCCESS at 16:28:57 and jobscheduler retains the next network-constrained refresh with a 30-minute delay. Existing launcher item still reports span/minSpan 3x3 while provider metadata reports 120dp minima; cached launcher sizing is a hypothesis, not verified root cause.",
+      "summary": "Native dark-to-light theme switch exposed pale /10 retaining dark-theme color. Replaced resolved inline color span with separate baseline-aligned TextView using XML theme color. 175 tests and Android prebuild pass; replacement native verification pending.",
       "evidence": [
-        "store/android-widget-regression.json records sanitized worker completion, scheduler and launcher measurements. Both PR92 check workflows passed. Apple version remains WAITING_FOR_REVIEW; live Google Create app remains disabled pending device/contact-phone verification."
+        "source/android-phone/07-widget-theme-switch-v8.png and provenance-v8.json preserve actual capture; android-widget-regression.json records scope. Source fix applies to both compact and expanded layouts."
       ],
-      "next_action": "Complete fresh resize test; if still constrained, remove/re-add the existing native widget via launcher before further code changes. Capture corrected Android gallery. Owner instructions now omit obsolete Mac-lock and Apple-resubmission requests.",
-      "updated_at": "2026-09-16T08:42:54+00:00"
+      "next_action": "Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB.",
+      "updated_at": "2026-09-16T08:51:20+00:00"
     }
   },
   "events": [
@@ -1889,6 +1889,22 @@
         ],
         "next_action": "Complete fresh resize test; if still constrained, remove/re-add the existing native widget via launcher before further code changes. Capture corrected Android gallery. Owner instructions now omit obsolete Mac-lock and Apple-resubmission requests.",
         "updated_at": "2026-09-16T08:42:54+00:00"
+      }
+    },
+    {
+      "sequence": 90,
+      "at": "2026-09-16T08:51:20+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Native dark-to-light theme switch exposed pale /10 retaining dark-theme color. Replaced resolved inline color span with separate baseline-aligned TextView using XML theme color. 175 tests and Android prebuild pass; replacement native verification pending.",
+        "evidence": [
+          "source/android-phone/07-widget-theme-switch-v8.png and provenance-v8.json preserve actual capture; android-widget-regression.json records scope. Source fix applies to both compact and expanded layouts."
+        ],
+        "next_action": "Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB.",
+        "updated_at": "2026-09-16T08:51:20+00:00"
       }
     }
   ],

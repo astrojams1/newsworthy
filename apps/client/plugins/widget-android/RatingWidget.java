@@ -8,10 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.widget.RemoteViews;
 import androidx.work.Constraints;
@@ -110,10 +106,10 @@ public class RatingWidget extends AppWidgetProvider {
                 LevelPalette.background(reading == null ? 0 : reading.optInt("score")));
             if (reading != null) {
                 String number = Integer.toString(reading.optInt("score"));
-                SpannableString score = new SpannableString(number + " /10");
-                score.setSpan(new RelativeSizeSpan(12f / scoreSize), number.length(), score.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                score.setSpan(new ForegroundColorSpan(context.getColor(R.color.widget_muted)), number.length(), score.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                views.setTextViewText(R.id.widget_score, score);
+                // Keep the denominator in a separate, baseline-aligned TextView.
+                // XML theme colors are resolved again when the host switches theme;
+                // an inline ForegroundColorSpan retained the old theme's color.
+                views.setTextViewText(R.id.widget_score, number);
                 views.setContentDescription(R.id.widget_score, reading.optInt("score") + " out of 10");
                 views.setTextViewText(R.id.widget_explanation, reading.optString("explanation"));
                 String date = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(readingDate(reading));
