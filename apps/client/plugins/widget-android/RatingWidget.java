@@ -8,11 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 import android.widget.RemoteViews;
 import androidx.work.Constraints;
-import androidx.work.ExistingWorkPolicy;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import java.util.concurrent.TimeUnit;
 import androidx.work.WorkManager;
 import org.json.JSONObject;
 import java.text.DateFormat;
@@ -24,27 +30,35 @@ import java.util.TimeZone;
 
 public class RatingWidget extends AppWidgetProvider {
     static final String CACHE = "rating:" + BuildConfig.NEWSWORTHY_API_URL;
-    private static final String WORK = "newsworthy-widget-refresh";
+    private static final String LEGACY_WORK = "newsworthy-widget-refresh";
+    private static final String WORK = "newsworthy-widget-periodic-refresh";
+    static final String SAVED = CACHE + ":saved";
 
     @Override public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
-        renderAll(context, true);
+        renderAll(context);
         refresh(context);
     }
 
     @Override public void onAppWidgetOptionsChanged(Context context, AppWidgetManager manager, int id, Bundle options) {
-        renderAll(context, true);
+        renderAll(context);
     }
 
     @Override public void onDisabled(Context context) {
         WorkManager.getInstance(context).cancelUniqueWork(WORK);
+        WorkManager.getInstance(context).cancelUniqueWork(LEGACY_WORK);
     }
 
     public static void refresh(Context context) {
         int[] ids = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, RatingWidget.class));
         if (ids.length == 0) return;
-        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(RatingWidgetWorker.class)
+        // One persistent job keeps WorkManager's receiver enabled between runs.
+        // Chaining one-time jobs from onUpdate caused PACKAGE_CHANGED -> onUpdate
+        // -> refresh loops that recreated the launcher widget every second.
+        PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(RatingWidgetWorker.class, 30, TimeUnit.MINUTES)
             .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()).build();
-        WorkManager.getInstance(context).enqueueUniqueWork(WORK, ExistingWorkPolicy.KEEP, request);
+        WorkManager work = WorkManager.getInstance(context);
+        work.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.KEEP, request);
+        work.cancelUniqueWork(LEGACY_WORK);
     }
 
     static Date readingDate(JSONObject data) {
@@ -70,7 +84,8 @@ public class RatingWidget extends AppWidgetProvider {
             && !text.trim().isEmpty() && text.length() <= 2000 && readingDate(data) != null;
     }
 
-    static void renderAll(Context context, boolean saved) {
+    static void renderAll(Context context) {
+        boolean saved = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE).getBoolean(SAVED, true);
         JSONObject reading = null;
         try {
             JSONObject cached = new JSONObject(context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE).getString(CACHE, ""));
@@ -81,18 +96,29 @@ public class RatingWidget extends AppWidgetProvider {
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent launch = PendingIntent.getActivity(context, 0, open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         for (int id : manager.getAppWidgetIds(new ComponentName(context, RatingWidget.class))) {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.rating_widget);
+            Bundle options = manager.getAppWidgetOptions(id);
+            // A narrow square shows the score; a wider/taller widget adds context.
+            // Height alone left typical two-row launcher cells stuck in expanded mode.
+            int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+            int height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
+            boolean compact = width < 250 || height < 150;
+            float scoreSize = compact ? 52 : 44;
+            RemoteViews views = new RemoteViews(context.getPackageName(), compact ? R.layout.rating_widget_compact : R.layout.rating_widget);
+            views.setTextViewTextSize(R.id.widget_score, TypedValue.COMPLEX_UNIT_SP, scoreSize);
             views.setOnClickPendingIntent(R.id.widget_root, launch);
             views.setInt(R.id.widget_root, "setBackgroundResource",
                 LevelPalette.background(reading == null ? 0 : reading.optInt("score")));
             if (reading != null) {
-                views.setTextViewText(R.id.widget_score, reading.optInt("score") + "/10");
+                String number = Integer.toString(reading.optInt("score"));
+                SpannableString score = new SpannableString(number + " /10");
+                score.setSpan(new RelativeSizeSpan(12f / scoreSize), number.length(), score.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                score.setSpan(new ForegroundColorSpan(context.getColor(R.color.widget_muted)), number.length(), score.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                views.setTextViewText(R.id.widget_score, score);
                 views.setContentDescription(R.id.widget_score, reading.optInt("score") + " out of 10");
                 views.setTextViewText(R.id.widget_explanation, reading.optString("explanation"));
                 String date = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(readingDate(reading));
                 views.setTextViewText(R.id.widget_updated, (saved ? "Saved · " : "Updated ") + date);
             }
-            boolean compact = manager.getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT) < 160;
             views.setViewVisibility(R.id.widget_explanation, compact ? View.GONE : View.VISIBLE);
             manager.updateAppWidget(id, views);
         }
