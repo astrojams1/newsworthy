@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T07:03:19+00:00
+Updated: 2026-09-16T07:11:08+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,8 +25,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.native | in_progress | agent | observed | Replacement simulator artifact downloaded and installed on the booted iPhone simulator; visual checks and new captures await Mac unlock. | After unlock, verify revised reading screen, privacy/support links, share, offline recovery, large text, and both widget sizes; capture clean neutral Home Screen images and updated iPhone/iPad reading screens. |
 | apple.upload | done | agent | observed | Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | in_progress | agent | observed | Developer withdrew build 5 to replace About with the approved reading-screen design. This is a developer withdrawal, not an Apple reviewer rejection. | Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit. |
-| apple.release | waiting_provider | provider | observed | Apple review is pending; AFTER_APPROVAL release configured. No public availability verified. Commercial account requirements remain separately unverified. | Read review outcome and resolve feedback; check tax/banking/agreement and address response; verify paid public listing after approval. Do not resubmit the existing review. |
+| apple.review | in_progress | agent | observed | Replacement build 6 is valid and selected; current version is PREPARE_FOR_SUBMISSION. The withdrawn old review is complete; no replacement review has been submitted. | After Mac unlock, finish native checks and the clean neutral-background widget-size gallery, verify uploaded replacements, then create and submit the replacement review. |
+| apple.release | in_progress | agent | observed | Public release is not achieved. The replacement version is being prepared; no active review is awaiting Apple. | Complete and submit the replacement review, resolve owner/provider commercial-readiness gates, then verify approved paid public availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
@@ -41,7 +41,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
 | apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
 | host.ui | waiting_user | user | observed | Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check. | Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved. |
-| google.artwork | done | agent | observed | Three Android store screenshots rendered from version 6 native captures: light reading, dark reading, About. | — |
+| google.artwork | in_progress | agent | observed | The old version-6 artwork set is superseded. About art is removed, and clean widget-size captures plus version-7 reading captures are pending. | Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done. |
 | design.reading-screen | in_progress | agent | observed | Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback. | Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery. |
 | native.ui-access | waiting_user | user | observed | Mac locked again; native app-control tool could not unlock it. | Owner unlocks Mac; resume native UI checks and captures. |
 | design.widget-gallery | in_progress | agent | observed | Owner requests clean widget imagery: no unrelated icons, show supported size options, and use plain neutral wallpaper that does not compete with widget colors. | After unlock, set neutral wallpaper on capture devices and verify/capture iOS small and medium plus Android compact and expanded layouts; replace remote old widget screenshot before resubmitting. |
@@ -676,3 +676,33 @@ Android version 7 APK downloaded, archive checked and installed successfully on 
 - APK 104,436,147 bytes; SHA256 bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194. adb install Success; installed package versionName 1.0.0/versionCode 7. This proves installation, not visual behavior.
 
 Next: After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.
+
+### 67. apple.review — in_progress
+
+2026-09-16T07:11:08+00:00 · observed · agent
+
+Replacement build 6 is valid and selected; current version is PREPARE_FOR_SUBMISSION. The withdrawn old review is complete; no replacement review has been submitted.
+
+- Live App Store Connect version 267c6f52-d22d-4cb0-bb4c-d22f280b4499 readback includes selected build b62a9dc5-1b0c-4200-8830-68db021bb0cd, version 6, VALID, with appStoreState PREPARE_FOR_SUBMISSION.
+
+Next: After Mac unlock, finish native checks and the clean neutral-background widget-size gallery, verify uploaded replacements, then create and submit the replacement review.
+
+### 68. apple.release — in_progress
+
+2026-09-16T07:11:08+00:00 · observed · agent
+
+Public release is not achieved. The replacement version is being prepared; no active review is awaiting Apple.
+
+- Current version PREPARE_FOR_SUBMISSION, selected build 6 VALID. Earlier review was withdrawn; banking/agreement and address correction remain separately tracked.
+
+Next: Complete and submit the replacement review, resolve owner/provider commercial-readiness gates, then verify approved paid public availability.
+
+### 69. google.artwork — in_progress
+
+2026-09-16T07:11:08+00:00 · observed · agent
+
+The old version-6 artwork set is superseded. About art is removed, and clean widget-size captures plus version-7 reading captures are pending.
+
+- PR90 retired About and cluttered iPhone widget artwork. Current manifest contains only older reading-screen captures; widget-gallery-brief.md defines required clean neutral backgrounds and size variants.
+
+Next: Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done.
