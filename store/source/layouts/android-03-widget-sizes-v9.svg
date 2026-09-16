@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920">
+    <rect width="1080" height="1920" fill="#F4F3EF"/>
+    <rect x="72" y="60" width="34" height="5" fill="#59685F"/>
+    <text x="126" y="74" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" fill="#59685F" letter-spacing="5">NEWSWORTHY</text>
+    <text x="72" y="184" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="76" fill="#172C25" font-weight="500" letter-spacing="-2">Room for</text>
+    <text x="72" y="272" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="76" fill="#172C25" font-weight="500" letter-spacing="-2">perspective.</text>
+    <text x="75" y="339" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="29" fill="#59685F" >A widget that fits your day.</text>
+    <text x="72" y="395" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" fill="#59685F" letter-spacing="4">COMPACT</text>
+    <svg x="72" y="430" width="206.32696390658174" height="280.276008492569" viewBox="67 422 452 614"><defs><clipPath id="android-0"><rect x="67" y="422" width="452" height="614" rx="53"/></clipPath></defs><image width="1080" height="2400" href="../../source/android-phone/14-widget-compact-dark-v9.png" clip-path="url(#android-0)"/></svg><svg x="72" y="1080" width="319.07643312101914" height="430" viewBox="67 422 699 942"><defs><clipPath id="android-1"><rect x="67" y="422" width="699" height="942" rx="53"/></clipPath></defs><image width="1080" height="2400" href="../../source/android-phone/10-widget-dark-v9.png" clip-path="url(#android-1)"/></svg>
+    <text x="72" y="927" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="29" fill="#172C25" >The score, at a glance.</text>
+    <path d="M72 987 H1008" stroke="#D5D9D0" stroke-width="2"/>
+    <text x="72" y="1045" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" fill="#59685F" letter-spacing="4">EXPANDED</text>
+    <text x="72" y="1582" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="29" fill="#172C25" >More room for context.</text>
+    <text x="72" y="1725" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="27" fill="#59685F" >A quiet check-in, right on your Home Screen.</text>
+    <text x="72" y="1850" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" fill="#59685F" >No feed. No ads. No subscription.</text>
+  </svg>

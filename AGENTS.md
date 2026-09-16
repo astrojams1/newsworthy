@@ -14,6 +14,11 @@ Read `CLAUDE.md` for repository workflow and technical constraints, and
 - Keep admin views web-only. Preserve the web app alongside the mobile apps.
 - The shared interface uses Expo / React Native in `apps/client`. A browser view is not an iOS
   preview. Do not claim native builds or widgets are verified until tested.
+- For UI changes, run `npm run test:design` and extend its regression cases for
+  the reported defect. Follow `design/surfaces.json` and `design/README.md` across
+  web, iOS, Android and both widgets. Passing builds, shared palette generation,
+  or rendered-prop tests alone do not establish native visual parity; record
+  actual native verification and any untested states in the release ledger.
 - Follow `PROMPT-RULES.md`; never edit a published rating prompt in place or
   alter the scale to fit marketing copy.
 - Public AI-reader facts live in `public/llms.txt`. Authorized rating instructions

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T09:33:15+00:00",
+  "updated_at": "2026-09-16T10:13:03+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -244,26 +244,26 @@
       "updated_at": "2026-09-16T06:42:40+00:00"
     },
     "google.build": {
-      "state": "done",
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5.",
+      "summary": "Preview APK9 contains the verified denominator theme fix. Existing production AAB9 predates that fix and must not be submitted as final.",
       "evidence": [
-        "EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; downloads underway. Native verification and Play account eligibility remain separate gates."
+        "Preview bfb5310e-c8e1-41af-bc01-6037b17701b6 source 698071b; older production a55d6cc8-d3cf-41f3-ae88-6b2b29456151"
       ],
-      "next_action": "",
-      "updated_at": "2026-09-16T06:54:20+00:00"
+      "next_action": "Create and verify the final production AAB after PR92 integration; retain build provenance.",
+      "updated_at": "2026-09-16T10:13:03+00:00"
     },
     "google.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Android version 7 APK downloaded, archive checked and installed successfully on the emulator. Revised UI and widgets still need native verification.",
+      "summary": "APK9 native light/dark app and expanded widget theme transitions verified; owner-approved dark compact widget captured at actual 2x2",
       "evidence": [
-        "APK 104,436,147 bytes; SHA256 bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194. adb install Success; installed package versionName 1.0.0/versionCode 7. This proves installation, not visual behavior."
+        "store/source/android-phone/provenance-v9.json; android-widget-regression.json; new 2x2 native capture and launcher readback"
       ],
-      "next_action": "After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.",
-      "updated_at": "2026-09-16T07:03:19+00:00"
+      "next_action": "Verify compact light, score 10, enlarged text, replacement offline recovery and physical-device behavior. CI design contracts do not prove native layout.",
+      "updated_at": "2026-09-16T10:13:02+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -354,15 +354,15 @@
       "updated_at": "2026-09-16T07:19:02+00:00"
     },
     "google.artwork": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Replaced old reading gallery with actual APK9 light/dark captures and versioned assets. Widget-size comparison remains pending compact native capture.",
+      "summary": "APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps",
       "evidence": [
-        "store/preview-android.png visually inspected; manifest points to12-reading-light-v9.png and13-reading-dark-v9.png. Renderer/metadata validator passed. About excluded."
+        "store/assets/google-play/phone/03-widget-sizes-v9.png; widget-frames.json; image validation and visual inspection"
       ],
-      "next_action": "Add verified compact/expanded widget frames and regenerate first gallery image; keep actual widget surfaces on neutral canvas.",
-      "updated_at": "2026-09-16T09:33:15+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T10:09:19+00:00"
     },
     "design.reading-screen": {
       "state": "in_progress",
@@ -387,15 +387,15 @@
       "updated_at": "2026-09-16T07:19:02+00:00"
     },
     "design.widget-gallery": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Apple neutral small/medium gallery completed and uploaded; Android compact/expanded composition remains pending native resizing.",
+      "summary": "Both platform galleries feature actual widget size choices on neutral backgrounds",
       "evidence": [
-        "store/apple-gallery-verification.json; store/design/widget-gallery-brief.md"
+        "Apple submitted five-image gallery; Android APK9 compact/expanded gallery in store/assets/manifest.json"
       ],
-      "next_action": "When Android launcher resize handles are available, capture compact and expanded native widgets and replace Android artwork.",
-      "updated_at": "2026-09-16T07:50:27+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T10:09:19+00:00"
     },
     "native.ios-widget-sizes": {
       "state": "done",
@@ -442,15 +442,26 @@
       "updated_at": "2026-09-16T07:48:41+00:00"
     },
     "google.widget-fix": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "APK9 downloaded, ZIP-validated and installed. Native light/dark/light expanded-widget denominator checks passed with zero worker starts during transitions. Current reading light/dark captures are complete. Launcher existing widget now reports minSpan2x2. Actual compact rendering remains pending; Mac relocked.",
+      "summary": "APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained",
       "evidence": [
-        "store/release.json artifact SHA25677d5c0c8da4ca6b33092949176cde4daa9677c079472379c9a191546741cc185; source/android-phone/provenance-v9.json and theme screenshots. Native launcher keyboard focus worked, but Ctrl+W/Menu/Ctrl+R did not open picker/resize popup. Store renderer/validator passed for current reading gallery."
+        "store/source/android-phone/14-widget-compact-dark-v9.png; provenance-v9.json; android-widget-regression.json; launcher span/minSpan 2x2"
       ],
-      "next_action": "Owner unlocks Mac and leaves widget at2x2 using long-press resize handles; alternatively inspect emulator keyboard routing when available. Capture compact and expanded, finish gallery, then final production AAB and PR92.",
-      "updated_at": "2026-09-16T09:33:15+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T10:09:18+00:00"
+    },
+    "design.regression": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "189 repository tests pass locally. New design gate rejects historical b5571c5 expanded XML and 922a9b1 inline theme override; 192 reading-render combinations and 12 deliberate regressions pass.",
+      "evidence": [
+        "npm test: 189/189; npm run test:design: 19/19; npm run check:app; test/surface-design.test.js; design/README.md"
+      ],
+      "next_action": "Push PR92 and verify CI design gate; tests check design contracts/rendered props, not native screenshot layout",
+      "updated_at": "2026-09-16T10:11:05+00:00"
     }
   },
   "events": [
@@ -1985,6 +1996,118 @@
         ],
         "next_action": "Add verified compact/expanded widget frames and regenerate first gallery image; keep actual widget surfaces on neutral canvas.",
         "updated_at": "2026-09-16T09:33:15+00:00"
+      }
+    },
+    {
+      "sequence": 96,
+      "at": "2026-09-16T10:09:18+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained",
+        "evidence": [
+          "store/source/android-phone/14-widget-compact-dark-v9.png; provenance-v9.json; android-widget-regression.json; launcher span/minSpan 2x2"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T10:09:18+00:00"
+      }
+    },
+    {
+      "sequence": 97,
+      "at": "2026-09-16T10:09:19+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps",
+        "evidence": [
+          "store/assets/google-play/phone/03-widget-sizes-v9.png; widget-frames.json; image validation and visual inspection"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T10:09:19+00:00"
+      }
+    },
+    {
+      "sequence": 98,
+      "at": "2026-09-16T10:09:19+00:00",
+      "gate": "design.widget-gallery",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Both platform galleries feature actual widget size choices on neutral backgrounds",
+        "evidence": [
+          "Apple submitted five-image gallery; Android APK9 compact/expanded gallery in store/assets/manifest.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T10:09:19+00:00"
+      }
+    },
+    {
+      "sequence": 99,
+      "at": "2026-09-16T10:09:19+00:00",
+      "gate": "design.regression",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Cross-surface design tests pass locally and reject historical APK7 and APK8 designs; full suite and CI pending",
+        "evidence": [
+          "test/surface-design.test.js; design/surfaces.json; 192 app rendered-prop combinations plus native XML/Swift/Java contracts and 12 deliberate regression checks"
+        ],
+        "next_action": "Finish npm test, push PR92 and verify the named CI design gate",
+        "updated_at": "2026-09-16T10:09:19+00:00"
+      }
+    },
+    {
+      "sequence": 100,
+      "at": "2026-09-16T10:11:05+00:00",
+      "gate": "design.regression",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "189 repository tests pass locally. New design gate rejects historical b5571c5 expanded XML and 922a9b1 inline theme override; 192 reading-render combinations and 12 deliberate regressions pass.",
+        "evidence": [
+          "npm test: 189/189; npm run test:design: 19/19; npm run check:app; test/surface-design.test.js; design/README.md"
+        ],
+        "next_action": "Push PR92 and verify CI design gate; tests check design contracts/rendered props, not native screenshot layout",
+        "updated_at": "2026-09-16T10:11:05+00:00"
+      }
+    },
+    {
+      "sequence": 101,
+      "at": "2026-09-16T10:13:02+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "APK9 native light/dark app and expanded widget theme transitions verified; owner-approved dark compact widget captured at actual 2x2",
+        "evidence": [
+          "store/source/android-phone/provenance-v9.json; android-widget-regression.json; new 2x2 native capture and launcher readback"
+        ],
+        "next_action": "Verify compact light, score 10, enlarged text, replacement offline recovery and physical-device behavior. CI design contracts do not prove native layout.",
+        "updated_at": "2026-09-16T10:13:02+00:00"
+      }
+    },
+    {
+      "sequence": 102,
+      "at": "2026-09-16T10:13:03+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Preview APK9 contains the verified denominator theme fix. Existing production AAB9 predates that fix and must not be submitted as final.",
+        "evidence": [
+          "Preview bfb5310e-c8e1-41af-bc01-6037b17701b6 source 698071b; older production a55d6cc8-d3cf-41f3-ae88-6b2b29456151"
+        ],
+        "next_action": "Create and verify the final production AAB after PR92 integration; retain build provenance.",
+        "updated_at": "2026-09-16T10:13:03+00:00"
       }
     }
   ],

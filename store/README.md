@@ -13,9 +13,10 @@ Android version 7 exposed a widget refresh loop that flickers and interrupts
 resizing. APK8 passed idle and scheduled-refresh checks without recurring
 widget recreation. A theme switch exposed a separate denominator contrast issue;
 APK9 is installed and passed native light/dark/light widget transitions. Current
-reading images are refreshed from APK9. The launcher now reports minimum2×2,
-but actual compact rendering still needs a capture. The earlier production AAB9
-needs replacement. The Android preview below is provisional. Google account verification
+reading and widget images are refreshed from APK9. The owner approved the smaller
+widget; its actual 2×2 rendering and launcher span are now verified. The gallery
+compares compact and expanded captures at one scale on a neutral canvas. The
+earlier production AAB9 needs replacement. Google account verification
 still blocks app creation. See the ledger for current gates and exact next actions.
 
 ![iPhone listing artwork](preview.png)
@@ -61,8 +62,8 @@ still blocks app creation. See the ledger for current gates and exact next actio
 - **Android binary:** corrected preview APK8 installed and production AAB9
   downloaded/ZIP-validated. One persistent periodic job replaces the refresh
   loop. Native logs show zero widget recreations in 65 seconds versus 30 in
-  34 seconds before the fix, and the small baseline `/10` is visible. Fresh
-  compact/expanded resizing and gallery capture remain pending. Build hashes
+  34 seconds before the fix. APK9 additionally passed theme transitions and
+  compact 2×2 rendering; its compact/expanded gallery is complete. Build hashes
   and scope are in `release.json` and `android-widget-regression.json`.
 - **Apple review details:** contact information, phone, no-login requirement,
   and review notes saved and verified. Private contact details are not in Git.
@@ -114,9 +115,11 @@ excluded from the current gallery.
 The widget renderer expects `source/android-phone/widget-frames.json` to identify
 actual compact/expanded captures, viewport bounds, and the verified `versionCode`.
 It then creates a versioned widget comparison as the first Android gallery image.
-The expanded widget passed light→dark→light contrast checks without a worker run;
-compact sizing is not yet verified visually. A 2×2 launcher minimum is metadata
-evidence, not a substitute for inspecting the compact widget.
+The expanded widget passed light→dark→light contrast checks without a worker run.
+The compact dark capture shows the actual 2×2 state approved by the owner, with
+launcher span/minimum independently read back as 2×2. Compact light, score 10,
+large text and physical-device checks remain unverified. Automated design-contract
+coverage and its limits are documented in [the design system](../design/README.md).
 
 The pasted macOS crash report identified Android Emulator startup, not
 Newsworthy. Local emulator library/resource paths were corrected, and the

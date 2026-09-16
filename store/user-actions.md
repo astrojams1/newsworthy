@@ -119,18 +119,17 @@ refresh without recurring widget recreation. APK9 is installed and passed native
 light→dark→light widget contrast checks. Current light/dark reading images are
 captured; the earlier production AAB9 must be replaced after sizing verification.
 
-A fresh compact/expanded resize check is pending. The launcher now reports a
-2×2 minimum for the existing widget, but actual compact rendering is not yet
-captured. The control tool could focus the widget but did not expose its resize
-popup through the available shortcut routing. With the Mac unlocked, press and
-hold the widget, then drag its handles to 2×2. Leave it at that size for capture.
-The agent can finish the gallery once that native state is available.
+The owner resized the widget and approved its compact appearance. The agent
+captured and inspected the native 2×2 dark widget, verified launcher span/minimum,
+and completed the neutral compact/expanded gallery. No further owner resizing
+step is needed. Cross-surface design-contract tests now enforce typography,
+baseline alignment, theme bindings and minimum sizing in CI.
 
 The remaining technical release work is:
 
-- Finish Android compact/expanded resize verification and capture updated native
-  widget and reading images. Frame the real widget surfaces on a neutral canvas,
-  without unrelated apps or stock wallpaper.
+- Build the final production Android AAB from the denominator/theme fix. Complete
+  remaining native verification (compact light, score 10 and enlarged text)
+  without claiming CI contract checks are native screenshot tests.
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
 - Observe Apple's replacement review result; do not submit another duplicate

@@ -41,6 +41,18 @@
     "displayType": "APP_IPAD_PRO_3GEN_129"
   },
   {
+    "file": "assets/google-play/phone/03-widget-sizes-v9.png",
+    "source": "source/android-phone/widget-frames.json",
+    "sources": [
+      "source/android-phone/14-widget-compact-dark-v9.png",
+      "source/android-phone/10-widget-dark-v9.png"
+    ],
+    "width": 1080,
+    "height": 1920,
+    "platform": "android",
+    "composition": "Actual native widget viewports on a neutral canvas."
+  },
+  {
     "file": "assets/google-play/phone/01-at-a-glance-v9.png",
     "source": "source/android-phone/12-reading-light-v9.png",
     "width": 1080,

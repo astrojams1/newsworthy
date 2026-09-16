@@ -1,0 +1,23 @@
+{
+  "widget": {
+    "compactScore": 52,
+    "expandedScore": 44,
+    "denominatorSize": 12,
+    "trackingEm": -0.04,
+    "androidDenominatorGap": 4,
+    "minimumDp": 120,
+    "minimumCells": 2,
+    "expandedMinWidth": 250,
+    "expandedMinHeight": 150,
+    "expandedExplanationLines": 2
+  },
+  "reading": {
+    "weight": "300",
+    "trackingEm": -0.055,
+    "denominatorPortrait": 20,
+    "denominatorLandscape": 17,
+    "denominatorGap": 9,
+    "maximumScore": 224,
+    "minimumPortraitScore": 64
+  }
+}

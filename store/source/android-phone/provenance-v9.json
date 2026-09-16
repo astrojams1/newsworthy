@@ -13,10 +13,10 @@
     "Expanded widget denominator baseline and light/dark/light contrast",
     "Zero worker starts during widget theme transition test, 17:14 through17:19",
     "Widget tap opens app; fresh light reading rendered",
-    "Native reading light/dark rendering and theme change on resume"
+    "Native reading light/dark rendering and theme change on resume",
+    "Compact widget rendered at actual 2x2 launcher size, with 52sp score and small baseline denominator; owner reports it looks good"
   ],
   "notVerified": [
-    "Fresh compact resize",
     "Physical Android device",
     "Large accessibility text"
   ],
@@ -40,6 +40,10 @@
     "13-reading-dark-v9.png": {
       "description": "Current native dark reading after resuming from system theme change; Privacy/Support footer, no About.",
       "sha256": "6f56c185f6693aaebc154c5ae9d2d187b91f110787be207aae28f36634825a34"
+    },
+    "14-widget-compact-dark-v9.png": {
+      "description": "User-approved compact widget, independently observed at launcher span 2x2 / minimum 2x2. Dark appearance.",
+      "sha256": "6df809679814e4ed2e5869ef570e28d17eb34dbb372d2c18448a64013bb0f3c7"
     }
   }
 }
