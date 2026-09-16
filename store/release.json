@@ -123,6 +123,18 @@
         "installedVersionCode": 8
       }
     ],
-    "widgetFixVersionNote": "Preview APK is versionCode 8; production retry is versionCode 9. Initial production upload stalled before creating a build. Source commits differ only in release documentation; apps/client has no diff."
+    "widgetFixVersionNote": "Preview APK is versionCode 8; production retry is versionCode 9. Initial production upload stalled before creating a build. Source commits differ only in release documentation; apps/client has no diff.",
+    "themeFixBuild": {
+      "id": "bfb5310e-c8e1-41af-bc01-6037b17701b6",
+      "profile": "preview",
+      "version": "1.0.0",
+      "build": "9",
+      "sourceCommit": "698071b0a92da20f0647348464508425c8487b16",
+      "sourceDirty": false,
+      "status": "IN_PROGRESS",
+      "purpose": "Verify denominator color follows native light/dark theme without waiting for widget refresh."
+    },
+    "productionBuildRequiresReplacement": true,
+    "productionReplacementReason": "AAB9 predates denominator theme-switch fix; validate preview APK9 before final production build."
   }
 }

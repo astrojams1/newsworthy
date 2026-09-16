@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T08:51:20+00:00
+Updated: 2026-09-16T08:54:07+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -49,7 +49,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
 | apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
-| google.widget-fix | in_progress | agent | observed | Native dark-to-light theme switch exposed pale /10 retaining dark-theme color. Replaced resolved inline color span with separate baseline-aligned TextView using XML theme color. 175 tests and Android prebuild pass; replacement native verification pending. | Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB. |
+| google.widget-fix | in_progress | agent | observed | Theme-fix preview APK9 accepted by EAS as bfb5310e-c8e1-41af-bc01-6037b17701b6 from clean commit 698071b. Existing production AAB9 predates this theme fix and must be replaced after preview verification. | Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle. |
 
 ## Evidence and history
 
@@ -905,3 +905,13 @@ Native dark-to-light theme switch exposed pale /10 retaining dark-theme color. R
 - source/android-phone/07-widget-theme-switch-v8.png and provenance-v8.json preserve actual capture; android-widget-regression.json records scope. Source fix applies to both compact and expanded layouts.
 
 Next: Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB.
+
+### 91. google.widget-fix — in_progress
+
+2026-09-16T08:54:07+00:00 · observed · agent
+
+Theme-fix preview APK9 accepted by EAS as bfb5310e-c8e1-41af-bc01-6037b17701b6 from clean commit 698071b. Existing production AAB9 predates this theme fix and must be replaced after preview verification.
+
+- EAS build request returned NEW, appBuildVersion9, source commit698071b0a92da20f0647348464508425c8487b16. Build watcher downloads and ZIP-checks artifact; no duplicate production build started.
+
+Next: Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle.

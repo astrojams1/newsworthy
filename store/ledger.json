@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T08:51:20+00:00",
+  "updated_at": "2026-09-16T08:54:07+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -445,12 +445,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Native dark-to-light theme switch exposed pale /10 retaining dark-theme color. Replaced resolved inline color span with separate baseline-aligned TextView using XML theme color. 175 tests and Android prebuild pass; replacement native verification pending.",
+      "summary": "Theme-fix preview APK9 accepted by EAS as bfb5310e-c8e1-41af-bc01-6037b17701b6 from clean commit 698071b. Existing production AAB9 predates this theme fix and must be replaced after preview verification.",
       "evidence": [
-        "source/android-phone/07-widget-theme-switch-v8.png and provenance-v8.json preserve actual capture; android-widget-regression.json records scope. Source fix applies to both compact and expanded layouts."
+        "EAS build request returned NEW, appBuildVersion9, source commit698071b0a92da20f0647348464508425c8487b16. Build watcher downloads and ZIP-checks artifact; no duplicate production build started."
       ],
-      "next_action": "Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB.",
-      "updated_at": "2026-09-16T08:51:20+00:00"
+      "next_action": "Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle.",
+      "updated_at": "2026-09-16T08:54:07+00:00"
     }
   },
   "events": [
@@ -1905,6 +1905,22 @@
         ],
         "next_action": "Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB.",
         "updated_at": "2026-09-16T08:51:20+00:00"
+      }
+    },
+    {
+      "sequence": 91,
+      "at": "2026-09-16T08:54:07+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Theme-fix preview APK9 accepted by EAS as bfb5310e-c8e1-41af-bc01-6037b17701b6 from clean commit 698071b. Existing production AAB9 predates this theme fix and must be replaced after preview verification.",
+        "evidence": [
+          "EAS build request returned NEW, appBuildVersion9, source commit698071b0a92da20f0647348464508425c8487b16. Build watcher downloads and ZIP-checks artifact; no duplicate production build started."
+        ],
+        "next_action": "Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle.",
+        "updated_at": "2026-09-16T08:54:07+00:00"
       }
     }
   ],
