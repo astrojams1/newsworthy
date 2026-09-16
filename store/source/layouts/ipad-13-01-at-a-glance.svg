@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2064" height="2752" viewBox="0 0 2064 2752">
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#EFF8F2"/><stop offset="1" stop-color="#B6DCCA"/></linearGradient><clipPath id="screen"><rect x="262" y="480" width="1540" height="2053" rx="35"/></clipPath></defs>
+  <rect width="2064" height="2752" fill="url(#bg)"/>
+  <rect x="118" y="98" width="42" height="6" rx="3" fill="#3F685E"/>
+  <text x="182" y="114" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#3F685E" letter-spacing="6">NEWSWORTHY</text>
+  <text x="118" y="274" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="99" fill="#142C28" font-weight="500" letter-spacing="-4">The world, at a glance.</text>
+  <text x="120" y="353" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="42" fill="#3F685E" >A number out of 10. One sentence explaining why.</text>
+  <rect x="240" y="458" width="1584" height="2097" rx="56" fill="#101514"/>
+  <image x="262" y="480" width="1540" height="2053" clip-path="url(#screen)" xlink:href="../ipad-13/01-reading-light.png"/>
+  <text x="1032" y="2682" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="32" fill="#3F685E" text-anchor="middle">No feed. No ads. No subscription.</text>
+  </svg>

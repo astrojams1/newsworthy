@@ -123,7 +123,12 @@ access. Internal testing alone does not meet this requirement. See
   The widget plugin now explicitly includes Android Guava. A replacement build
   (version code 4) finished successfully:
   [12c77b26-8035-469a-ba7a-3ed613cc2ef7](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/12c77b26-8035-469a-ba7a-3ed613cc2ef7).
-  The signed AAB is available; Android device/runtime verification is pending.
+  Version 4 is superseded by version 6 below.
+  Native inspection found missing SVG gradients/icons because Android expo-image
+  expects base64 data URLs. The app now encodes Android SVGs accordingly.
+  Production version 6 and its preview APK both finished successfully; their
+  IDs are in `store/release.json`. Final visual verification and Android listing
+  capture are paused until the host Mac is unlocked.
 - iOS custom simulator build compiled successfully, including the widget:
   [a92ddf2a-2b9b-47ca-a343-d588ab38e99d](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/a92ddf2a-2b9b-47ca-a343-d588ab38e99d).
   Installed on iPhone 16 Pro / iOS 18.3. Native launch exposed an Expo Head
@@ -137,14 +142,16 @@ access. Internal testing alone does not meet this requirement. See
   sharing sheet were verified. Full device and widget checks remain pending.
   A newer simulator release build including the configurable widget layout
   finished successfully: [1a4edab8-6c4c-4133-ab32-62c45fd0a7f9](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/1a4edab8-6c4c-4133-ab32-62c45fd0a7f9).
-  Its runtime checks remain pending.
+  The current simulator release has since been checked on iPhone and iPad,
+  including the iPhone medium widget. Capture provenance and artwork are in the
+  [store release hub](../store/README.md).
 - Apple confirmed the James Thompson team's renewal through September 15, 2027;
   App Store Connect recognizes the active membership after refreshing.
   Both `com.astrojams.newsworthy` and its `.widget` identifier are registered.
   [Newsworthy: Calm News](https://appstoreconnect.apple.com/apps/6812519450/distribution)
   is created in Prepare for Submission. The shorter name was already taken.
-  Listing copy, subtitle, privacy-policy URL and News category are saved, but
-  saving the review details still requires a contact phone number.
+  Listing copy, subtitle, privacy-policy URL, News category, review contact
+  (including phone), and review notes are saved.
   The saved Apple Current Price table confirms a US$1.00 base price and local
   prices in the other regions. The Paid Apps Agreement is still New. The
   legal-address correction did not persist after verification; Apple's
@@ -155,17 +162,19 @@ access. Internal testing alone does not meet this requirement. See
   for `Newsworthy` and `NewsworthyWidget`.
   Signed production iOS build 5 finished successfully:
   [34e8a094-c122-4770-9bf6-611f70f671ab](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/34e8a094-c122-4770-9bf6-611f70f671ab).
-  Its [App Store Connect upload](https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/4a6398aa-658c-49c0-a909-c09209dd5021)
-  is queued. This is a binary upload, not an App Review submission or a public
-  release. Upload completion and Apple processing still need verification.
+  The stalled [EAS submission](https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/4a6398aa-658c-49c0-a909-c09209dd5021)
+  was canceled and replaced with a successful direct Apple `altool` upload.
+  Apple build `805f70f3-09a4-4111-afd2-bf04bb99e30d` is `VALID` and selected for
+  version 1.0.0. Three iPhone and two iPad listing screenshots are `COMPLETE`.
+  This is not an App Review submission or a public release.
 - Google Play developer registration and its fee are complete. Play Console
-  disables app creation until account verification is complete: government ID
-  and address documents, access to a real Android device through the Play Console
-  mobile app, then contact phone verification. These are pending. The Google
+  disables app creation until account verification is complete. Identity is now
+  verified successfully. Access to a real Android device through the Play Console
+  mobile app, then contact phone verification, remain pending. The Google
   developer profile already shows the corrected legal address.
 - Google Play pricing and both submissions for review remain pending. Record final
-  build results, device checks, store URLs and submission status here as each
-  becomes available.
+  build results, device checks, store URLs and submission status in the
+  [store release hub](../store/README.md). It is the canonical operational checklist.
 - Local release checks passed after updating Expo to 57.0.23: TypeScript,
   21 Expo Doctor checks, live API/policy/support checks, both native JavaScript
   exports and 175 repository tests (including the production web export).

@@ -62,7 +62,8 @@ widgets and the complete app package without updating local Xcode.
   rating-agent contract. A reading is score/explanation; a complete submission
   also carries the computed `prompt_sha256` provenance proof.
 - `README.md`, `CLAUDE.md`, `AGENTS.md`: developer and coding-agent guidance.
-- `docs/store-listing.md`: draft mobile listing, pending native verification.
+- `store/`: canonical mobile listing copy, native captures, artwork, upload scripts,
+  release evidence and account-owner steps; `docs/store-listing.md` points there.
 
 If the production domain or release status changes, update all applicable
 surfaces above, plus `mobile.release.json`. Search engines and social platforms

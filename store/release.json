@@ -1,0 +1,27 @@
+{
+  "verifiedDate": "2026-09-16",
+  "apple": {
+    "appId": "6812519450",
+    "appInfoId": "09033ad1-a920-419a-9aaa-63a094d5791b",
+    "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
+    "versionLocalizationId": "56ba180c-30af-4b0a-a65e-3fa27e7e2360",
+    "infoLocalizationId": "5e5c29c3-82d8-43e3-88a6-46199d1c5d55",
+    "productionBuild": "34e8a094-c122-4770-9bf6-611f70f671ab",
+    "submission": "4a6398aa-658c-49c0-a909-c09209dd5021",
+    "submissionStatus": "CANCELED_QUEUE_REPLACED_BY_DIRECT_UPLOAD",
+    "appleBuildId": "805f70f3-09a4-4111-afd2-bf04bb99e30d",
+    "appleBuildProcessingState": "VALID",
+    "screenshotBuild": "1a4edab8-6c4c-4133-ab32-62c45fd0a7f9",
+    "reviewSubmitted": false,
+    "reviewDetailsSaved": true,
+    "privacyPublication": "AWAITING_LEGAL_ATTESTATION"
+  },
+  "google": {
+    "productionBuild": "615799c2-7fb9-4342-b2f4-9a073d308884",
+    "screenshotBuild": "f3dddec5-23f3-4a41-8fd6-e0d4f79ee366",
+    "appCreated": false,
+    "reviewSubmitted": false,
+    "versionCode": 6,
+    "buildStatus": "FINISHED"
+  }
+}
