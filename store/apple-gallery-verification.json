@@ -1,0 +1,46 @@
+{
+  "observedAt": "2026-09-16T07:48:10.569Z",
+  "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+  "sets": [
+    {
+      "setId": "7e5eeec0-cde4-48b9-9cd4-d8cf96e42162",
+      "images": [
+        {
+          "id": "da87b8b7-9bb8-479e-aa16-17812131f8db",
+          "name": "02-widget-sizes-v2.png",
+          "state": "COMPLETE",
+          "checksum": "cb3313b3a3582c0a49bc15ca06e41a7e"
+        },
+        {
+          "id": "1cbb0501-0be3-4771-880b-397bdbd83b6f",
+          "name": "01-at-a-glance-v6.png",
+          "state": "COMPLETE",
+          "checksum": "6412f650cf5a375b9410a8db72c16382"
+        },
+        {
+          "id": "c436cb64-739b-45eb-90a6-011febb38e09",
+          "name": "03-dark-mode-v6.png",
+          "state": "COMPLETE",
+          "checksum": "b26b413831c95d6dff38b03e8d5d74cd"
+        }
+      ]
+    },
+    {
+      "setId": "d3a7afa4-c07e-4803-ba38-47ecead34f01",
+      "images": [
+        {
+          "id": "fea597b3-6342-4ac2-8334-22975ca5ac92",
+          "name": "01-at-a-glance-v6.png",
+          "state": "COMPLETE",
+          "checksum": "5e7b0c3bb08ef50faf7c47b9cbe3aaa9"
+        },
+        {
+          "id": "ce48fde6-0ab8-4e6d-bb2c-c12a0215f81e",
+          "name": "02-dark-mode-v6.png",
+          "state": "COMPLETE",
+          "checksum": "a15593bd615e2a76d55162b3d951f58c"
+        }
+      ]
+    }
+  ]
+}

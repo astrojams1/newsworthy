@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T07:11:08+00:00
+Updated: 2026-09-16T07:59:54+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -20,13 +20,13 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | user | observed | Owner published diagnostics/performance collection for app functionality, linked to user, no tracking. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
-| apple.listing | in_progress | agent | observed | Widget-first order is saved remotely, but owner rejected the existing cluttered Home Screen image. It is superseded for final listing use. | Replace old widget image with verified clean small/medium native captures, refresh reading images, then validate the final gallery before resubmitting. |
+| apple.listing | done | agent | observed | All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed. | — |
 | apple.build | done | agent | observed | Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5. | — |
-| apple.native | in_progress | agent | observed | Replacement simulator artifact downloaded and installed on the booted iPhone simulator; visual checks and new captures await Mac unlock. | After unlock, verify revised reading screen, privacy/support links, share, offline recovery, large text, and both widget sizes; capture clean neutral Home Screen images and updated iPhone/iPad reading screens. |
+| apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | in_progress | agent | observed | Replacement build 6 is valid and selected; current version is PREPARE_FOR_SUBMISSION. The withdrawn old review is complete; no replacement review has been submitted. | After Mac unlock, finish native checks and the clean neutral-background widget-size gallery, verify uploaded replacements, then create and submit the replacement review. |
-| apple.release | in_progress | agent | observed | Public release is not achieved. The replacement version is being prepared; no active review is awaiting Apple. | Complete and submit the replacement review, resolve owner/provider commercial-readiness gates, then verify approved paid public availability. |
+| apple.review | waiting_provider | provider | observed | Replacement build 6 submitted successfully with corrected widget-first gallery; both review submission and version are WAITING_FOR_REVIEW. | Wait for Apple review result; resolve banking/paid agreement and legal-address correction before paid public availability. |
+| apple.release | waiting_provider | provider | observed | Replacement build 6 is waiting for Apple review; public release not yet achieved. Paid agreement/banking and address correction remain separate gates. | Verify Apple approval, paid-sale readiness and public availability; do not equate review submission with release. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
@@ -40,11 +40,16 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.review | todo | agent | observed | No Google release submitted for review. | Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state. |
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
 | apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
-| host.ui | waiting_user | user | observed | Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check. | Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved. |
+| host.ui | done | agent | observed | Native UI access restored after the Mac was unlocked. | — |
 | google.artwork | in_progress | agent | observed | The old version-6 artwork set is superseded. About art is removed, and clean widget-size captures plus version-7 reading captures are pending. | Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done. |
 | design.reading-screen | in_progress | agent | observed | Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback. | Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery. |
-| native.ui-access | waiting_user | user | observed | Mac locked again; native app-control tool could not unlock it. | Owner unlocks Mac; resume native UI checks and captures. |
-| design.widget-gallery | in_progress | agent | observed | Owner requests clean widget imagery: no unrelated icons, show supported size options, and use plain neutral wallpaper that does not compete with widget colors. | After unlock, set neutral wallpaper on capture devices and verify/capture iOS small and medium plus Android compact and expanded layouts; replace remote old widget screenshot before resubmitting. |
+| native.ui-access | done | agent | observed | Mac is now unlocked; native Android Emulator and iOS Simulator accessibility/screenshot controls are available. | — |
+| design.widget-gallery | in_progress | agent | observed | Apple neutral small/medium gallery completed and uploaded; Android compact/expanded composition remains pending native resizing. | When Android launcher resize handles are available, capture compact and expanded native widgets and replace Android artwork. |
+| native.ios-widget-sizes | done | agent | observed | Replacement small and medium iOS widgets verified on iPhone 16 Pro Max iOS 18.3; clean neutral artwork rendered from actual widget viewports. | — |
+| native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
+| apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
+| apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
+| google.widget-fix | in_progress | agent | observed | Owner observed flicker, resize resets and oversized /10. Android logs confirm one-time WorkManager completion toggles RescheduleReceiver, PACKAGE_CHANGED recreates widget and starts another worker about every second. | Build and install corrected APK; verify idle logs stop looping, compact/expanded resizing persists, score styling matches iOS, then recapture Android gallery. |
 
 ## Evidence and history
 
@@ -706,3 +711,127 @@ The old version-6 artwork set is superseded. About art is removed, and clean wid
 - PR90 retired About and cluttered iPhone widget artwork. Current manifest contains only older reading-screen captures; widget-gallery-brief.md defines required clean neutral backgrounds and size variants.
 
 Next: Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done.
+
+### 70. native.ui-access — done
+
+2026-09-16T07:19:02+00:00 · observed · agent
+
+Mac is now unlocked; native Android Emulator and iOS Simulator accessibility/screenshot controls are available.
+
+- CUA opened Android Emulator window and rendered a live Newsworthy widget; Simulator exposes Home Screen controls and widget edit-mode accessibility actions.
+
+### 71. host.ui — done
+
+2026-09-16T07:19:02+00:00 · observed · agent
+
+Native UI access restored after the Mac was unlocked.
+
+- Live Android and iOS simulator state returned through CUA.
+
+### 72. native.ios-widget-sizes — done
+
+2026-09-16T07:41:18+00:00 · observed · agent
+
+Replacement small and medium iOS widgets verified on iPhone 16 Pro Max iOS 18.3; clean neutral artwork rendered from actual widget viewports.
+
+- store/source/iphone-6.9/provenance.json; store/assets/apple/iphone-6.9/02-widget-sizes-v2.png. Small tap opens app. Medium preserves native two-line truncation.
+
+### 73. native.ios-replacement-ui — in_progress
+
+2026-09-16T07:41:18+00:00 · observed · agent
+
+Replacement iPhone light/dark reading screens captured; About absent; Privacy and Support links open correct published pages.
+
+- store/source/iphone-6.9/provenance.json
+
+Next: Finish iPad/Android captures and remaining native checks; replace remote Apple gallery before resubmission.
+
+### 74. apple.gallery-order — done
+
+2026-09-16T07:48:41+00:00 · observed · agent
+
+Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed.
+
+- store/apple-gallery-verification.json
+
+### 75. apple.widget-gallery-revision — done
+
+2026-09-16T07:48:41+00:00 · observed · agent
+
+Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE.
+
+- store/apple-gallery-verification.json; store/source/iphone-6.9/provenance.json
+
+### 76. apple.listing — done
+
+2026-09-16T07:50:27+00:00 · observed · agent
+
+All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed.
+
+- store/apple-gallery-verification.json; capture provenance in store/source/iphone-6.9 and ipad-13
+
+### 77. apple.native — done
+
+2026-09-16T07:50:27+00:00 · observed · agent
+
+Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open.
+
+- store/source/iphone-6.9/provenance.json; store/source/ipad-13/provenance.json. Verification is simulator-scoped; physical-device, replacement offline and large-text checks are not claimed.
+
+### 78. design.widget-gallery — in_progress
+
+2026-09-16T07:50:27+00:00 · observed · agent
+
+Apple neutral small/medium gallery completed and uploaded; Android compact/expanded composition remains pending native resizing.
+
+- store/apple-gallery-verification.json; store/design/widget-gallery-brief.md
+
+Next: When Android launcher resize handles are available, capture compact and expanded native widgets and replace Android artwork.
+
+### 79. apple.review — in_progress
+
+2026-09-16T07:50:58+00:00 · observed · agent
+
+Created replacement review draft 4f28761f-3096-4f0d-aa37-df83332f818f with build 6 version item; submission request sent, awaiting provider readback.
+
+- Apple draft READY_FOR_REVIEW and item NGYyODc2MWYtMzA5Ni00ZjBkLWFhMzctZGY4MzMzMmY4MThmfDZ8ODkxNDI4ODYw returned from API.
+
+Next: Read back replacement submission and version state; do not retry uncertain submission.
+
+### 80. apple.review — waiting_provider
+
+2026-09-16T07:52:45+00:00 · observed · provider
+
+Replacement build 6 submitted successfully with corrected widget-first gallery; both review submission and version are WAITING_FOR_REVIEW.
+
+- Submission 4f28761f-3096-4f0d-aa37-df83332f818f submitted 2026-09-16T07:50:46.874Z; version 267c6f52-d22d-4cb0-bb4c-d22f280b4499 read back WAITING_FOR_REVIEW with build b62a9dc5-1b0c-4200-8830-68db021bb0cd.
+
+Next: Wait for Apple review result; resolve banking/paid agreement and legal-address correction before paid public availability.
+
+### 81. apple.release — waiting_provider
+
+2026-09-16T07:52:45+00:00 · observed · provider
+
+Replacement build 6 is waiting for Apple review; public release not yet achieved. Paid agreement/banking and address correction remain separate gates.
+
+- Version and replacement submission WAITING_FOR_REVIEW on 2026-09-16; automatic release after approval configured.
+
+Next: Verify Apple approval, paid-sale readiness and public availability; do not equate review submission with release.
+
+### 82. native.ios-replacement-ui — done
+
+2026-09-16T07:52:45+00:00 · observed · agent
+
+Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens.
+
+- Native capture provenance JSON files; physical-device, replacement offline and large-text checks remain unclaimed.
+
+### 83. google.widget-fix — in_progress
+
+2026-09-16T07:59:54+00:00 · observed · agent
+
+Owner observed flicker, resize resets and oversized /10. Android logs confirm one-time WorkManager completion toggles RescheduleReceiver, PACKAGE_CHANGED recreates widget and starts another worker about every second.
+
+- 2026-09-16 emulator log captured in private /tmp/newsworthy-android-widget-log.txt; package-change/onUpdate/worker loop reproduced. Fix source uses one persistent periodic job, persisted saved status, compact layout and smaller baseline denominator.
+
+Next: Build and install corrected APK; verify idle logs stop looping, compact/expanded resizing persists, score styling matches iOS, then recapture Android gallery.

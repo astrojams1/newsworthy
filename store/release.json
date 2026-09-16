@@ -12,21 +12,21 @@
     "appleBuildId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
     "appleBuildProcessingState": "VALID",
     "screenshotBuild": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
-    "reviewSubmitted": false,
+    "reviewSubmitted": true,
     "reviewDetailsSaved": true,
     "privacyPublication": "PUBLISHED",
     "addressCorrectionRequest": "SUBMITTED_AWAITING_APPLE_REVIEW",
     "paidAppsAgreement": "PENDING_USER_INFO",
     "dsaCompliance": "ACTIVE",
     "w9Status": "ACTIVE",
-    "reviewSubmissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
-    "reviewState": "PREPARE_FOR_SUBMISSION",
-    "reviewSubmittedDate": "2026-09-16T04:53:38.974Z",
+    "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
+    "reviewState": "WAITING_FOR_REVIEW",
+    "reviewSubmittedDate": "2026-09-16T07:50:46.874Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,
     "availableInNewTerritories": true,
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
-    "reviewSubmissionState": "COMPLETE",
+    "reviewSubmissionState": "WAITING_FOR_REVIEW",
     "reviewWithdrawalReason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets.",
     "replacementBuildRequired": false,
     "replacementBuilds": [
@@ -52,14 +52,14 @@
         "status": "FINISHED"
       }
     ],
-    "widgetArtworkStatus": "REPLACE_WITH_CLEAN_NEUTRAL_BACKGROUND_SMALL_AND_MEDIUM_CAPTURE",
+    "widgetArtworkStatus": "NEUTRAL_SMALL_MEDIUM_ARTWORK_COMPLETE_ON_APPLE",
     "replacementUpload": {
       "build": "6",
       "deliveryId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
       "status": "VALID",
       "sha256": "032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5"
     },
-    "replacementNativeVerification": "PENDING_MAC_UNLOCK_AND_NATIVE_UI_CHECKS"
+    "replacementNativeVerification": "IPHONE_IPAD_LIGHT_DARK_AND_IPHONE_WIDGETS_VERIFIED_SIMULATOR_SCOPE"
   },
   "google": {
     "productionBuild": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",
@@ -69,7 +69,7 @@
     "versionCode": 7,
     "buildStatus": "FINISHED",
     "artworkStatus": "REVISION_PENDING_NATIVE_CAPTURES",
-    "nativeVerification": "V7_PENDING_MAC_UNLOCK_AND_NATIVE_UI_CHECKS",
+    "nativeVerification": "V7_INSTALLED_EXPANDED_WIDGET_OBSERVED_COMPACT_RESIZE_PENDING",
     "replacementBuilds": [
       {
         "id": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",

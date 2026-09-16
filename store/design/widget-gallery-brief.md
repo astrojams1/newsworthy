@@ -30,10 +30,32 @@ capture is superseded for final listing use; do not submit it again as final art
   Inspect all clipping, truncation, labels, touch-to-open behavior and theme
   contrast before uploading. Save platform/build/runtime/size provenance.
 
+## Neutral composition fallback
+
+The iOS 18.3 simulator does not expose Wallpaper settings. The final iPhone
+artboard therefore frames actual native small and medium widget surfaces as
+close-ups on a plain warm off-white (`#F4F3EF`) vector canvas. Original full-screen
+captures remain intact in `source/iphone-6.9/04-widget-sizes-native.png`. This is
+an editorial composition, not a claim that the simulator Home Screen wallpaper
+was changed. No UI, score, explanation or timestamp is generated or retouched.
+The two sizes retain the same scale relative to one another. Rounded viewport
+masks exclude the wallpaper outside each widget.
+
 ## Current evidence and next action
 
-Code supports the sizes above (`NewsworthyWidget.swift` and
-`plugins/widget-android`). Only the older iOS medium widget has been visually
-verified. Small iOS, Android resizing, and clean replacement captures remain
-unverified. Native UI control is currently blocked by the locked Mac; an unlock
-request is pending. Cloud builds and binary processing can proceed independently.
+The Mac is unlocked. Replacement iOS simulator build from commit `b5571c5` is
+installed on iPhone 16 Pro Max / iOS 18.3. Small and medium widgets were added
+through SpringBoard's native widget picker and captured. Both show the actual
+3/10 reading and original timestamp. Medium truncates a long explanation after
+two lines; the gallery preserves that behavior. Small tap-to-open works.
+Revised light/dark iPhone reading captures are saved, with no About and the
+Privacy/Support footer visible. See the adjacent capture provenance JSON.
+
+Android version 7 expanded rendering was captured as diagnostic evidence in
+`source/android-phone/05-widget-expanded-v7.png`, not final artwork. The owner
+observed flicker, resize resets and the oversized denominator. Native logs show
+a one-time WorkManager completion → component/package change → widget onUpdate
+→ new worker loop about every second. This recreates the widget during resizing.
+Source fixes are pending a replacement APK and native verification; do not use
+version 7 for final widget marketing. Replacement iPad light/dark captures are
+complete and the corrected Apple gallery is uploaded and waiting for review.
