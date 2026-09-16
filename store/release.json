@@ -66,14 +66,14 @@
     }
   },
   "google": {
-    "productionBuild": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",
-    "screenshotBuild": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
+    "productionBuild": "a55d6cc8-d3cf-41f3-ae88-6b2b29456151",
+    "screenshotBuild": "c18fb254-3145-4e69-b7f5-906b3c0621e1",
     "appCreated": false,
     "reviewSubmitted": false,
-    "versionCode": 7,
+    "versionCode": 9,
     "buildStatus": "FINISHED",
     "artworkStatus": "REVISION_PENDING_NATIVE_CAPTURES",
-    "nativeVerification": "V7_INSTALLED_EXPANDED_WIDGET_OBSERVED_COMPACT_RESIZE_PENDING",
+    "nativeVerification": "V8_INSTALLED_NO_REFRESH_LOOP_65_SECONDS_RESIZE_PENDING",
     "replacementBuilds": [
       {
         "id": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
@@ -97,7 +97,7 @@
         "sha256": "28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8"
       }
     ],
-    "widgetArtworkStatus": "BLOCKED_ON_V8_WIDGET_FIX_NATIVE_VERIFICATION",
+    "widgetArtworkStatus": "PENDING_V8_COMPACT_EXPANDED_CAPTURE",
     "widgetFixBuilds": [
       {
         "id": "a55d6cc8-d3cf-41f3-ae88-6b2b29456151",
@@ -106,7 +106,9 @@
         "build": "9",
         "sourceCommit": "2bd11797104e1fda158c24d6607644c61e66ccf6",
         "sourceDirty": false,
-        "status": "IN_PROGRESS"
+        "status": "FINISHED",
+        "sha256": "423c72392e272262e8a6d2074e36efd77112923dd647310ab20e6dc79dda9733",
+        "bytes": 72474455
       },
       {
         "id": "c18fb254-3145-4e69-b7f5-906b3c0621e1",
@@ -115,7 +117,10 @@
         "build": "8",
         "sourceCommit": "922a9b19f26a750df0867d0c3e1bdf4b6672ceba",
         "sourceDirty": false,
-        "status": "IN_PROGRESS"
+        "status": "FINISHED",
+        "sha256": "f4f5b72c2538231d80876b3739e431fbdbd8ccf1f1b6a836c1ac3936a9a92d14",
+        "bytes": 104436991,
+        "installedVersionCode": 8
       }
     ],
     "widgetFixVersionNote": "Preview APK is versionCode 8; production retry is versionCode 9. Initial production upload stalled before creating a build. Source commits differ only in release documentation; apps/client has no diff."

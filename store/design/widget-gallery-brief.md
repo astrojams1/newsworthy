@@ -19,7 +19,7 @@ capture is superseded for final listing use; do not submit it again as final art
   medium adds the news sentence. Do not advertise a complete sentence in small.
 - Android implements a horizontally/vertically resizable widget. Capture its
   compact and expanded layouts through the actual launcher resize controls.
-  The explanation becomes visible at the implemented height threshold. Label
+  The explanation becomes visible when both width and height pass the compact thresholds. Label
   them compact/expanded unless the actual launcher grid size has been verified.
 - Prefer one lead image showing both supported layouts clearly, followed by the
   approved reading screen and dark appearance. Add a second widget close-up only
@@ -56,6 +56,10 @@ Android version 7 expanded rendering was captured as diagnostic evidence in
 observed flicker, resize resets and the oversized denominator. Native logs show
 a one-time WorkManager completion → component/package change → widget onUpdate
 → new worker loop about every second. This recreates the widget during resizing.
-Source fixes are pending a replacement APK and native verification; do not use
-version 7 for final widget marketing. Replacement iPad light/dark captures are
+Corrected APK8 is installed, and AAB9 is downloaded and ZIP-validated. Native
+logs show zero worker restarts or widget recreations over 65 seconds; the small
+baseline `/10` is visible. Automated drags on the resize controls inherited from
+the older build did not change the settled size. A fresh owner resize attempt
+is pending because CUA cannot reliably send the sustained Android press.
+Do not mark compact sizing verified or use version 7 for final widget marketing. Replacement iPad light/dark captures are
 complete and the corrected Apple gallery is uploaded and waiting for review.

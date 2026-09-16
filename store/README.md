@@ -10,8 +10,9 @@ without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
 
 Android version 7 exposed a widget refresh loop that flickers and interrupts
-resizing. Corrected Android builds and native regression verification are in
-progress; the Android preview below is provisional. Google account verification
+resizing. Corrected APK8 is installed and AAB9 is downloaded. A 65-second
+native log check found no repeat workers or widget recreations; fresh compact
+resize verification remains pending. The Android preview below is provisional. Google account verification
 still blocks app creation. See the ledger for current gates and exact next actions.
 
 ![iPhone listing artwork](preview.png)
@@ -54,12 +55,12 @@ still blocks app creation. See the ledger for current gates and exact next actio
   **identity verified successfully**. Real Android device verification remains;
   phone verification is disabled until that prerequisite is complete. **Create
   app is disabled**, so no Google app, price, listing, or release has been saved.
-- **Android binary:** version 7 AAB/APK built and installed. Widget testing
-  exposed repeated WorkManager/package-change recreation, unstable resizing, and
-  an oversized denominator. Source fixes introduce one persistent periodic job,
-  compact layout and the iOS-style small baseline `/10`. Replacement build/native
-  evidence belongs in `release.json` and the ledger; do not use v7 widget artwork
-  as final release art.
+- **Android binary:** corrected preview APK8 installed and production AAB9
+  downloaded/ZIP-validated. One persistent periodic job replaces the refresh
+  loop. Native logs show zero widget recreations in 65 seconds versus 30 in
+  34 seconds before the fix, and the small baseline `/10` is visible. Fresh
+  compact/expanded resizing and gallery capture remain pending. Build hashes
+  and scope are in `release.json` and `android-widget-regression.json`.
 - **Apple review details:** contact information, phone, no-login requirement,
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
@@ -105,8 +106,9 @@ Android reading captures currently in `source/android-phone/` are
 (1080×2400). The renderer frames them as 1080×1920 Google Play images and
 reports missing captures rather than substituting iOS screenshots. The old About
 capture remains historical source evidence and is never rendered into the gallery.
-The renderer expects `03-home-widgets-clean.png` as the first gallery image once an
-actual Android widget capture is available. Capture new reading images from
+The renderer expects `source/android-phone/widget-frames.json` to identify actual
+compact/expanded native captures and their viewport bounds. It then produces
+`03-widget-sizes-v8.png` as the first Android gallery image. Capture new reading images from
 the corrected Android build before describing this gallery as final.
 The offline capture is retained as test evidence, outside the store gallery.
 The earlier APK screenshots are not release assets because they exposed the

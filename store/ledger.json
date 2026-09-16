@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T08:12:15+00:00",
+  "updated_at": "2026-09-16T08:36:36+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -445,12 +445,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Corrected preview APK v8 and production AAB v9 are IN_PROGRESS. Initial production upload stalled before build creation; checked remote list, stopped that upload, then retried. Retry incremented production versionCode to 9.",
+      "summary": "Preview APK8 installed; production AAB9 finished, downloaded and ZIP validated. Corrected widget has small baseline /10. In a 65-second native log window, worker restarts, widget recreations, receiver toggles and fatal exceptions were all zero; old build recreated widget 30 times in 34 seconds. Fresh resize verification remains pending.",
       "evidence": [
-        "Preview c18fb254-3145-4e69-b7f5-906b3c0621e1 source922a9b1; production a55d6cc8-d3cf-41f3-ae88-6b2b29456151 source2bd1179. Source diff affects release docs only, no apps/client changes. store/android-widget-regression.json records 30 widget recreations in 34 seconds before fix."
+        "store/android-widget-regression.json; store/release.json contains build IDs, source commits and artifact SHA256. Existing resize handles survived package upgrade; automated drags did not change settled dimensions. CUA sustained press unavailable; owner asked for fresh two-by-two resize while independent work continues."
       ],
-      "next_action": "Install APK v8 and verify stable idle logs plus compact/expanded resizing and small /10; download and validate AAB v9. Then capture corrected Android gallery and finish PR92.",
-      "updated_at": "2026-09-16T08:12:15+00:00"
+      "next_action": "Verify fresh native compact/expanded resizing, capture both sizes and updated reading screens, render gallery, then complete PR92.",
+      "updated_at": "2026-09-16T08:36:36+00:00"
     }
   },
   "events": [
@@ -1857,6 +1857,22 @@
         ],
         "next_action": "Install APK v8 and verify stable idle logs plus compact/expanded resizing and small /10; download and validate AAB v9. Then capture corrected Android gallery and finish PR92.",
         "updated_at": "2026-09-16T08:12:15+00:00"
+      }
+    },
+    {
+      "sequence": 88,
+      "at": "2026-09-16T08:36:36+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Preview APK8 installed; production AAB9 finished, downloaded and ZIP validated. Corrected widget has small baseline /10. In a 65-second native log window, worker restarts, widget recreations, receiver toggles and fatal exceptions were all zero; old build recreated widget 30 times in 34 seconds. Fresh resize verification remains pending.",
+        "evidence": [
+          "store/android-widget-regression.json; store/release.json contains build IDs, source commits and artifact SHA256. Existing resize handles survived package upgrade; automated drags did not change settled dimensions. CUA sustained press unavailable; owner asked for fresh two-by-two resize while independent work continues."
+        ],
+        "next_action": "Verify fresh native compact/expanded resizing, capture both sizes and updated reading screens, render gallery, then complete PR92.",
+        "updated_at": "2026-09-16T08:36:36+00:00"
       }
     }
   ],

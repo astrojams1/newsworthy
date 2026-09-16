@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T08:12:15+00:00
+Updated: 2026-09-16T08:36:36+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -49,7 +49,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
 | apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
-| google.widget-fix | in_progress | agent | observed | Corrected preview APK v8 and production AAB v9 are IN_PROGRESS. Initial production upload stalled before build creation; checked remote list, stopped that upload, then retried. Retry incremented production versionCode to 9. | Install APK v8 and verify stable idle logs plus compact/expanded resizing and small /10; download and validate AAB v9. Then capture corrected Android gallery and finish PR92. |
+| google.widget-fix | in_progress | agent | observed | Preview APK8 installed; production AAB9 finished, downloaded and ZIP validated. Corrected widget has small baseline /10. In a 65-second native log window, worker restarts, widget recreations, receiver toggles and fatal exceptions were all zero; old build recreated widget 30 times in 34 seconds. Fresh resize verification remains pending. | Verify fresh native compact/expanded resizing, capture both sizes and updated reading screens, render gallery, then complete PR92. |
 
 ## Evidence and history
 
@@ -875,3 +875,13 @@ Corrected preview APK v8 and production AAB v9 are IN_PROGRESS. Initial producti
 - Preview c18fb254-3145-4e69-b7f5-906b3c0621e1 source922a9b1; production a55d6cc8-d3cf-41f3-ae88-6b2b29456151 source2bd1179. Source diff affects release docs only, no apps/client changes. store/android-widget-regression.json records 30 widget recreations in 34 seconds before fix.
 
 Next: Install APK v8 and verify stable idle logs plus compact/expanded resizing and small /10; download and validate AAB v9. Then capture corrected Android gallery and finish PR92.
+
+### 88. google.widget-fix — in_progress
+
+2026-09-16T08:36:36+00:00 · observed · agent
+
+Preview APK8 installed; production AAB9 finished, downloaded and ZIP validated. Corrected widget has small baseline /10. In a 65-second native log window, worker restarts, widget recreations, receiver toggles and fatal exceptions were all zero; old build recreated widget 30 times in 34 seconds. Fresh resize verification remains pending.
+
+- store/android-widget-regression.json; store/release.json contains build IDs, source commits and artifact SHA256. Existing resize handles survived package upgrade; automated drags did not change settled dimensions. CUA sustained press unavailable; owner asked for fresh two-by-two resize while independent work continues.
+
+Next: Verify fresh native compact/expanded resizing, capture both sizes and updated reading screens, render gallery, then complete PR92.

@@ -21,5 +21,19 @@
     "file": "source/android-phone/05-widget-expanded-v7.png",
     "sha256": "37e9de9d0293cd159c51e54ee8c7913fb13f359a49d82e6a890f1746bb587ef9",
     "finalArtwork": false
+  },
+  "correctedBuildObservation": {
+    "date": "2026-09-16",
+    "versionCode": 8,
+    "windowStart": "09-16 16:30:00.000",
+    "durationSeconds": 65,
+    "workerStarts": 0,
+    "widgetRecreations": 0,
+    "workManagerReceiverEnabled": 0,
+    "workManagerReceiverDisabled": 0,
+    "fatalExceptions": 0,
+    "scope": "Post-install observation including native widget resize interactions; private full log kept outside repo.",
+    "sourceCommit": "922a9b19f26a750df0867d0c3e1bdf4b6672ceba",
+    "resizeVerification": "Still pending; automated drags did not change the settled size."
   }
 }
