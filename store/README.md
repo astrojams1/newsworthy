@@ -67,8 +67,8 @@ local previews until captured.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
 - **Apple review:** the September 16 submission was withdrawn for the approved
-  design revision. API readback is **DEVELOPER_REJECTED**, with the old submission
-  **COMPLETE**. This records our withdrawal, not reviewer feedback. The replacement native
+  design revision. After selecting replacement build 6, the current version is
+  **PREPARE_FOR_SUBMISSION**. The withdrawn submission remains **COMPLETE**. This records our withdrawal, not reviewer feedback. The replacement native
   build and matching reading-screen captures must be verified before resubmission.
   Automatic release after approval
   is configured; all 175 territories are enabled without preorder. The API still

@@ -20,7 +20,7 @@
     "dsaCompliance": "ACTIVE",
     "w9Status": "ACTIVE",
     "reviewSubmissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
-    "reviewState": "DEVELOPER_REJECTED",
+    "reviewState": "PREPARE_FOR_SUBMISSION",
     "reviewSubmittedDate": "2026-09-16T04:53:38.974Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,

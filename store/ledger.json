@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T07:03:19+00:00",
+  "updated_at": "2026-09-16T07:11:08+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -181,23 +181,23 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Developer withdrew build 5 to replace About with the approved reading-screen design. This is a developer withdrawal, not an Apple reviewer rejection.",
+      "summary": "Replacement build 6 is valid and selected; current version is PREPARE_FOR_SUBMISSION. The withdrawn old review is complete; no replacement review has been submitted.",
       "evidence": [
-        "2026-09-16 App Store Connect readback: version DEVELOPER_REJECTED; review submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48 COMPLETE."
+        "Live App Store Connect version 267c6f52-d22d-4cb0-bb4c-d22f280b4499 readback includes selected build b62a9dc5-1b0c-4200-8830-68db021bb0cd, version 6, VALID, with appStoreState PREPARE_FOR_SUBMISSION."
       ],
-      "next_action": "Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit.",
-      "updated_at": "2026-09-16T06:14:03+00:00"
+      "next_action": "After Mac unlock, finish native checks and the clean neutral-background widget-size gallery, verify uploaded replacements, then create and submit the replacement review.",
+      "updated_at": "2026-09-16T07:11:08+00:00"
     },
     "apple.release": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "in_progress",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Apple review is pending; AFTER_APPROVAL release configured. No public availability verified. Commercial account requirements remain separately unverified.",
+      "summary": "Public release is not achieved. The replacement version is being prepared; no active review is awaiting Apple.",
       "evidence": [
-        "Submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48 WAITING_FOR_REVIEW; availability contentStatuses CANNOT_SELL and AVAILABLE_FOR_SALE_UNRELEASED_APP."
+        "Current version PREPARE_FOR_SUBMISSION, selected build 6 VALID. Earlier review was withdrawn; banking/agreement and address correction remain separately tracked."
       ],
-      "next_action": "Read review outcome and resolve feedback; check tax/banking/agreement and address response; verify paid public listing after approval. Do not resubmit the existing review.",
-      "updated_at": "2026-09-16T04:55:59+00:00"
+      "next_action": "Complete and submit the replacement review, resolve owner/provider commercial-readiness gates, then verify approved paid public availability.",
+      "updated_at": "2026-09-16T07:11:08+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -354,15 +354,15 @@
       "updated_at": "2026-09-16T05:43:11+00:00"
     },
     "google.artwork": {
-      "state": "done",
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Three Android store screenshots rendered from version 6 native captures: light reading, dark reading, About.",
+      "summary": "The old version-6 artwork set is superseded. About art is removed, and clean widget-size captures plus version-7 reading captures are pending.",
       "evidence": [
-        "1080x2400 originals captured via emulator screenshot shortcut through CUA; rendered 1080x1920 RGB PNGs. Gallery visually reviewed and store/scripts/validate.mjs passed; store/preview-android.png."
+        "PR90 retired About and cluttered iPhone widget artwork. Current manifest contains only older reading-screen captures; widget-gallery-brief.md defines required clean neutral backgrounds and size variants."
       ],
-      "next_action": "",
-      "updated_at": "2026-09-16T05:39:50+00:00"
+      "next_action": "Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done.",
+      "updated_at": "2026-09-16T07:11:08+00:00"
     },
     "design.reading-screen": {
       "state": "in_progress",
@@ -1466,6 +1466,54 @@
         ],
         "next_action": "After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.",
         "updated_at": "2026-09-16T07:03:19+00:00"
+      }
+    },
+    {
+      "sequence": 67,
+      "at": "2026-09-16T07:11:08+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement build 6 is valid and selected; current version is PREPARE_FOR_SUBMISSION. The withdrawn old review is complete; no replacement review has been submitted.",
+        "evidence": [
+          "Live App Store Connect version 267c6f52-d22d-4cb0-bb4c-d22f280b4499 readback includes selected build b62a9dc5-1b0c-4200-8830-68db021bb0cd, version 6, VALID, with appStoreState PREPARE_FOR_SUBMISSION."
+        ],
+        "next_action": "After Mac unlock, finish native checks and the clean neutral-background widget-size gallery, verify uploaded replacements, then create and submit the replacement review.",
+        "updated_at": "2026-09-16T07:11:08+00:00"
+      }
+    },
+    {
+      "sequence": 68,
+      "at": "2026-09-16T07:11:08+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Public release is not achieved. The replacement version is being prepared; no active review is awaiting Apple.",
+        "evidence": [
+          "Current version PREPARE_FOR_SUBMISSION, selected build 6 VALID. Earlier review was withdrawn; banking/agreement and address correction remain separately tracked."
+        ],
+        "next_action": "Complete and submit the replacement review, resolve owner/provider commercial-readiness gates, then verify approved paid public availability.",
+        "updated_at": "2026-09-16T07:11:08+00:00"
+      }
+    },
+    {
+      "sequence": 69,
+      "at": "2026-09-16T07:11:08+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "The old version-6 artwork set is superseded. About art is removed, and clean widget-size captures plus version-7 reading captures are pending.",
+        "evidence": [
+          "PR90 retired About and cluttered iPhone widget artwork. Current manifest contains only older reading-screen captures; widget-gallery-brief.md defines required clean neutral backgrounds and size variants."
+        ],
+        "next_action": "Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done.",
+        "updated_at": "2026-09-16T07:11:08+00:00"
       }
     }
   ],
