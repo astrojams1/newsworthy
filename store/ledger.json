@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T05:43:11+00:00",
+  "updated_at": "2026-09-16T06:14:03+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -186,15 +186,15 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "done",
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Version 1.0.0 build 5 submitted; both version and review submission report WAITING_FOR_REVIEW.",
+      "summary": "Developer withdrew build 5 to replace About with the approved reading-screen design. This is a developer withdrawal, not an Apple reviewer rejection.",
       "evidence": [
-        "App Store Connect review submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48, submittedDate 2026-09-16T04:53:38.974Z; independent GET of version and submission confirmed WAITING_FOR_REVIEW."
+        "2026-09-16 App Store Connect readback: version DEVELOPER_REJECTED; review submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48 COMPLETE."
       ],
-      "next_action": "",
-      "updated_at": "2026-09-16T04:55:59+00:00"
+      "next_action": "Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit.",
+      "updated_at": "2026-09-16T06:14:03+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -373,6 +373,17 @@
       ],
       "next_action": "",
       "updated_at": "2026-09-16T05:39:50+00:00"
+    },
+    "design.reading-screen": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback.",
+      "evidence": [
+        "Phone-size web-rendered light/dark previews inspected; npm test: 175 passed; npm run check:app passed. Native replacement build and screenshots remain pending."
+      ],
+      "next_action": "Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery.",
+      "updated_at": "2026-09-16T06:11:23+00:00"
     }
   },
   "events": [
@@ -1107,6 +1118,38 @@
         ],
         "next_action": "Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved.",
         "updated_at": "2026-09-16T05:43:11+00:00"
+      }
+    },
+    {
+      "sequence": 46,
+      "at": "2026-09-16T06:11:23+00:00",
+      "gate": "design.reading-screen",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback.",
+        "evidence": [
+          "Phone-size web-rendered light/dark previews inspected; npm test: 175 passed; npm run check:app passed. Native replacement build and screenshots remain pending."
+        ],
+        "next_action": "Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery.",
+        "updated_at": "2026-09-16T06:11:23+00:00"
+      }
+    },
+    {
+      "sequence": 47,
+      "at": "2026-09-16T06:14:03+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Developer withdrew build 5 to replace About with the approved reading-screen design. This is a developer withdrawal, not an Apple reviewer rejection.",
+        "evidence": [
+          "2026-09-16 App Store Connect readback: version DEVELOPER_REJECTED; review submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48 COMPLETE."
+        ],
+        "next_action": "Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit.",
+        "updated_at": "2026-09-16T06:14:03+00:00"
       }
     }
   ],
