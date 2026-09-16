@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T07:59:54+00:00
+Updated: 2026-09-16T08:07:01+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -13,10 +13,10 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | scope | done | agent | observed | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
 | web.deploy | done | agent | observed | Approved reading-screen design merged and deployed to production. | — |
 | apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
-| apple.address | waiting_provider | provider | observed | Apple support email confirms receipt of the authorized address-correction request; no correction approval observed. | Read support response and Business legal-entity address; do not duplicate request or reuse obsolete address. |
+| apple.address | waiting_provider | provider | observed | Apple Business still shows the obsolete legal address; authorized correction request remains acknowledged but not completed. | Await Apple correction response, then verify legal entity and paid-contract records against the authorized current address. |
 | apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
 | apple.tax | done | user | observed | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
-| apple.bank | waiting_user | user | observed | Apple Business still requests Add Bank Account; owner entry requested with direct instructions. | Owner enters payout details privately in Apple Business; agent verifies saved bank and Active paid agreement. |
+| apple.bank | waiting_user | user | observed | Rechecked Apple Business after replacement submission: Add Bank Account still required; no bank is listed. W-9 and DSA remain Active. | Owner enters payout bank in App Store Connect Business > Add Bank Account. Private bank details are not available to the agent. |
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | user | observed | Owner published diagnostics/performance collection for app functionality, linked to user, no tracking. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
@@ -49,7 +49,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
 | apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
-| google.widget-fix | in_progress | agent | observed | Owner observed flicker, resize resets and oversized /10. Android logs confirm one-time WorkManager completion toggles RescheduleReceiver, PACKAGE_CHANGED recreates widget and starts another worker about every second. | Build and install corrected APK; verify idle logs stop looping, compact/expanded resizing persists, score styling matches iOS, then recapture Android gallery. |
+| google.widget-fix | in_progress | agent | observed | Corrected preview APK version 8 is IN_PROGRESS in EAS from clean commit 922a9b1. Source fixes periodic scheduling, compact sizing and baseline /10. Production upload attempt is still running; no production v8 build ID returned yet. | Download/install corrected APK, verify idle no longer causes worker/package-change loop and actual compact/expanded resize; inspect production upload outcome before any retry. |
 
 ## Evidence and history
 
@@ -835,3 +835,33 @@ Owner observed flicker, resize resets and oversized /10. Android logs confirm on
 - 2026-09-16 emulator log captured in private /tmp/newsworthy-android-widget-log.txt; package-change/onUpdate/worker loop reproduced. Fix source uses one persistent periodic job, persisted saved status, compact layout and smaller baseline denominator.
 
 Next: Build and install corrected APK; verify idle logs stop looping, compact/expanded resizing persists, score styling matches iOS, then recapture Android gallery.
+
+### 84. apple.bank — waiting_user
+
+2026-09-16T08:05:54+00:00 · observed · user
+
+Rechecked Apple Business after replacement submission: Add Bank Account still required; no bank is listed. W-9 and DSA remain Active.
+
+- Native signed-in Apple Business readback 2026-09-16; Paid Apps Agreement remains Pending User Info.
+
+Next: Owner enters payout bank in App Store Connect Business > Add Bank Account. Private bank details are not available to the agent.
+
+### 85. apple.address — waiting_provider
+
+2026-09-16T08:05:54+00:00 · observed · provider
+
+Apple Business still shows the obsolete legal address; authorized correction request remains acknowledged but not completed.
+
+- Native Apple Business rechecked 2026-09-16 after replacement review submission. No new address was submitted.
+
+Next: Await Apple correction response, then verify legal entity and paid-contract records against the authorized current address.
+
+### 86. google.widget-fix — in_progress
+
+2026-09-16T08:07:01+00:00 · observed · agent
+
+Corrected preview APK version 8 is IN_PROGRESS in EAS from clean commit 922a9b1. Source fixes periodic scheduling, compact sizing and baseline /10. Production upload attempt is still running; no production v8 build ID returned yet.
+
+- EAS preview c18fb254-3145-4e69-b7f5-906b3c0621e1 readback IN_PROGRESS, appBuildVersion 8, source commit 922a9b19f26a750df0867d0c3e1bdf4b6672ceba. PR92 draft; 175 tests, typecheck, prebuild passed.
+
+Next: Download/install corrected APK, verify idle no longer causes worker/package-change loop and actual compact/expanded resize; inspect production upload outcome before any retry.

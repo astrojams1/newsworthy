@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T07:59:54+00:00",
+  "updated_at": "2026-09-16T08:07:01+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -48,12 +48,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Apple support email confirms receipt of the authorized address-correction request; no correction approval observed.",
+      "summary": "Apple Business still shows the obsolete legal address; authorized correction request remains acknowledged but not completed.",
       "evidence": [
-        "Apple Developer Program Support acknowledgment received 2026-09-16 03:15 UTC. Case reference remains in private email, not this public ledger."
+        "Native Apple Business rechecked 2026-09-16 after replacement review submission. No new address was submitted."
       ],
-      "next_action": "Read support response and Business legal-entity address; do not duplicate request or reuse obsolete address.",
-      "updated_at": "2026-09-16T04:55:59+00:00"
+      "next_action": "Await Apple correction response, then verify legal entity and paid-contract records against the authorized current address.",
+      "updated_at": "2026-09-16T08:05:54+00:00"
     },
     "apple.agreement": {
       "state": "waiting_user",
@@ -81,12 +81,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Apple Business still requests Add Bank Account; owner entry requested with direct instructions.",
+      "summary": "Rechecked Apple Business after replacement submission: Add Bank Account still required; no bank is listed. W-9 and DSA remain Active.",
       "evidence": [
-        "Live Bank Accounts section contains Add Bank Account and no listed payout account."
+        "Native signed-in Apple Business readback 2026-09-16; Paid Apps Agreement remains Pending User Info."
       ],
-      "next_action": "Owner enters payout details privately in Apple Business; agent verifies saved bank and Active paid agreement.",
-      "updated_at": "2026-09-16T05:39:49+00:00"
+      "next_action": "Owner enters payout bank in App Store Connect Business > Add Bank Account. Private bank details are not available to the agent.",
+      "updated_at": "2026-09-16T08:05:54+00:00"
     },
     "apple.dsa": {
       "state": "done",
@@ -445,12 +445,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner observed flicker, resize resets and oversized /10. Android logs confirm one-time WorkManager completion toggles RescheduleReceiver, PACKAGE_CHANGED recreates widget and starts another worker about every second.",
+      "summary": "Corrected preview APK version 8 is IN_PROGRESS in EAS from clean commit 922a9b1. Source fixes periodic scheduling, compact sizing and baseline /10. Production upload attempt is still running; no production v8 build ID returned yet.",
       "evidence": [
-        "2026-09-16 emulator log captured in private /tmp/newsworthy-android-widget-log.txt; package-change/onUpdate/worker loop reproduced. Fix source uses one persistent periodic job, persisted saved status, compact layout and smaller baseline denominator."
+        "EAS preview c18fb254-3145-4e69-b7f5-906b3c0621e1 readback IN_PROGRESS, appBuildVersion 8, source commit 922a9b19f26a750df0867d0c3e1bdf4b6672ceba. PR92 draft; 175 tests, typecheck, prebuild passed."
       ],
-      "next_action": "Build and install corrected APK; verify idle logs stop looping, compact/expanded resizing persists, score styling matches iOS, then recapture Android gallery.",
-      "updated_at": "2026-09-16T07:59:54+00:00"
+      "next_action": "Download/install corrected APK, verify idle no longer causes worker/package-change loop and actual compact/expanded resize; inspect production upload outcome before any retry.",
+      "updated_at": "2026-09-16T08:07:01+00:00"
     }
   },
   "events": [
@@ -1793,6 +1793,54 @@
         ],
         "next_action": "Build and install corrected APK; verify idle logs stop looping, compact/expanded resizing persists, score styling matches iOS, then recapture Android gallery.",
         "updated_at": "2026-09-16T07:59:54+00:00"
+      }
+    },
+    {
+      "sequence": 84,
+      "at": "2026-09-16T08:05:54+00:00",
+      "gate": "apple.bank",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Rechecked Apple Business after replacement submission: Add Bank Account still required; no bank is listed. W-9 and DSA remain Active.",
+        "evidence": [
+          "Native signed-in Apple Business readback 2026-09-16; Paid Apps Agreement remains Pending User Info."
+        ],
+        "next_action": "Owner enters payout bank in App Store Connect Business > Add Bank Account. Private bank details are not available to the agent.",
+        "updated_at": "2026-09-16T08:05:54+00:00"
+      }
+    },
+    {
+      "sequence": 85,
+      "at": "2026-09-16T08:05:54+00:00",
+      "gate": "apple.address",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple Business still shows the obsolete legal address; authorized correction request remains acknowledged but not completed.",
+        "evidence": [
+          "Native Apple Business rechecked 2026-09-16 after replacement review submission. No new address was submitted."
+        ],
+        "next_action": "Await Apple correction response, then verify legal entity and paid-contract records against the authorized current address.",
+        "updated_at": "2026-09-16T08:05:54+00:00"
+      }
+    },
+    {
+      "sequence": 86,
+      "at": "2026-09-16T08:07:01+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrected preview APK version 8 is IN_PROGRESS in EAS from clean commit 922a9b1. Source fixes periodic scheduling, compact sizing and baseline /10. Production upload attempt is still running; no production v8 build ID returned yet.",
+        "evidence": [
+          "EAS preview c18fb254-3145-4e69-b7f5-906b3c0621e1 readback IN_PROGRESS, appBuildVersion 8, source commit 922a9b19f26a750df0867d0c3e1bdf4b6672ceba. PR92 draft; 175 tests, typecheck, prebuild passed."
+        ],
+        "next_action": "Download/install corrected APK, verify idle no longer causes worker/package-change loop and actual compact/expanded resize; inspect production upload outcome before any retry.",
+        "updated_at": "2026-09-16T08:07:01+00:00"
       }
     }
   ],

@@ -27,7 +27,6 @@
     "availableInNewTerritories": true,
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
     "reviewSubmissionState": "WAITING_FOR_REVIEW",
-    "reviewWithdrawalReason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets.",
     "replacementBuildRequired": false,
     "replacementBuilds": [
       {
@@ -59,7 +58,12 @@
       "status": "VALID",
       "sha256": "032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5"
     },
-    "replacementNativeVerification": "IPHONE_IPAD_LIGHT_DARK_AND_IPHONE_WIDGETS_VERIFIED_SIMULATOR_SCOPE"
+    "replacementNativeVerification": "IPHONE_IPAD_LIGHT_DARK_AND_IPHONE_WIDGETS_VERIFIED_SIMULATOR_SCOPE",
+    "previousReview": {
+      "submissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
+      "state": "COMPLETE",
+      "reason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets."
+    }
   },
   "google": {
     "productionBuild": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",
@@ -93,6 +97,17 @@
         "sha256": "28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8"
       }
     ],
-    "widgetArtworkStatus": "CAPTURE_CLEAN_NEUTRAL_BACKGROUND_COMPACT_AND_EXPANDED_LAYOUTS"
+    "widgetArtworkStatus": "BLOCKED_ON_V8_WIDGET_FIX_NATIVE_VERIFICATION",
+    "widgetFixBuilds": [
+      {
+        "id": "c18fb254-3145-4e69-b7f5-906b3c0621e1",
+        "profile": "preview",
+        "version": "1.0.0",
+        "build": "8",
+        "sourceCommit": "922a9b19f26a750df0867d0c3e1bdf4b6672ceba",
+        "sourceDirty": false,
+        "status": "IN_PROGRESS"
+      }
+    ]
   }
 }
