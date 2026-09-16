@@ -1,6 +1,8 @@
 # Newsworthy store release
 
 One place for the mobile listings, artwork, evidence, and remaining work.
+Resume from [the release ledger](ledger.md) with the reusable
+[app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
 Last checked **September 16, 2026**. Neither app is publicly released or
 submitted for App Review yet.
 
@@ -10,6 +12,7 @@ submitted for App Review yet.
 
 | File or folder | Purpose |
 |---|---|
+| [ledger.md](ledger.md) / [ledger.json](ledger.json) | Canonical resumable gates, evidence and event history |
 | [listing.json](listing.json) | Canonical English copy, URLs, review notes, and US$1 paid-download target |
 | [assets/](assets/) | Upload-ready PNGs and dimension/platform manifest |
 | [source/](source/) | Original native captures and editable SVG layouts |
@@ -25,7 +28,10 @@ submitted for App Review yet.
   screenshots** saved. Apple reports every image `COMPLETE`: three 6.9-inch
   iPhone images and two 13-inch iPad images.
 - **Apple pricing:** US$1.00 saved with local equivalents. Paid Apps Agreement
-  remains **New**; the obsolete legal address still needs Apple correction.
+  was **Pending User Info** at the last live check after owner acceptance.
+  The owner subsequently reported completing the W-9; final tax status needs
+  readback, and banking remains outstanding at the last check. The address-correction request has been sent and acknowledged by Apple,
+  but the obsolete legal address still needs Apple approval/correction.
 - **Apple binary:** signed production build **5** validated and uploaded with
   Apple's `altool`. Apple reports `VALID` / `APP_STORE_ELIGIBLE`, and build 5
   is selected for version 1.0.0. The stalled EAS submission was canceled before
@@ -41,12 +47,15 @@ submitted for App Review yet.
 - **Android binary:** production AAB and preview APK version **6** built
   successfully. Native inspection of the earlier APK exposed missing gradients
   and icons: Android requires base64 SVG data URLs. Version 6 includes that fix.
-  Its final visual verification and screenshots are pending because the host Mac
-  locked during capture setup. Google icon and feature graphic are ready.
+  Its final visual verification and screenshots are pending. The host Mac
+  locked during capture setup and is now unlocked. Google icon and feature
+  graphic are ready.
   See `release.json`.
 - **Apple review details:** contact information, phone, no-login requirement,
   and review notes saved and verified. Private contact details are not in Git.
-- **Review:** not submitted. Account requirements, privacy publication,
+- **Apple compliance:** the owner published App Privacy and completed the DSA
+  declaration; the Business page reports DSA compliance **Active**.
+- **Review:** not submitted. Account requirements,
   availability and release testing must be complete first.
 
 ## Reproduce the artwork
@@ -75,7 +84,7 @@ Android captures belong in `source/android-phone/`: `01-reading-light.png`,
 `f3dddec5-23f3-4a41-8fd6-e0d4f79ee366` on the API 35 ARM64 emulator
 (1080×2400). The renderer frames them as 1080×1920 Google Play images and
 reports missing captures rather than substituting iOS screenshots. Capture is
-pending the host Mac being unlocked; the earlier APK screenshots are not release
+still pending; the earlier APK screenshots are not release
 assets because they exposed the SVG-rendering defect.
 
 The pasted macOS crash report identified Android Emulator startup, not

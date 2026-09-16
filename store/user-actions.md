@@ -33,32 +33,37 @@ the owner's phone call/SMS through the currently connected tools.
 
 ## 3. Apple: correct the obsolete legal address
 
-**Prepared; awaiting authorization to send the support request, then Apple's
-review.** Direct editing was attempted but the corrected address did not persist;
-the live Business page still shows the obsolete address. Do not accept the paid
-contract with that address.
+**Submitted to Apple Developer Support with the owner's explicit approval.**
+Apple's confirmation page says it received the request and will review it and
+respond. The request asks Apple to update both the individual developer
+membership and App Store Connect legal entity to the current address supplied
+privately by the owner. No case number appeared on the confirmation page.
 
-The [membership update request](https://developer.apple.com/contact/request/update-individual-information/)
-is prepared in the existing Chrome tab with the current address supplied privately
-by the owner. Review and submit it, or explicitly authorize the release agent to
-send that prepared request to Apple Developer Support. The agent can send it
-after authorization; Apple must approve/process the account change.
+The Business page still shows the obsolete address; submission is not approval
+or evidence that the record has changed. Await Apple's response and provide any
+requested verification directly to Apple. Do not submit a duplicate request or
+reuse the obsolete address in new forms.
 
 Reference: [Apple membership information changes](https://developer.apple.com/help/account/membership/updating-your-account-information).
 
 ## 4. Apple: paid-app contract, banking and tax
 
-**Owner's agreement and private financial information required.** The live
-[Business page](https://appstoreconnect.apple.com/business) shows the Paid Apps
-Agreement as **New**. A renewed developer membership does not complete this step.
+**Agreement accepted; W-9 completion reported by the owner.**
+The owner reports adding the W-9. Its final Apple processing status has not been
+rechecked; do not ask the owner to repeat it without first checking the console.
+Banking remains outstanding at the last live check. The live
+[Business page](https://appstoreconnect.apple.com/business) now shows the Paid
+Apps Agreement as **Pending User Info** at that check. Do not repeat acceptance.
 
-After the legal address is corrected:
-
-1. Open **Business → Agreements → Paid Apps Agreement → View and Agree to Terms**.
-2. Review the agreement and accept it as the account holder.
-3. Complete the banking and tax forms Apple presents using your own legal,
-   payout-account and tax information. Complete any bank verification.
-4. Confirm the agreement becomes **Active** and no required forms remain.
+1. Open **Business → Add Bank Account** and enter the owner's payout details.
+2. Check the existing **U.S. Form W-9** status. The owner reports completion.
+   If Apple still requests missing information, use **Add Tax Info** beside that
+   form; **Add Tax Form** is for additional countries.
+3. The W-9 **Address** control offers **Add New Address** or **Choose Existing
+   Address**. Use the current address supplied privately by the owner; a tax-form
+   address change does not establish that the membership legal address changed.
+   If Apple will not allow correction, await the support response before submitting.
+4. Complete any bank verification and confirm the agreement becomes **Active**.
 
 The agent can navigate and explain the forms, but cannot invent financial/tax
 facts or accept a binding agreement without action-time confirmation. The
@@ -71,16 +76,14 @@ not a separately verified current blocker.
 
 ## 5. Apple: trader declaration and privacy attestation
 
-The Business page requests **Digital Services Act compliance** for EU availability.
-Open **Business → Complete Compliance Requirements**. Determine and declare the
-correct trader status; if Apple requests public contact verification, complete it
-using current details. The agent cannot infer your legal business status from the
-app's code or fees. Avoid choosing a status merely to bypass verification.
+**Completed by the owner.** Business now shows Digital Services Act compliance
+as **Active** and says all regulatory requirements are complete at this time.
+The selected trader classification was not inspected; this records Apple's
+completion status without inferring the owner's legal status.
 
-Privacy answers are prepared: performance and diagnostic data for app
-functionality, linked to users, with no tracking. Apple presents a final legal
-attestation before publishing. The agent can click Publish after action-time
-confirmation, or the owner can publish from **App Privacy**.
+App Privacy now explicitly reports publication by James Thompson. The published
+categories are performance and diagnostic data for app functionality, linked to
+users, with no tracking. No further publication approval is pending.
 
 Apple App Review contact details, the reachable phone, no-login requirement,
 and review notes are now saved and verified. This is no longer an owner task.
@@ -104,11 +107,11 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 Do **not** ask the owner to create listing art/copy, configure Expo, generate
 signing credentials again, fetch binaries, or manually upload screenshots.
-Those have working automated paths. Android capture is temporarily paused
-because the host Mac locked; unlock it so the agent can finish native visual
-verification and capture. The remaining technical release work is:
+Those have working automated paths. The Mac is unlocked again; final Android
+visual verification and capture remain agent work. The remaining technical
+release work is:
 
-- Finalize privacy and Google content-rating declarations using the code and live
+- Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
 - Choose availability consistent with compliance and submit Apple for review
   once all gates pass. Review contact and notes are already saved.

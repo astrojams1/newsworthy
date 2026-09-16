@@ -27,7 +27,7 @@ that every console questionnaire has been submitted.
   and the user's selected destination. Review the stores' optional-data rules
   before classifying support messages.
 
-Apple's configured categories are **Performance Data** and **Other Diagnostic
+App Store Connect now confirms publication by the owner. Apple's published categories are **Performance Data** and **Other Diagnostic
 Data**, for **App Functionality**, **linked to the user**, **not used for
 tracking**. Request timing and operational logs support these categories.
 Vercel documents matching retained logs by IP address and user agent; no

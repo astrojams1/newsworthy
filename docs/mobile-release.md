@@ -128,7 +128,7 @@ access. Internal testing alone does not meet this requirement. See
   expects base64 data URLs. The app now encodes Android SVGs accordingly.
   Production version 6 and its preview APK both finished successfully; their
   IDs are in `store/release.json`. Final visual verification and Android listing
-  capture are paused until the host Mac is unlocked.
+  capture remain pending; the host Mac has been unlocked again.
 - iOS custom simulator build compiled successfully, including the widget:
   [a92ddf2a-2b9b-47ca-a343-d588ab38e99d](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/a92ddf2a-2b9b-47ca-a343-d588ab38e99d).
   Installed on iPhone 16 Pro / iOS 18.3. Native launch exposed an Expo Head
@@ -153,10 +153,13 @@ access. Internal testing alone does not meet this requirement. See
   Listing copy, subtitle, privacy-policy URL, News category, review contact
   (including phone), and review notes are saved.
   The saved Apple Current Price table confirms a US$1.00 base price and local
-  prices in the other regions. The Paid Apps Agreement is still New. The
-  legal-address correction did not persist after verification; Apple's
-  membership-update request is prepared for account-holder approval. The old
-  address must not be reused for the paid-app contract.
+  prices in the other regions. The owner accepted the Paid Apps Agreement; it
+  last showed Pending User Info, with banking and US tax information outstanding.
+  The owner subsequently reported completing the W-9; final status needs readback.
+  DSA compliance is Active, and App Privacy has been published by the owner.
+  The legal-address correction did not persist after verification; the authorized
+  membership-update request has now been submitted and acknowledged by Apple.
+  Approval is pending, and the obsolete address must not be reused in new forms.
   The supplied App Store Connect API key authenticated successfully. EAS now has
   an Apple distribution certificate and separate active provisioning profiles
   for `Newsworthy` and `NewsworthyWidget`.
