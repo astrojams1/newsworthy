@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T07:11:08+00:00",
+  "updated_at": "2026-09-16T10:18:37+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -48,12 +48,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Apple support email confirms receipt of the authorized address-correction request; no correction approval observed.",
+      "summary": "Apple Business still shows the obsolete legal address; authorized correction request remains acknowledged but not completed.",
       "evidence": [
-        "Apple Developer Program Support acknowledgment received 2026-09-16 03:15 UTC. Case reference remains in private email, not this public ledger."
+        "Native Apple Business rechecked 2026-09-16 after replacement review submission. No new address was submitted."
       ],
-      "next_action": "Read support response and Business legal-entity address; do not duplicate request or reuse obsolete address.",
-      "updated_at": "2026-09-16T04:55:59+00:00"
+      "next_action": "Await Apple correction response, then verify legal entity and paid-contract records against the authorized current address.",
+      "updated_at": "2026-09-16T08:05:54+00:00"
     },
     "apple.agreement": {
       "state": "waiting_user",
@@ -81,12 +81,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Apple Business still requests Add Bank Account; owner entry requested with direct instructions.",
+      "summary": "Rechecked Apple Business after replacement submission: Add Bank Account still required; no bank is listed. W-9 and DSA remain Active.",
       "evidence": [
-        "Live Bank Accounts section contains Add Bank Account and no listed payout account."
+        "Native signed-in Apple Business readback 2026-09-16; Paid Apps Agreement remains Pending User Info."
       ],
-      "next_action": "Owner enters payout details privately in Apple Business; agent verifies saved bank and Active paid agreement.",
-      "updated_at": "2026-09-16T05:39:49+00:00"
+      "next_action": "Owner enters payout bank in App Store Connect Business > Add Bank Account. Private bank details are not available to the agent.",
+      "updated_at": "2026-09-16T08:05:54+00:00"
     },
     "apple.dsa": {
       "state": "done",
@@ -123,15 +123,15 @@
       "updated_at": "2026-09-16T06:42:40+00:00"
     },
     "apple.listing": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Widget-first order is saved remotely, but owner rejected the existing cluttered Home Screen image. It is superseded for final listing use.",
+      "summary": "All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed.",
       "evidence": [
-        "Remote widget-first order verified; owner requested no unrelated icons and multiple widget size options. Capture brief in store/design/widget-gallery-brief.md."
+        "store/apple-gallery-verification.json; capture provenance in store/source/iphone-6.9 and ipad-13"
       ],
-      "next_action": "Replace old widget image with verified clean small/medium native captures, refresh reading images, then validate the final gallery before resubmitting.",
-      "updated_at": "2026-09-16T06:46:32+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T07:50:27+00:00"
     },
     "apple.build": {
       "state": "done",
@@ -145,15 +145,15 @@
       "updated_at": "2026-09-16T06:52:37+00:00"
     },
     "apple.native": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Replacement simulator artifact downloaded and installed on the booted iPhone simulator; visual checks and new captures await Mac unlock.",
+      "summary": "Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open.",
       "evidence": [
-        "EAS simulator e02851c0-0cae-4f95-b854-2d57e32cc0b2, source b5571c5, SHA256 f6f446b7f04513e9d5d01c50755ae5d4c9b430daa71bcf9ec873dc4a1d34ded9. Actual simulator Info.plist is version 1.0.0 / CFBundleVersion 1 despite EAS remote-version label 6; xcrun simctl install succeeded. Production IPA independently confirms build 6. Earlier screenshots verify only the older artifact."
+        "store/source/iphone-6.9/provenance.json; store/source/ipad-13/provenance.json. Verification is simulator-scoped; physical-device, replacement offline and large-text checks are not claimed."
       ],
-      "next_action": "After unlock, verify revised reading screen, privacy/support links, share, offline recovery, large text, and both widget sizes; capture clean neutral Home Screen images and updated iPhone/iPad reading screens.",
-      "updated_at": "2026-09-16T06:59:34+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T07:50:27+00:00"
     },
     "apple.upload": {
       "state": "done",
@@ -178,26 +178,26 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "Replacement build 6 is valid and selected; current version is PREPARE_FOR_SUBMISSION. The withdrawn old review is complete; no replacement review has been submitted.",
+      "summary": "Replacement build 6 submitted successfully with corrected widget-first gallery; both review submission and version are WAITING_FOR_REVIEW.",
       "evidence": [
-        "Live App Store Connect version 267c6f52-d22d-4cb0-bb4c-d22f280b4499 readback includes selected build b62a9dc5-1b0c-4200-8830-68db021bb0cd, version 6, VALID, with appStoreState PREPARE_FOR_SUBMISSION."
+        "Submission 4f28761f-3096-4f0d-aa37-df83332f818f submitted 2026-09-16T07:50:46.874Z; version 267c6f52-d22d-4cb0-bb4c-d22f280b4499 read back WAITING_FOR_REVIEW with build b62a9dc5-1b0c-4200-8830-68db021bb0cd."
       ],
-      "next_action": "After Mac unlock, finish native checks and the clean neutral-background widget-size gallery, verify uploaded replacements, then create and submit the replacement review.",
-      "updated_at": "2026-09-16T07:11:08+00:00"
+      "next_action": "Wait for Apple review result; resolve banking/paid agreement and legal-address correction before paid public availability.",
+      "updated_at": "2026-09-16T07:52:45+00:00"
     },
     "apple.release": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "Public release is not achieved. The replacement version is being prepared; no active review is awaiting Apple.",
+      "summary": "Replacement build 6 is waiting for Apple review; public release not yet achieved. Paid agreement/banking and address correction remain separate gates.",
       "evidence": [
-        "Current version PREPARE_FOR_SUBMISSION, selected build 6 VALID. Earlier review was withdrawn; banking/agreement and address correction remain separately tracked."
+        "Version and replacement submission WAITING_FOR_REVIEW on 2026-09-16; automatic release after approval configured."
       ],
-      "next_action": "Complete and submit the replacement review, resolve owner/provider commercial-readiness gates, then verify approved paid public availability.",
-      "updated_at": "2026-09-16T07:11:08+00:00"
+      "next_action": "Verify Apple approval, paid-sale readiness and public availability; do not equate review submission with release.",
+      "updated_at": "2026-09-16T07:52:45+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -244,26 +244,26 @@
       "updated_at": "2026-09-16T06:42:40+00:00"
     },
     "google.build": {
-      "state": "done",
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5.",
+      "summary": "Preview APK9 contains the verified denominator theme fix. Existing production AAB9 predates that fix and must not be submitted as final.",
       "evidence": [
-        "EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; downloads underway. Native verification and Play account eligibility remain separate gates."
+        "Preview bfb5310e-c8e1-41af-bc01-6037b17701b6 source 698071b; older production a55d6cc8-d3cf-41f3-ae88-6b2b29456151"
       ],
-      "next_action": "",
-      "updated_at": "2026-09-16T06:54:20+00:00"
+      "next_action": "Create and verify the final production AAB after PR92 integration; retain build provenance.",
+      "updated_at": "2026-09-16T10:13:03+00:00"
     },
     "google.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Android version 7 APK downloaded, archive checked and installed successfully on the emulator. Revised UI and widgets still need native verification.",
+      "summary": "APK9 native light/dark app and expanded widget theme transitions verified; owner-approved dark compact widget captured at actual 2x2",
       "evidence": [
-        "APK 104,436,147 bytes; SHA256 bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194. adb install Success; installed package versionName 1.0.0/versionCode 7. This proves installation, not visual behavior."
+        "store/source/android-phone/provenance-v9.json; android-widget-regression.json; new 2x2 native capture and launcher readback"
       ],
-      "next_action": "After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.",
-      "updated_at": "2026-09-16T07:03:19+00:00"
+      "next_action": "Verify compact light, score 10, enlarged text, replacement offline recovery and physical-device behavior. CI design contracts do not prove native layout.",
+      "updated_at": "2026-09-16T10:13:02+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -343,26 +343,26 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "host.ui": {
-      "state": "waiting_user",
-      "owner": "user",
-      "basis": "observed",
-      "summary": "Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check.",
-      "evidence": [
-        "CUA native click returned Mac locked and automatic unlock failed after successful app captures."
-      ],
-      "next_action": "Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved.",
-      "updated_at": "2026-09-16T05:43:11+00:00"
-    },
-    "google.artwork": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "The old version-6 artwork set is superseded. About art is removed, and clean widget-size captures plus version-7 reading captures are pending.",
+      "summary": "Native UI access restored after the Mac was unlocked.",
       "evidence": [
-        "PR90 retired About and cluttered iPhone widget artwork. Current manifest contains only older reading-screen captures; widget-gallery-brief.md defines required clean neutral backgrounds and size variants."
+        "Live Android and iOS simulator state returned through CUA."
       ],
-      "next_action": "Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done.",
-      "updated_at": "2026-09-16T07:11:08+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T07:19:02+00:00"
+    },
+    "google.artwork": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps",
+      "evidence": [
+        "store/assets/google-play/phone/03-widget-sizes-v9.png; widget-frames.json; image validation and visual inspection"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T10:09:19+00:00"
     },
     "design.reading-screen": {
       "state": "in_progress",
@@ -376,26 +376,92 @@
       "updated_at": "2026-09-16T06:11:23+00:00"
     },
     "native.ui-access": {
-      "state": "waiting_user",
-      "owner": "user",
-      "basis": "observed",
-      "summary": "Mac locked again; native app-control tool could not unlock it.",
-      "evidence": [
-        "CUA getApp(com.astrojams.newsworthy.emulator) returned locked Mac. Owner unlock requested while cloud work continues."
-      ],
-      "next_action": "Owner unlocks Mac; resume native UI checks and captures.",
-      "updated_at": "2026-09-16T06:40:14+00:00"
-    },
-    "design.widget-gallery": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner requests clean widget imagery: no unrelated icons, show supported size options, and use plain neutral wallpaper that does not compete with widget colors.",
+      "summary": "Mac is now unlocked; native Android Emulator and iOS Simulator accessibility/screenshot controls are available.",
       "evidence": [
-        "Owner correction includes stock-wallpaper color clash. Capture brief updated; renderer now omits the old cluttered widget asset from local gallery previews until clean native captures exist."
+        "CUA opened Android Emulator window and rendered a live Newsworthy widget; Simulator exposes Home Screen controls and widget edit-mode accessibility actions."
       ],
-      "next_action": "After unlock, set neutral wallpaper on capture devices and verify/capture iOS small and medium plus Android compact and expanded layouts; replace remote old widget screenshot before resubmitting.",
-      "updated_at": "2026-09-16T06:48:13+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T07:19:02+00:00"
+    },
+    "design.widget-gallery": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Both platform galleries feature actual widget size choices on neutral backgrounds",
+      "evidence": [
+        "Apple submitted five-image gallery; Android APK9 compact/expanded gallery in store/assets/manifest.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T10:09:19+00:00"
+    },
+    "native.ios-widget-sizes": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Replacement small and medium iOS widgets verified on iPhone 16 Pro Max iOS 18.3; clean neutral artwork rendered from actual widget viewports.",
+      "evidence": [
+        "store/source/iphone-6.9/provenance.json; store/assets/apple/iphone-6.9/02-widget-sizes-v2.png. Small tap opens app. Medium preserves native two-line truncation."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T07:41:18+00:00"
+    },
+    "native.ios-replacement-ui": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens.",
+      "evidence": [
+        "Native capture provenance JSON files; physical-device, replacement offline and large-text checks remain unclaimed."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T07:52:45+00:00"
+    },
+    "apple.gallery-order": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed.",
+      "evidence": [
+        "store/apple-gallery-verification.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T07:48:41+00:00"
+    },
+    "apple.widget-gallery-revision": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE.",
+      "evidence": [
+        "store/apple-gallery-verification.json; store/source/iphone-6.9/provenance.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T07:48:41+00:00"
+    },
+    "google.widget-fix": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained",
+      "evidence": [
+        "store/source/android-phone/14-widget-compact-dark-v9.png; provenance-v9.json; android-widget-regression.json; launcher span/minSpan 2x2"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T10:09:18+00:00"
+    },
+    "design.regression": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate",
+      "evidence": [
+        "GitHub Actions 35083882871: design gate and npm test passed; 192 Expo rendered-prop combinations; 12 deliberate regression checks; historical XML b5571c5 and theme override 922a9b1 rejected; app-release skill v1.0.6 merged in skills PR65"
+      ],
+      "next_action": "For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines.",
+      "updated_at": "2026-09-16T10:18:37+00:00"
     }
   },
   "events": [
@@ -1514,6 +1580,550 @@
         ],
         "next_action": "Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done.",
         "updated_at": "2026-09-16T07:11:08+00:00"
+      }
+    },
+    {
+      "sequence": 70,
+      "at": "2026-09-16T07:19:02+00:00",
+      "gate": "native.ui-access",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Mac is now unlocked; native Android Emulator and iOS Simulator accessibility/screenshot controls are available.",
+        "evidence": [
+          "CUA opened Android Emulator window and rendered a live Newsworthy widget; Simulator exposes Home Screen controls and widget edit-mode accessibility actions."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T07:19:02+00:00"
+      }
+    },
+    {
+      "sequence": 71,
+      "at": "2026-09-16T07:19:02+00:00",
+      "gate": "host.ui",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Native UI access restored after the Mac was unlocked.",
+        "evidence": [
+          "Live Android and iOS simulator state returned through CUA."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T07:19:02+00:00"
+      }
+    },
+    {
+      "sequence": 72,
+      "at": "2026-09-16T07:41:18+00:00",
+      "gate": "native.ios-widget-sizes",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement small and medium iOS widgets verified on iPhone 16 Pro Max iOS 18.3; clean neutral artwork rendered from actual widget viewports.",
+        "evidence": [
+          "store/source/iphone-6.9/provenance.json; store/assets/apple/iphone-6.9/02-widget-sizes-v2.png. Small tap opens app. Medium preserves native two-line truncation."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T07:41:18+00:00"
+      }
+    },
+    {
+      "sequence": 73,
+      "at": "2026-09-16T07:41:18+00:00",
+      "gate": "native.ios-replacement-ui",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement iPhone light/dark reading screens captured; About absent; Privacy and Support links open correct published pages.",
+        "evidence": [
+          "store/source/iphone-6.9/provenance.json"
+        ],
+        "next_action": "Finish iPad/Android captures and remaining native checks; replace remote Apple gallery before resubmission.",
+        "updated_at": "2026-09-16T07:41:18+00:00"
+      }
+    },
+    {
+      "sequence": 74,
+      "at": "2026-09-16T07:48:41+00:00",
+      "gate": "apple.gallery-order",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed.",
+        "evidence": [
+          "store/apple-gallery-verification.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T07:48:41+00:00"
+      }
+    },
+    {
+      "sequence": 75,
+      "at": "2026-09-16T07:48:41+00:00",
+      "gate": "apple.widget-gallery-revision",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE.",
+        "evidence": [
+          "store/apple-gallery-verification.json; store/source/iphone-6.9/provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T07:48:41+00:00"
+      }
+    },
+    {
+      "sequence": 76,
+      "at": "2026-09-16T07:50:27+00:00",
+      "gate": "apple.listing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed.",
+        "evidence": [
+          "store/apple-gallery-verification.json; capture provenance in store/source/iphone-6.9 and ipad-13"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T07:50:27+00:00"
+      }
+    },
+    {
+      "sequence": 77,
+      "at": "2026-09-16T07:50:27+00:00",
+      "gate": "apple.native",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open.",
+        "evidence": [
+          "store/source/iphone-6.9/provenance.json; store/source/ipad-13/provenance.json. Verification is simulator-scoped; physical-device, replacement offline and large-text checks are not claimed."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T07:50:27+00:00"
+      }
+    },
+    {
+      "sequence": 78,
+      "at": "2026-09-16T07:50:27+00:00",
+      "gate": "design.widget-gallery",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple neutral small/medium gallery completed and uploaded; Android compact/expanded composition remains pending native resizing.",
+        "evidence": [
+          "store/apple-gallery-verification.json; store/design/widget-gallery-brief.md"
+        ],
+        "next_action": "When Android launcher resize handles are available, capture compact and expanded native widgets and replace Android artwork.",
+        "updated_at": "2026-09-16T07:50:27+00:00"
+      }
+    },
+    {
+      "sequence": 79,
+      "at": "2026-09-16T07:50:58+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Created replacement review draft 4f28761f-3096-4f0d-aa37-df83332f818f with build 6 version item; submission request sent, awaiting provider readback.",
+        "evidence": [
+          "Apple draft READY_FOR_REVIEW and item NGYyODc2MWYtMzA5Ni00ZjBkLWFhMzctZGY4MzMzMmY4MThmfDZ8ODkxNDI4ODYw returned from API."
+        ],
+        "next_action": "Read back replacement submission and version state; do not retry uncertain submission.",
+        "updated_at": "2026-09-16T07:50:58+00:00"
+      }
+    },
+    {
+      "sequence": 80,
+      "at": "2026-09-16T07:52:45+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Replacement build 6 submitted successfully with corrected widget-first gallery; both review submission and version are WAITING_FOR_REVIEW.",
+        "evidence": [
+          "Submission 4f28761f-3096-4f0d-aa37-df83332f818f submitted 2026-09-16T07:50:46.874Z; version 267c6f52-d22d-4cb0-bb4c-d22f280b4499 read back WAITING_FOR_REVIEW with build b62a9dc5-1b0c-4200-8830-68db021bb0cd."
+        ],
+        "next_action": "Wait for Apple review result; resolve banking/paid agreement and legal-address correction before paid public availability.",
+        "updated_at": "2026-09-16T07:52:45+00:00"
+      }
+    },
+    {
+      "sequence": 81,
+      "at": "2026-09-16T07:52:45+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Replacement build 6 is waiting for Apple review; public release not yet achieved. Paid agreement/banking and address correction remain separate gates.",
+        "evidence": [
+          "Version and replacement submission WAITING_FOR_REVIEW on 2026-09-16; automatic release after approval configured."
+        ],
+        "next_action": "Verify Apple approval, paid-sale readiness and public availability; do not equate review submission with release.",
+        "updated_at": "2026-09-16T07:52:45+00:00"
+      }
+    },
+    {
+      "sequence": 82,
+      "at": "2026-09-16T07:52:45+00:00",
+      "gate": "native.ios-replacement-ui",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens.",
+        "evidence": [
+          "Native capture provenance JSON files; physical-device, replacement offline and large-text checks remain unclaimed."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T07:52:45+00:00"
+      }
+    },
+    {
+      "sequence": 83,
+      "at": "2026-09-16T07:59:54+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner observed flicker, resize resets and oversized /10. Android logs confirm one-time WorkManager completion toggles RescheduleReceiver, PACKAGE_CHANGED recreates widget and starts another worker about every second.",
+        "evidence": [
+          "2026-09-16 emulator log captured in private /tmp/newsworthy-android-widget-log.txt; package-change/onUpdate/worker loop reproduced. Fix source uses one persistent periodic job, persisted saved status, compact layout and smaller baseline denominator."
+        ],
+        "next_action": "Build and install corrected APK; verify idle logs stop looping, compact/expanded resizing persists, score styling matches iOS, then recapture Android gallery.",
+        "updated_at": "2026-09-16T07:59:54+00:00"
+      }
+    },
+    {
+      "sequence": 84,
+      "at": "2026-09-16T08:05:54+00:00",
+      "gate": "apple.bank",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Rechecked Apple Business after replacement submission: Add Bank Account still required; no bank is listed. W-9 and DSA remain Active.",
+        "evidence": [
+          "Native signed-in Apple Business readback 2026-09-16; Paid Apps Agreement remains Pending User Info."
+        ],
+        "next_action": "Owner enters payout bank in App Store Connect Business > Add Bank Account. Private bank details are not available to the agent.",
+        "updated_at": "2026-09-16T08:05:54+00:00"
+      }
+    },
+    {
+      "sequence": 85,
+      "at": "2026-09-16T08:05:54+00:00",
+      "gate": "apple.address",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple Business still shows the obsolete legal address; authorized correction request remains acknowledged but not completed.",
+        "evidence": [
+          "Native Apple Business rechecked 2026-09-16 after replacement review submission. No new address was submitted."
+        ],
+        "next_action": "Await Apple correction response, then verify legal entity and paid-contract records against the authorized current address.",
+        "updated_at": "2026-09-16T08:05:54+00:00"
+      }
+    },
+    {
+      "sequence": 86,
+      "at": "2026-09-16T08:07:01+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrected preview APK version 8 is IN_PROGRESS in EAS from clean commit 922a9b1. Source fixes periodic scheduling, compact sizing and baseline /10. Production upload attempt is still running; no production v8 build ID returned yet.",
+        "evidence": [
+          "EAS preview c18fb254-3145-4e69-b7f5-906b3c0621e1 readback IN_PROGRESS, appBuildVersion 8, source commit 922a9b19f26a750df0867d0c3e1bdf4b6672ceba. PR92 draft; 175 tests, typecheck, prebuild passed."
+        ],
+        "next_action": "Download/install corrected APK, verify idle no longer causes worker/package-change loop and actual compact/expanded resize; inspect production upload outcome before any retry.",
+        "updated_at": "2026-09-16T08:07:01+00:00"
+      }
+    },
+    {
+      "sequence": 87,
+      "at": "2026-09-16T08:12:15+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrected preview APK v8 and production AAB v9 are IN_PROGRESS. Initial production upload stalled before build creation; checked remote list, stopped that upload, then retried. Retry incremented production versionCode to 9.",
+        "evidence": [
+          "Preview c18fb254-3145-4e69-b7f5-906b3c0621e1 source922a9b1; production a55d6cc8-d3cf-41f3-ae88-6b2b29456151 source2bd1179. Source diff affects release docs only, no apps/client changes. store/android-widget-regression.json records 30 widget recreations in 34 seconds before fix."
+        ],
+        "next_action": "Install APK v8 and verify stable idle logs plus compact/expanded resizing and small /10; download and validate AAB v9. Then capture corrected Android gallery and finish PR92.",
+        "updated_at": "2026-09-16T08:12:15+00:00"
+      }
+    },
+    {
+      "sequence": 88,
+      "at": "2026-09-16T08:36:36+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Preview APK8 installed; production AAB9 finished, downloaded and ZIP validated. Corrected widget has small baseline /10. In a 65-second native log window, worker restarts, widget recreations, receiver toggles and fatal exceptions were all zero; old build recreated widget 30 times in 34 seconds. Fresh resize verification remains pending.",
+        "evidence": [
+          "store/android-widget-regression.json; store/release.json contains build IDs, source commits and artifact SHA256. Existing resize handles survived package upgrade; automated drags did not change settled dimensions. CUA sustained press unavailable; owner asked for fresh two-by-two resize while independent work continues."
+        ],
+        "next_action": "Verify fresh native compact/expanded resizing, capture both sizes and updated reading screens, render gallery, then complete PR92.",
+        "updated_at": "2026-09-16T08:36:36+00:00"
+      }
+    },
+    {
+      "sequence": 89,
+      "at": "2026-09-16T08:42:54+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrected worker completed SUCCESS at 16:28:57 and jobscheduler retains the next network-constrained refresh with a 30-minute delay. Existing launcher item still reports span/minSpan 3x3 while provider metadata reports 120dp minima; cached launcher sizing is a hypothesis, not verified root cause.",
+        "evidence": [
+          "store/android-widget-regression.json records sanitized worker completion, scheduler and launcher measurements. Both PR92 check workflows passed. Apple version remains WAITING_FOR_REVIEW; live Google Create app remains disabled pending device/contact-phone verification."
+        ],
+        "next_action": "Complete fresh resize test; if still constrained, remove/re-add the existing native widget via launcher before further code changes. Capture corrected Android gallery. Owner instructions now omit obsolete Mac-lock and Apple-resubmission requests.",
+        "updated_at": "2026-09-16T08:42:54+00:00"
+      }
+    },
+    {
+      "sequence": 90,
+      "at": "2026-09-16T08:51:20+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Native dark-to-light theme switch exposed pale /10 retaining dark-theme color. Replaced resolved inline color span with separate baseline-aligned TextView using XML theme color. 175 tests and Android prebuild pass; replacement native verification pending.",
+        "evidence": [
+          "source/android-phone/07-widget-theme-switch-v8.png and provenance-v8.json preserve actual capture; android-widget-regression.json records scope. Source fix applies to both compact and expanded layouts."
+        ],
+        "next_action": "Build preview APK from this fix, install and verify denominator in light/dark transitions, then finish compact/expanded checks and gallery before producing final AAB.",
+        "updated_at": "2026-09-16T08:51:20+00:00"
+      }
+    },
+    {
+      "sequence": 91,
+      "at": "2026-09-16T08:54:07+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Theme-fix preview APK9 accepted by EAS as bfb5310e-c8e1-41af-bc01-6037b17701b6 from clean commit 698071b. Existing production AAB9 predates this theme fix and must be replaced after preview verification.",
+        "evidence": [
+          "EAS build request returned NEW, appBuildVersion9, source commit698071b0a92da20f0647348464508425c8487b16. Build watcher downloads and ZIP-checks artifact; no duplicate production build started."
+        ],
+        "next_action": "Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle.",
+        "updated_at": "2026-09-16T08:54:07+00:00"
+      }
+    },
+    {
+      "sequence": 92,
+      "at": "2026-09-16T09:02:14+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Installed APK8 completed its next scheduled refresh at16:59:50.826. From16:29 through90 seconds after completion, native logs contain one worker start/success, one widget recreation at16:47 during the deliberate theme change, zero receiver-disable events and no fatal exception. No widget recreation followed the scheduled refresh. Periodic refresh remains functional without the old loop.",
+        "evidence": [
+          "store/android-widget-regression.json includes recurringExecution; full device log remains private. Theme-fix APK9 bfb5310e-c8e1-41af-bc01-6037b17701b6 is still IN_PROGRESS."
+        ],
+        "next_action": "Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build.",
+        "updated_at": "2026-09-16T09:02:14+00:00"
+      }
+    },
+    {
+      "sequence": 93,
+      "at": "2026-09-16T09:09:34+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Theme-fix APK9 build finished successfully after12m36s. Artifact download is progressing. CUA reports the Mac is locked and automatic unlock unavailable, preventing native theme/resize checks and captures.",
+        "evidence": [
+          "EAS build bfb5310e-c8e1-41af-bc01-6037b17701b6 Finished in provider UI; existing download watcher remains live and partial file grew17MB to40MB. CUA lock response observed; owner unlock request sent."
+        ],
+        "next_action": "Finish downloading and installing APK9 through CLI. Owner unlocks Mac; then resume native theme switching, fresh widget resize and final Android gallery. Do not mark theme or compact size verified while locked.",
+        "updated_at": "2026-09-16T09:09:34+00:00"
+      }
+    },
+    {
+      "sequence": 94,
+      "at": "2026-09-16T09:33:15+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "APK9 downloaded, ZIP-validated and installed. Native light/dark/light expanded-widget denominator checks passed with zero worker starts during transitions. Current reading light/dark captures are complete. Launcher existing widget now reports minSpan2x2. Actual compact rendering remains pending; Mac relocked.",
+        "evidence": [
+          "store/release.json artifact SHA25677d5c0c8da4ca6b33092949176cde4daa9677c079472379c9a191546741cc185; source/android-phone/provenance-v9.json and theme screenshots. Native launcher keyboard focus worked, but Ctrl+W/Menu/Ctrl+R did not open picker/resize popup. Store renderer/validator passed for current reading gallery."
+        ],
+        "next_action": "Owner unlocks Mac and leaves widget at2x2 using long-press resize handles; alternatively inspect emulator keyboard routing when available. Capture compact and expanded, finish gallery, then final production AAB and PR92.",
+        "updated_at": "2026-09-16T09:33:15+00:00"
+      }
+    },
+    {
+      "sequence": 95,
+      "at": "2026-09-16T09:33:15+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replaced old reading gallery with actual APK9 light/dark captures and versioned assets. Widget-size comparison remains pending compact native capture.",
+        "evidence": [
+          "store/preview-android.png visually inspected; manifest points to12-reading-light-v9.png and13-reading-dark-v9.png. Renderer/metadata validator passed. About excluded."
+        ],
+        "next_action": "Add verified compact/expanded widget frames and regenerate first gallery image; keep actual widget surfaces on neutral canvas.",
+        "updated_at": "2026-09-16T09:33:15+00:00"
+      }
+    },
+    {
+      "sequence": 96,
+      "at": "2026-09-16T10:09:18+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained",
+        "evidence": [
+          "store/source/android-phone/14-widget-compact-dark-v9.png; provenance-v9.json; android-widget-regression.json; launcher span/minSpan 2x2"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T10:09:18+00:00"
+      }
+    },
+    {
+      "sequence": 97,
+      "at": "2026-09-16T10:09:19+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps",
+        "evidence": [
+          "store/assets/google-play/phone/03-widget-sizes-v9.png; widget-frames.json; image validation and visual inspection"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T10:09:19+00:00"
+      }
+    },
+    {
+      "sequence": 98,
+      "at": "2026-09-16T10:09:19+00:00",
+      "gate": "design.widget-gallery",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Both platform galleries feature actual widget size choices on neutral backgrounds",
+        "evidence": [
+          "Apple submitted five-image gallery; Android APK9 compact/expanded gallery in store/assets/manifest.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T10:09:19+00:00"
+      }
+    },
+    {
+      "sequence": 99,
+      "at": "2026-09-16T10:09:19+00:00",
+      "gate": "design.regression",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Cross-surface design tests pass locally and reject historical APK7 and APK8 designs; full suite and CI pending",
+        "evidence": [
+          "test/surface-design.test.js; design/surfaces.json; 192 app rendered-prop combinations plus native XML/Swift/Java contracts and 12 deliberate regression checks"
+        ],
+        "next_action": "Finish npm test, push PR92 and verify the named CI design gate",
+        "updated_at": "2026-09-16T10:09:19+00:00"
+      }
+    },
+    {
+      "sequence": 100,
+      "at": "2026-09-16T10:11:05+00:00",
+      "gate": "design.regression",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "189 repository tests pass locally. New design gate rejects historical b5571c5 expanded XML and 922a9b1 inline theme override; 192 reading-render combinations and 12 deliberate regressions pass.",
+        "evidence": [
+          "npm test: 189/189; npm run test:design: 19/19; npm run check:app; test/surface-design.test.js; design/README.md"
+        ],
+        "next_action": "Push PR92 and verify CI design gate; tests check design contracts/rendered props, not native screenshot layout",
+        "updated_at": "2026-09-16T10:11:05+00:00"
+      }
+    },
+    {
+      "sequence": 101,
+      "at": "2026-09-16T10:13:02+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "APK9 native light/dark app and expanded widget theme transitions verified; owner-approved dark compact widget captured at actual 2x2",
+        "evidence": [
+          "store/source/android-phone/provenance-v9.json; android-widget-regression.json; new 2x2 native capture and launcher readback"
+        ],
+        "next_action": "Verify compact light, score 10, enlarged text, replacement offline recovery and physical-device behavior. CI design contracts do not prove native layout.",
+        "updated_at": "2026-09-16T10:13:02+00:00"
+      }
+    },
+    {
+      "sequence": 102,
+      "at": "2026-09-16T10:13:03+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Preview APK9 contains the verified denominator theme fix. Existing production AAB9 predates that fix and must not be submitted as final.",
+        "evidence": [
+          "Preview bfb5310e-c8e1-41af-bc01-6037b17701b6 source 698071b; older production a55d6cc8-d3cf-41f3-ae88-6b2b29456151"
+        ],
+        "next_action": "Create and verify the final production AAB after PR92 integration; retain build provenance.",
+        "updated_at": "2026-09-16T10:13:03+00:00"
+      }
+    },
+    {
+      "sequence": 103,
+      "at": "2026-09-16T10:18:37+00:00",
+      "gate": "design.regression",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate",
+        "evidence": [
+          "GitHub Actions 35083882871: design gate and npm test passed; 192 Expo rendered-prop combinations; 12 deliberate regression checks; historical XML b5571c5 and theme override 922a9b1 rejected; app-release skill v1.0.6 merged in skills PR65"
+        ],
+        "next_action": "For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines.",
+        "updated_at": "2026-09-16T10:18:37+00:00"
       }
     }
   ],

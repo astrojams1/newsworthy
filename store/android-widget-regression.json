@@ -1,0 +1,137 @@
+{
+  "date": "2026-09-16",
+  "runtime": "Android API 35 ARM64 emulator",
+  "versionCode": 7,
+  "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+  "windowStart": "09-16 15:55:13.779",
+  "windowEnd": "09-16 15:55:47.529",
+  "workerStarts": 29,
+  "workerSuccesses": 28,
+  "widgetRecreations": 30,
+  "workManagerReceiverEnabled": 29,
+  "workManagerReceiverDisabled": 28,
+  "observedSequence": [
+    "RatingWidgetWorker succeeds",
+    "WorkManager disables RescheduleReceiver after last one-time job finishes",
+    "AppWidgetService receives PACKAGE_CHANGED and recreates widget",
+    "RatingWidget.onUpdate queues another one-time job"
+  ],
+  "verificationScope": "Native logs and observed flicker/resize reset before fix; not proof of corrected build.",
+  "diagnosticCapture": {
+    "file": "source/android-phone/05-widget-expanded-v7.png",
+    "sha256": "37e9de9d0293cd159c51e54ee8c7913fb13f359a49d82e6a890f1746bb587ef9",
+    "finalArtwork": false
+  },
+  "correctedBuildObservation": {
+    "date": "2026-09-16",
+    "versionCode": 8,
+    "windowStart": "09-16 16:30:00.000",
+    "durationSeconds": 65,
+    "workerStarts": 0,
+    "widgetRecreations": 0,
+    "workManagerReceiverEnabled": 0,
+    "workManagerReceiverDisabled": 0,
+    "fatalExceptions": 0,
+    "scope": "Post-install observation including native widget resize interactions; private full log kept outside repo.",
+    "sourceCommit": "922a9b19f26a750df0867d0c3e1bdf4b6672ceba",
+    "resizeVerification": "Still pending; automated drags did not change the settled size.",
+    "initialRefresh": {
+      "startedAt": "2026-09-16 16:28:55.057 +08:00",
+      "completedAt": "2026-09-16 16:28:57.040 +08:00",
+      "result": "SUCCESS",
+      "evidence": "Native WM-WorkerWrapper log; corrected process PID12664. Receiver remains enabled after completion."
+    },
+    "scheduledRefresh": {
+      "source": "Android dumpsys jobscheduler",
+      "jobId": 7671,
+      "minimumLatencyMilliseconds": 1799984,
+      "networkConstraintSatisfied": true,
+      "onlyUnsatisfiedConstraint": "TIMING_DELAY",
+      "scope": "Next refresh is scheduled; not yet an observation of its later execution."
+    },
+    "launcherSizing": {
+      "source": "Android dumpsys activity NexusLauncherActivity and dumpsys appwidget",
+      "existingWidgetId": 2,
+      "existingSpan": [
+        3,
+        3
+      ],
+      "existingMinimumSpan": [
+        3,
+        3
+      ],
+      "installedProviderMinimumDp": [
+        120,
+        120
+      ],
+      "installedProviderMinimumResizeDp": [
+        120,
+        120
+      ],
+      "inference": "The existing launcher item may retain sizing from its earlier installation. New package dimensions alone do not verify resize behavior.",
+      "next": "Reopen resize controls; if minimum remains unchanged, remove and add the widget again through the launcher, then inspect compact/expanded layouts.",
+      "followUp": {
+        "versionCode": 9,
+        "existingSpan": [
+          3,
+          3
+        ],
+        "existingMinimumSpan": [
+          2,
+          2
+        ],
+        "scope": "Read-only launcher data after APK9 installation and theme transitions; actual compact rendering not yet captured.",
+        "attempts": "Focused widget through native Down key; Ctrl+W, Menu, Ctrl+R did not expose picker/resize popup through current emulator keyboard routing. Mac relocked before inspecting emulator routing setting."
+      }
+    },
+    "recurringExecution": {
+      "date": "2026-09-16",
+      "installedVersionCode": 8,
+      "windowStart": "09-16 16:29:00.000",
+      "workerStarts": 1,
+      "workerSuccesses": 1,
+      "startTimestamps": [
+        "09-16 16:59:48.465"
+      ],
+      "successTimestamps": [
+        "09-16 16:59:50.826"
+      ],
+      "postSuccessObservationSeconds": 90,
+      "scope": "Native log observation of scheduled refresh; does not verify compact resizing.",
+      "receiverDisableEvents": 0,
+      "widgetRecreations": 1,
+      "fatalExceptions": 0,
+      "widgetRecreationTimestamps": [
+        "09-16 16:47:11.273"
+      ],
+      "widgetRecreationNote": "One recreation coincided with the deliberate dark-to-light system theme change; none followed the scheduled refresh.",
+      "postRefreshWidgetRecreations": 0
+    }
+  },
+  "themeSwitchRegression": {
+    "versionCode": 8,
+    "observed": "Dark-to-light switch changed widget background and primary text but /10 retained a pale color.",
+    "cause": "ForegroundColorSpan stores the resolved color in RemoteViews instead of a theme resource.",
+    "diagnosticCapture": "source/android-phone/07-widget-theme-switch-v8.png",
+    "fix": "Separate baseline-aligned denominator TextView with theme color in XML.",
+    "verification": "APK9 installed and native light-to-dark-to-light transitions passed; denominator changed with the widget surface, with zero worker starts during the test.",
+    "verifiedBuild": "bfb5310e-c8e1-41af-bc01-6037b17701b6",
+    "evidence": "source/android-phone/provenance-v9.json"
+  },
+  "compactVerification": {
+    "date": "2026-09-16",
+    "versionCode": 9,
+    "userReported": "Smaller widget looks good.",
+    "observed": "Native compact score, small baseline denominator, update time; no explanation in compact layout.",
+    "launcherSpan": [
+      2,
+      2
+    ],
+    "launcherMinimumSpan": [
+      2,
+      2
+    ],
+    "evidence": "source/android-phone/14-widget-compact-dark-v9.png",
+    "scope": "Dark compact rendering and settled launcher size observed after owner resized; physical device and large text not verified."
+  }
+}

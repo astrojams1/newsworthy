@@ -12,22 +12,21 @@
     "appleBuildId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
     "appleBuildProcessingState": "VALID",
     "screenshotBuild": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
-    "reviewSubmitted": false,
+    "reviewSubmitted": true,
     "reviewDetailsSaved": true,
     "privacyPublication": "PUBLISHED",
     "addressCorrectionRequest": "SUBMITTED_AWAITING_APPLE_REVIEW",
     "paidAppsAgreement": "PENDING_USER_INFO",
     "dsaCompliance": "ACTIVE",
     "w9Status": "ACTIVE",
-    "reviewSubmissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
-    "reviewState": "PREPARE_FOR_SUBMISSION",
-    "reviewSubmittedDate": "2026-09-16T04:53:38.974Z",
+    "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
+    "reviewState": "WAITING_FOR_REVIEW",
+    "reviewSubmittedDate": "2026-09-16T07:50:46.874Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,
     "availableInNewTerritories": true,
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
-    "reviewSubmissionState": "COMPLETE",
-    "reviewWithdrawalReason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets.",
+    "reviewSubmissionState": "WAITING_FOR_REVIEW",
     "replacementBuildRequired": false,
     "replacementBuilds": [
       {
@@ -52,24 +51,29 @@
         "status": "FINISHED"
       }
     ],
-    "widgetArtworkStatus": "REPLACE_WITH_CLEAN_NEUTRAL_BACKGROUND_SMALL_AND_MEDIUM_CAPTURE",
+    "widgetArtworkStatus": "NEUTRAL_SMALL_MEDIUM_ARTWORK_COMPLETE_ON_APPLE",
     "replacementUpload": {
       "build": "6",
       "deliveryId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
       "status": "VALID",
       "sha256": "032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5"
     },
-    "replacementNativeVerification": "PENDING_MAC_UNLOCK_AND_NATIVE_UI_CHECKS"
+    "replacementNativeVerification": "IPHONE_IPAD_LIGHT_DARK_AND_IPHONE_WIDGETS_VERIFIED_SIMULATOR_SCOPE",
+    "previousReview": {
+      "submissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
+      "state": "COMPLETE",
+      "reason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets."
+    }
   },
   "google": {
-    "productionBuild": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",
-    "screenshotBuild": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
+    "productionBuild": "a55d6cc8-d3cf-41f3-ae88-6b2b29456151",
+    "screenshotBuild": "c18fb254-3145-4e69-b7f5-906b3c0621e1",
     "appCreated": false,
     "reviewSubmitted": false,
-    "versionCode": 7,
+    "versionCode": 9,
     "buildStatus": "FINISHED",
-    "artworkStatus": "REVISION_PENDING_NATIVE_CAPTURES",
-    "nativeVerification": "V7_PENDING_MAC_UNLOCK_AND_NATIVE_UI_CHECKS",
+    "artworkStatus": "APK9_READING_IMAGES_UPDATED_WIDGET_COMPARISON_PENDING",
+    "nativeVerification": "APK9_INSTALLED_THEME_AND_READING_LIGHT_DARK_VERIFIED_COMPACT_PENDING",
     "replacementBuilds": [
       {
         "id": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
@@ -93,6 +97,48 @@
         "sha256": "28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8"
       }
     ],
-    "widgetArtworkStatus": "CAPTURE_CLEAN_NEUTRAL_BACKGROUND_COMPACT_AND_EXPANDED_LAYOUTS"
+    "widgetArtworkStatus": "LAUNCHER_MINIMUM_2X2_OBSERVED_COMPACT_CAPTURE_PENDING",
+    "widgetFixBuilds": [
+      {
+        "id": "a55d6cc8-d3cf-41f3-ae88-6b2b29456151",
+        "profile": "production",
+        "version": "1.0.0",
+        "build": "9",
+        "sourceCommit": "2bd11797104e1fda158c24d6607644c61e66ccf6",
+        "sourceDirty": false,
+        "status": "FINISHED",
+        "sha256": "423c72392e272262e8a6d2074e36efd77112923dd647310ab20e6dc79dda9733",
+        "bytes": 72474455
+      },
+      {
+        "id": "c18fb254-3145-4e69-b7f5-906b3c0621e1",
+        "profile": "preview",
+        "version": "1.0.0",
+        "build": "8",
+        "sourceCommit": "922a9b19f26a750df0867d0c3e1bdf4b6672ceba",
+        "sourceDirty": false,
+        "status": "FINISHED",
+        "sha256": "f4f5b72c2538231d80876b3739e431fbdbd8ccf1f1b6a836c1ac3936a9a92d14",
+        "bytes": 104436991,
+        "installedVersionCode": 8
+      }
+    ],
+    "widgetFixVersionNote": "Preview APK is versionCode 8; production retry is versionCode 9. Initial production upload stalled before creating a build. Source commits differ only in release documentation; apps/client has no diff.",
+    "themeFixBuild": {
+      "id": "bfb5310e-c8e1-41af-bc01-6037b17701b6",
+      "profile": "preview",
+      "version": "1.0.0",
+      "build": "9",
+      "sourceCommit": "698071b0a92da20f0647348464508425c8487b16",
+      "sourceDirty": false,
+      "status": "FINISHED",
+      "purpose": "Verify denominator color follows native light/dark theme without waiting for widget refresh.",
+      "sha256": "77d5c0c8da4ca6b33092949176cde4daa9677c079472379c9a191546741cc185",
+      "bytes": 104437651,
+      "installedVersionCode": 9
+    },
+    "productionBuildRequiresReplacement": true,
+    "productionReplacementReason": "AAB9 predates denominator theme-switch fix; validate preview APK9 before final production build.",
+    "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED"
   }
 }

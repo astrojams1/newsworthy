@@ -22,6 +22,7 @@
     "pretest": "npm run build:web",
     "design:generate": "node scripts/generate-design.mjs",
     "design:check": "node scripts/generate-design.mjs --check",
+    "test:design": "node --test test/design.test.js test/reading-gradient.test.js test/surface-design.test.js",
     "design:assets": "npm run design:generate && node scripts/generate-brand.mjs"
   },
   "dependencies": {
@@ -30,11 +31,12 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.6",
-    "sharp": "0.35.4",
-    "react-native": "0.86.3",
+    "@xmldom/xmldom": "^0.8.15",
     "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-reanimated": "4.5.1",
     "react-native-worklets": "0.10.1",
-    "react-native-reanimated": "4.5.1"
+    "sharp": "0.35.4"
   },
   "workspaces": [
     "apps/client"

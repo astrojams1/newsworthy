@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="2868">
+    <rect width="1320" height="2868" fill="#F4F3EF"/>
+    <rect x="104" y="120" width="42" height="5" rx="2.5" fill="#59685F"/>
+    <text x="166" y="134" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="29" fill="#59685F" letter-spacing="6">NEWSWORTHY</text>
+    <text x="104" y="327" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="106" fill="#172C25" font-weight="500" letter-spacing="-4">A little space.</text>
+    <text x="104" y="451" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="106" fill="#172C25" font-weight="500" letter-spacing="-4">A clearer picture.</text>
+    <text x="108" y="557" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="36" fill="#59685F" >Two sizes. One calm perspective.</text>
+    <text x="108" y="748" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="27" fill="#59685F" letter-spacing="5">SMALL</text>
+    
+    <svg x="108" y="803" width="510" height="510" viewBox="114 918 510 510">
+      <defs><clipPath id="small"><rect x="114" y="918" width="510" height="510" rx="92"/></clipPath></defs>
+      <image width="1320" height="2868" href="../iphone-6.9/04-widget-sizes-native.png" clip-path="url(#small)"/>
+    </svg>
+    <text x="108" y="1396" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="37" fill="#172C25" >The score, at a glance.</text>
+    <path d="M108 1510 H1212" stroke="#D5D9D0" stroke-width="2"/>
+    <text x="108" y="1658" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="27" fill="#59685F" letter-spacing="5">MEDIUM</text>
+    
+    <svg x="108" y="1713" width="1092" height="510" viewBox="114 282 1092 510">
+      <defs><clipPath id="medium"><rect x="114" y="282" width="1092" height="510" rx="92"/></clipPath></defs>
+      <image width="1320" height="2868" href="../iphone-6.9/04-widget-sizes-native.png" clip-path="url(#medium)"/>
+    </svg>
+    <text x="108" y="2308" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="37" fill="#172C25" >More room for context.</text>
+    <text x="108" y="2532" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="31" fill="#59685F" >A quiet check-in, right on your Home Screen.</text>
+    <text x="108" y="2758" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="27" fill="#59685F" >No feed. No ads. No subscription.</text>
+  </svg>

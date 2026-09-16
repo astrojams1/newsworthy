@@ -1,0 +1,23 @@
+{
+  "versionCode": 9,
+  "frames": [
+    {
+      "label": "COMPACT",
+      "file": "source/android-phone/14-widget-compact-dark-v9.png",
+      "x": 67,
+      "y": 422,
+      "width": 452,
+      "height": 614,
+      "radius": 53
+    },
+    {
+      "label": "EXPANDED",
+      "file": "source/android-phone/10-widget-dark-v9.png",
+      "x": 67,
+      "y": 422,
+      "width": 699,
+      "height": 942,
+      "radius": 53
+    }
+  ]
+}

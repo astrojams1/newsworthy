@@ -1,6 +1,15 @@
 [
   {
-    "file": "assets/apple/iphone-6.9/01-at-a-glance.png",
+    "file": "assets/apple/iphone-6.9/02-widget-sizes-v2.png",
+    "source": "source/iphone-6.9/04-widget-sizes-native.png",
+    "width": 1320,
+    "height": 2868,
+    "platform": "ios",
+    "displayType": "APP_IPHONE_67",
+    "composition": "Unchanged native widget viewports on a neutral vector canvas; not a full Home Screen screenshot."
+  },
+  {
+    "file": "assets/apple/iphone-6.9/01-at-a-glance-v6.png",
     "source": "source/iphone-6.9/01-reading-light.png",
     "width": 1320,
     "height": 2868,
@@ -8,7 +17,7 @@
     "displayType": "APP_IPHONE_67"
   },
   {
-    "file": "assets/apple/iphone-6.9/03-dark-mode.png",
+    "file": "assets/apple/iphone-6.9/03-dark-mode-v6.png",
     "source": "source/iphone-6.9/02-reading-dark.png",
     "width": 1320,
     "height": 2868,
@@ -16,7 +25,7 @@
     "displayType": "APP_IPHONE_67"
   },
   {
-    "file": "assets/apple/ipad-13/01-at-a-glance.png",
+    "file": "assets/apple/ipad-13/01-at-a-glance-v6.png",
     "source": "source/ipad-13/01-reading-light.png",
     "width": 2064,
     "height": 2752,
@@ -24,7 +33,7 @@
     "displayType": "APP_IPAD_PRO_3GEN_129"
   },
   {
-    "file": "assets/apple/ipad-13/02-dark-mode.png",
+    "file": "assets/apple/ipad-13/02-dark-mode-v6.png",
     "source": "source/ipad-13/02-reading-dark.png",
     "width": 2064,
     "height": 2752,
@@ -32,15 +41,27 @@
     "displayType": "APP_IPAD_PRO_3GEN_129"
   },
   {
-    "file": "assets/google-play/phone/01-at-a-glance.png",
-    "source": "source/android-phone/01-reading-light.png",
+    "file": "assets/google-play/phone/03-widget-sizes-v9.png",
+    "source": "source/android-phone/widget-frames.json",
+    "sources": [
+      "source/android-phone/14-widget-compact-dark-v9.png",
+      "source/android-phone/10-widget-dark-v9.png"
+    ],
+    "width": 1080,
+    "height": 1920,
+    "platform": "android",
+    "composition": "Actual native widget viewports on a neutral canvas."
+  },
+  {
+    "file": "assets/google-play/phone/01-at-a-glance-v9.png",
+    "source": "source/android-phone/12-reading-light-v9.png",
     "width": 1080,
     "height": 1920,
     "platform": "android"
   },
   {
-    "file": "assets/google-play/phone/02-dark-mode.png",
-    "source": "source/android-phone/02-reading-dark.png",
+    "file": "assets/google-play/phone/02-dark-mode-v9.png",
+    "source": "source/android-phone/13-reading-dark-v9.png",
     "width": 1080,
     "height": 1920,
     "platform": "android"

@@ -1,0 +1,40 @@
+{
+  "capturedDate": "2026-09-16",
+  "bundleId": "com.astrojams.newsworthy",
+  "version": "1.0.0",
+  "simulatorBundleVersion": "1",
+  "easBuildId": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
+  "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+  "runtime": "iPhone 16 Pro Max, iOS 18.3",
+  "dimensions": {
+    "width": 1320,
+    "height": 2868
+  },
+  "captureMethod": "Simulator Save Screen through CUA; original PNGs copied unchanged",
+  "files": {
+    "01-reading-light.png": {
+      "sha256": "37a9fd5997bbdb0bd609b95dafa7fe76757fef4e57816815bd0fc3d386ed1f13"
+    },
+    "02-reading-dark.png": {
+      "sha256": "ace2bbf6ee05362576e0cc55293c5dd15ff61963d49e07898f971edc0f84cbad"
+    },
+    "04-widget-sizes-native.png": {
+      "sha256": "44788d97833e7639e9be7daa9cce83755da4b8950f693a485a217b490bdd5c89"
+    }
+  },
+  "verified": [
+    "revised light and dark reading screen",
+    "Privacy and Support footer visible; About absent",
+    "small Home Screen widget: score and timestamp",
+    "medium Home Screen widget: score, two-line truncated explanation, timestamp",
+    "small widget tap opens Newsworthy",
+    "Privacy link opens published privacy policy in Safari",
+    "Support link opens published support page in Safari"
+  ],
+  "composition": "Final widget artwork frames the actual small and medium surfaces with SVG viewports on a neutral canvas. It is not a full Home Screen screenshot. Original capture retained unchanged.",
+  "limitations": [
+    "Medium long explanations truncate after two lines; artwork preserves this actual behavior.",
+    "Simulator artifact has CFBundleVersion 1 despite EAS metadata saying 6; production IPA independently verified build 6.",
+    "Physical iOS device not checked."
+  ]
+}

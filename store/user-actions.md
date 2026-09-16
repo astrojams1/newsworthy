@@ -108,19 +108,32 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 Do **not** ask the owner to create listing art/copy, configure Expo, generate
 signing credentials again, fetch binaries, or manually upload screenshots.
-Those have working automated paths. Prior Android version 6 passed rendering,
-sharing and offline/recovery checks. The approved redesign now needs replacement
-native verification and captures. iOS build 6 and Android version 7 have been
-built from merged commit `b5571c5`; Apple build 6 is uploaded, valid and selected. The Mac is locked again; unlock it to resume
-native UI work. Widget/large-text and physical-device checks remain open.
+Those have working automated paths. Apple build 6 and the corrected five-image
+gallery are submitted and **Waiting for Review**, confirmed through the API on
+September 16. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
+Privacy/Support links and iPad share popover have been checked. Physical-device
+and large-text behavior remain unclaimed.
+
+Android preview APK8 verified the refresh-loop fix, including its next scheduled
+refresh without recurring widget recreation. APK9 is installed and passed native
+light→dark→light widget contrast checks. Current light/dark reading images are
+captured; the earlier production AAB9 must be replaced after sizing verification.
+
+The owner resized the widget and approved its compact appearance. The agent
+captured and inspected the native 2×2 dark widget, verified launcher span/minimum,
+and completed the neutral compact/expanded gallery. No further owner resizing
+step is needed. Cross-surface design-contract tests now enforce typography,
+baseline alignment, theme bindings and minimum sizing in CI.
+
 The remaining technical release work is:
 
+- Build the final production Android AAB from the denominator/theme fix. Complete
+  remaining native verification (compact light, score 10 and enlarged text)
+  without claiming CI contract checks are native screenshot tests.
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
-- The original Apple submission was withdrawn to replace About and improve the
-  design. Verify the replacement native builds, refresh screenshots, select the
-  new Apple build and resubmit. The iPhone gallery already leads with the actual
-  widget. All 175 territories remain configured with release after approval.
+- Observe Apple's replacement review result; do not submit another duplicate
+  review. All 175 territories remain configured with release after approval.
 - When **Create app** becomes enabled, create Newsworthy as **paid**, set US$1.00,
   upload the AAB, copy, icon, feature graphic, and prepared Android screenshots,
   complete app-content forms, and prepare the closed-test release.

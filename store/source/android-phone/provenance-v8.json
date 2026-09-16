@@ -1,0 +1,23 @@
+{
+  "capturedDate": "2026-09-16",
+  "versionCode": 8,
+  "easBuildId": "c18fb254-3145-4e69-b7f5-906b3c0621e1",
+  "sourceCommit": "922a9b19f26a750df0867d0c3e1bdf4b6672ceba",
+  "runtime": "Android API35 ARM64 emulator",
+  "captureMethod": "Android Emulator screenshot shortcut through CUA; original PNGs unchanged",
+  "finalArtwork": false,
+  "files": {
+    "06-widget-expanded-v8.png": {
+      "description": "Native expanded widget in dark theme; compact size not verified.",
+      "sha256": "baf1d746f90959878cac7cd5d3f772d72b8792e8c9dcad72cad4ed7da6f91b42"
+    },
+    "07-widget-theme-switch-v8.png": {
+      "description": "Diagnostic: after dark-to-light theme switch, inline denominator retained pale dark-theme color.",
+      "sha256": "168e32e1189916dd5475d9fde1771cccdc01d60c084b07363d89e13e8cb35a26"
+    },
+    "08-reading-dark-v8.png": {
+      "description": "Native dark reading with Privacy/Support footer and no About.",
+      "sha256": "4dee9b2d89877f5b900573251bdac453cc4181b07ac18bb9be89138f2426ef12"
+    }
+  }
+}

@@ -46,7 +46,9 @@ public class RatingWidgetWorker extends Worker {
         } finally {
             if (connection != null) connection.disconnect();
         }
-        RatingWidget.renderAll(getApplicationContext(), saved);
+        getApplicationContext().getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE)
+            .edit().putBoolean(RatingWidget.SAVED, saved).apply();
+        RatingWidget.renderAll(getApplicationContext());
         return Result.success();
     }
 }

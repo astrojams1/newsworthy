@@ -1,0 +1,31 @@
+{
+  "capturedDate": "2026-09-16",
+  "bundleId": "com.astrojams.newsworthy",
+  "version": "1.0.0",
+  "simulatorBundleVersion": "1",
+  "easBuildId": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
+  "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+  "runtime": "iPad Pro 13-inch (M4), iOS 18.3",
+  "dimensions": {
+    "width": 2064,
+    "height": 2752
+  },
+  "captureMethod": "Simulator Save Screen through CUA; original PNGs copied unchanged",
+  "files": {
+    "01-reading-light.png": {
+      "sha256": "f31cf257ac6890cd09a193988fe7d489316353211a91ba7a3402715e9b808543"
+    },
+    "02-reading-dark.png": {
+      "sha256": "b50b87f06dcb622486eb6e17b0efcc141c7dd8089655603f97c06d696aa91c1e"
+    }
+  },
+  "verified": [
+    "revised light and dark reading screen",
+    "Privacy and Support footer visible; About absent",
+    "native share popover opens with rating and explanation"
+  ],
+  "limitations": [
+    "Simulator artifact has CFBundleVersion 1 despite EAS metadata saying 6; production IPA independently verified build 6.",
+    "Physical iOS device not checked."
+  ]
+}
