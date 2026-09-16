@@ -8,14 +8,6 @@
     "displayType": "APP_IPHONE_67"
   },
   {
-    "file": "assets/apple/iphone-6.9/02-widget.png",
-    "source": "source/iphone-6.9/03-home-widget.png",
-    "width": 1320,
-    "height": 2868,
-    "platform": "ios",
-    "displayType": "APP_IPHONE_67"
-  },
-  {
     "file": "assets/apple/iphone-6.9/03-dark-mode.png",
     "source": "source/iphone-6.9/02-reading-dark.png",
     "width": 1320,
@@ -49,13 +41,6 @@
   {
     "file": "assets/google-play/phone/02-dark-mode.png",
     "source": "source/android-phone/02-reading-dark.png",
-    "width": 1080,
-    "height": 1920,
-    "platform": "android"
-  },
-  {
-    "file": "assets/google-play/phone/03-about.png",
-    "source": "source/android-phone/03-about.png",
     "width": 1080,
     "height": 1920,
     "platform": "android"

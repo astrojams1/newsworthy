@@ -20,5 +20,6 @@
     "baseCurrency": "USD",
     "basePrice": "1.00",
     "localizePrices": true
-  }
+  },
+  "demoAccountRequired": false
 }

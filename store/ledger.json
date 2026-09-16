@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T06:14:03+00:00",
+  "updated_at": "2026-09-16T07:03:19+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -26,13 +26,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Production commit f1ee64d deployed successfully; live release URLs checked.",
+      "summary": "Approved reading-screen design merged and deployed to production.",
       "evidence": [
-        "https://github.com/astrojams1/newsworthy/pull/85",
-        "Vercel commit status success; npm run mobile:check -- --live passed"
+        "PR89; Vercel success for b5571c5983a128e007bb0e166e39697c188242d9; live browser shows score, share, Privacy and Support with no About route; 175 tests and CI passed."
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "updated_at": "2026-09-16T06:40:14+00:00"
     },
     "apple.membership": {
       "state": "done",
@@ -116,63 +115,56 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Review contact including phone, no-login requirement and notes saved and all supplied fields read back.",
+      "summary": "Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved.",
       "evidence": [
-        "App Store Connect API success; store/scripts/apple.mjs review-notes. Private contact fields excluded."
+        "App Store Connect review-notes PATCH and readback passed for version 267c6f52-d22d-4cb0-bb4c-d22f280b4499; demoAccountRequired=false. Private contact information stays outside Git."
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "updated_at": "2026-09-16T06:42:40+00:00"
     },
     "apple.listing": {
-      "state": "done",
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "English copy, category, US$1 pricing and five native iPhone/iPad screenshots saved; screenshots COMPLETE.",
+      "summary": "Widget-first order is saved remotely, but owner rejected the existing cluttered Home Screen image. It is superseded for final listing use.",
       "evidence": [
-        "store/listing.json",
-        "store/assets/manifest.json",
-        "https://appstoreconnect.apple.com/apps/6812519450/distribution"
+        "Remote widget-first order verified; owner requested no unrelated icons and multiple widget size options. Capture brief in store/design/widget-gallery-brief.md."
       ],
-      "next_action": "",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Replace old widget image with verified clean small/medium native captures, refresh reading images, then validate the final gallery before resubmitting.",
+      "updated_at": "2026-09-16T06:46:32+00:00"
     },
     "apple.build": {
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Signed production IPA build 5 completed and validated; simulator capture build recorded separately.",
+      "summary": "Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5.",
       "evidence": [
-        "EAS production 34e8a094-c122-4770-9bf6-611f70f671ab",
-        "EAS simulator 1a4edab8-6c4c-4133-ab32-62c45fd0a7f9",
-        "Archive and signing checks; Apple altool validation succeeded"
+        "EAS 461def41-d59d-4c9e-9f91-d8f2c9bdc95c and e02851c0-0cae-4f95-b854-2d57e32cc0b2 FINISHED. IPA archive validation passed; simulator download in progress. Native/UI verification remains a separate gate."
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "updated_at": "2026-09-16T06:52:37+00:00"
     },
     "apple.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Actual iPhone/iPad simulator reading, light/dark UI, sharing and iPhone medium widget checked. Physical-device release checklist remains.",
+      "summary": "Replacement simulator artifact downloaded and installed on the booted iPhone simulator; visual checks and new captures await Mac unlock.",
       "evidence": [
-        "store/source/iphone-6.9/",
-        "store/source/ipad-13/",
-        "docs/mobile-release.md"
+        "EAS simulator e02851c0-0cae-4f95-b854-2d57e32cc0b2, source b5571c5, SHA256 f6f446b7f04513e9d5d01c50755ae5d4c9b430daa71bcf9ec873dc4a1d34ded9. Actual simulator Info.plist is version 1.0.0 / CFBundleVersion 1 despite EAS remote-version label 6; xcrun simctl install succeeded. Production IPA independently confirms build 6. Earlier screenshots verify only the older artifact."
       ],
-      "next_action": "Finish applicable physical-device, offline/recovery, accessibility and widget checks; do not treat web or Expo Go as signed-device proof.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "After unlock, verify revised reading screen, privacy/support links, share, offline recovery, large text, and both widget sizes; capture clean neutral Home Screen images and updated iPhone/iPad reading screens.",
+      "updated_at": "2026-09-16T06:59:34+00:00"
     },
     "apple.upload": {
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Direct altool upload processed VALID and APP_STORE_ELIGIBLE; Apple build 5 selected for version 1.0.0.",
+      "summary": "Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0.",
       "evidence": [
-        "Apple build 805f70f3-09a4-4111-afd2-bf04bb99e30d",
-        "Queued EAS submission 4a6398aa-658c-49c0-a909-c09209dd5021 canceled before direct upload"
+        "Delivery/build b62a9dc5-1b0c-4200-8830-68db021bb0cd; App Store Connect VALID readback and build-selection readback passed. No replacement review submission yet."
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "updated_at": "2026-09-16T06:59:34+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -244,47 +236,45 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Create app remains disabled; live account home lists Android-device and contact-phone verification as required.",
+      "summary": "Live Play Console still disables Create app until real-device and contact-phone verification finish.",
       "evidence": [
-        "Live Play Console app-list on September 16 says Complete account verifications to create new apps."
+        "2026-09-16 live Home page for developer 8388544157780149515: real Android device Action required, contact phone Action required, Create app disabled."
       ],
-      "next_action": "After owner device and phone verification, create paid app, configure US$1 and local equivalents, upload version 6 and prepare required closed test.",
-      "updated_at": "2026-09-16T04:55:59+00:00"
+      "next_action": "Owner verifies a real Android device in the Play Console mobile app, then completes contact-phone verification; agent can then create the paid app.",
+      "updated_at": "2026-09-16T06:42:40+00:00"
     },
     "google.build": {
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Corrected production AAB and preview APK version 6 finished, downloaded and passed archive checks; preview APK installed.",
+      "summary": "Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5.",
       "evidence": [
-        "EAS AAB 615799c2-7fb9-4342-b2f4-9a073d308884",
-        "EAS APK f3dddec5-23f3-4a41-8fd6-e0d4f79ee366",
-        "adb streamed install Success. Version 4 and canceled intermediate version 5 are superseded."
+        "EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; downloads underway. Native verification and Play account eligibility remain separate gates."
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "updated_at": "2026-09-16T06:54:20+00:00"
     },
     "google.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Version 6 launch, light/dark gradients and share icon, native share sheet, About navigation, cached offline reading, and online recovery verified on API 35 ARM64 emulator.",
+      "summary": "Android version 7 APK downloaded, archive checked and installed successfully on the emulator. Revised UI and widgets still need native verification.",
       "evidence": [
-        "Installed package reports versionCode 6/versionName 1.0.0. Native UI shows gradient/icon, share payload with original timestamp, offline Saved reading/Try again, and recovery with saved warning removed. Source screenshots stored under store/source/android-phone/."
+        "APK 104,436,147 bytes; SHA256 bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194. adb install Success; installed package versionName 1.0.0/versionCode 7. This proves installation, not visual behavior."
       ],
-      "next_action": "Verify Android widget installation/rendering/resize and large text, then physical-device behavior during real closed testing. Launcher widget picker was not reachable through available CUA controls; no widget success claim.",
-      "updated_at": "2026-09-16T05:39:50+00:00"
+      "next_action": "After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.",
+      "updated_at": "2026-09-16T07:03:19+00:00"
     },
     "google.listing": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Copy, icon, feature graphic and three real Android screenshots ready in repo; upload still blocked by disabled app creation.",
+      "summary": "Removed About from Android artwork and contact sheet; renderer now reserves first place for a real Android widget capture.",
       "evidence": [
-        "store/assets/google-play/phone/, store/assets/manifest.json and store/preview-android.png; Play Console account verification remains incomplete."
+        "store/scripts/render.mjs and store/preview-android.png; two old-build reading images remain. No synthetic widget or cross-platform substitution. Image dimensions and listing length validation passed."
       ],
-      "next_action": "After owner device/phone verification enables Create app, save paid listing and upload all prepared assets.",
-      "updated_at": "2026-09-16T05:39:50+00:00"
+      "next_action": "Capture Android widget and revised reading screen on version 7, regenerate and inspect the final gallery.",
+      "updated_at": "2026-09-16T06:40:14+00:00"
     },
     "google.disclosures": {
       "state": "todo",
@@ -384,6 +374,28 @@
       ],
       "next_action": "Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery.",
       "updated_at": "2026-09-16T06:11:23+00:00"
+    },
+    "native.ui-access": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Mac locked again; native app-control tool could not unlock it.",
+      "evidence": [
+        "CUA getApp(com.astrojams.newsworthy.emulator) returned locked Mac. Owner unlock requested while cloud work continues."
+      ],
+      "next_action": "Owner unlocks Mac; resume native UI checks and captures.",
+      "updated_at": "2026-09-16T06:40:14+00:00"
+    },
+    "design.widget-gallery": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner requests clean widget imagery: no unrelated icons, show supported size options, and use plain neutral wallpaper that does not compete with widget colors.",
+      "evidence": [
+        "Owner correction includes stock-wallpaper color clash. Capture brief updated; renderer now omits the old cluttered widget asset from local gallery previews until clean native captures exist."
+      ],
+      "next_action": "After unlock, set neutral wallpaper on capture devices and verify/capture iOS small and medium plus Android compact and expanded layouts; replace remote old widget screenshot before resubmitting.",
+      "updated_at": "2026-09-16T06:48:13+00:00"
     }
   },
   "events": [
@@ -1150,6 +1162,310 @@
         ],
         "next_action": "Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit.",
         "updated_at": "2026-09-16T06:14:03+00:00"
+      }
+    },
+    {
+      "sequence": 48,
+      "at": "2026-09-16T06:39:09+00:00",
+      "gate": "apple.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple iPhone gallery now leads with the actual Home Screen widget; remote order verified. Replacement reading-screen captures still required.",
+        "evidence": [
+          "App Store Connect screenshot-set 7e5eeec0-cde4-48b9-9cd4-d8cf96e42162 readback order: widget, reading, dark. Original screenshot delivery remains COMPLETE."
+        ],
+        "next_action": "Capture updated native reading screens, replace the outdated reading images, and retain the verified widget-first ordering.",
+        "updated_at": "2026-09-16T06:39:09+00:00"
+      }
+    },
+    {
+      "sequence": 49,
+      "at": "2026-09-16T06:40:14+00:00",
+      "gate": "apple.build",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Replacement iOS production build 6 and matching simulator build queued from clean merged commit b5571c5.",
+        "evidence": [
+          "EAS production 461def41-d59d-4c9e-9f91-d8f2c9bdc95c IN_PROGRESS; simulator e02851c0-0cae-4f95-b854-2d57e32cc0b2 NEW. Both source b5571c5983a128e007bb0e166e39697c188242d9."
+        ],
+        "next_action": "Poll these build IDs; download completed IPA and simulator archive, verify native UI, upload the replacement IPA.",
+        "updated_at": "2026-09-16T06:40:14+00:00"
+      }
+    },
+    {
+      "sequence": 50,
+      "at": "2026-09-16T06:40:14+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Replacement Android production AAB and preview APK version 7 are building from clean merged commit b5571c5.",
+        "evidence": [
+          "EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 IN_PROGRESS."
+        ],
+        "next_action": "Poll these build IDs, download and inspect completed packages, install the APK for native checks.",
+        "updated_at": "2026-09-16T06:40:14+00:00"
+      }
+    },
+    {
+      "sequence": 51,
+      "at": "2026-09-16T06:40:14+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Removed About from Android artwork and contact sheet; renderer now reserves first place for a real Android widget capture.",
+        "evidence": [
+          "store/scripts/render.mjs and store/preview-android.png; two old-build reading images remain. No synthetic widget or cross-platform substitution. Image dimensions and listing length validation passed."
+        ],
+        "next_action": "Capture Android widget and revised reading screen on version 7, regenerate and inspect the final gallery.",
+        "updated_at": "2026-09-16T06:40:14+00:00"
+      }
+    },
+    {
+      "sequence": 52,
+      "at": "2026-09-16T06:40:14+00:00",
+      "gate": "native.ui-access",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Mac locked again; native app-control tool could not unlock it.",
+        "evidence": [
+          "CUA getApp(com.astrojams.newsworthy.emulator) returned locked Mac. Owner unlock requested while cloud work continues."
+        ],
+        "next_action": "Owner unlocks Mac; resume native UI checks and captures.",
+        "updated_at": "2026-09-16T06:40:14+00:00"
+      }
+    },
+    {
+      "sequence": 53,
+      "at": "2026-09-16T06:40:14+00:00",
+      "gate": "web.deploy",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Approved reading-screen design merged and deployed to production.",
+        "evidence": [
+          "PR89; Vercel success for b5571c5983a128e007bb0e166e39697c188242d9; live browser shows score, share, Privacy and Support with no About route; 175 tests and CI passed."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T06:40:14+00:00"
+      }
+    },
+    {
+      "sequence": 54,
+      "at": "2026-09-16T06:42:40+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Live Play Console still disables Create app until real-device and contact-phone verification finish.",
+        "evidence": [
+          "2026-09-16 live Home page for developer 8388544157780149515: real Android device Action required, contact phone Action required, Create app disabled."
+        ],
+        "next_action": "Owner verifies a real Android device in the Play Console mobile app, then completes contact-phone verification; agent can then create the paid app.",
+        "updated_at": "2026-09-16T06:42:40+00:00"
+      }
+    },
+    {
+      "sequence": 55,
+      "at": "2026-09-16T06:42:40+00:00",
+      "gate": "apple.review-contact",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved.",
+        "evidence": [
+          "App Store Connect review-notes PATCH and readback passed for version 267c6f52-d22d-4cb0-bb4c-d22f280b4499; demoAccountRequired=false. Private contact information stays outside Git."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T06:42:40+00:00"
+      }
+    },
+    {
+      "sequence": 56,
+      "at": "2026-09-16T06:46:32+00:00",
+      "gate": "design.widget-gallery",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner rejected unrelated icons in widget imagery and requested the available size options. Capture brief now requires clean Home Screens with iOS small/medium and Android compact/expanded layouts.",
+        "evidence": [
+          "Owner correction; iOS supportedFamilies=[systemSmall,systemMedium]; Android horizontal/vertical resizing with height-dependent explanation. store/design/widget-gallery-brief.md."
+        ],
+        "next_action": "After Mac unlock, verify both native layouts per platform and capture clean Home Screen images; replace the old cluttered iPhone widget image before resubmission.",
+        "updated_at": "2026-09-16T06:46:32+00:00"
+      }
+    },
+    {
+      "sequence": 57,
+      "at": "2026-09-16T06:46:32+00:00",
+      "gate": "apple.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Widget-first order is saved remotely, but owner rejected the existing cluttered Home Screen image. It is superseded for final listing use.",
+        "evidence": [
+          "Remote widget-first order verified; owner requested no unrelated icons and multiple widget size options. Capture brief in store/design/widget-gallery-brief.md."
+        ],
+        "next_action": "Replace old widget image with verified clean small/medium native captures, refresh reading images, then validate the final gallery before resubmitting.",
+        "updated_at": "2026-09-16T06:46:32+00:00"
+      }
+    },
+    {
+      "sequence": 58,
+      "at": "2026-09-16T06:48:13+00:00",
+      "gate": "design.widget-gallery",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner requests clean widget imagery: no unrelated icons, show supported size options, and use plain neutral wallpaper that does not compete with widget colors.",
+        "evidence": [
+          "Owner correction includes stock-wallpaper color clash. Capture brief updated; renderer now omits the old cluttered widget asset from local gallery previews until clean native captures exist."
+        ],
+        "next_action": "After unlock, set neutral wallpaper on capture devices and verify/capture iOS small and medium plus Android compact and expanded layouts; replace remote old widget screenshot before resubmitting.",
+        "updated_at": "2026-09-16T06:48:13+00:00"
+      }
+    },
+    {
+      "sequence": 59,
+      "at": "2026-09-16T06:48:34+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement iOS build 6 downloaded and passed official Apple archive validation; direct altool upload started.",
+        "evidence": [
+          "EAS 461def41-d59d-4c9e-9f91-d8f2c9bdc95c FINISHED; archive bundle com.astrojams.newsworthy version 1.0.0 build 6; SHA256 032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5; altool VERIFY SUCCEEDED. App Store Connect had no build 6 before this upload."
+        ],
+        "next_action": "Observe current altool upload, then poll Apple processing for build 6. Native verification and final clean widget gallery remain required before review submission.",
+        "updated_at": "2026-09-16T06:48:34+00:00"
+      }
+    },
+    {
+      "sequence": 60,
+      "at": "2026-09-16T06:52:37+00:00",
+      "gate": "apple.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5.",
+        "evidence": [
+          "EAS 461def41-d59d-4c9e-9f91-d8f2c9bdc95c and e02851c0-0cae-4f95-b854-2d57e32cc0b2 FINISHED. IPA archive validation passed; simulator download in progress. Native/UI verification remains a separate gate."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T06:52:37+00:00"
+      }
+    },
+    {
+      "sequence": 61,
+      "at": "2026-09-16T06:54:20+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple acknowledged replacement iOS build 6 upload; processing is pending.",
+        "evidence": [
+          "altool UPLOAD SUCCEEDED; delivery b62a9dc5-1b0c-4200-8830-68db021bb0cd; 19,258,964 bytes. First App Store Connect build-6 query returned no processed build yet."
+        ],
+        "next_action": "Poll build 6 processing before selecting it. Do not upload again while this accepted delivery is processing.",
+        "updated_at": "2026-09-16T06:54:20+00:00"
+      }
+    },
+    {
+      "sequence": 62,
+      "at": "2026-09-16T06:54:20+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5.",
+        "evidence": [
+          "EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; downloads underway. Native verification and Play account eligibility remain separate gates."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T06:54:20+00:00"
+      }
+    },
+    {
+      "sequence": 63,
+      "at": "2026-09-16T06:59:34+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0.",
+        "evidence": [
+          "Delivery/build b62a9dc5-1b0c-4200-8830-68db021bb0cd; App Store Connect VALID readback and build-selection readback passed. No replacement review submission yet."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T06:59:34+00:00"
+      }
+    },
+    {
+      "sequence": 64,
+      "at": "2026-09-16T06:59:34+00:00",
+      "gate": "apple.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement simulator artifact downloaded and installed on the booted iPhone simulator; visual checks and new captures await Mac unlock.",
+        "evidence": [
+          "EAS simulator e02851c0-0cae-4f95-b854-2d57e32cc0b2, source b5571c5, SHA256 f6f446b7f04513e9d5d01c50755ae5d4c9b430daa71bcf9ec873dc4a1d34ded9. Actual simulator Info.plist is version 1.0.0 / CFBundleVersion 1 despite EAS remote-version label 6; xcrun simctl install succeeded. Production IPA independently confirms build 6. Earlier screenshots verify only the older artifact."
+        ],
+        "next_action": "After unlock, verify revised reading screen, privacy/support links, share, offline recovery, large text, and both widget sizes; capture clean neutral Home Screen images and updated iPhone/iPad reading screens.",
+        "updated_at": "2026-09-16T06:59:34+00:00"
+      }
+    },
+    {
+      "sequence": 65,
+      "at": "2026-09-16T06:59:34+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android version 7 production AAB download verified; matching preview APK download is running. Version 6 UI checks do not verify the revised screen.",
+        "evidence": [
+          "AAB 72,473,181 bytes; SHA256 28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8. Preview EAS 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; active APK transfer and partial file observed."
+        ],
+        "next_action": "Finish the current APK download and archive validation, install version 7, then perform native checks and clean neutral-background widget captures after Mac unlock.",
+        "updated_at": "2026-09-16T06:59:34+00:00"
+      }
+    },
+    {
+      "sequence": 66,
+      "at": "2026-09-16T07:03:19+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android version 7 APK downloaded, archive checked and installed successfully on the emulator. Revised UI and widgets still need native verification.",
+        "evidence": [
+          "APK 104,436,147 bytes; SHA256 bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194. adb install Success; installed package versionName 1.0.0/versionCode 7. This proves installation, not visual behavior."
+        ],
+        "next_action": "After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.",
+        "updated_at": "2026-09-16T07:03:19+00:00"
       }
     }
   ],

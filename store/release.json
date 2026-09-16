@@ -6,12 +6,12 @@
     "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
     "versionLocalizationId": "56ba180c-30af-4b0a-a65e-3fa27e7e2360",
     "infoLocalizationId": "5e5c29c3-82d8-43e3-88a6-46199d1c5d55",
-    "productionBuild": "34e8a094-c122-4770-9bf6-611f70f671ab",
+    "productionBuild": "461def41-d59d-4c9e-9f91-d8f2c9bdc95c",
     "submission": "4a6398aa-658c-49c0-a909-c09209dd5021",
     "submissionStatus": "CANCELED_QUEUE_REPLACED_BY_DIRECT_UPLOAD",
-    "appleBuildId": "805f70f3-09a4-4111-afd2-bf04bb99e30d",
+    "appleBuildId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
     "appleBuildProcessingState": "VALID",
-    "screenshotBuild": "1a4edab8-6c4c-4133-ab32-62c45fd0a7f9",
+    "screenshotBuild": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
     "reviewSubmitted": false,
     "reviewDetailsSaved": true,
     "privacyPublication": "PUBLISHED",
@@ -28,16 +28,71 @@
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
     "reviewSubmissionState": "COMPLETE",
     "reviewWithdrawalReason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets.",
-    "replacementBuildRequired": true
+    "replacementBuildRequired": false,
+    "replacementBuilds": [
+      {
+        "id": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
+        "profile": "simulator-release",
+        "version": "1.0.0",
+        "build": "6",
+        "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+        "sourceDirty": false,
+        "status": "FINISHED",
+        "bundleBuildVersion": "1",
+        "sha256": "f6f446b7f04513e9d5d01c50755ae5d4c9b430daa71bcf9ec873dc4a1d34ded9",
+        "versionNote": "EAS reports remote version 6, but downloaded simulator Info.plist reports CFBundleVersion 1. Source commit is b5571c5; simulator screenshots are identified by EAS ID and actual plist value, not production signing."
+      },
+      {
+        "id": "461def41-d59d-4c9e-9f91-d8f2c9bdc95c",
+        "profile": "production",
+        "version": "1.0.0",
+        "build": "6",
+        "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+        "sourceDirty": false,
+        "status": "FINISHED"
+      }
+    ],
+    "widgetArtworkStatus": "REPLACE_WITH_CLEAN_NEUTRAL_BACKGROUND_SMALL_AND_MEDIUM_CAPTURE",
+    "replacementUpload": {
+      "build": "6",
+      "deliveryId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
+      "status": "VALID",
+      "sha256": "032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5"
+    },
+    "replacementNativeVerification": "PENDING_MAC_UNLOCK_AND_NATIVE_UI_CHECKS"
   },
   "google": {
-    "productionBuild": "615799c2-7fb9-4342-b2f4-9a073d308884",
-    "screenshotBuild": "f3dddec5-23f3-4a41-8fd6-e0d4f79ee366",
+    "productionBuild": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",
+    "screenshotBuild": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
     "appCreated": false,
     "reviewSubmitted": false,
-    "versionCode": 6,
+    "versionCode": 7,
     "buildStatus": "FINISHED",
-    "artworkStatus": "READY_NOT_UPLOADED",
-    "nativeVerification": "EMULATOR_APP_CHECKS_PASSED_WIDGET_AND_PHYSICAL_DEVICE_PENDING"
+    "artworkStatus": "REVISION_PENDING_NATIVE_CAPTURES",
+    "nativeVerification": "V7_PENDING_MAC_UNLOCK_AND_NATIVE_UI_CHECKS",
+    "replacementBuilds": [
+      {
+        "id": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
+        "profile": "preview",
+        "version": "1.0.0",
+        "build": "7",
+        "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+        "sourceDirty": false,
+        "status": "FINISHED",
+        "sha256": "bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194",
+        "installedVersionCode": 7
+      },
+      {
+        "id": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",
+        "profile": "production",
+        "version": "1.0.0",
+        "build": "7",
+        "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+        "sourceDirty": false,
+        "status": "FINISHED",
+        "sha256": "28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8"
+      }
+    ],
+    "widgetArtworkStatus": "CAPTURE_CLEAN_NEUTRAL_BACKGROUND_COMPACT_AND_EXPANDED_LAYOUTS"
   }
 }
