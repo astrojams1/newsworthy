@@ -25,7 +25,8 @@ test('public discovery links resolve, metadata parses, and operational routes op
         const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
         assert.equal(data['@type'], 'WebSite');
         assert.equal(data.url, location);
-        assert.match(html, /href="\/about"/);
+        assert.match(html, /href="https:\/\/newsworthy-indol\.vercel\.app\/privacy"/);
+        assert.match(html, /href="https:\/\/newsworthy-indol\.vercel\.app\/support"/);
       }
     }
 

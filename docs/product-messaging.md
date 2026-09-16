@@ -52,7 +52,7 @@ widgets and the complete app package without updating local Xcode.
 
 ## Where copy lives
 
-- `apps/client/app/`: shared screens, About copy, search metadata, social tags and WebSite data.
+- `apps/client/app/`: shared reading screen, search metadata, social tags and WebSite data.
 - `public/privacy.html`, `public/support.html`: policy and help; each has its own metadata.
 - `public/social-card.svg`: editable source for the evergreen social preview PNG.
 - `public/robots.txt`, `public/sitemap.xml`: crawler access and public page discovery.

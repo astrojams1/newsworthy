@@ -13,6 +13,12 @@
   "privacyPolicyUrl": "https://newsworthy-indol.vercel.app/privacy",
   "supportEmail": "astrojams1@gmail.com",
   "copyright": "2026 James Thompson",
-  "reviewNotes": "One-time paid download. No account, login, subscription, ads, or in-app purchases. The service supplies a public news reading, so no demo credentials are needed. Tap Newsworthy (the About icon at large text sizes) to open About and the privacy/support links. The Share button opens the system share sheet. Open online, then relaunch without a connection to test the saved reading. Add Newsworthy through the system widget picker to test the Home Screen rating. Widgets refresh independently and preserve the original timestamp when offline. AI ratings are not emergency alerts or personal safety advice.",
-  "pricing": { "type": "paidDownload", "baseTerritory": "USA", "baseCurrency": "USD", "basePrice": "1.00", "localizePrices": true }
+  "reviewNotes": "One-time paid download. No account, login, subscription, ads, or in-app purchases. The service supplies a public news reading, so no demo credentials are needed. Privacy and Support links are at the bottom of the reading screen. The Share button opens the system share sheet. Open online, then relaunch without a connection to test the saved reading. Add Newsworthy through the system widget picker to test the Home Screen rating. Widgets refresh independently and preserve the original timestamp when offline. AI ratings are not emergency alerts or personal safety advice.",
+  "pricing": {
+    "type": "paidDownload",
+    "baseTerritory": "USA",
+    "baseCurrency": "USD",
+    "basePrice": "1.00",
+    "localizePrices": true
+  }
 }

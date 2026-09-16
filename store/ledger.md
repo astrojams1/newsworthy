@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T05:43:11+00:00
+Updated: 2026-09-16T06:14:03+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,7 +25,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.native | in_progress | agent | observed | Actual iPhone/iPad simulator reading, light/dark UI, sharing and iPhone medium widget checked. Physical-device release checklist remains. | Finish applicable physical-device, offline/recovery, accessibility and widget checks; do not treat web or Expo Go as signed-device proof. |
 | apple.upload | done | agent | observed | Direct altool upload processed VALID and APP_STORE_ELIGIBLE; Apple build 5 selected for version 1.0.0. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | done | agent | observed | Version 1.0.0 build 5 submitted; both version and review submission report WAITING_FOR_REVIEW. | — |
+| apple.review | in_progress | agent | observed | Developer withdrew build 5 to replace About with the approved reading-screen design. This is a developer withdrawal, not an Apple reviewer rejection. | Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit. |
 | apple.release | waiting_provider | provider | observed | Apple review is pending; AFTER_APPROVAL release configured. No public availability verified. Commercial account requirements remain separately unverified. | Read review outcome and resolve feedback; check tax/banking/agreement and address response; verify paid public listing after approval. Do not resubmit the existing review. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
@@ -42,6 +42,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
 | host.ui | waiting_user | user | observed | Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check. | Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved. |
 | google.artwork | done | agent | observed | Three Android store screenshots rendered from version 6 native captures: light reading, dark reading, About. | — |
+| design.reading-screen | in_progress | agent | observed | Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback. | Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery. |
 
 ## Evidence and history
 
@@ -473,3 +474,23 @@ Mac relocked after Android captures and offline/recovery verification; native UI
 - CUA native click returned Mac locked and automatic unlock failed after successful app captures.
 
 Next: Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved.
+
+### 46. design.reading-screen — in_progress
+
+2026-09-16T06:11:23+00:00 · observed · agent
+
+Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback.
+
+- Phone-size web-rendered light/dark previews inspected; npm test: 175 passed; npm run check:app passed. Native replacement build and screenshots remain pending.
+
+Next: Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery.
+
+### 47. apple.review — in_progress
+
+2026-09-16T06:14:03+00:00 · observed · agent
+
+Developer withdrew build 5 to replace About with the approved reading-screen design. This is a developer withdrawal, not an Apple reviewer rejection.
+
+- 2026-09-16 App Store Connect readback: version DEVELOPER_REJECTED; review submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48 COMPLETE.
+
+Next: Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit.
