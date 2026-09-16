@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T06:59:34+00:00
+Updated: 2026-09-16T07:03:19+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -32,7 +32,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
 | google.app | waiting_user | user | observed | Live Play Console still disables Create app until real-device and contact-phone verification finish. | Owner verifies a real Android device in the Play Console mobile app, then completes contact-phone verification; agent can then create the paid app. |
 | google.build | done | agent | observed | Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5. | — |
-| google.native | in_progress | agent | observed | Android version 7 production AAB download verified; matching preview APK download is running. Version 6 UI checks do not verify the revised screen. | Finish the current APK download and archive validation, install version 7, then perform native checks and clean neutral-background widget captures after Mac unlock. |
+| google.native | in_progress | agent | observed | Android version 7 APK downloaded, archive checked and installed successfully on the emulator. Revised UI and widgets still need native verification. | After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate. |
 | google.listing | in_progress | agent | observed | Removed About from Android artwork and contact sheet; renderer now reserves first place for a real Android widget capture. | Capture Android widget and revised reading screen on version 7, regenerate and inspect the final gallery. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
@@ -666,3 +666,13 @@ Android version 7 production AAB download verified; matching preview APK downloa
 - AAB 72,473,181 bytes; SHA256 28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8. Preview EAS 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; active APK transfer and partial file observed.
 
 Next: Finish the current APK download and archive validation, install version 7, then perform native checks and clean neutral-background widget captures after Mac unlock.
+
+### 66. google.native — in_progress
+
+2026-09-16T07:03:19+00:00 · observed · agent
+
+Android version 7 APK downloaded, archive checked and installed successfully on the emulator. Revised UI and widgets still need native verification.
+
+- APK 104,436,147 bytes; SHA256 bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194. adb install Success; installed package versionName 1.0.0/versionCode 7. This proves installation, not visual behavior.
+
+Next: After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.

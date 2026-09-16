@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T06:59:34+00:00",
+  "updated_at": "2026-09-16T07:03:19+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -258,12 +258,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Android version 7 production AAB download verified; matching preview APK download is running. Version 6 UI checks do not verify the revised screen.",
+      "summary": "Android version 7 APK downloaded, archive checked and installed successfully on the emulator. Revised UI and widgets still need native verification.",
       "evidence": [
-        "AAB 72,473,181 bytes; SHA256 28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8. Preview EAS 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; active APK transfer and partial file observed."
+        "APK 104,436,147 bytes; SHA256 bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194. adb install Success; installed package versionName 1.0.0/versionCode 7. This proves installation, not visual behavior."
       ],
-      "next_action": "Finish the current APK download and archive validation, install version 7, then perform native checks and clean neutral-background widget captures after Mac unlock.",
-      "updated_at": "2026-09-16T06:59:34+00:00"
+      "next_action": "After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.",
+      "updated_at": "2026-09-16T07:03:19+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -1450,6 +1450,22 @@
         ],
         "next_action": "Finish the current APK download and archive validation, install version 7, then perform native checks and clean neutral-background widget captures after Mac unlock.",
         "updated_at": "2026-09-16T06:59:34+00:00"
+      }
+    },
+    {
+      "sequence": 66,
+      "at": "2026-09-16T07:03:19+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android version 7 APK downloaded, archive checked and installed successfully on the emulator. Revised UI and widgets still need native verification.",
+        "evidence": [
+          "APK 104,436,147 bytes; SHA256 bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194. adb install Success; installed package versionName 1.0.0/versionCode 7. This proves installation, not visual behavior."
+        ],
+        "next_action": "After Mac unlock, verify revised app UI, share, Privacy/Support, offline recovery and large text; capture compact and expanded widgets on a clean Home Screen with plain neutral wallpaper. Physical-device checks remain separate.",
+        "updated_at": "2026-09-16T07:03:19+00:00"
       }
     }
   ],

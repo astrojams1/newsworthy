@@ -78,7 +78,9 @@
         "build": "7",
         "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
         "sourceDirty": false,
-        "status": "FINISHED"
+        "status": "FINISHED",
+        "sha256": "bc3412d60962c5b205bb61f34ae0d98f3dbfa84a8119a8bed7163016b1234194",
+        "installedVersionCode": 7
       },
       {
         "id": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",
