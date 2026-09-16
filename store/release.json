@@ -14,7 +14,10 @@
     "screenshotBuild": "1a4edab8-6c4c-4133-ab32-62c45fd0a7f9",
     "reviewSubmitted": false,
     "reviewDetailsSaved": true,
-    "privacyPublication": "AWAITING_LEGAL_ATTESTATION"
+    "privacyPublication": "PUBLISHED",
+    "addressCorrectionRequest": "SUBMITTED_AWAITING_APPLE_REVIEW",
+    "paidAppsAgreement": "PENDING_USER_INFO",
+    "dsaCompliance": "ACTIVE"
   },
   "google": {
     "productionBuild": "615799c2-7fb9-4342-b2f4-9a073d308884",
