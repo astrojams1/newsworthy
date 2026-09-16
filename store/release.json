@@ -49,7 +49,13 @@
         "status": "FINISHED"
       }
     ],
-    "widgetArtworkStatus": "REPLACE_WITH_CLEAN_NEUTRAL_BACKGROUND_SMALL_AND_MEDIUM_CAPTURE"
+    "widgetArtworkStatus": "REPLACE_WITH_CLEAN_NEUTRAL_BACKGROUND_SMALL_AND_MEDIUM_CAPTURE",
+    "replacementUpload": {
+      "build": "6",
+      "deliveryId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
+      "status": "UPLOAD_SUCCEEDED_PROCESSING_PENDING",
+      "sha256": "032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5"
+    }
   },
   "google": {
     "productionBuild": "615799c2-7fb9-4342-b2f4-9a073d308884",
@@ -68,7 +74,7 @@
         "build": "7",
         "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
         "sourceDirty": false,
-        "status": "IN_PROGRESS"
+        "status": "FINISHED"
       },
       {
         "id": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",

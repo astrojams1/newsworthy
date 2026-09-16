@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T06:52:37+00:00",
+  "updated_at": "2026-09-16T06:54:20+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -158,15 +158,15 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "apple.upload": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "Replacement iOS build 6 downloaded and passed official Apple archive validation; direct altool upload started.",
+      "summary": "Apple acknowledged replacement iOS build 6 upload; processing is pending.",
       "evidence": [
-        "EAS 461def41-d59d-4c9e-9f91-d8f2c9bdc95c FINISHED; archive bundle com.astrojams.newsworthy version 1.0.0 build 6; SHA256 032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5; altool VERIFY SUCCEEDED. App Store Connect had no build 6 before this upload."
+        "altool UPLOAD SUCCEEDED; delivery b62a9dc5-1b0c-4200-8830-68db021bb0cd; 19,258,964 bytes. First App Store Connect build-6 query returned no processed build yet."
       ],
-      "next_action": "Observe current altool upload, then poll Apple processing for build 6. Native verification and final clean widget gallery remain required before review submission.",
-      "updated_at": "2026-09-16T06:48:34+00:00"
+      "next_action": "Poll build 6 processing before selecting it. Do not upload again while this accepted delivery is processing.",
+      "updated_at": "2026-09-16T06:54:20+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -246,15 +246,15 @@
       "updated_at": "2026-09-16T06:42:40+00:00"
     },
     "google.build": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Replacement Android production AAB and preview APK version 7 are building from clean merged commit b5571c5.",
+      "summary": "Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5.",
       "evidence": [
-        "EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 IN_PROGRESS."
+        "EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; downloads underway. Native verification and Play account eligibility remain separate gates."
       ],
-      "next_action": "Poll these build IDs, download and inspect completed packages, install the APK for native checks.",
-      "updated_at": "2026-09-16T06:40:14+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T06:54:20+00:00"
     },
     "google.native": {
       "state": "in_progress",
@@ -1372,6 +1372,38 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-16T06:52:37+00:00"
+      }
+    },
+    {
+      "sequence": 61,
+      "at": "2026-09-16T06:54:20+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple acknowledged replacement iOS build 6 upload; processing is pending.",
+        "evidence": [
+          "altool UPLOAD SUCCEEDED; delivery b62a9dc5-1b0c-4200-8830-68db021bb0cd; 19,258,964 bytes. First App Store Connect build-6 query returned no processed build yet."
+        ],
+        "next_action": "Poll build 6 processing before selecting it. Do not upload again while this accepted delivery is processing.",
+        "updated_at": "2026-09-16T06:54:20+00:00"
+      }
+    },
+    {
+      "sequence": 62,
+      "at": "2026-09-16T06:54:20+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5.",
+        "evidence": [
+          "EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; downloads underway. Native verification and Play account eligibility remain separate gates."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T06:54:20+00:00"
       }
     }
   ],

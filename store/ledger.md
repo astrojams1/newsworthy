@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T06:52:37+00:00
+Updated: 2026-09-16T06:54:20+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -23,7 +23,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.listing | in_progress | agent | observed | Widget-first order is saved remotely, but owner rejected the existing cluttered Home Screen image. It is superseded for final listing use. | Replace old widget image with verified clean small/medium native captures, refresh reading images, then validate the final gallery before resubmitting. |
 | apple.build | done | agent | observed | Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5. | — |
 | apple.native | in_progress | agent | observed | Actual iPhone/iPad simulator reading, light/dark UI, sharing and iPhone medium widget checked. Physical-device release checklist remains. | Finish applicable physical-device, offline/recovery, accessibility and widget checks; do not treat web or Expo Go as signed-device proof. |
-| apple.upload | in_progress | agent | observed | Replacement iOS build 6 downloaded and passed official Apple archive validation; direct altool upload started. | Observe current altool upload, then poll Apple processing for build 6. Native verification and final clean widget gallery remain required before review submission. |
+| apple.upload | waiting_provider | provider | observed | Apple acknowledged replacement iOS build 6 upload; processing is pending. | Poll build 6 processing before selecting it. Do not upload again while this accepted delivery is processing. |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
 | apple.review | in_progress | agent | observed | Developer withdrew build 5 to replace About with the approved reading-screen design. This is a developer withdrawal, not an Apple reviewer rejection. | Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit. |
 | apple.release | waiting_provider | provider | observed | Apple review is pending; AFTER_APPROVAL release configured. No public availability verified. Commercial account requirements remain separately unverified. | Read review outcome and resolve feedback; check tax/banking/agreement and address response; verify paid public listing after approval. Do not resubmit the existing review. |
@@ -31,7 +31,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
 | google.app | waiting_user | user | observed | Live Play Console still disables Create app until real-device and contact-phone verification finish. | Owner verifies a real Android device in the Play Console mobile app, then completes contact-phone verification; agent can then create the paid app. |
-| google.build | waiting_provider | provider | observed | Replacement Android production AAB and preview APK version 7 are building from clean merged commit b5571c5. | Poll these build IDs, download and inspect completed packages, install the APK for native checks. |
+| google.build | done | agent | observed | Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5. | — |
 | google.native | in_progress | agent | observed | Version 6 launch, light/dark gradients and share icon, native share sheet, About navigation, cached offline reading, and online recovery verified on API 35 ARM64 emulator. | Verify Android widget installation/rendering/resize and large text, then physical-device behavior during real closed testing. Launcher widget picker was not reachable through available CUA controls; no widget success claim. |
 | google.listing | in_progress | agent | observed | Removed About from Android artwork and contact sheet; renderer now reserves first place for a real Android widget capture. | Capture Android widget and revised reading screen on version 7, regenerate and inspect the final gallery. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
@@ -620,3 +620,21 @@ Next: Observe current altool upload, then poll Apple processing for build 6. Nat
 Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5.
 
 - EAS 461def41-d59d-4c9e-9f91-d8f2c9bdc95c and e02851c0-0cae-4f95-b854-2d57e32cc0b2 FINISHED. IPA archive validation passed; simulator download in progress. Native/UI verification remains a separate gate.
+
+### 61. apple.upload — waiting_provider
+
+2026-09-16T06:54:20+00:00 · observed · provider
+
+Apple acknowledged replacement iOS build 6 upload; processing is pending.
+
+- altool UPLOAD SUCCEEDED; delivery b62a9dc5-1b0c-4200-8830-68db021bb0cd; 19,258,964 bytes. First App Store Connect build-6 query returned no processed build yet.
+
+Next: Poll build 6 processing before selecting it. Do not upload again while this accepted delivery is processing.
+
+### 62. google.build — done
+
+2026-09-16T06:54:20+00:00 · observed · agent
+
+Replacement Android production AAB and preview APK version 7 both finished from clean merged commit b5571c5.
+
+- EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; downloads underway. Native verification and Play account eligibility remain separate gates.

@@ -6,8 +6,9 @@ Resume from [the release ledger](ledger.md) with the reusable
 Last checked **September 16, 2026**. Neither app is publicly released.
 Apple build 5 was **withdrawn by the developer** to replace About with the
 approved reading-screen design. Replacement iOS build 6 and Android version 7
-are building from merged commit `b5571c5`; Google account verification still
-blocks app creation. Native reading-screen images below need replacement. Clean, neutral-background
+have finished building from merged commit `b5571c5`; Google account verification still
+blocks app creation. Apple acknowledged the build 6 upload; processing is pending.
+Native reading-screen images below need replacement. Clean, neutral-background
 widget images showing each supported size are pending and omitted from these
 local previews until captured.
 
