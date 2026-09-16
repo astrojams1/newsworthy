@@ -17,7 +17,8 @@
     "privacyPublication": "PUBLISHED",
     "addressCorrectionRequest": "SUBMITTED_AWAITING_APPLE_REVIEW",
     "paidAppsAgreement": "PENDING_USER_INFO",
-    "dsaCompliance": "ACTIVE"
+    "dsaCompliance": "ACTIVE",
+    "w9Status": "OWNER_REPORTED_COMPLETED_PENDING_READBACK"
   },
   "google": {
     "productionBuild": "615799c2-7fb9-4342-b2f4-9a073d308884",

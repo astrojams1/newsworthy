@@ -48,14 +48,17 @@ Reference: [Apple membership information changes](https://developer.apple.com/he
 
 ## 4. Apple: paid-app contract, banking and tax
 
-**Agreement accepted by the owner; banking and tax information remain.** The live
+**Agreement accepted; W-9 completion reported by the owner.**
+The owner reports adding the W-9. Its final Apple processing status has not been
+rechecked; do not ask the owner to repeat it without first checking the console.
+Banking remains outstanding at the last live check. The live
 [Business page](https://appstoreconnect.apple.com/business) now shows the Paid
-Apps Agreement as **Pending User Info**. Do not repeat the acceptance step.
+Apps Agreement as **Pending User Info** at that check. Do not repeat acceptance.
 
 1. Open **Business → Add Bank Account** and enter the owner's payout details.
-2. Under **Tax Forms**, use **U.S. Form W-9 → Add Tax Info** to complete the
-   required information. **Add Tax Form** is for additional countries, not the
-   existing required US form.
+2. Check the existing **U.S. Form W-9** status. The owner reports completion.
+   If Apple still requests missing information, use **Add Tax Info** beside that
+   form; **Add Tax Form** is for additional countries.
 3. The W-9 **Address** control offers **Add New Address** or **Choose Existing
    Address**. Use the current address supplied privately by the owner; a tax-form
    address change does not establish that the membership legal address changed.

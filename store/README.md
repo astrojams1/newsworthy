@@ -25,8 +25,9 @@ submitted for App Review yet.
   screenshots** saved. Apple reports every image `COMPLETE`: three 6.9-inch
   iPhone images and two 13-inch iPad images.
 - **Apple pricing:** US$1.00 saved with local equivalents. Paid Apps Agreement
-  is **Pending User Info** after owner acceptance; banking and tax information
-  remain. The address-correction request has been sent and acknowledged by Apple,
+  was **Pending User Info** at the last live check after owner acceptance.
+  The owner subsequently reported completing the W-9; final tax status needs
+  readback, and banking remains outstanding at the last check. The address-correction request has been sent and acknowledged by Apple,
   but the obsolete legal address still needs Apple approval/correction.
 - **Apple binary:** signed production build **5** validated and uploaded with
   Apple's `altool`. Apple reports `VALID` / `APP_STORE_ELIGIBLE`, and build 5

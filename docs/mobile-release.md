@@ -154,7 +154,8 @@ access. Internal testing alone does not meet this requirement. See
   (including phone), and review notes are saved.
   The saved Apple Current Price table confirms a US$1.00 base price and local
   prices in the other regions. The owner accepted the Paid Apps Agreement; it
-  now shows Pending User Info, with banking and US tax information outstanding.
+  last showed Pending User Info, with banking and US tax information outstanding.
+  The owner subsequently reported completing the W-9; final status needs readback.
   DSA compliance is Active, and App Privacy has been published by the owner.
   The legal-address correction did not persist after verification; the authorized
   membership-update request has now been submitted and acknowledged by Apple.
