@@ -1,0 +1,31 @@
+{
+  "capturedDate": "2026-09-16",
+  "package": "com.astrojams.newsworthy",
+  "versionName": "1.0.0",
+  "versionCode": 6,
+  "easBuildId": "f3dddec5-23f3-4a41-8fd6-e0d4f79ee366",
+  "runtime": "Android API 35 ARM64 emulator",
+  "dimensions": {
+    "width": 1080,
+    "height": 2400
+  },
+  "captureMethod": "Android Emulator screenshot shortcut invoked through CUA; original PNGs copied without altering screen content",
+  "files": {
+    "01-reading-light.png": "Native light reading with fixed gradient/share icon",
+    "02-reading-dark.png": "Native dark reading",
+    "03-about.png": "Native About screen in light theme",
+    "04-offline.png": "Evidence only: airplane mode, saved reading and retry affordance"
+  },
+  "verified": [
+    "light/dark rendering",
+    "share sheet payload and timestamp",
+    "About navigation",
+    "cached reading while offline",
+    "online recovery"
+  ],
+  "notVerified": [
+    "physical Android device",
+    "Android widget installation/rendering/resize",
+    "large accessibility text"
+  ]
+}

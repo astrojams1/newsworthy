@@ -38,5 +38,26 @@
     "height": 2752,
     "platform": "ios",
     "displayType": "APP_IPAD_PRO_3GEN_129"
+  },
+  {
+    "file": "assets/google-play/phone/01-at-a-glance.png",
+    "source": "source/android-phone/01-reading-light.png",
+    "width": 1080,
+    "height": 1920,
+    "platform": "android"
+  },
+  {
+    "file": "assets/google-play/phone/02-dark-mode.png",
+    "source": "source/android-phone/02-reading-dark.png",
+    "width": 1080,
+    "height": 1920,
+    "platform": "android"
+  },
+  {
+    "file": "assets/google-play/phone/03-about.png",
+    "source": "source/android-phone/03-about.png",
+    "width": 1080,
+    "height": 1920,
+    "platform": "android"
   }
 ]

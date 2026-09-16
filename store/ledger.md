@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T04:55:59+00:00
+Updated: 2026-09-16T05:43:11+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -14,9 +14,9 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | web.deploy | done | agent | observed | Production commit f1ee64d deployed successfully; live release URLs checked. | — |
 | apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
 | apple.address | waiting_provider | provider | observed | Apple support email confirms receipt of the authorized address-correction request; no correction approval observed. | Read support response and Business legal-entity address; do not duplicate request or reuse obsolete address. |
-| apple.agreement | in_progress | agent | observed | Owner accepted Paid Apps Agreement; latest live status Pending User Info. | Read status after W-9 processing and banking; require Active before paid release. |
-| apple.tax | in_progress | agent | user_reported | Owner reports adding the W-9; final status not yet read back. | Read existing U.S. Form W-9 status before asking for further owner action. Add Tax Info edits the existing form; Add Tax Form is for other countries. |
-| apple.bank | waiting_user | user | observed | Latest live Business page still requested Add Bank Account. | Owner enters payout details directly in Apple and completes any verification; agent then reads back status. |
+| apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
+| apple.tax | done | user | observed | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
+| apple.bank | waiting_user | user | observed | Apple Business still requests Add Bank Account; owner entry requested with direct instructions. | Owner enters payout details privately in Apple Business; agent verifies saved bank and Active paid agreement. |
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | user | observed | Owner published diagnostics/performance collection for app functionality, linked to user, no tracking. | — |
 | apple.review-contact | done | agent | observed | Review contact including phone, no-login requirement and notes saved and all supplied fields read back. | — |
@@ -32,15 +32,16 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
 | google.app | waiting_user | user | observed | Create app remains disabled; live account home lists Android-device and contact-phone verification as required. | After owner device and phone verification, create paid app, configure US$1 and local equivalents, upload version 6 and prepare required closed test. |
 | google.build | done | agent | observed | Corrected production AAB and preview APK version 6 finished, downloaded and passed archive checks; preview APK installed. | — |
-| google.native | in_progress | agent | observed | Earlier APK exposed missing gradient/share icon from non-base64 SVG URLs. Fixed source and replacement build exist; final visual check pending. | Open installed corrected APK in native emulator, verify gradient/share, light/dark/offline/navigation and applicable widget behavior. Mac is unlocked again. |
-| google.listing | in_progress | agent | observed | Shared English copy, icon and feature graphic ready. Android-specific screenshots still pending. | Capture native Android light/dark/About images from version 6; render, visually inspect and validate Google images. Never substitute iOS captures. |
+| google.native | in_progress | agent | observed | Version 6 launch, light/dark gradients and share icon, native share sheet, About navigation, cached offline reading, and online recovery verified on API 35 ARM64 emulator. | Verify Android widget installation/rendering/resize and large text, then physical-device behavior during real closed testing. Launcher widget picker was not reachable through available CUA controls; no widget success claim. |
+| google.listing | in_progress | agent | observed | Copy, icon, feature graphic and three real Android screenshots ready in repo; upload still blocked by disabled app creation. | After owner device/phone verification enables Create app, save paid listing and upload all prepared assets. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
 | google.review | todo | agent | observed | No Google release submitted for review. | Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state. |
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
 | apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
-| host.ui | waiting_user | user | observed | Native UI tool reports Mac locked; automatic unlock failed. In-app browser works for Google but is signed out of Apple. | Owner unlocks Mac; then agent resumes signed-in Apple Business readback and native Android verification/capture. API work does not require unlock. |
+| host.ui | waiting_user | user | observed | Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check. | Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved. |
+| google.artwork | done | agent | observed | Three Android store screenshots rendered from version 6 native captures: light reading, dark reading, About. | — |
 
 ## Evidence and history
 
@@ -398,3 +399,77 @@ Create app remains disabled; live account home lists Android-device and contact-
 - Live Play Console app-list on September 16 says Complete account verifications to create new apps.
 
 Next: After owner device and phone verification, create paid app, configure US$1 and local equivalents, upload version 6 and prepare required closed test.
+
+### 38. apple.tax — done
+
+2026-09-16T05:26:39+00:00 · observed · user
+
+Apple Business lists U.S. Form W-9 submitted September 16 with status Active.
+
+- Live signed-in Chrome Business Tax Forms table on September 16: U.S. Form W-9, Sep 16 2026, Active.
+
+### 39. host.ui — done
+
+2026-09-16T05:26:39+00:00 · observed · user
+
+Mac unlocked; native Android emulator and signed-in Chrome are accessible.
+
+- CUA app inventory and native screenshot succeeded; Apple Business table read in Chrome.
+
+### 40. apple.agreement — waiting_user
+
+2026-09-16T05:39:49+00:00 · observed · user
+
+W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account.
+
+- Live signed-in Apple Business page September 16: W-9 Active, no bank account, Paid Apps Agreement Pending User Info.
+
+Next: Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward.
+
+### 41. apple.bank — waiting_user
+
+2026-09-16T05:39:49+00:00 · observed · user
+
+Apple Business still requests Add Bank Account; owner entry requested with direct instructions.
+
+- Live Bank Accounts section contains Add Bank Account and no listed payout account.
+
+Next: Owner enters payout details privately in Apple Business; agent verifies saved bank and Active paid agreement.
+
+### 42. google.native — in_progress
+
+2026-09-16T05:39:50+00:00 · observed · agent
+
+Version 6 launch, light/dark gradients and share icon, native share sheet, About navigation, cached offline reading, and online recovery verified on API 35 ARM64 emulator.
+
+- Installed package reports versionCode 6/versionName 1.0.0. Native UI shows gradient/icon, share payload with original timestamp, offline Saved reading/Try again, and recovery with saved warning removed. Source screenshots stored under store/source/android-phone/.
+
+Next: Verify Android widget installation/rendering/resize and large text, then physical-device behavior during real closed testing. Launcher widget picker was not reachable through available CUA controls; no widget success claim.
+
+### 43. google.artwork — done
+
+2026-09-16T05:39:50+00:00 · observed · agent
+
+Three Android store screenshots rendered from version 6 native captures: light reading, dark reading, About.
+
+- 1080x2400 originals captured via emulator screenshot shortcut through CUA; rendered 1080x1920 RGB PNGs. Gallery visually reviewed and store/scripts/validate.mjs passed; store/preview-android.png.
+
+### 44. google.listing — in_progress
+
+2026-09-16T05:39:50+00:00 · observed · agent
+
+Copy, icon, feature graphic and three real Android screenshots ready in repo; upload still blocked by disabled app creation.
+
+- store/assets/google-play/phone/, store/assets/manifest.json and store/preview-android.png; Play Console account verification remains incomplete.
+
+Next: After owner device/phone verification enables Create app, save paid listing and upload all prepared assets.
+
+### 45. host.ui — waiting_user
+
+2026-09-16T05:43:11+00:00 · observed · user
+
+Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check.
+
+- CUA native click returned Mac locked and automatic unlock failed after successful app captures.
+
+Next: Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved.

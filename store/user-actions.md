@@ -49,16 +49,16 @@ Reference: [Apple membership information changes](https://developer.apple.com/he
 
 ## 4. Apple: paid-app contract, banking and tax
 
-**Agreement accepted; W-9 completion reported by the owner.**
-The owner reports adding the W-9. Its final Apple processing status has not been
-rechecked; do not ask the owner to repeat it without first checking the console.
+**Agreement accepted; W-9 confirmed Active in Apple Business.**
+The W-9 row shows September 16 as the submission date and Active status.
+No further W-9 submission is required based on the current console.
 Banking remains outstanding at the last live check. The live
 [Business page](https://appstoreconnect.apple.com/business) now shows the Paid
 Apps Agreement as **Pending User Info** at that check. Do not repeat acceptance.
 
 1. Open **Business → Add Bank Account** and enter the owner's payout details.
-2. Check the existing **U.S. Form W-9** status. The owner reports completion.
-   If Apple still requests missing information, use **Add Tax Info** beside that
+2. The existing **U.S. Form W-9** is **Active**. If Apple later requests
+   missing information, use **Add Tax Info** beside that
    form; **Add Tax Form** is for additional countries.
 3. The W-9 **Address** control offers **Add New Address** or **Choose Existing
    Address**. Use the current address supplied privately by the owner; a tax-form
@@ -108,8 +108,10 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 Do **not** ask the owner to create listing art/copy, configure Expo, generate
 signing credentials again, fetch binaries, or manually upload screenshots.
-Those have working automated paths. The Mac is currently locked; the owner must
-unlock it, then final Android visual verification and capture remain agent work.
+Those have working automated paths. Android rendering, sharing, navigation,
+offline/recovery checks and the three store screenshots are complete. The Mac
+relocked before the large-text check; unlock it to resume. Widget/large-text
+and physical-device checks remain open.
 The remaining technical release work is:
 
 - Complete Google privacy and content-rating declarations using the code and live
@@ -119,7 +121,7 @@ The remaining technical release work is:
   All 175 territories are configured with release after approval. Do not create
   a duplicate submission.
 - When **Create app** becomes enabled, create Newsworthy as **paid**, set US$1.00,
-  upload the AAB, copy, icon, feature graphic, and real Android screenshots,
+  upload the AAB, copy, icon, feature graphic, and prepared Android screenshots,
   complete app-content forms, and prepare the closed-test release.
 - Verify real-device behavior through TestFlight/the closed test with actual
   participants. Emulator checks alone do not establish physical-device behavior.

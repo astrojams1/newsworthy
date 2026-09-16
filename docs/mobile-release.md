@@ -127,8 +127,9 @@ access. Internal testing alone does not meet this requirement. See
   Native inspection found missing SVG gradients/icons because Android expo-image
   expects base64 data URLs. The app now encodes Android SVGs accordingly.
   Production version 6 and its preview APK both finished successfully; their
-  IDs are in `store/release.json`. Final visual verification and Android listing
-  capture remain pending; the host Mac is locked at the latest check.
+  IDs are in `store/release.json`. Version 6 passes emulator light/dark, share,
+  About, offline-cache and recovery checks. Three Android listing captures are
+  prepared; widget/large-text and physical-device verification remain pending.
 - iOS custom simulator build compiled successfully, including the widget:
   [a92ddf2a-2b9b-47ca-a343-d588ab38e99d](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/a92ddf2a-2b9b-47ca-a343-d588ab38e99d).
   Installed on iPhone 16 Pro / iOS 18.3. Native launch exposed an Expo Head
@@ -155,7 +156,7 @@ access. Internal testing alone does not meet this requirement. See
   The saved Apple Current Price table confirms a US$1.00 base price and local
   prices in the other regions. The owner accepted the Paid Apps Agreement; it
   last showed Pending User Info, with banking and US tax information outstanding.
-  The owner subsequently reported completing the W-9; final status needs readback.
+  Apple Business now confirms the W-9 is Active. Banking remains outstanding.
   DSA compliance is Active, and App Privacy has been published by the owner.
   The legal-address correction did not persist after verification; the authorized
   membership-update request has now been submitted and acknowledged by Apple.

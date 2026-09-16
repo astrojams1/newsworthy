@@ -18,7 +18,7 @@
     "addressCorrectionRequest": "SUBMITTED_AWAITING_APPLE_REVIEW",
     "paidAppsAgreement": "PENDING_USER_INFO",
     "dsaCompliance": "ACTIVE",
-    "w9Status": "OWNER_REPORTED_COMPLETED_PENDING_READBACK",
+    "w9Status": "ACTIVE",
     "reviewSubmissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
     "reviewState": "WAITING_FOR_REVIEW",
     "reviewSubmittedDate": "2026-09-16T04:53:38.974Z",
@@ -33,6 +33,8 @@
     "appCreated": false,
     "reviewSubmitted": false,
     "versionCode": 6,
-    "buildStatus": "FINISHED"
+    "buildStatus": "FINISHED",
+    "artworkStatus": "READY_NOT_UPLOADED",
+    "nativeVerification": "EMULATOR_APP_CHECKS_PASSED_WIDGET_AND_PHYSICAL_DEVICE_PENDING"
   }
 }
