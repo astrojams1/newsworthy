@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T08:54:07+00:00
+Updated: 2026-09-16T09:02:14+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -49,7 +49,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
 | apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
-| google.widget-fix | in_progress | agent | observed | Theme-fix preview APK9 accepted by EAS as bfb5310e-c8e1-41af-bc01-6037b17701b6 from clean commit 698071b. Existing production AAB9 predates this theme fix and must be replaced after preview verification. | Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle. |
+| google.widget-fix | in_progress | agent | observed | Installed APK8 completed its next scheduled refresh at16:59:50.826. From16:29 through90 seconds after completion, native logs contain one worker start/success, one widget recreation at16:47 during the deliberate theme change, zero receiver-disable events and no fatal exception. No widget recreation followed the scheduled refresh. Periodic refresh remains functional without the old loop. | Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build. |
 
 ## Evidence and history
 
@@ -915,3 +915,13 @@ Theme-fix preview APK9 accepted by EAS as bfb5310e-c8e1-41af-bc01-6037b17701b6 f
 - EAS build request returned NEW, appBuildVersion9, source commit698071b0a92da20f0647348464508425c8487b16. Build watcher downloads and ZIP-checks artifact; no duplicate production build started.
 
 Next: Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle.
+
+### 92. google.widget-fix — in_progress
+
+2026-09-16T09:02:14+00:00 · observed · agent
+
+Installed APK8 completed its next scheduled refresh at16:59:50.826. From16:29 through90 seconds after completion, native logs contain one worker start/success, one widget recreation at16:47 during the deliberate theme change, zero receiver-disable events and no fatal exception. No widget recreation followed the scheduled refresh. Periodic refresh remains functional without the old loop.
+
+- store/android-widget-regression.json includes recurringExecution; full device log remains private. Theme-fix APK9 bfb5310e-c8e1-41af-bc01-6037b17701b6 is still IN_PROGRESS.
+
+Next: Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build.

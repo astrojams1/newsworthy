@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T08:54:07+00:00",
+  "updated_at": "2026-09-16T09:02:14+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -445,12 +445,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Theme-fix preview APK9 accepted by EAS as bfb5310e-c8e1-41af-bc01-6037b17701b6 from clean commit 698071b. Existing production AAB9 predates this theme fix and must be replaced after preview verification.",
+      "summary": "Installed APK8 completed its next scheduled refresh at16:59:50.826. From16:29 through90 seconds after completion, native logs contain one worker start/success, one widget recreation at16:47 during the deliberate theme change, zero receiver-disable events and no fatal exception. No widget recreation followed the scheduled refresh. Periodic refresh remains functional without the old loop.",
       "evidence": [
-        "EAS build request returned NEW, appBuildVersion9, source commit698071b0a92da20f0647348464508425c8487b16. Build watcher downloads and ZIP-checks artifact; no duplicate production build started."
+        "store/android-widget-regression.json includes recurringExecution; full device log remains private. Theme-fix APK9 bfb5310e-c8e1-41af-bc01-6037b17701b6 is still IN_PROGRESS."
       ],
-      "next_action": "Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle.",
-      "updated_at": "2026-09-16T08:54:07+00:00"
+      "next_action": "Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build.",
+      "updated_at": "2026-09-16T09:02:14+00:00"
     }
   },
   "events": [
@@ -1921,6 +1921,22 @@
         ],
         "next_action": "Wait for this exact EAS build, install APK9, verify native theme switching and compact/expanded resizing, then capture final Android assets and build production bundle.",
         "updated_at": "2026-09-16T08:54:07+00:00"
+      }
+    },
+    {
+      "sequence": 92,
+      "at": "2026-09-16T09:02:14+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Installed APK8 completed its next scheduled refresh at16:59:50.826. From16:29 through90 seconds after completion, native logs contain one worker start/success, one widget recreation at16:47 during the deliberate theme change, zero receiver-disable events and no fatal exception. No widget recreation followed the scheduled refresh. Periodic refresh remains functional without the old loop.",
+        "evidence": [
+          "store/android-widget-regression.json includes recurringExecution; full device log remains private. Theme-fix APK9 bfb5310e-c8e1-41af-bc01-6037b17701b6 is still IN_PROGRESS."
+        ],
+        "next_action": "Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build.",
+        "updated_at": "2026-09-16T09:02:14+00:00"
       }
     }
   ],

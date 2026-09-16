@@ -70,6 +70,29 @@
       ],
       "inference": "The existing launcher item may retain sizing from its earlier installation. New package dimensions alone do not verify resize behavior.",
       "next": "Reopen resize controls; if minimum remains unchanged, remove and add the widget again through the launcher, then inspect compact/expanded layouts."
+    },
+    "recurringExecution": {
+      "date": "2026-09-16",
+      "installedVersionCode": 8,
+      "windowStart": "09-16 16:29:00.000",
+      "workerStarts": 1,
+      "workerSuccesses": 1,
+      "startTimestamps": [
+        "09-16 16:59:48.465"
+      ],
+      "successTimestamps": [
+        "09-16 16:59:50.826"
+      ],
+      "postSuccessObservationSeconds": 90,
+      "scope": "Native log observation of scheduled refresh; does not verify compact resizing.",
+      "receiverDisableEvents": 0,
+      "widgetRecreations": 1,
+      "fatalExceptions": 0,
+      "widgetRecreationTimestamps": [
+        "09-16 16:47:11.273"
+      ],
+      "widgetRecreationNote": "One recreation coincided with the deliberate dark-to-light system theme change; none followed the scheduled refresh.",
+      "postRefreshWidgetRecreations": 0
     }
   },
   "themeSwitchRegression": {
