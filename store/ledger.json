@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T06:54:20+00:00",
+  "updated_at": "2026-09-16T06:59:34+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -148,25 +148,23 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Actual iPhone/iPad simulator reading, light/dark UI, sharing and iPhone medium widget checked. Physical-device release checklist remains.",
+      "summary": "Replacement simulator artifact downloaded and installed on the booted iPhone simulator; visual checks and new captures await Mac unlock.",
       "evidence": [
-        "store/source/iphone-6.9/",
-        "store/source/ipad-13/",
-        "docs/mobile-release.md"
+        "EAS simulator e02851c0-0cae-4f95-b854-2d57e32cc0b2, source b5571c5, SHA256 f6f446b7f04513e9d5d01c50755ae5d4c9b430daa71bcf9ec873dc4a1d34ded9. Actual simulator Info.plist is version 1.0.0 / CFBundleVersion 1 despite EAS remote-version label 6; xcrun simctl install succeeded. Production IPA independently confirms build 6. Earlier screenshots verify only the older artifact."
       ],
-      "next_action": "Finish applicable physical-device, offline/recovery, accessibility and widget checks; do not treat web or Expo Go as signed-device proof.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "After unlock, verify revised reading screen, privacy/support links, share, offline recovery, large text, and both widget sizes; capture clean neutral Home Screen images and updated iPhone/iPad reading screens.",
+      "updated_at": "2026-09-16T06:59:34+00:00"
     },
     "apple.upload": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Apple acknowledged replacement iOS build 6 upload; processing is pending.",
+      "summary": "Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0.",
       "evidence": [
-        "altool UPLOAD SUCCEEDED; delivery b62a9dc5-1b0c-4200-8830-68db021bb0cd; 19,258,964 bytes. First App Store Connect build-6 query returned no processed build yet."
+        "Delivery/build b62a9dc5-1b0c-4200-8830-68db021bb0cd; App Store Connect VALID readback and build-selection readback passed. No replacement review submission yet."
       ],
-      "next_action": "Poll build 6 processing before selecting it. Do not upload again while this accepted delivery is processing.",
-      "updated_at": "2026-09-16T06:54:20+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T06:59:34+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -260,12 +258,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Version 6 launch, light/dark gradients and share icon, native share sheet, About navigation, cached offline reading, and online recovery verified on API 35 ARM64 emulator.",
+      "summary": "Android version 7 production AAB download verified; matching preview APK download is running. Version 6 UI checks do not verify the revised screen.",
       "evidence": [
-        "Installed package reports versionCode 6/versionName 1.0.0. Native UI shows gradient/icon, share payload with original timestamp, offline Saved reading/Try again, and recovery with saved warning removed. Source screenshots stored under store/source/android-phone/."
+        "AAB 72,473,181 bytes; SHA256 28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8. Preview EAS 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; active APK transfer and partial file observed."
       ],
-      "next_action": "Verify Android widget installation/rendering/resize and large text, then physical-device behavior during real closed testing. Launcher widget picker was not reachable through available CUA controls; no widget success claim.",
-      "updated_at": "2026-09-16T05:39:50+00:00"
+      "next_action": "Finish the current APK download and archive validation, install version 7, then perform native checks and clean neutral-background widget captures after Mac unlock.",
+      "updated_at": "2026-09-16T06:59:34+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -1404,6 +1402,54 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-16T06:54:20+00:00"
+      }
+    },
+    {
+      "sequence": 63,
+      "at": "2026-09-16T06:59:34+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0.",
+        "evidence": [
+          "Delivery/build b62a9dc5-1b0c-4200-8830-68db021bb0cd; App Store Connect VALID readback and build-selection readback passed. No replacement review submission yet."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T06:59:34+00:00"
+      }
+    },
+    {
+      "sequence": 64,
+      "at": "2026-09-16T06:59:34+00:00",
+      "gate": "apple.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement simulator artifact downloaded and installed on the booted iPhone simulator; visual checks and new captures await Mac unlock.",
+        "evidence": [
+          "EAS simulator e02851c0-0cae-4f95-b854-2d57e32cc0b2, source b5571c5, SHA256 f6f446b7f04513e9d5d01c50755ae5d4c9b430daa71bcf9ec873dc4a1d34ded9. Actual simulator Info.plist is version 1.0.0 / CFBundleVersion 1 despite EAS remote-version label 6; xcrun simctl install succeeded. Production IPA independently confirms build 6. Earlier screenshots verify only the older artifact."
+        ],
+        "next_action": "After unlock, verify revised reading screen, privacy/support links, share, offline recovery, large text, and both widget sizes; capture clean neutral Home Screen images and updated iPhone/iPad reading screens.",
+        "updated_at": "2026-09-16T06:59:34+00:00"
+      }
+    },
+    {
+      "sequence": 65,
+      "at": "2026-09-16T06:59:34+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android version 7 production AAB download verified; matching preview APK download is running. Version 6 UI checks do not verify the revised screen.",
+        "evidence": [
+          "AAB 72,473,181 bytes; SHA256 28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8. Preview EAS 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 FINISHED; active APK transfer and partial file observed."
+        ],
+        "next_action": "Finish the current APK download and archive validation, install version 7, then perform native checks and clean neutral-background widget captures after Mac unlock.",
+        "updated_at": "2026-09-16T06:59:34+00:00"
       }
     }
   ],

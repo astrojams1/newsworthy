@@ -111,7 +111,7 @@ signing credentials again, fetch binaries, or manually upload screenshots.
 Those have working automated paths. Prior Android version 6 passed rendering,
 sharing and offline/recovery checks. The approved redesign now needs replacement
 native verification and captures. iOS build 6 and Android version 7 have been
-queued from merged commit `b5571c5`. The Mac is locked again; unlock it to resume
+built from merged commit `b5571c5`; Apple build 6 is uploaded, valid and selected. The Mac is locked again; unlock it to resume
 native UI work. Widget/large-text and physical-device checks remain open.
 The remaining technical release work is:
 

@@ -7,7 +7,7 @@ Last checked **September 16, 2026**. Neither app is publicly released.
 Apple build 5 was **withdrawn by the developer** to replace About with the
 approved reading-screen design. Replacement iOS build 6 and Android version 7
 have finished building from merged commit `b5571c5`; Google account verification still
-blocks app creation. Apple acknowledged the build 6 upload; processing is pending.
+blocks app creation. Apple processed build 6 as VALID and it is selected for version 1.0.0.
 Native reading-screen images below need replacement. Clean, neutral-background
 widget images showing each supported size are pending and omitted from these
 local previews until captured.
@@ -40,10 +40,10 @@ local previews until captured.
   Apple Business now confirms the W-9 is **Active**; banking remains outstanding. The address-correction request
   has been sent and acknowledged by Apple,
   but the obsolete legal address still needs Apple approval/correction.
-- **Apple binary:** signed production build **5** validated and uploaded with
-  Apple's `altool`. Apple reports `VALID` / `APP_STORE_ELIGIBLE`, and build 5
-  is selected for version 1.0.0. The stalled EAS submission was canceled before
-  the successful direct upload. Delivery/build ID is in `release.json`.
+- **Apple binary:** replacement signed production build **6** validated and
+  uploaded with Apple's `altool`. Apple reports `VALID`, and build 6 is selected
+  for version 1.0.0. Delivery/build ID is in `release.json`. The prior build 5
+  EAS queue cancellation is retained as historical evidence.
 - **Apple age rating:** declaration saved and verified through the API. It
   accounts for recurring war/weapons and mature news, with no graphic imagery.
   Apple returned `SEVENTEEN_PLUS` in its legacy age-rating field and 18 in
@@ -58,7 +58,8 @@ local previews until captured.
   Version 6 now passes emulator checks for light/dark rendering, share sheet,
   saved offline reading and online recovery. About navigation was tested on
   that previous build but the route has now been removed. Its gallery image is
-  retired. Replacement version 7 and matching captures are pending; Android
+  retired. Replacement version 7 AAB/APK builds finished, and the AAB download is verified;
+  replacement native checks and matching captures are pending; Android
   widget and physical-device checks remain pending.
   See `release.json`.
 - **Apple review details:** contact information, phone, no-login requirement,
@@ -67,7 +68,7 @@ local previews until captured.
   declaration; the Business page reports DSA compliance **Active**.
 - **Apple review:** the September 16 submission was withdrawn for the approved
   design revision. API readback is **DEVELOPER_REJECTED**, with the old submission
-  **COMPLETE**. This records our withdrawal, not reviewer feedback. A new native
+  **COMPLETE**. This records our withdrawal, not reviewer feedback. The replacement native
   build and matching reading-screen captures must be verified before resubmission.
   Automatic release after approval
   is configured; all 175 territories are enabled without preorder. The API still
