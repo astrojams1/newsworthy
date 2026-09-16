@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T10:13:03+00:00",
+  "updated_at": "2026-09-16T10:18:37+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -453,15 +453,15 @@
       "updated_at": "2026-09-16T10:09:18+00:00"
     },
     "design.regression": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "189 repository tests pass locally. New design gate rejects historical b5571c5 expanded XML and 922a9b1 inline theme override; 192 reading-render combinations and 12 deliberate regressions pass.",
+      "summary": "CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate",
       "evidence": [
-        "npm test: 189/189; npm run test:design: 19/19; npm run check:app; test/surface-design.test.js; design/README.md"
+        "GitHub Actions 35083882871: design gate and npm test passed; 192 Expo rendered-prop combinations; 12 deliberate regression checks; historical XML b5571c5 and theme override 922a9b1 rejected; app-release skill v1.0.6 merged in skills PR65"
       ],
-      "next_action": "Push PR92 and verify CI design gate; tests check design contracts/rendered props, not native screenshot layout",
-      "updated_at": "2026-09-16T10:11:05+00:00"
+      "next_action": "For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines.",
+      "updated_at": "2026-09-16T10:18:37+00:00"
     }
   },
   "events": [
@@ -2108,6 +2108,22 @@
         ],
         "next_action": "Create and verify the final production AAB after PR92 integration; retain build provenance.",
         "updated_at": "2026-09-16T10:13:03+00:00"
+      }
+    },
+    {
+      "sequence": 103,
+      "at": "2026-09-16T10:18:37+00:00",
+      "gate": "design.regression",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate",
+        "evidence": [
+          "GitHub Actions 35083882871: design gate and npm test passed; 192 Expo rendered-prop combinations; 12 deliberate regression checks; historical XML b5571c5 and theme override 922a9b1 rejected; app-release skill v1.0.6 merged in skills PR65"
+        ],
+        "next_action": "For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines.",
+        "updated_at": "2026-09-16T10:18:37+00:00"
       }
     }
   ],

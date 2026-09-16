@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T10:13:03+00:00
+Updated: 2026-09-16T10:18:37+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -50,7 +50,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
 | google.widget-fix | done | agent | observed | APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained | — |
-| design.regression | in_progress | agent | observed | 189 repository tests pass locally. New design gate rejects historical b5571c5 expanded XML and 922a9b1 inline theme override; 192 reading-render combinations and 12 deliberate regressions pass. | Push PR92 and verify CI design gate; tests check design contracts/rendered props, not native screenshot layout |
+| design.regression | done | agent | observed | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
 
 ## Evidence and history
 
@@ -1020,3 +1020,13 @@ Preview APK9 contains the verified denominator theme fix. Existing production AA
 - Preview bfb5310e-c8e1-41af-bc01-6037b17701b6 source 698071b; older production a55d6cc8-d3cf-41f3-ae88-6b2b29456151
 
 Next: Create and verify the final production AAB after PR92 integration; retain build provenance.
+
+### 103. design.regression — done
+
+2026-09-16T10:18:37+00:00 · observed · agent
+
+CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate
+
+- GitHub Actions 35083882871: design gate and npm test passed; 192 Expo rendered-prop combinations; 12 deliberate regression checks; historical XML b5571c5 and theme override 922a9b1 rejected; app-release skill v1.0.6 merged in skills PR65
+
+Next: For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines.
