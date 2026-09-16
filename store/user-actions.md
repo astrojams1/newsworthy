@@ -108,19 +108,32 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 Do **not** ask the owner to create listing art/copy, configure Expo, generate
 signing credentials again, fetch binaries, or manually upload screenshots.
-Those have working automated paths. Prior Android version 6 passed rendering,
-sharing and offline/recovery checks. The approved redesign now needs replacement
-native verification and captures. iOS build 6 and Android version 7 have been
-built from merged commit `b5571c5`; Apple build 6 is uploaded, valid and selected. The Mac is locked again; unlock it to resume
-native UI work. Widget/large-text and physical-device checks remain open.
+Those have working automated paths. Apple build 6 and the corrected five-image
+gallery are submitted and **Waiting for Review**, confirmed through the API on
+September 16. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
+Privacy/Support links and iPad share popover have been checked. Physical-device
+and large-text behavior remain unclaimed.
+
+Corrected Android preview APK8 is installed, and production AAB9 is downloaded
+and validated. A 65-second native log check found no repeated workers or widget
+recreations after the refresh-loop fix. The smaller baseline `/10` is visible.
+A fresh compact/expanded resize check is pending; the computer-control tool did
+not reliably reopen sustained-press resize controls. There is no current Mac
+unlock request. The Android gallery remains provisional until updated captures
+are complete. The launcher still reports the existing widget as minimum 3×3,
+while installed provider metadata reports 120dp minima. If reopening resize
+controls still cannot shrink it, remove and re-add that widget through the
+launcher to check whether it retained the old size limits.
+
 The remaining technical release work is:
 
+- Finish Android compact/expanded resize verification and capture updated native
+  widget and reading images. Frame the real widget surfaces on a neutral canvas,
+  without unrelated apps or stock wallpaper.
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
-- The original Apple submission was withdrawn to replace About and improve the
-  design. Verify the replacement native builds, refresh screenshots, select the
-  new Apple build and resubmit. The iPhone gallery already leads with the actual
-  widget. All 175 territories remain configured with release after approval.
+- Observe Apple's replacement review result; do not submit another duplicate
+  review. All 175 territories remain configured with release after approval.
 - When **Create app** becomes enabled, create Newsworthy as **paid**, set US$1.00,
   upload the AAB, copy, icon, feature graphic, and prepared Android screenshots,
   complete app-content forms, and prepare the closed-test release.

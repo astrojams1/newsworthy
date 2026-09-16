@@ -34,6 +34,42 @@
     "fatalExceptions": 0,
     "scope": "Post-install observation including native widget resize interactions; private full log kept outside repo.",
     "sourceCommit": "922a9b19f26a750df0867d0c3e1bdf4b6672ceba",
-    "resizeVerification": "Still pending; automated drags did not change the settled size."
+    "resizeVerification": "Still pending; automated drags did not change the settled size.",
+    "initialRefresh": {
+      "startedAt": "2026-09-16 16:28:55.057 +08:00",
+      "completedAt": "2026-09-16 16:28:57.040 +08:00",
+      "result": "SUCCESS",
+      "evidence": "Native WM-WorkerWrapper log; corrected process PID12664. Receiver remains enabled after completion."
+    },
+    "scheduledRefresh": {
+      "source": "Android dumpsys jobscheduler",
+      "jobId": 7671,
+      "minimumLatencyMilliseconds": 1799984,
+      "networkConstraintSatisfied": true,
+      "onlyUnsatisfiedConstraint": "TIMING_DELAY",
+      "scope": "Next refresh is scheduled; not yet an observation of its later execution."
+    },
+    "launcherSizing": {
+      "source": "Android dumpsys activity NexusLauncherActivity and dumpsys appwidget",
+      "existingWidgetId": 2,
+      "existingSpan": [
+        3,
+        3
+      ],
+      "existingMinimumSpan": [
+        3,
+        3
+      ],
+      "installedProviderMinimumDp": [
+        120,
+        120
+      ],
+      "installedProviderMinimumResizeDp": [
+        120,
+        120
+      ],
+      "inference": "The existing launcher item may retain sizing from its earlier installation. New package dimensions alone do not verify resize behavior.",
+      "next": "Reopen resize controls; if minimum remains unchanged, remove and add the widget again through the launcher, then inspect compact/expanded layouts."
+    }
   }
 }

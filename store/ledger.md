@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T08:36:36+00:00
+Updated: 2026-09-16T08:42:54+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -49,7 +49,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
 | apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
-| google.widget-fix | in_progress | agent | observed | Preview APK8 installed; production AAB9 finished, downloaded and ZIP validated. Corrected widget has small baseline /10. In a 65-second native log window, worker restarts, widget recreations, receiver toggles and fatal exceptions were all zero; old build recreated widget 30 times in 34 seconds. Fresh resize verification remains pending. | Verify fresh native compact/expanded resizing, capture both sizes and updated reading screens, render gallery, then complete PR92. |
+| google.widget-fix | in_progress | agent | observed | Corrected worker completed SUCCESS at 16:28:57 and jobscheduler retains the next network-constrained refresh with a 30-minute delay. Existing launcher item still reports span/minSpan 3x3 while provider metadata reports 120dp minima; cached launcher sizing is a hypothesis, not verified root cause. | Complete fresh resize test; if still constrained, remove/re-add the existing native widget via launcher before further code changes. Capture corrected Android gallery. Owner instructions now omit obsolete Mac-lock and Apple-resubmission requests. |
 
 ## Evidence and history
 
@@ -885,3 +885,13 @@ Preview APK8 installed; production AAB9 finished, downloaded and ZIP validated. 
 - store/android-widget-regression.json; store/release.json contains build IDs, source commits and artifact SHA256. Existing resize handles survived package upgrade; automated drags did not change settled dimensions. CUA sustained press unavailable; owner asked for fresh two-by-two resize while independent work continues.
 
 Next: Verify fresh native compact/expanded resizing, capture both sizes and updated reading screens, render gallery, then complete PR92.
+
+### 89. google.widget-fix — in_progress
+
+2026-09-16T08:42:54+00:00 · observed · agent
+
+Corrected worker completed SUCCESS at 16:28:57 and jobscheduler retains the next network-constrained refresh with a 30-minute delay. Existing launcher item still reports span/minSpan 3x3 while provider metadata reports 120dp minima; cached launcher sizing is a hypothesis, not verified root cause.
+
+- store/android-widget-regression.json records sanitized worker completion, scheduler and launcher measurements. Both PR92 check workflows passed. Apple version remains WAITING_FOR_REVIEW; live Google Create app remains disabled pending device/contact-phone verification.
+
+Next: Complete fresh resize test; if still constrained, remove/re-add the existing native widget via launcher before further code changes. Capture corrected Android gallery. Owner instructions now omit obsolete Mac-lock and Apple-resubmission requests.
