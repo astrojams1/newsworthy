@@ -72,8 +72,8 @@
     "reviewSubmitted": false,
     "versionCode": 9,
     "buildStatus": "FINISHED",
-    "artworkStatus": "REVISION_PENDING_NATIVE_CAPTURES",
-    "nativeVerification": "V8_INSTALLED_NO_REFRESH_LOOP_65_SECONDS_RESIZE_PENDING",
+    "artworkStatus": "APK9_READING_IMAGES_UPDATED_WIDGET_COMPARISON_PENDING",
+    "nativeVerification": "APK9_INSTALLED_THEME_AND_READING_LIGHT_DARK_VERIFIED_COMPACT_PENDING",
     "replacementBuilds": [
       {
         "id": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
@@ -97,7 +97,7 @@
         "sha256": "28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8"
       }
     ],
-    "widgetArtworkStatus": "PENDING_V8_COMPACT_EXPANDED_CAPTURE",
+    "widgetArtworkStatus": "LAUNCHER_MINIMUM_2X2_OBSERVED_COMPACT_CAPTURE_PENDING",
     "widgetFixBuilds": [
       {
         "id": "a55d6cc8-d3cf-41f3-ae88-6b2b29456151",
@@ -131,10 +131,14 @@
       "build": "9",
       "sourceCommit": "698071b0a92da20f0647348464508425c8487b16",
       "sourceDirty": false,
-      "status": "IN_PROGRESS",
-      "purpose": "Verify denominator color follows native light/dark theme without waiting for widget refresh."
+      "status": "FINISHED",
+      "purpose": "Verify denominator color follows native light/dark theme without waiting for widget refresh.",
+      "sha256": "77d5c0c8da4ca6b33092949176cde4daa9677c079472379c9a191546741cc185",
+      "bytes": 104437651,
+      "installedVersionCode": 9
     },
     "productionBuildRequiresReplacement": true,
-    "productionReplacementReason": "AAB9 predates denominator theme-switch fix; validate preview APK9 before final production build."
+    "productionReplacementReason": "AAB9 predates denominator theme-switch fix; validate preview APK9 before final production build.",
+    "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED"
   }
 }

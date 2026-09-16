@@ -10,9 +10,12 @@ without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
 
 Android version 7 exposed a widget refresh loop that flickers and interrupts
-resizing. Corrected APK8 is installed and AAB9 is downloaded. A 65-second
-native log check found no repeat workers or widget recreations; fresh compact
-resize verification remains pending. The Android preview below is provisional. Google account verification
+resizing. APK8 passed idle and scheduled-refresh checks without recurring
+widget recreation. A theme switch exposed a separate denominator contrast issue;
+APK9 is installed and passed native light/dark/light widget transitions. Current
+reading images are refreshed from APK9. The launcher now reports minimum2×2,
+but actual compact rendering still needs a capture. The earlier production AAB9
+needs replacement. The Android preview below is provisional. Google account verification
 still blocks app creation. See the ledger for current gates and exact next actions.
 
 ![iPhone listing artwork](preview.png)
@@ -100,19 +103,20 @@ All five replacement images were read back COMPLETE in the correct order; see
 [Apple gallery verification](apple-gallery-verification.json). Native simulator
 checks do not establish physical-device certification.
 
-Android reading captures currently in `source/android-phone/` are
-`01-reading-light.png` and `02-reading-dark.png`, from previous preview build
-`f3dddec5-23f3-4a41-8fd6-e0d4f79ee366` on the API 35 ARM64 emulator
-(1080×2400). The renderer frames them as 1080×1920 Google Play images and
-reports missing captures rather than substituting iOS screenshots. The old About
-capture remains historical source evidence and is never rendered into the gallery.
-The renderer expects `source/android-phone/widget-frames.json` to identify actual
-compact/expanded native captures and their viewport bounds. It then produces
-`03-widget-sizes-v8.png` as the first Android gallery image. Capture new reading images from
-the corrected Android build before describing this gallery as final.
-The offline capture is retained as test evidence, outside the store gallery.
-The earlier APK screenshots are not release assets because they exposed the
-SVG-rendering defect.
+Android reading assets now use `12-reading-light-v9.png` and
+`13-reading-dark-v9.png`, from preview APK9
+`bfb5310e-c8e1-41af-bc01-6037b17701b6` on the API35 ARM64 emulator
+(1080×2400). `provenance-v9.json` records hashes and native verification scope.
+The renderer frames them as 1080×1920 Google Play images. Earlier captures,
+including About and offline evidence, remain historical source files and are
+excluded from the current gallery.
+
+The widget renderer expects `source/android-phone/widget-frames.json` to identify
+actual compact/expanded captures, viewport bounds, and the verified `versionCode`.
+It then creates a versioned widget comparison as the first Android gallery image.
+The expanded widget passed light→dark→light contrast checks without a worker run;
+compact sizing is not yet verified visually. A 2×2 launcher minimum is metadata
+evidence, not a substitute for inspecting the compact widget.
 
 The pasted macOS crash report identified Android Emulator startup, not
 Newsworthy. Local emulator library/resource paths were corrected, and the

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T09:02:14+00:00",
+  "updated_at": "2026-09-16T09:33:15+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -357,12 +357,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "The old version-6 artwork set is superseded. About art is removed, and clean widget-size captures plus version-7 reading captures are pending.",
+      "summary": "Replaced old reading gallery with actual APK9 light/dark captures and versioned assets. Widget-size comparison remains pending compact native capture.",
       "evidence": [
-        "PR90 retired About and cluttered iPhone widget artwork. Current manifest contains only older reading-screen captures; widget-gallery-brief.md defines required clean neutral backgrounds and size variants."
+        "store/preview-android.png visually inspected; manifest points to12-reading-light-v9.png and13-reading-dark-v9.png. Renderer/metadata validator passed. About excluded."
       ],
-      "next_action": "Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done.",
-      "updated_at": "2026-09-16T07:11:08+00:00"
+      "next_action": "Add verified compact/expanded widget frames and regenerate first gallery image; keep actual widget surfaces on neutral canvas.",
+      "updated_at": "2026-09-16T09:33:15+00:00"
     },
     "design.reading-screen": {
       "state": "in_progress",
@@ -442,15 +442,15 @@
       "updated_at": "2026-09-16T07:48:41+00:00"
     },
     "google.widget-fix": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Installed APK8 completed its next scheduled refresh at16:59:50.826. From16:29 through90 seconds after completion, native logs contain one worker start/success, one widget recreation at16:47 during the deliberate theme change, zero receiver-disable events and no fatal exception. No widget recreation followed the scheduled refresh. Periodic refresh remains functional without the old loop.",
+      "summary": "APK9 downloaded, ZIP-validated and installed. Native light/dark/light expanded-widget denominator checks passed with zero worker starts during transitions. Current reading light/dark captures are complete. Launcher existing widget now reports minSpan2x2. Actual compact rendering remains pending; Mac relocked.",
       "evidence": [
-        "store/android-widget-regression.json includes recurringExecution; full device log remains private. Theme-fix APK9 bfb5310e-c8e1-41af-bc01-6037b17701b6 is still IN_PROGRESS."
+        "store/release.json artifact SHA25677d5c0c8da4ca6b33092949176cde4daa9677c079472379c9a191546741cc185; source/android-phone/provenance-v9.json and theme screenshots. Native launcher keyboard focus worked, but Ctrl+W/Menu/Ctrl+R did not open picker/resize popup. Store renderer/validator passed for current reading gallery."
       ],
-      "next_action": "Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build.",
-      "updated_at": "2026-09-16T09:02:14+00:00"
+      "next_action": "Owner unlocks Mac and leaves widget at2x2 using long-press resize handles; alternatively inspect emulator keyboard routing when available. Capture compact and expanded, finish gallery, then final production AAB and PR92.",
+      "updated_at": "2026-09-16T09:33:15+00:00"
     }
   },
   "events": [
@@ -1937,6 +1937,54 @@
         ],
         "next_action": "Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build.",
         "updated_at": "2026-09-16T09:02:14+00:00"
+      }
+    },
+    {
+      "sequence": 93,
+      "at": "2026-09-16T09:09:34+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Theme-fix APK9 build finished successfully after12m36s. Artifact download is progressing. CUA reports the Mac is locked and automatic unlock unavailable, preventing native theme/resize checks and captures.",
+        "evidence": [
+          "EAS build bfb5310e-c8e1-41af-bc01-6037b17701b6 Finished in provider UI; existing download watcher remains live and partial file grew17MB to40MB. CUA lock response observed; owner unlock request sent."
+        ],
+        "next_action": "Finish downloading and installing APK9 through CLI. Owner unlocks Mac; then resume native theme switching, fresh widget resize and final Android gallery. Do not mark theme or compact size verified while locked.",
+        "updated_at": "2026-09-16T09:09:34+00:00"
+      }
+    },
+    {
+      "sequence": 94,
+      "at": "2026-09-16T09:33:15+00:00",
+      "gate": "google.widget-fix",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "APK9 downloaded, ZIP-validated and installed. Native light/dark/light expanded-widget denominator checks passed with zero worker starts during transitions. Current reading light/dark captures are complete. Launcher existing widget now reports minSpan2x2. Actual compact rendering remains pending; Mac relocked.",
+        "evidence": [
+          "store/release.json artifact SHA25677d5c0c8da4ca6b33092949176cde4daa9677c079472379c9a191546741cc185; source/android-phone/provenance-v9.json and theme screenshots. Native launcher keyboard focus worked, but Ctrl+W/Menu/Ctrl+R did not open picker/resize popup. Store renderer/validator passed for current reading gallery."
+        ],
+        "next_action": "Owner unlocks Mac and leaves widget at2x2 using long-press resize handles; alternatively inspect emulator keyboard routing when available. Capture compact and expanded, finish gallery, then final production AAB and PR92.",
+        "updated_at": "2026-09-16T09:33:15+00:00"
+      }
+    },
+    {
+      "sequence": 95,
+      "at": "2026-09-16T09:33:15+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replaced old reading gallery with actual APK9 light/dark captures and versioned assets. Widget-size comparison remains pending compact native capture.",
+        "evidence": [
+          "store/preview-android.png visually inspected; manifest points to12-reading-light-v9.png and13-reading-dark-v9.png. Renderer/metadata validator passed. About excluded."
+        ],
+        "next_action": "Add verified compact/expanded widget frames and regenerate first gallery image; keep actual widget surfaces on neutral canvas.",
+        "updated_at": "2026-09-16T09:33:15+00:00"
       }
     }
   ],

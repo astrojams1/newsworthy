@@ -56,10 +56,16 @@ Android version 7 expanded rendering was captured as diagnostic evidence in
 observed flicker, resize resets and the oversized denominator. Native logs show
 a one-time WorkManager completion → component/package change → widget onUpdate
 → new worker loop about every second. This recreates the widget during resizing.
-Corrected APK8 is installed, and AAB9 is downloaded and ZIP-validated. Native
-logs show zero worker restarts or widget recreations over 65 seconds; the small
-baseline `/10` is visible. Automated drags on the resize controls inherited from
-the older build did not change the settled size. A fresh owner resize attempt
-is pending because CUA cannot reliably send the sustained Android press.
-Do not mark compact sizing verified or use version 7 for final widget marketing. Replacement iPad light/dark captures are
-complete and the corrected Apple gallery is uploaded and waiting for review.
+APK8 passed an initial idle check and its next scheduled refresh without a
+recreation loop. A theme transition exposed a separate inline `/10` color issue;
+APK9 replaces it with a baseline-aligned XML-themed text view. Native
+light→dark→light transitions passed without a worker run, and current light/dark
+reading images are captured. See `source/android-phone/provenance-v9.json`.
+
+The launcher now reports minimum2×2 for the existing widget (previously3×3), but
+a compact native capture is still required. Keyboard focus worked; shortcut
+routing did not expose the resize popup. The Mac relocked before the emulator
+routing settings could be inspected. Finish the actual compact/expanded capture
+before completing the Android comparison artwork or producing the final AAB.
+Replacement iPad light/dark captures are complete and the corrected Apple gallery
+is uploaded and waiting for review.

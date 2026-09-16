@@ -69,7 +69,20 @@
         120
       ],
       "inference": "The existing launcher item may retain sizing from its earlier installation. New package dimensions alone do not verify resize behavior.",
-      "next": "Reopen resize controls; if minimum remains unchanged, remove and add the widget again through the launcher, then inspect compact/expanded layouts."
+      "next": "Reopen resize controls; if minimum remains unchanged, remove and add the widget again through the launcher, then inspect compact/expanded layouts.",
+      "followUp": {
+        "versionCode": 9,
+        "existingSpan": [
+          3,
+          3
+        ],
+        "existingMinimumSpan": [
+          2,
+          2
+        ],
+        "scope": "Read-only launcher data after APK9 installation and theme transitions; actual compact rendering not yet captured.",
+        "attempts": "Focused widget through native Down key; Ctrl+W, Menu, Ctrl+R did not expose picker/resize popup through current emulator keyboard routing. Mac relocked before inspecting emulator routing setting."
+      }
     },
     "recurringExecution": {
       "date": "2026-09-16",
@@ -101,6 +114,8 @@
     "cause": "ForegroundColorSpan stores the resolved color in RemoteViews instead of a theme resource.",
     "diagnosticCapture": "source/android-phone/07-widget-theme-switch-v8.png",
     "fix": "Separate baseline-aligned denominator TextView with theme color in XML.",
-    "verification": "Source fix prepared; replacement native build and theme-switch verification pending."
+    "verification": "APK9 installed and native light-to-dark-to-light transitions passed; denominator changed with the widget surface, with zero worker starts during the test.",
+    "verifiedBuild": "bfb5310e-c8e1-41af-bc01-6037b17701b6",
+    "evidence": "source/android-phone/provenance-v9.json"
   }
 }

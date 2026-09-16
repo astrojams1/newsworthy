@@ -1,0 +1,45 @@
+{
+  "capturedDate": "2026-09-16",
+  "versionCode": 9,
+  "easBuildId": "bfb5310e-c8e1-41af-bc01-6037b17701b6",
+  "sourceCommit": "698071b0a92da20f0647348464508425c8487b16",
+  "runtime": "Android API35 ARM64 emulator",
+  "dimensions": {
+    "width": 1080,
+    "height": 2400
+  },
+  "captureMethod": "Android Emulator screenshot shortcut through CUA; original PNGs unchanged",
+  "verified": [
+    "Expanded widget denominator baseline and light/dark/light contrast",
+    "Zero worker starts during widget theme transition test, 17:14 through17:19",
+    "Widget tap opens app; fresh light reading rendered",
+    "Native reading light/dark rendering and theme change on resume"
+  ],
+  "notVerified": [
+    "Fresh compact resize",
+    "Physical Android device",
+    "Large accessibility text"
+  ],
+  "files": {
+    "09-widget-light-v9.png": {
+      "description": "Expanded widget after APK9 installation, light theme.",
+      "sha256": "61da73f5c860e28e10dac61d6eb36fc9252c9c87ca821b7e61b648d1a10988ce"
+    },
+    "10-widget-dark-v9.png": {
+      "description": "Expanded widget after light-to-dark transition; denominator contrast remains legible.",
+      "sha256": "6bd43a492d1d0c85e09abbbf05f220fd6e20b671a8b0d87ef7d5ba5db010cbfa"
+    },
+    "11-widget-light-transition-v9.png": {
+      "description": "Expanded widget after dark-to-light transition; previously failing denominator contrast is corrected.",
+      "sha256": "52093daa78c8388fe04ad828b939d153bd3cb2d00b897ecf1d10de281245d634"
+    },
+    "12-reading-light-v9.png": {
+      "description": "Native light reading with Privacy/Support footer, no About.",
+      "sha256": "f745c968ed0f38d961b538391bfaacb2f0496706f8ba24e97c582caac8020427"
+    },
+    "13-reading-dark-v9.png": {
+      "description": "Current native dark reading after resuming from system theme change; Privacy/Support footer, no About.",
+      "sha256": "6f56c185f6693aaebc154c5ae9d2d187b91f110787be207aae28f36634825a34"
+    }
+  }
+}

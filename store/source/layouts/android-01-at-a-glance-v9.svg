@@ -6,6 +6,6 @@
   <text x="72" y="160" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="72" fill="#142C28" font-weight="500" letter-spacing="-2">The world,</text><text x="72" y="238" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="72" fill="#142C28" font-weight="500" letter-spacing="-2">at a glance.</text>
   <text x="75" y="292" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="28" fill="#3F685E" >A number out of 10. One sentence explaining why.</text>
   <rect x="206" y="338" width="668" height="1455" rx="40" fill="#101514"/>
-  <image x="218" y="350" width="644" height="1431" clip-path="url(#screen)" xlink:href="../android-phone/01-reading-light.png"/>
+  <image x="218" y="350" width="644" height="1431" clip-path="url(#screen)" xlink:href="../android-phone/12-reading-light-v9.png"/>
   <text x="540" y="1860" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="25" fill="#3F685E" text-anchor="middle">No feed. No ads. No subscription.</text>
   </svg>

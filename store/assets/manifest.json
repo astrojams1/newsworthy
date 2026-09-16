@@ -41,15 +41,15 @@
     "displayType": "APP_IPAD_PRO_3GEN_129"
   },
   {
-    "file": "assets/google-play/phone/01-at-a-glance.png",
-    "source": "source/android-phone/01-reading-light.png",
+    "file": "assets/google-play/phone/01-at-a-glance-v9.png",
+    "source": "source/android-phone/12-reading-light-v9.png",
     "width": 1080,
     "height": 1920,
     "platform": "android"
   },
   {
-    "file": "assets/google-play/phone/02-dark-mode.png",
-    "source": "source/android-phone/02-reading-dark.png",
+    "file": "assets/google-play/phone/02-dark-mode-v9.png",
+    "source": "source/android-phone/13-reading-dark-v9.png",
     "width": 1080,
     "height": 1920,
     "platform": "android"

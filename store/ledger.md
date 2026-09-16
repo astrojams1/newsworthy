@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T09:02:14+00:00
+Updated: 2026-09-16T09:33:15+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -41,7 +41,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
 | apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
 | host.ui | done | agent | observed | Native UI access restored after the Mac was unlocked. | — |
-| google.artwork | in_progress | agent | observed | The old version-6 artwork set is superseded. About art is removed, and clean widget-size captures plus version-7 reading captures are pending. | Capture version-7 Android reading screens and compact/expanded widgets after Mac unlock, render and inspect the replacement gallery, then mark this gate done. |
+| google.artwork | in_progress | agent | observed | Replaced old reading gallery with actual APK9 light/dark captures and versioned assets. Widget-size comparison remains pending compact native capture. | Add verified compact/expanded widget frames and regenerate first gallery image; keep actual widget surfaces on neutral canvas. |
 | design.reading-screen | in_progress | agent | observed | Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback. | Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery. |
 | native.ui-access | done | agent | observed | Mac is now unlocked; native Android Emulator and iOS Simulator accessibility/screenshot controls are available. | — |
 | design.widget-gallery | in_progress | agent | observed | Apple neutral small/medium gallery completed and uploaded; Android compact/expanded composition remains pending native resizing. | When Android launcher resize handles are available, capture compact and expanded native widgets and replace Android artwork. |
@@ -49,7 +49,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
 | apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
-| google.widget-fix | in_progress | agent | observed | Installed APK8 completed its next scheduled refresh at16:59:50.826. From16:29 through90 seconds after completion, native logs contain one worker start/success, one widget recreation at16:47 during the deliberate theme change, zero receiver-disable events and no fatal exception. No widget recreation followed the scheduled refresh. Periodic refresh remains functional without the old loop. | Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build. |
+| google.widget-fix | waiting_user | user | observed | APK9 downloaded, ZIP-validated and installed. Native light/dark/light expanded-widget denominator checks passed with zero worker starts during transitions. Current reading light/dark captures are complete. Launcher existing widget now reports minSpan2x2. Actual compact rendering remains pending; Mac relocked. | Owner unlocks Mac and leaves widget at2x2 using long-press resize handles; alternatively inspect emulator keyboard routing when available. Capture compact and expanded, finish gallery, then final production AAB and PR92. |
 
 ## Evidence and history
 
@@ -925,3 +925,33 @@ Installed APK8 completed its next scheduled refresh at16:59:50.826. From16:29 th
 - store/android-widget-regression.json includes recurringExecution; full device log remains private. Theme-fix APK9 bfb5310e-c8e1-41af-bc01-6037b17701b6 is still IN_PROGRESS.
 
 Next: Install and verify exact theme-fix APK9; finish fresh compact/expanded resizing and artwork before final AAB build.
+
+### 93. google.widget-fix — waiting_user
+
+2026-09-16T09:09:34+00:00 · observed · user
+
+Theme-fix APK9 build finished successfully after12m36s. Artifact download is progressing. CUA reports the Mac is locked and automatic unlock unavailable, preventing native theme/resize checks and captures.
+
+- EAS build bfb5310e-c8e1-41af-bc01-6037b17701b6 Finished in provider UI; existing download watcher remains live and partial file grew17MB to40MB. CUA lock response observed; owner unlock request sent.
+
+Next: Finish downloading and installing APK9 through CLI. Owner unlocks Mac; then resume native theme switching, fresh widget resize and final Android gallery. Do not mark theme or compact size verified while locked.
+
+### 94. google.widget-fix — waiting_user
+
+2026-09-16T09:33:15+00:00 · observed · user
+
+APK9 downloaded, ZIP-validated and installed. Native light/dark/light expanded-widget denominator checks passed with zero worker starts during transitions. Current reading light/dark captures are complete. Launcher existing widget now reports minSpan2x2. Actual compact rendering remains pending; Mac relocked.
+
+- store/release.json artifact SHA25677d5c0c8da4ca6b33092949176cde4daa9677c079472379c9a191546741cc185; source/android-phone/provenance-v9.json and theme screenshots. Native launcher keyboard focus worked, but Ctrl+W/Menu/Ctrl+R did not open picker/resize popup. Store renderer/validator passed for current reading gallery.
+
+Next: Owner unlocks Mac and leaves widget at2x2 using long-press resize handles; alternatively inspect emulator keyboard routing when available. Capture compact and expanded, finish gallery, then final production AAB and PR92.
+
+### 95. google.artwork — in_progress
+
+2026-09-16T09:33:15+00:00 · observed · agent
+
+Replaced old reading gallery with actual APK9 light/dark captures and versioned assets. Widget-size comparison remains pending compact native capture.
+
+- store/preview-android.png visually inspected; manifest points to12-reading-light-v9.png and13-reading-dark-v9.png. Renderer/metadata validator passed. About excluded.
+
+Next: Add verified compact/expanded widget frames and regenerate first gallery image; keep actual widget surfaces on neutral canvas.

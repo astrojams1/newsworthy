@@ -114,16 +114,17 @@ September 16. Native iPhone/iPad light/dark screens, iPhone small/medium widgets
 Privacy/Support links and iPad share popover have been checked. Physical-device
 and large-text behavior remain unclaimed.
 
-Corrected Android preview APK8 is installed, and production AAB9 is downloaded
-and validated. A 65-second native log check found no repeated workers or widget
-recreations after the refresh-loop fix. The smaller baseline `/10` is visible.
-A fresh compact/expanded resize check is pending; the computer-control tool did
-not reliably reopen sustained-press resize controls. There is no current Mac
-unlock request. The Android gallery remains provisional until updated captures
-are complete. The launcher still reports the existing widget as minimum 3×3,
-while installed provider metadata reports 120dp minima. If reopening resize
-controls still cannot shrink it, remove and re-add that widget through the
-launcher to check whether it retained the old size limits.
+Android preview APK8 verified the refresh-loop fix, including its next scheduled
+refresh without recurring widget recreation. APK9 is installed and passed native
+light→dark→light widget contrast checks. Current light/dark reading images are
+captured; the earlier production AAB9 must be replaced after sizing verification.
+
+A fresh compact/expanded resize check is pending. The launcher now reports a
+2×2 minimum for the existing widget, but actual compact rendering is not yet
+captured. The control tool could focus the widget but did not expose its resize
+popup through the available shortcut routing. With the Mac unlocked, press and
+hold the widget, then drag its handles to 2×2. Leave it at that size for capture.
+The agent can finish the gallery once that native state is available.
 
 The remaining technical release work is:
 

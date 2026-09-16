@@ -125,10 +125,11 @@ try {
     ${text(72,1725,27,'A quiet check-in, right on your Home Screen.','#59685F')}
     ${text(72,1850,24,'No feed. No ads. No subscription.','#59685F')}
   </svg>`;
-  const target='assets/google-play/phone/03-widget-sizes-v8.png';
+  if (!Number.isInteger(config.versionCode) || config.versionCode < 1) throw new Error('Widget frames require the verified Android versionCode');
+  const target=`assets/google-play/phone/03-widget-sizes-v${config.versionCode}.png`;
   let editable=svg;
   for(const capture of captures) editable=editable.replaceAll(capture.href,`../../${capture.file}`);
-  await out('source/layouts/android-03-widget-sizes-v8.svg',editable);
+  await out(`source/layouts/android-03-widget-sizes-v${config.versionCode}.svg`,editable);
   await out(target,await sharp(Buffer.from(svg)).removeAlpha().png({compressionLevel:9}).toBuffer());
   manifest.push({file:target,source:'source/android-phone/widget-frames.json',sources:captures.map(x=>x.file),width:1080,height:1920,platform:'android',composition:'Actual native widget viewports on a neutral canvas.'});
 } catch(error) {
@@ -137,10 +138,14 @@ try {
 }
 
 const androidLayouts = [
-  ['01-reading-light.png', '01-at-a-glance.png', ['The world,', 'at a glance.'], 'A number out of 10. One sentence explaining why.', false],
-  ['02-reading-dark.png', '02-dark-mode.png', ['A quieter way', 'to stay informed.'], 'Light and dark. The same calm perspective.', true],
+  ['12-reading-light-v9.png', '01-at-a-glance-v9.png', ['The world,', 'at a glance.'], 'A number out of 10. One sentence explaining why.', false],
+  ['13-reading-dark-v9.png', '02-dark-mode-v9.png', ['A quieter way', 'to stay informed.'], 'Light and dark. The same calm perspective.', true],
 ];
-// Retire the obsolete About art even when rendering over an existing checkout.
+// Retire superseded Android art even when rendering over an existing checkout.
+for (const name of ['01-at-a-glance', '02-dark-mode']) {
+  await rm(resolve(root, `assets/google-play/phone/${name}.png`), {force:true});
+  await rm(resolve(root, `source/layouts/android-${name}.svg`), {force:true});
+}
 await rm(resolve(root, 'assets/google-play/phone/03-about.png'), { force: true });
 await rm(resolve(root, 'source/layouts/android-03-about.svg'), { force: true });
 for (const [source, name, headline, caption, dark] of androidLayouts) {
