@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T04:55:59+00:00",
+  "updated_at": "2026-09-16T05:43:11+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -57,37 +57,37 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.agreement": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Owner accepted Paid Apps Agreement; latest live status Pending User Info.",
+      "summary": "W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account.",
       "evidence": [
-        "Apple Business agreements table after acceptance"
+        "Live signed-in Apple Business page September 16: W-9 Active, no bank account, Paid Apps Agreement Pending User Info."
       ],
-      "next_action": "Read status after W-9 processing and banking; require Active before paid release.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward.",
+      "updated_at": "2026-09-16T05:39:49+00:00"
     },
     "apple.tax": {
-      "state": "in_progress",
-      "owner": "agent",
-      "basis": "user_reported",
-      "summary": "Owner reports adding the W-9; final status not yet read back.",
+      "state": "done",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Apple Business lists U.S. Form W-9 submitted September 16 with status Active.",
       "evidence": [
-        "Owner message: I added the W9."
+        "Live signed-in Chrome Business Tax Forms table on September 16: U.S. Form W-9, Sep 16 2026, Active."
       ],
-      "next_action": "Read existing U.S. Form W-9 status before asking for further owner action. Add Tax Info edits the existing form; Add Tax Form is for other countries.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T05:26:39+00:00"
     },
     "apple.bank": {
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Latest live Business page still requested Add Bank Account.",
+      "summary": "Apple Business still requests Add Bank Account; owner entry requested with direct instructions.",
       "evidence": [
-        "Apple Business banking banner"
+        "Live Bank Accounts section contains Add Bank Account and no listed payout account."
       ],
-      "next_action": "Owner enters payout details directly in Apple and completes any verification; agent then reads back status.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Owner enters payout details privately in Apple Business; agent verifies saved bank and Active paid agreement.",
+      "updated_at": "2026-09-16T05:39:49+00:00"
     },
     "apple.dsa": {
       "state": "done",
@@ -268,25 +268,23 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Earlier APK exposed missing gradient/share icon from non-base64 SVG URLs. Fixed source and replacement build exist; final visual check pending.",
+      "summary": "Version 6 launch, light/dark gradients and share icon, native share sheet, About navigation, cached offline reading, and online recovery verified on API 35 ARM64 emulator.",
       "evidence": [
-        "PR #85 Android base64 fix",
-        "Old native log: ExpoImage IllegalArgumentException bad base-64"
+        "Installed package reports versionCode 6/versionName 1.0.0. Native UI shows gradient/icon, share payload with original timestamp, offline Saved reading/Try again, and recovery with saved warning removed. Source screenshots stored under store/source/android-phone/."
       ],
-      "next_action": "Open installed corrected APK in native emulator, verify gradient/share, light/dark/offline/navigation and applicable widget behavior. Mac is unlocked again.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Verify Android widget installation/rendering/resize and large text, then physical-device behavior during real closed testing. Launcher widget picker was not reachable through available CUA controls; no widget success claim.",
+      "updated_at": "2026-09-16T05:39:50+00:00"
     },
     "google.listing": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Shared English copy, icon and feature graphic ready. Android-specific screenshots still pending.",
+      "summary": "Copy, icon, feature graphic and three real Android screenshots ready in repo; upload still blocked by disabled app creation.",
       "evidence": [
-        "store/assets/google-play/",
-        "store/scripts/render.mjs"
+        "store/assets/google-play/phone/, store/assets/manifest.json and store/preview-android.png; Play Console account verification remains incomplete."
       ],
-      "next_action": "Capture native Android light/dark/About images from version 6; render, visually inspect and validate Google images. Never substitute iOS captures.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "After owner device/phone verification enables Create app, save paid listing and upload all prepared assets.",
+      "updated_at": "2026-09-16T05:39:50+00:00"
     },
     "google.disclosures": {
       "state": "todo",
@@ -358,12 +356,23 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Native UI tool reports Mac locked; automatic unlock failed. In-app browser works for Google but is signed out of Apple.",
+      "summary": "Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check.",
       "evidence": [
-        "CUA getState returned locked-host error; Apple Business redirected to login authResult=FAILED."
+        "CUA native click returned Mac locked and automatic unlock failed after successful app captures."
       ],
-      "next_action": "Owner unlocks Mac; then agent resumes signed-in Apple Business readback and native Android verification/capture. API work does not require unlock.",
-      "updated_at": "2026-09-16T04:55:59+00:00"
+      "next_action": "Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved.",
+      "updated_at": "2026-09-16T05:43:11+00:00"
+    },
+    "google.artwork": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Three Android store screenshots rendered from version 6 native captures: light reading, dark reading, About.",
+      "evidence": [
+        "1080x2400 originals captured via emulator screenshot shortcut through CUA; rendered 1080x1920 RGB PNGs. Gallery visually reviewed and store/scripts/validate.mjs passed; store/preview-android.png."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T05:39:50+00:00"
     }
   },
   "events": [
@@ -970,6 +979,134 @@
         ],
         "next_action": "After owner device and phone verification, create paid app, configure US$1 and local equivalents, upload version 6 and prepare required closed test.",
         "updated_at": "2026-09-16T04:55:59+00:00"
+      }
+    },
+    {
+      "sequence": 38,
+      "at": "2026-09-16T05:26:39+00:00",
+      "gate": "apple.tax",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Apple Business lists U.S. Form W-9 submitted September 16 with status Active.",
+        "evidence": [
+          "Live signed-in Chrome Business Tax Forms table on September 16: U.S. Form W-9, Sep 16 2026, Active."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T05:26:39+00:00"
+      }
+    },
+    {
+      "sequence": 39,
+      "at": "2026-09-16T05:26:39+00:00",
+      "gate": "host.ui",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Mac unlocked; native Android emulator and signed-in Chrome are accessible.",
+        "evidence": [
+          "CUA app inventory and native screenshot succeeded; Apple Business table read in Chrome."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T05:26:39+00:00"
+      }
+    },
+    {
+      "sequence": 40,
+      "at": "2026-09-16T05:39:49+00:00",
+      "gate": "apple.agreement",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account.",
+        "evidence": [
+          "Live signed-in Apple Business page September 16: W-9 Active, no bank account, Paid Apps Agreement Pending User Info."
+        ],
+        "next_action": "Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward.",
+        "updated_at": "2026-09-16T05:39:49+00:00"
+      }
+    },
+    {
+      "sequence": 41,
+      "at": "2026-09-16T05:39:49+00:00",
+      "gate": "apple.bank",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Apple Business still requests Add Bank Account; owner entry requested with direct instructions.",
+        "evidence": [
+          "Live Bank Accounts section contains Add Bank Account and no listed payout account."
+        ],
+        "next_action": "Owner enters payout details privately in Apple Business; agent verifies saved bank and Active paid agreement.",
+        "updated_at": "2026-09-16T05:39:49+00:00"
+      }
+    },
+    {
+      "sequence": 42,
+      "at": "2026-09-16T05:39:50+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Version 6 launch, light/dark gradients and share icon, native share sheet, About navigation, cached offline reading, and online recovery verified on API 35 ARM64 emulator.",
+        "evidence": [
+          "Installed package reports versionCode 6/versionName 1.0.0. Native UI shows gradient/icon, share payload with original timestamp, offline Saved reading/Try again, and recovery with saved warning removed. Source screenshots stored under store/source/android-phone/."
+        ],
+        "next_action": "Verify Android widget installation/rendering/resize and large text, then physical-device behavior during real closed testing. Launcher widget picker was not reachable through available CUA controls; no widget success claim.",
+        "updated_at": "2026-09-16T05:39:50+00:00"
+      }
+    },
+    {
+      "sequence": 43,
+      "at": "2026-09-16T05:39:50+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Three Android store screenshots rendered from version 6 native captures: light reading, dark reading, About.",
+        "evidence": [
+          "1080x2400 originals captured via emulator screenshot shortcut through CUA; rendered 1080x1920 RGB PNGs. Gallery visually reviewed and store/scripts/validate.mjs passed; store/preview-android.png."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T05:39:50+00:00"
+      }
+    },
+    {
+      "sequence": 44,
+      "at": "2026-09-16T05:39:50+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Copy, icon, feature graphic and three real Android screenshots ready in repo; upload still blocked by disabled app creation.",
+        "evidence": [
+          "store/assets/google-play/phone/, store/assets/manifest.json and store/preview-android.png; Play Console account verification remains incomplete."
+        ],
+        "next_action": "After owner device/phone verification enables Create app, save paid listing and upload all prepared assets.",
+        "updated_at": "2026-09-16T05:39:50+00:00"
+      }
+    },
+    {
+      "sequence": 45,
+      "at": "2026-09-16T05:43:11+00:00",
+      "gate": "host.ui",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check.",
+        "evidence": [
+          "CUA native click returned Mac locked and automatic unlock failed after successful app captures."
+        ],
+        "next_action": "Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved.",
+        "updated_at": "2026-09-16T05:43:11+00:00"
       }
     }
   ],

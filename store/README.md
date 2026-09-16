@@ -9,6 +9,8 @@ Apple version 1.0.0 build 5 is
 
 ![iPhone listing artwork](preview.png)
 
+![Android listing artwork](preview-android.png)
+
 ## Contents
 
 | File or folder | Purpose |
@@ -30,8 +32,8 @@ Apple version 1.0.0 build 5 is
   iPhone images and two 13-inch iPad images.
 - **Apple pricing:** US$1.00 saved with local equivalents. Paid Apps Agreement
   was **Pending User Info** at the last live check after owner acceptance.
-  The owner subsequently reported completing the W-9; final tax status needs
-  readback, and banking remains outstanding at the last check. The address-correction request has been sent and acknowledged by Apple,
+  Apple Business now confirms the W-9 is **Active**; banking remains outstanding. The address-correction request
+  has been sent and acknowledged by Apple,
   but the obsolete legal address still needs Apple approval/correction.
 - **Apple binary:** signed production build **5** validated and uploaded with
   Apple's `altool`. Apple reports `VALID` / `APP_STORE_ELIGIBLE`, and build 5
@@ -48,9 +50,10 @@ Apple version 1.0.0 build 5 is
 - **Android binary:** production AAB and preview APK version **6** built
   successfully. Native inspection of the earlier APK exposed missing gradients
   and icons: Android requires base64 SVG data URLs. Version 6 includes that fix.
-  Its final visual verification and screenshots are pending. The host Mac
-  locked again during the latest verification attempt. Google icon and feature
-  graphic are ready.
+  Version 6 now passes emulator checks for light/dark rendering, share sheet,
+  About navigation, saved offline reading and online recovery. Three Android
+  listing screenshots, icon and feature graphic are ready. Android widget and
+  physical-device checks remain pending.
   See `release.json`.
 - **Apple review details:** contact information, phone, no-login requirement,
   and review notes saved and verified. Private contact details are not in Git.
@@ -60,7 +63,8 @@ Apple version 1.0.0 build 5 is
   submission both report **Waiting for Review**. Automatic release after approval
   is configured; all 175 territories are enabled without preorder. The API still
   reports `CANNOT_SELL`, so review acceptance does not establish commercial
-  readiness or public release. Tax/banking/agreement readback remains pending.
+  readiness or public release. W-9 is Active; banking and paid-agreement
+  activation remain pending.
 
 ## Reproduce the artwork
 
@@ -87,9 +91,11 @@ Android captures belong in `source/android-phone/`: `01-reading-light.png`,
 `02-reading-dark.png`, and `03-about.png`, from preview build
 `f3dddec5-23f3-4a41-8fd6-e0d4f79ee366` on the API 35 ARM64 emulator
 (1080×2400). The renderer frames them as 1080×1920 Google Play images and
-reports missing captures rather than substituting iOS screenshots. Capture is
-still pending; the earlier APK screenshots are not release
-assets because they exposed the SVG-rendering defect.
+reports missing captures rather than substituting iOS screenshots. All three
+were captured and visually reviewed on September 16.
+The offline capture is retained as test evidence, outside the store gallery.
+The earlier APK screenshots are not release assets because they exposed the
+SVG-rendering defect.
 
 The pasted macOS crash report identified Android Emulator startup, not
 Newsworthy. Local emulator library/resource paths were corrected, and the
