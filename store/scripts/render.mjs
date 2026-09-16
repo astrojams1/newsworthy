@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, access, rm } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,14 +15,25 @@ const text = (x, y, size, value, fill = '#142C28', extra = '') =>
 // Artboards are editable SVG; native captures are embedded without changing
 // their content. No synthetic UI, sample score, or invented news is rendered.
 const layouts = [
+  ['iphone-6.9', '03-home-widgets-clean.png', '02-widget-sizes.png', ['A little space.', 'A clearer picture.'], 'Small for the score. Medium for more context.', false],
   ['iphone-6.9', '01-reading-light.png', '01-at-a-glance.png', ['The world,', 'at a glance.'], 'A number out of 10. One sentence explaining why.', false],
-  ['iphone-6.9', '03-home-widget.png', '02-widget.png', ['Check in.', 'Carry on.'], 'Your latest reading, on your Home Screen.', false],
   ['iphone-6.9', '02-reading-dark.png', '03-dark-mode.png', ['A quieter way', 'to stay informed.'], 'Light and dark. The same calm perspective.', true],
   ['ipad-13', '01-reading-light.png', '01-at-a-glance.png', ['The world, at a glance.'], 'A number out of 10. One sentence explaining why.', false],
   ['ipad-13', '02-reading-dark.png', '02-dark-mode.png', ['A quieter way to stay informed.'], 'Light and dark. The same calm perspective.', true],
 ];
 const manifest = [];
+// The original widget capture had unrelated app icons. Keep it only as historic
+// source evidence; the final gallery requires a clean native small/medium capture.
+await rm(resolve(root, 'assets/apple/iphone-6.9/02-widget.png'), { force: true });
+await rm(resolve(root, 'source/layouts/iphone-6.9-02-widget.svg'), { force: true });
 for (const [family, source, name, headline, caption, dark] of layouts) {
+  try {
+    await access(resolve(root, 'source', family, source));
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    console.warn(`Pending native capture: ${family}/${source}`);
+    continue;
+  }
   const tablet = family === 'ipad-13';
   const width = tablet ? 2064 : 1320, height = tablet ? 2752 : 2868;
   const sx = tablet ? 262 : 194, sy = tablet ? 480 : 700;
@@ -47,10 +58,13 @@ for (const [family, source, name, headline, caption, dark] of layouts) {
 }
 
 const androidLayouts = [
+  ['03-home-widgets-clean.png', '03-widget-sizes.png', ['Room for', 'perspective.'], 'Compact or expanded. Make room for what matters.', false],
   ['01-reading-light.png', '01-at-a-glance.png', ['The world,', 'at a glance.'], 'A number out of 10. One sentence explaining why.', false],
   ['02-reading-dark.png', '02-dark-mode.png', ['A quieter way', 'to stay informed.'], 'Light and dark. The same calm perspective.', true],
-  ['03-about.png', '03-about.png', ['Small app.', 'Clear purpose.'], 'Check in, then get on with your day.', false],
 ];
+// Retire the obsolete About art even when rendering over an existing checkout.
+await rm(resolve(root, 'assets/google-play/phone/03-about.png'), { force: true });
+await rm(resolve(root, 'source/layouts/android-03-about.svg'), { force: true });
 for (const [source, name, headline, caption, dark] of androidLayouts) {
   try {
     await access(resolve(root, 'source/android-phone', source));
@@ -88,7 +102,7 @@ await out('assets/google-play/icon.png', await sharp(resolve(root, '../apps/clie
 await out('assets/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
 
 const thumbs = await Promise.all(manifest.filter(x => x.width === 1320).map(async x => ({ input: await sharp(resolve(root, x.file)).resize(330).toBuffer() })));
-await out('preview.png', await sharp({create:{width:990,height:717,channels:3,background:'#EFF8F2'}}).composite(thumbs.map((x,i)=>({...x,left:i*330,top:0}))).png().toBuffer());
+if (thumbs.length) await out('preview.png', await sharp({create:{width:330*thumbs.length,height:717,channels:3,background:'#EFF8F2'}}).composite(thumbs.map((x,i)=>({...x,left:i*330,top:0}))).png().toBuffer());
 const androidThumbs = await Promise.all(manifest.filter(x=>x.platform==='android').map(async x=>({input:await sharp(resolve(root,x.file)).resize(330).toBuffer()})));
 if (androidThumbs.length) await out('preview-android.png', await sharp({create:{width:330*androidThumbs.length,height:587,channels:3,background:'#EFF8F2'}}).composite(androidThumbs.map((x,i)=>({...x,left:i*330,top:0}))).png().toBuffer());
 console.log(`Rendered ${manifest.length} store screenshots, Google artwork, and previews.`);

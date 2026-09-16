@@ -108,18 +108,19 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 Do **not** ask the owner to create listing art/copy, configure Expo, generate
 signing credentials again, fetch binaries, or manually upload screenshots.
-Those have working automated paths. Android rendering, sharing, navigation,
-offline/recovery checks and the three store screenshots are complete. The Mac
-relocked before the large-text check; unlock it to resume. Widget/large-text
-and physical-device checks remain open.
+Those have working automated paths. Prior Android version 6 passed rendering,
+sharing and offline/recovery checks. The approved redesign now needs replacement
+native verification and captures. iOS build 6 and Android version 7 have been
+queued from merged commit `b5571c5`. The Mac is locked again; unlock it to resume
+native UI work. Widget/large-text and physical-device checks remain open.
 The remaining technical release work is:
 
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
-- Apple submission is complete and **Waiting for Review**. Read the review
-  result, resolve feedback, verify commercial readiness and public availability.
-  All 175 territories are configured with release after approval. Do not create
-  a duplicate submission.
+- The original Apple submission was withdrawn to replace About and improve the
+  design. Verify the replacement native builds, refresh screenshots, select the
+  new Apple build and resubmit. The iPhone gallery already leads with the actual
+  widget. All 175 territories remain configured with release after approval.
 - When **Create app** becomes enabled, create Newsworthy as **paid**, set US$1.00,
   upload the AAB, copy, icon, feature graphic, and prepared Android screenshots,
   complete app-content forms, and prepare the closed-test release.

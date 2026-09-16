@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T06:14:03+00:00
+Updated: 2026-09-16T06:52:37+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -11,7 +11,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | Gate | State | Owner | Evidence basis | Result | Next action |
 |---|---|---|---|---|---|
 | scope | done | agent | observed | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
-| web.deploy | done | agent | observed | Production commit f1ee64d deployed successfully; live release URLs checked. | — |
+| web.deploy | done | agent | observed | Approved reading-screen design merged and deployed to production. | — |
 | apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
 | apple.address | waiting_provider | provider | observed | Apple support email confirms receipt of the authorized address-correction request; no correction approval observed. | Read support response and Business legal-entity address; do not duplicate request or reuse obsolete address. |
 | apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
@@ -19,21 +19,21 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.bank | waiting_user | user | observed | Apple Business still requests Add Bank Account; owner entry requested with direct instructions. | Owner enters payout details privately in Apple Business; agent verifies saved bank and Active paid agreement. |
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | user | observed | Owner published diagnostics/performance collection for app functionality, linked to user, no tracking. | — |
-| apple.review-contact | done | agent | observed | Review contact including phone, no-login requirement and notes saved and all supplied fields read back. | — |
-| apple.listing | done | agent | observed | English copy, category, US$1 pricing and five native iPhone/iPad screenshots saved; screenshots COMPLETE. | — |
-| apple.build | done | agent | observed | Signed production IPA build 5 completed and validated; simulator capture build recorded separately. | — |
+| apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
+| apple.listing | in_progress | agent | observed | Widget-first order is saved remotely, but owner rejected the existing cluttered Home Screen image. It is superseded for final listing use. | Replace old widget image with verified clean small/medium native captures, refresh reading images, then validate the final gallery before resubmitting. |
+| apple.build | done | agent | observed | Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5. | — |
 | apple.native | in_progress | agent | observed | Actual iPhone/iPad simulator reading, light/dark UI, sharing and iPhone medium widget checked. Physical-device release checklist remains. | Finish applicable physical-device, offline/recovery, accessibility and widget checks; do not treat web or Expo Go as signed-device proof. |
-| apple.upload | done | agent | observed | Direct altool upload processed VALID and APP_STORE_ELIGIBLE; Apple build 5 selected for version 1.0.0. | — |
+| apple.upload | in_progress | agent | observed | Replacement iOS build 6 downloaded and passed official Apple archive validation; direct altool upload started. | Observe current altool upload, then poll Apple processing for build 6. Native verification and final clean widget gallery remain required before review submission. |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
 | apple.review | in_progress | agent | observed | Developer withdrew build 5 to replace About with the approved reading-screen design. This is a developer withdrawal, not an Apple reviewer rejection. | Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit. |
 | apple.release | waiting_provider | provider | observed | Apple review is pending; AFTER_APPROVAL release configured. No public availability verified. Commercial account requirements remain separately unverified. | Read review outcome and resolve feedback; check tax/banking/agreement and address response; verify paid public listing after approval. Do not resubmit the existing review. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
-| google.app | waiting_user | user | observed | Create app remains disabled; live account home lists Android-device and contact-phone verification as required. | After owner device and phone verification, create paid app, configure US$1 and local equivalents, upload version 6 and prepare required closed test. |
-| google.build | done | agent | observed | Corrected production AAB and preview APK version 6 finished, downloaded and passed archive checks; preview APK installed. | — |
+| google.app | waiting_user | user | observed | Live Play Console still disables Create app until real-device and contact-phone verification finish. | Owner verifies a real Android device in the Play Console mobile app, then completes contact-phone verification; agent can then create the paid app. |
+| google.build | waiting_provider | provider | observed | Replacement Android production AAB and preview APK version 7 are building from clean merged commit b5571c5. | Poll these build IDs, download and inspect completed packages, install the APK for native checks. |
 | google.native | in_progress | agent | observed | Version 6 launch, light/dark gradients and share icon, native share sheet, About navigation, cached offline reading, and online recovery verified on API 35 ARM64 emulator. | Verify Android widget installation/rendering/resize and large text, then physical-device behavior during real closed testing. Launcher widget picker was not reachable through available CUA controls; no widget success claim. |
-| google.listing | in_progress | agent | observed | Copy, icon, feature graphic and three real Android screenshots ready in repo; upload still blocked by disabled app creation. | After owner device/phone verification enables Create app, save paid listing and upload all prepared assets. |
+| google.listing | in_progress | agent | observed | Removed About from Android artwork and contact sheet; renderer now reserves first place for a real Android widget capture. | Capture Android widget and revised reading screen on version 7, regenerate and inspect the final gallery. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
@@ -43,6 +43,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | host.ui | waiting_user | user | observed | Mac relocked after Android captures and offline/recovery verification; native UI could not open Settings for large-text check. | Owner unlocks Mac; agent continues Android large-text and widget UI checks, with completed captures preserved. |
 | google.artwork | done | agent | observed | Three Android store screenshots rendered from version 6 native captures: light reading, dark reading, About. | — |
 | design.reading-screen | in_progress | agent | observed | Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback. | Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery. |
+| native.ui-access | waiting_user | user | observed | Mac locked again; native app-control tool could not unlock it. | Owner unlocks Mac; resume native UI checks and captures. |
+| design.widget-gallery | in_progress | agent | observed | Owner requests clean widget imagery: no unrelated icons, show supported size options, and use plain neutral wallpaper that does not compete with widget colors. | After unlock, set neutral wallpaper on capture devices and verify/capture iOS small and medium plus Android compact and expanded layouts; replace remote old widget screenshot before resubmitting. |
 
 ## Evidence and history
 
@@ -494,3 +496,127 @@ Developer withdrew build 5 to replace About with the approved reading-screen des
 - 2026-09-16 App Store Connect readback: version DEVELOPER_REJECTED; review submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48 COMPLETE.
 
 Next: Build and verify replacement native packages, update screenshots/review notes, select the new iOS build and resubmit.
+
+### 48. apple.listing — in_progress
+
+2026-09-16T06:39:09+00:00 · observed · agent
+
+Apple iPhone gallery now leads with the actual Home Screen widget; remote order verified. Replacement reading-screen captures still required.
+
+- App Store Connect screenshot-set 7e5eeec0-cde4-48b9-9cd4-d8cf96e42162 readback order: widget, reading, dark. Original screenshot delivery remains COMPLETE.
+
+Next: Capture updated native reading screens, replace the outdated reading images, and retain the verified widget-first ordering.
+
+### 49. apple.build — waiting_provider
+
+2026-09-16T06:40:14+00:00 · observed · provider
+
+Replacement iOS production build 6 and matching simulator build queued from clean merged commit b5571c5.
+
+- EAS production 461def41-d59d-4c9e-9f91-d8f2c9bdc95c IN_PROGRESS; simulator e02851c0-0cae-4f95-b854-2d57e32cc0b2 NEW. Both source b5571c5983a128e007bb0e166e39697c188242d9.
+
+Next: Poll these build IDs; download completed IPA and simulator archive, verify native UI, upload the replacement IPA.
+
+### 50. google.build — waiting_provider
+
+2026-09-16T06:40:14+00:00 · observed · provider
+
+Replacement Android production AAB and preview APK version 7 are building from clean merged commit b5571c5.
+
+- EAS production 96385f7c-2d30-4771-bfc7-6b91cc291c1d and preview 6a3cb29a-51c2-46e0-94db-0bd425fa83a7 IN_PROGRESS.
+
+Next: Poll these build IDs, download and inspect completed packages, install the APK for native checks.
+
+### 51. google.listing — in_progress
+
+2026-09-16T06:40:14+00:00 · observed · agent
+
+Removed About from Android artwork and contact sheet; renderer now reserves first place for a real Android widget capture.
+
+- store/scripts/render.mjs and store/preview-android.png; two old-build reading images remain. No synthetic widget or cross-platform substitution. Image dimensions and listing length validation passed.
+
+Next: Capture Android widget and revised reading screen on version 7, regenerate and inspect the final gallery.
+
+### 52. native.ui-access — waiting_user
+
+2026-09-16T06:40:14+00:00 · observed · user
+
+Mac locked again; native app-control tool could not unlock it.
+
+- CUA getApp(com.astrojams.newsworthy.emulator) returned locked Mac. Owner unlock requested while cloud work continues.
+
+Next: Owner unlocks Mac; resume native UI checks and captures.
+
+### 53. web.deploy — done
+
+2026-09-16T06:40:14+00:00 · observed · agent
+
+Approved reading-screen design merged and deployed to production.
+
+- PR89; Vercel success for b5571c5983a128e007bb0e166e39697c188242d9; live browser shows score, share, Privacy and Support with no About route; 175 tests and CI passed.
+
+### 54. google.app — waiting_user
+
+2026-09-16T06:42:40+00:00 · observed · user
+
+Live Play Console still disables Create app until real-device and contact-phone verification finish.
+
+- 2026-09-16 live Home page for developer 8388544157780149515: real Android device Action required, contact phone Action required, Create app disabled.
+
+Next: Owner verifies a real Android device in the Play Console mobile app, then completes contact-phone verification; agent can then create the paid app.
+
+### 55. apple.review-contact — done
+
+2026-09-16T06:42:40+00:00 · observed · agent
+
+Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved.
+
+- App Store Connect review-notes PATCH and readback passed for version 267c6f52-d22d-4cb0-bb4c-d22f280b4499; demoAccountRequired=false. Private contact information stays outside Git.
+
+### 56. design.widget-gallery — in_progress
+
+2026-09-16T06:46:32+00:00 · observed · agent
+
+Owner rejected unrelated icons in widget imagery and requested the available size options. Capture brief now requires clean Home Screens with iOS small/medium and Android compact/expanded layouts.
+
+- Owner correction; iOS supportedFamilies=[systemSmall,systemMedium]; Android horizontal/vertical resizing with height-dependent explanation. store/design/widget-gallery-brief.md.
+
+Next: After Mac unlock, verify both native layouts per platform and capture clean Home Screen images; replace the old cluttered iPhone widget image before resubmission.
+
+### 57. apple.listing — in_progress
+
+2026-09-16T06:46:32+00:00 · observed · agent
+
+Widget-first order is saved remotely, but owner rejected the existing cluttered Home Screen image. It is superseded for final listing use.
+
+- Remote widget-first order verified; owner requested no unrelated icons and multiple widget size options. Capture brief in store/design/widget-gallery-brief.md.
+
+Next: Replace old widget image with verified clean small/medium native captures, refresh reading images, then validate the final gallery before resubmitting.
+
+### 58. design.widget-gallery — in_progress
+
+2026-09-16T06:48:13+00:00 · observed · agent
+
+Owner requests clean widget imagery: no unrelated icons, show supported size options, and use plain neutral wallpaper that does not compete with widget colors.
+
+- Owner correction includes stock-wallpaper color clash. Capture brief updated; renderer now omits the old cluttered widget asset from local gallery previews until clean native captures exist.
+
+Next: After unlock, set neutral wallpaper on capture devices and verify/capture iOS small and medium plus Android compact and expanded layouts; replace remote old widget screenshot before resubmitting.
+
+### 59. apple.upload — in_progress
+
+2026-09-16T06:48:34+00:00 · observed · agent
+
+Replacement iOS build 6 downloaded and passed official Apple archive validation; direct altool upload started.
+
+- EAS 461def41-d59d-4c9e-9f91-d8f2c9bdc95c FINISHED; archive bundle com.astrojams.newsworthy version 1.0.0 build 6; SHA256 032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5; altool VERIFY SUCCEEDED. App Store Connect had no build 6 before this upload.
+
+Next: Observe current altool upload, then poll Apple processing for build 6. Native verification and final clean widget gallery remain required before review submission.
+
+### 60. apple.build — done
+
+2026-09-16T06:52:37+00:00 · observed · agent
+
+Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5.
+
+- EAS 461def41-d59d-4c9e-9f91-d8f2c9bdc95c and e02851c0-0cae-4f95-b854-2d57e32cc0b2 FINISHED. IPA archive validation passed; simulator download in progress. Native/UI verification remains a separate gate.

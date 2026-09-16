@@ -28,7 +28,28 @@
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
     "reviewSubmissionState": "COMPLETE",
     "reviewWithdrawalReason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets.",
-    "replacementBuildRequired": true
+    "replacementBuildRequired": true,
+    "replacementBuilds": [
+      {
+        "id": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
+        "profile": "simulator-release",
+        "version": "1.0.0",
+        "build": "6",
+        "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+        "sourceDirty": false,
+        "status": "FINISHED"
+      },
+      {
+        "id": "461def41-d59d-4c9e-9f91-d8f2c9bdc95c",
+        "profile": "production",
+        "version": "1.0.0",
+        "build": "6",
+        "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+        "sourceDirty": false,
+        "status": "FINISHED"
+      }
+    ],
+    "widgetArtworkStatus": "REPLACE_WITH_CLEAN_NEUTRAL_BACKGROUND_SMALL_AND_MEDIUM_CAPTURE"
   },
   "google": {
     "productionBuild": "615799c2-7fb9-4342-b2f4-9a073d308884",
@@ -37,7 +58,28 @@
     "reviewSubmitted": false,
     "versionCode": 6,
     "buildStatus": "FINISHED",
-    "artworkStatus": "READY_NOT_UPLOADED",
-    "nativeVerification": "EMULATOR_APP_CHECKS_PASSED_WIDGET_AND_PHYSICAL_DEVICE_PENDING"
+    "artworkStatus": "REVISION_PENDING_NATIVE_CAPTURES",
+    "nativeVerification": "EMULATOR_APP_CHECKS_PASSED_WIDGET_AND_PHYSICAL_DEVICE_PENDING",
+    "replacementBuilds": [
+      {
+        "id": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
+        "profile": "preview",
+        "version": "1.0.0",
+        "build": "7",
+        "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+        "sourceDirty": false,
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "96385f7c-2d30-4771-bfc7-6b91cc291c1d",
+        "profile": "production",
+        "version": "1.0.0",
+        "build": "7",
+        "sourceCommit": "b5571c5983a128e007bb0e166e39697c188242d9",
+        "sourceDirty": false,
+        "status": "FINISHED"
+      }
+    ],
+    "widgetArtworkStatus": "CAPTURE_CLEAN_NEUTRAL_BACKGROUND_COMPACT_AND_EXPANDED_LAYOUTS"
   }
 }

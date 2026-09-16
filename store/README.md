@@ -4,8 +4,12 @@ One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
 Last checked **September 16, 2026**. Neither app is publicly released.
-Apple version 1.0.0 build 5 is
-**Waiting for Review**; Google account verification still blocks app creation.
+Apple build 5 was **withdrawn by the developer** to replace About with the
+approved reading-screen design. Replacement iOS build 6 and Android version 7
+are building from merged commit `b5571c5`; Google account verification still
+blocks app creation. Native reading-screen images below need replacement. Clean, neutral-background
+widget images showing each supported size are pending and omitted from these
+local previews until captured.
 
 ![iPhone listing artwork](preview.png)
 
@@ -47,20 +51,24 @@ Apple version 1.0.0 build 5 is
   **identity verified successfully**. Real Android device verification remains;
   phone verification is disabled until that prerequisite is complete. **Create
   app is disabled**, so no Google app, price, listing, or release has been saved.
-- **Android binary:** production AAB and preview APK version **6** built
+- **Android binary:** previous production AAB and preview APK version **6** built
   successfully. Native inspection of the earlier APK exposed missing gradients
   and icons: Android requires base64 SVG data URLs. Version 6 includes that fix.
   Version 6 now passes emulator checks for light/dark rendering, share sheet,
-  About navigation, saved offline reading and online recovery. Three Android
-  listing screenshots, icon and feature graphic are ready. Android widget and
-  physical-device checks remain pending.
+  saved offline reading and online recovery. About navigation was tested on
+  that previous build but the route has now been removed. Its gallery image is
+  retired. Replacement version 7 and matching captures are pending; Android
+  widget and physical-device checks remain pending.
   See `release.json`.
 - **Apple review details:** contact information, phone, no-login requirement,
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** submitted September 16, 2026 at 04:53 UTC. Version and
-  submission both report **Waiting for Review**. Automatic release after approval
+- **Apple review:** the September 16 submission was withdrawn for the approved
+  design revision. API readback is **DEVELOPER_REJECTED**, with the old submission
+  **COMPLETE**. This records our withdrawal, not reviewer feedback. A new native
+  build and matching reading-screen captures must be verified before resubmission.
+  Automatic release after approval
   is configured; all 175 territories are enabled without preorder. The API still
   reports `CANNOT_SELL`, so review acceptance does not establish commercial
   readiness or public release. W-9 is Active; banking and paid-agreement
@@ -83,16 +91,22 @@ with [product messaging](../docs/product-messaging.md).
 Apple screenshots were captured from EAS simulator-release build
 `1a4edab8-6c4c-4133-ab32-62c45fd0a7f9`, using iPhone 16 Pro Max/iOS 18.3
 (1320×2868) and iPad Pro 13-inch M4/iOS 17.5 (2064×2752). The widget capture
-is an actual medium WidgetKit widget on the simulator Home Screen. The About
+is an actual medium WidgetKit widget on the simulator Home Screen; it now leads
+the existing App Store Connect gallery (verified API order). The owner has since
+rejected its stock wallpaper and unrelated app icons. It is omitted from local
+previews pending clean small/medium captures on plain neutral wallpaper. The About
 capture is retained as source but isn't used in the current Apple gallery.
 These are native simulator checks, not physical-device certification.
 
-Android captures belong in `source/android-phone/`: `01-reading-light.png`,
-`02-reading-dark.png`, and `03-about.png`, from preview build
+Android reading captures currently in `source/android-phone/` are
+`01-reading-light.png` and `02-reading-dark.png`, from previous preview build
 `f3dddec5-23f3-4a41-8fd6-e0d4f79ee366` on the API 35 ARM64 emulator
 (1080×2400). The renderer frames them as 1080×1920 Google Play images and
-reports missing captures rather than substituting iOS screenshots. All three
-were captured and visually reviewed on September 16.
+reports missing captures rather than substituting iOS screenshots. The old About
+capture remains historical source evidence and is never rendered into the gallery.
+The renderer expects `03-home-widgets-clean.png` as the first gallery image once an
+actual Android widget capture is available. Capture new reading images from
+version 7 before describing this gallery as final.
 The offline capture is retained as test evidence, outside the store gallery.
 The earlier APK screenshots are not release assets because they exposed the
 SVG-rendering defect.
