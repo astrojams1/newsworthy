@@ -1,6 +1,8 @@
 # Newsworthy store release
 
 One place for the mobile listings, artwork, evidence, and remaining work.
+Resume from [the release ledger](ledger.md) with the reusable
+[app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
 Last checked **September 16, 2026**. Neither app is publicly released or
 submitted for App Review yet.
 
@@ -10,6 +12,7 @@ submitted for App Review yet.
 
 | File or folder | Purpose |
 |---|---|
+| [ledger.md](ledger.md) / [ledger.json](ledger.json) | Canonical resumable gates, evidence and event history |
 | [listing.json](listing.json) | Canonical English copy, URLs, review notes, and US$1 paid-download target |
 | [assets/](assets/) | Upload-ready PNGs and dimension/platform manifest |
 | [source/](source/) | Original native captures and editable SVG layouts |

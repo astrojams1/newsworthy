@@ -1,0 +1,830 @@
+{
+  "schema_version": 1,
+  "app": "Newsworthy",
+  "repository": "https://github.com/astrojams1/newsworthy",
+  "objective": "Preserve the web app and submit iOS and Android for a one-time US$1 paid download with local equivalents.",
+  "platforms": [
+    "web",
+    "ios",
+    "android"
+  ],
+  "created_at": "2026-09-16T03:31:16+00:00",
+  "updated_at": "2026-09-16T03:31:16+00:00",
+  "steps": {
+    "scope": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo.",
+      "evidence": [
+        "Owner instructions in release task; product rules in AGENTS.md and docs/product-messaging.md"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "web.deploy": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Production commit f1ee64d deployed successfully; live release URLs checked.",
+      "evidence": [
+        "https://github.com/astrojams1/newsworthy/pull/85",
+        "Vercel commit status success; npm run mobile:check -- --live passed"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.membership": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Renewed individual developer membership is recognized by App Store Connect.",
+      "evidence": [
+        "Live developer account and App Store Connect accepted signing/upload"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.address": {
+      "state": "waiting_provider",
+      "owner": "provider",
+      "basis": "observed",
+      "summary": "Authorized membership and App Store Connect legal-address correction request submitted; Apple confirmed receipt. Business still showed obsolete address.",
+      "evidence": [
+        "Apple Developer Support page: Thanks for contacting us; request will be reviewed. No case number displayed."
+      ],
+      "next_action": "Read Apple response and Business legal-entity address; provide owner documents only if requested. Do not duplicate request or claim address changed.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.agreement": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner accepted Paid Apps Agreement; latest live status Pending User Info.",
+      "evidence": [
+        "Apple Business agreements table after acceptance"
+      ],
+      "next_action": "Read status after W-9 processing and banking; require Active before paid release.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.tax": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "user_reported",
+      "summary": "Owner reports adding the W-9; final status not yet read back.",
+      "evidence": [
+        "Owner message: I added the W9."
+      ],
+      "next_action": "Read existing U.S. Form W-9 status before asking for further owner action. Add Tax Info edits the existing form; Add Tax Form is for other countries.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.bank": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Latest live Business page still requested Add Bank Account.",
+      "evidence": [
+        "Apple Business banking banner"
+      ],
+      "next_action": "Owner enters payout details directly in Apple and completes any verification; agent then reads back status.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.dsa": {
+      "state": "done",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Digital Services Act compliance Active; Apple says current regulatory requirements completed.",
+      "evidence": [
+        "Live Apple Business compliance table. Selected trader classification not inspected."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.privacy": {
+      "state": "done",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Owner published diagnostics/performance collection for app functionality, linked to user, no tracking.",
+      "evidence": [
+        "App Privacy explicitly displayed Published by James Thompson",
+        "store/disclosures.md"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.review-contact": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Review contact including phone, no-login requirement and notes saved and all supplied fields read back.",
+      "evidence": [
+        "App Store Connect API success; store/scripts/apple.mjs review-notes. Private contact fields excluded."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.listing": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "English copy, category, US$1 pricing and five native iPhone/iPad screenshots saved; screenshots COMPLETE.",
+      "evidence": [
+        "store/listing.json",
+        "store/assets/manifest.json",
+        "https://appstoreconnect.apple.com/apps/6812519450/distribution"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.build": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Signed production IPA build 5 completed and validated; simulator capture build recorded separately.",
+      "evidence": [
+        "EAS production 34e8a094-c122-4770-9bf6-611f70f671ab",
+        "EAS simulator 1a4edab8-6c4c-4133-ab32-62c45fd0a7f9",
+        "Archive and signing checks; Apple altool validation succeeded"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.native": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Actual iPhone/iPad simulator reading, light/dark UI, sharing and iPhone medium widget checked. Physical-device release checklist remains.",
+      "evidence": [
+        "store/source/iphone-6.9/",
+        "store/source/ipad-13/",
+        "docs/mobile-release.md"
+      ],
+      "next_action": "Finish applicable physical-device, offline/recovery, accessibility and widget checks; do not treat web or Expo Go as signed-device proof.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.upload": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Direct altool upload processed VALID and APP_STORE_ELIGIBLE; Apple build 5 selected for version 1.0.0.",
+      "evidence": [
+        "Apple build 805f70f3-09a4-4111-afd2-bf04bb99e30d",
+        "Queued EAS submission 4a6398aa-658c-49c0-a909-c09209dd5021 canceled before direct upload"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.availability": {
+      "state": "todo",
+      "owner": "agent",
+      "basis": "inferred",
+      "summary": "Final territory/release settings still require inspection.",
+      "evidence": [
+        "Prior submission checklist"
+      ],
+      "next_action": "Inspect desired territories and release behavior against current DSA and owner scope; configure and read back.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.review": {
+      "state": "todo",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Version remains Prepare for Submission; no App Review submitted.",
+      "evidence": [
+        "Last App Store Connect version readback"
+      ],
+      "next_action": "Finish commercial/account, availability and release checks, then submit under original owner authorization.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.release": {
+      "state": "todo",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "App is not publicly released.",
+      "evidence": [
+        "No App Review submission yet"
+      ],
+      "next_action": "Track review only within active user-requested work; resolve feedback and release according to approved behavior. Do not schedule monitoring unless requested.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.identity": {
+      "state": "done",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Registration fee paid and Play Console reports identity successfully verified.",
+      "evidence": [
+        "Live Play Console identity-success notice"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.device": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Play Console requires a real Android device; only the account owner can complete it.",
+      "evidence": [
+        "Live device-verification details; emulator/API cannot replace owner device check"
+      ],
+      "next_action": "On a real Android phone, sign into Play Console as the owner and complete device verification.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.phone": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Phone-verification link disabled while earlier verification task remains.",
+      "evidence": [
+        "Live account phone-verification page"
+      ],
+      "next_action": "Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.app": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Create app disabled; no Google app record, saved price, listing or release exists.",
+      "evidence": [
+        "Live Play Console account restrictions"
+      ],
+      "next_action": "Owner completes verification; agent then creates the app as paid, sets US$1 local equivalents and configures release.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.build": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Corrected production AAB and preview APK version 6 finished, downloaded and passed archive checks; preview APK installed.",
+      "evidence": [
+        "EAS AAB 615799c2-7fb9-4342-b2f4-9a073d308884",
+        "EAS APK f3dddec5-23f3-4a41-8fd6-e0d4f79ee366",
+        "adb streamed install Success. Version 4 and canceled intermediate version 5 are superseded."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.native": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Earlier APK exposed missing gradient/share icon from non-base64 SVG URLs. Fixed source and replacement build exist; final visual check pending.",
+      "evidence": [
+        "PR #85 Android base64 fix",
+        "Old native log: ExpoImage IllegalArgumentException bad base-64"
+      ],
+      "next_action": "Open installed corrected APK in native emulator, verify gradient/share, light/dark/offline/navigation and applicable widget behavior. Mac is unlocked again.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.listing": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Shared English copy, icon and feature graphic ready. Android-specific screenshots still pending.",
+      "evidence": [
+        "store/assets/google-play/",
+        "store/scripts/render.mjs"
+      ],
+      "next_action": "Capture native Android light/dark/About images from version 6; render, visually inspect and validate Google images. Never substitute iOS captures.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.disclosures": {
+      "state": "todo",
+      "owner": "agent",
+      "basis": "inferred",
+      "summary": "Google app-content/privacy/rating questionnaires not yet available without app record.",
+      "evidence": [
+        "store/disclosures.md contains implementation/hosting evidence"
+      ],
+      "next_action": "After app creation, answer current questionnaires using code and actual service logging evidence.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.closed-test": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "New personal account testing path needs genuine testers and elapsed testing time.",
+      "evidence": [
+        "Google requirements checked September 16, 2026; store/user-actions.md"
+      ],
+      "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.production-access": {
+      "state": "todo",
+      "owner": "agent",
+      "basis": "inferred",
+      "summary": "No production-access application submitted.",
+      "evidence": [
+        "Account/app/testing gates unfinished"
+      ],
+      "next_action": "Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.review": {
+      "state": "todo",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "No Google release submitted for review.",
+      "evidence": [
+        "No app record exists at last live check"
+      ],
+      "next_action": "Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "google.release": {
+      "state": "todo",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "No public Android store release.",
+      "evidence": [
+        "No Google app record or production access yet"
+      ],
+      "next_action": "Release only after review/access approval and verify the public paid listing.",
+      "updated_at": "2026-09-16T03:31:16+00:00"
+    }
+  },
+  "events": [
+    {
+      "sequence": 1,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "scope",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo.",
+        "evidence": [
+          "Owner instructions in release task; product rules in AGENTS.md and docs/product-messaging.md"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 2,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "web.deploy",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Production commit f1ee64d deployed successfully; live release URLs checked.",
+        "evidence": [
+          "https://github.com/astrojams1/newsworthy/pull/85",
+          "Vercel commit status success; npm run mobile:check -- --live passed"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 3,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.membership",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Renewed individual developer membership is recognized by App Store Connect.",
+        "evidence": [
+          "Live developer account and App Store Connect accepted signing/upload"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 4,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.address",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Authorized membership and App Store Connect legal-address correction request submitted; Apple confirmed receipt. Business still showed obsolete address.",
+        "evidence": [
+          "Apple Developer Support page: Thanks for contacting us; request will be reviewed. No case number displayed."
+        ],
+        "next_action": "Read Apple response and Business legal-entity address; provide owner documents only if requested. Do not duplicate request or claim address changed.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 5,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.agreement",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner accepted Paid Apps Agreement; latest live status Pending User Info.",
+        "evidence": [
+          "Apple Business agreements table after acceptance"
+        ],
+        "next_action": "Read status after W-9 processing and banking; require Active before paid release.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 6,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.tax",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "user_reported",
+        "summary": "Owner reports adding the W-9; final status not yet read back.",
+        "evidence": [
+          "Owner message: I added the W9."
+        ],
+        "next_action": "Read existing U.S. Form W-9 status before asking for further owner action. Add Tax Info edits the existing form; Add Tax Form is for other countries.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 7,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.bank",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Latest live Business page still requested Add Bank Account.",
+        "evidence": [
+          "Apple Business banking banner"
+        ],
+        "next_action": "Owner enters payout details directly in Apple and completes any verification; agent then reads back status.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 8,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.dsa",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Digital Services Act compliance Active; Apple says current regulatory requirements completed.",
+        "evidence": [
+          "Live Apple Business compliance table. Selected trader classification not inspected."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 9,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.privacy",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner published diagnostics/performance collection for app functionality, linked to user, no tracking.",
+        "evidence": [
+          "App Privacy explicitly displayed Published by James Thompson",
+          "store/disclosures.md"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 10,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.review-contact",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Review contact including phone, no-login requirement and notes saved and all supplied fields read back.",
+        "evidence": [
+          "App Store Connect API success; store/scripts/apple.mjs review-notes. Private contact fields excluded."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 11,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.listing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "English copy, category, US$1 pricing and five native iPhone/iPad screenshots saved; screenshots COMPLETE.",
+        "evidence": [
+          "store/listing.json",
+          "store/assets/manifest.json",
+          "https://appstoreconnect.apple.com/apps/6812519450/distribution"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 12,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Signed production IPA build 5 completed and validated; simulator capture build recorded separately.",
+        "evidence": [
+          "EAS production 34e8a094-c122-4770-9bf6-611f70f671ab",
+          "EAS simulator 1a4edab8-6c4c-4133-ab32-62c45fd0a7f9",
+          "Archive and signing checks; Apple altool validation succeeded"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 13,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Actual iPhone/iPad simulator reading, light/dark UI, sharing and iPhone medium widget checked. Physical-device release checklist remains.",
+        "evidence": [
+          "store/source/iphone-6.9/",
+          "store/source/ipad-13/",
+          "docs/mobile-release.md"
+        ],
+        "next_action": "Finish applicable physical-device, offline/recovery, accessibility and widget checks; do not treat web or Expo Go as signed-device proof.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 14,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Direct altool upload processed VALID and APP_STORE_ELIGIBLE; Apple build 5 selected for version 1.0.0.",
+        "evidence": [
+          "Apple build 805f70f3-09a4-4111-afd2-bf04bb99e30d",
+          "Queued EAS submission 4a6398aa-658c-49c0-a909-c09209dd5021 canceled before direct upload"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 15,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.availability",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Final territory/release settings still require inspection.",
+        "evidence": [
+          "Prior submission checklist"
+        ],
+        "next_action": "Inspect desired territories and release behavior against current DSA and owner scope; configure and read back.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 16,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Version remains Prepare for Submission; no App Review submitted.",
+        "evidence": [
+          "Last App Store Connect version readback"
+        ],
+        "next_action": "Finish commercial/account, availability and release checks, then submit under original owner authorization.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 17,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "App is not publicly released.",
+        "evidence": [
+          "No App Review submission yet"
+        ],
+        "next_action": "Track review only within active user-requested work; resolve feedback and release according to approved behavior. Do not schedule monitoring unless requested.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 18,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.identity",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Registration fee paid and Play Console reports identity successfully verified.",
+        "evidence": [
+          "Live Play Console identity-success notice"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 19,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.device",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Play Console requires a real Android device; only the account owner can complete it.",
+        "evidence": [
+          "Live device-verification details; emulator/API cannot replace owner device check"
+        ],
+        "next_action": "On a real Android phone, sign into Play Console as the owner and complete device verification.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 20,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.phone",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Phone-verification link disabled while earlier verification task remains.",
+        "evidence": [
+          "Live account phone-verification page"
+        ],
+        "next_action": "Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 21,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Create app disabled; no Google app record, saved price, listing or release exists.",
+        "evidence": [
+          "Live Play Console account restrictions"
+        ],
+        "next_action": "Owner completes verification; agent then creates the app as paid, sets US$1 local equivalents and configures release.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 22,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrected production AAB and preview APK version 6 finished, downloaded and passed archive checks; preview APK installed.",
+        "evidence": [
+          "EAS AAB 615799c2-7fb9-4342-b2f4-9a073d308884",
+          "EAS APK f3dddec5-23f3-4a41-8fd6-e0d4f79ee366",
+          "adb streamed install Success. Version 4 and canceled intermediate version 5 are superseded."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 23,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Earlier APK exposed missing gradient/share icon from non-base64 SVG URLs. Fixed source and replacement build exist; final visual check pending.",
+        "evidence": [
+          "PR #85 Android base64 fix",
+          "Old native log: ExpoImage IllegalArgumentException bad base-64"
+        ],
+        "next_action": "Open installed corrected APK in native emulator, verify gradient/share, light/dark/offline/navigation and applicable widget behavior. Mac is unlocked again.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 24,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Shared English copy, icon and feature graphic ready. Android-specific screenshots still pending.",
+        "evidence": [
+          "store/assets/google-play/",
+          "store/scripts/render.mjs"
+        ],
+        "next_action": "Capture native Android light/dark/About images from version 6; render, visually inspect and validate Google images. Never substitute iOS captures.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 25,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Google app-content/privacy/rating questionnaires not yet available without app record.",
+        "evidence": [
+          "store/disclosures.md contains implementation/hosting evidence"
+        ],
+        "next_action": "After app creation, answer current questionnaires using code and actual service logging evidence.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 26,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.closed-test",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "New personal account testing path needs genuine testers and elapsed testing time.",
+        "evidence": [
+          "Google requirements checked September 16, 2026; store/user-actions.md"
+        ],
+        "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 27,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.production-access",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "No production-access application submitted.",
+        "evidence": [
+          "Account/app/testing gates unfinished"
+        ],
+        "next_action": "Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 28,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.review",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "No Google release submitted for review.",
+        "evidence": [
+          "No app record exists at last live check"
+        ],
+        "next_action": "Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 29,
+      "at": "2026-09-16T03:31:16+00:00",
+      "gate": "google.release",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "No public Android store release.",
+        "evidence": [
+          "No Google app record or production access yet"
+        ],
+        "next_action": "Release only after review/access approval and verify the public paid listing.",
+        "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    }
+  ],
+  "metrics": {
+    "tokens": null,
+    "cost_usd": null
+  }
+}
