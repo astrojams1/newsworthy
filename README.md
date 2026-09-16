@@ -45,13 +45,14 @@ extensions, signing and the remaining store setup. Expo Go can verify the core
 native interface; widgets require a custom development build.
 
 See [Accessibility verification](docs/accessibility-verification.md) for checks
-performed and remaining device/assistive-technology release checks. EAS account
-setup and signing are still required; this repository is not an App Store or
-Google Play release.
+performed and remaining device/assistive-technology release checks. EAS and iOS
+signing are configured; store review and account requirements remain. This
+repository is not an App Store or Google Play release.
 
 The planned store release is a one-time US$1 download, with local store
-equivalents, to help offset running costs. See [Store listing](docs/store-listing.md)
-for pricing setup and release requirements.
+equivalents, to help offset running costs. The [store release hub](store/README.md)
+keeps listing copy, screenshots, editable sources, upload scripts, verified status,
+and account-owner instructions together.
 
 ### Web
 

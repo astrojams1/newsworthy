@@ -1,0 +1,18 @@
+{
+  "locale": "en-US",
+  "appleName": "Newsworthy: Calm News",
+  "googleName": "Newsworthy",
+  "subtitle": "A calmer way to check the news",
+  "shortDescription": "A number out of 10 and one sentence explaining the news.",
+  "promotionalText": "Stay connected without an endless feed. A calm news reading, light and dark appearances, and a Home Screen widget. Check in, then get on with your day.",
+  "description": "Stay connected to the world without getting pulled into the feed.\n\nNewsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why. Check in, then get on with your day.\n\nA LITTLE CONTEXT. ROOM TO BREATHE.\nAn AI model assesses how consequential the news is. Higher means more consequential; the displayed score fades as developments age. See the latest reading and when it was updated, without a stream of articles to scroll through.\n\nAT A GLANCE, IN YOUR OWN TIME\nAdd a Home Screen widget for a quick look at the rating and update time. Open the app for the full explanation. Light and dark appearances keep the presentation simple, and the last downloaded reading remains available offline.\n\nONE PURCHASE. NO SUBSCRIPTION.\nA one-time download purchase helps offset the cost of running the service. No subscription, in-app purchases, ads, or endless feed. No streaks or pressure to keep checking.\n\nA CALMER MIDDLE GROUND\nConstant news can leave us anxious. Switching off entirely can leave us out of touch. Newsworthy offers a small, considered way to stay connected.\n\nAI assessments can be wrong. Newsworthy is not an emergency alert or a measure of personal safety. Readings update periodically; saved readings may be outdated, and widget refreshes depend on your device. Check the displayed update time.",
+  "keywords": "news,headlines,world,calm,widget,global,awareness",
+  "category": "NEWS",
+  "supportUrl": "https://newsworthy-indol.vercel.app/support",
+  "marketingUrl": "https://newsworthy-indol.vercel.app/",
+  "privacyPolicyUrl": "https://newsworthy-indol.vercel.app/privacy",
+  "supportEmail": "astrojams1@gmail.com",
+  "copyright": "2026 James Thompson",
+  "reviewNotes": "One-time paid download. No account, login, subscription, ads, or in-app purchases. The service supplies a public news reading, so no demo credentials are needed. Tap Newsworthy (the About icon at large text sizes) to open About and the privacy/support links. The Share button opens the system share sheet. Open online, then relaunch without a connection to test the saved reading. Add Newsworthy through the system widget picker to test the Home Screen rating. Widgets refresh independently and preserve the original timestamp when offline. AI ratings are not emergency alerts or personal safety advice.",
+  "pricing": { "type": "paidDownload", "baseTerritory": "USA", "baseCurrency": "USD", "basePrice": "1.00", "localizePrices": true }
+}

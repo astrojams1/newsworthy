@@ -1,0 +1,42 @@
+[
+  {
+    "file": "assets/apple/iphone-6.9/01-at-a-glance.png",
+    "source": "source/iphone-6.9/01-reading-light.png",
+    "width": 1320,
+    "height": 2868,
+    "platform": "ios",
+    "displayType": "APP_IPHONE_67"
+  },
+  {
+    "file": "assets/apple/iphone-6.9/02-widget.png",
+    "source": "source/iphone-6.9/03-home-widget.png",
+    "width": 1320,
+    "height": 2868,
+    "platform": "ios",
+    "displayType": "APP_IPHONE_67"
+  },
+  {
+    "file": "assets/apple/iphone-6.9/03-dark-mode.png",
+    "source": "source/iphone-6.9/02-reading-dark.png",
+    "width": 1320,
+    "height": 2868,
+    "platform": "ios",
+    "displayType": "APP_IPHONE_67"
+  },
+  {
+    "file": "assets/apple/ipad-13/01-at-a-glance.png",
+    "source": "source/ipad-13/01-reading-light.png",
+    "width": 2064,
+    "height": 2752,
+    "platform": "ios",
+    "displayType": "APP_IPAD_PRO_3GEN_129"
+  },
+  {
+    "file": "assets/apple/ipad-13/02-dark-mode.png",
+    "source": "source/ipad-13/02-reading-dark.png",
+    "width": 2064,
+    "height": 2752,
+    "platform": "ios",
+    "displayType": "APP_IPAD_PRO_3GEN_129"
+  }
+]
