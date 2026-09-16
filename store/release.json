@@ -12,13 +12,20 @@
     "appleBuildId": "805f70f3-09a4-4111-afd2-bf04bb99e30d",
     "appleBuildProcessingState": "VALID",
     "screenshotBuild": "1a4edab8-6c4c-4133-ab32-62c45fd0a7f9",
-    "reviewSubmitted": false,
+    "reviewSubmitted": true,
     "reviewDetailsSaved": true,
     "privacyPublication": "PUBLISHED",
     "addressCorrectionRequest": "SUBMITTED_AWAITING_APPLE_REVIEW",
     "paidAppsAgreement": "PENDING_USER_INFO",
     "dsaCompliance": "ACTIVE",
-    "w9Status": "OWNER_REPORTED_COMPLETED_PENDING_READBACK"
+    "w9Status": "OWNER_REPORTED_COMPLETED_PENDING_READBACK",
+    "reviewSubmissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
+    "reviewState": "WAITING_FOR_REVIEW",
+    "reviewSubmittedDate": "2026-09-16T04:53:38.974Z",
+    "releaseType": "AFTER_APPROVAL",
+    "availabilityTerritoryCount": 175,
+    "availableInNewTerritories": true,
+    "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT"
   },
   "google": {
     "productionBuild": "615799c2-7fb9-4342-b2f4-9a073d308884",

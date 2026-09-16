@@ -61,3 +61,11 @@ events are also disclosed. No graphic/prolonged violence, sexual imagery, or
 profanity is presented. Apple calculates the resulting regional age ratings.
 Google's questionnaire and the final privacy labels remain release-agent work;
 the account owner need not reverse-engineer the code to answer them.
+
+## Content rights
+
+Apple accepted `DOES_NOT_USE_THIRD_PARTY_CONTENT` on September 16. The native
+app presents its generated score and short factual sentence, plus original
+vector artwork; it does not display publisher articles, photos, or media feeds.
+Reassess this declaration if third-party content is added. The field was read
+back after saving; Apple then accepted the version into its review submission.

@@ -37,7 +37,8 @@ the owner's phone call/SMS through the currently connected tools.
 Apple's confirmation page says it received the request and will review it and
 respond. The request asks Apple to update both the individual developer
 membership and App Store Connect legal entity to the current address supplied
-privately by the owner. No case number appeared on the confirmation page.
+privately by the owner. Apple subsequently emailed a case number; keep that
+reference in the private support email.
 
 The Business page still shows the obsolete address; submission is not approval
 or evidence that the record has changed. Await Apple's response and provide any
@@ -107,14 +108,16 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 Do **not** ask the owner to create listing art/copy, configure Expo, generate
 signing credentials again, fetch binaries, or manually upload screenshots.
-Those have working automated paths. The Mac is unlocked again; final Android
-visual verification and capture remain agent work. The remaining technical
-release work is:
+Those have working automated paths. The Mac is currently locked; the owner must
+unlock it, then final Android visual verification and capture remain agent work.
+The remaining technical release work is:
 
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
-- Choose availability consistent with compliance and submit Apple for review
-  once all gates pass. Review contact and notes are already saved.
+- Apple submission is complete and **Waiting for Review**. Read the review
+  result, resolve feedback, verify commercial readiness and public availability.
+  All 175 territories are configured with release after approval. Do not create
+  a duplicate submission.
 - When **Create app** becomes enabled, create Newsworthy as **paid**, set US$1.00,
   upload the AAB, copy, icon, feature graphic, and real Android screenshots,
   complete app-content forms, and prepare the closed-test release.

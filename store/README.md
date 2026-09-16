@@ -3,8 +3,9 @@
 One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
-Last checked **September 16, 2026**. Neither app is publicly released or
-submitted for App Review yet.
+Last checked **September 16, 2026**. Neither app is publicly released.
+Apple version 1.0.0 build 5 is
+**Waiting for Review**; Google account verification still blocks app creation.
 
 ![iPhone listing artwork](preview.png)
 
@@ -48,15 +49,18 @@ submitted for App Review yet.
   successfully. Native inspection of the earlier APK exposed missing gradients
   and icons: Android requires base64 SVG data URLs. Version 6 includes that fix.
   Its final visual verification and screenshots are pending. The host Mac
-  locked during capture setup and is now unlocked. Google icon and feature
+  locked again during the latest verification attempt. Google icon and feature
   graphic are ready.
   See `release.json`.
 - **Apple review details:** contact information, phone, no-login requirement,
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Review:** not submitted. Account requirements,
-  availability and release testing must be complete first.
+- **Apple review:** submitted September 16, 2026 at 04:53 UTC. Version and
+  submission both report **Waiting for Review**. Automatic release after approval
+  is configured; all 175 territories are enabled without preorder. The API still
+  reports `CANNOT_SELL`, so review acceptance does not establish commercial
+  readiness or public release. Tax/banking/agreement readback remains pending.
 
 ## Reproduce the artwork
 

@@ -2,14 +2,14 @@
   "schema_version": 1,
   "app": "Newsworthy",
   "repository": "https://github.com/astrojams1/newsworthy",
-  "objective": "Preserve the web app and submit iOS and Android for a one-time US$1 paid download with local equivalents.",
+  "objective": "Release iOS and Android publicly as a one-time US$1 paid download with local equivalents, preserving the web app.",
   "platforms": [
     "web",
     "ios",
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T03:31:16+00:00",
+  "updated_at": "2026-09-16T04:55:59+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -49,12 +49,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Authorized membership and App Store Connect legal-address correction request submitted; Apple confirmed receipt. Business still showed obsolete address.",
+      "summary": "Apple support email confirms receipt of the authorized address-correction request; no correction approval observed.",
       "evidence": [
-        "Apple Developer Support page: Thanks for contacting us; request will be reviewed. No case number displayed."
+        "Apple Developer Program Support acknowledgment received 2026-09-16 03:15 UTC. Case reference remains in private email, not this public ledger."
       ],
-      "next_action": "Read Apple response and Business legal-entity address; provide owner documents only if requested. Do not duplicate request or claim address changed.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Read support response and Business legal-entity address; do not duplicate request or reuse obsolete address.",
+      "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.agreement": {
       "state": "in_progress",
@@ -175,37 +175,37 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "apple.availability": {
-      "state": "todo",
+      "state": "done",
       "owner": "agent",
-      "basis": "inferred",
-      "summary": "Final territory/release settings still require inspection.",
+      "basis": "observed",
+      "summary": "Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained.",
       "evidence": [
-        "Prior submission checklist"
+        "App Store Connect GET /v2/appAvailabilities/6812519450/territoryAvailabilities returned 175 enabled records; version releaseType AFTER_APPROVAL. CANNOT_SELL remains on all records; configuration does not prove sale eligibility."
       ],
-      "next_action": "Inspect desired territories and release behavior against current DSA and owner scope; configure and read back.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "todo",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Version remains Prepare for Submission; no App Review submitted.",
+      "summary": "Version 1.0.0 build 5 submitted; both version and review submission report WAITING_FOR_REVIEW.",
       "evidence": [
-        "Last App Store Connect version readback"
+        "App Store Connect review submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48, submittedDate 2026-09-16T04:53:38.974Z; independent GET of version and submission confirmed WAITING_FOR_REVIEW."
       ],
-      "next_action": "Finish commercial/account, availability and release checks, then submit under original owner authorization.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.release": {
-      "state": "todo",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "App is not publicly released.",
+      "summary": "Apple review is pending; AFTER_APPROVAL release configured. No public availability verified. Commercial account requirements remain separately unverified.",
       "evidence": [
-        "No App Review submission yet"
+        "Submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48 WAITING_FOR_REVIEW; availability contentStatuses CANNOT_SELL and AVAILABLE_FOR_SALE_UNRELEASED_APP."
       ],
-      "next_action": "Track review only within active user-requested work; resolve feedback and release according to approved behavior. Do not schedule monitoring unless requested.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Read review outcome and resolve feedback; check tax/banking/agreement and address response; verify paid public listing after approval. Do not resubmit the existing review.",
+      "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -222,12 +222,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Play Console requires a real Android device; only the account owner can complete it.",
+      "summary": "Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this.",
       "evidence": [
-        "Live device-verification details; emulator/API cannot replace owner device check"
+        "Live Play Console device-verification page on September 16: owner signs into current Play Console mobile app with developer-owner account and chooses AstroJams."
       ],
-      "next_action": "On a real Android phone, sign into Play Console as the owner and complete device verification.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification.",
+      "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "google.phone": {
       "state": "waiting_user",
@@ -244,12 +244,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Create app disabled; no Google app record, saved price, listing or release exists.",
+      "summary": "Create app remains disabled; live account home lists Android-device and contact-phone verification as required.",
       "evidence": [
-        "Live Play Console account restrictions"
+        "Live Play Console app-list on September 16 says Complete account verifications to create new apps."
       ],
-      "next_action": "Owner completes verification; agent then creates the app as paid, sets US$1 local equivalents and configures release.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "After owner device and phone verification, create paid app, configure US$1 and local equivalents, upload version 6 and prepare required closed test.",
+      "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "google.build": {
       "state": "done",
@@ -342,6 +342,28 @@
       ],
       "next_action": "Release only after review/access approval and verify the public paid listing.",
       "updated_at": "2026-09-16T03:31:16+00:00"
+    },
+    "apple.content-rights": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds.",
+      "evidence": [
+        "Source review of shared native UI and generated reading contract; GET /v1/apps/6812519450 readback confirmed declaration. Initial immediate readback lagged; later GET matched without repeating mutation."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-16T04:55:59+00:00"
+    },
+    "host.ui": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Native UI tool reports Mac locked; automatic unlock failed. In-app browser works for Google but is signed out of Apple.",
+      "evidence": [
+        "CUA getState returned locked-host error; Apple Business redirected to login authResult=FAILED."
+      ],
+      "next_action": "Owner unlocks Mac; then agent resumes signed-in Apple Business readback and native Android verification/capture. API work does not require unlock.",
+      "updated_at": "2026-09-16T04:55:59+00:00"
     }
   },
   "events": [
@@ -820,6 +842,134 @@
         ],
         "next_action": "Release only after review/access approval and verify the public paid listing.",
         "updated_at": "2026-09-16T03:31:16+00:00"
+      }
+    },
+    {
+      "sequence": 30,
+      "at": "2026-09-16T04:55:59+00:00",
+      "gate": "apple.availability",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained.",
+        "evidence": [
+          "App Store Connect GET /v2/appAvailabilities/6812519450/territoryAvailabilities returned 175 enabled records; version releaseType AFTER_APPROVAL. CANNOT_SELL remains on all records; configuration does not prove sale eligibility."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T04:55:59+00:00"
+      }
+    },
+    {
+      "sequence": 31,
+      "at": "2026-09-16T04:55:59+00:00",
+      "gate": "apple.content-rights",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds.",
+        "evidence": [
+          "Source review of shared native UI and generated reading contract; GET /v1/apps/6812519450 readback confirmed declaration. Initial immediate readback lagged; later GET matched without repeating mutation."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T04:55:59+00:00"
+      }
+    },
+    {
+      "sequence": 32,
+      "at": "2026-09-16T04:55:59+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Version 1.0.0 build 5 submitted; both version and review submission report WAITING_FOR_REVIEW.",
+        "evidence": [
+          "App Store Connect review submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48, submittedDate 2026-09-16T04:53:38.974Z; independent GET of version and submission confirmed WAITING_FOR_REVIEW."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-16T04:55:59+00:00"
+      }
+    },
+    {
+      "sequence": 33,
+      "at": "2026-09-16T04:55:59+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple review is pending; AFTER_APPROVAL release configured. No public availability verified. Commercial account requirements remain separately unverified.",
+        "evidence": [
+          "Submission 54c8b17c-868f-47fe-bb27-c2af1e0b6d48 WAITING_FOR_REVIEW; availability contentStatuses CANNOT_SELL and AVAILABLE_FOR_SALE_UNRELEASED_APP."
+        ],
+        "next_action": "Read review outcome and resolve feedback; check tax/banking/agreement and address response; verify paid public listing after approval. Do not resubmit the existing review.",
+        "updated_at": "2026-09-16T04:55:59+00:00"
+      }
+    },
+    {
+      "sequence": 34,
+      "at": "2026-09-16T04:55:59+00:00",
+      "gate": "apple.address",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple support email confirms receipt of the authorized address-correction request; no correction approval observed.",
+        "evidence": [
+          "Apple Developer Program Support acknowledgment received 2026-09-16 03:15 UTC. Case reference remains in private email, not this public ledger."
+        ],
+        "next_action": "Read support response and Business legal-entity address; do not duplicate request or reuse obsolete address.",
+        "updated_at": "2026-09-16T04:55:59+00:00"
+      }
+    },
+    {
+      "sequence": 35,
+      "at": "2026-09-16T04:55:59+00:00",
+      "gate": "host.ui",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Native UI tool reports Mac locked; automatic unlock failed. In-app browser works for Google but is signed out of Apple.",
+        "evidence": [
+          "CUA getState returned locked-host error; Apple Business redirected to login authResult=FAILED."
+        ],
+        "next_action": "Owner unlocks Mac; then agent resumes signed-in Apple Business readback and native Android verification/capture. API work does not require unlock.",
+        "updated_at": "2026-09-16T04:55:59+00:00"
+      }
+    },
+    {
+      "sequence": 36,
+      "at": "2026-09-16T04:55:59+00:00",
+      "gate": "google.device",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this.",
+        "evidence": [
+          "Live Play Console device-verification page on September 16: owner signs into current Play Console mobile app with developer-owner account and chooses AstroJams."
+        ],
+        "next_action": "Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification.",
+        "updated_at": "2026-09-16T04:55:59+00:00"
+      }
+    },
+    {
+      "sequence": 37,
+      "at": "2026-09-16T04:55:59+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Create app remains disabled; live account home lists Android-device and contact-phone verification as required.",
+        "evidence": [
+          "Live Play Console app-list on September 16 says Complete account verifications to create new apps."
+        ],
+        "next_action": "After owner device and phone verification, create paid app, configure US$1 and local equivalents, upload version 6 and prepare required closed test.",
+        "updated_at": "2026-09-16T04:55:59+00:00"
       }
     }
   ],
