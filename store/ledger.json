@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T12:09:27+00:00",
+  "updated_at": "2026-09-17T12:15:40+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -566,12 +566,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Browser prototype revised: denominator beside the numeral on its baseline, description left-aligned in a separate column. Three-line optical numeral, two/four-line alternatives and wrap comparison retained. Production native layouts unchanged; no native verification for this proposal.",
+      "summary": "Browser prototype now uses fixed iPhone 16 Pro Max frames: medium 364×170pt and small 170×170pt, derived from the recorded iOS18.3 native capture. Long copy truncates with ellipsis; oversized numerals explicitly report non-fit. Denominator remains beside the numeral. No native layout changed or new native verification performed.",
       "evidence": [
-        "design/prototypes/widget-alignment/README.md; test:design 33 passed; npm test 205 passed including web export. Browser checks include denominator position and shared baseline plus deliberate below-number regression; native matrix remains unverified."
+        "design/prototypes/widget-alignment/README.md; native frame source store/source/iphone-6.9/04-widget-sizes-native.png and its provenance/crop SVG. Design tests34 passed; npm test206 passed including web export; 216 browser combinations passed at1280/320px. Revised native font metrics, margins, accessibility, resizing and theme transitions remain unverified."
       ],
-      "next_action": "Review the prototype. If adopted, implement native layouts and verify the full native matrix before release.",
-      "updated_at": "2026-09-17T12:09:27+00:00"
+      "next_action": "Review the fixed-size prototype. If adopted, implement native layouts and verify the full native matrix before release.",
+      "updated_at": "2026-09-17T12:15:40+00:00"
     }
   },
   "events": [
@@ -3258,6 +3258,22 @@
         ],
         "next_action": "Review the prototype. If adopted, implement native layouts and verify the full native matrix before release.",
         "updated_at": "2026-09-17T12:09:27+00:00"
+      }
+    },
+    {
+      "sequence": 168,
+      "at": "2026-09-17T12:15:40+00:00",
+      "gate": "design.widget-alignment-prototype",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Browser prototype now uses fixed iPhone 16 Pro Max frames: medium 364×170pt and small 170×170pt, derived from the recorded iOS18.3 native capture. Long copy truncates with ellipsis; oversized numerals explicitly report non-fit. Denominator remains beside the numeral. No native layout changed or new native verification performed.",
+        "evidence": [
+          "design/prototypes/widget-alignment/README.md; native frame source store/source/iphone-6.9/04-widget-sizes-native.png and its provenance/crop SVG. Design tests34 passed; npm test206 passed including web export; 216 browser combinations passed at1280/320px. Revised native font metrics, margins, accessibility, resizing and theme transitions remain unverified."
+        ],
+        "next_action": "Review the fixed-size prototype. If adopted, implement native layouts and verify the full native matrix before release.",
+        "updated_at": "2026-09-17T12:15:40+00:00"
       }
     }
   ],

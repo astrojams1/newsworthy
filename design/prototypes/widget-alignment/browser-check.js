@@ -9,11 +9,18 @@
   assert(Math.abs(numeral.getStartPositionOfChar(0).y-denominator.getStartPositionOfChar(0).y)<.5, 'denominator must share the numeral baseline');
   assert(d.bottom<=n.bottom+1, 'denominator must not sit beneath the numeral');
  }
- let cases=0;
+ function checkFrames() {
+  for(const [selector,width] of [['.medium',364],['.compact',170]]) {
+   const rect=document.querySelector(selector).getBoundingClientRect();
+   assert(rect.width===width && rect.height===170, 'native widget frame must stay fixed');
+  }
+ }
+ let cases=0, clippedCases=0, numberOverflowCases=0;
  document.getElementById('long').click();
  for(const score of [1,3,10]) for(const lines of [2,3,4]) for(const theme of ['Light','Dark']) for(const scale of [1,1.3,2]) for(const layout of ['column','wrap']) {
   set('score',score);set('lines',lines);set('theme',theme);set('scale',scale);set('layout',layout);
-  for(const widget of document.querySelectorAll('.widget')) {
+  for(const widget of document.querySelectorAll('.medium')) {
+   checkFrames();
    checkDenominator(widget);
    const description=widget.querySelector('.description'), number=widget.querySelector('.score'), svg=widget.querySelector('svg');
    const range=document.createRange();range.selectNodeContents(description);
@@ -26,11 +33,30 @@
    for(const r of rects) assert(r.top>=n.bottom || r.left>=n.right,'description overlaps number');
    assert(widget.scrollWidth<=widget.clientWidth+1,'widget horizontal overflow');
    assert(widget.scrollHeight<=widget.clientHeight+1,'widget vertical clipping');
+   const available=widget.querySelector('.body').getBoundingClientRect();
+   assert(rects.every(r=>r.bottom<=available.bottom+.5),'visible sentence escapes fixed text area');
+   if(widget.dataset.clipped==='true') {
+    assert(description.textContent.endsWith('…'),'truncated sentence needs an ellipsis');
+    clippedCases++;
+   }
+   const overflow=lines*lh>available.height;
+   assert(widget.dataset.numberOverflow===String(overflow),'number overflow must be reported honestly');
+   if(overflow) {
+    assert(document.getElementById('fit-status').textContent.startsWith('Does not fit:'),'unfittable numeral needs an explicit warning');
+    numberOverflowCases++;
+   }
    assert(number.getAttribute('aria-label')===`${score} out of 10`,'scale missing');
   }
   cases++;
  }
  set('score',3);set('lines',3);set('theme','Light');set('scale',1);set('layout','column');
+ const medium=document.querySelector('.medium');
+ medium.style.height='240px';
+ let growthRejected=false;
+ try { checkFrames(); } catch { growthRejected=true; }
+ medium.style.height='';
+ assert(growthRejected,'regression guard must reject growing widget frames');
+ assert(clippedCases>0 && numberOverflowCases>0,'stress cases must exercise honest overflow states');
  const denominator=document.querySelector('.denominator');
  denominator.setAttribute('y', 20);
  let belowRejected=false;
@@ -47,5 +73,5 @@
  assert(!document.querySelector('.description img'),'custom copy must be text');
  assert(document.documentElement.scrollWidth<=innerWidth+1,'page overflow');
  document.getElementById('long').click();
- return {cases,widgetsPerCase:2,viewport:innerWidth,centeredTextRegressionDetected:true,belowNumberRegressionDetected:belowRejected};
+ return {cases,widgetsPerCase:2,clippedCases,numberOverflowCases,growingFrameRegressionDetected:growthRejected,viewport:innerWidth,centeredTextRegressionDetected:true,belowNumberRegressionDetected:belowRejected};
 })();

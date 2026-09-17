@@ -22,6 +22,11 @@ function render() {
   document.body.classList.toggle('wrap', $('layout').value === 'wrap');
   for (const widget of document.querySelectorAll('.widget')) {
     widget.dataset.level = score; widget.dataset.appearance = $('theme').value.toLowerCase();
+  }
+  document.querySelector('.compact-number').textContent = score;
+  document.querySelector('.compact-run').setAttribute('aria-label', `${score} out of 10`);
+  for (const widget of document.querySelectorAll('.medium')) {
+    widget.dataset.level = score; widget.dataset.appearance = $('theme').value.toLowerCase();
     for (const [key,value] of Object.entries({ '--line':`${lineHeight}px`, '--body-size':`${bodySize}px`, '--span':lines, '--score-width':`${runWidth}px`, '--ink-top':`${inkTop}px` })) widget.style.setProperty(key,value);
     widget.querySelector('.score').setAttribute('aria-label', `${score} out of 10`);
     const svg = widget.querySelector('svg'), text = svg.querySelector('.numeral'), denominator = svg.querySelector('.denominator');
@@ -31,7 +36,35 @@ function render() {
     denominator.setAttribute('x', denominatorX);
     denominator.setAttribute('y', 0);
     denominator.style.font = `300 ${denominatorSize}px ${family}`;
-    widget.querySelector('.description').textContent = $('sentence').value;
+    const description = widget.querySelector('.description');
+    const full = $('sentence').value;
+    const available = widget.querySelector('.body').clientHeight;
+    const textHeight = Math.floor(available / lineHeight) * lineHeight;
+    description.textContent = full;
+    // Measure the final line's actual ink; never increase the fixed widget frame.
+    const fits = () => {
+      const range = document.createRange(); range.selectNodeContents(description);
+      return !description.textContent || range.getBoundingClientRect().bottom <= description.getBoundingClientRect().top + textHeight + .5;
+    };
+    const clipped = !fits();
+    if (clipped) {
+      const characters = Array.from(full);
+      let low = 0, high = characters.length;
+      while (low < high) {
+        const mid = Math.ceil((low + high) / 2);
+        description.textContent = characters.slice(0,mid).join('').trimEnd() + '…';
+        if (fits()) low = mid; else high = mid - 1;
+      }
+      description.textContent = characters.slice(0,low).join('').trimEnd() + '…';
+    }
+    const numberOverflow = metrics.lineBoxHeight > available;
+    widget.dataset.clipped = String(clipped);
+    widget.dataset.numberOverflow = String(numberOverflow);
+    $('fit-status').dataset.state = numberOverflow ? 'number-overflow' : clipped ? 'clipped' : 'fits';
+    $('fit-status').textContent = numberOverflow
+      ? `Does not fit: the number needs ${metrics.lineBoxHeight} pt; ${available} pt is available. Choose fewer lines or smaller text.`
+      : clipped ? `Sentence truncated to ${Math.floor(available / lineHeight)} lines. The frame stays 364 × 170 pt.`
+      : 'Full sentence fits · Fixed 364 × 170 pt frame.';
   }
   $('alignment-copy').textContent = `The top of the numeral meets the top of the first line. Its foot meets the bottom of line ${lines}. ${$('layout').value === 'column' ? 'The sentence keeps a straight left edge.' : 'The sentence continues beneath the score after clearing the numeral.'}`;
   $('body-metric').textContent = `${bodySize.toFixed(0)} / ${lineHeight.toFixed(0)} px`;

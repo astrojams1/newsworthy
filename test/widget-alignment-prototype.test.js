@@ -18,3 +18,15 @@ test('alignment follows enlarged text and two-to-four-line spans', () => {
 test('fractional line spans and unusable font metrics cannot silently break alignment', () => {
   for (const bad of [{ lines: 2.5 }, { numberInkAt100: 0 }, { lineHeight: NaN }]) assert.throws(() => alignmentMetrics({ lines: 3, lineHeight: 20, bodyInkHeight: 10, numberInkAt100: 72, ...bad }), RangeError);
 });
+
+// Native reference is a 3× iPhone 16 Pro Max capture, not a responsive browser card.
+import { readFileSync } from 'node:fs';
+test('iOS study fixes both supported widget frames and never grows with its text', () => {
+  const css = readFileSync(new URL('../design/prototypes/widget-alignment/style.css', import.meta.url), 'utf8');
+  assert.match(css, /width:364px;height:170px/);
+  assert.match(css, /\.compact\{width:170px\}/);
+  assert.match(css, /grid-template-rows:14px minmax\(0,1fr\) 16px/);
+  const nativeLayout = readFileSync(new URL('../store/source/layouts/iphone-6.9-02-widget-sizes-v2.svg', import.meta.url), 'utf8');
+  assert.match(nativeLayout, /viewBox="114 282 1092 510"/);
+  assert.match(nativeLayout, /viewBox="114 918 510 510"/);
+});
