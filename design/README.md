@@ -110,6 +110,19 @@ widgets in both appearances, score 10, enlarged text, resize behavior and a them
 switch without a data refresh. Capture build/version provenance in `store/`.
 Any untested matrix cell remains unverified; green CI cannot fill that gap.
 
+## Widget centering and fresh app readings
+
+Both widget sizes vertically center their reading content between the heading
+and timestamp. Expanded widgets center the numeral and sentence as one block,
+keeping their capital tops aligned. Long and enlarged text remains bounded.
+The design gate rejects top-only expanded placement on both platforms.
+
+Successful foreground app requests hand the public display fields and original
+reading timestamp to the native widgets. iOS uses the app group's snapshot and
+requests a WidgetKit timeline reload; Android sends an explicit app-private
+broadcast and renders from the updated cache. Background fetches remain enabled.
+See `store/widget-refresh-verification.json` for this change's verification scope.
+
 ## Platform references
 
 - [Android RemoteViews](https://developer.android.com/reference/android/widget/RemoteViews)

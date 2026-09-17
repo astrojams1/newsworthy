@@ -68,10 +68,29 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
     }
 }
 
+struct AppReading: Decodable {
+    let reading: Reading
+    let fetchedAt: Double
+}
+
 struct Provider: TimelineProvider {
     private var cacheKey: String { "widget.reading.v1:\(WidgetConfig.apiBaseURL)" }
 
+    private func appReading() -> AppReading? {
+        guard let data = UserDefaults(suiteName: WidgetConfig.appGroup)?.data(forKey: cacheKey),
+              let snapshot = try? JSONDecoder().decode(AppReading.self, from: data),
+              snapshot.reading.isValid, snapshot.fetchedAt.isFinite else { return nil }
+        return snapshot
+    }
+
     private func cached() -> Reading? {
+        if let app = appReading(), app.fetchedAt >= UserDefaults.standard.double(forKey: cacheKey + ":fetchedAt") {
+            return app.reading
+        }
+        return locallyCached()
+    }
+
+    private func locallyCached() -> Reading? {
         guard let data = UserDefaults.standard.data(forKey: cacheKey),
               let reading = try? JSONDecoder().decode(Reading.self, from: data), reading.isValid else { return nil }
         return reading
@@ -86,9 +105,15 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<ReadingEntry>) -> Void) {
-        let fallback = cached()
+        let startedAt = Date().timeIntervalSince1970 * 1000
+        // An app-triggered reload can use the just-fetched reading even offline.
+        if let app = appReading(), startedAt - app.fetchedAt < 60_000,
+           app.fetchedAt >= UserDefaults.standard.double(forKey: cacheKey + ":fetchedAt") {
+            completion(timeline(reading: app.reading, saved: false))
+            return
+        }
         guard let url = URL(string: "\(WidgetConfig.apiBaseURL)/api/current") else {
-            completion(timeline(reading: fallback, saved: true))
+            completion(timeline(reading: cached(), saved: true))
             return
         }
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 15)
@@ -97,12 +122,18 @@ struct Provider: TimelineProvider {
             guard let response = response as? HTTPURLResponse, response.statusCode == 200,
                   let data = data, data.count <= 65_536,
                   let reading = try? JSONDecoder().decode(Reading.self, from: data), reading.isValid else {
-                completion(timeline(reading: fallback, saved: true))
+                completion(timeline(reading: cached(), saved: true))
                 return
             }
-            // Persist only public display fields; no shared app-group entitlement is needed.
+            // A request already in flight must not undo a later app refresh.
+            if let app = appReading(), app.fetchedAt > startedAt {
+                completion(timeline(reading: app.reading, saved: false))
+                return
+            }
+            // Keep the extension cache separate; only the app writes the shared snapshot.
             if let encoded = try? JSONEncoder().encode(reading) {
                 UserDefaults.standard.set(encoded, forKey: cacheKey)
+                UserDefaults.standard.set(startedAt, forKey: cacheKey + ":fetchedAt")
             }
             completion(timeline(reading: reading, saved: false))
         }.resume()
@@ -138,15 +169,17 @@ private struct WidgetReadingLayout: Layout {
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         guard let number = subviews.first else { return }
         let score = number.dimensions(in: .unspecified)
-        let top = compact ? max(0, (bounds.height - scoreCapHeight) / 2) : 0
+        let width = max(0, bounds.width - score.width - WidgetTypography.columnGap)
+        let textProposal = ProposedViewSize(width: width, height: bounds.height)
+        let text = !compact && subviews.count > 1 ? subviews[1].dimensions(in: textProposal) : nil
+        let textHeight = text.map { $0.height - $0[.firstTextBaseline] + explanationCapHeight } ?? 0
+        let contentHeight = max(scoreCapHeight, textHeight)
+        let top = max(0, (bounds.height - contentHeight) / 2)
         number.place(at: CGPoint(x: bounds.minX, y: bounds.minY + top + scoreCapHeight - score[.firstTextBaseline]),
                      anchor: .topLeading, proposal: .unspecified)
-        if !compact, subviews.count > 1 {
-            let width = max(0, bounds.width - score.width - WidgetTypography.columnGap)
-            let textProposal = ProposedViewSize(width: width, height: bounds.height)
-            let text = subviews[1].dimensions(in: textProposal)
+        if let text = text {
             subviews[1].place(at: CGPoint(x: bounds.minX + score.width + WidgetTypography.columnGap,
-                                        y: bounds.minY + explanationCapHeight - text[.firstTextBaseline]),
+                                        y: bounds.minY + top + explanationCapHeight - text[.firstTextBaseline]),
                               anchor: .topLeading, proposal: textProposal)
         }
     }

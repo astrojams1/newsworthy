@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T15:37:10+00:00",
+  "updated_at": "2026-09-17T22:24:21+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -594,6 +594,17 @@
       ],
       "next_action": "",
       "updated_at": "2026-09-17T15:37:10+00:00"
+    },
+    "apple.widget-refresh": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Implement centered widget content and foreground app-to-widget reading handoff; owner requested merge and replacement TestFlight build.",
+      "evidence": [
+        "Branch codex/widget-centering-refresh; design gate 39 passed; app TypeScript passed; widget Swift compiled for iOS simulator."
+      ],
+      "next_action": "Complete tests, merge PR, create signed production iOS build with App Groups and upload to TestFlight.",
+      "updated_at": "2026-09-17T22:24:21+00:00"
     }
   },
   "events": [
@@ -3504,6 +3515,22 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-17T15:37:10+00:00"
+      }
+    },
+    {
+      "sequence": 182,
+      "at": "2026-09-17T22:24:21+00:00",
+      "gate": "apple.widget-refresh",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Implement centered widget content and foreground app-to-widget reading handoff; owner requested merge and replacement TestFlight build.",
+        "evidence": [
+          "Branch codex/widget-centering-refresh; design gate 39 passed; app TypeScript passed; widget Swift compiled for iOS simulator."
+        ],
+        "next_action": "Complete tests, merge PR, create signed production iOS build with App Groups and upload to TestFlight.",
+        "updated_at": "2026-09-17T22:24:21+00:00"
       }
     }
   ],

@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-18",
+  "scope": "Center compact/expanded reading content and sync successful app refreshes to native widgets.",
+  "sourceSha256": {
+    "apps/client/targets/widget/NewsworthyWidget.swift": "6b17125d58ce59fbcfc37d96fce3e153407a8a508eb19425254b677e3ff9becb",
+    "apps/client/plugins/widget-android/RatingWidget.java": "5e574c55d0677db8a34316f1f118bc4b9bb22b4bd12df10b8ed4d400dd8c81ba",
+    "apps/client/plugins/widget-android/RatingWidgetWorker.java": "b73ee9966e181dcaf0bb197ae489f5d9402aa2a48be3947335c392d8c68e718a",
+    "apps/client/plugins/widget-android/res/layout/rating_widget.xml": "d7aeb94de8d836e00beac5aa8390628622504f94142728f9d90fd8bc70f4864a",
+    "apps/client/modules/newsworthy-widgets/ios/NewsworthyWidgetsModule.swift": "6af541e571bae63ee33a0ce14e35b5c4e7eba19a870bd4f13b4b5f17f404442c"
+  },
+  "checks": {
+    "designGate": "39 passed, including deliberate centering regressions",
+    "widgetSync": "3 passed: launch/resume/polling, decay with unchanged timestamp, storage/network failure and optional bridge",
+    "typeScript": "passed",
+    "iosWidgetCompile": "Full production WidgetKit source linked for arm64 iOS16.4 simulator using Xcode16.2",
+    "npmTest": "214 passed, including production web export"
+  },
+  "nativeVerification": {
+    "ios": "Production WidgetKit source compiled. Standalone host initially hid widget-only container background; no visual parity claimed. Signed app/WidgetKit handoff pending TestFlight.",
+    "android": "Prebuild passed; XML/source contract passed. Local compile could not start because JAVA_HOME is unset; launcher verification remains pending."
+  },
+  "untested": [
+    "Physical iPhone app-to-widget synchronization and offline recovery",
+    "Actual WidgetKit small/medium widgets, light/dark, score10, large text, name shown/hidden",
+    "Android launcher small/expanded resize, refresh, offline recovery and theme switch without data refresh"
+  ],
+  "release": {
+    "target": "TestFlight",
+    "state": "Tests and PR in progress",
+    "next": "Merge PR, create production iOS build with matching App Groups entitlement in app/extension, upload and verify TestFlight processing."
+  }
+}

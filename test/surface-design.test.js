@@ -12,6 +12,10 @@ test('native widget implementations satisfy the same compact/expanded design con
 // Prove the checker rejects the actual categories of bugs, rather than merely
 // accepting today's source. Each mutation is isolated and must fail specifically.
 const regressions = [
+  ['expanded body top aligned', s => { s.expanded = s.expanded.replace('android:gravity="center_vertical"', 'android:gravity="top"'); }, /expanded content centered vertically/],
+  ['expanded text fills centered body', s => { s.expanded = s.expanded.replace('android:layout_weight="1" android:layout_height="wrap_content"', 'android:layout_weight="1" android:layout_height="match_parent"'); }, /expanded text fits centered row/],
+  ['only iOS compact centered', s => { s.swift = s.swift.replace('let top = max(0, (bounds.height - contentHeight) / 2)', 'let top = compact ? max(0, (bounds.height - contentHeight) / 2) : 0'); }, /iOS both families centered vertically/],
+  ['iOS sentence stays at top', s => { s.swift = s.swift.replace('y: bounds.minY + top + explanationCapHeight', 'y: bounds.minY + explanationCapHeight'); }, /iOS sentence shares centered offset/],
   ['expanded text moved below number', s => { s.expanded = s.expanded.replace('android:orientation="horizontal" android:baselineAligned="false"', 'android:orientation="vertical" android:baselineAligned="false"'); }, /expanded description direction/],
   ['iOS text moved below number', s => { s.swift = s.swift.replace('bounds.minX + score.width + WidgetTypography.columnGap', 'bounds.minX'); }, /iOS explanation beside numeral/],
   ['iOS lost optical top alignment', s => { s.swift = s.swift.replace('scoreCapHeight - score[.firstTextBaseline]', '0'); }, /iOS optical score top/],

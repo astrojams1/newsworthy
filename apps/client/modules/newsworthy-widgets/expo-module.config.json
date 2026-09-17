@@ -1,0 +1,16 @@
+{
+  "platforms": [
+    "apple",
+    "android"
+  ],
+  "apple": {
+    "modules": [
+      "NewsworthyWidgetsModule"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.newsworthywidgets.NewsworthyWidgetsModule"
+    ]
+  }
+}
