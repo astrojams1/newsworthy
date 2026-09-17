@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T02:38:10+00:00",
+  "updated_at": "2026-09-17T02:49:03+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -511,12 +511,23 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Corrective Android preview APK10 accepted by EAS as NEW; production AAB10 remains held for replacement.",
+      "summary": "Corrective Android preview APK10 is IN_PROGRESS at EAS; no provider error reported. CI checks for PR94 passed.",
       "evidence": [
-        "EASc21ad449-7cef-4d4e-b602-031b0313c750; preview1.0.0(10); source metadata cab96c5c3cb34726d6ca43451559a7c4d31207b2. Native code is33ebd60; only release-record commits changed while upload ran. CLI81220 completed successfully."
+        "Fresh EAS build:view readback c21ad449-7cef-4d4e-b602-031b0313c750 on September17 at02:48UTC; /tmp/newsworthy-android-large-text-status.json. GitHub PR94 both checks passed."
       ],
-      "next_action": "Read buildc21ad449-7cef-4d4e-b602-031b0313c750, download/install when finished, verify fontScale2.0 and background theme behavior. Emulator remains at2.0 for this test; restore original1.0 after verification.",
-      "updated_at": "2026-09-17T02:38:10+00:00"
+      "next_action": "Poll this same build, download/install when finished, verify clipping and appearance corrections at fontScale2.0, then restore original fontScale1.0 and verify default layout. No duplicate build needed.",
+      "updated_at": "2026-09-17T02:49:03+00:00"
+    },
+    "google.offline": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery.",
+      "evidence": [
+        "store/android-large-text-verification.json and native captures18/19; read-only settings verified airplane0/wifi1 after restoration. System UI status-bar ANR was recovered separately; no Newsworthy crash observed."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-17T02:48:31+00:00"
     }
   },
   "events": [
@@ -2483,6 +2494,38 @@
         ],
         "next_action": "Read buildc21ad449-7cef-4d4e-b602-031b0313c750, download/install when finished, verify fontScale2.0 and background theme behavior. Emulator remains at2.0 for this test; restore original1.0 after verification.",
         "updated_at": "2026-09-17T02:38:10+00:00"
+      }
+    },
+    {
+      "sequence": 123,
+      "at": "2026-09-17T02:48:31+00:00",
+      "gate": "google.offline",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery.",
+        "evidence": [
+          "store/android-large-text-verification.json and native captures18/19; read-only settings verified airplane0/wifi1 after restoration. System UI status-bar ANR was recovered separately; no Newsworthy crash observed."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T02:48:31+00:00"
+      }
+    },
+    {
+      "sequence": 124,
+      "at": "2026-09-17T02:49:03+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Corrective Android preview APK10 is IN_PROGRESS at EAS; no provider error reported. CI checks for PR94 passed.",
+        "evidence": [
+          "Fresh EAS build:view readback c21ad449-7cef-4d4e-b602-031b0313c750 on September17 at02:48UTC; /tmp/newsworthy-android-large-text-status.json. GitHub PR94 both checks passed."
+        ],
+        "next_action": "Poll this same build, download/install when finished, verify clipping and appearance corrections at fontScale2.0, then restore original fontScale1.0 and verify default layout. No duplicate build needed.",
+        "updated_at": "2026-09-17T02:49:03+00:00"
       }
     }
   ],

@@ -10,7 +10,9 @@
     "Main reading remained light after returning from font-size settings while system UI mode and widget were dark."
   ],
   "passed": [
-    "Main reading score, explanatory sentence, timestamp and Privacy/Support footer remained visible at fontScale2.0."
+    "Main reading score, explanatory sentence, timestamp and Privacy/Support footer remained visible at fontScale2.0.",
+    "Offline foreground reopen retains score and explanation, labels Saved reading, preserves original timestamp and offers Try again at fontScale2.0.",
+    "After restoring airplane_mode_on=0 and wifi_on=1, foreground reopen cleared Saved reading and Try again while retaining the original reading timestamp."
   ],
   "fixStatus": "SOURCE_CHANGES_NATIVE_VERIFICATION_PENDING",
   "fixScope": [
@@ -23,6 +25,16 @@
     },
     "17-reading-large-text-theme-mismatch-v9.png": {
       "sha256": "c11af1bb7ee41afcf3e017c89bcaa90177d432f8034471bd702386d7929b3e5f"
+    },
+    "18-reading-offline-large-text-v9.png": {
+      "sha256": "8d28ce5a110b7e417c536700a57d72db9f3523b665f00beecc7b905c8dee492f"
+    },
+    "19-reading-online-recovery-large-text-v9.png": {
+      "sha256": "72d4b3551a761922ffaed295ae4b62d6258f3e2afa6d5f1e47d4983f950f1378"
     }
-  }
+  },
+  "environmentIssue": "System UI status-bar input dispatch ANR during connectivity restoration; modal identified System UI, and dumpsys lastanr confirmed StatusBar timeout. Do not attribute to app crash.",
+  "networkRestored": true,
+  "fontScaleRestorePending": true,
+  "originalFontScale": 1.0
 }

@@ -141,7 +141,7 @@ The remaining technical release work is:
 
 - Complete
   the Android large-text clipping/appearance fixes and remaining native verification
-  (score 10, offline recovery and physical devices)
+  (score 10 and physical devices)
   without claiming CI contract checks are native screenshot tests.
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).

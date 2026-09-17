@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T02:38:10+00:00
+Updated: 2026-09-17T02:49:03+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -55,7 +55,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
 | apple.physical-recording | waiting_user | user | observed | Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available. | Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed. |
 | apple.testflight | waiting_user | user | observed | Owner is now in Release QA, but tester state is NOT_INVITED. Build6 internal state is IN_BETA_TESTING. No email invitation sent by the agent. | Owner approves pending TestFlight email invitation, or sends it in App Store Connect; agent can call invitation API and verify state after authorization. |
-| google.large-text-build | waiting_provider | provider | observed | Corrective Android preview APK10 accepted by EAS as NEW; production AAB10 remains held for replacement. | Read buildc21ad449-7cef-4d4e-b602-031b0313c750, download/install when finished, verify fontScale2.0 and background theme behavior. Emulator remains at2.0 for this test; restore original1.0 after verification. |
+| google.large-text-build | waiting_provider | provider | observed | Corrective Android preview APK10 is IN_PROGRESS at EAS; no provider error reported. CI checks for PR94 passed. | Poll this same build, download/install when finished, verify clipping and appearance corrections at fontScale2.0, then restore original fontScale1.0 and verify default layout. No duplicate build needed. |
+| google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
 
 ## Evidence and history
 
@@ -1219,3 +1220,21 @@ Corrective Android preview APK10 accepted by EAS as NEW; production AAB10 remain
 - EASc21ad449-7cef-4d4e-b602-031b0313c750; preview1.0.0(10); source metadata cab96c5c3cb34726d6ca43451559a7c4d31207b2. Native code is33ebd60; only release-record commits changed while upload ran. CLI81220 completed successfully.
 
 Next: Read buildc21ad449-7cef-4d4e-b602-031b0313c750, download/install when finished, verify fontScale2.0 and background theme behavior. Emulator remains at2.0 for this test; restore original1.0 after verification.
+
+### 123. google.offline — done
+
+2026-09-17T02:48:31+00:00 · observed · agent
+
+Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery.
+
+- store/android-large-text-verification.json and native captures18/19; read-only settings verified airplane0/wifi1 after restoration. System UI status-bar ANR was recovered separately; no Newsworthy crash observed.
+
+### 124. google.large-text-build — waiting_provider
+
+2026-09-17T02:49:03+00:00 · observed · provider
+
+Corrective Android preview APK10 is IN_PROGRESS at EAS; no provider error reported. CI checks for PR94 passed.
+
+- Fresh EAS build:view readback c21ad449-7cef-4d4e-b602-031b0313c750 on September17 at02:48UTC; /tmp/newsworthy-android-large-text-status.json. GitHub PR94 both checks passed.
+
+Next: Poll this same build, download/install when finished, verify clipping and appearance corrections at fontScale2.0, then restore original fontScale1.0 and verify default layout. No duplicate build needed.
