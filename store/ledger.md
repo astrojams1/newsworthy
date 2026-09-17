@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T12:15:40+00:00
+Updated: 2026-09-17T12:23:14+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -60,7 +60,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.header-background | done | agent | observed | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
 | native.replacement-builds | done | agent | observed | Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified. | Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload. |
 | design.denominator | in_progress | agent | observed | Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction. | Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission. |
-| design.widget-alignment-prototype | done | agent | observed | Browser prototype now uses fixed iPhone 16 Pro Max frames: medium 364×170pt and small 170×170pt, derived from the recorded iOS18.3 native capture. Long copy truncates with ellipsis; oversized numerals explicitly report non-fit. Denominator remains beside the numeral. No native layout changed or new native verification performed. | Review the fixed-size prototype. If adopted, implement native layouts and verify the full native matrix before release. |
+| design.widget-alignment-prototype | done | agent | observed | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
 
 ## Evidence and history
 
@@ -1660,3 +1660,13 @@ Browser prototype now uses fixed iPhone 16 Pro Max frames: medium 364×170pt and
 - design/prototypes/widget-alignment/README.md; native frame source store/source/iphone-6.9/04-widget-sizes-native.png and its provenance/crop SVG. Design tests34 passed; npm test206 passed including web export; 216 browser combinations passed at1280/320px. Revised native font metrics, margins, accessibility, resizing and theme transitions remain unverified.
 
 Next: Review the fixed-size prototype. If adopted, implement native layouts and verify the full native matrix before release.
+
+### 169. design.widget-alignment-prototype — done
+
+2026-09-17T12:23:14+00:00 · observed · agent
+
+Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged.
+
+- design/prototypes/widget-alignment/README.md; design tests35 passed; npm test207 passed including web export. Browser matrix includes equal numeral sizes, equal title-hidden space, fixed frames and non-fit notices. In-app title-on/off visuals inspected; native font metrics/margins, accessibility, resizing and theme transitions remain unverified.
+
+Next: Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted.

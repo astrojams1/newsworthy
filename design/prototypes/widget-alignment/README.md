@@ -16,8 +16,8 @@ iPhone 16 Pro Max / iOS 18.3 Home Screen:
 
 Source: `store/source/iphone-6.9/04-widget-sizes-native.png`, provenance in the
 adjacent `provenance.json`, and exact crops in
-`store/source/layouts/iphone-6.9-02-widget-sizes-v2.svg`. The small widget is a
-number-only size reference; the medium widget demonstrates the new layout.
+`store/source/layouts/iphone-6.9-02-widget-sizes-v2.svg`. The small widget uses the same numeral size as the medium, in a number-only
+layout; the medium adds the explanation beside it.
 Newsworthy currently registers systemSmall and systemMedium, not systemLarge.
 
 One CSS pixel represents one iOS point. These are logical layout dimensions,
@@ -31,7 +31,10 @@ font rendering are approximations. Device/OS configurations can differ; see
 
 The medium frame is always 364 × 170. Its proposed layout reserves a 14-point
 name row, a 16-point timestamp row, 8-point gaps and 16-point outer margins,
-leaving 92 points for the number and explanation. The timestamp never moves
+leaving 92 points for the number and explanation. Hiding the app title removes
+its 14-point row and an 8-point gap, giving both widgets 114 points. The selected
+three-line numeral stays the same size in both; it does not silently grow when
+the title disappears. The timestamp never moves
 outside the frame as copy grows.
 
 Default description: 14px text / 20px line height. The numeral aligns optically
@@ -49,9 +52,10 @@ reducing the selected type size. Text-scale controls are browser stress tests,
 not exact mappings to iOS Dynamic Type categories.
 
 Controls cover all ten scores, two-to-four-line numeral, aligned column or
-wrapping, light/dark appearance, normal/1.3×/2× text, line guides and custom text.
-Samples are fictional and custom text uses textContent. The small reference keeps
-its production-contract 52-point score and 12-point denominator.
+wrapping, light/dark appearance, normal/1.3×/2× text, app title visibility, line guides and custom text.
+Samples are fictional and custom text uses textContent. Both widgets use the same SVG numeral renderer, computed font size and
+denominator. The title toggle affects both widgets together. Oversized numbers
+that exceed the small widget’s width or height get an explicit non-fit notice.
 
 ## Verification limits
 
@@ -64,19 +68,20 @@ production surface contract in design/surfaces.json remains unchanged.
 `npm run test:design` includes the fixed iOS frames and source crop dimensions,
 as well as optical alignment and enlarged-text regressions. The browser check
 covers score 1/3/10, span 2/3/4, both appearances, three text scales and both
-layout modes. It checks constant small/medium dimensions, baseline denominator,
+layout modes, with the title both shown and hidden. It checks equal numeral
+heights, equal reclaimed title space, constant small/medium dimensions, baseline denominator,
 text containment, ellipsis and overflow notices. It deliberately reintroduces
 growing frames, a denominator below the score and centered text to verify that
-each regression is detectable.
+each regression is detectable. It also reinstates a 52-point small numeral to
+verify that mismatched numeral sizes are caught.
 
 ```sh
 npx agent-browser open http://127.0.0.1:8766/design/prototypes/widget-alignment/
 npx agent-browser eval --stdin < design/prototypes/widget-alignment/browser-check.js
 ```
 
-Verified 2026-09-17: 34 design tests and 206 full-suite tests pass, including web
-export. Browser checks pass for 108 combinations each at 1280px and 320px
-viewports, checking both fixed frames. All long-sentence cases truncate; 36
-settings per viewport explicitly report numeral overflow. Default copy at
-score 4 / three lines fits in the refreshed user preview. Desktop and in-app
-screenshots were inspected. This remains browser verification only.
+Verified 2026-09-17: 35 design tests and 207 full-suite tests pass, including web
+export. The browser matrix now covers 216 combinations per viewport with the
+title shown/hidden, comparing both numeral sizes and available heights. The
+in-app preview was visually inspected with titles on and off. No native build
+or revised native layout verification is claimed.

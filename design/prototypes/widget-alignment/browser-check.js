@@ -1,6 +1,6 @@
 // Run in the prototype page using agent-browser eval --stdin.
 (() => {
- const set = (id,value) => { const e=document.getElementById(id); e.value=String(value); e.dispatchEvent(new Event('change',{bubbles:true})); };
+ const set = (id,value) => { const e=document.getElementById(id); if(e.type==='checkbox') e.checked=value; else e.value=String(value); e.dispatchEvent(new Event('change',{bubbles:true})); };
  const assert = (condition,message) => {if (!condition) throw Error(message)};
  function checkDenominator(widget) {
   const numeral=widget.querySelector('.numeral'), denominator=widget.querySelector('.denominator');
@@ -15,10 +15,20 @@
    assert(rect.width===width && rect.height===170, 'native widget frame must stay fixed');
   }
  }
+ function checkEqualNumerals() {
+  const large=document.querySelector('.medium .numeral'), small=document.querySelector('.compact .numeral');
+  assert(getComputedStyle(large).fontSize===getComputedStyle(small).fontSize,'small and medium numeral font sizes must match');
+  assert(Math.abs(large.getBoundingClientRect().height-small.getBoundingClientRect().height)<.5,'visible numeral heights must match');
+ }
  let cases=0, clippedCases=0, numberOverflowCases=0;
  document.getElementById('long').click();
- for(const score of [1,3,10]) for(const lines of [2,3,4]) for(const theme of ['Light','Dark']) for(const scale of [1,1.3,2]) for(const layout of ['column','wrap']) {
-  set('score',score);set('lines',lines);set('theme',theme);set('scale',scale);set('layout',layout);
+ for(const score of [1,3,10]) for(const lines of [2,3,4]) for(const theme of ['Light','Dark']) for(const scale of [1,1.3,2]) for(const layout of ['column','wrap']) for(const title of [true,false]) {
+  set('score',score);set('lines',lines);set('theme',theme);set('scale',scale);set('layout',layout);set('show-name',title);
+  checkEqualNumerals();
+  for(const widget of document.querySelectorAll('.widget')) {
+   assert(widget.querySelector('.body').clientHeight===(title?92:114),'title toggle must reclaim the same height in both widgets');
+   checkDenominator(widget);
+  }
   for(const widget of document.querySelectorAll('.medium')) {
    checkFrames();
    checkDenominator(widget);
@@ -49,7 +59,14 @@
   }
   cases++;
  }
- set('score',3);set('lines',3);set('theme','Light');set('scale',1);set('layout','column');
+ set('score',3);set('lines',3);set('theme','Light');set('scale',1);set('layout','column');set('show-name',true);
+ const smallNumeral=document.querySelector('.compact .numeral');
+ const originalFont=smallNumeral.style.fontSize;
+ smallNumeral.style.fontSize='52px';
+ let unequalRejected=false;
+ try { checkEqualNumerals(); } catch { unequalRejected=true; }
+ smallNumeral.style.fontSize=originalFont;
+ assert(unequalRejected,'guard must reject the old smaller compact numeral');
  const medium=document.querySelector('.medium');
  medium.style.height='240px';
  let growthRejected=false;
@@ -73,5 +90,5 @@
  assert(!document.querySelector('.description img'),'custom copy must be text');
  assert(document.documentElement.scrollWidth<=innerWidth+1,'page overflow');
  document.getElementById('long').click();
- return {cases,widgetsPerCase:2,clippedCases,numberOverflowCases,growingFrameRegressionDetected:growthRejected,viewport:innerWidth,centeredTextRegressionDetected:true,belowNumberRegressionDetected:belowRejected};
+ return {cases,widgetsPerCase:2,unequalNumeralRegressionDetected:unequalRejected,clippedCases,numberOverflowCases,growingFrameRegressionDetected:growthRejected,viewport:innerWidth,centeredTextRegressionDetected:true,belowNumberRegressionDetected:belowRejected};
 })();

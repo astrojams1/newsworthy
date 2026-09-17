@@ -2,4 +2,6 @@
 /* Preserve the proposed widget dimensions on narrow browser canvases. */
 .widget-stage{overflow-x:auto}figure{width:max-content;max-width:none}.widget{max-width:none}
 
-.compact-run{display:flex;align-items:baseline;align-self:center;gap:6px;font-weight:300}.compact-number{font-size:52px;line-height:1;letter-spacing:-.04em}.compact-denominator{font-size:12px;color:var(--ink-on-gradient-muted)}.fit-status,.reference-note{max-width:364px;font-size:11px;line-height:1.5;color:#64705a;margin:8px 0 0}.fit-status[data-state="clipped"],.fit-status[data-state="number-overflow"]{color:#874d24}figure:first-child figcaption{max-width:364px}figure:last-child figcaption{max-width:170px}footer a{color:inherit}.widget-stage{scrollbar-gutter:stable}body.wrap .body{height:92px}
+.fit-status,.reference-note{max-width:364px;font-size:11px;line-height:1.5;color:#64705a;margin:8px 0 0}.fit-status[data-state="clipped"],.fit-status[data-state="number-overflow"]{color:#874d24}figure:first-child figcaption{max-width:364px}figure:last-child figcaption{max-width:170px}footer a{color:inherit}.widget-stage{scrollbar-gutter:stable}
+
+body.hide-name .widget-name,body.hide-name .name{display:none}body.hide-name .widget{grid-template-rows:minmax(0,1fr) 16px}.compact .body,body.wrap .compact .body{display:flex;align-items:center}.compact .score{flex-shrink:0}.reference-note[data-state="number-overflow"]{color:#874d24}

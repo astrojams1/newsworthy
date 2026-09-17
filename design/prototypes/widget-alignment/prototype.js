@@ -20,12 +20,8 @@ function render() {
   const runWidth = digit.actualBoundingBoxLeft + denominatorX + denominatorWidth;
   document.body.classList.toggle('guides', $('guides').checked);
   document.body.classList.toggle('wrap', $('layout').value === 'wrap');
+  document.body.classList.toggle('hide-name', !$('show-name').checked);
   for (const widget of document.querySelectorAll('.widget')) {
-    widget.dataset.level = score; widget.dataset.appearance = $('theme').value.toLowerCase();
-  }
-  document.querySelector('.compact-number').textContent = score;
-  document.querySelector('.compact-run').setAttribute('aria-label', `${score} out of 10`);
-  for (const widget of document.querySelectorAll('.medium')) {
     widget.dataset.level = score; widget.dataset.appearance = $('theme').value.toLowerCase();
     for (const [key,value] of Object.entries({ '--line':`${lineHeight}px`, '--body-size':`${bodySize}px`, '--span':lines, '--score-width':`${runWidth}px`, '--ink-top':`${inkTop}px` })) widget.style.setProperty(key,value);
     widget.querySelector('.score').setAttribute('aria-label', `${score} out of 10`);
@@ -36,9 +32,16 @@ function render() {
     denominator.setAttribute('x', denominatorX);
     denominator.setAttribute('y', 0);
     denominator.style.font = `300 ${denominatorSize}px ${family}`;
+    const available = widget.querySelector('.body').clientHeight;
+    if (widget.classList.contains('compact')) {
+      const overflow = metrics.lineBoxHeight > available || runWidth > widget.querySelector('.body').clientWidth;
+      widget.dataset.numberOverflow = String(overflow);
+      $('compact-status').textContent = overflow ? 'Does not fit: this number size exceeds the small widget’s available space.' : 'Same numeral size · Number-only layout';
+      $('compact-status').dataset.state = overflow ? 'number-overflow' : 'fits';
+      continue;
+    }
     const description = widget.querySelector('.description');
     const full = $('sentence').value;
-    const available = widget.querySelector('.body').clientHeight;
     const textHeight = Math.floor(available / lineHeight) * lineHeight;
     description.textContent = full;
     // Measure the final line's actual ink; never increase the fixed widget frame.
@@ -67,6 +70,7 @@ function render() {
       : 'Full sentence fits · Fixed 364 × 170 pt frame.';
   }
   $('alignment-copy').textContent = `The top of the numeral meets the top of the first line. Its foot meets the bottom of line ${lines}. ${$('layout').value === 'column' ? 'The sentence keeps a straight left edge.' : 'The sentence continues beneath the score after clearing the numeral.'}`;
+  $('height-metric').textContent = `${document.querySelector('.medium .body').clientHeight} pt${$('show-name').checked ? '' : ' · +22 without title'}`;
   $('body-metric').textContent = `${bodySize.toFixed(0)} / ${lineHeight.toFixed(0)} px`;
   $('span-metric').textContent = `${lineHeight} × ${lines} = ${metrics.lineBoxHeight} px`;
   $('ink-metric').textContent = `${metrics.inkHeight.toFixed(1)} px`;

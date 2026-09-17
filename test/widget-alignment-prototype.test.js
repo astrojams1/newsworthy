@@ -30,3 +30,13 @@ test('iOS study fixes both supported widget frames and never grows with its text
   assert.match(nativeLayout, /viewBox="114 282 1092 510"/);
   assert.match(nativeLayout, /viewBox="114 918 510 510"/);
 });
+
+
+test('small and medium previews share the same numeral renderer and reclaim title height', () => {
+  const html = readFileSync(new URL('../design/prototypes/widget-alignment/index.html', import.meta.url), 'utf8');
+  assert.equal((html.match(/<text class="numeral">/g) ?? []).length, 2);
+  assert.match(html, /id="show-name" checked/);
+  const css = readFileSync(new URL('../design/prototypes/widget-alignment/style.css', import.meta.url), 'utf8');
+  assert.doesNotMatch(css, /font-size:52px/);
+  assert.match(css, /body\.hide-name \.widget\{grid-template-rows:minmax\(0,1fr\) 16px\}/);
+});
