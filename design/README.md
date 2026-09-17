@@ -106,3 +106,11 @@ The reading-gradient regression fixture captures pixels from Chromium rendering
 independent reference pixels with a four-channel-value rasterization tolerance.
 If the approved CSS changes, recapture the CSS reference rather than deriving
 expected pixels from the SVG renderer.
+
+## Standalone-score prototype
+
+`design/prototypes/drop-cap/index.html` is an interactive browser study of
+standalone scores and text wrapping around a numeral in expanded widgets.
+See its [preview notes](prototypes/drop-cap/README.md) for proposed sizes,
+controls and verification limits. The production contract above remains the
+baseline until this proposal is approved and implemented on native surfaces.
