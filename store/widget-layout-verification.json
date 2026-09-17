@@ -26,7 +26,21 @@
     ]
   },
   "android": {
-    "state": "Native RemoteViews verification in progress; XML resources compile. Full production Android package not yet built."
+    "state": "Production XML and applyTypography compiled and rendered through native RemoteViews on Android API35 in a standalone test host; full production APK and launcher still untested.",
+    "verified": [
+      "compact/expanded matching numeral size",
+      "score3 and10",
+      "baseline denominator",
+      "expanded description beside score with capital-top alignment",
+      "light theme and saved timestamp",
+      "dark theme",
+      "2x font scale: description truncates, numeral and timestamp remain visible"
+    ],
+    "captures": [
+      "store/source/widget-layout/android-light.png",
+      "store/source/widget-layout/android-dark.png",
+      "store/source/widget-layout/android-large-text.png"
+    ]
   },
   "untested": [
     "Revised widget installed through WidgetKit Home Screen",
@@ -37,6 +51,6 @@
   ],
   "checks": {
     "npmTest": 205,
-    "designGate": "Native contract and deliberate regression checks passed"
+    "designGate": "33 native contract and deliberate regression tests passed"
   }
 }
