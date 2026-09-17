@@ -1,0 +1,27 @@
+node_modules/
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+.env
+.DS_Store
+dist/
+.env.mobile
+.vercel/
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+*.p8
+artifacts/
+
+.expo/
+apps/client/ios/
+apps/client/android/
+
+# Store listing artwork and verification captures are not app build inputs.
+/store/source/
+/store/assets/
+
+# EAS records the source commit separately; omit packed repository history.
+/.git

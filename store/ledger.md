@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T11:47:11+00:00
+Updated: 2026-09-17T13:05:45+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -60,6 +60,9 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.header-background | done | agent | observed | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
 | native.replacement-builds | done | agent | observed | Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified. | Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload. |
 | design.denominator | in_progress | agent | observed | Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction. | Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission. |
+| design.widget-alignment-prototype | done | agent | observed | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
+| design.widget-layout-feature | in_progress | agent | observed | Actual native widget feature committed in PR100; 205 tests and 33 design checks passed. iOS SwiftUI and Android RemoteViews rendered in native test hosts. | Finish TestFlight build upload; retain untested WidgetKit/launcher and physical-device states in verification record. |
+| apple.widget-testflight | in_progress | agent | observed | EAS build9 c00512fb-db9f-4ec6-bebb-94614b360d5a was canceled before upload to Apple so the next TestFlight build can include merged main and the share-icon fix. User also authorized merging PR100. | Complete merged-source checks, merge PR100, build the merged commit, upload to TestFlight and retain review build7. |
 
 ## Evidence and history
 
@@ -1619,3 +1622,113 @@ Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space
 - Owner selected regular space on September 17 after reviewing browser comparisons. Design source guards cover glyph, spacing and single-line denominator. Browser comparisons are not native widget verification.
 
 Next: Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission.
+
+### 165. design.widget-alignment-prototype — in_progress
+
+2026-09-17T12:01:16+00:00 · observed · agent
+
+Browser-only numeral alignment prototype; production native layouts unchanged. No native builds or device verification performed for this proposal.
+
+- design/prototypes/widget-alignment/README.md; native matrix entirely unverified for this prototype: iOS and Android compact/expanded, light/dark, score 10, enlarged text, resizing, theme switches without refresh.
+
+Next: Review the browser prototype, then implement and verify native surfaces only if adopted.
+
+### 166. design.widget-alignment-prototype — done
+
+2026-09-17T12:02:28+00:00 · observed · agent
+
+Browser prototype complete: three-line optical numeral with adjacent left-aligned description, two/four-line alternatives and wrap comparison. Production native layouts unchanged; native verification for this proposal remains entirely unperformed.
+
+- design/prototypes/widget-alignment/README.md; test:design 33 passed; npm test 205 passed including web export; 216 browser combinations at 1280/320 widths, two widgets each, passed. Native untested states: iOS/Android compact/expanded, light/dark, score 10, enlarged text, resizing and theme changes without refresh.
+
+Next: Review the prototype. If adopted, implement native layouts and verify the full native matrix before release.
+
+### 167. design.widget-alignment-prototype — done
+
+2026-09-17T12:09:27+00:00 · observed · agent
+
+Browser prototype revised: denominator beside the numeral on its baseline, description left-aligned in a separate column. Three-line optical numeral, two/four-line alternatives and wrap comparison retained. Production native layouts unchanged; no native verification for this proposal.
+
+- design/prototypes/widget-alignment/README.md; test:design 33 passed; npm test 205 passed including web export. Browser checks include denominator position and shared baseline plus deliberate below-number regression; native matrix remains unverified.
+
+Next: Review the prototype. If adopted, implement native layouts and verify the full native matrix before release.
+
+### 168. design.widget-alignment-prototype — done
+
+2026-09-17T12:15:40+00:00 · observed · agent
+
+Browser prototype now uses fixed iPhone 16 Pro Max frames: medium 364×170pt and small 170×170pt, derived from the recorded iOS18.3 native capture. Long copy truncates with ellipsis; oversized numerals explicitly report non-fit. Denominator remains beside the numeral. No native layout changed or new native verification performed.
+
+- design/prototypes/widget-alignment/README.md; native frame source store/source/iphone-6.9/04-widget-sizes-native.png and its provenance/crop SVG. Design tests34 passed; npm test206 passed including web export; 216 browser combinations passed at1280/320px. Revised native font metrics, margins, accessibility, resizing and theme transitions remain unverified.
+
+Next: Review the fixed-size prototype. If adopted, implement native layouts and verify the full native matrix before release.
+
+### 169. design.widget-alignment-prototype — done
+
+2026-09-17T12:23:14+00:00 · observed · agent
+
+Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged.
+
+- design/prototypes/widget-alignment/README.md; design tests35 passed; npm test207 passed including web export. Browser matrix includes equal numeral sizes, equal title-hidden space, fixed frames and non-fit notices. In-app title-on/off visuals inspected; native font metrics/margins, accessibility, resizing and theme transitions remain unverified.
+
+Next: Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted.
+
+### 170. design.widget-layout-feature — in_progress
+
+2026-09-17T12:45:18+00:00 · observed · agent
+
+Production iOS and Android widget code now implements matching69-point numerals and side-by-side expanded descriptions. Browser-only study removed from final PR diff. Native iOS renderer verified, Android native renderer verification in progress; launcher/device matrix remains incomplete.
+
+- store/widget-layout-verification.json; npm test205 passed; iOS widget executable compiled; native SwiftUI small/medium, score3/10, title on/off, light/dark and AX5 checked.
+
+Next: Complete Android renderer verification and upload iOS TestFlight build, preserving App Review build7.
+
+### 171. apple.widget-testflight — in_progress
+
+2026-09-17T12:45:19+00:00 · observed · agent
+
+Owner authorizes a new TestFlight build only. Baseline App Store version1.0.0 and submission4f28761f-3096-4f0d-aa37-df83332f818f remain WAITING_FOR_REVIEW with selected build7 eff31b5d-6c18-492d-874c-d7a0e4392bf6.
+
+- App Store Connect readback2026-09-17; no version-build or review mutation authorized or planned.
+
+Next: Build production-profile IPA from committed widget feature, upload and assign only to existing internal TestFlight group; verify build7 review relationship unchanged.
+
+### 172. design.widget-layout-feature — in_progress
+
+2026-09-17T12:53:50+00:00 · observed · agent
+
+Actual native widget feature committed in PR100; 205 tests and 33 design checks passed. iOS SwiftUI and Android RemoteViews rendered in native test hosts.
+
+- efdc1f6; store/widget-layout-verification.json; store/source/widget-layout/
+
+Next: Finish TestFlight build upload; retain untested WidgetKit/launcher and physical-device states in verification record.
+
+### 173. apple.widget-testflight — in_progress
+
+2026-09-17T12:54:38+00:00 · observed · agent
+
+Production iOS build request for native widget commit efdc1f6 is uploading its archive to EAS; existing App Review build7 and review submission unchanged.
+
+- App Store version267c6f52-d22d-4cb0-bb4c-d22f280b4499 selects eff31b5d-6c18-492d-874c-d7a0e4392bf6; review4f28761f-3096-4f0d-aa37-df83332f818f WAITING_FOR_REVIEW; upload byte count advancing.
+
+Next: Await EAS build ID and successful signed IPA; upload only to TestFlight and add existing Release QA group, then recheck App Review selection.
+
+### 174. apple.widget-testflight — in_progress
+
+2026-09-17T12:58:43+00:00 · observed · agent
+
+Stopped only the oversized local source upload before EAS created a build; excluded store captures/artwork and Git history from the build archive. Native source unchanged, 205 tests passed.
+
+- .easignore; EAS latest build remained a151f9ee-9a5f-48b2-887a-f936bfe48db7 (build7); existing App Review submission untouched.
+
+Next: Submit the smaller archive, await signed IPA, then upload and enable it for the existing TestFlight group.
+
+### 175. apple.widget-testflight — in_progress
+
+2026-09-17T13:05:45+00:00 · observed · agent
+
+EAS build9 c00512fb-db9f-4ec6-bebb-94614b360d5a was canceled before upload to Apple so the next TestFlight build can include merged main and the share-icon fix. User also authorized merging PR100.
+
+- Build9 source06b6cd9, production iOS1.0.0; EAS confirms CANCELED. App Store version/build7 and review4f28761f-3096-4f0d-aa37-df83332f818f still WAITING_FOR_REVIEW, selected build eff31b5d-6c18-492d-874c-d7a0e4392bf6.
+
+Next: Complete merged-source checks, merge PR100, build the merged commit, upload to TestFlight and retain review build7.

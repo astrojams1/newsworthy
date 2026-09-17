@@ -70,8 +70,9 @@ correction or an offset applied to Android. This is an optical adjustment, not a
 change to the navigation-bar slots or the title's horizontal position.
 
 `design/surfaces.json` records the approved typography and widget size rules.
-The full reading deliberately uses larger digits than widgets. Compact widgets
-use 52-point digits, expanded widgets use 44, and both use a 12-point `∕ 10`.
+The full reading deliberately uses larger digits than widgets. Compact and expanded widgets use the same 69-point base numeral and a
+12-point `∕ 10`. Expanded descriptions use 14-point text on a 20-point line
+rhythm beside the numeral, with truncation at the available height.
 All reading surfaces use U+2215 DIVISION SLASH followed by U+0020 SPACE
 for the displayed denominator. The regular space keeps the slash clear of the “1”;
 the division slash’s stroke sits optically alongside the lining numerals instead of the ordinary
@@ -121,3 +122,23 @@ The reading-gradient regression fixture captures pixels from Chromium rendering
 independent reference pixels with a four-channel-value rasterization tolerance.
 If the approved CSS changes, recapture the CSS reference rather than deriving
 expected pixels from the SVG renderer.
+
+
+## Native widget reading layout
+
+The iOS widget uses a native SwiftUI Layout to align the numeral and sentence by
+their measured text baselines and capital heights. Small and medium families
+share the same base size. The existing Show app name setting frees its title row
+and gap when disabled. Description text follows Dynamic Type independently of
+the already-large numeral, with an explicit line limit based on available height.
+
+Android uses a horizontal RemoteViews body row with separate, baseline-aligned
+score and denominator TextViews. The description fills the remaining column,
+uses a 20sp line height, and truncates at the host's available height. The compact
+layout keeps only the number and timestamp. Both families use the same 69-point
+base numeral; runtime fitting uses the worst-case two-digit width, never the
+current score. Palette resources remain adaptive when the host changes theme.
+
+Native verification and remaining launcher/device states are recorded in
+`store/widget-layout-verification.json`; a browser study is not evidence for the
+native implementation. Web and the main native reading screen are unchanged.

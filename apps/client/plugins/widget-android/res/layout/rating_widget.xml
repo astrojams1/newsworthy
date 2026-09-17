@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:padding="16dp" android:background="@drawable/widget_background">
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="@string/widget_name" android:textSize="12sp" android:letterSpacing="0.18" android:textColor="@color/widget_muted"/>
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:baselineAligned="true" android:gravity="bottom">
-        <TextView android:id="@+id/widget_score" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="@string/widget_empty_score" android:textSize="44sp" android:includeFontPadding="false" android:letterSpacing="-0.04" android:fontFamily="sans-serif-light" android:textColor="@color/widget_ink"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_marginStart="4dp" android:text="@string/widget_denominator" android:maxLines="1" android:textSize="12sp"
-            android:includeFontPadding="false" android:fontFamily="sans-serif-light" android:textColor="@color/widget_muted"
-            android:importantForAccessibility="no"/>
+    android:orientation="vertical" android:padding="12dp" android:background="@drawable/widget_background">
+    <TextView android:layout_width="match_parent" android:layout_height="18dp"
+        android:text="@string/widget_name" android:textSize="10sp" android:letterSpacing="0.18"
+        android:autoSizeTextType="uniform" android:autoSizeMinTextSize="6sp" android:autoSizeMaxTextSize="10sp"
+        android:autoSizeStepGranularity="1sp" android:maxLines="1" android:textColor="@color/widget_muted"/>
+    <LinearLayout android:id="@+id/widget_body" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:orientation="horizontal" android:baselineAligned="false" android:gravity="top">
+        <LinearLayout android:id="@+id/widget_number" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:baselineAligned="true" android:gravity="bottom">
+            <TextView android:id="@+id/widget_score" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/widget_empty_score" android:textSize="69sp" android:maxLines="1"
+                android:includeFontPadding="false" android:letterSpacing="-0.04" android:fontFamily="sans-serif-light" android:textColor="@color/widget_ink"/>
+            <TextView android:id="@+id/widget_denominator" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginStart="6dp" android:text="@string/widget_denominator" android:maxLines="1" android:textSize="12sp"
+                android:includeFontPadding="false" android:fontFamily="sans-serif-light" android:textColor="@color/widget_muted"
+                android:importantForAccessibility="no"/>
+        </LinearLayout>
+        <TextView android:id="@+id/widget_explanation" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+            android:layout_marginStart="16dp" android:gravity="top|start" android:includeFontPadding="false"
+            android:text="@string/widget_waiting" android:textSize="14sp" android:lineHeight="20sp" android:maxLines="4"
+            android:ellipsize="end" android:textColor="@color/widget_ink"/>
     </LinearLayout>
-    <TextView android:id="@+id/widget_explanation" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
-        android:text="@string/widget_waiting" android:textSize="11sp" android:maxLines="2" android:ellipsize="end" android:textColor="@color/widget_ink"/>
-    <TextView android:id="@+id/widget_updated" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="@string/widget_waiting" android:textSize="11sp" android:maxLines="2" android:textColor="@color/widget_muted"/>
+    <TextView android:id="@+id/widget_updated" android:layout_width="match_parent" android:layout_height="32dp"
+        android:text="@string/widget_waiting" android:textSize="10sp" android:maxLines="2"
+        android:autoSizeTextType="uniform" android:autoSizeMinTextSize="6sp" android:autoSizeMaxTextSize="10sp"
+        android:autoSizeStepGranularity="1sp" android:gravity="bottom" android:textColor="@color/widget_muted"/>
 </LinearLayout>

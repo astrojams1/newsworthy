@@ -1,6 +1,9 @@
 package com.example.newsworthy;
 
 import android.app.PendingIntent;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -80,6 +83,38 @@ public class RatingWidget extends AppWidgetProvider {
             && !text.trim().isEmpty() && text.length() <= 2000 && readingDate(data) != null;
     }
 
+    // Both families share a base numeral. Only host constraints shrink it; score
+    // changes never do. Keep native TextViews so theme resources remain adaptive.
+    static void applyTypography(Context context, RemoteViews views, int width, int height, boolean compact, float scoreSize) {
+        android.util.DisplayMetrics display = context.getResources().getDisplayMetrics();
+        float density = display.density;
+        Paint number = new Paint(Paint.ANTI_ALIAS_FLAG);
+        number.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        number.setTextSize(scoreSize * density);
+        Paint denominator = new Paint(number);
+        denominator.setTextSize(12 * density);
+        float availableHeight = Math.max(24, height - 74) * density;
+        float availableWidth = Math.max(36, width - 24 - (compact ? 0 : 112)) * density;
+        float fit = Math.min(1, Math.min(availableHeight / number.getFontSpacing(),
+            (availableWidth - denominator.measureText("∕ 10") - 6 * density) / number.measureText("10")));
+        number.setTextSize(scoreSize * density * Math.max(0.4f, fit));
+        views.setTextViewTextSize(R.id.widget_score, TypedValue.COMPLEX_UNIT_PX, number.getTextSize());
+        views.setTextViewTextSize(R.id.widget_denominator, TypedValue.COMPLEX_UNIT_PX, denominator.getTextSize());
+        if (!compact) {
+            Paint text = new Paint(Paint.ANTI_ALIAS_FLAG);
+            text.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+            text.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, display));
+            Rect numberInk = new Rect(), textInk = new Rect();
+            number.getTextBounds("0", 0, 1, numberInk);
+            text.getTextBounds("H", 0, 1, textInk);
+            int top = Math.max(0, Math.round((-number.ascent() + numberInk.top) - (-text.ascent() + textInk.top)));
+            int lineHeight = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 20, display));
+            views.setViewPadding(R.id.widget_explanation, 0, top, 0, 0);
+            views.setInt(R.id.widget_explanation, "setLineHeight", lineHeight);
+            views.setInt(R.id.widget_explanation, "setMaxLines", Math.max(1, Math.min(4, (int)((availableHeight - top) / lineHeight))));
+        }
+    }
+
     static void renderAll(Context context) {
         boolean saved = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE).getBoolean(SAVED, true);
         JSONObject reading = null;
@@ -98,9 +133,9 @@ public class RatingWidget extends AppWidgetProvider {
             int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
             int height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
             boolean compact = width < 250 || height < 150;
-            float scoreSize = compact ? 52 : 44;
+            float scoreSize = 69;
             RemoteViews views = new RemoteViews(context.getPackageName(), compact ? R.layout.rating_widget_compact : R.layout.rating_widget);
-            views.setTextViewTextSize(R.id.widget_score, TypedValue.COMPLEX_UNIT_SP, scoreSize);
+            applyTypography(context, views, width, height, compact, scoreSize);
             views.setOnClickPendingIntent(R.id.widget_root, launch);
             views.setInt(R.id.widget_root, "setBackgroundResource",
                 LevelPalette.background(reading == null ? 0 : reading.optInt("score")));
