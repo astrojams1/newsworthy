@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { checkWidgetDesign, widgetSources, contract } from './helpers/widget-contract.js';
-import { renderReading, nodes } from './helpers/render-reading.js';
+import { renderReading, renderShareIcon, nodes } from './helpers/render-reading.js';
 import { themeForLevel } from '../apps/client/lib/palette.js';
 
 test('native widget implementations satisfy the same compact/expanded design contract', () => {
@@ -116,13 +116,40 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
     assert.equal(right.props.accessibilityLabel, 'Share this reading');
     assert.equal(right.props.accessibilityRole, 'button');
     assert.equal(typeof right.props.onPress, 'function');
-    assert.ok(right.props.style.minWidth >= 44 && right.props.style.minHeight >= 44);
+    assert.ok(right.props.style.minWidth >= contract.header.minimumTouchTarget && right.props.style.minHeight >= contract.header.minimumTouchTarget);
+    assert.equal(right.props.style.transform, undefined, 'optical correction must not move the touch target');
   } else assert.equal(score, null);
 }
 
 test('native header keeps plain brand/share controls and accessible touch targets', () => {
   for (const platform of ['ios', 'android', 'web']) {
     for (const score of [null, 3]) inspectHeader({ platform, score });
+  }
+});
+
+function inspectShareIcon(platform, dark, sourceOverride) {
+  const color = themeForLevel(3, dark).accent;
+  const { props } = renderShareIcon({ platform, color, sourceOverride });
+  assert.equal(props.style.width, contract.header.shareIconSize);
+  assert.equal(props.style.height, contract.header.shareIconSize);
+  assert.equal(props.style.transform?.[0]?.translateY, contract.header.shareOpticalOffsetY[platform], 'share artwork keeps its platform optical alignment');
+  assert.equal(props.tintColor, color);
+  if (platform === 'ios') assert.equal(props.source, 'sf:square.and.arrow.up');
+}
+
+test('share artwork aligns optically with the title without moving its touch target', () => {
+  for (const platform of ['web', 'ios', 'android']) for (const dark of [false, true]) {
+    inspectHeader({ platform });
+    inspectShareIcon(platform, dark);
+  }
+});
+
+test('header gate rejects missing optical correction and shifting the balanced Android glyph', () => {
+  const source = readFileSync(new URL('../apps/client/components/app-icon.tsx', import.meta.url), 'utf8');
+  for (const [platform, expression] of [['web', '0'], ['ios', '0'], ['android', '-2']]) {
+    const sourceOverride = source.replace("process.env.EXPO_OS === 'android' ? 0 : -2", expression);
+    assert.notEqual(sourceOverride, source);
+    assert.throws(() => inspectShareIcon(platform, false, sourceOverride), /platform optical alignment/);
   }
 });
 
