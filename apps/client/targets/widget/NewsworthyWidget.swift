@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import Foundation
 import AppIntents
+import UIKit
 
 struct Reading: Codable {
     let score: Int
@@ -113,48 +114,118 @@ struct Provider: TimelineProvider {
     }
 }
 
+// One three-line numeral size for both families. The description can grow with
+// Dynamic Type independently; the already-large score remains legible and stable.
+private enum WidgetTypography {
+    static let scoreSize: CGFloat = 69
+    static let explanationSize: CGFloat = 14
+    static let explanationLineHeight: CGFloat = 20
+    static let denominatorSize: CGFloat = 12
+    static let columnGap: CGFloat = 16
+}
+
+// Align actual capital tops, using SwiftUI's measured baselines. A Text frame
+// includes ascenders/leading; treating its top as the numeral top wastes space.
+private struct WidgetReadingLayout: Layout {
+    let compact: Bool
+    let scoreCapHeight: CGFloat
+    let explanationCapHeight: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        proposal.replacingUnspecifiedDimensions(by: CGSize(width: 332, height: 92))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        guard let number = subviews.first else { return }
+        let score = number.dimensions(in: .unspecified)
+        let top = compact ? max(0, (bounds.height - scoreCapHeight) / 2) : 0
+        number.place(at: CGPoint(x: bounds.minX, y: bounds.minY + top + scoreCapHeight - score[.firstTextBaseline]),
+                     anchor: .topLeading, proposal: .unspecified)
+        if !compact, subviews.count > 1 {
+            let width = max(0, bounds.width - score.width - WidgetTypography.columnGap)
+            let textProposal = ProposedViewSize(width: width, height: bounds.height)
+            let text = subviews[1].dimensions(in: textProposal)
+            subviews[1].place(at: CGPoint(x: bounds.minX + score.width + WidgetTypography.columnGap,
+                                        y: bounds.minY + explanationCapHeight - text[.firstTextBaseline]),
+                              anchor: .topLeading, proposal: textProposal)
+        }
+    }
+}
+
 struct ReadingView: View {
     let entry: ReadingEntry
     @Environment(\.widgetFamily) private var family
-    private var baseScoreSize: CGFloat { family == .systemSmall ? 52 : 44 }
-    private var scoreSize: CGFloat {
-        entry.showAppName ? baseScoreSize : (family == .systemSmall ? 72 : 56)
+    var body: some View { ReadingContent(entry: entry, family: family) }
+}
+
+// Explicit family makes the production content testable in a native host.
+struct ReadingContent: View {
+    let entry: ReadingEntry
+    let family: WidgetFamily
+    @ScaledMetric(relativeTo: .caption) private var explanationSize = WidgetTypography.explanationSize
+    @ScaledMetric(relativeTo: .caption) private var explanationLineHeight = WidgetTypography.explanationLineHeight
+
+    // A very narrow/short host may need a smaller number, regardless of family.
+    // Measure the two-digit case so readings never jump size when the score changes.
+    private func scoreSize(in size: CGSize) -> CGFloat {
+        let font = UIFont.monospacedDigitSystemFont(ofSize: WidgetTypography.scoreSize, weight: .light)
+        let width = ("10" as NSString).size(withAttributes: [.font: font]).width
+        let denominator = (" ∕ 10" as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: WidgetTypography.denominatorSize, weight: .light)]).width
+        let scale = min(1, max(0.4, min(size.height / font.capHeight, (size.width - denominator) / width)))
+        return WidgetTypography.scoreSize * scale
+    }
+
+    private func score(size: CGFloat) -> some View {
+        (Text(entry.reading.map { String($0.score) } ?? "–")
+            .font(.system(size: size, weight: .light)).monospacedDigit()
+            .tracking(-size * 0.04)
+         + Text(" ∕ 10")
+            .font(.system(size: WidgetTypography.denominatorSize, weight: .light)).monospacedDigit()
+            .tracking(0)
+            .foregroundColor(Color("NewsworthyGradientMuted")))
+            .lineLimit(1).fixedSize()
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(entry.reading.map { "\($0.score) out of 10" } ?? "Rating unavailable")
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             if entry.showAppName {
-                Text("NEWSWORTHY").font(.caption2).tracking(2)
+                Text("NEWSWORTHY").font(.system(size: 10)).tracking(2)
                     .lineLimit(1).minimumScaleFactor(0.8)
                     .foregroundStyle(Color("NewsworthyGradientMuted"))
+                    .frame(height: 14, alignment: .leading)
             }
-            if family == .systemSmall { Spacer(minLength: 0) }
-            // Match the app's light digits, -0.04em tracking and baseline-aligned
-            // denominator, including its leading space. Scale the whole run together.
-            (Text(entry.reading.map { String($0.score) } ?? "–")
-                .font(.system(size: scoreSize, weight: .light)).monospacedDigit()
-                .tracking(-scoreSize * 0.04)
-             + Text(" ∕ 10")
-                .font(.system(size: 12 * scoreSize / baseScoreSize, weight: .light)).monospacedDigit()
-                .tracking(0)
-                .foregroundColor(Color("NewsworthyGradientMuted")))
-                .lineLimit(1).minimumScaleFactor(0.7)
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel(entry.reading.map { "\($0.score) out of 10" } ?? "Rating unavailable")
-            if family == .systemMedium {
-                Text(entry.reading?.explanation ?? "The latest rating will appear when a connection is available.")
-                    .font(.caption).lineLimit(2)
+            GeometryReader { geometry in
+                let size = scoreSize(in: geometry.size)
+                let scoreFont = UIFont.monospacedDigitSystemFont(ofSize: size, weight: .light)
+                let bodyFont = UIFont.systemFont(ofSize: explanationSize)
+                WidgetReadingLayout(compact: family == .systemSmall, scoreCapHeight: scoreFont.capHeight,
+                                    explanationCapHeight: bodyFont.capHeight) {
+                    score(size: size)
+                    if family == .systemMedium {
+                        Text(entry.reading?.explanation ?? "The latest rating will appear when a connection is available.")
+                            .font(.system(size: explanationSize))
+                            .lineSpacing(max(0, explanationLineHeight - bodyFont.lineHeight))
+                            .lineLimit(max(1, Int(geometry.size.height / explanationLineHeight)))
+                            .truncationMode(.tail)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+                .clipped()
             }
-            Spacer(minLength: 0)
-            if let date = entry.reading?.updatedAt {
-                // An absolute date stays truthful even if the OS postpones the next update.
-                Text("\(entry.saved ? "Saved · " : "")\(date.formatted(.dateTime.month(.abbreviated).day())) · \(date.formatted(date: .omitted, time: .shortened))")
-                    .font(.caption2).foregroundStyle(Color("NewsworthyGradientMuted"))
-                    .lineLimit(1).minimumScaleFactor(0.5)
-                    .accessibilityLabel("\(entry.saved ? "Saved reading from" : "Updated") \(date.formatted(date: .abbreviated, time: .shortened))")
-            } else {
-                Text("Waiting for a reading").font(.caption2).foregroundStyle(Color("NewsworthyGradientMuted"))
+            Group {
+                if let date = entry.reading?.updatedAt {
+                    // Preserve the saved reading's absolute timestamp.
+                    Text("\(entry.saved ? "Saved · " : "")\(date.formatted(.dateTime.month(.abbreviated).day())) · \(date.formatted(date: .omitted, time: .shortened))")
+                        .accessibilityLabel("\(entry.saved ? "Saved reading from" : "Updated") \(date.formatted(date: .abbreviated, time: .shortened))")
+                } else {
+                    Text("Waiting for a reading")
+                }
             }
+            .font(.system(size: 11)).foregroundStyle(Color("NewsworthyGradientMuted"))
+            .lineLimit(1).minimumScaleFactor(0.5)
+            .frame(height: 16, alignment: .leading)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .foregroundStyle(Color("NewsworthyInk"))

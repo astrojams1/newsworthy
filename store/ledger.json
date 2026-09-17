@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T12:23:14+00:00",
+  "updated_at": "2026-09-17T12:45:19+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -572,6 +572,28 @@
       ],
       "next_action": "Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted.",
       "updated_at": "2026-09-17T12:23:14+00:00"
+    },
+    "design.widget-layout-feature": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Production iOS and Android widget code now implements matching69-point numerals and side-by-side expanded descriptions. Browser-only study removed from final PR diff. Native iOS renderer verified, Android native renderer verification in progress; launcher/device matrix remains incomplete.",
+      "evidence": [
+        "store/widget-layout-verification.json; npm test205 passed; iOS widget executable compiled; native SwiftUI small/medium, score3/10, title on/off, light/dark and AX5 checked."
+      ],
+      "next_action": "Complete Android renderer verification and upload iOS TestFlight build, preserving App Review build7.",
+      "updated_at": "2026-09-17T12:45:18+00:00"
+    },
+    "apple.widget-testflight": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner authorizes a new TestFlight build only. Baseline App Store version1.0.0 and submission4f28761f-3096-4f0d-aa37-df83332f818f remain WAITING_FOR_REVIEW with selected build7 eff31b5d-6c18-492d-874c-d7a0e4392bf6.",
+      "evidence": [
+        "App Store Connect readback2026-09-17; no version-build or review mutation authorized or planned."
+      ],
+      "next_action": "Build production-profile IPA from committed widget feature, upload and assign only to existing internal TestFlight group; verify build7 review relationship unchanged.",
+      "updated_at": "2026-09-17T12:45:19+00:00"
     }
   },
   "events": [
@@ -3290,6 +3312,38 @@
         ],
         "next_action": "Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted.",
         "updated_at": "2026-09-17T12:23:14+00:00"
+      }
+    },
+    {
+      "sequence": 170,
+      "at": "2026-09-17T12:45:18+00:00",
+      "gate": "design.widget-layout-feature",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Production iOS and Android widget code now implements matching69-point numerals and side-by-side expanded descriptions. Browser-only study removed from final PR diff. Native iOS renderer verified, Android native renderer verification in progress; launcher/device matrix remains incomplete.",
+        "evidence": [
+          "store/widget-layout-verification.json; npm test205 passed; iOS widget executable compiled; native SwiftUI small/medium, score3/10, title on/off, light/dark and AX5 checked."
+        ],
+        "next_action": "Complete Android renderer verification and upload iOS TestFlight build, preserving App Review build7.",
+        "updated_at": "2026-09-17T12:45:18+00:00"
+      }
+    },
+    {
+      "sequence": 171,
+      "at": "2026-09-17T12:45:19+00:00",
+      "gate": "apple.widget-testflight",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner authorizes a new TestFlight build only. Baseline App Store version1.0.0 and submission4f28761f-3096-4f0d-aa37-df83332f818f remain WAITING_FOR_REVIEW with selected build7 eff31b5d-6c18-492d-874c-d7a0e4392bf6.",
+        "evidence": [
+          "App Store Connect readback2026-09-17; no version-build or review mutation authorized or planned."
+        ],
+        "next_action": "Build production-profile IPA from committed widget feature, upload and assign only to existing internal TestFlight group; verify build7 review relationship unchanged.",
+        "updated_at": "2026-09-17T12:45:19+00:00"
       }
     }
   ],

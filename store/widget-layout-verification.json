@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-17",
+  "scope": "Production widget implementation; standalone native renderer checks are separate from launcher verification.",
+  "sourceSha256": {
+    "apps/client/targets/widget/NewsworthyWidget.swift": "951e942562d9d288f25fb9e393a1ba10ab298ded5bca11a22fc883e32529b49f",
+    "apps/client/plugins/widget-android/RatingWidget.java": "ff024e9b98c5123974e6c36842e8a9b2a1e05d1088f84804c46c76d5d8f5bbfc",
+    "apps/client/plugins/widget-android/res/layout/rating_widget.xml": "16f635c3b327a59936a1b57d50ae39c31002af3b738665c1d460d04c1865399f",
+    "apps/client/plugins/widget-android/res/layout/rating_widget_compact.xml": "29131c8f69becd6dd9bf861c97cd4ca97c619a44e00014179e9ad024e73d55b6"
+  },
+  "ios": {
+    "compile": "Complete widget source linked for arm64 iOS16.4 simulator using Xcode16.2.",
+    "nativeRenderer": "Production ReadingContent compiled unchanged into a SwiftUI test host on iPad Pro13-inch iOS18.3. Host uses fixed iPhone-sized frames and copies existing named-color Assets.car; not a WidgetKit Home Screen capture.",
+    "verified": [
+      "small/medium 69-point base numerals",
+      "expanded description beside score with capital-top alignment",
+      "baseline denominator",
+      "score3 and10",
+      "title shown/hidden",
+      "light/dark",
+      "AX5 text truncates while score/timestamp remain visible"
+    ],
+    "captures": [
+      "store/source/widget-layout/ios-light.png",
+      "store/source/widget-layout/ios-dark.png",
+      "store/source/widget-layout/ios-large-text.png"
+    ]
+  },
+  "android": {
+    "state": "Native RemoteViews verification in progress; XML resources compile. Full production Android package not yet built."
+  },
+  "untested": [
+    "Revised widget installed through WidgetKit Home Screen",
+    "Android launcher add/resize/tap/refresh with revised package",
+    "physical devices",
+    "theme switch without data refresh in actual widget hosts",
+    "production IPA until EAS completes"
+  ],
+  "checks": {
+    "npmTest": 205,
+    "designGate": "Native contract and deliberate regression checks passed"
+  }
+}

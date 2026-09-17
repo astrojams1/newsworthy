@@ -1,16 +1,20 @@
 {
-  "denominatorText": "∕ 10",
+  "denominatorText": "\u2215 10",
   "widget": {
-    "compactScore": 52,
-    "expandedScore": 44,
+    "compactScore": 69,
+    "expandedScore": 69,
     "denominatorSize": 12,
     "trackingEm": -0.04,
-    "androidDenominatorGap": 4,
+    "androidDenominatorGap": 6,
     "minimumDp": 120,
     "minimumCells": 2,
     "expandedMinWidth": 250,
     "expandedMinHeight": 150,
-    "expandedExplanationLines": 2
+    "expandedExplanationLines": 4,
+    "explanationSize": 14,
+    "explanationLineHeight": 20,
+    "numeralLines": 3,
+    "columnGap": 16
   },
   "reading": {
     "weight": "300",

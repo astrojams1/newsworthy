@@ -72,7 +72,15 @@ export function checkWidgetDesign(sources = widgetSources()) {
         assert.equal(attr(node, 'autoSizeMaxTextSize'), '10sp', `compact ${role} fitting maximum`);
       }
     }
-    else assert.equal(attr(explanation, 'maxLines'), String(c.expandedExplanationLines), 'expanded context limit');
+    else {
+      assert.equal(attr(explanation, 'maxLines'), String(c.expandedExplanationLines), 'expanded context limit');
+      assert.equal(attr(explanation, 'textSize'), `${c.explanationSize}sp`, 'expanded explanation size');
+      assert.equal(attr(explanation, 'lineHeight'), `${c.explanationLineHeight}sp`, 'expanded line rhythm');
+      assert.equal(explanation.parentNode, score.parentNode.parentNode, 'description beside numeral');
+      assert.equal(attr(explanation.parentNode, 'orientation'), 'horizontal', 'expanded description direction');
+      assert.equal(attr(explanation, 'layout_marginStart'), `${c.columnGap}dp`, 'expanded column gap');
+      assert.equal(attr(explanation, 'ellipsize'), 'end', 'bounded explanation truncates');
+    }
   }
   for (const mode of ['light', 'dark']) {
     const doc = xml(sources[mode]);
@@ -96,16 +104,27 @@ export function checkWidgetDesign(sources = widgetSources()) {
   // Runtime paint overrides bypass theme-resource reapplication on host changes.
   assert.doesNotMatch(java, /\b(?:ForegroundColorSpan|RelativeSizeSpan|AbsoluteSizeSpan|SpannableString|setTextColor)\b|"setTextColor"/, 'widget text must retain XML theme/size bindings');
   assert.deepEqual(extract(java, /boolean compact\s*=\s*width\s*<\s*(\d+)\s*\|\|\s*height\s*<\s*(\d+)\s*;/, 'compact selection'), [c.expandedMinWidth, c.expandedMinHeight]);
-  assert.deepEqual(extract(java, /float scoreSize\s*=\s*compact\s*\?\s*(\d+)\s*:\s*(\d+)\s*;/, 'Android runtime score'), [c.compactScore, c.expandedScore]);
-  assert.match(java, /setTextViewTextSize\(R\.id\.widget_score,\s*TypedValue\.COMPLEX_UNIT_SP,\s*scoreSize\)/, 'runtime score uses scale-aware shared sizes');
+  assert.deepEqual(extract(java, /float scoreSize\s*=\s*(\d+)\s*;/, 'Android runtime score'), [c.compactScore]);
+  assert.equal(c.compactScore, c.expandedScore, 'shared numeral size');
+  assert.match(java, /applyTypography\(context, views, width, height, compact, scoreSize\)/, 'runtime fits host constraints');
+  assert.match(java, /setTextViewTextSize\(R\.id\.widget_score,\s*TypedValue\.COMPLEX_UNIT_PX,\s*number\.getTextSize\(\)\)/, 'runtime uses measured numeral');
+  assert.match(java, /number\.measureText\("10"\)/, 'fit is stable across score values');
   assert.match(java, /String number\s*=\s*Integer\.toString\(reading\.optInt\("score"\)\)\s*;/, 'score value excludes the denominator');
   assert.match(java, /views\.setTextViewText\(R\.id\.widget_score, number\)/, 'score value uses the separate denominator');
 
-  const swift = code(sources.swift).split('struct ReadingView: View {')[1]?.split('struct WidgetSurface:')[0];
-  assert.ok(swift, 'Swift reading view is present');
-  assert.deepEqual(extract(swift, /baseScoreSize:\s*CGFloat\s*\{\s*family == \.systemSmall \? (\d+) : (\d+)\s*\}/, 'iOS family score'), [c.compactScore, c.expandedScore]);
-  assert.deepEqual(extract(swift, /Text\(" ∕ 10"\)\s*\.font\(\.system\(size: ([\d.]+) \* scoreSize \/ baseScoreSize, weight: \.light\)\)\.monospacedDigit\(\)\s*\.tracking\(0\)\s*\.foregroundColor\(Color\("NewsworthyGradientMuted"\)\)/, 'iOS adaptive denominator'), [c.denominatorSize]);
-  assert.deepEqual(extract(swift, /\.font\(\.system\(size: scoreSize, weight: \.light\)\)\.monospacedDigit\(\)\s*\.tracking\(-scoreSize \* ([\d.]+)\)\s*\+ Text\(" ∕ 10"\)/, 'iOS baseline text run'), [-c.trackingEm]);
-  assert.match(swift, /if family == \.systemMedium\s*\{\s*Text\(entry\.reading\?\.explanation[\s\S]*?\.lineLimit\(2\)/, 'iOS expanded explanation matches Android');
+  const swift = code(sources.swift);
+  assert.deepEqual(extract(swift, /static let scoreSize: CGFloat = (\d+)/, 'iOS shared numeral'), [c.compactScore]);
+  assert.deepEqual(extract(swift, /static let denominatorSize: CGFloat = (\d+)/, 'iOS denominator size'), [c.denominatorSize]);
+  assert.deepEqual(extract(swift, /static let explanationSize: CGFloat = (\d+)/, 'iOS explanation size'), [c.explanationSize]);
+  assert.deepEqual(extract(swift, /static let explanationLineHeight: CGFloat = (\d+)/, 'iOS line rhythm'), [c.explanationLineHeight]);
+  assert.match(swift, /\+ Text\(" ∕ 10"\)[\s\S]*?foregroundColor\(Color\("NewsworthyGradientMuted"\)\)/, 'iOS adaptive denominator');
+  assert.match(swift, /tracking\(-size \* 0\.04\)/, 'iOS score tracking');
+  assert.match(swift, /WidgetReadingLayout\(compact: family == \.systemSmall/, 'same score layout across families');
+  assert.match(swift, /bounds\.minX \+ score\.width \+ WidgetTypography\.columnGap/, 'iOS explanation beside numeral');
+  assert.match(swift, /scoreCapHeight - score\[\.firstTextBaseline\]/, 'iOS optical score top');
+  assert.match(swift, /explanationCapHeight - text\[\.firstTextBaseline\]/, 'iOS optical sentence top');
+  assert.match(swift, /lineLimit\(max\(1, Int\(geometry\.size\.height \/ explanationLineHeight\)\)\)/, 'iOS bounded context limit');
+  assert.match(swift, /if entry\.showAppName/, 'title setting retained');
+  assert.doesNotMatch(swift, /systemSmall \? (?:52|72)/, 'no smaller compact numeral');
   assert.match(swift, /\.foregroundStyle\(Color\("NewsworthyInk"\)\)/, 'iOS primary text uses adaptive ink');
 }
