@@ -1,4 +1,4 @@
-# Apple Guideline 2.1 response — version 1.0.0 (6)
+# Apple Guideline 2.1 response — version 1.0.0 (7)
 
 September 17, 2026. The owner pasted Apple's review message into the release
 task. Apple requests additional information because this developer account has
@@ -17,7 +17,7 @@ OS, version and build. Keep those same facts in Notes and the App Review reply.
 
 1. Physical-device demonstration
 
-Pending: a recording of version 1.0.0 (6) launching and showing the main flow on
+Pending: a recording of version 1.0.0 (7) launching and showing the main flow on
 a physical device running the latest OS. Existing simulator screenshots are
 not evidence of this requirement. Physical-device QA is not yet claimed.
 
@@ -82,7 +82,7 @@ videos or media feeds. It does not offer licensed third-party content for sale.
 
 1. Update the device in **Settings → General → Software Update**. Apple lists
    iOS/iPadOS 27 as latest on September 17; check again on the recording date.
-2. Install **Newsworthy 1.0.0 (6)** through TestFlight. In App Store Connect,
+2. Install **Newsworthy 1.0.0 (7)** through TestFlight. In App Store Connect,
    **Newsworthy → TestFlight → Internal Testing**, use the prepared internal
    group and add the existing account holder as a tester if not already present.
    Accept the TestFlight invitation on the device. No paid purchase is needed.

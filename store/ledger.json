@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T03:49:29+00:00",
+  "updated_at": "2026-09-17T04:05:10+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -486,15 +486,15 @@
       "updated_at": "2026-09-17T02:15:17+00:00"
     },
     "apple.physical-recording": {
-      "state": "waiting_user",
-      "owner": "user",
-      "basis": "observed",
-      "summary": "Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available.",
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "user_reported",
+      "summary": "Owner confirms the iCloud recording uses Newsworthy1.0.0(7). The Mac has only the 201.5 MB placeholder; Finder Download Now requested, local media inspection still awaits bytes.",
       "evidence": [
-        "devicectl: paired, tunnel unavailable, last OS 26.6.2; CUA iPhone Mirroring first-time onboarding; Apple official releases list iOS/iPadOS 27."
+        "Owner response: 1.0.0 (7). Filename ScreenRecording_09-17-2026 11-50-21_1.MP4. Native stat reports dataless and zero allocated blocks; no video contents or OS version verified."
       ],
-      "next_action": "Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed.",
-      "updated_at": "2026-09-17T02:12:04+00:00"
+      "next_action": "Complete iCloud download; inspect actual launch, reading, Share and widgets. Confirm recorded OS before finalizing latest-OS evidence and sending the App Review response.",
+      "updated_at": "2026-09-17T04:05:10+00:00"
     },
     "apple.testflight": {
       "state": "in_progress",
@@ -2852,6 +2852,70 @@
         ],
         "next_action": "Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload.",
         "updated_at": "2026-09-17T03:49:29+00:00"
+      }
+    },
+    {
+      "sequence": 144,
+      "at": "2026-09-17T03:55:44+00:00",
+      "gate": "apple.physical-recording",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "user_reported",
+        "summary": "Owner reports the review video is recorded. The file has not been provided, so build/OS, launch sequence and content remain unverified.",
+        "evidence": [
+          "Owner message: i have the video recorded. Narrow recent-video search found none in Downloads, Desktop or current task attachments. CUA Photos access reported Mac locked and automatic unlock unavailable."
+        ],
+        "next_action": "Owner attaches the video or AirDrops it and provides its filename. Review contents and current-OS/build provenance before App Review upload or claiming physical QA complete.",
+        "updated_at": "2026-09-17T03:55:44+00:00"
+      }
+    },
+    {
+      "sequence": 145,
+      "at": "2026-09-17T04:01:30+00:00",
+      "gate": "apple.physical-recording",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner reports copying the review recording to Mac Downloads, but the recording is not yet located. Downloads and subfolders contain one unrelated video; Finder confirms no newly added recording.",
+        "evidence": [
+          "September17: recursive video-name search of /Users/astro/Downloads and direct Finder Downloads inspection. The sole candidate was inspected locally and is not Newsworthy; no file uploaded to Apple."
+        ],
+        "next_action": "Owner supplies exact filename/path or attaches the recording. Inspect the actual video, verify physical device OS and build, then complete review evidence and upload.",
+        "updated_at": "2026-09-17T04:01:30+00:00"
+      }
+    },
+    {
+      "sequence": 146,
+      "at": "2026-09-17T04:03:15+00:00",
+      "gate": "apple.physical-recording",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Located the owner recording in iCloud Drive. Finder is downloading the 201.5 MB MP4; content, build and OS are not yet verified.",
+        "evidence": [
+          "ScreenRecording_09-17-2026 11-50-21_1.MP4, file size 201473391 bytes. Finder status: Downloading 1 item. Local AVFoundation inspection is waiting for file hydration."
+        ],
+        "next_action": "Finish download, inspect recording and provenance, record actual physical QA coverage, then attach review evidence and update Notes.",
+        "updated_at": "2026-09-17T04:03:15+00:00"
+      }
+    },
+    {
+      "sequence": 147,
+      "at": "2026-09-17T04:05:10+00:00",
+      "gate": "apple.physical-recording",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "user_reported",
+        "summary": "Owner confirms the iCloud recording uses Newsworthy1.0.0(7). The Mac has only the 201.5 MB placeholder; Finder Download Now requested, local media inspection still awaits bytes.",
+        "evidence": [
+          "Owner response: 1.0.0 (7). Filename ScreenRecording_09-17-2026 11-50-21_1.MP4. Native stat reports dataless and zero allocated blocks; no video contents or OS version verified."
+        ],
+        "next_action": "Complete iCloud download; inspect actual launch, reading, Share and widgets. Confirm recorded OS before finalizing latest-OS evidence and sending the App Review response.",
+        "updated_at": "2026-09-17T04:05:10+00:00"
       }
     }
   ],

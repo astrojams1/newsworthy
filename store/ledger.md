@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T03:49:29+00:00
+Updated: 2026-09-17T04:05:10+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -53,7 +53,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | design.regression | done | agent | observed | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
 | apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
-| apple.physical-recording | waiting_user | user | observed | Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available. | Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed. |
+| apple.physical-recording | in_progress | agent | user_reported | Owner confirms the iCloud recording uses Newsworthy1.0.0(7). The Mac has only the 201.5 MB placeholder; Finder Download Now requested, local media inspection still awaits bytes. | Complete iCloud download; inspect actual launch, reading, Share and widgets. Confirm recorded OS before finalizing latest-OS evidence and sending the App Review response. |
 | apple.testflight | in_progress | agent | observed | App Store Connect now shows Installed1.0.0(6) on iPhone17Pro/iOS26.6.2, confirming invitation acceptance and physical installation. | Deliver corrected build7 for header recheck; update physical device to latest OS before the review recording. |
 | google.large-text-build | done | agent | observed | Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation. | Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source. |
 | google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
@@ -1426,3 +1426,43 @@ Both replacement builds completed. iOS7 uploaded, VALID and available in Release
 - store/release.json; Android AAB72475175 bytes SHA256b19aa46afcf95e954586f8db1397a0b88113ed3b5460824a52a94f6ad0476bab with ZIP CRC valid. Apple build7 eff31b5d-6c18-492d-874c-d7a0e4392bf6 IN_BETA_TESTING.
 
 Next: Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload.
+
+### 144. apple.physical-recording — waiting_user
+
+2026-09-17T03:55:44+00:00 · user_reported · user
+
+Owner reports the review video is recorded. The file has not been provided, so build/OS, launch sequence and content remain unverified.
+
+- Owner message: i have the video recorded. Narrow recent-video search found none in Downloads, Desktop or current task attachments. CUA Photos access reported Mac locked and automatic unlock unavailable.
+
+Next: Owner attaches the video or AirDrops it and provides its filename. Review contents and current-OS/build provenance before App Review upload or claiming physical QA complete.
+
+### 145. apple.physical-recording — waiting_user
+
+2026-09-17T04:01:30+00:00 · observed · user
+
+Owner reports copying the review recording to Mac Downloads, but the recording is not yet located. Downloads and subfolders contain one unrelated video; Finder confirms no newly added recording.
+
+- September17: recursive video-name search of /Users/astro/Downloads and direct Finder Downloads inspection. The sole candidate was inspected locally and is not Newsworthy; no file uploaded to Apple.
+
+Next: Owner supplies exact filename/path or attaches the recording. Inspect the actual video, verify physical device OS and build, then complete review evidence and upload.
+
+### 146. apple.physical-recording — in_progress
+
+2026-09-17T04:03:15+00:00 · observed · agent
+
+Located the owner recording in iCloud Drive. Finder is downloading the 201.5 MB MP4; content, build and OS are not yet verified.
+
+- ScreenRecording_09-17-2026 11-50-21_1.MP4, file size 201473391 bytes. Finder status: Downloading 1 item. Local AVFoundation inspection is waiting for file hydration.
+
+Next: Finish download, inspect recording and provenance, record actual physical QA coverage, then attach review evidence and update Notes.
+
+### 147. apple.physical-recording — in_progress
+
+2026-09-17T04:05:10+00:00 · user_reported · agent
+
+Owner confirms the iCloud recording uses Newsworthy1.0.0(7). The Mac has only the 201.5 MB placeholder; Finder Download Now requested, local media inspection still awaits bytes.
+
+- Owner response: 1.0.0 (7). Filename ScreenRecording_09-17-2026 11-50-21_1.MP4. Native stat reports dataless and zero allocated blocks; no video contents or OS version verified.
+
+Next: Complete iCloud download; inspect actual launch, reading, Share and widgets. Confirm recorded OS before finalizing latest-OS evidence and sending the App Review response.

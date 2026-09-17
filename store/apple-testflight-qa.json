@@ -12,7 +12,7 @@
   "invitationsSent": true,
   "reviewNotesSaved": true,
   "reviewNotesSha256": "dc4431898d1d26f93cc27b78a12cac1fa1a02f85c38e8a9f96171cd63e0b9f06",
-  "physicalRecordingStatus": "PENDING",
+  "physicalRecordingStatus": "LOCATED_ICLOUD_DOWNLOAD_IN_PROGRESS",
   "physicalTestingStatus": "PENDING_CORRECTED_BUILD_CHECK",
   "testerState": "INVITED",
   "internalBuildState": "IN_BETA_TESTING",
@@ -31,5 +31,10 @@
   "processingState": "VALID",
   "installedBuildLastObserved": "6",
   "physicalHeaderVerification": "PENDING",
-  "latestBuildAvailableAt": "2026-09-17T03:48:29.310429+00:00"
+  "latestBuildAvailableAt": "2026-09-17T03:48:29.310429+00:00",
+  "physicalRecordingVerification": "PENDING_MEDIA_INSPECTION",
+  "physicalRecordingFilename": "ScreenRecording_09-17-2026 11-50-21_1.MP4",
+  "recordedBuildOwnerReported": "7",
+  "recordedOSVersion": null,
+  "recordingProvenanceBasis": "user_reported"
 }
