@@ -23,7 +23,17 @@
       "store/source/widget-layout/ios-light.png",
       "store/source/widget-layout/ios-dark.png",
       "store/source/widget-layout/ios-large-text.png"
-    ]
+    ],
+    "productionBuild": {
+      "easBuildId": "7d89e403-472e-4698-bb32-59c5a55e788f",
+      "version": "1.0.0",
+      "build": "10",
+      "commit": "6fe63746017004775ea057a1e9ed672707b31b31",
+      "state": "Apple validation/upload succeeded; processing VALID and IN_BETA_TESTING for existing Release QA group. No physical-device installation claimed.",
+      "ipaSha256": "9683fcc4f292bd0c9dcd6adece68c82ae32f13401db7a79e6c0dd1c84199834e",
+      "appleBuildId": "c4806ea6-c3cb-4baf-a700-6c6f92706fd4",
+      "appReviewBuildPreserved": "7"
+    }
   },
   "android": {
     "state": "Production XML and applyTypography compiled and rendered through native RemoteViews on Android API35 in a standalone test host; full production APK and launcher still untested.",
@@ -46,8 +56,7 @@
     "Revised widget installed through WidgetKit Home Screen",
     "Android launcher add/resize/tap/refresh with revised package",
     "physical devices",
-    "theme switch without data refresh in actual widget hosts",
-    "production IPA until EAS completes"
+    "theme switch without data refresh in actual widget hosts"
   ],
   "checks": {
     "npmTest": 207,

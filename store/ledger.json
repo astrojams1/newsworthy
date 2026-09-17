@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T13:05:45+00:00",
+  "updated_at": "2026-09-17T15:37:10+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -574,26 +574,26 @@
       "updated_at": "2026-09-17T12:23:14+00:00"
     },
     "design.widget-layout-feature": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Actual native widget feature committed in PR100; 205 tests and 33 design checks passed. iOS SwiftUI and Android RemoteViews rendered in native test hosts.",
+      "summary": "Actual native widget feature merged in PR100, retaining latest share-icon fix. 207 tests and35 design checks passed; iOS and Android native test-host captures recorded with untested real-widget-host states explicit.",
       "evidence": [
-        "efdc1f6; store/widget-layout-verification.json; store/source/widget-layout/"
+        "https://github.com/astrojams1/newsworthy/pull/100; merge6fe63746017004775ea057a1e9ed672707b31b31; store/widget-layout-verification.json"
       ],
-      "next_action": "Finish TestFlight build upload; retain untested WidgetKit/launcher and physical-device states in verification record.",
-      "updated_at": "2026-09-17T12:53:50+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-17T15:13:30+00:00"
     },
     "apple.widget-testflight": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "EAS build9 c00512fb-db9f-4ec6-bebb-94614b360d5a was canceled before upload to Apple so the next TestFlight build can include merged main and the share-icon fix. User also authorized merging PR100.",
+      "summary": "iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW.",
       "evidence": [
-        "Build9 source06b6cd9, production iOS1.0.0; EAS confirms CANCELED. App Store version/build7 and review4f28761f-3096-4f0d-aa37-df83332f818f still WAITING_FOR_REVIEW, selected build eff31b5d-6c18-492d-874c-d7a0e4392bf6."
+        "Apple build/delivery c4806ea6-c3cb-4baf-a700-6c6f92706fd4; EAS7d89e403-472e-4698-bb32-59c5a55e788f; source6fe63746017004775ea057a1e9ed672707b31b31; group312a8585-2ca2-413e-bb5f-75d0ba487e13 includes build10 and retains7/6; review4f28761f-3096-4f0d-aa37-df83332f818f submitted2026-09-17T04:33:40.475Z unchanged; store/widget-layout-verification.json."
       ],
-      "next_action": "Complete merged-source checks, merge PR100, build the merged commit, upload to TestFlight and retain review build7.",
-      "updated_at": "2026-09-17T13:05:45+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-17T15:37:10+00:00"
     }
   },
   "events": [
@@ -3408,6 +3408,102 @@
         ],
         "next_action": "Complete merged-source checks, merge PR100, build the merged commit, upload to TestFlight and retain review build7.",
         "updated_at": "2026-09-17T13:05:45+00:00"
+      }
+    },
+    {
+      "sequence": 176,
+      "at": "2026-09-17T15:13:30+00:00",
+      "gate": "apple.widget-testflight",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Production iOS1.0.0 build10 accepted by EAS from clean merged commit6fe6374 (PR100 plus PR101). App Review remains on build7.",
+        "evidence": [
+          "https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/7d89e403-472e-4698-bb32-59c5a55e788f; source6fe63746017004775ea057a1e9ed672707b31b31; archive1.6MB uploaded16s; build9 canceled before Apple upload."
+        ],
+        "next_action": "Wait for signed IPA, validate and upload through Apple, enable existing Release QA TestFlight group, then read back build7 review selection.",
+        "updated_at": "2026-09-17T15:13:30+00:00"
+      }
+    },
+    {
+      "sequence": 177,
+      "at": "2026-09-17T15:13:30+00:00",
+      "gate": "design.widget-layout-feature",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Actual native widget feature merged in PR100, retaining latest share-icon fix. 207 tests and35 design checks passed; iOS and Android native test-host captures recorded with untested real-widget-host states explicit.",
+        "evidence": [
+          "https://github.com/astrojams1/newsworthy/pull/100; merge6fe63746017004775ea057a1e9ed672707b31b31; store/widget-layout-verification.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T15:13:30+00:00"
+      }
+    },
+    {
+      "sequence": 178,
+      "at": "2026-09-17T15:15:37+00:00",
+      "gate": "apple.widget-testflight",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Signed production iOS1.0.0 build10 completed successfully from merged commit6fe6374; downloading for Apple validation and TestFlight-only upload.",
+        "evidence": [
+          "EAS7d89e403-472e-4698-bb32-59c5a55e788f FINISHED at2026-09-17T13:23:57.427Z; source6fe63746017004775ea057a1e9ed672707b31b31; clean tree when archived."
+        ],
+        "next_action": "Validate IPA version/bundle metadata, upload through Apple, wait for VALID and assign existing TestFlight group; leave App Review build7 selected.",
+        "updated_at": "2026-09-17T15:15:37+00:00"
+      }
+    },
+    {
+      "sequence": 179,
+      "at": "2026-09-17T15:27:51+00:00",
+      "gate": "apple.widget-testflight",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple altool validation passed with no errors for signed iOS1.0.0 build10. Direct upload of that IPA started; no EAS Submit job was created.",
+        "evidence": [
+          "VERIFY SUCCEEDED at2026-09-17T15:26:24.472Z; IPA SHA2569683fcc4f292bd0c9dcd6adece68c82ae32f13401db7a79e6c0dd1c84199834e; app and widget both1.0.0(10)."
+        ],
+        "next_action": "Await upload receipt, then Apple VALID processing and existing Release QA group availability; preserve App Review build7.",
+        "updated_at": "2026-09-17T15:27:51+00:00"
+      }
+    },
+    {
+      "sequence": 180,
+      "at": "2026-09-17T15:32:25+00:00",
+      "gate": "apple.widget-testflight",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple accepted iOS1.0.0 build10 upload with no errors; TestFlight processing pending. App Review build7 has not been changed.",
+        "evidence": [
+          "Delivery UUIDc4806ea6-c3cb-4baf-a700-6c6f92706fd4; UPLOAD SUCCEEDED at2026-09-17T15:31:47.272Z; 19277637bytes; EAS7d89e403-472e-4698-bb32-59c5a55e788f from merged6fe6374."
+        ],
+        "next_action": "Wait for Apple build10 VALID, add notes and existing Release QA group, verify IN_BETA_TESTING and unchanged review build7.",
+        "updated_at": "2026-09-17T15:32:25+00:00"
+      }
+    },
+    {
+      "sequence": 181,
+      "at": "2026-09-17T15:37:10+00:00",
+      "gate": "apple.widget-testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW.",
+        "evidence": [
+          "Apple build/delivery c4806ea6-c3cb-4baf-a700-6c6f92706fd4; EAS7d89e403-472e-4698-bb32-59c5a55e788f; source6fe63746017004775ea057a1e9ed672707b31b31; group312a8585-2ca2-413e-bb5f-75d0ba487e13 includes build10 and retains7/6; review4f28761f-3096-4f0d-aa37-df83332f818f submitted2026-09-17T04:33:40.475Z unchanged; store/widget-layout-verification.json."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T15:37:10+00:00"
       }
     }
   ],
