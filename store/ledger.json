@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T12:02:28+00:00",
+  "updated_at": "2026-09-17T12:09:27+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -566,12 +566,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Browser prototype complete: three-line optical numeral with adjacent left-aligned description, two/four-line alternatives and wrap comparison. Production native layouts unchanged; native verification for this proposal remains entirely unperformed.",
+      "summary": "Browser prototype revised: denominator beside the numeral on its baseline, description left-aligned in a separate column. Three-line optical numeral, two/four-line alternatives and wrap comparison retained. Production native layouts unchanged; no native verification for this proposal.",
       "evidence": [
-        "design/prototypes/widget-alignment/README.md; test:design 33 passed; npm test 205 passed including web export; 216 browser combinations at 1280/320 widths, two widgets each, passed. Native untested states: iOS/Android compact/expanded, light/dark, score 10, enlarged text, resizing and theme changes without refresh."
+        "design/prototypes/widget-alignment/README.md; test:design 33 passed; npm test 205 passed including web export. Browser checks include denominator position and shared baseline plus deliberate below-number regression; native matrix remains unverified."
       ],
       "next_action": "Review the prototype. If adopted, implement native layouts and verify the full native matrix before release.",
-      "updated_at": "2026-09-17T12:02:28+00:00"
+      "updated_at": "2026-09-17T12:09:27+00:00"
     }
   },
   "events": [
@@ -3242,6 +3242,22 @@
         ],
         "next_action": "Review the prototype. If adopted, implement native layouts and verify the full native matrix before release.",
         "updated_at": "2026-09-17T12:02:28+00:00"
+      }
+    },
+    {
+      "sequence": 167,
+      "at": "2026-09-17T12:09:27+00:00",
+      "gate": "design.widget-alignment-prototype",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Browser prototype revised: denominator beside the numeral on its baseline, description left-aligned in a separate column. Three-line optical numeral, two/four-line alternatives and wrap comparison retained. Production native layouts unchanged; no native verification for this proposal.",
+        "evidence": [
+          "design/prototypes/widget-alignment/README.md; test:design 33 passed; npm test 205 passed including web export. Browser checks include denominator position and shared baseline plus deliberate below-number regression; native matrix remains unverified."
+        ],
+        "next_action": "Review the prototype. If adopted, implement native layouts and verify the full native matrix before release.",
+        "updated_at": "2026-09-17T12:09:27+00:00"
       }
     }
   ],

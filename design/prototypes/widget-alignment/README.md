@@ -15,7 +15,9 @@ optically with three lines: its visible ink height equals the body capital heigh
 plus two baseline intervals. The occupied text grid is 3 × 20 = 60px, but font size
 is computed from the browser font's actual digit ink metrics, not forced to 60px.
 This preserves first-line top and third-line bottom alignment across digits.
-The denominator occupies another line under the number.
+The denominator sits beside the numeral on the same baseline, with a 6px gap.
+Both text runs share one SVG coordinate system, so no separate line is reserved
+under the number.
 
 Controls: scores 1–10, two/three/four-line numeral, aligned-column or wrapping
 layout, light/dark appearance, normal/1.3×/2× text, line guides, editable sentence.
@@ -51,3 +53,6 @@ Verified on 2026-09-17: all 108 browser combinations passed at both 1280px and
 320px viewports (216 combinations / 432 widget checks). Light and narrow
 screenshots were visually inspected. Browser reported no page errors.
 `npm run test:design`: 33 passing; `npm test`: 205 passing, including web export.
+
+The denominator regression checks its horizontal position and shared baseline,
+and deliberately moves it below the number to prove that the defect is caught.

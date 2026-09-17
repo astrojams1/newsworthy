@@ -2,11 +2,19 @@
 (() => {
  const set = (id,value) => { const e=document.getElementById(id); e.value=String(value); e.dispatchEvent(new Event('change',{bubbles:true})); };
  const assert = (condition,message) => {if (!condition) throw Error(message)};
+ function checkDenominator(widget) {
+  const numeral=widget.querySelector('.numeral'), denominator=widget.querySelector('.denominator');
+  const n=numeral.getBoundingClientRect(), d=denominator.getBoundingClientRect();
+  assert(d.left>n.right, 'denominator must sit to the right of the numeral');
+  assert(Math.abs(numeral.getStartPositionOfChar(0).y-denominator.getStartPositionOfChar(0).y)<.5, 'denominator must share the numeral baseline');
+  assert(d.bottom<=n.bottom+1, 'denominator must not sit beneath the numeral');
+ }
  let cases=0;
  document.getElementById('long').click();
  for(const score of [1,3,10]) for(const lines of [2,3,4]) for(const theme of ['Light','Dark']) for(const scale of [1,1.3,2]) for(const layout of ['column','wrap']) {
   set('score',score);set('lines',lines);set('theme',theme);set('scale',scale);set('layout',layout);
   for(const widget of document.querySelectorAll('.widget')) {
+   checkDenominator(widget);
    const description=widget.querySelector('.description'), number=widget.querySelector('.score'), svg=widget.querySelector('svg');
    const range=document.createRange();range.selectNodeContents(description);
    const rects=[...range.getClientRects()], n=number.getBoundingClientRect(), ink=svg.getBoundingClientRect();
@@ -23,6 +31,12 @@
   cases++;
  }
  set('score',3);set('lines',3);set('theme','Light');set('scale',1);set('layout','column');
+ const denominator=document.querySelector('.denominator');
+ denominator.setAttribute('y', 20);
+ let belowRejected=false;
+ try { checkDenominator(document.querySelector('.widget')); } catch { belowRejected=true; }
+ denominator.setAttribute('y', 0);
+ assert(belowRejected, 'regression guard must reject a denominator moved beneath the number');
  const description=document.querySelector('.description');
  description.style.textAlign='center';
  const r=document.createRange();r.selectNodeContents(description);
@@ -33,5 +47,5 @@
  assert(!document.querySelector('.description img'),'custom copy must be text');
  assert(document.documentElement.scrollWidth<=innerWidth+1,'page overflow');
  document.getElementById('long').click();
- return {cases,widgetsPerCase:2,viewport:innerWidth,centeredTextRegressionDetected:true};
+ return {cases,widgetsPerCase:2,viewport:innerWidth,centeredTextRegressionDetected:true,belowNumberRegressionDetected:belowRejected};
 })();
