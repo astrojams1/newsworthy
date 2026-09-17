@@ -7,19 +7,22 @@ API readback independently confirms `REJECTED` / `UNRESOLVED_ISSUES`.
 
 ## Submission status
 
-The factual response below is saved and verified in App Review Notes. **Do not send
-this as a completed response or resubmit until the physical-device recording
-and testing evidence are available.** Replace the pending paragraph with the
-actual attachment filename or accessible recording URL and verified device,
-OS, version and build. Keep those same facts in Notes and the App Review reply.
+**Build7 is WAITING_FOR_REVIEW.** App Store Connect confirmed both submission
+and version state on September17 at04:33UTC. The six-part response below is
+saved/read back in App Review Notes and posted to App Review with
+`newsworthy-ios7-review-demo.mp4`. The message and attachment Download control
+were verified in the browser. Review acceptance and public release are pending.
+See `apple-review-resubmission.json` and `apple-physical-review-video.json`
+for provider IDs, file hashes and actual physical verification scope.
 
 ## Response text
 
 1. Physical-device demonstration
 
-Pending: a recording of version 1.0.0 (7) launching and showing the main flow on
-a physical device running the latest OS. Existing simulator screenshots are
-not evidence of this requirement. Physical-device QA is not yet claimed.
+Video: newsworthy-ios7-review-demo.mp4. Recorded on a physical iPhone using
+Newsworthy 1.0.0 (7). It shows launching Newsworthy, the loaded score,
+explanation and update time, and the small and medium Home Screen widgets.
+Build 7 also removes the unwanted backgrounds around the title and Share icon.
 
 2. Purpose and audience
 
@@ -103,20 +106,21 @@ videos or media feeds. It does not offer licensed third-party content for sale.
    response item 1 and App Review Notes, then reply to Apple's message. Sending
    the reply and the review/submission state must each be verified separately.
 
-## Current access evidence
+## Current evidence
 
-- Physical TestFlight build6 check exposed iOS system glass backgrounds around brand/share.
-  The fix uses custom native header items with `hidesSharedBackground: true` and is
-  merged in PR94. **Build7 is VALID and IN_BETA_TESTING in Release QA.**
-  Update through TestFlight and check the corrected header/share behavior before recording.
-- App Store Connect confirmed installed build6 on iPhone17Pro/iOS26.6.2. The
-  latest public iOS is27, verified September17 against Apple's release list;
-  update the phone before the latest-OS recording Apple requested.
-- Local simulator checks used iOS18.3 and do not establish iOS26+ chrome behavior.
-- The owner invitation was accepted after a public API invitation request; no new
-  invitation or account setup is required to update the app.
-- The public API does not expose App Review correspondence. Signed-in Chrome
-  control recovered and the full rejection message was confirmed directly.
+- The supplied physical recording shows TestFlight1.0.0(7), launch, the current
+  reading and small/medium Home Screen widgets. The title and Share icon have
+  no unwanted backgrounds in light appearance.
+- The review copy trims42seconds of initial idle Home Screen and omits audio;
+  the remaining66-second sequence is continuous. The original is retained.
+- Opening Share, footer-link navigation, dark appearance, larger text, offline
+  recovery and physical iPad testing are not demonstrated by this recording.
+- The exact reply text is also in `listing.json.reviewNotes`; neither makes
+  claims about device coverage beyond the observed demonstration.
+- App Review correspondence required the signed-in browser. Public API calls
+  selected valid build7, preserved the review-contact phone while updating Notes,
+  resolved the rejected item and submitted it. Both review states were then
+  independently read back as WAITING_FOR_REVIEW.
 
 References: [Apple TestFlight internal testers](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers),
 [Apple security releases](https://support.apple.com/en-ca/100100),

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T04:06:56+00:00
+Updated: 2026-09-17T04:40:13+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -11,7 +11,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | Gate | State | Owner | Evidence basis | Result | Next action |
 |---|---|---|---|---|---|
 | scope | done | agent | observed | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
-| web.deploy | done | agent | observed | Merged PR94/bbdfd25 deployed successfully; production browser retains plain brand/share header and loads current score2 reading. | — |
+| web.deploy | done | agent | observed | Merged PR96 deployed successfully; production health reports main76fc23b with healthy database. | — |
 | apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
 | apple.address | waiting_provider | provider | observed | Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved. | Await Apple correction or support response, then verify Business legal entity before paid release. |
 | apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
@@ -21,18 +21,18 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.privacy | done | user | observed | Owner published diagnostics/performance collection for app functionality, linked to user, no tracking. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
 | apple.listing | done | agent | observed | All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed. | — |
-| apple.build | done | agent | observed | Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5. | — |
+| apple.build | done | agent | observed | Corrected production iOS7 finished from clean8055d61, matches merged PR94 app source, and passed Apple validation. | — |
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
-| apple.upload | done | agent | observed | Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0. | — |
+| apple.upload | done | agent | observed | Apple build7 is VALID and selected for App Store version1.0.0; API relationship readback confirmed eff31b5d-6c18-492d-874c-d7a0e4392bf6. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | in_progress | agent | user_reported | Owner supplied Guideline 2.1 request for new developer information, including physical-device video on latest OS. No specific code defect reported. | Complete physical-device QA/video; finish item 1 in Notes and reply to App Review; verify subsequent review state. |
-| apple.release | in_progress | agent | observed | Build6 rejected with unresolved review issues; public release not achieved. Guideline2.1 response work is underway; banking/address gates remain separate. | Resolve App Review request, confirm approval and paid-sale readiness, then verify public availability. |
+| apple.review | waiting_provider | provider | observed | Build7 resubmitted after the six-part reply and video. App Store version and review submission both read back WAITING_FOR_REVIEW. | Read Apple review result; address any new request. Approval and public availability remain unverified. |
+| apple.release | waiting_provider | provider | observed | Build7 is Waiting for Review after response/video resubmission. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, complete paid-sale account readiness, and verify public paid availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
-| google.app | waiting_user | user | observed | Play Console still disables Create app until real Android-device and contact-phone verification are complete. | Owner completes Play Console mobile-app real-device verification then phone verification; agent creates paid app after readback. |
-| google.build | done | agent | observed | Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix. | — |
-| google.native | in_progress | agent | observed | Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification. | Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate. |
+| google.app | waiting_user | user | observed | Fresh Play Console readback still shows real Android-device verification and contact-phone tasks; Create app remains disabled. | Owner completes real-device verification in Play Console mobile app and then phone verification; agent creates paid Newsworthy and uploads AAB11 afterward. |
+| google.build | done | agent | observed | Production Android11 AAB finished from clean8055d61; downloaded and verified, superseding AAB10. | — |
+| google.native | in_progress | agent | observed | Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified. | Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open. |
 | google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
@@ -52,12 +52,12 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.widget-fix | done | agent | observed | APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained | — |
 | design.regression | done | agent | observed | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
 | apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
-| apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
-| apple.physical-recording | waiting_provider | provider | observed | The build7 recording is located in iCloud Drive, but Finder still shows zero of 201.5 MB downloaded after both local media access and Download Now. File contents remain unavailable for review. | Once iCloud supplies the file bytes, extract frames and inspect the unaltered recording. If the phone upload is incomplete, finish its transfer or AirDrop the original file to the Mac. Recorded OS remains unconfirmed. |
-| apple.testflight | in_progress | agent | observed | App Store Connect now shows Installed1.0.0(6) on iPhone17Pro/iOS26.6.2, confirming invitation acceptance and physical installation. | Deliver corrected build7 for header recheck; update physical device to latest OS before the review recording. |
-| google.large-text-build | done | agent | observed | Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation. | Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source. |
+| apple.review-notes | done | agent | observed | Final six-part Notes include the physical build7 demonstration filename and accurate product/setup/services/regions/rights information; API save and exact-value readback passed. | — |
+| apple.physical-recording | done | agent | observed | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
+| apple.testflight | done | agent | observed | Build7 is available in Release QA and the physical recording visibly identifies installed1.0.0(7). The owner invitation and installation handoff are complete. | — |
+| google.large-text-build | done | agent | observed | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
 | google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
-| apple.header-background | waiting_user | user | observed | Corrected iOS7 processed VALID and is IN_BETA_TESTING in the existing Release QA group; focused test instructions saved. | Owner updates TestFlight to1.0.0(7), checks plain header and Share on physical iPhone; update to latest public iOS before review recording. Async physical-check question is pending. |
+| apple.header-background | done | agent | observed | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
 | native.replacement-builds | done | agent | observed | Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified. | Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload. |
 
 ## Evidence and history
@@ -1476,3 +1476,135 @@ The build7 recording is located in iCloud Drive, but Finder still shows zero of 
 - Native file flags remain compressed,dataless with zero allocated blocks. Recording filename and owner-reported build7 are saved in apple-testflight-qa.json. No review upload performed.
 
 Next: Once iCloud supplies the file bytes, extract frames and inspect the unaltered recording. If the phone upload is incomplete, finish its transfer or AirDrop the original file to the Mac. Recorded OS remains unconfirmed.
+
+### 149. apple.physical-recording — waiting_provider
+
+2026-09-17T04:14:33+00:00 · observed · provider
+
+iCloud metadata confirms the owner recording is uploaded, but the Mac download remains requested without local bytes. The media reader terminated with POSIX60 timeout; the source video has not been inspected.
+
+- NSURL metadata: uploaded true, uploading false, downloadRequested true, downloading true, status NotDownloaded. Native stat: zero blocks, dataless. Finder Download Now requested. iCloud website reachable HTTP200; direct web access needs authentication. PR96 merged as76fc23b and production health reports that commit.
+
+Next: Obtain the video through completed Mac iCloud download or authenticated iCloud Drive web download. Then inspect and hash it, verify recorded OS, complete Notes and App Review response. Do not restart media decoding until bytes are available.
+
+### 150. apple.physical-recording — in_progress
+
+2026-09-17T04:30:53+00:00 · observed · agent
+
+Chrome download completed; source recording inspected and build7 confirmed on the TestFlight launch screen. Prepared continuous66-second silent review copy beginning just before app launch. Upload to App Review is in progress.
+
+- store/apple-physical-review-video.json records hashes, sizes, observed launch/reading/widgets/plain light header and untested cases. User authorized submission of the supplied recording.
+
+Next: Verify attachment upload, send prepared six-part reply, resubmit selected build7, and read back provider review state.
+
+### 151. apple.upload — done
+
+2026-09-17T04:30:55+00:00 · observed · agent
+
+Apple build7 is VALID and selected for App Store version1.0.0; API relationship readback confirmed eff31b5d-6c18-492d-874c-d7a0e4392bf6.
+
+- store/scripts/apple.mjs build succeeded and verified selection on September17. Separate App Review submission remains pending.
+
+### 152. apple.header-background — done
+
+2026-09-17T04:30:55+00:00 · observed · agent
+
+Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds.
+
+- Source recording seconds48-95; TestFlight build7 visible at second45. Share action and dark appearance are outside this recording evidence.
+
+### 153. apple.physical-recording — done
+
+2026-09-17T04:34:59+00:00 · observed · agent
+
+Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified.
+
+- store/apple-physical-review-video.json. Core launch, live reading, small/medium widgets and plain light header observed; other QA cases are not claimed.
+
+### 154. apple.review — waiting_provider
+
+2026-09-17T04:34:59+00:00 · observed · provider
+
+Build7 resubmitted after the six-part reply and video. App Store version and review submission both read back WAITING_FOR_REVIEW.
+
+- store/apple-review-resubmission.json; submission4f28761f-3096-4f0d-aa37-df83332f818f; build eff31b5d-6c18-492d-874c-d7a0e4392bf6.
+
+Next: Read Apple review result; address any new request. Approval and public availability remain unverified.
+
+### 155. apple.review-notes — done
+
+2026-09-17T04:34:59+00:00 · observed · agent
+
+Final six-part Notes include the physical build7 demonstration filename and accurate product/setup/services/regions/rights information; API save and exact-value readback passed.
+
+- store/listing.json reviewNotes matches posted reply;3485 characters; existing private review contact phone preserved in memory.
+
+### 156. apple.release — waiting_provider
+
+2026-09-17T04:35:00+00:00 · observed · provider
+
+Build7 is Waiting for Review after response/video resubmission. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates.
+
+- Both App Store version and review-submission API readbacks WAITING_FOR_REVIEW September17. Business still requests a bank account.
+
+Next: Obtain review approval, complete paid-sale account readiness, and verify public paid availability.
+
+### 157. apple.build — done
+
+2026-09-17T04:35:02+00:00 · observed · agent
+
+Corrected production iOS7 finished from clean8055d61, matches merged PR94 app source, and passed Apple validation.
+
+- EAS a151f9ee-9a5f-48b2-887a-f936bfe48db7; store/release.json nativeReplacementBuild. Simulator gallery remains separately identified by its build6 source.
+
+### 158. google.build — done
+
+2026-09-17T04:35:03+00:00 · observed · agent
+
+Production Android11 AAB finished from clean8055d61; downloaded and verified, superseding AAB10.
+
+- store/release.json finalProductionBuild4dc57992-b1e5-4517-8197-215b66789963, byte count and SHA256. Not uploaded while account verification blocks app creation.
+
+### 159. google.native — in_progress
+
+2026-09-17T04:35:03+00:00 · observed · agent
+
+Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified.
+
+- store/android-large-text-verification.json and native captures20-24. Original fontScale1.0 restored; no source-only test is counted as native evidence.
+
+Next: Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open.
+
+### 160. apple.testflight — done
+
+2026-09-17T04:35:04+00:00 · observed · agent
+
+Build7 is available in Release QA and the physical recording visibly identifies installed1.0.0(7). The owner invitation and installation handoff are complete.
+
+- Video source second45; Applebuild eff31b5d-6c18-492d-874c-d7a0e4392bf6 is VALID and attached to internal Release QA.
+
+### 161. google.app — waiting_user
+
+2026-09-17T04:37:40+00:00 · observed · user
+
+Fresh Play Console readback still shows real Android-device verification and contact-phone tasks; Create app remains disabled.
+
+- September17 Play Console Home: AstroJams personal account, Action required for real mobile device and phone, disabled Create app. No app record exists.
+
+Next: Owner completes real-device verification in Play Console mobile app and then phone verification; agent creates paid Newsworthy and uploads AAB11 afterward.
+
+### 162. web.deploy — done
+
+2026-09-17T04:37:41+00:00 · observed · agent
+
+Merged PR96 deployed successfully; production health reports main76fc23b with healthy database.
+
+- GitHub Vercel status success and /healthz git_commit76fc23b on September17. App code unchanged from prior native/web fix.
+
+### 163. google.large-text-build — done
+
+2026-09-17T04:40:13+00:00 · observed · agent
+
+Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source.
+
+- store/android-large-text-verification.json; captures20-24; store/release.json finalProductionBuild4dc57992-b1e5-4517-8197-215b66789963.

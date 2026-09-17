@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T04:06:56+00:00",
+  "updated_at": "2026-09-17T04:40:13+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -26,12 +26,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Merged PR94/bbdfd25 deployed successfully; production browser retains plain brand/share header and loads current score2 reading.",
+      "summary": "Merged PR96 deployed successfully; production health reports main76fc23b with healthy database.",
       "evidence": [
-        "GitHub Vercel status success for bbdfd257cb874cead165bc62baf9a283cc7d8af0; browser native AX/screenshot. Root/privacy/support/api-current all HTTP200."
+        "GitHub Vercel status success and /healthz git_commit76fc23b on September17. App code unchanged from prior native/web fix."
       ],
       "next_action": "",
-      "updated_at": "2026-09-17T03:33:19+00:00"
+      "updated_at": "2026-09-17T04:37:41+00:00"
     },
     "apple.membership": {
       "state": "done",
@@ -137,12 +137,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Replacement production iOS build 6 and matching simulator build finished from clean merged commit b5571c5.",
+      "summary": "Corrected production iOS7 finished from clean8055d61, matches merged PR94 app source, and passed Apple validation.",
       "evidence": [
-        "EAS 461def41-d59d-4c9e-9f91-d8f2c9bdc95c and e02851c0-0cae-4f95-b854-2d57e32cc0b2 FINISHED. IPA archive validation passed; simulator download in progress. Native/UI verification remains a separate gate."
+        "EAS a151f9ee-9a5f-48b2-887a-f936bfe48db7; store/release.json nativeReplacementBuild. Simulator gallery remains separately identified by its build6 source."
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T06:52:37+00:00"
+      "updated_at": "2026-09-17T04:35:02+00:00"
     },
     "apple.native": {
       "state": "done",
@@ -159,12 +159,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0.",
+      "summary": "Apple build7 is VALID and selected for App Store version1.0.0; API relationship readback confirmed eff31b5d-6c18-492d-874c-d7a0e4392bf6.",
       "evidence": [
-        "Delivery/build b62a9dc5-1b0c-4200-8830-68db021bb0cd; App Store Connect VALID readback and build-selection readback passed. No replacement review submission yet."
+        "store/scripts/apple.mjs build succeeded and verified selection on September17. Separate App Review submission remains pending."
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T06:59:34+00:00"
+      "updated_at": "2026-09-17T04:30:55+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -178,26 +178,26 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "in_progress",
-      "owner": "agent",
-      "basis": "user_reported",
-      "summary": "Owner supplied Guideline 2.1 request for new developer information, including physical-device video on latest OS. No specific code defect reported.",
+      "state": "waiting_provider",
+      "owner": "provider",
+      "basis": "observed",
+      "summary": "Build7 resubmitted after the six-part reply and video. App Store version and review submission both read back WAITING_FOR_REVIEW.",
       "evidence": [
-        "store/apple-review-response.md; user-pasted Apple review message September 17; API independently confirms REJECTED and UNRESOLVED_ISSUES"
+        "store/apple-review-resubmission.json; submission4f28761f-3096-4f0d-aa37-df83332f818f; build eff31b5d-6c18-492d-874c-d7a0e4392bf6."
       ],
-      "next_action": "Complete physical-device QA/video; finish item 1 in Notes and reply to App Review; verify subsequent review state.",
-      "updated_at": "2026-09-17T02:12:04+00:00"
+      "next_action": "Read Apple review result; address any new request. Approval and public availability remain unverified.",
+      "updated_at": "2026-09-17T04:34:59+00:00"
     },
     "apple.release": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "Build6 rejected with unresolved review issues; public release not achieved. Guideline2.1 response work is underway; banking/address gates remain separate.",
+      "summary": "Build7 is Waiting for Review after response/video resubmission. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates.",
       "evidence": [
-        "Apple API REJECTED / UNRESOLVED_ISSUES on September17; six-part Notes saved; physical recording pending."
+        "Both App Store version and review-submission API readbacks WAITING_FOR_REVIEW September17. Business still requests a bank account."
       ],
-      "next_action": "Resolve App Review request, confirm approval and paid-sale readiness, then verify public availability.",
-      "updated_at": "2026-09-17T02:13:53+00:00"
+      "next_action": "Obtain review approval, complete paid-sale account readiness, and verify public paid availability.",
+      "updated_at": "2026-09-17T04:35:00+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -236,34 +236,34 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Play Console still disables Create app until real Android-device and contact-phone verification are complete.",
+      "summary": "Fresh Play Console readback still shows real Android-device verification and contact-phone tasks; Create app remains disabled.",
       "evidence": [
-        "2026-09-17 Play Console8388544157780149515 Home: both verifications Action required; Create app disabled."
+        "September17 Play Console Home: AstroJams personal account, Action required for real mobile device and phone, disabled Create app. No app record exists."
       ],
-      "next_action": "Owner completes Play Console mobile-app real-device verification then phone verification; agent creates paid app after readback.",
-      "updated_at": "2026-09-17T01:53:48+00:00"
+      "next_action": "Owner completes real-device verification in Play Console mobile app and then phone verification; agent creates paid Newsworthy and uploads AAB11 afterward.",
+      "updated_at": "2026-09-17T04:37:40+00:00"
     },
     "google.build": {
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix.",
+      "summary": "Production Android11 AAB finished from clean8055d61; downloaded and verified, superseding AAB10.",
       "evidence": [
-        "EAS8162d6a2-7980-4f48-9153-d325ffd55e68; version1.0.0/versionCode10; 72474952 bytes; SHA2561e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202; ZIP CRC and Android bundle structure valid. Download timed out with 838408 bytes remaining; verified HTTP206 resume completed."
+        "store/release.json finalProductionBuild4dc57992-b1e5-4517-8197-215b66789963, byte count and SHA256. Not uploaded while account verification blocks app creation."
       ],
       "next_action": "",
-      "updated_at": "2026-09-17T02:17:29+00:00"
+      "updated_at": "2026-09-17T04:35:03+00:00"
     },
     "google.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification.",
+      "summary": "Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified.",
       "evidence": [
-        "store/android-large-text-verification.json; actual screenshots16/17; adb read-only font_scale2.0 and UiMode mNightMode2."
+        "store/android-large-text-verification.json and native captures20-24. Original fontScale1.0 restored; no source-only test is counted as native evidence."
       ],
-      "next_action": "Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.",
-      "updated_at": "2026-09-17T02:33:13+00:00"
+      "next_action": "Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open.",
+      "updated_at": "2026-09-17T04:35:03+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -478,45 +478,45 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE.",
+      "summary": "Final six-part Notes include the physical build7 demonstration filename and accurate product/setup/services/regions/rights information; API save and exact-value readback passed.",
       "evidence": [
-        "store/scripts/apple.mjs review-notes returned saved and verified; listing.json matches App Store Connect; store/apple-testflight-qa.json records Notes SHA256. Phone stayed private."
+        "store/listing.json reviewNotes matches posted reply;3485 characters; existing private review contact phone preserved in memory."
       ],
       "next_action": "",
-      "updated_at": "2026-09-17T02:15:17+00:00"
+      "updated_at": "2026-09-17T04:34:59+00:00"
     },
     "apple.physical-recording": {
-      "state": "waiting_provider",
-      "owner": "provider",
-      "basis": "observed",
-      "summary": "The build7 recording is located in iCloud Drive, but Finder still shows zero of 201.5 MB downloaded after both local media access and Download Now. File contents remain unavailable for review.",
-      "evidence": [
-        "Native file flags remain compressed,dataless with zero allocated blocks. Recording filename and owner-reported build7 are saved in apple-testflight-qa.json. No review upload performed."
-      ],
-      "next_action": "Once iCloud supplies the file bytes, extract frames and inspect the unaltered recording. If the phone upload is incomplete, finish its transfer or AirDrop the original file to the Mac. Recorded OS remains unconfirmed.",
-      "updated_at": "2026-09-17T04:06:56+00:00"
-    },
-    "apple.testflight": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "App Store Connect now shows Installed1.0.0(6) on iPhone17Pro/iOS26.6.2, confirming invitation acceptance and physical installation.",
+      "summary": "Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified.",
       "evidence": [
-        "Refreshed signed-in Chrome AllTesters table September17; owner screenshot independently shows app running."
+        "store/apple-physical-review-video.json. Core launch, live reading, small/medium widgets and plain light header observed; other QA cases are not claimed."
       ],
-      "next_action": "Deliver corrected build7 for header recheck; update physical device to latest OS before the review recording.",
-      "updated_at": "2026-09-17T03:30:56+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-17T04:34:59+00:00"
+    },
+    "apple.testflight": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Build7 is available in Release QA and the physical recording visibly identifies installed1.0.0(7). The owner invitation and installation handoff are complete.",
+      "evidence": [
+        "Video source second45; Applebuild eff31b5d-6c18-492d-874c-d7a0e4392bf6 is VALID and attached to internal Release QA."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-17T04:35:04+00:00"
     },
     "google.large-text-build": {
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation.",
+      "summary": "Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source.",
       "evidence": [
-        "store/android-large-text-verification.json; native captures20-24. Original failing light-to-dark sequence reproduced and passed. npm test194passed."
+        "store/android-large-text-verification.json; captures20-24; store/release.json finalProductionBuild4dc57992-b1e5-4517-8197-215b66789963."
       ],
-      "next_action": "Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source.",
-      "updated_at": "2026-09-17T03:18:12+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-17T04:40:13+00:00"
     },
     "google.offline": {
       "state": "done",
@@ -530,15 +530,15 @@
       "updated_at": "2026-09-17T02:48:31+00:00"
     },
     "apple.header-background": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Corrected iOS7 processed VALID and is IN_BETA_TESTING in the existing Release QA group; focused test instructions saved.",
+      "summary": "Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds.",
       "evidence": [
-        "Apple build eff31b5d-6c18-492d-874c-d7a0e4392bf6; group312a8585-2ca2-413e-bb5f-75d0ba487e13 readback contains build7. store/apple-testflight-qa.json."
+        "Source recording seconds48-95; TestFlight build7 visible at second45. Share action and dark appearance are outside this recording evidence."
       ],
-      "next_action": "Owner updates TestFlight to1.0.0(7), checks plain header and Share on physical iPhone; update to latest public iOS before review recording. Async physical-check question is pending.",
-      "updated_at": "2026-09-17T03:48:29+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-17T04:30:55+00:00"
     },
     "native.replacement-builds": {
       "state": "done",
@@ -2932,6 +2932,246 @@
         ],
         "next_action": "Once iCloud supplies the file bytes, extract frames and inspect the unaltered recording. If the phone upload is incomplete, finish its transfer or AirDrop the original file to the Mac. Recorded OS remains unconfirmed.",
         "updated_at": "2026-09-17T04:06:56+00:00"
+      }
+    },
+    {
+      "sequence": 149,
+      "at": "2026-09-17T04:14:33+00:00",
+      "gate": "apple.physical-recording",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "iCloud metadata confirms the owner recording is uploaded, but the Mac download remains requested without local bytes. The media reader terminated with POSIX60 timeout; the source video has not been inspected.",
+        "evidence": [
+          "NSURL metadata: uploaded true, uploading false, downloadRequested true, downloading true, status NotDownloaded. Native stat: zero blocks, dataless. Finder Download Now requested. iCloud website reachable HTTP200; direct web access needs authentication. PR96 merged as76fc23b and production health reports that commit."
+        ],
+        "next_action": "Obtain the video through completed Mac iCloud download or authenticated iCloud Drive web download. Then inspect and hash it, verify recorded OS, complete Notes and App Review response. Do not restart media decoding until bytes are available.",
+        "updated_at": "2026-09-17T04:14:33+00:00"
+      }
+    },
+    {
+      "sequence": 150,
+      "at": "2026-09-17T04:30:53+00:00",
+      "gate": "apple.physical-recording",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Chrome download completed; source recording inspected and build7 confirmed on the TestFlight launch screen. Prepared continuous66-second silent review copy beginning just before app launch. Upload to App Review is in progress.",
+        "evidence": [
+          "store/apple-physical-review-video.json records hashes, sizes, observed launch/reading/widgets/plain light header and untested cases. User authorized submission of the supplied recording."
+        ],
+        "next_action": "Verify attachment upload, send prepared six-part reply, resubmit selected build7, and read back provider review state.",
+        "updated_at": "2026-09-17T04:30:53+00:00"
+      }
+    },
+    {
+      "sequence": 151,
+      "at": "2026-09-17T04:30:55+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple build7 is VALID and selected for App Store version1.0.0; API relationship readback confirmed eff31b5d-6c18-492d-874c-d7a0e4392bf6.",
+        "evidence": [
+          "store/scripts/apple.mjs build succeeded and verified selection on September17. Separate App Review submission remains pending."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:30:55+00:00"
+      }
+    },
+    {
+      "sequence": 152,
+      "at": "2026-09-17T04:30:55+00:00",
+      "gate": "apple.header-background",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds.",
+        "evidence": [
+          "Source recording seconds48-95; TestFlight build7 visible at second45. Share action and dark appearance are outside this recording evidence."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:30:55+00:00"
+      }
+    },
+    {
+      "sequence": 153,
+      "at": "2026-09-17T04:34:59+00:00",
+      "gate": "apple.physical-recording",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified.",
+        "evidence": [
+          "store/apple-physical-review-video.json. Core launch, live reading, small/medium widgets and plain light header observed; other QA cases are not claimed."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:34:59+00:00"
+      }
+    },
+    {
+      "sequence": 154,
+      "at": "2026-09-17T04:34:59+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build7 resubmitted after the six-part reply and video. App Store version and review submission both read back WAITING_FOR_REVIEW.",
+        "evidence": [
+          "store/apple-review-resubmission.json; submission4f28761f-3096-4f0d-aa37-df83332f818f; build eff31b5d-6c18-492d-874c-d7a0e4392bf6."
+        ],
+        "next_action": "Read Apple review result; address any new request. Approval and public availability remain unverified.",
+        "updated_at": "2026-09-17T04:34:59+00:00"
+      }
+    },
+    {
+      "sequence": 155,
+      "at": "2026-09-17T04:34:59+00:00",
+      "gate": "apple.review-notes",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Final six-part Notes include the physical build7 demonstration filename and accurate product/setup/services/regions/rights information; API save and exact-value readback passed.",
+        "evidence": [
+          "store/listing.json reviewNotes matches posted reply;3485 characters; existing private review contact phone preserved in memory."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:34:59+00:00"
+      }
+    },
+    {
+      "sequence": 156,
+      "at": "2026-09-17T04:35:00+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build7 is Waiting for Review after response/video resubmission. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates.",
+        "evidence": [
+          "Both App Store version and review-submission API readbacks WAITING_FOR_REVIEW September17. Business still requests a bank account."
+        ],
+        "next_action": "Obtain review approval, complete paid-sale account readiness, and verify public paid availability.",
+        "updated_at": "2026-09-17T04:35:00+00:00"
+      }
+    },
+    {
+      "sequence": 157,
+      "at": "2026-09-17T04:35:02+00:00",
+      "gate": "apple.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrected production iOS7 finished from clean8055d61, matches merged PR94 app source, and passed Apple validation.",
+        "evidence": [
+          "EAS a151f9ee-9a5f-48b2-887a-f936bfe48db7; store/release.json nativeReplacementBuild. Simulator gallery remains separately identified by its build6 source."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:35:02+00:00"
+      }
+    },
+    {
+      "sequence": 158,
+      "at": "2026-09-17T04:35:03+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Production Android11 AAB finished from clean8055d61; downloaded and verified, superseding AAB10.",
+        "evidence": [
+          "store/release.json finalProductionBuild4dc57992-b1e5-4517-8197-215b66789963, byte count and SHA256. Not uploaded while account verification blocks app creation."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:35:03+00:00"
+      }
+    },
+    {
+      "sequence": 159,
+      "at": "2026-09-17T04:35:03+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified.",
+        "evidence": [
+          "store/android-large-text-verification.json and native captures20-24. Original fontScale1.0 restored; no source-only test is counted as native evidence."
+        ],
+        "next_action": "Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open.",
+        "updated_at": "2026-09-17T04:35:03+00:00"
+      }
+    },
+    {
+      "sequence": 160,
+      "at": "2026-09-17T04:35:04+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build7 is available in Release QA and the physical recording visibly identifies installed1.0.0(7). The owner invitation and installation handoff are complete.",
+        "evidence": [
+          "Video source second45; Applebuild eff31b5d-6c18-492d-874c-d7a0e4392bf6 is VALID and attached to internal Release QA."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:35:04+00:00"
+      }
+    },
+    {
+      "sequence": 161,
+      "at": "2026-09-17T04:37:40+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Fresh Play Console readback still shows real Android-device verification and contact-phone tasks; Create app remains disabled.",
+        "evidence": [
+          "September17 Play Console Home: AstroJams personal account, Action required for real mobile device and phone, disabled Create app. No app record exists."
+        ],
+        "next_action": "Owner completes real-device verification in Play Console mobile app and then phone verification; agent creates paid Newsworthy and uploads AAB11 afterward.",
+        "updated_at": "2026-09-17T04:37:40+00:00"
+      }
+    },
+    {
+      "sequence": 162,
+      "at": "2026-09-17T04:37:41+00:00",
+      "gate": "web.deploy",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Merged PR96 deployed successfully; production health reports main76fc23b with healthy database.",
+        "evidence": [
+          "GitHub Vercel status success and /healthz git_commit76fc23b on September17. App code unchanged from prior native/web fix."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:37:41+00:00"
+      }
+    },
+    {
+      "sequence": 163,
+      "at": "2026-09-17T04:40:13+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source.",
+        "evidence": [
+          "store/android-large-text-verification.json; captures20-24; store/release.json finalProductionBuild4dc57992-b1e5-4517-8197-215b66789963."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T04:40:13+00:00"
       }
     }
   ],

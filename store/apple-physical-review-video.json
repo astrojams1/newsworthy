@@ -1,0 +1,45 @@
+{
+  "observedAt": "2026-09-17T04:30:53.289826+00:00",
+  "appVersion": "1.0.0",
+  "appBuild": "7",
+  "buildEvidence": "TestFlight first-launch screen visible at source second45.",
+  "original": {
+    "file": "artifacts/store-submission/newsworthy-ios7-review-original.mp4",
+    "bytes": 201473391,
+    "durationSeconds": 108.051678,
+    "sha256": "312acce0c13a746ad6a15ebabe59f477397e1213deba9dea721607f922347acd"
+  },
+  "reviewCopy": {
+    "file": "artifacts/store-submission/newsworthy-ios7-review-demo.mp4",
+    "bytes": 91102860,
+    "durationSeconds": 66.068333,
+    "sha256": "1bd143661f82fca77767726179d0ee9b61abe4e352bfe083a0bbf93121550068",
+    "preparation": "Removed first42seconds of idle Home Screen; retained continuous remaining sequence; video-only export without audio.",
+    "attachmentStatus": "POSTED_IN_APP_REVIEW_MESSAGE"
+  },
+  "observed": [
+    "Physical iPhone screen recording",
+    "App launch from Home Screen",
+    "TestFlight identifies1.0.0(7)",
+    "Live score, explanation and update time",
+    "Plain title and Share icon without glass backgrounds in light appearance",
+    "Small and medium Home Screen widgets before and after app use"
+  ],
+  "notDemonstrated": [
+    "Opening the app Share sheet",
+    "Privacy and Support navigation",
+    "Dark appearance",
+    "Larger text",
+    "Offline recovery",
+    "Physical iPad testing"
+  ],
+  "verification": "Exact-time source frames sampled each second; scene transitions and final review-copy contact sheet visually inspected.",
+  "storage": "Video copies kept under ignored local artifacts/store-submission; this manifest is the versioned record. App Review attachment is tracked separately.",
+  "reply": {
+    "postedAtObserved": "2026-09-17T04:34:58.831150+00:00",
+    "uiTimestamp": "September17 12:31 PM",
+    "messageCount": 2,
+    "attachmentFilename": "newsworthy-ios7-review-demo.mp4",
+    "verified": "App Review message shows response text, Message Attachments filename and Download control."
+  }
+}

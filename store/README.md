@@ -4,14 +4,14 @@ One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
 Last checked **September 17, 2026**. Neither app is publicly released.
-Apple build **6** was **Rejected**; its review submission has **Unresolved Issues**.
-The owner supplied Apple’s Guideline 2.1 request: a physical-device recording on
-the latest OS and five factual explanations. The six-part Notes are saved; the
-recording and physical-device QA remain pending. See [the response and recording
-checklist](apple-review-response.md). Internal TestFlight group **Release QA**
-now includes **build 7**, VALID and IN_BETA_TESTING. The owner installed build 6
-and exposed iOS glass backgrounds around the header controls. The fix is merged
-and available in build 7; physical confirmation and the review recording remain pending.
+Apple **build7 is Waiting for Review**. The supplied physical-device recording
+shows the launch, live reading, small/medium widgets and corrected plain header.
+The six-part response and66-second demonstration were posted to App Review;
+the same response is saved in Notes. Both version and submission states were
+verified through the API. See [submission evidence](apple-review-resubmission.json),
+[video verification](apple-physical-review-video.json) and
+[the response](apple-review-response.md). Review approval is still pending.
+Internal TestFlight group **Release QA** includes build7.
 The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
@@ -48,7 +48,9 @@ still blocks app creation. See the ledger for current gates and exact next actio
 | [source/](source/) | Original native captures and editable SVG layouts |
 | [release.json](release.json) | Public app/build identifiers; no credentials |
 | [user-actions.md](user-actions.md) | Verified account-owner steps with instructions |
-| [apple-review-response.md](apple-review-response.md) | Guideline 2.1 response, physical recording and QA checklist |
+| [apple-review-response.md](apple-review-response.md) | Posted Guideline2.1 response and recording checklist |
+| [apple-physical-review-video.json](apple-physical-review-video.json) | Recording hashes, preparation, attachment and observed verification scope |
+| [apple-review-resubmission.json](apple-review-resubmission.json) | Confirmed build7 Waiting for Review readback |
 | [disclosures.md](disclosures.md) | Evidence for privacy and content declarations |
 | [scripts/](scripts/) | Reproduce, validate, and upload the Apple listing |
 
@@ -63,10 +65,9 @@ still blocks app creation. See the ledger for current gates and exact next actio
   Apple Business now confirms the W-9 is **Active**; banking remains outstanding. The address-correction request
   has been sent and acknowledged by Apple,
   but the obsolete legal address still needs Apple approval/correction.
-- **Apple binary:** replacement signed production build **6** validated and
-  uploaded with Apple's `altool`. Apple reports `VALID`, and build 6 is selected
-  for version 1.0.0. Delivery/build ID is in `release.json`. The prior build 5
-  EAS queue cancellation is retained as historical evidence.
+- **Apple binary:** production **build7** passed Apple validation, uploaded,
+  processed `VALID`, and is selected for version1.0.0. Production and Apple build
+  IDs plus hashes are in `release.json`. Earlier builds remain historical evidence.
 - **Apple age rating:** declaration saved and verified through the API. It
   accounts for recurring war/weapons and mature news, with no graphic imagery.
   Apple returned `SEVENTEEN_PLUS` in its legacy age-rating field and 18 in
@@ -75,8 +76,8 @@ still blocks app creation. See the ledger for current gates and exact next actio
   **identity verified successfully**. Real Android device verification remains;
   phone verification is disabled until that prerequisite is complete. **Create
   app is disabled**, so no Google app, price, listing, or release has been saved.
-- **Android binary:** final production AAB10 downloaded and SHA-256/ZIP-validated
-  from merged commit `34f2570`; it supersedes AAB9. Preview APK8 verified the
+- **Android binary:** production AAB11 downloaded and SHA-256/ZIP-validated
+  from clean PR94 source `8055d61`; it supersedes AAB10. Preview APK8 verified the
   refresh-loop fix: zero widget recreations in 65 seconds versus 30 in 34 seconds
   before the fix. Installed APK9 additionally passed theme transitions and
   compact 2×2 rendering; its compact/expanded gallery is complete. Native APK
@@ -86,12 +87,10 @@ still blocks app creation. See the ledger for current gates and exact next actio
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** replacement submission
-  `4f28761f-3096-4f0d-aa37-df83332f818f` reports **UNRESOLVED_ISSUES**, and
-  version 1.0.0 is **REJECTED**, with build 6 selected. The six-part Guideline 2.1
-  response is saved in Notes; physical-device recording/QA and the reply remain. The old build-5 submission was
-  withdrawn by the developer to make the approved revision; it was not rejected
-  by an Apple reviewer. Automatic release after approval remains configured.
+- **Apple review:** submission `4f28761f-3096-4f0d-aa37-df83332f818f` and
+  version1.0.0 both report **WAITING_FOR_REVIEW**, with **build7** selected.
+  The Guideline2.1 response/video was posted and verified. This proves receipt
+  and queuing, not approval. Automatic release after approval remains configured.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.
 
 ## Reproduce the artwork
