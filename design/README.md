@@ -112,3 +112,12 @@ The reading-gradient regression fixture captures pixels from Chromium rendering
 independent reference pixels with a four-channel-value rasterization tolerance.
 If the approved CSS changes, recapture the CSS reference rather than deriving
 expected pixels from the SVG renderer.
+
+## Numeral alignment prototype
+
+[Widget alignment study](prototypes/widget-alignment/README.md) explores larger
+widgets with a sentence left-aligned beside a numeral spanning whole text lines.
+The interactive browser study compares two-to-four-line spans and optional
+wrapping, retaining the visible ten-point scale. It uses font ink metrics rather
+than assuming the numeral's font size equals its visible height. Production
+surface contracts remain unchanged; native implementation is unverified.

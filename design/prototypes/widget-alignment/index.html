@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Newsworthy · Beside the number</title><link rel="icon" href="../../../public/brand/icon-light.svg"><link rel="stylesheet" href="../../../public/levels.css"><link rel="stylesheet" href="./style.css"></head>
+<body>
+<header><p class="eyebrow">Newsworthy / Widget study</p><h1>Beside the number.</h1><p class="intro">One number, one sentence. A shared rhythm.</p><span class="badge">Prototype · Sample content</span></header>
+<form aria-label="Prototype controls">
+<label>Score<select id="score"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></label>
+<label>Number spans<select id="lines"><option value="2">2 lines</option><option value="3" selected>3 lines</option><option value="4">4 lines</option></select></label>
+<label>Layout<select id="layout"><option value="column">Aligned column</option><option value="wrap">Wrap underneath</option></select></label>
+<label>Appearance<select id="theme"><option>Light</option><option>Dark</option></select></label>
+<label>Text size<select id="scale"><option value="1">Default</option><option value="1.3">Larger</option><option value="2">Double</option></select></label>
+<label class="check"><input type="checkbox" id="guides"> Show line guides</label>
+</form>
+<main>
+<section class="proposal"><div class="section-heading"><h2>The proposal</h2><span>Left-aligned beside the score</span></div><div class="widget-stage">
+<figure><article class="widget medium" aria-label="Medium widget browser concept"><div class="name">Newsworthy</div><div class="body"><div class="score"><svg aria-hidden="true"><text></text></svg><span class="denominator" aria-hidden="true">∕ 10</span></div><p class="description"></p></div><div class="timestamp">Sep 17 · 09:41</div></article><figcaption>Medium <span>360 px wide</span></figcaption></figure>
+<figure><article class="widget wide" aria-label="Wide widget browser concept"><div class="name">Newsworthy</div><div class="body"><div class="score"><svg aria-hidden="true"><text></text></svg><span class="denominator" aria-hidden="true">∕ 10</span></div><p class="description"></p></div><div class="timestamp">Sep 17 · 09:41</div></article><figcaption>Wide <span>440 px wide</span></figcaption></figure>
+</div></section>
+<aside><p class="eyebrow">The alignment</p><h2>Count lines, not font points.</h2><p id="alignment-copy"></p><dl><div><dt>Description</dt><dd id="body-metric"></dd></div><div><dt>Line box × span</dt><dd id="span-metric"></dd></div><div><dt>Visible numeral</dt><dd id="ink-metric"></dd></div><div><dt>Numeral font size</dt><dd id="font-metric"></dd></div></dl><p class="note">Font size includes space outside the visible letter. Matching the ink gives a more convincing drop-cap effect than simply multiplying font sizes.</p></aside>
+</main>
+<section class="sentence-editor"><label for="sentence">Try a different sentence</label><textarea id="sentence" rows="3" maxlength="2000">Negotiators have agreed to resume talks, while aid deliveries reach communities affected by flooding and transport links gradually reopen.</textarea><div class="presets"><button type="button" id="short">Short sentence</button><button type="button" id="long">Long sentence</button></div></section>
+<footer>Browser typography study · Widget heights expand to show the whole sentence. Native sizing, accessibility and font metrics still need device verification.</footer>
+<script type="module" src="./prototype.js"></script></body></html>

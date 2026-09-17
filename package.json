@@ -22,7 +22,7 @@
     "pretest": "npm run build:web",
     "design:generate": "node scripts/generate-design.mjs",
     "design:check": "node scripts/generate-design.mjs --check",
-    "test:design": "node --test test/design.test.js test/reading-gradient.test.js test/surface-design.test.js",
+    "test:design": "node --test test/design.test.js test/reading-gradient.test.js test/surface-design.test.js test/widget-alignment-prototype.test.js",
     "design:assets": "npm run design:generate && node scripts/generate-brand.mjs"
   },
   "dependencies": {
