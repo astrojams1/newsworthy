@@ -269,5 +269,37 @@
       "sha256": "1e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202",
       "localArtifact": "artifacts/store-submission/newsworthy-android-production-v10.aab"
     }
+  },
+  "dropCapPrototype": {
+    "date": "2026-09-17",
+    "status": "BROWSER_PROTOTYPE_ONLY",
+    "path": "design/prototypes/drop-cap/index.html",
+    "baseCommit": "1dfb579",
+    "nativeBuild": null,
+    "nativeVerification": "NOT_IMPLEMENTED_OR_TESTED",
+    "untestedNativeStates": [
+      "iOS and Android app screens",
+      "small and expanded widgets in light and dark",
+      "score 10",
+      "enlarged text and fixed-height overflow",
+      "launcher resize",
+      "theme switch without a data refresh"
+    ],
+    "note": "Standalone scores and drop-cap wrapping are a browser design study; existing release/build verification does not apply to this proposal.",
+    "browserVerification": {
+      "viewports": [
+        1200,
+        320
+      ],
+      "cases": 72,
+      "expandedWidgetsPerCase": 2,
+      "checks": [
+        "text beside and below number",
+        "no paragraph overlap or overflow",
+        "empty state",
+        "missing-float regression rejection"
+      ],
+      "screenshots": "artifacts/drop-cap-prototype-*.png"
+    }
   }
 }
