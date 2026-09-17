@@ -84,3 +84,49 @@ test('rendered-prop test catches a platform-specific denominator regression', ()
   assert.notEqual(sourceOverride, source);
   assert.throws(() => inspectReading({ sourceOverride, platform: 'android', width: 390, height: 844, score: 3, dark: false }), /40 !== 20/);
 });
+
+function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
+  const tree = nodes(renderReading({ platform, score, width: 390, height: 844, sourceOverride }));
+  const options = tree.find(n => n.type === 'Screen').props.options;
+  assert.equal(options.headerTransparent, true);
+  const left = options.headerLeft();
+  const right = options.headerRight();
+  assert.equal(left.type, 'BrandMark');
+  if (platform === 'ios') {
+    const leftItems = options.unstable_headerLeftItems();
+    const rightItems = options.unstable_headerRightItems();
+    assert.equal(leftItems.length, 1);
+    assert.equal(leftItems[0].hidesSharedBackground, true, 'brand must not acquire iOS glass');
+    assert.equal(leftItems[0].element, left);
+    assert.equal(rightItems.length, score == null ? 0 : 1);
+    if (right) {
+      assert.equal(rightItems[0].hidesSharedBackground, true, 'share must not acquire iOS glass');
+      assert.equal(rightItems[0].element, right);
+    }
+  } else {
+    assert.equal(options.unstable_headerLeftItems, undefined);
+    assert.equal(options.unstable_headerRightItems, undefined);
+  }
+  if (right) {
+    assert.equal(right.props.accessibilityLabel, 'Share this reading');
+    assert.equal(right.props.accessibilityRole, 'button');
+    assert.equal(typeof right.props.onPress, 'function');
+    assert.ok(right.props.style.minWidth >= 44 && right.props.style.minHeight >= 44);
+  } else assert.equal(score, null);
+}
+
+test('native header keeps plain brand/share controls and accessible touch targets', () => {
+  for (const platform of ['ios', 'android', 'web']) {
+    for (const score of [null, 3]) inspectHeader({ platform, score });
+  }
+});
+
+test('header gate rejects iOS glass returning on either control', () => {
+  const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
+  for (const element of ['brand', 'shareButton']) {
+    const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: true`,
+      `element: ${element}, hidesSharedBackground: false`);
+    assert.notEqual(sourceOverride, source);
+    assert.throws(() => inspectHeader({ sourceOverride }), /must not acquire iOS glass/);
+  }
+});

@@ -14,7 +14,7 @@
     "Offline foreground reopen retains score and explanation, labels Saved reading, preserves original timestamp and offers Try again at fontScale2.0.",
     "After restoring airplane_mode_on=0 and wifi_on=1, foreground reopen cleared Saved reading and Try again while retaining the original reading timestamp."
   ],
-  "fixStatus": "SOURCE_CHANGES_NATIVE_VERIFICATION_PENDING",
+  "fixStatus": "CORRECTIVE_PREVIEW_NATIVE_VERIFIED",
   "fixScope": [
     "Bounded autosizing for compact-widget title and timestamp.",
     "Refresh React appearance from Activity configuration on Android resume."
@@ -31,10 +31,43 @@
     },
     "19-reading-online-recovery-large-text-v9.png": {
       "sha256": "72d4b3551a761922ffaed295ae4b62d6258f3e2afa6d5f1e47d4983f950f1378"
+    },
+    "20-widget-large-text-corrected-v10.png": {
+      "sha256": "d6868a7d018912bfe48b336520ec3d93e679ccd033f2288f8f54857f8b9b7b4e"
+    },
+    "21-reading-large-text-dark-v10.png": {
+      "sha256": "67b44b9730f78a157e6d3125e225bc21a36eed065d83b7d051ead9e99ef52546"
+    },
+    "22-widget-default-light-v10.png": {
+      "sha256": "e9a9391fcdd3e36d435f9c04ba395e4609e9baa00cc91dac0125fd8c5d82d145"
+    },
+    "23-reading-restored-light-v10.png": {
+      "sha256": "57814b7a10f6d8ce4f06453061d1c3a23a4a611f3ce6505bd9aaf302795c9f61"
+    },
+    "24-reading-resume-dark-large-text-v10.png": {
+      "sha256": "ac8161e970ea774c494a2ec5313f6cbd7ba1154b69cbf37a0063f7503016c69c"
     }
   },
   "environmentIssue": "System UI status-bar input dispatch ANR during connectivity restoration; modal identified System UI, and dumpsys lastanr confirmed StatusBar timeout. Do not attribute to app crash.",
   "networkRestored": true,
-  "fontScaleRestorePending": true,
-  "originalFontScale": 1.0
+  "fontScaleRestorePending": false,
+  "originalFontScale": 1.0,
+  "correctivePreview": {
+    "buildId": "c21ad449-7cef-4d4e-b602-031b0313c750",
+    "versionCode": 10,
+    "artifactBytes": 104437763,
+    "sha256": "018908534bbf2e0f8fb926361f962d8d1ee8643b1ff7e71dea862ecd4fc8feb5",
+    "zipCRC": "valid",
+    "installed": true,
+    "installedVersionCodeReadback": 10,
+    "nativeRecheck": "PASSED_ANDROID_EMULATOR_API35",
+    "observedPasses": [
+      "Maximum fontScale2.0 compact title and timestamp are complete.",
+      "Dark native reading remains legible at maximum fontScale2.0.",
+      "After dark-to-light system change and fontScale2.0-to1.0 change, reopened app correctly uses light appearance.",
+      "Default fontScale1.0 compact widget fields are complete.",
+      "Original failing sequence passes: foreground light app at fontScale1.0, background to Settings, change to dark and fontScale2.0, reopen app; native reading correctly dark."
+    ]
+  },
+  "restoredFontScale": 1.0
 }

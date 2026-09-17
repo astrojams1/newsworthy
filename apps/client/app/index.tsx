@@ -3,6 +3,7 @@ import { Pressable, ScrollView, Text, View, Share, useWindowDimensions } from 'r
 import { Stack, Link } from 'expo-router';
 import Head from 'expo-router/head';
 import { AppIcon } from '@/components/app-icon';
+import { BrandMark } from '@/components/brand-mark';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
 import { useCurrentReading } from '@/components/reading-provider';
@@ -42,12 +43,21 @@ export default function Home() {
       if (!(error instanceof Error && error.name === 'AbortError')) setShareNotice('Sharing is unavailable. Please try again.');
     }
   };
+  const brand = <BrandMark />;
+  const shareButton = reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
+    <AppIcon color={theme.accent} />
+  </Pressable> : null;
   return <>
     {process.env.EXPO_OS === 'web' && <Head><title>Newsworthy — A calm global status indicator</title></Head>}
     <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: '',
-      headerRight: () => reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
-        <AppIcon color={theme.accent} />
-      </Pressable> : null }} />
+      headerLeft: () => brand, headerRight: () => shareButton,
+      // A transparent bar does not hide iOS 26+ glass around individual items.
+      unstable_headerLeftItems: process.env.EXPO_OS === 'ios' ? () => [
+        { type: 'custom', element: brand, hidesSharedBackground: true },
+      ] : undefined,
+      unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => shareButton ? [
+        { type: 'custom', element: shareButton, hidesSharedBackground: true },
+      ] : [] : undefined }} />
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
     <ReadingGradient score={reading?.score} dark={theme.dark} />
     <ScrollView key={fontScale} contentInsetAdjustmentBehavior="never" style={{ flex: 1, backgroundColor: 'transparent' }}
