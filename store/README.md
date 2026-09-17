@@ -4,14 +4,14 @@ One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
 Last checked **September 17, 2026**. Neither app is publicly released.
-Apple **build7 is Waiting for Review**. The supplied physical-device recording
+Apple **build 7 is Waiting for Review**. The supplied physical-device recording
 shows the launch, live reading, small/medium widgets and corrected plain header.
-The six-part response and66-second demonstration were posted to App Review;
+The six-part response and 66-second demonstration were posted to App Review;
 the same response is saved in Notes. Both version and submission states were
 verified through the API. See [submission evidence](apple-review-resubmission.json),
 [video verification](apple-physical-review-video.json) and
 [the response](apple-review-response.md). Review approval is still pending.
-Internal TestFlight group **Release QA** includes build7.
+Internal TestFlight group **Release QA** includes build 7.
 The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
@@ -48,9 +48,9 @@ still blocks app creation. See the ledger for current gates and exact next actio
 | [source/](source/) | Original native captures and editable SVG layouts |
 | [release.json](release.json) | Public app/build identifiers; no credentials |
 | [user-actions.md](user-actions.md) | Verified account-owner steps with instructions |
-| [apple-review-response.md](apple-review-response.md) | Posted Guideline2.1 response and recording checklist |
+| [apple-review-response.md](apple-review-response.md) | Posted Guideline 2.1 response and recording checklist |
 | [apple-physical-review-video.json](apple-physical-review-video.json) | Recording hashes, preparation, attachment and observed verification scope |
-| [apple-review-resubmission.json](apple-review-resubmission.json) | Confirmed build7 Waiting for Review readback |
+| [apple-review-resubmission.json](apple-review-resubmission.json) | Confirmed build 7 Waiting for Review readback |
 | [disclosures.md](disclosures.md) | Evidence for privacy and content declarations |
 | [scripts/](scripts/) | Reproduce, validate, and upload the Apple listing |
 
@@ -65,8 +65,8 @@ still blocks app creation. See the ledger for current gates and exact next actio
   Apple Business now confirms the W-9 is **Active**; banking remains outstanding. The address-correction request
   has been sent and acknowledged by Apple,
   but the obsolete legal address still needs Apple approval/correction.
-- **Apple binary:** production **build7** passed Apple validation, uploaded,
-  processed `VALID`, and is selected for version1.0.0. Production and Apple build
+- **Apple binary:** production **build 7** passed Apple validation, uploaded,
+  processed `VALID`, and is selected for version 1.0.0. Production and Apple build
   IDs plus hashes are in `release.json`. Earlier builds remain historical evidence.
 - **Apple age rating:** declaration saved and verified through the API. It
   accounts for recurring war/weapons and mature news, with no graphic imagery.
@@ -88,8 +88,8 @@ still blocks app creation. See the ledger for current gates and exact next actio
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
 - **Apple review:** submission `4f28761f-3096-4f0d-aa37-df83332f818f` and
-  version1.0.0 both report **WAITING_FOR_REVIEW**, with **build7** selected.
-  The Guideline2.1 response/video was posted and verified. This proves receipt
+  version 1.0.0 both report **WAITING_FOR_REVIEW**, with **build 7** selected.
+  The Guideline 2.1 response/video was posted and verified. This proves receipt
   and queuing, not approval. Automatic release after approval remains configured.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.
 

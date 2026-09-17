@@ -21,7 +21,7 @@
     "w9Status": "ACTIVE",
     "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
     "reviewState": "WAITING_FOR_REVIEW",
-    "reviewSubmittedDate": "2026-09-16T07:50:46.874Z",
+    "reviewSubmittedDate": "2026-09-17T04:33:40.475Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,
     "availableInNewTerritories": true,
@@ -143,8 +143,10 @@
     "previousSelectedAppleBuildId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
     "previousProductionBuild": "461def41-d59d-4c9e-9f91-d8f2c9bdc95c",
     "buildSelectionStatus": "SELECTED_VERIFIED",
-    "reviewResubmittedAt": "2026-09-17T04:33:43.363Z",
-    "reviewResubmissionEvidence": "store/apple-review-resubmission.json"
+    "reviewResubmittedAt": "2026-09-17T04:33:40.475Z",
+    "reviewResubmissionEvidence": "store/apple-review-resubmission.json",
+    "firstReviewSubmittedDate": "2026-09-16T07:50:46.874Z",
+    "reviewStatusObservedAt": "2026-09-17T04:33:43.363Z"
   },
   "google": {
     "productionBuild": "4dc57992-b1e5-4517-8197-215b66789963",

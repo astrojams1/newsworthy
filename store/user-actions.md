@@ -107,15 +107,15 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 ## Work the agent can do
 
-**Apple build7 is Waiting for Review.** The supplied physical recording shows
-TestFlight1.0.0(7), app launch, live reading, small/medium Home Screen widgets
+**Apple build 7 is Waiting for Review.** The supplied physical recording shows
+TestFlight 1.0.0(7), app launch, live reading, small/medium Home Screen widgets
 and the corrected plain title/share header in light appearance. The video and
 six-part reply were posted to App Review, Notes were saved, and both provider
 review states were verified. No further invitation or recording transfer is
 currently requested. See [submission evidence](apple-review-resubmission.json)
 and [the exact verification scope](apple-physical-review-video.json).
 
-Android corrective previewAPK10 passed emulator checks for maximum-text widget
+Android corrective preview APK10 passed emulator checks for maximum-text widget
 labels and background appearance changes. Production **AAB11** is downloaded
 and verified. The owner-approved compact widget and neutral compact/expanded
 gallery are complete; no further resizing is needed. Physical Android testing
@@ -132,5 +132,5 @@ The remaining technical release work is:
   Google production access only after the required testing gate is satisfied.
 
 The original request authorizes store submission; no generic submission
-confirmation is pending. Account-owner steps1–4 and real closed testing remain
+confirmation is pending. Account-owner steps 1–4 and real closed testing remain
 as described above. No store is publicly live yet.

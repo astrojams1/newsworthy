@@ -7,8 +7,8 @@ API readback independently confirms `REJECTED` / `UNRESOLVED_ISSUES`.
 
 ## Submission status
 
-**Build7 is WAITING_FOR_REVIEW.** App Store Connect confirmed both submission
-and version state on September17 at04:33UTC. The six-part response below is
+**Build 7 is WAITING_FOR_REVIEW.** App Store Connect confirmed both submission
+and version state on September 17 at 04:33 UTC. The six-part response below is
 saved/read back in App Review Notes and posted to App Review with
 `newsworthy-ios7-review-demo.mp4`. The message and attachment Download control
 were verified in the browser. Review acceptance and public release are pending.
@@ -108,17 +108,17 @@ videos or media feeds. It does not offer licensed third-party content for sale.
 
 ## Current evidence
 
-- The supplied physical recording shows TestFlight1.0.0(7), launch, the current
+- The supplied physical recording shows TestFlight 1.0.0(7), launch, the current
   reading and small/medium Home Screen widgets. The title and Share icon have
   no unwanted backgrounds in light appearance.
-- The review copy trims42seconds of initial idle Home Screen and omits audio;
-  the remaining66-second sequence is continuous. The original is retained.
+- The review copy trims 42 seconds of initial idle Home Screen and omits audio;
+  the remaining 66-second sequence is continuous. The original is retained.
 - Opening Share, footer-link navigation, dark appearance, larger text, offline
   recovery and physical iPad testing are not demonstrated by this recording.
 - The exact reply text is also in `listing.json.reviewNotes`; neither makes
   claims about device coverage beyond the observed demonstration.
 - App Review correspondence required the signed-in browser. Public API calls
-  selected valid build7, preserved the review-contact phone while updating Notes,
+  selected valid build 7, preserved the review-contact phone while updating Notes,
   resolved the rejected item and submitted it. Both review states were then
   independently read back as WAITING_FOR_REVIEW.
 
