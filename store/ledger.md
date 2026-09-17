@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T02:36:54+00:00
+Updated: 2026-09-17T02:38:10+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -55,7 +55,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
 | apple.physical-recording | waiting_user | user | observed | Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available. | Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed. |
 | apple.testflight | waiting_user | user | observed | Owner is now in Release QA, but tester state is NOT_INVITED. Build6 internal state is IN_BETA_TESTING. No email invitation sent by the agent. | Owner approves pending TestFlight email invitation, or sends it in App Store Connect; agent can call invitation API and verify state after authorization. |
-| google.large-text-build | in_progress | agent | observed | Corrective Android preview APK build command is uploading the source archive; provider build ID is not yet returned. | Poll existing session81220, read /tmp/newsworthy-android-large-text-build.json, then follow returned provider build ID without starting a duplicate. |
+| google.large-text-build | waiting_provider | provider | observed | Corrective Android preview APK10 accepted by EAS as NEW; production AAB10 remains held for replacement. | Read buildc21ad449-7cef-4d4e-b602-031b0313c750, download/install when finished, verify fontScale2.0 and background theme behavior. Emulator remains at2.0 for this test; restore original1.0 after verification. |
 
 ## Evidence and history
 
@@ -1209,3 +1209,13 @@ Corrective Android preview APK build command is uploading the source archive; pr
 - EAS CLI live session81220; source33ebd60; native fixes committed; 194 tests, typecheck and Android prebuild passed. Upload status110MB archive.
 
 Next: Poll existing session81220, read /tmp/newsworthy-android-large-text-build.json, then follow returned provider build ID without starting a duplicate.
+
+### 122. google.large-text-build — waiting_provider
+
+2026-09-17T02:38:10+00:00 · observed · provider
+
+Corrective Android preview APK10 accepted by EAS as NEW; production AAB10 remains held for replacement.
+
+- EASc21ad449-7cef-4d4e-b602-031b0313c750; preview1.0.0(10); source metadata cab96c5c3cb34726d6ca43451559a7c4d31207b2. Native code is33ebd60; only release-record commits changed while upload ran. CLI81220 completed successfully.
+
+Next: Read buildc21ad449-7cef-4d4e-b602-031b0313c750, download/install when finished, verify fontScale2.0 and background theme behavior. Emulator remains at2.0 for this test; restore original1.0 after verification.
