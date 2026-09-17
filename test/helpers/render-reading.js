@@ -14,6 +14,16 @@ const compile = text => ts.transpileModule(text, { compilerOptions: {
 } }).outputText;
 const compiled = compile(source);
 
+export function renderShareIcon({ platform, color, sourceOverride }) {
+  const iconSource = sourceOverride ?? readFileSync(new URL('../../apps/client/components/app-icon.tsx', import.meta.url), 'utf8');
+  const exports = {};
+  vm.runInNewContext(compile(iconSource), {
+    exports, process: { env: { EXPO_OS: platform } },
+    require: name => name === 'expo-image' ? { Image: 'Image' } : require(name),
+  });
+  return exports.AppIcon({ color });
+}
+
 export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, sourceOverride }) {
   const reading = score == null ? null : { score, explanation: 'A quiet day for the world.', created_at: '2026-09-16T09:00:00Z' };
   const mocks = {
