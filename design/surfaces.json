@@ -1,5 +1,10 @@
 {
-  "denominatorText": "\u2215 10",
+  "denominatorText": "∕ 10",
+  "header": {
+    "shareIconSize": 24,
+    "shareOpticalOffsetY": { "web": -2, "ios": -2, "android": 0 },
+    "minimumTouchTarget": 48
+  },
   "widget": {
     "compactScore": 69,
     "expandedScore": 69,

@@ -50,7 +50,7 @@
     "production IPA until EAS completes"
   ],
   "checks": {
-    "npmTest": 205,
-    "designGate": "33 native contract and deliberate regression tests passed"
+    "npmTest": 207,
+    "designGate": "35 native contract and deliberate regression tests passed after merging main"
   }
 }

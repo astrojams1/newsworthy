@@ -269,5 +269,43 @@
       "sha256": "1e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202",
       "localArtifact": "artifacts/store-submission/newsworthy-android-production-v10.aab"
     }
+  },
+  "headerOpticalAlignment": {
+    "date": "2026-09-17",
+    "status": "LOCAL_WEB_AND_IOS_EXPO_GO_VERIFIED_NOT_RELEASED",
+    "branch": "codex/header-center-alignment",
+    "baseCommit": "8721bc4",
+    "sourceFile": "apps/client/components/app-icon.tsx",
+    "sourceSha256": "9ec8014f3e8c9a9aa8c204c785efa6167eec65c0ff7391f74571fd25eda2507b",
+    "change": "Lift web/iOS box-and-arrow share artwork by 2 logical units to align its visual weight with NEWSWORTHY; retain the fixed 48-point touch target and unchanged Android glyph.",
+    "diagnosis": {
+      "web": "Production Chromium capture: both containers center at y=32 CSS px. Thresholded ink-weighted vertical centers were title 31.73 and icon 33.52; after the correction title 31.73 and icon 31.52. This is an optical heuristic, not a layout-box mismatch.",
+      "physicalIPhone": "Build 7 review recording at source second 65: title ink center 251.15 image pixels and icon 256.86 at 3x, approximately 1.9 points of visual-weight offset. This capture predates the fix."
+    },
+    "verification": {
+      "automated": [
+        "npm run test:design: 32 passed",
+        "npm run check:app: passed",
+        "npm test including web export: 204 passed",
+        "git diff --check: passed"
+      ],
+      "web": [
+        "Chromium desktop 1280x633 dark; actual screenshot and DOM bounds inspected",
+        "Chromium phone viewport 390x844 light; screenshot inspected",
+        "48x48 Share target remains at its original bounds; only image translates upward",
+        "Browser error collector empty"
+      ],
+      "native": [
+        "iPhone 16 Pro simulator, iOS 18.3, Expo Go SDK 57, local Metro port 8086",
+        "Actual native reading screen inspected in light appearance with score 1 and normal text size; title and SF Symbol visible, Share accessibility label retained"
+      ],
+      "localEvidence": "artifacts/header-alignment/ contains web before/after, web phone light, and the pre-fix physical iOS 7 frame. Post-fix native screenshot was inspected through Simulator computer-use capture."
+    },
+    "untested": [
+      "Custom iOS build and physical iOS 26 device with the fix",
+      "iPad, native dark appearance, enlarged text and landscape with the fix",
+      "Android native runtime and both native widgets were not rerun; their artwork/layout is unchanged"
+    ],
+    "releaseNote": "Existing Apple build 7 and Android build 11 verification remains historical. No new native build or store submission was created for this change."
   }
 }

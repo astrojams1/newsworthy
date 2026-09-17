@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T12:58:43+00:00",
+  "updated_at": "2026-09-17T13:05:45+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -588,12 +588,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Stopped only the oversized local source upload before EAS created a build; excluded store captures/artwork and Git history from the build archive. Native source unchanged, 205 tests passed.",
+      "summary": "EAS build9 c00512fb-db9f-4ec6-bebb-94614b360d5a was canceled before upload to Apple so the next TestFlight build can include merged main and the share-icon fix. User also authorized merging PR100.",
       "evidence": [
-        ".easignore; EAS latest build remained a151f9ee-9a5f-48b2-887a-f936bfe48db7 (build7); existing App Review submission untouched."
+        "Build9 source06b6cd9, production iOS1.0.0; EAS confirms CANCELED. App Store version/build7 and review4f28761f-3096-4f0d-aa37-df83332f818f still WAITING_FOR_REVIEW, selected build eff31b5d-6c18-492d-874c-d7a0e4392bf6."
       ],
-      "next_action": "Submit the smaller archive, await signed IPA, then upload and enable it for the existing TestFlight group.",
-      "updated_at": "2026-09-17T12:58:43+00:00"
+      "next_action": "Complete merged-source checks, merge PR100, build the merged commit, upload to TestFlight and retain review build7.",
+      "updated_at": "2026-09-17T13:05:45+00:00"
     }
   },
   "events": [
@@ -3392,6 +3392,22 @@
         ],
         "next_action": "Submit the smaller archive, await signed IPA, then upload and enable it for the existing TestFlight group.",
         "updated_at": "2026-09-17T12:58:43+00:00"
+      }
+    },
+    {
+      "sequence": 175,
+      "at": "2026-09-17T13:05:45+00:00",
+      "gate": "apple.widget-testflight",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EAS build9 c00512fb-db9f-4ec6-bebb-94614b360d5a was canceled before upload to Apple so the next TestFlight build can include merged main and the share-icon fix. User also authorized merging PR100.",
+        "evidence": [
+          "Build9 source06b6cd9, production iOS1.0.0; EAS confirms CANCELED. App Store version/build7 and review4f28761f-3096-4f0d-aa37-df83332f818f still WAITING_FOR_REVIEW, selected build eff31b5d-6c18-492d-874c-d7a0e4392bf6."
+        ],
+        "next_action": "Complete merged-source checks, merge PR100, build the merged commit, upload to TestFlight and retain review build7.",
+        "updated_at": "2026-09-17T13:05:45+00:00"
       }
     }
   ],

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T12:58:43+00:00
+Updated: 2026-09-17T13:05:45+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -62,7 +62,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | design.denominator | in_progress | agent | observed | Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction. | Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission. |
 | design.widget-alignment-prototype | done | agent | observed | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
 | design.widget-layout-feature | in_progress | agent | observed | Actual native widget feature committed in PR100; 205 tests and 33 design checks passed. iOS SwiftUI and Android RemoteViews rendered in native test hosts. | Finish TestFlight build upload; retain untested WidgetKit/launcher and physical-device states in verification record. |
-| apple.widget-testflight | in_progress | agent | observed | Stopped only the oversized local source upload before EAS created a build; excluded store captures/artwork and Git history from the build archive. Native source unchanged, 205 tests passed. | Submit the smaller archive, await signed IPA, then upload and enable it for the existing TestFlight group. |
+| apple.widget-testflight | in_progress | agent | observed | EAS build9 c00512fb-db9f-4ec6-bebb-94614b360d5a was canceled before upload to Apple so the next TestFlight build can include merged main and the share-icon fix. User also authorized merging PR100. | Complete merged-source checks, merge PR100, build the merged commit, upload to TestFlight and retain review build7. |
 
 ## Evidence and history
 
@@ -1722,3 +1722,13 @@ Stopped only the oversized local source upload before EAS created a build; exclu
 - .easignore; EAS latest build remained a151f9ee-9a5f-48b2-887a-f936bfe48db7 (build7); existing App Review submission untouched.
 
 Next: Submit the smaller archive, await signed IPA, then upload and enable it for the existing TestFlight group.
+
+### 175. apple.widget-testflight — in_progress
+
+2026-09-17T13:05:45+00:00 · observed · agent
+
+EAS build9 c00512fb-db9f-4ec6-bebb-94614b360d5a was canceled before upload to Apple so the next TestFlight build can include merged main and the share-icon fix. User also authorized merging PR100.
+
+- Build9 source06b6cd9, production iOS1.0.0; EAS confirms CANCELED. App Store version/build7 and review4f28761f-3096-4f0d-aa37-df83332f818f still WAITING_FOR_REVIEW, selected build eff31b5d-6c18-492d-874c-d7a0e4392bf6.
+
+Next: Complete merged-source checks, merge PR100, build the merged commit, upload to TestFlight and retain review build7.

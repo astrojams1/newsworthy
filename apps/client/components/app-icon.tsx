@@ -11,5 +11,9 @@ export function AppIcon({ color }: { color: string }) {
     : { uri: process.env.EXPO_OS === 'android'
       ? `data:image/svg+xml;base64,${fromByteArray(Uint8Array.from(svg, char => char.charCodeAt(0)))}`
       : `data:image/svg+xml,${encodeURIComponent(svg)}` };
-  return <Image source={source} tintColor={color} accessibilityElementsHidden importantForAccessibility="no" style={{ width: 24, height: 24 }} />;
+  // The box-and-arrow glyph carries more ink below its geometric center.
+  // Lift the artwork to align optically with the capitals; keep the hit area still.
+  // Android's three-node share glyph is vertically balanced already.
+  const opticalOffsetY = process.env.EXPO_OS === 'android' ? 0 : -2;
+  return <Image source={source} tintColor={color} accessibilityElementsHidden importantForAccessibility="no" style={{ width: 24, height: 24, transform: [{ translateY: opticalOffsetY }] }} />;
 }

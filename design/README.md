@@ -60,6 +60,15 @@ Source assets and the Android config plugin preserve the design through Expo pre
 
 ## Design regression gate
 
+The home header centers the title and Share touch target in 48-point containers.
+The box-and-arrow share artwork on web and iOS has more visual weight below its
+geometric center, so its image moves up 2 points (CSS pixels on web) to align
+optically with the uppercase title. The touch target stays fixed. Android's
+vertically balanced three-node glyph has no offset. `design/surfaces.json`
+records these values, and the rendered-icon regression cases reject a missing
+correction or an offset applied to Android. This is an optical adjustment, not a
+change to the navigation-bar slots or the title's horizontal position.
+
 `design/surfaces.json` records the approved typography and widget size rules.
 The full reading deliberately uses larger digits than widgets. Compact and expanded widgets use the same 69-point base numeral and a
 12-point `∕ 10`. Expanded descriptions use 14-point text on a 20-point line
