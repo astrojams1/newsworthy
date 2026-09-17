@@ -113,17 +113,21 @@ Those have working automated paths. Apple build 6 and the corrected five-image
 gallery were reviewed and **Rejected**, confirmed through the API on
 September 17. The owner supplied the Guideline 2.1 information request. The agent saved and
 verified the six-part Notes and created internal TestFlight group **Release QA**
-with build 6 and testing instructions. No testers have been invited.
+with build 6 and testing instructions. Apple accepted the owner invitation (HTTP 201); tester state is now **INVITED**.
+The owner confirmed the app running in TestFlight with a physical iPhone screenshot.
+That test exposed unexpected iOS glass backgrounds on title/share; the agent is
+preparing a corrected build before the final physical recording.
 The next App Review step is a physical-device demonstration and QA;
 see [the exact recording checklist](apple-review-response.md). The paired iPhone
 is disconnected, and iPhone Mirroring is still at first-time setup. Connect and
 unlock the phone so the agent can determine available testing/recording access.
 The latest OS is iOS/iPadOS 27 at this check; the paired phone last reported
-26.6.2. The public API cannot send the App Review correspondence, and Chrome
-control remains unavailable, so the prepared reply may require pasting in Apple’s
-App Review page after the recording is ready. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
+26.6.2. The public API cannot send App Review correspondence. Chrome control recovered
+and the rejection was read directly. The Mac was briefly locked, then UI access
+recovered and Android regression checks completed. The TestFlight group build says Testing. The direct tester-build list remains
+empty; recheck availability after invitation acceptance. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
 Privacy/Support links and iPad share popover have been checked. Physical-device
-and large-text behavior remain unclaimed.
+testing remains incomplete; Android maximum-text behavior passed on the corrected APK10.
 
 Android preview APK8 verified the refresh-loop fix, including its next scheduled
 refresh without recurring widget recreation. APK9 is installed and passed native
@@ -139,9 +143,9 @@ baseline alignment, theme bindings and minimum sizing in CI.
 
 The remaining technical release work is:
 
-- Complete
-  remaining native verification (score 10 and enlarged text)
-  without claiming CI contract checks are native screenshot tests.
+- Deliver the corrected iOS header in TestFlight for a physical recheck. Android
+  clipping/appearance corrections passed emulator testing; build the replacement
+  production AAB. Score 10 and physical-device coverage remain separate gaps.
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
 - Complete the physical recording/QA, replace the pending item in Notes, and

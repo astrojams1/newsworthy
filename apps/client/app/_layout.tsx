@@ -4,7 +4,6 @@ import { faviconSvg } from '../../../public/favicon';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
-import { BrandMark } from '@/components/brand-mark';
 export default function Layout() {
   return <ReadingProvider><ThemedLayout /></ReadingProvider>;
 }
@@ -27,7 +26,7 @@ function ThemedLayout() {
     <StatusBar style={theme.dark ? 'light' : 'dark'} />
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
-      <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerLeft: () => <BrandMark /> }} />
+      <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
     </Stack>
   </>;
 }

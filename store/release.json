@@ -77,12 +77,29 @@
       "groupName": "Release QA",
       "isInternalGroup": true,
       "buildAttached": true,
-      "testerCount": 0,
-      "invitationsSent": false,
+      "testerCount": 1,
+      "invitationsSent": true,
       "reviewNotesSaved": true,
       "reviewNotesSha256": "dc4431898d1d26f93cc27b78a12cac1fa1a02f85c38e8a9f96171cd63e0b9f06",
       "physicalRecordingStatus": "PENDING",
-      "physicalTestingStatus": "PENDING"
+      "physicalTestingStatus": "IN_PROGRESS_HEADER_DEFECT_REPORTED",
+      "testerState": "INVITED",
+      "internalBuildState": "IN_BETA_TESTING",
+      "testerBuildCount": 0,
+      "testerUIStatus": "Not rechecked after invitation; previously No Builds Available",
+      "groupBuildUIStatus": "Testing",
+      "invitationBlocker": null,
+      "invitationRequestStatus": 201,
+      "invitationId": "21fd5051-6930-4f07-a100-79c427afa6df",
+      "invitationConfirmedAt": "2026-09-17T03:07:55.654344+00:00",
+      "installationStatus": "USER_CONFIRMED_TESTFLIGHT_RUNNING",
+      "physicalDeviceEvidence": "Owner supplied TestFlight iPhone screenshot September17 showing live reading and unexpected glass backgrounds on brand/share."
+    },
+    "headerBackgroundFix": {
+      "status": "SOURCE_FIXED_PHYSICAL_VERIFICATION_PENDING",
+      "reportedBuild": "6",
+      "scope": "Hide iOS26+ system glass backgrounds for brand/share native header items; retain Android/web header and share accessibility.",
+      "replacementBuildRequired": true
     }
   },
   "google": {
@@ -157,8 +174,8 @@
       "bytes": 104437651,
       "installedVersionCode": 9
     },
-    "productionBuildRequiresReplacement": false,
-    "productionReplacementReason": "AAB10 replaces AAB9 and includes the verified denominator/theme fix from merged PR92.",
+    "productionBuildRequiresReplacement": true,
+    "productionReplacementReason": "Corrective APK10 passed native large-text clipping and appearance-resume regression checks. Production replacement AAB remains required.",
     "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED",
     "finalProductionBuild": {
       "id": "8162d6a2-7980-4f48-9153-d325ffd55e68",

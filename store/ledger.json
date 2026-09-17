@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T02:17:29+00:00",
+  "updated_at": "2026-09-17T03:23:33+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -258,12 +258,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "APK9 compact2x2 now verified in light as well as dark, with correct denominator theme change and widget tap opening the live native app.",
+      "summary": "Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification.",
       "evidence": [
-        "store/source/android-phone/15-widget-compact-light-v9.png and provenance-v9.json; native app opened to current score2 with Privacy/Support footer on2026-09-17."
+        "store/android-large-text-verification.json; actual screenshots16/17; adb read-only font_scale2.0 and UiMode mNightMode2."
       ],
-      "next_action": "Complete score10, enlarged text, replacement offline recovery and physical-device checks without substituting CI props for native layout.",
-      "updated_at": "2026-09-17T01:58:02+00:00"
+      "next_action": "Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.",
+      "updated_at": "2026-09-17T02:33:13+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -464,15 +464,15 @@
       "updated_at": "2026-09-16T10:18:37+00:00"
     },
     "apple.review-access": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner-pasted rejection text is available; browser control is still unavailable for sending the response. API Notes access works.",
+      "summary": "Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read.",
       "evidence": [
-        "store/apple-review-response.md contains the user-supplied requirement; Notes saved and read back via API; Chrome CUA reconnect/reset remained unavailable."
+        "CUA Android native UI successfully operated September17; AppReview text had been read directly before prior lock."
       ],
-      "next_action": "Use existing rejection text; recover supported browser control or provide prepared response for owner to paste after recording is ready.",
-      "updated_at": "2026-09-17T02:13:53+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-17T03:18:12+00:00"
     },
     "apple.review-notes": {
       "state": "done",
@@ -499,13 +499,46 @@
     "apple.testflight": {
       "state": "in_progress",
       "owner": "agent",
-      "basis": "observed",
-      "summary": "Build6 ready for internal beta testing; Release QA group created with build6 and testing instructions; zero testers, no invitations sent.",
+      "basis": "user_reported",
+      "summary": "Owner is testing Newsworthy in TestFlight on a physical iPhone; invitation/install handoff succeeded.",
       "evidence": [
-        "store/apple-testflight-qa.json; betaBuildDetails READY_FOR_BETA_TESTING; betaGroups and builds API readback."
+        "Owner-provided iPhone screenshot of Newsworthy launched from TestFlight; header defect flagged during testing. This is not full QA or a recording."
       ],
-      "next_action": "Add existing account holder as internal tester through supported Apple path; obtain authorization before sending an invitation; install TestFlight build6 on physical devices.",
-      "updated_at": "2026-09-17T02:12:04+00:00"
+      "next_action": "Deliver corrected header build through existing Release QA group and recheck on physical device.",
+      "updated_at": "2026-09-17T03:23:33+00:00"
+    },
+    "google.large-text-build": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation.",
+      "evidence": [
+        "store/android-large-text-verification.json; native captures20-24. Original failing light-to-dark sequence reproduced and passed. npm test194passed."
+      ],
+      "next_action": "Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source.",
+      "updated_at": "2026-09-17T03:18:12+00:00"
+    },
+    "google.offline": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery.",
+      "evidence": [
+        "store/android-large-text-verification.json and native captures18/19; read-only settings verified airplane0/wifi1 after restoration. System UI status-bar ANR was recovered separately; no Newsworthy crash observed."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-17T02:48:31+00:00"
+    },
+    "apple.header-background": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner physical TestFlight screenshot shows iOS glass backgrounds around brand/share; installed Expo native header defaults explain the mismatch.",
+      "evidence": [
+        "Owner screenshot September17; Expo57.0.21 useHeaderConfigProps forwards hidesSharedBackground only for custom header items. Source fix uses those items; design24tests and typecheck pass."
+      ],
+      "next_action": "Run full tests, merge PR, build/upload replacement iOS version and obtain physical verification before review recording.",
+      "updated_at": "2026-09-17T03:23:33+00:00"
     }
   },
   "events": [
@@ -2408,6 +2441,246 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-17T02:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 119,
+      "at": "2026-09-17T02:33:13+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification.",
+        "evidence": [
+          "store/android-large-text-verification.json; actual screenshots16/17; adb read-only font_scale2.0 and UiMode mNightMode2."
+        ],
+        "next_action": "Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.",
+        "updated_at": "2026-09-17T02:33:13+00:00"
+      }
+    },
+    {
+      "sequence": 120,
+      "at": "2026-09-17T02:36:01+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner is now in Release QA, but tester state is NOT_INVITED. Build6 internal state is IN_BETA_TESTING. No email invitation sent by the agent.",
+        "evidence": [
+          "September17 fresh Apple betaGroups testers API returned one existing owner tester NOT_INVITED; buildBetaDetail IN_BETA_TESTING."
+        ],
+        "next_action": "Owner approves pending TestFlight email invitation, or sends it in App Store Connect; agent can call invitation API and verify state after authorization.",
+        "updated_at": "2026-09-17T02:36:01+00:00"
+      }
+    },
+    {
+      "sequence": 121,
+      "at": "2026-09-17T02:36:54+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrective Android preview APK build command is uploading the source archive; provider build ID is not yet returned.",
+        "evidence": [
+          "EAS CLI live session81220; source33ebd60; native fixes committed; 194 tests, typecheck and Android prebuild passed. Upload status110MB archive."
+        ],
+        "next_action": "Poll existing session81220, read /tmp/newsworthy-android-large-text-build.json, then follow returned provider build ID without starting a duplicate.",
+        "updated_at": "2026-09-17T02:36:54+00:00"
+      }
+    },
+    {
+      "sequence": 122,
+      "at": "2026-09-17T02:38:10+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Corrective Android preview APK10 accepted by EAS as NEW; production AAB10 remains held for replacement.",
+        "evidence": [
+          "EASc21ad449-7cef-4d4e-b602-031b0313c750; preview1.0.0(10); source metadata cab96c5c3cb34726d6ca43451559a7c4d31207b2. Native code is33ebd60; only release-record commits changed while upload ran. CLI81220 completed successfully."
+        ],
+        "next_action": "Read buildc21ad449-7cef-4d4e-b602-031b0313c750, download/install when finished, verify fontScale2.0 and background theme behavior. Emulator remains at2.0 for this test; restore original1.0 after verification.",
+        "updated_at": "2026-09-17T02:38:10+00:00"
+      }
+    },
+    {
+      "sequence": 123,
+      "at": "2026-09-17T02:48:31+00:00",
+      "gate": "google.offline",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery.",
+        "evidence": [
+          "store/android-large-text-verification.json and native captures18/19; read-only settings verified airplane0/wifi1 after restoration. System UI status-bar ANR was recovered separately; no Newsworthy crash observed."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T02:48:31+00:00"
+      }
+    },
+    {
+      "sequence": 124,
+      "at": "2026-09-17T02:49:03+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Corrective Android preview APK10 is IN_PROGRESS at EAS; no provider error reported. CI checks for PR94 passed.",
+        "evidence": [
+          "Fresh EAS build:view readback c21ad449-7cef-4d4e-b602-031b0313c750 on September17 at02:48UTC; /tmp/newsworthy-android-large-text-status.json. GitHub PR94 both checks passed."
+        ],
+        "next_action": "Poll this same build, download/install when finished, verify clipping and appearance corrections at fontScale2.0, then restore original fontScale1.0 and verify default layout. No duplicate build needed.",
+        "updated_at": "2026-09-17T02:49:03+00:00"
+      }
+    },
+    {
+      "sequence": 125,
+      "at": "2026-09-17T02:52:09+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrective Android preview APK10 FINISHED at EAS; verified-range download is running before install and native QA.",
+        "evidence": [
+          "EASc21ad449-7cef-4d4e-b602-031b0313c750 completed2026-09-17T02:49:53.603Z. APK104437763 bytes; download session34142 validates four exact HTTP206 ranges before assembling the artifact."
+        ],
+        "next_action": "Poll session34142; verify complete APK CRC/SHA256 and install over existing APK9. Test max-font compact fields and app appearance on resume, then restore fontScale1.0. Never install the .partial file.",
+        "updated_at": "2026-09-17T02:52:09+00:00"
+      }
+    },
+    {
+      "sequence": 126,
+      "at": "2026-09-17T02:59:23+00:00",
+      "gate": "apple.review-access",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Chrome control recovered and full Guideline2.1 message was read directly, but the Mac then locked and automatic unlock failed.",
+        "evidence": [
+          "CUA read App Review details in signed-in Chrome, then TestFlight group; next CUA call explicitly reported Mac locked. User-supplied rejection text matches live message."
+        ],
+        "next_action": "Owner unlocks Mac; resume current Chrome tester page and native Android QA. No new sign-in or API key requested.",
+        "updated_at": "2026-09-17T02:59:23+00:00"
+      }
+    },
+    {
+      "sequence": 127,
+      "at": "2026-09-17T03:01:24+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Live UI reveals build6 Testing in Release QA but existing owner tester No Builds Available / API NOT_INVITED. Tester-builds endpoint returns zero; tester-apps contains Newsworthy.",
+        "evidence": [
+          "Signed-in Chrome TestFlight group Builds and Testers views; fresh /betaTesters/id/builds and /apps readback200; store/apple-testflight-qa.json."
+        ],
+        "next_action": "Resolve tester-build assignment before claiming installation readiness. Pending explicit invitation approval still applies; Mac must be unlocked for UI controls. Do not instruct owner to use a nonexistent group Invite button.",
+        "updated_at": "2026-09-17T03:01:24+00:00"
+      }
+    },
+    {
+      "sequence": 128,
+      "at": "2026-09-17T03:07:56+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Apple accepted owner TestFlight invitation with HTTP201; group tester readback changed from NOT_INVITED to INVITED.",
+        "evidence": [
+          "Invitation21fd5051-6930-4f07-a100-79c427afa6df; store/apple-testflight-qa.json. Email delivery and installation not verified. Direct tester-build list remains empty."
+        ],
+        "next_action": "Owner opens invitation on iPhone, accepts and installs build6; verify availability and physical-device QA. No duplicate invitation while delivery is pending.",
+        "updated_at": "2026-09-17T03:07:56+00:00"
+      }
+    },
+    {
+      "sequence": 129,
+      "at": "2026-09-17T03:07:56+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Corrective preview APK10 downloaded, ZIP CRC and SHA256 verified, installed over APK9; package versionCode10 read back.",
+        "evidence": [
+          "EASc21ad449-7cef-4d4e-b602-031b0313c750; store/android-large-text-verification.json. Artifact104437763 bytes. Native visual corrections remain unverified."
+        ],
+        "next_action": "Unlock Mac to verify max-font clipping and appearance-resume correction via CUA; restore original fontScale1.0 after QA.",
+        "updated_at": "2026-09-17T03:07:56+00:00"
+      }
+    },
+    {
+      "sequence": 130,
+      "at": "2026-09-17T03:18:12+00:00",
+      "gate": "apple.review-access",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read.",
+        "evidence": [
+          "CUA Android native UI successfully operated September17; AppReview text had been read directly before prior lock."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T03:18:12+00:00"
+      }
+    },
+    {
+      "sequence": 131,
+      "at": "2026-09-17T03:18:12+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation.",
+        "evidence": [
+          "store/android-large-text-verification.json; native captures20-24. Original failing light-to-dark sequence reproduced and passed. npm test194passed."
+        ],
+        "next_action": "Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source.",
+        "updated_at": "2026-09-17T03:18:12+00:00"
+      }
+    },
+    {
+      "sequence": 132,
+      "at": "2026-09-17T03:23:33+00:00",
+      "gate": "apple.header-background",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner physical TestFlight screenshot shows iOS glass backgrounds around brand/share; installed Expo native header defaults explain the mismatch.",
+        "evidence": [
+          "Owner screenshot September17; Expo57.0.21 useHeaderConfigProps forwards hidesSharedBackground only for custom header items. Source fix uses those items; design24tests and typecheck pass."
+        ],
+        "next_action": "Run full tests, merge PR, build/upload replacement iOS version and obtain physical verification before review recording.",
+        "updated_at": "2026-09-17T03:23:33+00:00"
+      }
+    },
+    {
+      "sequence": 133,
+      "at": "2026-09-17T03:23:33+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "user_reported",
+        "summary": "Owner is testing Newsworthy in TestFlight on a physical iPhone; invitation/install handoff succeeded.",
+        "evidence": [
+          "Owner-provided iPhone screenshot of Newsworthy launched from TestFlight; header defect flagged during testing. This is not full QA or a recording."
+        ],
+        "next_action": "Deliver corrected header build through existing Release QA group and recheck on physical device.",
+        "updated_at": "2026-09-17T03:23:33+00:00"
       }
     }
   ],

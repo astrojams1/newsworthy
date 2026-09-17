@@ -9,10 +9,19 @@ The owner supplied Apple’s Guideline 2.1 request: a physical-device recording 
 the latest OS and five factual explanations. The six-part Notes are saved; the
 recording and physical-device QA remain pending. See [the response and recording
 checklist](apple-review-response.md). Internal TestFlight group **Release QA**
-contains build 6; no testers have been added or invited.
+contains build 6; Apple accepted the owner invitation (HTTP 201), and the tester
+state changed to **INVITED**. The owner subsequently confirmed TestFlight use
+with a physical iPhone screenshot. That check exposed iOS glass backgrounds
+around the header controls; a replacement build and physical recheck are required.
 The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
+
+**Additional Android QA:** maximum system text size exposed compact-widget
+text clipping and stale app appearance after returning from Settings. AAB10
+is held for replacement. See [the native evidence](android-large-text-verification.json);
+corrective APK10 passed the Android emulator reproduction in both theme
+directions and at maximum text size. The original font scale is restored.
 
 Android version 7 exposed a widget refresh loop that flickers and interrupts
 resizing. APK8 passed idle and scheduled-refresh checks without recurring

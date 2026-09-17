@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T02:17:29+00:00
+Updated: 2026-09-17T03:23:33+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -32,7 +32,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
 | google.app | waiting_user | user | observed | Play Console still disables Create app until real Android-device and contact-phone verification are complete. | Owner completes Play Console mobile-app real-device verification then phone verification; agent creates paid app after readback. |
 | google.build | done | agent | observed | Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix. | — |
-| google.native | in_progress | agent | observed | APK9 compact2x2 now verified in light as well as dark, with correct denominator theme change and widget tap opening the live native app. | Complete score10, enlarged text, replacement offline recovery and physical-device checks without substituting CI props for native layout. |
+| google.native | in_progress | agent | observed | Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification. | Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate. |
 | google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
@@ -51,10 +51,13 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
 | google.widget-fix | done | agent | observed | APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained | — |
 | design.regression | done | agent | observed | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
-| apple.review-access | in_progress | agent | observed | Owner-pasted rejection text is available; browser control is still unavailable for sending the response. API Notes access works. | Use existing rejection text; recover supported browser control or provide prepared response for owner to paste after recording is ready. |
+| apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
 | apple.physical-recording | waiting_user | user | observed | Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available. | Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed. |
-| apple.testflight | in_progress | agent | observed | Build6 ready for internal beta testing; Release QA group created with build6 and testing instructions; zero testers, no invitations sent. | Add existing account holder as internal tester through supported Apple path; obtain authorization before sending an invitation; install TestFlight build6 on physical devices. |
+| apple.testflight | in_progress | agent | user_reported | Owner is testing Newsworthy in TestFlight on a physical iPhone; invitation/install handoff succeeded. | Deliver corrected header build through existing Release QA group and recheck on physical device. |
+| google.large-text-build | done | agent | observed | Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation. | Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source. |
+| google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
+| apple.header-background | in_progress | agent | observed | Owner physical TestFlight screenshot shows iOS glass backgrounds around brand/share; installed Expo native header defaults explain the mismatch. | Run full tests, merge PR, build/upload replacement iOS version and obtain physical verification before review recording. |
 
 ## Evidence and history
 
@@ -1178,3 +1181,149 @@ Six-part Notes saved with recording explicitly pending. Reusable uploader now re
 Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix.
 
 - EAS8162d6a2-7980-4f48-9153-d325ffd55e68; version1.0.0/versionCode10; 72474952 bytes; SHA2561e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202; ZIP CRC and Android bundle structure valid. Download timed out with 838408 bytes remaining; verified HTTP206 resume completed.
+
+### 119. google.native — in_progress
+
+2026-09-17T02:33:13+00:00 · observed · agent
+
+Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification.
+
+- store/android-large-text-verification.json; actual screenshots16/17; adb read-only font_scale2.0 and UiMode mNightMode2.
+
+Next: Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.
+
+### 120. apple.testflight — waiting_user
+
+2026-09-17T02:36:01+00:00 · observed · user
+
+Owner is now in Release QA, but tester state is NOT_INVITED. Build6 internal state is IN_BETA_TESTING. No email invitation sent by the agent.
+
+- September17 fresh Apple betaGroups testers API returned one existing owner tester NOT_INVITED; buildBetaDetail IN_BETA_TESTING.
+
+Next: Owner approves pending TestFlight email invitation, or sends it in App Store Connect; agent can call invitation API and verify state after authorization.
+
+### 121. google.large-text-build — in_progress
+
+2026-09-17T02:36:54+00:00 · observed · agent
+
+Corrective Android preview APK build command is uploading the source archive; provider build ID is not yet returned.
+
+- EAS CLI live session81220; source33ebd60; native fixes committed; 194 tests, typecheck and Android prebuild passed. Upload status110MB archive.
+
+Next: Poll existing session81220, read /tmp/newsworthy-android-large-text-build.json, then follow returned provider build ID without starting a duplicate.
+
+### 122. google.large-text-build — waiting_provider
+
+2026-09-17T02:38:10+00:00 · observed · provider
+
+Corrective Android preview APK10 accepted by EAS as NEW; production AAB10 remains held for replacement.
+
+- EASc21ad449-7cef-4d4e-b602-031b0313c750; preview1.0.0(10); source metadata cab96c5c3cb34726d6ca43451559a7c4d31207b2. Native code is33ebd60; only release-record commits changed while upload ran. CLI81220 completed successfully.
+
+Next: Read buildc21ad449-7cef-4d4e-b602-031b0313c750, download/install when finished, verify fontScale2.0 and background theme behavior. Emulator remains at2.0 for this test; restore original1.0 after verification.
+
+### 123. google.offline — done
+
+2026-09-17T02:48:31+00:00 · observed · agent
+
+Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery.
+
+- store/android-large-text-verification.json and native captures18/19; read-only settings verified airplane0/wifi1 after restoration. System UI status-bar ANR was recovered separately; no Newsworthy crash observed.
+
+### 124. google.large-text-build — waiting_provider
+
+2026-09-17T02:49:03+00:00 · observed · provider
+
+Corrective Android preview APK10 is IN_PROGRESS at EAS; no provider error reported. CI checks for PR94 passed.
+
+- Fresh EAS build:view readback c21ad449-7cef-4d4e-b602-031b0313c750 on September17 at02:48UTC; /tmp/newsworthy-android-large-text-status.json. GitHub PR94 both checks passed.
+
+Next: Poll this same build, download/install when finished, verify clipping and appearance corrections at fontScale2.0, then restore original fontScale1.0 and verify default layout. No duplicate build needed.
+
+### 125. google.large-text-build — in_progress
+
+2026-09-17T02:52:09+00:00 · observed · agent
+
+Corrective Android preview APK10 FINISHED at EAS; verified-range download is running before install and native QA.
+
+- EASc21ad449-7cef-4d4e-b602-031b0313c750 completed2026-09-17T02:49:53.603Z. APK104437763 bytes; download session34142 validates four exact HTTP206 ranges before assembling the artifact.
+
+Next: Poll session34142; verify complete APK CRC/SHA256 and install over existing APK9. Test max-font compact fields and app appearance on resume, then restore fontScale1.0. Never install the .partial file.
+
+### 126. apple.review-access — waiting_user
+
+2026-09-17T02:59:23+00:00 · observed · user
+
+Chrome control recovered and full Guideline2.1 message was read directly, but the Mac then locked and automatic unlock failed.
+
+- CUA read App Review details in signed-in Chrome, then TestFlight group; next CUA call explicitly reported Mac locked. User-supplied rejection text matches live message.
+
+Next: Owner unlocks Mac; resume current Chrome tester page and native Android QA. No new sign-in or API key requested.
+
+### 127. apple.testflight — in_progress
+
+2026-09-17T03:01:24+00:00 · observed · agent
+
+Live UI reveals build6 Testing in Release QA but existing owner tester No Builds Available / API NOT_INVITED. Tester-builds endpoint returns zero; tester-apps contains Newsworthy.
+
+- Signed-in Chrome TestFlight group Builds and Testers views; fresh /betaTesters/id/builds and /apps readback200; store/apple-testflight-qa.json.
+
+Next: Resolve tester-build assignment before claiming installation readiness. Pending explicit invitation approval still applies; Mac must be unlocked for UI controls. Do not instruct owner to use a nonexistent group Invite button.
+
+### 128. apple.testflight — waiting_user
+
+2026-09-17T03:07:56+00:00 · observed · user
+
+Apple accepted owner TestFlight invitation with HTTP201; group tester readback changed from NOT_INVITED to INVITED.
+
+- Invitation21fd5051-6930-4f07-a100-79c427afa6df; store/apple-testflight-qa.json. Email delivery and installation not verified. Direct tester-build list remains empty.
+
+Next: Owner opens invitation on iPhone, accepts and installs build6; verify availability and physical-device QA. No duplicate invitation while delivery is pending.
+
+### 129. google.large-text-build — waiting_user
+
+2026-09-17T03:07:56+00:00 · observed · user
+
+Corrective preview APK10 downloaded, ZIP CRC and SHA256 verified, installed over APK9; package versionCode10 read back.
+
+- EASc21ad449-7cef-4d4e-b602-031b0313c750; store/android-large-text-verification.json. Artifact104437763 bytes. Native visual corrections remain unverified.
+
+Next: Unlock Mac to verify max-font clipping and appearance-resume correction via CUA; restore original fontScale1.0 after QA.
+
+### 130. apple.review-access — done
+
+2026-09-17T03:18:12+00:00 · observed · agent
+
+Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read.
+
+- CUA Android native UI successfully operated September17; AppReview text had been read directly before prior lock.
+
+### 131. google.large-text-build — done
+
+2026-09-17T03:18:12+00:00 · observed · agent
+
+Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation.
+
+- store/android-large-text-verification.json; native captures20-24. Original failing light-to-dark sequence reproduced and passed. npm test194passed.
+
+Next: Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source.
+
+### 132. apple.header-background — in_progress
+
+2026-09-17T03:23:33+00:00 · observed · agent
+
+Owner physical TestFlight screenshot shows iOS glass backgrounds around brand/share; installed Expo native header defaults explain the mismatch.
+
+- Owner screenshot September17; Expo57.0.21 useHeaderConfigProps forwards hidesSharedBackground only for custom header items. Source fix uses those items; design24tests and typecheck pass.
+
+Next: Run full tests, merge PR, build/upload replacement iOS version and obtain physical verification before review recording.
+
+### 133. apple.testflight — in_progress
+
+2026-09-17T03:23:33+00:00 · user_reported · agent
+
+Owner is testing Newsworthy in TestFlight on a physical iPhone; invitation/install handoff succeeded.
+
+- Owner-provided iPhone screenshot of Newsworthy launched from TestFlight; header defect flagged during testing. This is not full QA or a recording.
+
+Next: Deliver corrected header build through existing Release QA group and recheck on physical device.
