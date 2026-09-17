@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T04:05:10+00:00
+Updated: 2026-09-17T04:06:56+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -53,7 +53,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | design.regression | done | agent | observed | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
 | apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
-| apple.physical-recording | in_progress | agent | user_reported | Owner confirms the iCloud recording uses Newsworthy1.0.0(7). The Mac has only the 201.5 MB placeholder; Finder Download Now requested, local media inspection still awaits bytes. | Complete iCloud download; inspect actual launch, reading, Share and widgets. Confirm recorded OS before finalizing latest-OS evidence and sending the App Review response. |
+| apple.physical-recording | waiting_provider | provider | observed | The build7 recording is located in iCloud Drive, but Finder still shows zero of 201.5 MB downloaded after both local media access and Download Now. File contents remain unavailable for review. | Once iCloud supplies the file bytes, extract frames and inspect the unaltered recording. If the phone upload is incomplete, finish its transfer or AirDrop the original file to the Mac. Recorded OS remains unconfirmed. |
 | apple.testflight | in_progress | agent | observed | App Store Connect now shows Installed1.0.0(6) on iPhone17Pro/iOS26.6.2, confirming invitation acceptance and physical installation. | Deliver corrected build7 for header recheck; update physical device to latest OS before the review recording. |
 | google.large-text-build | done | agent | observed | Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation. | Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source. |
 | google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
@@ -1466,3 +1466,13 @@ Owner confirms the iCloud recording uses Newsworthy1.0.0(7). The Mac has only th
 - Owner response: 1.0.0 (7). Filename ScreenRecording_09-17-2026 11-50-21_1.MP4. Native stat reports dataless and zero allocated blocks; no video contents or OS version verified.
 
 Next: Complete iCloud download; inspect actual launch, reading, Share and widgets. Confirm recorded OS before finalizing latest-OS evidence and sending the App Review response.
+
+### 148. apple.physical-recording — waiting_provider
+
+2026-09-17T04:06:56+00:00 · observed · provider
+
+The build7 recording is located in iCloud Drive, but Finder still shows zero of 201.5 MB downloaded after both local media access and Download Now. File contents remain unavailable for review.
+
+- Native file flags remain compressed,dataless with zero allocated blocks. Recording filename and owner-reported build7 are saved in apple-testflight-qa.json. No review upload performed.
+
+Next: Once iCloud supplies the file bytes, extract frames and inspect the unaltered recording. If the phone upload is incomplete, finish its transfer or AirDrop the original file to the Mac. Recorded OS remains unconfirmed.

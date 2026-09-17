@@ -12,7 +12,7 @@
   "invitationsSent": true,
   "reviewNotesSaved": true,
   "reviewNotesSha256": "dc4431898d1d26f93cc27b78a12cac1fa1a02f85c38e8a9f96171cd63e0b9f06",
-  "physicalRecordingStatus": "LOCATED_ICLOUD_DOWNLOAD_IN_PROGRESS",
+  "physicalRecordingStatus": "LOCATED_ICLOUD_WAITING_FOR_FILE_BYTES",
   "physicalTestingStatus": "PENDING_CORRECTED_BUILD_CHECK",
   "testerState": "INVITED",
   "internalBuildState": "IN_BETA_TESTING",
