@@ -3,8 +3,13 @@
 One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
-Last checked **September 16, 2026**. Neither app is publicly released.
-Apple build **6** and the corrected five-image gallery are **Waiting for Review**.
+Last checked **September 17, 2026**. Neither app is publicly released.
+Apple build **6** was **Rejected**; its review submission has **Unresolved Issues**.
+The owner supplied Apple’s Guideline 2.1 request: a physical-device recording on
+the latest OS and five factual explanations. The six-part Notes are saved; the
+recording and physical-device QA remain pending. See [the response and recording
+checklist](apple-review-response.md). Internal TestFlight group **Release QA**
+contains build 6; no testers have been added or invited.
 The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
@@ -16,7 +21,8 @@ APK9 is installed and passed native light/dark/light widget transitions. Current
 reading and widget images are refreshed from APK9. The owner approved the smaller
 widget; its actual 2×2 rendering and launcher span are now verified. The gallery
 compares compact and expanded captures at one scale on a neutral canvas. The
-earlier production AAB9 needs replacement. Google account verification
+earlier production AAB9 is superseded; production AAB10 finished from merged
+commit `34f2570` and its downloaded AAB passed SHA-256/ZIP validation. Google account verification
 still blocks app creation. See the ledger for current gates and exact next actions.
 
 ![iPhone listing artwork](preview.png)
@@ -33,6 +39,7 @@ still blocks app creation. See the ledger for current gates and exact next actio
 | [source/](source/) | Original native captures and editable SVG layouts |
 | [release.json](release.json) | Public app/build identifiers; no credentials |
 | [user-actions.md](user-actions.md) | Verified account-owner steps with instructions |
+| [apple-review-response.md](apple-review-response.md) | Guideline 2.1 response, physical recording and QA checklist |
 | [disclosures.md](disclosures.md) | Evidence for privacy and content declarations |
 | [scripts/](scripts/) | Reproduce, validate, and upload the Apple listing |
 
@@ -59,19 +66,21 @@ still blocks app creation. See the ledger for current gates and exact next actio
   **identity verified successfully**. Real Android device verification remains;
   phone verification is disabled until that prerequisite is complete. **Create
   app is disabled**, so no Google app, price, listing, or release has been saved.
-- **Android binary:** corrected preview APK8 installed and production AAB9
-  downloaded/ZIP-validated. One persistent periodic job replaces the refresh
-  loop. Native logs show zero widget recreations in 65 seconds versus 30 in
-  34 seconds before the fix. APK9 additionally passed theme transitions and
-  compact 2×2 rendering; its compact/expanded gallery is complete. Build hashes
-  and scope are in `release.json` and `android-widget-regression.json`.
+- **Android binary:** final production AAB10 downloaded and SHA-256/ZIP-validated
+  from merged commit `34f2570`; it supersedes AAB9. Preview APK8 verified the
+  refresh-loop fix: zero widget recreations in 65 seconds versus 30 in 34 seconds
+  before the fix. Installed APK9 additionally passed theme transitions and
+  compact 2×2 rendering; its compact/expanded gallery is complete. Native APK
+  testing and AAB archive validation are distinct scopes. Build hashes and
+  evidence are in `release.json` and `android-widget-regression.json`.
 - **Apple review details:** contact information, phone, no-login requirement,
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
 - **Apple review:** replacement submission
-  `4f28761f-3096-4f0d-aa37-df83332f818f` and version 1.0.0 both report
-  **WAITING_FOR_REVIEW**, with build 6 selected. The old build-5 submission was
+  `4f28761f-3096-4f0d-aa37-df83332f818f` reports **UNRESOLVED_ISSUES**, and
+  version 1.0.0 is **REJECTED**, with build 6 selected. The six-part Guideline 2.1
+  response is saved in Notes; physical-device recording/QA and the reply remain. The old build-5 submission was
   withdrawn by the developer to make the approved revision; it was not rejected
   by an Apple reviewer. Automatic release after approval remains configured.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.
@@ -117,7 +126,7 @@ actual compact/expanded captures, viewport bounds, and the verified `versionCode
 It then creates a versioned widget comparison as the first Android gallery image.
 The expanded widget passed light→dark→light contrast checks without a worker run.
 The compact dark capture shows the actual 2×2 state approved by the owner, with
-launcher span/minimum independently read back as 2×2. Compact light, score 10,
+launcher span/minimum independently read back as 2×2. Compact light was also verified on September 17 after a theme switch. Score 10,
 large text and physical-device checks remain unverified. Automated design-contract
 coverage and its limits are documented in [the design system](../design/README.md).
 

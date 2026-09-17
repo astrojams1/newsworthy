@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-16T10:18:37+00:00",
+  "updated_at": "2026-09-17T02:17:29+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -178,26 +178,26 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "waiting_provider",
-      "owner": "provider",
-      "basis": "observed",
-      "summary": "Replacement build 6 submitted successfully with corrected widget-first gallery; both review submission and version are WAITING_FOR_REVIEW.",
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "user_reported",
+      "summary": "Owner supplied Guideline 2.1 request for new developer information, including physical-device video on latest OS. No specific code defect reported.",
       "evidence": [
-        "Submission 4f28761f-3096-4f0d-aa37-df83332f818f submitted 2026-09-16T07:50:46.874Z; version 267c6f52-d22d-4cb0-bb4c-d22f280b4499 read back WAITING_FOR_REVIEW with build b62a9dc5-1b0c-4200-8830-68db021bb0cd."
+        "store/apple-review-response.md; user-pasted Apple review message September 17; API independently confirms REJECTED and UNRESOLVED_ISSUES"
       ],
-      "next_action": "Wait for Apple review result; resolve banking/paid agreement and legal-address correction before paid public availability.",
-      "updated_at": "2026-09-16T07:52:45+00:00"
+      "next_action": "Complete physical-device QA/video; finish item 1 in Notes and reply to App Review; verify subsequent review state.",
+      "updated_at": "2026-09-17T02:12:04+00:00"
     },
     "apple.release": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "in_progress",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Replacement build 6 is waiting for Apple review; public release not yet achieved. Paid agreement/banking and address correction remain separate gates.",
+      "summary": "Build6 rejected with unresolved review issues; public release not achieved. Guideline2.1 response work is underway; banking/address gates remain separate.",
       "evidence": [
-        "Version and replacement submission WAITING_FOR_REVIEW on 2026-09-16; automatic release after approval configured."
+        "Apple API REJECTED / UNRESOLVED_ISSUES on September17; six-part Notes saved; physical recording pending."
       ],
-      "next_action": "Verify Apple approval, paid-sale readiness and public availability; do not equate review submission with release.",
-      "updated_at": "2026-09-16T07:52:45+00:00"
+      "next_action": "Resolve App Review request, confirm approval and paid-sale readiness, then verify public availability.",
+      "updated_at": "2026-09-17T02:13:53+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -236,45 +236,45 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Live Play Console still disables Create app until real-device and contact-phone verification finish.",
+      "summary": "Play Console still disables Create app until real Android-device and contact-phone verification are complete.",
       "evidence": [
-        "2026-09-16 live Home page for developer 8388544157780149515: real Android device Action required, contact phone Action required, Create app disabled."
+        "2026-09-17 Play Console8388544157780149515 Home: both verifications Action required; Create app disabled."
       ],
-      "next_action": "Owner verifies a real Android device in the Play Console mobile app, then completes contact-phone verification; agent can then create the paid app.",
-      "updated_at": "2026-09-16T06:42:40+00:00"
+      "next_action": "Owner completes Play Console mobile-app real-device verification then phone verification; agent creates paid app after readback.",
+      "updated_at": "2026-09-17T01:53:48+00:00"
     },
     "google.build": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Preview APK9 contains the verified denominator theme fix. Existing production AAB9 predates that fix and must not be submitted as final.",
+      "summary": "Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix.",
       "evidence": [
-        "Preview bfb5310e-c8e1-41af-bc01-6037b17701b6 source 698071b; older production a55d6cc8-d3cf-41f3-ae88-6b2b29456151"
+        "EAS8162d6a2-7980-4f48-9153-d325ffd55e68; version1.0.0/versionCode10; 72474952 bytes; SHA2561e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202; ZIP CRC and Android bundle structure valid. Download timed out with 838408 bytes remaining; verified HTTP206 resume completed."
       ],
-      "next_action": "Create and verify the final production AAB after PR92 integration; retain build provenance.",
-      "updated_at": "2026-09-16T10:13:03+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-17T02:17:29+00:00"
     },
     "google.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "APK9 native light/dark app and expanded widget theme transitions verified; owner-approved dark compact widget captured at actual 2x2",
+      "summary": "APK9 compact2x2 now verified in light as well as dark, with correct denominator theme change and widget tap opening the live native app.",
       "evidence": [
-        "store/source/android-phone/provenance-v9.json; android-widget-regression.json; new 2x2 native capture and launcher readback"
+        "store/source/android-phone/15-widget-compact-light-v9.png and provenance-v9.json; native app opened to current score2 with Privacy/Support footer on2026-09-17."
       ],
-      "next_action": "Verify compact light, score 10, enlarged text, replacement offline recovery and physical-device behavior. CI design contracts do not prove native layout.",
-      "updated_at": "2026-09-16T10:13:02+00:00"
+      "next_action": "Complete score10, enlarged text, replacement offline recovery and physical-device checks without substituting CI props for native layout.",
+      "updated_at": "2026-09-17T01:58:02+00:00"
     },
     "google.listing": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Removed About from Android artwork and contact sheet; renderer now reserves first place for a real Android widget capture.",
+      "summary": "Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload.",
       "evidence": [
-        "store/scripts/render.mjs and store/preview-android.png; two old-build reading images remain. No synthetic widget or cross-platform substitution. Image dimensions and listing length validation passed."
+        "store/assets/manifest.json; source/android-phone/provenance-v9.json and widget-frames.json; store/scripts/validate.mjs passed September17."
       ],
-      "next_action": "Capture Android widget and revised reading screen on version 7, regenerate and inspect the final gallery.",
-      "updated_at": "2026-09-16T06:40:14+00:00"
+      "next_action": "Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets.",
+      "updated_at": "2026-09-17T02:13:53+00:00"
     },
     "google.disclosures": {
       "state": "todo",
@@ -462,6 +462,50 @@
       ],
       "next_action": "For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines.",
       "updated_at": "2026-09-16T10:18:37+00:00"
+    },
+    "apple.review-access": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner-pasted rejection text is available; browser control is still unavailable for sending the response. API Notes access works.",
+      "evidence": [
+        "store/apple-review-response.md contains the user-supplied requirement; Notes saved and read back via API; Chrome CUA reconnect/reset remained unavailable."
+      ],
+      "next_action": "Use existing rejection text; recover supported browser control or provide prepared response for owner to paste after recording is ready.",
+      "updated_at": "2026-09-17T02:13:53+00:00"
+    },
+    "apple.review-notes": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE.",
+      "evidence": [
+        "store/scripts/apple.mjs review-notes returned saved and verified; listing.json matches App Store Connect; store/apple-testflight-qa.json records Notes SHA256. Phone stayed private."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-17T02:15:17+00:00"
+    },
+    "apple.physical-recording": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available.",
+      "evidence": [
+        "devicectl: paired, tunnel unavailable, last OS 26.6.2; CUA iPhone Mirroring first-time onboarding; Apple official releases list iOS/iPadOS 27."
+      ],
+      "next_action": "Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed.",
+      "updated_at": "2026-09-17T02:12:04+00:00"
+    },
+    "apple.testflight": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Build6 ready for internal beta testing; Release QA group created with build6 and testing instructions; zero testers, no invitations sent.",
+      "evidence": [
+        "store/apple-testflight-qa.json; betaBuildDetails READY_FOR_BETA_TESTING; betaGroups and builds API readback."
+      ],
+      "next_action": "Add existing account holder as internal tester through supported Apple path; obtain authorization before sending an invitation; install TestFlight build6 on physical devices.",
+      "updated_at": "2026-09-17T02:12:04+00:00"
     }
   },
   "events": [
@@ -2124,6 +2168,246 @@
         ],
         "next_action": "For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines.",
         "updated_at": "2026-09-16T10:18:37+00:00"
+      }
+    },
+    {
+      "sequence": 104,
+      "at": "2026-09-17T01:47:08+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "failed",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple rejected iOS1.0.0 build6; review submission has UNRESOLVED_ISSUES. Detailed feedback must be read before selecting a remedy.",
+        "evidence": [
+          "2026-09-17 App Store Connect API: version REJECTED; reviewSubmission4f28761f-3096-4f0d-aa37-df83332f818f UNRESOLVED_ISSUES. Apple feedback email Sep16 17:37UTC directs to App Review page."
+        ],
+        "next_action": "Read App Review rejection message; browser sessions expired but API remains valid. Resolve the actual issue without guessing or resubmitting blindly.",
+        "updated_at": "2026-09-17T01:47:08+00:00"
+      }
+    },
+    {
+      "sequence": 105,
+      "at": "2026-09-17T01:47:08+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "in_progress",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Final production Android versionCode10 submitted to EAS from clean merged source34f2570 with widget refresh, sizing and theme fixes.",
+        "evidence": [
+          "EAS8162d6a2-7980-4f48-9153-d325ffd55e68 production1.0.0(10), source34f2570b383d09c4ba4e5c16a641f739b98966e2; archive upload completed."
+        ],
+        "next_action": "Poll this build ID to terminal state, download and verify AAB checksum/archive; do not create another build because of a timeout.",
+        "updated_at": "2026-09-17T01:47:08+00:00"
+      }
+    },
+    {
+      "sequence": 106,
+      "at": "2026-09-17T01:53:48+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Play Console still disables Create app until real Android-device and contact-phone verification are complete.",
+        "evidence": [
+          "2026-09-17 Play Console8388544157780149515 Home: both verifications Action required; Create app disabled."
+        ],
+        "next_action": "Owner completes Play Console mobile-app real-device verification then phone verification; agent creates paid app after readback.",
+        "updated_at": "2026-09-17T01:53:48+00:00"
+      }
+    },
+    {
+      "sequence": 107,
+      "at": "2026-09-17T01:53:48+00:00",
+      "gate": "apple.review-access",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "user_reported",
+        "summary": "Owner reports App Store Connect sign-in complete; native Chrome connection returns only window title and rejects controls as user-changed.",
+        "evidence": [
+          "Owner reply on2026-09-17; CUA Chrome AX/screenshot unavailable after sign-in; CUA reset and reconnect attempted. API key remains valid; Apple OpenAPI4.4.1 has no review-correspondence endpoint."
+        ],
+        "next_action": "Read restored Chrome review page once control is available, or use owner-pasted rejection text. Do not ask for the API key again.",
+        "updated_at": "2026-09-17T01:53:48+00:00"
+      }
+    },
+    {
+      "sequence": 108,
+      "at": "2026-09-17T01:58:02+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "APK9 compact2x2 now verified in light as well as dark, with correct denominator theme change and widget tap opening the live native app.",
+        "evidence": [
+          "store/source/android-phone/15-widget-compact-light-v9.png and provenance-v9.json; native app opened to current score2 with Privacy/Support footer on2026-09-17."
+        ],
+        "next_action": "Complete score10, enlarged text, replacement offline recovery and physical-device checks without substituting CI props for native layout.",
+        "updated_at": "2026-09-17T01:58:02+00:00"
+      }
+    },
+    {
+      "sequence": 109,
+      "at": "2026-09-17T02:02:32+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Production Android1.0.0(10) finished successfully from clean34f2570; artifact download is running.",
+        "evidence": [
+          "EAS8162d6a2-7980-4f48-9153-d325ffd55e68 FINISHED2026-09-17T01:58:36.015Z; download process active"
+        ],
+        "next_action": "Complete download and verify archive/hash before selecting AAB10 as the final upload artifact.",
+        "updated_at": "2026-09-17T02:02:32+00:00"
+      }
+    },
+    {
+      "sequence": 110,
+      "at": "2026-09-17T02:12:04+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "user_reported",
+        "summary": "Owner supplied Guideline 2.1 request for new developer information, including physical-device video on latest OS. No specific code defect reported.",
+        "evidence": [
+          "store/apple-review-response.md; user-pasted Apple review message September 17; API independently confirms REJECTED and UNRESOLVED_ISSUES"
+        ],
+        "next_action": "Complete physical-device QA/video; finish item 1 in Notes and reply to App Review; verify subsequent review state.",
+        "updated_at": "2026-09-17T02:12:04+00:00"
+      }
+    },
+    {
+      "sequence": 111,
+      "at": "2026-09-17T02:12:04+00:00",
+      "gate": "apple.review-notes",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Six-part factual response saved and read back in App Review Notes; recording explicitly pending; existing phone and contact fields preserved.",
+        "evidence": [
+          "store/apple-testflight-qa.json records Notes SHA256; listing.json contains exact 3414-character Notes; API PATCH and GET matched all contact and Notes fields."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T02:12:04+00:00"
+      }
+    },
+    {
+      "sequence": 112,
+      "at": "2026-09-17T02:12:04+00:00",
+      "gate": "apple.physical-recording",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available.",
+        "evidence": [
+          "devicectl: paired, tunnel unavailable, last OS 26.6.2; CUA iPhone Mirroring first-time onboarding; Apple official releases list iOS/iPadOS 27."
+        ],
+        "next_action": "Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed.",
+        "updated_at": "2026-09-17T02:12:04+00:00"
+      }
+    },
+    {
+      "sequence": 113,
+      "at": "2026-09-17T02:12:04+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build6 ready for internal beta testing; Release QA group created with build6 and testing instructions; zero testers, no invitations sent.",
+        "evidence": [
+          "store/apple-testflight-qa.json; betaBuildDetails READY_FOR_BETA_TESTING; betaGroups and builds API readback."
+        ],
+        "next_action": "Add existing account holder as internal tester through supported Apple path; obtain authorization before sending an invitation; install TestFlight build6 on physical devices.",
+        "updated_at": "2026-09-17T02:12:04+00:00"
+      }
+    },
+    {
+      "sequence": 114,
+      "at": "2026-09-17T02:13:53+00:00",
+      "gate": "apple.review-access",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner-pasted rejection text is available; browser control is still unavailable for sending the response. API Notes access works.",
+        "evidence": [
+          "store/apple-review-response.md contains the user-supplied requirement; Notes saved and read back via API; Chrome CUA reconnect/reset remained unavailable."
+        ],
+        "next_action": "Use existing rejection text; recover supported browser control or provide prepared response for owner to paste after recording is ready.",
+        "updated_at": "2026-09-17T02:13:53+00:00"
+      }
+    },
+    {
+      "sequence": 115,
+      "at": "2026-09-17T02:13:53+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build6 rejected with unresolved review issues; public release not achieved. Guideline2.1 response work is underway; banking/address gates remain separate.",
+        "evidence": [
+          "Apple API REJECTED / UNRESOLVED_ISSUES on September17; six-part Notes saved; physical recording pending."
+        ],
+        "next_action": "Resolve App Review request, confirm approval and paid-sale readiness, then verify public availability.",
+        "updated_at": "2026-09-17T02:13:53+00:00"
+      }
+    },
+    {
+      "sequence": 116,
+      "at": "2026-09-17T02:13:53+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload.",
+        "evidence": [
+          "store/assets/manifest.json; source/android-phone/provenance-v9.json and widget-frames.json; store/scripts/validate.mjs passed September17."
+        ],
+        "next_action": "Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets.",
+        "updated_at": "2026-09-17T02:13:53+00:00"
+      }
+    },
+    {
+      "sequence": 117,
+      "at": "2026-09-17T02:15:17+00:00",
+      "gate": "apple.review-notes",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE.",
+        "evidence": [
+          "store/scripts/apple.mjs review-notes returned saved and verified; listing.json matches App Store Connect; store/apple-testflight-qa.json records Notes SHA256. Phone stayed private."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T02:15:17+00:00"
+      }
+    },
+    {
+      "sequence": 118,
+      "at": "2026-09-17T02:17:29+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix.",
+        "evidence": [
+          "EAS8162d6a2-7980-4f48-9153-d325ffd55e68; version1.0.0/versionCode10; 72474952 bytes; SHA2561e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202; ZIP CRC and Android bundle structure valid. Download timed out with 838408 bytes remaining; verified HTTP206 resume completed."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T02:17:29+00:00"
       }
     }
   ],

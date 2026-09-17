@@ -14,7 +14,8 @@
     "Zero worker starts during widget theme transition test, 17:14 through17:19",
     "Widget tap opens app; fresh light reading rendered",
     "Native reading light/dark rendering and theme change on resume",
-    "Compact widget rendered at actual 2x2 launcher size, with 52sp score and small baseline denominator; owner reports it looks good"
+    "Compact widget rendered at actual 2x2 launcher size, with 52sp score and small baseline denominator; owner reports it looks good",
+    "2026-09-17 compact2x2 dark-to-light transition: score and denominator follow light palette, original timestamp retained"
   ],
   "notVerified": [
     "Physical Android device",
@@ -44,6 +45,10 @@
     "14-widget-compact-dark-v9.png": {
       "description": "User-approved compact widget, independently observed at launcher span 2x2 / minimum 2x2. Dark appearance.",
       "sha256": "6df809679814e4ed2e5869ef570e28d17eb34dbb372d2c18448a64013bb0f3c7"
+    },
+    "15-widget-compact-light-v9.png": {
+      "description": "2026-09-17 native compact2x2 after dark-to-light transition; score2 and unchanged reading timestamp; denominator remains legible.",
+      "sha256": "032ff5f4cd4779af2253471f84db4a72ea9944e219bf50dc1af16961430d9164"
     }
   }
 }

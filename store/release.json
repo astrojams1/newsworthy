@@ -1,5 +1,5 @@
 {
-  "verifiedDate": "2026-09-16",
+  "verifiedDate": "2026-09-17",
   "apple": {
     "appId": "6812519450",
     "appInfoId": "09033ad1-a920-419a-9aaa-63a094d5791b",
@@ -20,13 +20,13 @@
     "dsaCompliance": "ACTIVE",
     "w9Status": "ACTIVE",
     "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
-    "reviewState": "WAITING_FOR_REVIEW",
+    "reviewState": "REJECTED",
     "reviewSubmittedDate": "2026-09-16T07:50:46.874Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,
     "availableInNewTerritories": true,
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
-    "reviewSubmissionState": "WAITING_FOR_REVIEW",
+    "reviewSubmissionState": "UNRESOLVED_ISSUES",
     "replacementBuildRequired": false,
     "replacementBuilds": [
       {
@@ -63,17 +63,37 @@
       "submissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
       "state": "COMPLETE",
       "reason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets."
+    },
+    "rejectionDetails": "GUIDELINE_2_1_NEW_DEVELOPER_INFORMATION_REQUEST",
+    "rejectionEvidenceBasis": "USER_SUPPLIED_REVIEW_MESSAGE",
+    "reviewResponse": "SIX_PART_NOTES_SAVED_PHYSICAL_RECORDING_PENDING",
+    "testFlightQA": {
+      "observedAt": "2026-09-17T02:10:36.748Z",
+      "appId": "6812519450",
+      "buildId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
+      "version": "1.0.0",
+      "build": "6",
+      "groupId": "312a8585-2ca2-413e-bb5f-75d0ba487e13",
+      "groupName": "Release QA",
+      "isInternalGroup": true,
+      "buildAttached": true,
+      "testerCount": 0,
+      "invitationsSent": false,
+      "reviewNotesSaved": true,
+      "reviewNotesSha256": "dc4431898d1d26f93cc27b78a12cac1fa1a02f85c38e8a9f96171cd63e0b9f06",
+      "physicalRecordingStatus": "PENDING",
+      "physicalTestingStatus": "PENDING"
     }
   },
   "google": {
-    "productionBuild": "a55d6cc8-d3cf-41f3-ae88-6b2b29456151",
-    "screenshotBuild": "c18fb254-3145-4e69-b7f5-906b3c0621e1",
+    "productionBuild": "8162d6a2-7980-4f48-9153-d325ffd55e68",
+    "screenshotBuild": "bfb5310e-c8e1-41af-bc01-6037b17701b6",
     "appCreated": false,
     "reviewSubmitted": false,
-    "versionCode": 9,
+    "versionCode": 10,
     "buildStatus": "FINISHED",
-    "artworkStatus": "APK9_READING_IMAGES_UPDATED_WIDGET_COMPARISON_PENDING",
-    "nativeVerification": "APK9_INSTALLED_THEME_AND_READING_LIGHT_DARK_VERIFIED_COMPACT_PENDING",
+    "artworkStatus": "APK9_NATIVE_READING_AND_NEUTRAL_WIDGET_COMPARISON_COMPLETE",
+    "nativeVerification": "APK9_APP_LIGHT_DARK_EXPANDED_THEME_TRANSITIONS_AND_COMPACT_2X2_LIGHT_DARK_VERIFIED",
     "replacementBuilds": [
       {
         "id": "6a3cb29a-51c2-46e0-94db-0bd425fa83a7",
@@ -97,7 +117,7 @@
         "sha256": "28393339165f9085535926b55b87953d410667db1561923d758025729d9549b8"
       }
     ],
-    "widgetArtworkStatus": "LAUNCHER_MINIMUM_2X2_OBSERVED_COMPACT_CAPTURE_PENDING",
+    "widgetArtworkStatus": "COMPACT_2X2_AND_EXPANDED_NATIVE_GALLERY_COMPLETE",
     "widgetFixBuilds": [
       {
         "id": "a55d6cc8-d3cf-41f3-ae88-6b2b29456151",
@@ -137,8 +157,22 @@
       "bytes": 104437651,
       "installedVersionCode": 9
     },
-    "productionBuildRequiresReplacement": true,
-    "productionReplacementReason": "AAB9 predates denominator theme-switch fix; validate preview APK9 before final production build.",
-    "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED"
+    "productionBuildRequiresReplacement": false,
+    "productionReplacementReason": "AAB10 replaces AAB9 and includes the verified denominator/theme fix from merged PR92.",
+    "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED",
+    "finalProductionBuild": {
+      "id": "8162d6a2-7980-4f48-9153-d325ffd55e68",
+      "profile": "production",
+      "version": "1.0.0",
+      "build": "10",
+      "sourceCommit": "34f2570b383d09c4ba4e5c16a641f739b98966e2",
+      "sourceDirty": false,
+      "status": "FINISHED",
+      "completedAt": "2026-09-17T01:58:36.015Z",
+      "artifactVerification": "DOWNLOADED_SHA256_AND_ZIP_CRC_VERIFIED",
+      "bytes": 72474952,
+      "sha256": "1e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202",
+      "localArtifact": "artifacts/store-submission/newsworthy-android-production-v10.aab"
+    }
   }
 }
