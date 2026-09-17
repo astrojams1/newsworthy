@@ -134,7 +134,7 @@ struct ReadingView: View {
             (Text(entry.reading.map { String($0.score) } ?? "–")
                 .font(.system(size: scoreSize, weight: .light)).monospacedDigit()
                 .tracking(-scoreSize * 0.04)
-             + Text(" /10")
+             + Text(" ∕ 10")
                 .font(.system(size: 12 * scoreSize / baseScoreSize, weight: .light)).monospacedDigit()
                 .tracking(0)
                 .foregroundColor(Color("NewsworthyGradientMuted")))

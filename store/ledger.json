@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T04:40:13+00:00",
+  "updated_at": "2026-09-17T11:47:11+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -550,6 +550,17 @@
       ],
       "next_action": "Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload.",
       "updated_at": "2026-09-17T03:49:29+00:00"
+    },
+    "design.denominator": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction.",
+      "evidence": [
+        "Owner selected regular space on September 17 after reviewing browser comparisons. Design source guards cover glyph, spacing and single-line denominator. Browser comparisons are not native widget verification."
+      ],
+      "next_action": "Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission.",
+      "updated_at": "2026-09-17T11:47:11+00:00"
     }
   },
   "events": [
@@ -3172,6 +3183,22 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-17T04:40:13+00:00"
+      }
+    },
+    {
+      "sequence": 164,
+      "at": "2026-09-17T11:47:11+00:00",
+      "gate": "design.denominator",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction.",
+        "evidence": [
+          "Owner selected regular space on September 17 after reviewing browser comparisons. Design source guards cover glyph, spacing and single-line denominator. Browser comparisons are not native widget verification."
+        ],
+        "next_action": "Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission.",
+        "updated_at": "2026-09-17T11:47:11+00:00"
       }
     }
   ],

@@ -62,7 +62,13 @@ Source assets and the Android config plugin preserve the design through Expo pre
 
 `design/surfaces.json` records the approved typography and widget size rules.
 The full reading deliberately uses larger digits than widgets. Compact widgets
-use 52-point digits, expanded widgets use 44, and both use a 12-point `/10`.
+use 52-point digits, expanded widgets use 44, and both use a 12-point `∕ 10`.
+All reading surfaces use U+2215 DIVISION SLASH followed by U+0020 SPACE
+for the displayed denominator. The regular space keeps the slash clear of the “1”;
+the division slash’s stroke sits optically alongside the lining numerals instead of the ordinary
+slash’s descending tail. Keep the denominator in one text run, on the existing
+score baseline; do not add per-platform vertical offsets. Shared/copied readings
+retain plain `/10`, and the app accessibility label remains “out of 10”.
 Native system fonts, launcher cell geometry, iOS's optional hidden name, timestamp
 formatting, and the app's larger-screen spacing are intentional platform variants.
 Do not make one surface look identical by copying another platform's screenshot.

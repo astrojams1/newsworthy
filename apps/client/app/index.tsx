@@ -69,7 +69,7 @@ export default function Home() {
             style={{ color: theme.ink, fontSize: scoreSize, lineHeight: scoreSize * 1.05, flexShrink: 1, fontWeight: '300', fontVariant: ['tabular-nums'], letterSpacing: -scoreSize * 0.055 }}>
             {reading?.score ?? '–'}
           </Text>
-          <Text accessible={false} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', marginLeft: 9 }}>/10</Text>
+          <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', marginLeft: 9 }}>∕ 10</Text>
         </View>
         <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{reading?.explanation ?? (failed ? 'The latest rating is unavailable. Try again when you’re connected.' : 'Checking the latest rating.')}</Text>
         {reading && <Text selectable style={{ color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>{saved ? 'Saved reading · ' : ''}Updated {relative}</Text>}
