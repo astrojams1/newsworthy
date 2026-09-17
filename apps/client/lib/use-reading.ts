@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { syncWidgets } from './widget-sync';
 import { apiOrigin } from './config';
 import { fetchReading, validReading } from './reading';
 
@@ -20,10 +21,12 @@ export function useReading() {
     busy.current = true;
     setLoading(true);
     try {
+      const fetchedAt = Date.now();
       const value = await fetchReading(apiOrigin);
       if (!alive.current) return;
       current.current = value;
       setReading(value); setSaved(false); setFailed(false);
+      void syncWidgets(apiOrigin, value, fetchedAt);
       // Storage failure must not discard a successful network response.
       await AsyncStorage.setItem(key, JSON.stringify(value)).catch(() => {});
     } catch {

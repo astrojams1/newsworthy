@@ -196,7 +196,13 @@ access. Internal testing alone does not meet this requirement. See
   compact, single-line date and time, retaining the saved-reading label when offline.
 - Android: `plugins/with-rating-widget.js` adds the native widget receiver,
   resources and WorkManager fetcher during prebuild.
-- Both fetch the public API independently, retain a last valid reading and its
+- A successful app refresh also hands its public reading to both widgets. iOS
+  uses `group.<appId>.widgets` shared defaults and requests `NewsworthyRating`
+  timeline reloads; Android delivers an explicit broadcast to its private receiver.
+  Failed app requests do not replace widget data. Original timestamps are preserved.
+  The iOS app and extension require matching App Groups entitlements and refreshed
+  provisioning profiles; this native change cannot be delivered as a JS-only update.
+- Both still fetch the public API independently, retain a last valid reading and its
   original time, and request periodic refreshes controlled by the OS.
 - Widgets and the app can temporarily disagree. Neither widget is real-time.
 - A static white dash on near-black remains the launcher icon.

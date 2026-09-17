@@ -57,6 +57,9 @@ export function checkWidgetDesign(sources = widgetSources()) {
     }
     assert.equal(attr(score, 'textColor'), '@color/widget_ink', `${kind} score theme binding`);
     assert.equal(attr(denom, 'textColor'), '@color/widget_muted', `${kind} denominator theme binding`);
+    const centeredBody = kind === 'compact' ? score.parentNode.parentNode : score.parentNode.parentNode.parentNode;
+    assert.equal(attr(centeredBody, 'gravity'), 'center_vertical', `${kind} content centered vertically`);
+    assert.equal(attr(centeredBody, 'layout_weight'), '1', `${kind} body fills remaining height`);
     const explanation = one(doc, n => attr(n, 'id') === '@+id/widget_explanation', `${kind} explanation`);
     if (kind === 'compact') {
       assert.equal(attr(explanation, 'visibility'), 'gone', 'compact keeps score and update time');
@@ -73,6 +76,8 @@ export function checkWidgetDesign(sources = widgetSources()) {
       }
     }
     else {
+      assert.equal(attr(explanation.parentNode, 'layout_height'), 'wrap_content', 'expanded centered row fits content');
+      assert.equal(attr(explanation, 'layout_height'), 'wrap_content', 'expanded text fits centered row');
       assert.equal(attr(explanation, 'maxLines'), String(c.expandedExplanationLines), 'expanded context limit');
       assert.equal(attr(explanation, 'textSize'), `${c.explanationSize}sp`, 'expanded explanation size');
       assert.equal(attr(explanation, 'lineHeight'), `${c.explanationLineHeight}sp`, 'expanded line rhythm');
@@ -121,6 +126,10 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(swift, /tracking\(-size \* 0\.04\)/, 'iOS score tracking');
   assert.match(swift, /WidgetReadingLayout\(compact: family == \.systemSmall/, 'same score layout across families');
   assert.match(swift, /bounds\.minX \+ score\.width \+ WidgetTypography\.columnGap/, 'iOS explanation beside numeral');
+  assert.equal(c.contentVerticalAlignment, 'center');
+  assert.match(swift, /let contentHeight = max\(scoreCapHeight, textHeight\)/, 'iOS centers the whole reading');
+  assert.match(swift, /let top = max\(0, \(bounds.height - contentHeight\) \/ 2\)/, 'iOS both families centered vertically');
+  assert.match(swift, /y: bounds.minY \+ top \+ explanationCapHeight/, 'iOS sentence shares centered offset');
   assert.match(swift, /scoreCapHeight - score\[\.firstTextBaseline\]/, 'iOS optical score top');
   assert.match(swift, /explanationCapHeight - text\[\.firstTextBaseline\]/, 'iOS optical sentence top');
   assert.match(swift, /lineLimit\(max\(1, Int\(geometry\.size\.height \/ explanationLineHeight\)\)\)/, 'iOS bounded context limit');

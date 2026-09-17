@@ -6,6 +6,7 @@
     "minimumTouchTarget": 48
   },
   "widget": {
+    "contentVerticalAlignment": "center",
     "compactScore": 69,
     "expandedScore": 69,
     "denominatorSize": 12,

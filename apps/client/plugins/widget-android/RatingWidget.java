@@ -33,6 +33,41 @@ public class RatingWidget extends AppWidgetProvider {
     private static final String WORK = "newsworthy-widget-periodic-refresh";
     static final String SAVED = CACHE + ":saved";
 
+    static final String REVISION = CACHE + ":revision";
+
+    @Override public void onReceive(Context context, Intent intent) {
+        if ((context.getPackageName() + ".SYNC_WIDGET_READING").equals(intent.getAction())) {
+            if (!BuildConfig.NEWSWORTHY_API_URL.equals(intent.getStringExtra("apiBaseURL"))) return;
+            try {
+                JSONObject snapshot = new JSONObject(intent.getStringExtra("payload"));
+                JSONObject reading = snapshot.getJSONObject("reading");
+                if (valid(reading)) {
+                    acceptAppReading(context, reading);
+                    refresh(context);
+                }
+            } catch (Exception ignored) { }
+            return;
+        }
+        super.onReceive(context, intent);
+    }
+
+    private static synchronized void acceptAppReading(Context context, JSONObject reading) {
+        android.content.SharedPreferences cache = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE);
+        cache.edit().putString(CACHE, reading.toString()).putBoolean(SAVED, false)
+            .putLong(REVISION, cache.getLong(REVISION, 0) + 1).apply();
+        renderAll(context);
+    }
+
+    // A worker started before the app refresh must not replace it or mark it saved.
+    static synchronized void completeRefresh(Context context, JSONObject reading, long revision) {
+        android.content.SharedPreferences cache = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE);
+        if (cache.getLong(REVISION, 0) != revision) return;
+        android.content.SharedPreferences.Editor edit = cache.edit().putBoolean(SAVED, reading == null);
+        if (reading != null) edit.putString(CACHE, reading.toString());
+        edit.apply();
+        renderAll(context);
+    }
+
     @Override public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
         renderAll(context);
         refresh(context);

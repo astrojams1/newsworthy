@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T15:37:10+00:00
+Updated: 2026-09-17T22:24:21+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -63,6 +63,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | design.widget-alignment-prototype | done | agent | observed | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
 | design.widget-layout-feature | done | agent | observed | Actual native widget feature merged in PR100, retaining latest share-icon fix. 207 tests and35 design checks passed; iOS and Android native test-host captures recorded with untested real-widget-host states explicit. | — |
 | apple.widget-testflight | done | agent | observed | iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW. | — |
+| apple.widget-refresh | in_progress | agent | observed | Implement centered widget content and foreground app-to-widget reading handoff; owner requested merge and replacement TestFlight build. | Complete tests, merge PR, create signed production iOS build with App Groups and upload to TestFlight. |
 
 ## Evidence and history
 
@@ -1788,3 +1789,13 @@ Next: Wait for Apple build10 VALID, add notes and existing Release QA group, ver
 iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW.
 
 - Apple build/delivery c4806ea6-c3cb-4baf-a700-6c6f92706fd4; EAS7d89e403-472e-4698-bb32-59c5a55e788f; source6fe63746017004775ea057a1e9ed672707b31b31; group312a8585-2ca2-413e-bb5f-75d0ba487e13 includes build10 and retains7/6; review4f28761f-3096-4f0d-aa37-df83332f818f submitted2026-09-17T04:33:40.475Z unchanged; store/widget-layout-verification.json.
+
+### 182. apple.widget-refresh — in_progress
+
+2026-09-17T22:24:21+00:00 · observed · agent
+
+Implement centered widget content and foreground app-to-widget reading handoff; owner requested merge and replacement TestFlight build.
+
+- Branch codex/widget-centering-refresh; design gate 39 passed; app TypeScript passed; widget Swift compiled for iOS simulator.
+
+Next: Complete tests, merge PR, create signed production iOS build with App Groups and upload to TestFlight.

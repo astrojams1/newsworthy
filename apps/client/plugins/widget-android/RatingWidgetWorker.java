@@ -16,7 +16,9 @@ public class RatingWidgetWorker extends Worker {
 
     @NonNull @Override public Result doWork() {
         HttpURLConnection connection = null;
-        boolean saved = true;
+        JSONObject display = null;
+        long revision = getApplicationContext().getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE)
+            .getLong(RatingWidget.REVISION, 0);
         try {
             connection = (HttpURLConnection) new URL(BuildConfig.NEWSWORTHY_API_URL + "/api/current").openConnection();
             connection.setConnectTimeout(10_000);
@@ -36,19 +38,15 @@ public class RatingWidgetWorker extends Worker {
             }
             JSONObject data = new JSONObject(output.toString(StandardCharsets.UTF_8.name()));
             if (!RatingWidget.valid(data)) throw new Exception("Invalid reading");
-            JSONObject display = new JSONObject().put("score", data.getInt("score"))
+            display = new JSONObject().put("score", data.getInt("score"))
                 .put("explanation", data.getString("explanation")).put("created_at", data.getString("created_at"));
-            getApplicationContext().getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE)
-                .edit().putString(RatingWidget.CACHE, display.toString()).apply();
-            saved = false;
+
         } catch (Exception ignored) {
             // Preserve the original reading and timestamp; the next scheduled update retries.
         } finally {
             if (connection != null) connection.disconnect();
         }
-        getApplicationContext().getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE)
-            .edit().putBoolean(RatingWidget.SAVED, saved).apply();
-        RatingWidget.renderAll(getApplicationContext());
+        RatingWidget.completeRefresh(getApplicationContext(), display, revision);
         return Result.success();
     }
 }
