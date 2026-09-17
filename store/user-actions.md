@@ -107,59 +107,30 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 ## Work the agent can do
 
-Do **not** ask the owner to create listing art/copy, configure Expo, generate
-signing credentials again, fetch binaries, or manually upload screenshots.
-Those have working automated paths. Apple build 6 and the corrected five-image
-gallery were reviewed and **Rejected**, confirmed through the API on
-September 17. The owner supplied the Guideline 2.1 information request. The agent saved and
-verified the six-part Notes and created internal TestFlight group **Release QA**
-with build 6 and testing instructions. Apple accepted the owner invitation (HTTP 201); tester state is now **INVITED**.
-The owner confirmed the app running in TestFlight with a physical iPhone screenshot.
-That test exposed unexpected iOS glass backgrounds on title/share. Corrected
-**TestFlight 1.0.0 (7) is available**: open TestFlight → Newsworthy → Update,
-confirm build 7, then check the plain title/share controls and that Share works.
-The next App Review step is a physical-device demonstration and QA;
-see [the exact recording checklist](apple-review-response.md). The paired iPhone
-is disconnected, and iPhone Mirroring is still at first-time setup. Connect and
-unlock the phone so the agent can determine available testing/recording access.
-The latest OS is iOS/iPadOS 27 at this check; the paired phone last reported
-26.6.2. The public API cannot send App Review correspondence. Chrome control recovered
-and the rejection was read directly. The Mac was briefly locked, then UI access
-recovered and Android regression checks completed. App Store Connect confirmed physical installation of build 6; build 7 is now
-VALID and IN_BETA_TESTING in the same Release QA group. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
-Privacy/Support links and iPad share popover have been checked. Physical-device
-testing remains incomplete; Android maximum-text behavior passed on the corrected APK10.
+**Apple build 7 is Waiting for Review.** The supplied physical recording shows
+TestFlight 1.0.0(7), app launch, live reading, small/medium Home Screen widgets
+and the corrected plain title/share header in light appearance. The video and
+six-part reply were posted to App Review, Notes were saved, and both provider
+review states were verified. No further invitation or recording transfer is
+currently requested. See [submission evidence](apple-review-resubmission.json)
+and [the exact verification scope](apple-physical-review-video.json).
 
-Android preview APK8 verified the refresh-loop fix, including its next scheduled
-refresh without recurring widget recreation. APK9 passed native
-light→dark→light widget contrast checks. Current light/dark reading images are
-captured. Corrective APK10 then passed maximum-text labels and appearance-resume
-checks; production AAB11 is downloaded and SHA-256/ZIP validated. It supersedes
-AAB10 and AAB9. Compact light also passed on September 17.
-
-The owner resized the widget and approved its compact appearance. The agent
-captured and inspected the native 2×2 dark widget, verified launcher span/minimum,
-and completed the neutral compact/expanded gallery. No further owner resizing
-step is needed. Cross-surface design-contract tests now enforce typography,
-baseline alignment, theme bindings and minimum sizing in CI.
+Android corrective preview APK10 passed emulator checks for maximum-text widget
+labels and background appearance changes. Production **AAB11** is downloaded
+and verified. The owner-approved compact widget and neutral compact/expanded
+gallery are complete; no further resizing is needed. Physical Android testing
+and the remaining native score10 case are separate from emulator coverage.
 
 The remaining technical release work is:
 
-- Obtain the physical iOS7 header/share recheck; it is already available in
-  TestFlight. Android clipping/appearance corrections passed emulator testing,
-  and replacement production AAB11 is ready. Score10 native and physical-device
-  coverage remain separate gaps.
-- Complete Google privacy and content-rating declarations using the code and live
-  hosting evidence in [disclosures.md](disclosures.md).
-- Complete the physical recording/QA, replace the pending item in Notes, and
-  send the prepared six-part App Review response before resubmission. All 175 territories remain
-  configured with release after approval.
-- When **Create app** becomes enabled, create Newsworthy as **paid**, set US$1.00,
-  upload the AAB, copy, icon, feature graphic, and prepared Android screenshots,
-  complete app-content forms, and prepare the closed-test release.
-- Verify real-device behavior through TestFlight/the closed test with actual
-  participants. Emulator checks alone do not establish physical-device behavior.
+- Read Apple's review result and address any new request. Verify paid-sale
+  readiness and public availability after approval.
+- When Google enables **Create app**, create Newsworthy as **paid**, configure
+  US$1.00 pricing, upload AAB11 and the prepared listing/artwork, complete privacy
+  and content-rating forms, and prepare the real closed test.
+- Collect genuine tester feedback and verify physical-device behavior. Apply for
+  Google production access only after the required testing gate is satisfied.
 
-The original request authorizes store submission; no additional generic
-“may I submit?” approval is needed. Store contracts, private information,
-unavailable verification channels, and genuine testing remain separate gates.
+The original request authorizes store submission; no generic submission
+confirmation is pending. Account-owner steps 1–4 and real closed testing remain
+as described above. No store is publicly live yet.

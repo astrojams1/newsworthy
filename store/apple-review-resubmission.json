@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-09-17T04:33:43.363Z",
+  "submissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
+  "submissionState": "WAITING_FOR_REVIEW",
+  "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
+  "versionState": "WAITING_FOR_REVIEW",
+  "buildId": "eff31b5d-6c18-492d-874c-d7a0e4392bf6",
+  "build": "7",
+  "submittedDate": "2026-09-17T04:33:40.475Z",
+  "browserVerification": {
+    "submissionState": "Waiting for Review",
+    "itemState": "Waiting for Review",
+    "displayedBuild": "1.0.0 (7)",
+    "messageCount": 2,
+    "attachment": "newsworthy-ios7-review-demo.mp4"
+  }
+}
