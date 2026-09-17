@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T22:24:21+00:00
+Updated: 2026-09-17T22:51:27+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -63,7 +63,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | design.widget-alignment-prototype | done | agent | observed | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
 | design.widget-layout-feature | done | agent | observed | Actual native widget feature merged in PR100, retaining latest share-icon fix. 207 tests and35 design checks passed; iOS and Android native test-host captures recorded with untested real-widget-host states explicit. | — |
 | apple.widget-testflight | done | agent | observed | iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW. | — |
-| apple.widget-refresh | in_progress | agent | observed | Implement centered widget content and foreground app-to-widget reading handoff; owner requested merge and replacement TestFlight build. | Complete tests, merge PR, create signed production iOS build with App Groups and upload to TestFlight. |
+| apple.widget-refresh | waiting_user | user | observed | Widget fixes merged in PR103. 214 tests passed; standalone native iOS content verified in light/dark, score3/10, hidden title and AX5 text. TestFlight waits for Apple Developer login to set up shared storage. | Sign in to Apple Developer in the prepared Codex browser. Agent then assigns App Group, refreshes signing and completes TestFlight build/upload. |
+| apple.widget-refresh-signing | waiting_user | user | observed | Apple Developer login required to register and assign the new App Group; API key cannot configure this capability assignment. | Owner signs in to Apple Developer in the prepared Codex browser tab. Then register group.com.astrojams.newsworthy.widgets, assign it to both bundle IDs, refresh profiles with API credentials, rebuild and upload to TestFlight. |
 
 ## Evidence and history
 
@@ -1799,3 +1800,33 @@ Implement centered widget content and foreground app-to-widget reading handoff; 
 - Branch codex/widget-centering-refresh; design gate 39 passed; app TypeScript passed; widget Swift compiled for iOS simulator.
 
 Next: Complete tests, merge PR, create signed production iOS build with App Groups and upload to TestFlight.
+
+### 183. apple.widget-refresh — in_progress
+
+2026-09-17T22:41:04+00:00 · observed · agent
+
+PR 103 merged; 214 tests, design gate, TypeScript and WidgetKit simulator compilation passed.
+
+- Merge 925e6de59a2bc354686cf6602c8e0bd005f748b7; GitHub checks passed; production iOS build/signing started from merged code.
+
+Next: Refresh matching App Groups provisioning and finish signed iOS build, upload and verify TestFlight availability.
+
+### 184. apple.widget-refresh-signing — waiting_user
+
+2026-09-17T22:48:06+00:00 · observed · user
+
+Apple Developer login required to register and assign the new App Group; API key cannot configure this capability assignment.
+
+- PR103 merged; EAS reserved build11 but stopped at Apple password prompt before creating a cloud build. Chrome and Codex browser Developer sessions are signed out. No password or verification code requested in chat.
+
+Next: Owner signs in to Apple Developer in the prepared Codex browser tab. Then register group.com.astrojams.newsworthy.widgets, assign it to both bundle IDs, refresh profiles with API credentials, rebuild and upload to TestFlight.
+
+### 185. apple.widget-refresh — waiting_user
+
+2026-09-17T22:51:27+00:00 · observed · user
+
+Widget fixes merged in PR103. 214 tests passed; standalone native iOS content verified in light/dark, score3/10, hidden title and AX5 text. TestFlight waits for Apple Developer login to set up shared storage.
+
+- store/widget-refresh-verification.json; source925e6de; EAS reserved11 but no cloud build/upload created. Existing App Review remains WAITING_FOR_REVIEW.
+
+Next: Sign in to Apple Developer in the prepared Codex browser. Agent then assigns App Group, refreshes signing and completes TestFlight build/upload.
