@@ -1,6 +1,7 @@
 # Account-owner actions
 
-Checked against the live consoles on **September 16, 2026**. The list below
+Google account and Apple API checked on **September 17, 2026**. Apple Business
+rows were last verified September 16. The list below
 separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
@@ -109,15 +110,26 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 Do **not** ask the owner to create listing art/copy, configure Expo, generate
 signing credentials again, fetch binaries, or manually upload screenshots.
 Those have working automated paths. Apple build 6 and the corrected five-image
-gallery are submitted and **Waiting for Review**, confirmed through the API on
-September 16. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
+gallery were reviewed and **Rejected**, confirmed through the API on
+September 17. The owner supplied the Guideline 2.1 information request. The agent saved and
+verified the six-part Notes and created internal TestFlight group **Release QA**
+with build 6 and testing instructions. No testers have been invited.
+The next App Review step is a physical-device demonstration and QA;
+see [the exact recording checklist](apple-review-response.md). The paired iPhone
+is disconnected, and iPhone Mirroring is still at first-time setup. Connect and
+unlock the phone so the agent can determine available testing/recording access.
+The latest OS is iOS/iPadOS 27 at this check; the paired phone last reported
+26.6.2. The public API cannot send the App Review correspondence, and Chrome
+control remains unavailable, so the prepared reply may require pasting in Apple’s
+App Review page after the recording is ready. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
 Privacy/Support links and iPad share popover have been checked. Physical-device
 and large-text behavior remain unclaimed.
 
 Android preview APK8 verified the refresh-loop fix, including its next scheduled
 refresh without recurring widget recreation. APK9 is installed and passed native
 light→dark→light widget contrast checks. Current light/dark reading images are
-captured; the earlier production AAB9 must be replaced after sizing verification.
+captured. Production AAB10 finished from merged PR92; its downloaded AAB passed SHA-256/ZIP validation. It replaces the older
+AAB9, which predates the theme fix. Compact light also passed on September 17.
 
 The owner resized the widget and approved its compact appearance. The agent
 captured and inspected the native 2×2 dark widget, verified launcher span/minimum,
@@ -127,13 +139,14 @@ baseline alignment, theme bindings and minimum sizing in CI.
 
 The remaining technical release work is:
 
-- Build the final production Android AAB from the denominator/theme fix. Complete
-  remaining native verification (compact light, score 10 and enlarged text)
+- Complete
+  remaining native verification (score 10 and enlarged text)
   without claiming CI contract checks are native screenshot tests.
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
-- Observe Apple's replacement review result; do not submit another duplicate
-  review. All 175 territories remain configured with release after approval.
+- Complete the physical recording/QA, replace the pending item in Notes, and
+  send the prepared six-part App Review response before resubmission. All 175 territories remain
+  configured with release after approval.
 - When **Create app** becomes enabled, create Newsworthy as **paid**, set US$1.00,
   upload the AAB, copy, icon, feature graphic, and prepared Android screenshots,
   complete app-content forms, and prepare the closed-test release.

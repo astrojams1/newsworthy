@@ -1,0 +1,19 @@
+{
+  "checkedDate": "2026-09-17",
+  "source": "https://developer.apple.com/sample-code/app-store-connect/app-store-connect-openapi-specification.zip",
+  "specVersion": "4.4.1",
+  "specSha256": "ed0202ef37155b9334772482d2ea0be688c3046b284c895bcbea5455fbe54fd8",
+  "reviewResourceAttributes": {
+    "ReviewSubmission": [
+      "platform",
+      "submittedDate",
+      "state"
+    ],
+    "ReviewSubmissionItem": [
+      "state"
+    ]
+  },
+  "reviewCorrespondenceEndpointFound": false,
+  "scope": "Inspected current Apple OpenAPI paths and review resource schemas; live calls returned status only. Public customer-review and TestFlight feedback APIs are different resources.",
+  "uiInstructions": "https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/reply-to-app-review-messages/"
+}

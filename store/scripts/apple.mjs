@@ -36,8 +36,11 @@ if (command === 'review-notes') {
   const version = (await api(`/v1/appStoreVersions/${ids.versionId}?include=appStoreReviewDetail`)).data;
   const existingId = version.relationships.appStoreReviewDetail?.data?.id;
   const attributes = {contactFirstName:'James',contactLastName:'Thompson',contactEmail:copy.supportEmail,demoAccountRequired:false,notes:copy.reviewNotes};
-  if (process.env.ASC_REVIEW_PHONE) attributes.contactPhone = process.env.ASC_REVIEW_PHONE;
-  if (!existingId && !attributes.contactPhone) throw new Error('Apple requires a review contact phone before creating this section. Obtain owner authorization and set ASC_REVIEW_PHONE locally.');
+  // Apple validates the phone even on a Notes-only PATCH. Keep the private
+  // existing value in memory rather than requiring another owner handoff.
+  const existing = existingId ? (await api(`/v1/appStoreReviewDetails/${existingId}`)).data.attributes : {};
+  attributes.contactPhone = process.env.ASC_REVIEW_PHONE || existing.contactPhone;
+  if (!attributes.contactPhone) throw new Error('Apple requires a review contact phone in this request. Set ASC_REVIEW_PHONE locally; never commit it.');
   const saved = existingId
     ? await api(`/v1/appStoreReviewDetails/${existingId}`, 'PATCH', {type:'appStoreReviewDetails',id:existingId,attributes})
     : await api('/v1/appStoreReviewDetails', 'POST', {type:'appStoreReviewDetails',attributes,relationships:{appStoreVersion:relation('appStoreVersions',ids.versionId)}});

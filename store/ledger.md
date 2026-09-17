@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-16T10:18:37+00:00
+Updated: 2026-09-17T02:17:29+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,15 +25,15 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Replacement Apple build 6 uploaded, processed VALID, and selected for version 1.0.0. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | Replacement build 6 submitted successfully with corrected widget-first gallery; both review submission and version are WAITING_FOR_REVIEW. | Wait for Apple review result; resolve banking/paid agreement and legal-address correction before paid public availability. |
-| apple.release | waiting_provider | provider | observed | Replacement build 6 is waiting for Apple review; public release not yet achieved. Paid agreement/banking and address correction remain separate gates. | Verify Apple approval, paid-sale readiness and public availability; do not equate review submission with release. |
+| apple.review | in_progress | agent | user_reported | Owner supplied Guideline 2.1 request for new developer information, including physical-device video on latest OS. No specific code defect reported. | Complete physical-device QA/video; finish item 1 in Notes and reply to App Review; verify subsequent review state. |
+| apple.release | in_progress | agent | observed | Build6 rejected with unresolved review issues; public release not achieved. Guideline2.1 response work is underway; banking/address gates remain separate. | Resolve App Review request, confirm approval and paid-sale readiness, then verify public availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
-| google.app | waiting_user | user | observed | Live Play Console still disables Create app until real-device and contact-phone verification finish. | Owner verifies a real Android device in the Play Console mobile app, then completes contact-phone verification; agent can then create the paid app. |
-| google.build | in_progress | agent | observed | Preview APK9 contains the verified denominator theme fix. Existing production AAB9 predates that fix and must not be submitted as final. | Create and verify the final production AAB after PR92 integration; retain build provenance. |
-| google.native | in_progress | agent | observed | APK9 native light/dark app and expanded widget theme transitions verified; owner-approved dark compact widget captured at actual 2x2 | Verify compact light, score 10, enlarged text, replacement offline recovery and physical-device behavior. CI design contracts do not prove native layout. |
-| google.listing | in_progress | agent | observed | Removed About from Android artwork and contact sheet; renderer now reserves first place for a real Android widget capture. | Capture Android widget and revised reading screen on version 7, regenerate and inspect the final gallery. |
+| google.app | waiting_user | user | observed | Play Console still disables Create app until real Android-device and contact-phone verification are complete. | Owner completes Play Console mobile-app real-device verification then phone verification; agent creates paid app after readback. |
+| google.build | done | agent | observed | Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix. | — |
+| google.native | in_progress | agent | observed | APK9 compact2x2 now verified in light as well as dark, with correct denominator theme change and widget tap opening the live native app. | Complete score10, enlarged text, replacement offline recovery and physical-device checks without substituting CI props for native layout. |
+| google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
@@ -51,6 +51,10 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
 | google.widget-fix | done | agent | observed | APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained | — |
 | design.regression | done | agent | observed | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
+| apple.review-access | in_progress | agent | observed | Owner-pasted rejection text is available; browser control is still unavailable for sending the response. API Notes access works. | Use existing rejection text; recover supported browser control or provide prepared response for owner to paste after recording is ready. |
+| apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
+| apple.physical-recording | waiting_user | user | observed | Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available. | Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed. |
+| apple.testflight | in_progress | agent | observed | Build6 ready for internal beta testing; Release QA group created with build6 and testing instructions; zero testers, no invitations sent. | Add existing account holder as internal tester through supported Apple path; obtain authorization before sending an invitation; install TestFlight build6 on physical devices. |
 
 ## Evidence and history
 
@@ -1030,3 +1034,147 @@ CI passed the named cross-surface design gate and all 189 repository tests on f6
 - GitHub Actions 35083882871: design gate and npm test passed; 192 Expo rendered-prop combinations; 12 deliberate regression checks; historical XML b5571c5 and theme override 922a9b1 rejected; app-release skill v1.0.6 merged in skills PR65
 
 Next: For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines.
+
+### 104. apple.review — failed
+
+2026-09-17T01:47:08+00:00 · observed · agent
+
+Apple rejected iOS1.0.0 build6; review submission has UNRESOLVED_ISSUES. Detailed feedback must be read before selecting a remedy.
+
+- 2026-09-17 App Store Connect API: version REJECTED; reviewSubmission4f28761f-3096-4f0d-aa37-df83332f818f UNRESOLVED_ISSUES. Apple feedback email Sep16 17:37UTC directs to App Review page.
+
+Next: Read App Review rejection message; browser sessions expired but API remains valid. Resolve the actual issue without guessing or resubmitting blindly.
+
+### 105. google.build — in_progress
+
+2026-09-17T01:47:08+00:00 · observed · provider
+
+Final production Android versionCode10 submitted to EAS from clean merged source34f2570 with widget refresh, sizing and theme fixes.
+
+- EAS8162d6a2-7980-4f48-9153-d325ffd55e68 production1.0.0(10), source34f2570b383d09c4ba4e5c16a641f739b98966e2; archive upload completed.
+
+Next: Poll this build ID to terminal state, download and verify AAB checksum/archive; do not create another build because of a timeout.
+
+### 106. google.app — waiting_user
+
+2026-09-17T01:53:48+00:00 · observed · user
+
+Play Console still disables Create app until real Android-device and contact-phone verification are complete.
+
+- 2026-09-17 Play Console8388544157780149515 Home: both verifications Action required; Create app disabled.
+
+Next: Owner completes Play Console mobile-app real-device verification then phone verification; agent creates paid app after readback.
+
+### 107. apple.review-access — in_progress
+
+2026-09-17T01:53:48+00:00 · user_reported · agent
+
+Owner reports App Store Connect sign-in complete; native Chrome connection returns only window title and rejects controls as user-changed.
+
+- Owner reply on2026-09-17; CUA Chrome AX/screenshot unavailable after sign-in; CUA reset and reconnect attempted. API key remains valid; Apple OpenAPI4.4.1 has no review-correspondence endpoint.
+
+Next: Read restored Chrome review page once control is available, or use owner-pasted rejection text. Do not ask for the API key again.
+
+### 108. google.native — in_progress
+
+2026-09-17T01:58:02+00:00 · observed · agent
+
+APK9 compact2x2 now verified in light as well as dark, with correct denominator theme change and widget tap opening the live native app.
+
+- store/source/android-phone/15-widget-compact-light-v9.png and provenance-v9.json; native app opened to current score2 with Privacy/Support footer on2026-09-17.
+
+Next: Complete score10, enlarged text, replacement offline recovery and physical-device checks without substituting CI props for native layout.
+
+### 109. google.build — in_progress
+
+2026-09-17T02:02:32+00:00 · observed · agent
+
+Production Android1.0.0(10) finished successfully from clean34f2570; artifact download is running.
+
+- EAS8162d6a2-7980-4f48-9153-d325ffd55e68 FINISHED2026-09-17T01:58:36.015Z; download process active
+
+Next: Complete download and verify archive/hash before selecting AAB10 as the final upload artifact.
+
+### 110. apple.review — in_progress
+
+2026-09-17T02:12:04+00:00 · user_reported · agent
+
+Owner supplied Guideline 2.1 request for new developer information, including physical-device video on latest OS. No specific code defect reported.
+
+- store/apple-review-response.md; user-pasted Apple review message September 17; API independently confirms REJECTED and UNRESOLVED_ISSUES
+
+Next: Complete physical-device QA/video; finish item 1 in Notes and reply to App Review; verify subsequent review state.
+
+### 111. apple.review-notes — done
+
+2026-09-17T02:12:04+00:00 · observed · agent
+
+Six-part factual response saved and read back in App Review Notes; recording explicitly pending; existing phone and contact fields preserved.
+
+- store/apple-testflight-qa.json records Notes SHA256; listing.json contains exact 3414-character Notes; API PATCH and GET matched all contact and Notes fields.
+
+### 112. apple.physical-recording — waiting_user
+
+2026-09-17T02:12:04+00:00 · observed · user
+
+Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available.
+
+- devicectl: paired, tunnel unavailable, last OS 26.6.2; CUA iPhone Mirroring first-time onboarding; Apple official releases list iOS/iPadOS 27.
+
+Next: Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed.
+
+### 113. apple.testflight — in_progress
+
+2026-09-17T02:12:04+00:00 · observed · agent
+
+Build6 ready for internal beta testing; Release QA group created with build6 and testing instructions; zero testers, no invitations sent.
+
+- store/apple-testflight-qa.json; betaBuildDetails READY_FOR_BETA_TESTING; betaGroups and builds API readback.
+
+Next: Add existing account holder as internal tester through supported Apple path; obtain authorization before sending an invitation; install TestFlight build6 on physical devices.
+
+### 114. apple.review-access — in_progress
+
+2026-09-17T02:13:53+00:00 · observed · agent
+
+Owner-pasted rejection text is available; browser control is still unavailable for sending the response. API Notes access works.
+
+- store/apple-review-response.md contains the user-supplied requirement; Notes saved and read back via API; Chrome CUA reconnect/reset remained unavailable.
+
+Next: Use existing rejection text; recover supported browser control or provide prepared response for owner to paste after recording is ready.
+
+### 115. apple.release — in_progress
+
+2026-09-17T02:13:53+00:00 · observed · agent
+
+Build6 rejected with unresolved review issues; public release not achieved. Guideline2.1 response work is underway; banking/address gates remain separate.
+
+- Apple API REJECTED / UNRESOLVED_ISSUES on September17; six-part Notes saved; physical recording pending.
+
+Next: Resolve App Review request, confirm approval and paid-sale readiness, then verify public availability.
+
+### 116. google.listing — in_progress
+
+2026-09-17T02:13:53+00:00 · observed · agent
+
+Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload.
+
+- store/assets/manifest.json; source/android-phone/provenance-v9.json and widget-frames.json; store/scripts/validate.mjs passed September17.
+
+Next: Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets.
+
+### 117. apple.review-notes — done
+
+2026-09-17T02:15:17+00:00 · observed · agent
+
+Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE.
+
+- store/scripts/apple.mjs review-notes returned saved and verified; listing.json matches App Store Connect; store/apple-testflight-qa.json records Notes SHA256. Phone stayed private.
+
+### 118. google.build — done
+
+2026-09-17T02:17:29+00:00 · observed · agent
+
+Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix.
+
+- EAS8162d6a2-7980-4f48-9153-d325ffd55e68; version1.0.0/versionCode10; 72474952 bytes; SHA2561e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202; ZIP CRC and Android bundle structure valid. Download timed out with 838408 bytes remaining; verified HTTP206 resume completed.
