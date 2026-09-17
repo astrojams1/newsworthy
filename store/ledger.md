@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T04:40:13+00:00
+Updated: 2026-09-17T11:47:11+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -59,6 +59,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
 | apple.header-background | done | agent | observed | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
 | native.replacement-builds | done | agent | observed | Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified. | Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload. |
+| design.denominator | in_progress | agent | observed | Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction. | Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission. |
 
 ## Evidence and history
 
@@ -1608,3 +1609,13 @@ Merged PR96 deployed successfully; production health reports main76fc23b with he
 Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source.
 
 - store/android-large-text-verification.json; captures20-24; store/release.json finalProductionBuild4dc57992-b1e5-4517-8197-215b66789963.
+
+### 164. design.denominator — in_progress
+
+2026-09-17T11:47:11+00:00 · observed · agent
+
+Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction.
+
+- Owner selected regular space on September 17 after reviewing browser comparisons. Design source guards cover glyph, spacing and single-line denominator. Browser comparisons are not native widget verification.
+
+Next: Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission.

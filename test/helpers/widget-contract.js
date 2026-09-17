@@ -44,6 +44,7 @@ export function checkWidgetDesign(sources = widgetSources()) {
     const score = one(doc, n => attr(n, 'id') === '@+id/widget_score', `${kind} score`);
     const denom = one(doc, n => attr(n, 'text') === '@string/widget_denominator', `${kind} denominator`);
     assert.equal(attr(score, 'textSize'), `${c[kind + 'Score']}sp`, `${kind} score size`);
+    assert.equal(attr(denom, 'maxLines'), '1', `${kind} denominator stays together`);
     assert.equal(attr(denom, 'textSize'), `${c.denominatorSize}sp`, `${kind} denominator size`);
     assert.equal(score.parentNode, denom.parentNode, `${kind} score and denominator share a baseline container`);
     assert.equal(attr(score.parentNode, 'orientation'), 'horizontal', `${kind} score direction`);
@@ -77,7 +78,7 @@ export function checkWidgetDesign(sources = widgetSources()) {
     const doc = xml(sources[mode]);
     if (mode === 'light') {
       const denominator = one(doc, n => n.tagName === 'string' && n.getAttribute('name') === 'widget_denominator', 'denominator text');
-      assert.equal(denominator.textContent.trim(), '/10', 'rating stays out of ten');
+      assert.equal(denominator.textContent.trim(), `"${contract.denominatorText}"`, 'denominator uses optically aligned division slash');
     }
     for (const [name, role] of [['widget_ink', 'nw_ink'], ['widget_muted', 'nw_gradient_muted']]) {
       const color = one(doc, n => n.tagName === 'color' && n.getAttribute('name') === name, `${mode} ${name}`);
@@ -103,8 +104,8 @@ export function checkWidgetDesign(sources = widgetSources()) {
   const swift = code(sources.swift).split('struct ReadingView: View {')[1]?.split('struct WidgetSurface:')[0];
   assert.ok(swift, 'Swift reading view is present');
   assert.deepEqual(extract(swift, /baseScoreSize:\s*CGFloat\s*\{\s*family == \.systemSmall \? (\d+) : (\d+)\s*\}/, 'iOS family score'), [c.compactScore, c.expandedScore]);
-  assert.deepEqual(extract(swift, /Text\(" \/10"\)\s*\.font\(\.system\(size: ([\d.]+) \* scoreSize \/ baseScoreSize, weight: \.light\)\)\.monospacedDigit\(\)\s*\.tracking\(0\)\s*\.foregroundColor\(Color\("NewsworthyGradientMuted"\)\)/, 'iOS adaptive denominator'), [c.denominatorSize]);
-  assert.deepEqual(extract(swift, /\.font\(\.system\(size: scoreSize, weight: \.light\)\)\.monospacedDigit\(\)\s*\.tracking\(-scoreSize \* ([\d.]+)\)\s*\+ Text\(" \/10"\)/, 'iOS baseline text run'), [-c.trackingEm]);
+  assert.deepEqual(extract(swift, /Text\(" ∕ 10"\)\s*\.font\(\.system\(size: ([\d.]+) \* scoreSize \/ baseScoreSize, weight: \.light\)\)\.monospacedDigit\(\)\s*\.tracking\(0\)\s*\.foregroundColor\(Color\("NewsworthyGradientMuted"\)\)/, 'iOS adaptive denominator'), [c.denominatorSize]);
+  assert.deepEqual(extract(swift, /\.font\(\.system\(size: scoreSize, weight: \.light\)\)\.monospacedDigit\(\)\s*\.tracking\(-scoreSize \* ([\d.]+)\)\s*\+ Text\(" ∕ 10"\)/, 'iOS baseline text run'), [-c.trackingEm]);
   assert.match(swift, /if family == \.systemMedium\s*\{\s*Text\(entry\.reading\?\.explanation[\s\S]*?\.lineLimit\(2\)/, 'iOS expanded explanation matches Android');
   assert.match(swift, /\.foregroundStyle\(Color\("NewsworthyInk"\)\)/, 'iOS primary text uses adaptive ink');
 }

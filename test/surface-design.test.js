@@ -12,6 +12,10 @@ test('native widget implementations satisfy the same compact/expanded design con
 // Prove the checker rejects the actual categories of bugs, rather than merely
 // accepting today's source. Each mutation is isolated and must fail specifically.
 const regressions = [
+  ['low-hanging Android slash', s => { s.light = s.light.replace('∕ 10', '/10'); }, /optically aligned division slash/],
+  ['low-hanging iOS slash', s => { s.swift = s.swift.replace('∕ 10', '/10'); }, /iOS adaptive denominator/],
+  ['crowded Android slash', s => { s.light = s.light.replace('∕ 10', '∕10'); }, /optically aligned division slash/],
+  ['crowded iOS slash', s => { s.swift = s.swift.replace('∕ 10', '∕10'); }, /iOS adaptive denominator/],
   ['full-size /10', s => { s.compact = s.compact.replace('android:textSize="12sp"', 'android:textSize="52sp"'); }, /compact denominator size/],
   ['lost baseline', s => { s.expanded = s.expanded.replace('android:baselineAligned="true"', 'android:baselineAligned="false"'); }, /expanded denominator baseline/],
   ['different compact score', s => { s.compact = s.compact.replace('52sp', '40sp'); }, /compact score size/],
@@ -37,7 +41,7 @@ function inspectReading(options) {
   const tree = nodes(renderReading(options));
   const score = tree.find(n => n.props.testID === 'rating-score');
   const explanation = tree.find(n => n.props.testID === 'rating-explanation');
-  const denominator = tree.find(n => n.type === 'Text' && n.props.children === '/10');
+  const denominator = tree.find(n => n.type === 'Text' && n.props.children === contract.denominatorText);
   const gradient = tree.find(n => n.type === 'ReadingGradient');
   assert.ok(score && explanation && denominator && gradient, 'all reading design roles are rendered');
   assert.equal(score.parent, denominator.parent, 'score and denominator share a container');
@@ -57,6 +61,7 @@ function inspectReading(options) {
   assert.equal(gradient.props.score, options.score ?? undefined);
   assert.equal(score.props.children, options.score ?? '–');
   assert.equal(score.props.numberOfLines, 1);
+  assert.equal(denominator.props.numberOfLines, 1, 'denominator stays together');
   assert.equal(score.props.adjustsFontSizeToFit, true);
   assert.ok(score.props.style.fontSize <= c.maximumScore);
   if (!landscape) assert.ok(score.props.style.fontSize >= c.minimumPortraitScore);
@@ -129,4 +134,19 @@ test('header gate rejects iOS glass returning on either control', () => {
     assert.notEqual(sourceOverride, source);
     assert.throws(() => inspectHeader({ sourceOverride }), /must not acquire iOS glass/);
   }
+});
+
+
+test('reading gate rejects the low-hanging text slash returning', () => {
+  const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
+  const sourceOverride = source.replace('>∕ 10</Text>', '>/10</Text>');
+  assert.notEqual(sourceOverride, source);
+  assert.throws(() => inspectReading({ sourceOverride, platform: 'web', width: 390, height: 844, score: 3, dark: false }), /all reading design roles/);
+});
+
+test('reading gate rejects the slash touching the ten', () => {
+  const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
+  const sourceOverride = source.replace('>∕ 10</Text>', '>∕10</Text>');
+  assert.notEqual(sourceOverride, source);
+  assert.throws(() => inspectReading({ sourceOverride, platform: 'web', width: 390, height: 844, score: 10, dark: false }), /all reading design roles/);
 });
