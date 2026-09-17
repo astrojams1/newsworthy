@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T03:23:33+00:00",
+  "updated_at": "2026-09-17T03:49:29+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -26,12 +26,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Approved reading-screen design merged and deployed to production.",
+      "summary": "Merged PR94/bbdfd25 deployed successfully; production browser retains plain brand/share header and loads current score2 reading.",
       "evidence": [
-        "PR89; Vercel success for b5571c5983a128e007bb0e166e39697c188242d9; live browser shows score, share, Privacy and Support with no About route; 175 tests and CI passed."
+        "GitHub Vercel status success for bbdfd257cb874cead165bc62baf9a283cc7d8af0; browser native AX/screenshot. Root/privacy/support/api-current all HTTP200."
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T06:40:14+00:00"
+      "updated_at": "2026-09-17T03:33:19+00:00"
     },
     "apple.membership": {
       "state": "done",
@@ -48,12 +48,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Apple Business still shows the obsolete legal address; authorized correction request remains acknowledged but not completed.",
+      "summary": "Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved.",
       "evidence": [
-        "Native Apple Business rechecked 2026-09-16 after replacement review submission. No new address was submitted."
+        "Signed-in Chrome Business page; existing support case retained privately. Obsolete address must not be reused."
       ],
-      "next_action": "Await Apple correction response, then verify legal entity and paid-contract records against the authorized current address.",
-      "updated_at": "2026-09-16T08:05:54+00:00"
+      "next_action": "Await Apple correction or support response, then verify Business legal entity before paid release.",
+      "updated_at": "2026-09-17T03:33:19+00:00"
     },
     "apple.agreement": {
       "state": "waiting_user",
@@ -81,12 +81,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Rechecked Apple Business after replacement submission: Add Bank Account still required; no bank is listed. W-9 and DSA remain Active.",
+      "summary": "Fresh Apple Business readback still has Add Bank Account and no payout account listed; Paid Apps Agreement remains Pending User Info.",
       "evidence": [
-        "Native signed-in Apple Business readback 2026-09-16; Paid Apps Agreement remains Pending User Info."
+        "Signed-in Chrome Business rows September17; W9 and Digital Services Act remain Active. No private banking details in repo."
       ],
-      "next_action": "Owner enters payout bank in App Store Connect Business > Add Bank Account. Private bank details are not available to the agent.",
-      "updated_at": "2026-09-16T08:05:54+00:00"
+      "next_action": "Owner adds payout account privately in App Store Connect Business; verify paid agreement becomes Active.",
+      "updated_at": "2026-09-17T03:33:19+00:00"
     },
     "apple.dsa": {
       "state": "done",
@@ -499,13 +499,13 @@
     "apple.testflight": {
       "state": "in_progress",
       "owner": "agent",
-      "basis": "user_reported",
-      "summary": "Owner is testing Newsworthy in TestFlight on a physical iPhone; invitation/install handoff succeeded.",
+      "basis": "observed",
+      "summary": "App Store Connect now shows Installed1.0.0(6) on iPhone17Pro/iOS26.6.2, confirming invitation acceptance and physical installation.",
       "evidence": [
-        "Owner-provided iPhone screenshot of Newsworthy launched from TestFlight; header defect flagged during testing. This is not full QA or a recording."
+        "Refreshed signed-in Chrome AllTesters table September17; owner screenshot independently shows app running."
       ],
-      "next_action": "Deliver corrected header build through existing Release QA group and recheck on physical device.",
-      "updated_at": "2026-09-17T03:23:33+00:00"
+      "next_action": "Deliver corrected build7 for header recheck; update physical device to latest OS before the review recording.",
+      "updated_at": "2026-09-17T03:30:56+00:00"
     },
     "google.large-text-build": {
       "state": "done",
@@ -530,15 +530,26 @@
       "updated_at": "2026-09-17T02:48:31+00:00"
     },
     "apple.header-background": {
-      "state": "in_progress",
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Corrected iOS7 processed VALID and is IN_BETA_TESTING in the existing Release QA group; focused test instructions saved.",
+      "evidence": [
+        "Apple build eff31b5d-6c18-492d-874c-d7a0e4392bf6; group312a8585-2ca2-413e-bb5f-75d0ba487e13 readback contains build7. store/apple-testflight-qa.json."
+      ],
+      "next_action": "Owner updates TestFlight to1.0.0(7), checks plain header and Share on physical iPhone; update to latest public iOS before review recording. Async physical-check question is pending.",
+      "updated_at": "2026-09-17T03:48:29+00:00"
+    },
+    "native.replacement-builds": {
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner physical TestFlight screenshot shows iOS glass backgrounds around brand/share; installed Expo native header defaults explain the mismatch.",
+      "summary": "Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified.",
       "evidence": [
-        "Owner screenshot September17; Expo57.0.21 useHeaderConfigProps forwards hidesSharedBackground only for custom header items. Source fix uses those items; design24tests and typecheck pass."
+        "store/release.json; Android AAB72475175 bytes SHA256b19aa46afcf95e954586f8db1397a0b88113ed3b5460824a52a94f6ad0476bab with ZIP CRC valid. Apple build7 eff31b5d-6c18-492d-874c-d7a0e4392bf6 IN_BETA_TESTING."
       ],
-      "next_action": "Run full tests, merge PR, build/upload replacement iOS version and obtain physical verification before review recording.",
-      "updated_at": "2026-09-17T03:23:33+00:00"
+      "next_action": "Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload.",
+      "updated_at": "2026-09-17T03:49:29+00:00"
     }
   },
   "events": [
@@ -2681,6 +2692,166 @@
         ],
         "next_action": "Deliver corrected header build through existing Release QA group and recheck on physical device.",
         "updated_at": "2026-09-17T03:23:33+00:00"
+      }
+    },
+    {
+      "sequence": 134,
+      "at": "2026-09-17T03:30:56+00:00",
+      "gate": "native.replacement-builds",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "EAS accepted production Android11 and iOS7 from clean source8055d61, merged as PR94/bbdfd25; app source matches merged commit.",
+        "evidence": [
+          "Android4dc57992-b1e5-4517-8197-215b66789963; iOSa151f9ee-9a5f-48b2-887a-f936bfe48db7; store/release.json. PR94 CIpassed; merged production Vercel deployment completed."
+        ],
+        "next_action": "Poll the same builds; upload iOS7 and add to Release QA for physical header recheck. Validate replacement Android11 AAB before any Play upload.",
+        "updated_at": "2026-09-17T03:30:56+00:00"
+      }
+    },
+    {
+      "sequence": 135,
+      "at": "2026-09-17T03:30:56+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "App Store Connect now shows Installed1.0.0(6) on iPhone17Pro/iOS26.6.2, confirming invitation acceptance and physical installation.",
+        "evidence": [
+          "Refreshed signed-in Chrome AllTesters table September17; owner screenshot independently shows app running."
+        ],
+        "next_action": "Deliver corrected build7 for header recheck; update physical device to latest OS before the review recording.",
+        "updated_at": "2026-09-17T03:30:56+00:00"
+      }
+    },
+    {
+      "sequence": 136,
+      "at": "2026-09-17T03:33:19+00:00",
+      "gate": "web.deploy",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Merged PR94/bbdfd25 deployed successfully; production browser retains plain brand/share header and loads current score2 reading.",
+        "evidence": [
+          "GitHub Vercel status success for bbdfd257cb874cead165bc62baf9a283cc7d8af0; browser native AX/screenshot. Root/privacy/support/api-current all HTTP200."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-17T03:33:19+00:00"
+      }
+    },
+    {
+      "sequence": 137,
+      "at": "2026-09-17T03:33:19+00:00",
+      "gate": "apple.bank",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Fresh Apple Business readback still has Add Bank Account and no payout account listed; Paid Apps Agreement remains Pending User Info.",
+        "evidence": [
+          "Signed-in Chrome Business rows September17; W9 and Digital Services Act remain Active. No private banking details in repo."
+        ],
+        "next_action": "Owner adds payout account privately in App Store Connect Business; verify paid agreement becomes Active.",
+        "updated_at": "2026-09-17T03:33:19+00:00"
+      }
+    },
+    {
+      "sequence": 138,
+      "at": "2026-09-17T03:33:19+00:00",
+      "gate": "apple.address",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved.",
+        "evidence": [
+          "Signed-in Chrome Business page; existing support case retained privately. Obsolete address must not be reused."
+        ],
+        "next_action": "Await Apple correction or support response, then verify Business legal entity before paid release.",
+        "updated_at": "2026-09-17T03:33:19+00:00"
+      }
+    },
+    {
+      "sequence": 139,
+      "at": "2026-09-17T03:34:51+00:00",
+      "gate": "native.replacement-builds",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Both accepted replacement builds are IN_PROGRESS with no provider error. Same-build monitor session38867 is live.",
+        "evidence": [
+          "Fresh EAS readbacks: iOS7 a151f9ee-9a5f-48b2-887a-f936bfe48db7; Android11 4dc57992-b1e5-4517-8197-215b66789963. /tmp/newsworthy-wait-native-builds.py polls those IDs and saves sanitized status files."
+        ],
+        "next_action": "Resume live session38867. On iOS completion validate/download/upload build7, verify Apple processing and attach to Release QA. On Android completion validate AAB11. Do not start duplicate builds.",
+        "updated_at": "2026-09-17T03:34:51+00:00"
+      }
+    },
+    {
+      "sequence": 140,
+      "at": "2026-09-17T03:41:47+00:00",
+      "gate": "apple.header-background",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replacement iOS7 FINISHED, downloaded intact, correct bundle/version verified; official Apple validation succeeded and altool upload is running.",
+        "evidence": [
+          "EASa151f9ee-9a5f-48b2-887a-f936bfe48db7; IPA19259065 bytes, SHA256ed7bc507575e8330391b76e2903411d149a188d4cfda4a50c8932d264e1b6f9a; /tmp/newsworthy-ios7-validate.log VERIFY SUCCEEDED. Apple had zero build7 records before upload."
+        ],
+        "next_action": "Resume upload session95466; verify receipt and Apple processing, attach build7 to Release QA and request physical header check.",
+        "updated_at": "2026-09-17T03:41:47+00:00"
+      }
+    },
+    {
+      "sequence": 141,
+      "at": "2026-09-17T03:43:50+00:00",
+      "gate": "apple.header-background",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Official Apple upload succeeded for iOS7; delivery receipt accepted. Processing and TestFlight assignment remain separate gates.",
+        "evidence": [
+          "altool UPLOAD SUCCEEDED; deliveryeff31b5d-6c18-492d-874c-d7a0e4392bf6; 19259065 bytes. /tmp/newsworthy-ios7-upload.log."
+        ],
+        "next_action": "Poll existing Apple build7 until VALID, then add it to Release QA with focused test instructions. No re-upload while accepted delivery processes.",
+        "updated_at": "2026-09-17T03:43:50+00:00"
+      }
+    },
+    {
+      "sequence": 142,
+      "at": "2026-09-17T03:48:29+00:00",
+      "gate": "apple.header-background",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Corrected iOS7 processed VALID and is IN_BETA_TESTING in the existing Release QA group; focused test instructions saved.",
+        "evidence": [
+          "Apple build eff31b5d-6c18-492d-874c-d7a0e4392bf6; group312a8585-2ca2-413e-bb5f-75d0ba487e13 readback contains build7. store/apple-testflight-qa.json."
+        ],
+        "next_action": "Owner updates TestFlight to1.0.0(7), checks plain header and Share on physical iPhone; update to latest public iOS before review recording. Async physical-check question is pending.",
+        "updated_at": "2026-09-17T03:48:29+00:00"
+      }
+    },
+    {
+      "sequence": 143,
+      "at": "2026-09-17T03:49:29+00:00",
+      "gate": "native.replacement-builds",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified.",
+        "evidence": [
+          "store/release.json; Android AAB72475175 bytes SHA256b19aa46afcf95e954586f8db1397a0b88113ed3b5460824a52a94f6ad0476bab with ZIP CRC valid. Apple build7 eff31b5d-6c18-492d-874c-d7a0e4392bf6 IN_BETA_TESTING."
+        ],
+        "next_action": "Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload.",
+        "updated_at": "2026-09-17T03:49:29+00:00"
       }
     }
   ],
