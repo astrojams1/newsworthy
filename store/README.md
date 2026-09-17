@@ -9,29 +9,29 @@ The owner supplied Apple’s Guideline 2.1 request: a physical-device recording 
 the latest OS and five factual explanations. The six-part Notes are saved; the
 recording and physical-device QA remain pending. See [the response and recording
 checklist](apple-review-response.md). Internal TestFlight group **Release QA**
-contains build 6; Apple accepted the owner invitation (HTTP 201), and the tester
-state changed to **INVITED**. The owner subsequently confirmed TestFlight use
-with a physical iPhone screenshot. That check exposed iOS glass backgrounds
-around the header controls; a replacement build and physical recheck are required.
+now includes **build 7**, VALID and IN_BETA_TESTING. The owner installed build 6
+and exposed iOS glass backgrounds around the header controls. The fix is merged
+and available in build 7; physical confirmation and the review recording remain pending.
 The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
 
 **Additional Android QA:** maximum system text size exposed compact-widget
 text clipping and stale app appearance after returning from Settings. AAB10
-is held for replacement. See [the native evidence](android-large-text-verification.json);
+is superseded by completed production AAB11. See [the native evidence](android-large-text-verification.json);
 corrective APK10 passed the Android emulator reproduction in both theme
 directions and at maximum text size. The original font scale is restored.
 
 Android version 7 exposed a widget refresh loop that flickers and interrupts
 resizing. APK8 passed idle and scheduled-refresh checks without recurring
 widget recreation. A theme switch exposed a separate denominator contrast issue;
-APK9 is installed and passed native light/dark/light widget transitions. Current
+APK9 passed native light/dark/light widget transitions. Current
 reading and widget images are refreshed from APK9. The owner approved the smaller
 widget; its actual 2×2 rendering and launcher span are now verified. The gallery
 compares compact and expanded captures at one scale on a neutral canvas. The
 earlier production AAB9 is superseded; production AAB10 finished from merged
-commit `34f2570` and its downloaded AAB passed SHA-256/ZIP validation. Google account verification
+commit `34f2570` and is now superseded by AAB11 from PR94 source, also downloaded
+and SHA-256/ZIP validated. Google account verification
 still blocks app creation. See the ledger for current gates and exact next actions.
 
 ![iPhone listing artwork](preview.png)

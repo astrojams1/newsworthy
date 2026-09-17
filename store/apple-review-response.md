@@ -105,23 +105,18 @@ videos or media feeds. It does not offer licensed third-party content for sale.
 
 ## Current access evidence
 
-- Physical TestFlight check exposed iOS system glass backgrounds around brand/share.
-  Source fix uses custom native header items with `hidesSharedBackground: true`.
-  The corrected build must be installed and checked on a current-OS iPhone before recording.
-
-- Build 6: `READY_FOR_BETA_TESTING` for internal testing; external beta review
-  has not been submitted. The **Release QA** internal group now contains build 6 and testing instructions.
-  Apple accepted the owner invitation through its public API (HTTP 201), and
-  group tester readback is now **INVITED**. The owner subsequently supplied a screenshot of the app running in TestFlight
-  on a physical iPhone; full physical QA and recording remain incomplete. The direct tester-build list still returns
-  zero; the group build remains Testing. Recheck access after acceptance.
-- Xcode device inventory found a paired iPhone last reporting iOS 26.6.2, but
-  its connection tunnel was unavailable. Pairing alone does not prove access.
-- iPhone Mirroring opens first-time onboarding. It has not been configured or
-  granted additional access. USB connection/unlock was requested from the owner.
-- Chrome control recovered and the full review message was confirmed directly.
-  The public API does not expose review correspondence. A temporary Mac lock
-  subsequently cleared; UI access recovered.
+- Physical TestFlight build6 check exposed iOS system glass backgrounds around brand/share.
+  The fix uses custom native header items with `hidesSharedBackground: true` and is
+  merged in PR94. **Build7 is VALID and IN_BETA_TESTING in Release QA.**
+  Update through TestFlight and check the corrected header/share behavior before recording.
+- App Store Connect confirmed installed build6 on iPhone17Pro/iOS26.6.2. The
+  latest public iOS is27, verified September17 against Apple's release list;
+  update the phone before the latest-OS recording Apple requested.
+- Local simulator checks used iOS18.3 and do not establish iOS26+ chrome behavior.
+- The owner invitation was accepted after a public API invitation request; no new
+  invitation or account setup is required to update the app.
+- The public API does not expose App Review correspondence. Signed-in Chrome
+  control recovered and the full rejection message was confirmed directly.
 
 References: [Apple TestFlight internal testers](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers),
 [Apple security releases](https://support.apple.com/en-ca/100100),

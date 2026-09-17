@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T03:23:33+00:00
+Updated: 2026-09-17T03:49:29+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -11,12 +11,12 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | Gate | State | Owner | Evidence basis | Result | Next action |
 |---|---|---|---|---|---|
 | scope | done | agent | observed | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
-| web.deploy | done | agent | observed | Approved reading-screen design merged and deployed to production. | — |
+| web.deploy | done | agent | observed | Merged PR94/bbdfd25 deployed successfully; production browser retains plain brand/share header and loads current score2 reading. | — |
 | apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
-| apple.address | waiting_provider | provider | observed | Apple Business still shows the obsolete legal address; authorized correction request remains acknowledged but not completed. | Await Apple correction response, then verify legal entity and paid-contract records against the authorized current address. |
+| apple.address | waiting_provider | provider | observed | Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved. | Await Apple correction or support response, then verify Business legal entity before paid release. |
 | apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
 | apple.tax | done | user | observed | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
-| apple.bank | waiting_user | user | observed | Rechecked Apple Business after replacement submission: Add Bank Account still required; no bank is listed. W-9 and DSA remain Active. | Owner enters payout bank in App Store Connect Business > Add Bank Account. Private bank details are not available to the agent. |
+| apple.bank | waiting_user | user | observed | Fresh Apple Business readback still has Add Bank Account and no payout account listed; Paid Apps Agreement remains Pending User Info. | Owner adds payout account privately in App Store Connect Business; verify paid agreement becomes Active. |
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | user | observed | Owner published diagnostics/performance collection for app functionality, linked to user, no tracking. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
@@ -54,10 +54,11 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
 | apple.physical-recording | waiting_user | user | observed | Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available. | Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed. |
-| apple.testflight | in_progress | agent | user_reported | Owner is testing Newsworthy in TestFlight on a physical iPhone; invitation/install handoff succeeded. | Deliver corrected header build through existing Release QA group and recheck on physical device. |
+| apple.testflight | in_progress | agent | observed | App Store Connect now shows Installed1.0.0(6) on iPhone17Pro/iOS26.6.2, confirming invitation acceptance and physical installation. | Deliver corrected build7 for header recheck; update physical device to latest OS before the review recording. |
 | google.large-text-build | done | agent | observed | Corrective APK10 passed native emulator checks for compact title/timestamp at fontScale2.0 and both theme changes across font-size recreation. | Restore fontScale1.0, merge PR94 after checks, then build replacement production AAB from merged source. |
 | google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
-| apple.header-background | in_progress | agent | observed | Owner physical TestFlight screenshot shows iOS glass backgrounds around brand/share; installed Expo native header defaults explain the mismatch. | Run full tests, merge PR, build/upload replacement iOS version and obtain physical verification before review recording. |
+| apple.header-background | waiting_user | user | observed | Corrected iOS7 processed VALID and is IN_BETA_TESTING in the existing Release QA group; focused test instructions saved. | Owner updates TestFlight to1.0.0(7), checks plain header and Share on physical iPhone; update to latest public iOS before review recording. Async physical-check question is pending. |
+| native.replacement-builds | done | agent | observed | Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified. | Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload. |
 
 ## Evidence and history
 
@@ -1327,3 +1328,101 @@ Owner is testing Newsworthy in TestFlight on a physical iPhone; invitation/insta
 - Owner-provided iPhone screenshot of Newsworthy launched from TestFlight; header defect flagged during testing. This is not full QA or a recording.
 
 Next: Deliver corrected header build through existing Release QA group and recheck on physical device.
+
+### 134. native.replacement-builds — waiting_provider
+
+2026-09-17T03:30:56+00:00 · observed · provider
+
+EAS accepted production Android11 and iOS7 from clean source8055d61, merged as PR94/bbdfd25; app source matches merged commit.
+
+- Android4dc57992-b1e5-4517-8197-215b66789963; iOSa151f9ee-9a5f-48b2-887a-f936bfe48db7; store/release.json. PR94 CIpassed; merged production Vercel deployment completed.
+
+Next: Poll the same builds; upload iOS7 and add to Release QA for physical header recheck. Validate replacement Android11 AAB before any Play upload.
+
+### 135. apple.testflight — in_progress
+
+2026-09-17T03:30:56+00:00 · observed · agent
+
+App Store Connect now shows Installed1.0.0(6) on iPhone17Pro/iOS26.6.2, confirming invitation acceptance and physical installation.
+
+- Refreshed signed-in Chrome AllTesters table September17; owner screenshot independently shows app running.
+
+Next: Deliver corrected build7 for header recheck; update physical device to latest OS before the review recording.
+
+### 136. web.deploy — done
+
+2026-09-17T03:33:19+00:00 · observed · agent
+
+Merged PR94/bbdfd25 deployed successfully; production browser retains plain brand/share header and loads current score2 reading.
+
+- GitHub Vercel status success for bbdfd257cb874cead165bc62baf9a283cc7d8af0; browser native AX/screenshot. Root/privacy/support/api-current all HTTP200.
+
+### 137. apple.bank — waiting_user
+
+2026-09-17T03:33:19+00:00 · observed · user
+
+Fresh Apple Business readback still has Add Bank Account and no payout account listed; Paid Apps Agreement remains Pending User Info.
+
+- Signed-in Chrome Business rows September17; W9 and Digital Services Act remain Active. No private banking details in repo.
+
+Next: Owner adds payout account privately in App Store Connect Business; verify paid agreement becomes Active.
+
+### 138. apple.address — waiting_provider
+
+2026-09-17T03:33:19+00:00 · observed · provider
+
+Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved.
+
+- Signed-in Chrome Business page; existing support case retained privately. Obsolete address must not be reused.
+
+Next: Await Apple correction or support response, then verify Business legal entity before paid release.
+
+### 139. native.replacement-builds — waiting_provider
+
+2026-09-17T03:34:51+00:00 · observed · provider
+
+Both accepted replacement builds are IN_PROGRESS with no provider error. Same-build monitor session38867 is live.
+
+- Fresh EAS readbacks: iOS7 a151f9ee-9a5f-48b2-887a-f936bfe48db7; Android11 4dc57992-b1e5-4517-8197-215b66789963. /tmp/newsworthy-wait-native-builds.py polls those IDs and saves sanitized status files.
+
+Next: Resume live session38867. On iOS completion validate/download/upload build7, verify Apple processing and attach to Release QA. On Android completion validate AAB11. Do not start duplicate builds.
+
+### 140. apple.header-background — in_progress
+
+2026-09-17T03:41:47+00:00 · observed · agent
+
+Replacement iOS7 FINISHED, downloaded intact, correct bundle/version verified; official Apple validation succeeded and altool upload is running.
+
+- EASa151f9ee-9a5f-48b2-887a-f936bfe48db7; IPA19259065 bytes, SHA256ed7bc507575e8330391b76e2903411d149a188d4cfda4a50c8932d264e1b6f9a; /tmp/newsworthy-ios7-validate.log VERIFY SUCCEEDED. Apple had zero build7 records before upload.
+
+Next: Resume upload session95466; verify receipt and Apple processing, attach build7 to Release QA and request physical header check.
+
+### 141. apple.header-background — waiting_provider
+
+2026-09-17T03:43:50+00:00 · observed · provider
+
+Official Apple upload succeeded for iOS7; delivery receipt accepted. Processing and TestFlight assignment remain separate gates.
+
+- altool UPLOAD SUCCEEDED; deliveryeff31b5d-6c18-492d-874c-d7a0e4392bf6; 19259065 bytes. /tmp/newsworthy-ios7-upload.log.
+
+Next: Poll existing Apple build7 until VALID, then add it to Release QA with focused test instructions. No re-upload while accepted delivery processes.
+
+### 142. apple.header-background — waiting_user
+
+2026-09-17T03:48:29+00:00 · observed · user
+
+Corrected iOS7 processed VALID and is IN_BETA_TESTING in the existing Release QA group; focused test instructions saved.
+
+- Apple build eff31b5d-6c18-492d-874c-d7a0e4392bf6; group312a8585-2ca2-413e-bb5f-75d0ba487e13 readback contains build7. store/apple-testflight-qa.json.
+
+Next: Owner updates TestFlight to1.0.0(7), checks plain header and Share on physical iPhone; update to latest public iOS before review recording. Async physical-check question is pending.
+
+### 143. native.replacement-builds — done
+
+2026-09-17T03:49:29+00:00 · observed · agent
+
+Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified.
+
+- store/release.json; Android AAB72475175 bytes SHA256b19aa46afcf95e954586f8db1397a0b88113ed3b5460824a52a94f6ad0476bab with ZIP CRC valid. Apple build7 eff31b5d-6c18-492d-874c-d7a0e4392bf6 IN_BETA_TESTING.
+
+Next: Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload.

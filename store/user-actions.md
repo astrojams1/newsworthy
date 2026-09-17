@@ -1,7 +1,7 @@
 # Account-owner actions
 
 Google account and Apple API checked on **September 17, 2026**. Apple Business
-rows were last verified September 16. The list below
+rows were last verified September 17. The list below
 separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
@@ -115,8 +115,9 @@ September 17. The owner supplied the Guideline 2.1 information request. The agen
 verified the six-part Notes and created internal TestFlight group **Release QA**
 with build 6 and testing instructions. Apple accepted the owner invitation (HTTP 201); tester state is now **INVITED**.
 The owner confirmed the app running in TestFlight with a physical iPhone screenshot.
-That test exposed unexpected iOS glass backgrounds on title/share; the agent is
-preparing a corrected build before the final physical recording.
+That test exposed unexpected iOS glass backgrounds on title/share. Corrected
+**TestFlight 1.0.0 (7) is available**: open TestFlight → Newsworthy → Update,
+confirm build 7, then check the plain title/share controls and that Share works.
 The next App Review step is a physical-device demonstration and QA;
 see [the exact recording checklist](apple-review-response.md). The paired iPhone
 is disconnected, and iPhone Mirroring is still at first-time setup. Connect and
@@ -124,16 +125,17 @@ unlock the phone so the agent can determine available testing/recording access.
 The latest OS is iOS/iPadOS 27 at this check; the paired phone last reported
 26.6.2. The public API cannot send App Review correspondence. Chrome control recovered
 and the rejection was read directly. The Mac was briefly locked, then UI access
-recovered and Android regression checks completed. The TestFlight group build says Testing. The direct tester-build list remains
-empty; recheck availability after invitation acceptance. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
+recovered and Android regression checks completed. App Store Connect confirmed physical installation of build 6; build 7 is now
+VALID and IN_BETA_TESTING in the same Release QA group. Native iPhone/iPad light/dark screens, iPhone small/medium widgets,
 Privacy/Support links and iPad share popover have been checked. Physical-device
 testing remains incomplete; Android maximum-text behavior passed on the corrected APK10.
 
 Android preview APK8 verified the refresh-loop fix, including its next scheduled
-refresh without recurring widget recreation. APK9 is installed and passed native
+refresh without recurring widget recreation. APK9 passed native
 light→dark→light widget contrast checks. Current light/dark reading images are
-captured. Production AAB10 finished from merged PR92; its downloaded AAB passed SHA-256/ZIP validation. It replaces the older
-AAB9, which predates the theme fix. Compact light also passed on September 17.
+captured. Corrective APK10 then passed maximum-text labels and appearance-resume
+checks; production AAB11 is downloaded and SHA-256/ZIP validated. It supersedes
+AAB10 and AAB9. Compact light also passed on September 17.
 
 The owner resized the widget and approved its compact appearance. The agent
 captured and inspected the native 2×2 dark widget, verified launcher span/minimum,
@@ -143,9 +145,10 @@ baseline alignment, theme bindings and minimum sizing in CI.
 
 The remaining technical release work is:
 
-- Deliver the corrected iOS header in TestFlight for a physical recheck. Android
-  clipping/appearance corrections passed emulator testing; build the replacement
-  production AAB. Score 10 and physical-device coverage remain separate gaps.
+- Obtain the physical iOS7 header/share recheck; it is already available in
+  TestFlight. Android clipping/appearance corrections passed emulator testing,
+  and replacement production AAB11 is ready. Score10 native and physical-device
+  coverage remain separate gaps.
 - Complete Google privacy and content-rating declarations using the code and live
   hosting evidence in [disclosures.md](disclosures.md).
 - Complete the physical recording/QA, replace the pending item in Notes, and
