@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T22:24:21+00:00",
+  "updated_at": "2026-09-17T22:51:27+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -596,15 +596,26 @@
       "updated_at": "2026-09-17T15:37:10+00:00"
     },
     "apple.widget-refresh": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Implement centered widget content and foreground app-to-widget reading handoff; owner requested merge and replacement TestFlight build.",
+      "summary": "Widget fixes merged in PR103. 214 tests passed; standalone native iOS content verified in light/dark, score3/10, hidden title and AX5 text. TestFlight waits for Apple Developer login to set up shared storage.",
       "evidence": [
-        "Branch codex/widget-centering-refresh; design gate 39 passed; app TypeScript passed; widget Swift compiled for iOS simulator."
+        "store/widget-refresh-verification.json; source925e6de; EAS reserved11 but no cloud build/upload created. Existing App Review remains WAITING_FOR_REVIEW."
       ],
-      "next_action": "Complete tests, merge PR, create signed production iOS build with App Groups and upload to TestFlight.",
-      "updated_at": "2026-09-17T22:24:21+00:00"
+      "next_action": "Sign in to Apple Developer in the prepared Codex browser. Agent then assigns App Group, refreshes signing and completes TestFlight build/upload.",
+      "updated_at": "2026-09-17T22:51:27+00:00"
+    },
+    "apple.widget-refresh-signing": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Apple Developer login required to register and assign the new App Group; API key cannot configure this capability assignment.",
+      "evidence": [
+        "PR103 merged; EAS reserved build11 but stopped at Apple password prompt before creating a cloud build. Chrome and Codex browser Developer sessions are signed out. No password or verification code requested in chat."
+      ],
+      "next_action": "Owner signs in to Apple Developer in the prepared Codex browser tab. Then register group.com.astrojams.newsworthy.widgets, assign it to both bundle IDs, refresh profiles with API credentials, rebuild and upload to TestFlight.",
+      "updated_at": "2026-09-17T22:48:06+00:00"
     }
   },
   "events": [
@@ -3531,6 +3542,54 @@
         ],
         "next_action": "Complete tests, merge PR, create signed production iOS build with App Groups and upload to TestFlight.",
         "updated_at": "2026-09-17T22:24:21+00:00"
+      }
+    },
+    {
+      "sequence": 183,
+      "at": "2026-09-17T22:41:04+00:00",
+      "gate": "apple.widget-refresh",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR 103 merged; 214 tests, design gate, TypeScript and WidgetKit simulator compilation passed.",
+        "evidence": [
+          "Merge 925e6de59a2bc354686cf6602c8e0bd005f748b7; GitHub checks passed; production iOS build/signing started from merged code."
+        ],
+        "next_action": "Refresh matching App Groups provisioning and finish signed iOS build, upload and verify TestFlight availability.",
+        "updated_at": "2026-09-17T22:41:04+00:00"
+      }
+    },
+    {
+      "sequence": 184,
+      "at": "2026-09-17T22:48:06+00:00",
+      "gate": "apple.widget-refresh-signing",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Apple Developer login required to register and assign the new App Group; API key cannot configure this capability assignment.",
+        "evidence": [
+          "PR103 merged; EAS reserved build11 but stopped at Apple password prompt before creating a cloud build. Chrome and Codex browser Developer sessions are signed out. No password or verification code requested in chat."
+        ],
+        "next_action": "Owner signs in to Apple Developer in the prepared Codex browser tab. Then register group.com.astrojams.newsworthy.widgets, assign it to both bundle IDs, refresh profiles with API credentials, rebuild and upload to TestFlight.",
+        "updated_at": "2026-09-17T22:48:06+00:00"
+      }
+    },
+    {
+      "sequence": 185,
+      "at": "2026-09-17T22:51:27+00:00",
+      "gate": "apple.widget-refresh",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Widget fixes merged in PR103. 214 tests passed; standalone native iOS content verified in light/dark, score3/10, hidden title and AX5 text. TestFlight waits for Apple Developer login to set up shared storage.",
+        "evidence": [
+          "store/widget-refresh-verification.json; source925e6de; EAS reserved11 but no cloud build/upload created. Existing App Review remains WAITING_FOR_REVIEW."
+        ],
+        "next_action": "Sign in to Apple Developer in the prepared Codex browser. Agent then assigns App Group, refreshes signing and completes TestFlight build/upload.",
+        "updated_at": "2026-09-17T22:51:27+00:00"
       }
     }
   ],
