@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T02:17:29+00:00
+Updated: 2026-09-17T02:33:13+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -32,7 +32,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
 | google.app | waiting_user | user | observed | Play Console still disables Create app until real Android-device and contact-phone verification are complete. | Owner completes Play Console mobile-app real-device verification then phone verification; agent creates paid app after readback. |
 | google.build | done | agent | observed | Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix. | — |
-| google.native | in_progress | agent | observed | APK9 compact2x2 now verified in light as well as dark, with correct denominator theme change and widget tap opening the live native app. | Complete score10, enlarged text, replacement offline recovery and physical-device checks without substituting CI props for native layout. |
+| google.native | in_progress | agent | observed | Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification. | Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate. |
 | google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
@@ -1178,3 +1178,13 @@ Six-part Notes saved with recording explicitly pending. Reusable uploader now re
 Final production AAB10 FINISHED from clean merged main34f2570; downloaded and verified. Supersedes production AAB9 that predates the denominator theme fix.
 
 - EAS8162d6a2-7980-4f48-9153-d325ffd55e68; version1.0.0/versionCode10; 72474952 bytes; SHA2561e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202; ZIP CRC and Android bundle structure valid. Download timed out with 838408 bytes remaining; verified HTTP206 resume completed.
+
+### 119. google.native — in_progress
+
+2026-09-17T02:33:13+00:00 · observed · agent
+
+Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification.
+
+- store/android-large-text-verification.json; actual screenshots16/17; adb read-only font_scale2.0 and UiMode mNightMode2.
+
+Next: Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.

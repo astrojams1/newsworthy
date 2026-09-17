@@ -23,6 +23,9 @@ const regressions = [
   ['height-only compact choice', s => { s.java = s.java.replace('width < 250 || height < 150', 'height < 150'); }, /compact selection/],
   ['runtime score overrides layout', s => { s.java = s.java.replace('compact ? 52 : 44', 'compact ? 40 : 40'); }, /Expected values to be strictly deep-equal/],
   ['explanation crowds compact widget', s => { s.compact = s.compact.replace('android:visibility="gone"', 'android:visibility="visible"'); }, /compact keeps score/],
+  ['compact title clips at large text', s => { s.compact = s.compact.replace('android:autoSizeTextType="uniform"', 'android:autoSizeTextType="none"'); }, /compact title fits large text/],
+  ['compact timestamp loses its ending', s => { s.compact = s.compact.replaceAll('android:autoSizeTextType="uniform"', 'android:autoSizeTextType="none"').replace('android:autoSizeTextType="none"', 'android:autoSizeTextType="uniform"'); }, /compact timestamp fits large text/],
+  ['compact autosize loses height constraint', s => { s.compact = s.compact.replace('android:layout_height="32dp"', 'android:layout_height="wrap_content"'); }, /compact timestamp has bounded height/],
 ];
 for (const [name, mutate, error] of regressions) test(`design gate rejects regression: ${name}`, () => {
   const sources = widgetSources();

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T02:17:29+00:00",
+  "updated_at": "2026-09-17T02:33:13+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -258,12 +258,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "APK9 compact2x2 now verified in light as well as dark, with correct denominator theme change and widget tap opening the live native app.",
+      "summary": "Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification.",
       "evidence": [
-        "store/source/android-phone/15-widget-compact-light-v9.png and provenance-v9.json; native app opened to current score2 with Privacy/Support footer on2026-09-17."
+        "store/android-large-text-verification.json; actual screenshots16/17; adb read-only font_scale2.0 and UiMode mNightMode2."
       ],
-      "next_action": "Complete score10, enlarged text, replacement offline recovery and physical-device checks without substituting CI props for native layout.",
-      "updated_at": "2026-09-17T01:58:02+00:00"
+      "next_action": "Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.",
+      "updated_at": "2026-09-17T02:33:13+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -2408,6 +2408,22 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-17T02:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 119,
+      "at": "2026-09-17T02:33:13+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale light app appearance despite system dark mode. Main reading contents remain legible. Source fixes are pending native verification.",
+        "evidence": [
+          "store/android-large-text-verification.json; actual screenshots16/17; adb read-only font_scale2.0 and UiMode mNightMode2."
+        ],
+        "next_action": "Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.",
+        "updated_at": "2026-09-17T02:33:13+00:00"
       }
     }
   ],

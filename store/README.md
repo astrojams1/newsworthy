@@ -14,6 +14,11 @@ The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
 
+**Additional Android QA:** maximum system text size exposed compact-widget
+text clipping and stale app appearance after returning from Settings. AAB10
+is held for replacement. See [the native evidence](android-large-text-verification.json);
+source fixes are under verification.
+
 Android version 7 exposed a widget refresh loop that flickers and interrupts
 resizing. APK8 passed idle and scheduled-refresh checks without recurring
 widget recreation. A theme switch exposed a separate denominator contrast issue;

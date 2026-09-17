@@ -57,7 +57,20 @@ export function checkWidgetDesign(sources = widgetSources()) {
     assert.equal(attr(score, 'textColor'), '@color/widget_ink', `${kind} score theme binding`);
     assert.equal(attr(denom, 'textColor'), '@color/widget_muted', `${kind} denominator theme binding`);
     const explanation = one(doc, n => attr(n, 'id') === '@+id/widget_explanation', `${kind} explanation`);
-    if (kind === 'compact') assert.equal(attr(explanation, 'visibility'), 'gone', 'compact keeps score and update time');
+    if (kind === 'compact') {
+      assert.equal(attr(explanation, 'visibility'), 'gone', 'compact keeps score and update time');
+      // Bounded fields must fit their entire content when system text grows.
+      // Native screenshots separately verify Android's autosizing behavior.
+      const title = one(doc, n => attr(n, 'text') === '@string/widget_name', 'compact title');
+      const updated = one(doc, n => attr(n, 'id') === '@+id/widget_updated', 'compact timestamp');
+      for (const [node, role, height] of [[title, 'title', '18dp'], [updated, 'timestamp', '32dp']]) {
+        assert.equal(attr(node, 'autoSizeTextType'), 'uniform', `compact ${role} fits large text`);
+        assert.equal(attr(node, 'layout_width'), 'match_parent', `compact ${role} has bounded width`);
+        assert.equal(attr(node, 'layout_height'), height, `compact ${role} has bounded height`);
+        assert.equal(attr(node, 'autoSizeMinTextSize'), '6sp', `compact ${role} fitting minimum`);
+        assert.equal(attr(node, 'autoSizeMaxTextSize'), '10sp', `compact ${role} fitting maximum`);
+      }
+    }
     else assert.equal(attr(explanation, 'maxLines'), String(c.expandedExplanationLines), 'expanded context limit');
   }
   for (const mode of ['light', 'dark']) {

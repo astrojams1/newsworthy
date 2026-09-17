@@ -1,0 +1,28 @@
+{
+  "observedDate": "2026-09-17",
+  "platform": "Android emulator API35",
+  "installedVersion": "1.0.0",
+  "installedVersionCode": 9,
+  "fontScale": 2.0,
+  "systemNightMode": 2,
+  "failures": [
+    "Compact widget title clipped to NEWSWORT and timestamp ending omitted at system maximum font size.",
+    "Main reading remained light after returning from font-size settings while system UI mode and widget were dark."
+  ],
+  "passed": [
+    "Main reading score, explanatory sentence, timestamp and Privacy/Support footer remained visible at fontScale2.0."
+  ],
+  "fixStatus": "SOURCE_CHANGES_NATIVE_VERIFICATION_PENDING",
+  "fixScope": [
+    "Bounded autosizing for compact-widget title and timestamp.",
+    "Refresh React appearance from Activity configuration on Android resume."
+  ],
+  "captures": {
+    "16-widget-large-text-clipping-v9.png": {
+      "sha256": "3e1fd1c5268f9d74da671ea802017d7123131e15273d52c85fc1a3b6378c65c3"
+    },
+    "17-reading-large-text-theme-mismatch-v9.png": {
+      "sha256": "c11af1bb7ee41afcf3e017c89bcaa90177d432f8034471bd702386d7929b3e5f"
+    }
+  }
+}

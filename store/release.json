@@ -157,8 +157,8 @@
       "bytes": 104437651,
       "installedVersionCode": 9
     },
-    "productionBuildRequiresReplacement": false,
-    "productionReplacementReason": "AAB10 replaces AAB9 and includes the verified denominator/theme fix from merged PR92.",
+    "productionBuildRequiresReplacement": true,
+    "productionReplacementReason": "Native QA at Android fontScale2.0 found clipped compact-widget title/timestamp and stale light app appearance while OS was dark. Fix and replacement native verification are in progress.",
     "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED",
     "finalProductionBuild": {
       "id": "8162d6a2-7980-4f48-9153-d325ffd55e68",
