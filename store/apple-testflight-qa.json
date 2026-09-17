@@ -8,10 +8,12 @@
   "groupName": "Release QA",
   "isInternalGroup": true,
   "buildAttached": true,
-  "testerCount": 0,
+  "testerCount": 1,
   "invitationsSent": false,
   "reviewNotesSaved": true,
   "reviewNotesSha256": "dc4431898d1d26f93cc27b78a12cac1fa1a02f85c38e8a9f96171cd63e0b9f06",
   "physicalRecordingStatus": "PENDING",
-  "physicalTestingStatus": "PENDING"
+  "physicalTestingStatus": "PENDING",
+  "testerState": "NOT_INVITED",
+  "internalBuildState": "IN_BETA_TESTING"
 }

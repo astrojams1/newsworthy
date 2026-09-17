@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T02:33:13+00:00",
+  "updated_at": "2026-09-17T02:36:54+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -497,15 +497,26 @@
       "updated_at": "2026-09-17T02:12:04+00:00"
     },
     "apple.testflight": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Owner is now in Release QA, but tester state is NOT_INVITED. Build6 internal state is IN_BETA_TESTING. No email invitation sent by the agent.",
+      "evidence": [
+        "September17 fresh Apple betaGroups testers API returned one existing owner tester NOT_INVITED; buildBetaDetail IN_BETA_TESTING."
+      ],
+      "next_action": "Owner approves pending TestFlight email invitation, or sends it in App Store Connect; agent can call invitation API and verify state after authorization.",
+      "updated_at": "2026-09-17T02:36:01+00:00"
+    },
+    "google.large-text-build": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build6 ready for internal beta testing; Release QA group created with build6 and testing instructions; zero testers, no invitations sent.",
+      "summary": "Corrective Android preview APK build command is uploading the source archive; provider build ID is not yet returned.",
       "evidence": [
-        "store/apple-testflight-qa.json; betaBuildDetails READY_FOR_BETA_TESTING; betaGroups and builds API readback."
+        "EAS CLI live session81220; source33ebd60; native fixes committed; 194 tests, typecheck and Android prebuild passed. Upload status110MB archive."
       ],
-      "next_action": "Add existing account holder as internal tester through supported Apple path; obtain authorization before sending an invitation; install TestFlight build6 on physical devices.",
-      "updated_at": "2026-09-17T02:12:04+00:00"
+      "next_action": "Poll existing session81220, read /tmp/newsworthy-android-large-text-build.json, then follow returned provider build ID without starting a duplicate.",
+      "updated_at": "2026-09-17T02:36:54+00:00"
     }
   },
   "events": [
@@ -2424,6 +2435,38 @@
         ],
         "next_action": "Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.",
         "updated_at": "2026-09-17T02:33:13+00:00"
+      }
+    },
+    {
+      "sequence": 120,
+      "at": "2026-09-17T02:36:01+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner is now in Release QA, but tester state is NOT_INVITED. Build6 internal state is IN_BETA_TESTING. No email invitation sent by the agent.",
+        "evidence": [
+          "September17 fresh Apple betaGroups testers API returned one existing owner tester NOT_INVITED; buildBetaDetail IN_BETA_TESTING."
+        ],
+        "next_action": "Owner approves pending TestFlight email invitation, or sends it in App Store Connect; agent can call invitation API and verify state after authorization.",
+        "updated_at": "2026-09-17T02:36:01+00:00"
+      }
+    },
+    {
+      "sequence": 121,
+      "at": "2026-09-17T02:36:54+00:00",
+      "gate": "google.large-text-build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Corrective Android preview APK build command is uploading the source archive; provider build ID is not yet returned.",
+        "evidence": [
+          "EAS CLI live session81220; source33ebd60; native fixes committed; 194 tests, typecheck and Android prebuild passed. Upload status110MB archive."
+        ],
+        "next_action": "Poll existing session81220, read /tmp/newsworthy-android-large-text-build.json, then follow returned provider build ID without starting a duplicate.",
+        "updated_at": "2026-09-17T02:36:54+00:00"
       }
     }
   ],

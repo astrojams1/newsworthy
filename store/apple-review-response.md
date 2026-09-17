@@ -107,7 +107,7 @@ videos or media feeds. It does not offer licensed third-party content for sale.
 
 - Build 6: `READY_FOR_BETA_TESTING` for internal testing; external beta review
   has not been submitted. The **Release QA** internal group now contains build 6 and testing instructions.
-  It has zero testers; no invitation was sent.
+  The owner has been added; Apple reports **NOT_INVITED**.
 - Xcode device inventory found a paired iPhone last reporting iOS 26.6.2, but
   its connection tunnel was unavailable. Pairing alone does not prove access.
 - iPhone Mirroring opens first-time onboarding. It has not been configured or

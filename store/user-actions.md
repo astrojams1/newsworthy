@@ -113,7 +113,7 @@ Those have working automated paths. Apple build 6 and the corrected five-image
 gallery were reviewed and **Rejected**, confirmed through the API on
 September 17. The owner supplied the Guideline 2.1 information request. The agent saved and
 verified the six-part Notes and created internal TestFlight group **Release QA**
-with build 6 and testing instructions. No testers have been invited.
+with build 6 and testing instructions. The owner has been added; Apple reports **NOT_INVITED**.
 The next App Review step is a physical-device demonstration and QA;
 see [the exact recording checklist](apple-review-response.md). The paired iPhone
 is disconnected, and iPhone Mirroring is still at first-time setup. Connect and

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T02:33:13+00:00
+Updated: 2026-09-17T02:36:54+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -54,7 +54,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.review-access | in_progress | agent | observed | Owner-pasted rejection text is available; browser control is still unavailable for sending the response. API Notes access works. | Use existing rejection text; recover supported browser control or provide prepared response for owner to paste after recording is ready. |
 | apple.review-notes | done | agent | observed | Six-part Notes saved with recording explicitly pending. Reusable uploader now retrieves and resends existing phone; verified live without ASC_REVIEW_PHONE. | — |
 | apple.physical-recording | waiting_user | user | observed | Paired iPhone is disconnected; iPhone Mirroring has not been set up. Physical video and device QA are not yet available. | Owner connects/unlocks physical iPhone by USB and updates OS; agent then checks available install/testing/recording path. Test physical iPad too before claiming both supported platforms passed. |
-| apple.testflight | in_progress | agent | observed | Build6 ready for internal beta testing; Release QA group created with build6 and testing instructions; zero testers, no invitations sent. | Add existing account holder as internal tester through supported Apple path; obtain authorization before sending an invitation; install TestFlight build6 on physical devices. |
+| apple.testflight | waiting_user | user | observed | Owner is now in Release QA, but tester state is NOT_INVITED. Build6 internal state is IN_BETA_TESTING. No email invitation sent by the agent. | Owner approves pending TestFlight email invitation, or sends it in App Store Connect; agent can call invitation API and verify state after authorization. |
+| google.large-text-build | in_progress | agent | observed | Corrective Android preview APK build command is uploading the source archive; provider build ID is not yet returned. | Poll existing session81220, read /tmp/newsworthy-android-large-text-build.json, then follow returned provider build ID without starting a duplicate. |
 
 ## Evidence and history
 
@@ -1188,3 +1189,23 @@ Native APK9 QA at fontScale2.0 found compact title/timestamp clipping and stale 
 - store/android-large-text-verification.json; actual screenshots16/17; adb read-only font_scale2.0 and UiMode mNightMode2.
 
 Next: Build/install corrected APK, reproduce maximum-font and background theme transitions, verify fixes and offline recovery; then replace production AAB10. Physical-device and score10 checks remain separate.
+
+### 120. apple.testflight — waiting_user
+
+2026-09-17T02:36:01+00:00 · observed · user
+
+Owner is now in Release QA, but tester state is NOT_INVITED. Build6 internal state is IN_BETA_TESTING. No email invitation sent by the agent.
+
+- September17 fresh Apple betaGroups testers API returned one existing owner tester NOT_INVITED; buildBetaDetail IN_BETA_TESTING.
+
+Next: Owner approves pending TestFlight email invitation, or sends it in App Store Connect; agent can call invitation API and verify state after authorization.
+
+### 121. google.large-text-build — in_progress
+
+2026-09-17T02:36:54+00:00 · observed · agent
+
+Corrective Android preview APK build command is uploading the source archive; provider build ID is not yet returned.
+
+- EAS CLI live session81220; source33ebd60; native fixes committed; 194 tests, typecheck and Android prebuild passed. Upload status110MB archive.
+
+Next: Poll existing session81220, read /tmp/newsworthy-android-large-text-build.json, then follow returned provider build ID without starting a duplicate.

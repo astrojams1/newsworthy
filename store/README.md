@@ -9,7 +9,7 @@ The owner supplied Apple’s Guideline 2.1 request: a physical-device recording 
 the latest OS and five factual explanations. The six-part Notes are saved; the
 recording and physical-device QA remain pending. See [the response and recording
 checklist](apple-review-response.md). Internal TestFlight group **Release QA**
-contains build 6; no testers have been added or invited.
+contains build 6; the owner is added with status **NOT_INVITED**.
 The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
