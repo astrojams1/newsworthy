@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-18T01:18:45+00:00
+Updated: 2026-09-18T20:12:29+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -65,7 +65,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.widget-testflight | done | agent | observed | iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW. | — |
 | apple.widget-refresh | in_progress | agent | observed | Widget centering and foreground refresh fixes are merged in PR103; current release branch is based on main 43fc2e2. App Group setup completed. Fresh npm test run passed all214 tests including web export; production EAS preparation underway. | Finish EAS build, verify both signed App Group entitlements, upload to TestFlight, then read back beta availability. |
 | apple.widget-refresh-signing | done | agent | observed | App Group registered and assigned to both targets; EAS regenerated both active provisioning profiles using the existing ASC API key. | — |
-| apple.widget-refresh-build | in_progress | agent | observed | Connection restored; Expo build list still shows10 as latest, confirming failed build12 upload created no cloud build. Retried production build noninteractively with both refreshed profiles. | Wait for cloud build ID and completion; verify archive before Apple upload. |
+| apple.widget-refresh-build | done | agent | observed | Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary. | — |
+| apple.widget-refresh-upload | waiting_provider | provider | observed | EAS accepted cloud submission of exact build13 to Apple using existing API key. Computer may shut down; upload and Apple processing continue remotely. TestFlight availability is not yet verified. | Read submission completion and App Store Connect build13 processing; save beta notes and ensure Release QA group availability, preserving App Review build7. |
 
 ## Evidence and history
 
@@ -1888,3 +1889,51 @@ Connection restored; Expo build list still shows10 as latest, confirming failed 
 - EAS build list readback; profile8FF85X8C9R and profileV8KCVRBSMJ decoded with matching widget App Group entitlements.
 
 Next: Wait for cloud build ID and completion; verify archive before Apple upload.
+
+### 192. apple.widget-refresh-build — in_progress
+
+2026-09-18T01:32:49+00:00 · observed · agent
+
+Retry reserved build13 and passed both app and widget signing checks; source archive upload underway.
+
+- EAS production noninteractive output; refreshed profiles8FF85X8C9R and V8KCVRBSMJ active.
+
+Next: Capture cloud build ID and monitor through artifact completion.
+
+### 193. apple.widget-refresh-build — waiting_provider
+
+2026-09-18T20:02:45+00:00 · observed · provider
+
+Production iOS build13 was created on EAS after source upload succeeded. Fingerprint upload reported ECONNRESET but cloud build creation succeeded.
+
+- https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/8b146213-5d8c-4aa8-8818-cbeb7bb02311
+
+Next: Verify cloud build completion and signed artifact.
+
+### 194. apple.widget-refresh-upload — in_progress
+
+2026-09-18T20:02:46+00:00 · observed · agent
+
+Queuing EAS cloud submission for exact build13 so Apple upload can continue with local computer off. Initial submission command failed at GraphQL access with ENOTFOUND; retry underway after DNS recovered.
+
+- Build8b146213-5d8c-4aa8-8818-cbeb7bb02311; first EAS submit exited1 before scheduling.
+
+Next: Confirm submission ID and server-side build dependency; then notify owner computer can be shut down.
+
+### 195. apple.widget-refresh-build — done
+
+2026-09-18T20:12:28+00:00 · observed · agent
+
+Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary.
+
+- EAS build8b146213-5d8c-4aa8-8818-cbeb7bb02311; SHA256 d1d1f8ea7a3b6f2f41d0478dbd86ac3954292c8f33561f404d95784eccb47ca6; source548a13e74ea474013ae6e1da7215690ed397c73e (release-record changes only after merged code).
+
+### 196. apple.widget-refresh-upload — waiting_provider
+
+2026-09-18T20:12:29+00:00 · observed · provider
+
+EAS accepted cloud submission of exact build13 to Apple using existing API key. Computer may shut down; upload and Apple processing continue remotely. TestFlight availability is not yet verified.
+
+- https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/d3229050-7764-4051-a630-996b01670668
+
+Next: Read submission completion and App Store Connect build13 processing; save beta notes and ensure Release QA group availability, preserving App Review build7.

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-18T01:18:45+00:00",
+  "updated_at": "2026-09-18T20:12:29+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -618,15 +618,26 @@
       "updated_at": "2026-09-18T01:14:45+00:00"
     },
     "apple.widget-refresh-build": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Connection restored; Expo build list still shows10 as latest, confirming failed build12 upload created no cloud build. Retried production build noninteractively with both refreshed profiles.",
+      "summary": "Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary.",
       "evidence": [
-        "EAS build list readback; profile8FF85X8C9R and profileV8KCVRBSMJ decoded with matching widget App Group entitlements."
+        "EAS build8b146213-5d8c-4aa8-8818-cbeb7bb02311; SHA256 d1d1f8ea7a3b6f2f41d0478dbd86ac3954292c8f33561f404d95784eccb47ca6; source548a13e74ea474013ae6e1da7215690ed397c73e (release-record changes only after merged code)."
       ],
-      "next_action": "Wait for cloud build ID and completion; verify archive before Apple upload.",
-      "updated_at": "2026-09-18T01:18:45+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-18T20:12:28+00:00"
+    },
+    "apple.widget-refresh-upload": {
+      "state": "waiting_provider",
+      "owner": "provider",
+      "basis": "observed",
+      "summary": "EAS accepted cloud submission of exact build13 to Apple using existing API key. Computer may shut down; upload and Apple processing continue remotely. TestFlight availability is not yet verified.",
+      "evidence": [
+        "https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/d3229050-7764-4051-a630-996b01670668"
+      ],
+      "next_action": "Read submission completion and App Store Connect build13 processing; save beta notes and ensure Release QA group availability, preserving App Review build7.",
+      "updated_at": "2026-09-18T20:12:29+00:00"
     }
   },
   "events": [
@@ -3695,6 +3706,86 @@
         ],
         "next_action": "Wait for cloud build ID and completion; verify archive before Apple upload.",
         "updated_at": "2026-09-18T01:18:45+00:00"
+      }
+    },
+    {
+      "sequence": 192,
+      "at": "2026-09-18T01:32:49+00:00",
+      "gate": "apple.widget-refresh-build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Retry reserved build13 and passed both app and widget signing checks; source archive upload underway.",
+        "evidence": [
+          "EAS production noninteractive output; refreshed profiles8FF85X8C9R and V8KCVRBSMJ active."
+        ],
+        "next_action": "Capture cloud build ID and monitor through artifact completion.",
+        "updated_at": "2026-09-18T01:32:49+00:00"
+      }
+    },
+    {
+      "sequence": 193,
+      "at": "2026-09-18T20:02:45+00:00",
+      "gate": "apple.widget-refresh-build",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Production iOS build13 was created on EAS after source upload succeeded. Fingerprint upload reported ECONNRESET but cloud build creation succeeded.",
+        "evidence": [
+          "https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/8b146213-5d8c-4aa8-8818-cbeb7bb02311"
+        ],
+        "next_action": "Verify cloud build completion and signed artifact.",
+        "updated_at": "2026-09-18T20:02:45+00:00"
+      }
+    },
+    {
+      "sequence": 194,
+      "at": "2026-09-18T20:02:46+00:00",
+      "gate": "apple.widget-refresh-upload",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Queuing EAS cloud submission for exact build13 so Apple upload can continue with local computer off. Initial submission command failed at GraphQL access with ENOTFOUND; retry underway after DNS recovered.",
+        "evidence": [
+          "Build8b146213-5d8c-4aa8-8818-cbeb7bb02311; first EAS submit exited1 before scheduling."
+        ],
+        "next_action": "Confirm submission ID and server-side build dependency; then notify owner computer can be shut down.",
+        "updated_at": "2026-09-18T20:02:46+00:00"
+      }
+    },
+    {
+      "sequence": 195,
+      "at": "2026-09-18T20:12:28+00:00",
+      "gate": "apple.widget-refresh-build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary.",
+        "evidence": [
+          "EAS build8b146213-5d8c-4aa8-8818-cbeb7bb02311; SHA256 d1d1f8ea7a3b6f2f41d0478dbd86ac3954292c8f33561f404d95784eccb47ca6; source548a13e74ea474013ae6e1da7215690ed397c73e (release-record changes only after merged code)."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-18T20:12:28+00:00"
+      }
+    },
+    {
+      "sequence": 196,
+      "at": "2026-09-18T20:12:29+00:00",
+      "gate": "apple.widget-refresh-upload",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "EAS accepted cloud submission of exact build13 to Apple using existing API key. Computer may shut down; upload and Apple processing continue remotely. TestFlight availability is not yet verified.",
+        "evidence": [
+          "https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/d3229050-7764-4051-a630-996b01670668"
+        ],
+        "next_action": "Read submission completion and App Store Connect build13 processing; save beta notes and ensure Release QA group availability, preserving App Review build7.",
+        "updated_at": "2026-09-18T20:12:29+00:00"
       }
     }
   ],

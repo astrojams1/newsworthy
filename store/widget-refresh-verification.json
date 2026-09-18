@@ -26,21 +26,48 @@
   ],
   "release": {
     "target": "TestFlight",
-    "state": "RETRYING_PRODUCTION_BUILD",
-    "sourceCommit": "43fc2e2ea88af85f72b3f2679ff35685d40be448",
+    "state": "EAS_CLOUD_SUBMISSION_QUEUED",
+    "sourceCommit": "548a13e74ea474013ae6e1da7215690ed397c73e",
     "pullRequest": "https://github.com/astrojams1/newsworthy/pull/103",
-    "reservedBuildNumber": "12",
-    "cloudBuildId": null,
-    "uploadState": "NOT_STARTED",
-    "reason": "Build12 source upload failed during a connection drop; Expo build list verified no new cloud build. Retrying with both App Group provisioning profiles refreshed.",
-    "next": "Finish retry, verify signed artifact, upload and verify TestFlight.",
+    "reservedBuildNumber": "13",
+    "cloudBuildId": "8b146213-5d8c-4aa8-8818-cbeb7bb02311",
+    "uploadState": "WAITING_PROVIDER",
+    "reason": "Cloud build13 finished and signed artifact verified. EAS accepted Apple upload using existing API key; no local computer dependency remains.",
+    "next": "Verify submission and Apple processing, beta notes and Release QA group availability.",
     "appReview": "Existing build7 remains WAITING_FOR_REVIEW; unchanged.",
-    "dirtyTree": "Only release ledger and verification record changed; application source matches merged main.",
+    "dirtyTree": "Application source matches merged main43fc2e2; later changes only update release records.",
     "signing": {
       "appGroup": "group.com.astrojams.newsworthy.widgets",
       "mainProfile": "8FF85X8C9R",
       "widgetProfile": "V8KCVRBSMJ",
       "verification": "Both Apple profiles decoded and contain the exact App Group entitlement."
+    },
+    "submissionId": "d3229050-7764-4051-a630-996b01670668",
+    "artifact": {
+      "artifact": "artifacts/store-submission/newsworthy-ios13.ipa",
+      "sha256": "d1d1f8ea7a3b6f2f41d0478dbd86ac3954292c8f33561f404d95784eccb47ca6",
+      "bytes": 19287987,
+      "verified": [
+        {
+          "bundleIdentifier": "com.astrojams.newsworthy",
+          "version": "1.0.0",
+          "build": "13",
+          "appGroups": [
+            "group.com.astrojams.newsworthy.widgets"
+          ],
+          "profileUUID": "234e633b-16bb-47f5-a2bb-25bb9635285c"
+        },
+        {
+          "bundleIdentifier": "com.astrojams.newsworthy.widget",
+          "version": "1.0.0",
+          "build": "13",
+          "appGroups": [
+            "group.com.astrojams.newsworthy.widgets"
+          ],
+          "profileUUID": "fce29625-d289-4900-a0d7-fe18562403fe"
+        }
+      ],
+      "nativeBridgeIncluded": true
     }
   },
   "captures": [
