@@ -26,15 +26,52 @@
   ],
   "release": {
     "target": "TestFlight",
-    "state": "WAITING_FOR_APPLE_DEVELOPER_LOGIN",
-    "sourceCommit": "925e6de59a2bc354686cf6602c8e0bd005f748b7",
+    "state": "IN_BETA_TESTING",
+    "sourceCommit": "548a13e74ea474013ae6e1da7215690ed397c73e",
     "pullRequest": "https://github.com/astrojams1/newsworthy/pull/103",
-    "reservedBuildNumber": "11",
-    "cloudBuildId": null,
-    "uploadState": "NOT_STARTED",
-    "reason": "App Group assignment requires Apple Developer account authentication. Existing API key cannot perform the assignment; both browser Developer sessions expired and EAS prompted for an unavailable password. EAS stopped before creating a cloud build.",
-    "next": "Owner signs in to Apple Developer in the prepared browser page. Register group.com.astrojams.newsworthy.widgets and assign both app and extension, refresh profiles using existing API credentials, build and upload, then verify TestFlight processing.",
-    "appReview": "Existing build7 remains WAITING_FOR_REVIEW; unchanged."
+    "reservedBuildNumber": "13",
+    "cloudBuildId": "8b146213-5d8c-4aa8-8818-cbeb7bb02311",
+    "uploadState": "COMPLETE",
+    "reason": "Apple processed build13 VALID and internal state is IN_BETA_TESTING. Test notes saved and existing Release QA group assignment accepted.",
+    "next": "Install build13 from TestFlight and check physical-device widget centering, refresh and offline recovery.",
+    "appReview": "Original version remains WAITING_FOR_REVIEW with build7; unchanged.",
+    "dirtyTree": "Application source matches merged main43fc2e2; later changes only update release records.",
+    "signing": {
+      "appGroup": "group.com.astrojams.newsworthy.widgets",
+      "mainProfile": "8FF85X8C9R",
+      "widgetProfile": "V8KCVRBSMJ",
+      "verification": "Both Apple profiles decoded and contain the exact App Group entitlement."
+    },
+    "submissionId": "d3229050-7764-4051-a630-996b01670668",
+    "artifact": {
+      "artifact": "artifacts/store-submission/newsworthy-ios13.ipa",
+      "sha256": "d1d1f8ea7a3b6f2f41d0478dbd86ac3954292c8f33561f404d95784eccb47ca6",
+      "bytes": 19287987,
+      "verified": [
+        {
+          "bundleIdentifier": "com.astrojams.newsworthy",
+          "version": "1.0.0",
+          "build": "13",
+          "appGroups": [
+            "group.com.astrojams.newsworthy.widgets"
+          ],
+          "profileUUID": "234e633b-16bb-47f5-a2bb-25bb9635285c"
+        },
+        {
+          "bundleIdentifier": "com.astrojams.newsworthy.widget",
+          "version": "1.0.0",
+          "build": "13",
+          "appGroups": [
+            "group.com.astrojams.newsworthy.widgets"
+          ],
+          "profileUUID": "fce29625-d289-4900-a0d7-fe18562403fe"
+        }
+      ],
+      "nativeBridgeIncluded": true
+    },
+    "appleBuildId": "0fe8e3e6-81cc-40a6-a539-38e70d97e9cd",
+    "buildNumber": "13",
+    "completedDate": "2026-09-19"
   },
   "captures": [
     "store/source/widget-refresh/ios-dark.png",
