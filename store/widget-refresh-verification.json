@@ -26,15 +26,15 @@
   ],
   "release": {
     "target": "TestFlight",
-    "state": "EAS_CLOUD_SUBMISSION_QUEUED",
+    "state": "IN_BETA_TESTING",
     "sourceCommit": "548a13e74ea474013ae6e1da7215690ed397c73e",
     "pullRequest": "https://github.com/astrojams1/newsworthy/pull/103",
     "reservedBuildNumber": "13",
     "cloudBuildId": "8b146213-5d8c-4aa8-8818-cbeb7bb02311",
-    "uploadState": "WAITING_PROVIDER",
-    "reason": "Cloud build13 finished and signed artifact verified. EAS accepted Apple upload using existing API key; no local computer dependency remains.",
-    "next": "Verify submission and Apple processing, beta notes and Release QA group availability.",
-    "appReview": "Existing build7 remains WAITING_FOR_REVIEW; unchanged.",
+    "uploadState": "COMPLETE",
+    "reason": "Apple processed build13 VALID and internal state is IN_BETA_TESTING. Test notes saved and existing Release QA group assignment accepted.",
+    "next": "Install build13 from TestFlight and check physical-device widget centering, refresh and offline recovery.",
+    "appReview": "Original version remains WAITING_FOR_REVIEW with build7; unchanged.",
     "dirtyTree": "Application source matches merged main43fc2e2; later changes only update release records.",
     "signing": {
       "appGroup": "group.com.astrojams.newsworthy.widgets",
@@ -68,7 +68,10 @@
         }
       ],
       "nativeBridgeIncluded": true
-    }
+    },
+    "appleBuildId": "0fe8e3e6-81cc-40a6-a539-38e70d97e9cd",
+    "buildNumber": "13",
+    "completedDate": "2026-09-19"
   },
   "captures": [
     "store/source/widget-refresh/ios-dark.png",

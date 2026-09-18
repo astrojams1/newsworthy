@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-18T20:12:29+00:00",
+  "updated_at": "2026-09-18T20:18:05+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -596,15 +596,15 @@
       "updated_at": "2026-09-17T15:37:10+00:00"
     },
     "apple.widget-refresh": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Widget centering and foreground refresh fixes are merged in PR103; current release branch is based on main 43fc2e2. App Group setup completed. Fresh npm test run passed all214 tests including web export; production EAS preparation underway.",
+      "summary": "Centering and app-to-widget refresh fixes merged in PR103 and released to TestFlight1.0.0 build13. Original App Review build7 remains WAITING_FOR_REVIEW. Native simulator layout checks and signed IPA verification recorded; physical-device widget synchronization and Android launcher checks remain untested.",
       "evidence": [
-        "PR103; PR104; store/widget-refresh-verification.json; npm test passed 214/214 on 2026-09-18."
+        "PR103; EAS build8b146213-5d8c-4aa8-8818-cbeb7bb02311; Apple build0fe8e3e6-81cc-40a6-a539-38e70d97e9cd IN_BETA_TESTING; store/widget-refresh-verification.json."
       ],
-      "next_action": "Finish EAS build, verify both signed App Group entitlements, upload to TestFlight, then read back beta availability.",
-      "updated_at": "2026-09-17T23:21:38+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-18T20:18:05+00:00"
     },
     "apple.widget-refresh-signing": {
       "state": "done",
@@ -629,15 +629,26 @@
       "updated_at": "2026-09-18T20:12:28+00:00"
     },
     "apple.widget-refresh-upload": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "EAS accepted cloud submission of exact build13 to Apple using existing API key. Computer may shut down; upload and Apple processing continue remotely. TestFlight availability is not yet verified.",
+      "summary": "EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate.",
       "evidence": [
-        "https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/d3229050-7764-4051-a630-996b01670668"
+        "Submissiond3229050-7764-4051-a630-996b01670668 statusFINISHED,error:null; original App Review version still WAITING_FOR_REVIEW with build7."
       ],
-      "next_action": "Read submission completion and App Store Connect build13 processing; save beta notes and ensure Release QA group availability, preserving App Review build7.",
-      "updated_at": "2026-09-18T20:12:29+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-18T20:14:42+00:00"
+    },
+    "apple.widget-refresh-testflight": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing.",
+      "evidence": [
+        "Apple build0fe8e3e6-81cc-40a6-a539-38e70d97e9cd; beta localization27b6e9e7-662d-4e5f-9afd-945bfd6fe496; group312a8585-2ca2-413e-bb5f-75d0ba487e13."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-18T20:18:03+00:00"
     }
   },
   "events": [
@@ -3786,6 +3797,70 @@
         ],
         "next_action": "Read submission completion and App Store Connect build13 processing; save beta notes and ensure Release QA group availability, preserving App Review build7.",
         "updated_at": "2026-09-18T20:12:29+00:00"
+      }
+    },
+    {
+      "sequence": 197,
+      "at": "2026-09-18T20:14:42+00:00",
+      "gate": "apple.widget-refresh-upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate.",
+        "evidence": [
+          "Submissiond3229050-7764-4051-a630-996b01670668 statusFINISHED,error:null; original App Review version still WAITING_FOR_REVIEW with build7."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-18T20:14:42+00:00"
+      }
+    },
+    {
+      "sequence": 198,
+      "at": "2026-09-18T20:14:44+00:00",
+      "gate": "apple.widget-refresh-testflight",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build13 upload complete; awaiting Apple processing and TestFlight availability readback.",
+        "evidence": [
+          "EAS submissiond3229050-7764-4051-a630-996b01670668 FINISHED; build13 not yet in initial Apple build-list readback."
+        ],
+        "next_action": "Read Apple build13 processing, add beta test notes and ensure Release QA availability.",
+        "updated_at": "2026-09-18T20:14:44+00:00"
+      }
+    },
+    {
+      "sequence": 199,
+      "at": "2026-09-18T20:18:03+00:00",
+      "gate": "apple.widget-refresh-testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing.",
+        "evidence": [
+          "Apple build0fe8e3e6-81cc-40a6-a539-38e70d97e9cd; beta localization27b6e9e7-662d-4e5f-9afd-945bfd6fe496; group312a8585-2ca2-413e-bb5f-75d0ba487e13."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-18T20:18:03+00:00"
+      }
+    },
+    {
+      "sequence": 200,
+      "at": "2026-09-18T20:18:05+00:00",
+      "gate": "apple.widget-refresh",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Centering and app-to-widget refresh fixes merged in PR103 and released to TestFlight1.0.0 build13. Original App Review build7 remains WAITING_FOR_REVIEW. Native simulator layout checks and signed IPA verification recorded; physical-device widget synchronization and Android launcher checks remain untested.",
+        "evidence": [
+          "PR103; EAS build8b146213-5d8c-4aa8-8818-cbeb7bb02311; Apple build0fe8e3e6-81cc-40a6-a539-38e70d97e9cd IN_BETA_TESTING; store/widget-refresh-verification.json."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-18T20:18:05+00:00"
       }
     }
   ],

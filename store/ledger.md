@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-18T20:12:29+00:00
+Updated: 2026-09-18T20:18:05+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -63,10 +63,11 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | design.widget-alignment-prototype | done | agent | observed | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
 | design.widget-layout-feature | done | agent | observed | Actual native widget feature merged in PR100, retaining latest share-icon fix. 207 tests and35 design checks passed; iOS and Android native test-host captures recorded with untested real-widget-host states explicit. | — |
 | apple.widget-testflight | done | agent | observed | iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW. | — |
-| apple.widget-refresh | in_progress | agent | observed | Widget centering and foreground refresh fixes are merged in PR103; current release branch is based on main 43fc2e2. App Group setup completed. Fresh npm test run passed all214 tests including web export; production EAS preparation underway. | Finish EAS build, verify both signed App Group entitlements, upload to TestFlight, then read back beta availability. |
+| apple.widget-refresh | done | agent | observed | Centering and app-to-widget refresh fixes merged in PR103 and released to TestFlight1.0.0 build13. Original App Review build7 remains WAITING_FOR_REVIEW. Native simulator layout checks and signed IPA verification recorded; physical-device widget synchronization and Android launcher checks remain untested. | — |
 | apple.widget-refresh-signing | done | agent | observed | App Group registered and assigned to both targets; EAS regenerated both active provisioning profiles using the existing ASC API key. | — |
 | apple.widget-refresh-build | done | agent | observed | Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary. | — |
-| apple.widget-refresh-upload | waiting_provider | provider | observed | EAS accepted cloud submission of exact build13 to Apple using existing API key. Computer may shut down; upload and Apple processing continue remotely. TestFlight availability is not yet verified. | Read submission completion and App Store Connect build13 processing; save beta notes and ensure Release QA group availability, preserving App Review build7. |
+| apple.widget-refresh-upload | done | agent | observed | EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate. | — |
+| apple.widget-refresh-testflight | done | agent | observed | Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing. | — |
 
 ## Evidence and history
 
@@ -1937,3 +1938,37 @@ EAS accepted cloud submission of exact build13 to Apple using existing API key. 
 - https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/d3229050-7764-4051-a630-996b01670668
 
 Next: Read submission completion and App Store Connect build13 processing; save beta notes and ensure Release QA group availability, preserving App Review build7.
+
+### 197. apple.widget-refresh-upload — done
+
+2026-09-18T20:14:42+00:00 · observed · agent
+
+EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate.
+
+- Submissiond3229050-7764-4051-a630-996b01670668 statusFINISHED,error:null; original App Review version still WAITING_FOR_REVIEW with build7.
+
+### 198. apple.widget-refresh-testflight — waiting_provider
+
+2026-09-18T20:14:44+00:00 · observed · provider
+
+Build13 upload complete; awaiting Apple processing and TestFlight availability readback.
+
+- EAS submissiond3229050-7764-4051-a630-996b01670668 FINISHED; build13 not yet in initial Apple build-list readback.
+
+Next: Read Apple build13 processing, add beta test notes and ensure Release QA availability.
+
+### 199. apple.widget-refresh-testflight — done
+
+2026-09-18T20:18:03+00:00 · observed · agent
+
+Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing.
+
+- Apple build0fe8e3e6-81cc-40a6-a539-38e70d97e9cd; beta localization27b6e9e7-662d-4e5f-9afd-945bfd6fe496; group312a8585-2ca2-413e-bb5f-75d0ba487e13.
+
+### 200. apple.widget-refresh — done
+
+2026-09-18T20:18:05+00:00 · observed · agent
+
+Centering and app-to-widget refresh fixes merged in PR103 and released to TestFlight1.0.0 build13. Original App Review build7 remains WAITING_FOR_REVIEW. Native simulator layout checks and signed IPA verification recorded; physical-device widget synchronization and Android launcher checks remain untested.
+
+- PR103; EAS build8b146213-5d8c-4aa8-8818-cbeb7bb02311; Apple build0fe8e3e6-81cc-40a6-a539-38e70d97e9cd IN_BETA_TESTING; store/widget-refresh-verification.json.
