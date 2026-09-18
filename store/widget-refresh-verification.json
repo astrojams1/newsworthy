@@ -26,15 +26,22 @@
   ],
   "release": {
     "target": "TestFlight",
-    "state": "WAITING_FOR_APPLE_DEVELOPER_LOGIN",
-    "sourceCommit": "925e6de59a2bc354686cf6602c8e0bd005f748b7",
+    "state": "RETRYING_PRODUCTION_BUILD",
+    "sourceCommit": "43fc2e2ea88af85f72b3f2679ff35685d40be448",
     "pullRequest": "https://github.com/astrojams1/newsworthy/pull/103",
-    "reservedBuildNumber": "11",
+    "reservedBuildNumber": "12",
     "cloudBuildId": null,
     "uploadState": "NOT_STARTED",
-    "reason": "App Group assignment requires Apple Developer account authentication. Existing API key cannot perform the assignment; both browser Developer sessions expired and EAS prompted for an unavailable password. EAS stopped before creating a cloud build.",
-    "next": "Owner signs in to Apple Developer in the prepared browser page. Register group.com.astrojams.newsworthy.widgets and assign both app and extension, refresh profiles using existing API credentials, build and upload, then verify TestFlight processing.",
-    "appReview": "Existing build7 remains WAITING_FOR_REVIEW; unchanged."
+    "reason": "Build12 source upload failed during a connection drop; Expo build list verified no new cloud build. Retrying with both App Group provisioning profiles refreshed.",
+    "next": "Finish retry, verify signed artifact, upload and verify TestFlight.",
+    "appReview": "Existing build7 remains WAITING_FOR_REVIEW; unchanged.",
+    "dirtyTree": "Only release ledger and verification record changed; application source matches merged main.",
+    "signing": {
+      "appGroup": "group.com.astrojams.newsworthy.widgets",
+      "mainProfile": "8FF85X8C9R",
+      "widgetProfile": "V8KCVRBSMJ",
+      "verification": "Both Apple profiles decoded and contain the exact App Group entitlement."
+    }
   },
   "captures": [
     "store/source/widget-refresh/ios-dark.png",

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-17T22:51:27+00:00
+Updated: 2026-09-18T01:18:45+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -63,8 +63,9 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | design.widget-alignment-prototype | done | agent | observed | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
 | design.widget-layout-feature | done | agent | observed | Actual native widget feature merged in PR100, retaining latest share-icon fix. 207 tests and35 design checks passed; iOS and Android native test-host captures recorded with untested real-widget-host states explicit. | — |
 | apple.widget-testflight | done | agent | observed | iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW. | — |
-| apple.widget-refresh | waiting_user | user | observed | Widget fixes merged in PR103. 214 tests passed; standalone native iOS content verified in light/dark, score3/10, hidden title and AX5 text. TestFlight waits for Apple Developer login to set up shared storage. | Sign in to Apple Developer in the prepared Codex browser. Agent then assigns App Group, refreshes signing and completes TestFlight build/upload. |
-| apple.widget-refresh-signing | waiting_user | user | observed | Apple Developer login required to register and assign the new App Group; API key cannot configure this capability assignment. | Owner signs in to Apple Developer in the prepared Codex browser tab. Then register group.com.astrojams.newsworthy.widgets, assign it to both bundle IDs, refresh profiles with API credentials, rebuild and upload to TestFlight. |
+| apple.widget-refresh | in_progress | agent | observed | Widget centering and foreground refresh fixes are merged in PR103; current release branch is based on main 43fc2e2. App Group setup completed. Fresh npm test run passed all214 tests including web export; production EAS preparation underway. | Finish EAS build, verify both signed App Group entitlements, upload to TestFlight, then read back beta availability. |
+| apple.widget-refresh-signing | done | agent | observed | App Group registered and assigned to both targets; EAS regenerated both active provisioning profiles using the existing ASC API key. | — |
+| apple.widget-refresh-build | in_progress | agent | observed | Connection restored; Expo build list still shows10 as latest, confirming failed build12 upload created no cloud build. Retried production build noninteractively with both refreshed profiles. | Wait for cloud build ID and completion; verify archive before Apple upload. |
 
 ## Evidence and history
 
@@ -1830,3 +1831,60 @@ Widget fixes merged in PR103. 214 tests passed; standalone native iOS content ve
 - store/widget-refresh-verification.json; source925e6de; EAS reserved11 but no cloud build/upload created. Existing App Review remains WAITING_FOR_REVIEW.
 
 Next: Sign in to Apple Developer in the prepared Codex browser. Agent then assigns App Group, refreshes signing and completes TestFlight build/upload.
+
+### 186. apple.widget-refresh-signing — in_progress
+
+2026-09-17T23:05:35+00:00 · observed · agent
+
+Owner reported Apple sign-in complete; authenticated Developer account for team CWQ9AWJF8T verified in browser. Registering widget App Group and updating profiles.
+
+
+Next: Assign group to main app and widget, refresh provisioning, then build.
+
+### 187. apple.widget-refresh-signing — in_progress
+
+2026-09-17T23:10:52+00:00 · observed · agent
+
+Registered group.com.astrojams.newsworthy.widgets and saved assignment to both app and widget bundle IDs in Apple Developer. Existing API credentials are now refreshing provisioning for production EAS build.
+
+- Apple Developer UI confirmed one selected App Group on each identifier and returned to identifier list after save; group identifier YN5LD3TTQS.
+
+Next: Verify regenerated profiles and signed archive contain the App Group.
+
+### 188. apple.widget-refresh — in_progress
+
+2026-09-17T23:21:38+00:00 · observed · agent
+
+Widget centering and foreground refresh fixes are merged in PR103; current release branch is based on main 43fc2e2. App Group setup completed. Fresh npm test run passed all214 tests including web export; production EAS preparation underway.
+
+- PR103; PR104; store/widget-refresh-verification.json; npm test passed 214/214 on 2026-09-18.
+
+Next: Finish EAS build, verify both signed App Group entitlements, upload to TestFlight, then read back beta availability.
+
+### 189. apple.widget-refresh-signing — done
+
+2026-09-18T01:14:45+00:00 · observed · agent
+
+App Group registered and assigned to both targets; EAS regenerated both active provisioning profiles using the existing ASC API key.
+
+- Main profile8FF85X8C9R and widget profileV8KCVRBSMJ; main profile decoded with exact group.com.astrojams.newsworthy.widgets entitlement. EAS confirmed credentials ready.
+
+### 190. apple.widget-refresh-build — failed
+
+2026-09-18T01:14:46+00:00 · observed · agent
+
+EAS reserved build12 and refreshed profiles, but local source archive upload failed with ENOTFOUND api.expo.dev before returning a cloud build ID.
+
+- Production EAS command exited1; compressed archive1.6MB, metadata and tarball upload failed.
+
+Next: Confirm restored DNS and no cloud build; retry production build with existing refreshed credentials.
+
+### 191. apple.widget-refresh-build — in_progress
+
+2026-09-18T01:18:45+00:00 · observed · agent
+
+Connection restored; Expo build list still shows10 as latest, confirming failed build12 upload created no cloud build. Retried production build noninteractively with both refreshed profiles.
+
+- EAS build list readback; profile8FF85X8C9R and profileV8KCVRBSMJ decoded with matching widget App Group entitlements.
+
+Next: Wait for cloud build ID and completion; verify archive before Apple upload.

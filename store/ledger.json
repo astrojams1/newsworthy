@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-17T22:51:27+00:00",
+  "updated_at": "2026-09-18T01:18:45+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -596,26 +596,37 @@
       "updated_at": "2026-09-17T15:37:10+00:00"
     },
     "apple.widget-refresh": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "in_progress",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Widget fixes merged in PR103. 214 tests passed; standalone native iOS content verified in light/dark, score3/10, hidden title and AX5 text. TestFlight waits for Apple Developer login to set up shared storage.",
+      "summary": "Widget centering and foreground refresh fixes are merged in PR103; current release branch is based on main 43fc2e2. App Group setup completed. Fresh npm test run passed all214 tests including web export; production EAS preparation underway.",
       "evidence": [
-        "store/widget-refresh-verification.json; source925e6de; EAS reserved11 but no cloud build/upload created. Existing App Review remains WAITING_FOR_REVIEW."
+        "PR103; PR104; store/widget-refresh-verification.json; npm test passed 214/214 on 2026-09-18."
       ],
-      "next_action": "Sign in to Apple Developer in the prepared Codex browser. Agent then assigns App Group, refreshes signing and completes TestFlight build/upload.",
-      "updated_at": "2026-09-17T22:51:27+00:00"
+      "next_action": "Finish EAS build, verify both signed App Group entitlements, upload to TestFlight, then read back beta availability.",
+      "updated_at": "2026-09-17T23:21:38+00:00"
     },
     "apple.widget-refresh-signing": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Apple Developer login required to register and assign the new App Group; API key cannot configure this capability assignment.",
+      "summary": "App Group registered and assigned to both targets; EAS regenerated both active provisioning profiles using the existing ASC API key.",
       "evidence": [
-        "PR103 merged; EAS reserved build11 but stopped at Apple password prompt before creating a cloud build. Chrome and Codex browser Developer sessions are signed out. No password or verification code requested in chat."
+        "Main profile8FF85X8C9R and widget profileV8KCVRBSMJ; main profile decoded with exact group.com.astrojams.newsworthy.widgets entitlement. EAS confirmed credentials ready."
       ],
-      "next_action": "Owner signs in to Apple Developer in the prepared Codex browser tab. Then register group.com.astrojams.newsworthy.widgets, assign it to both bundle IDs, refresh profiles with API credentials, rebuild and upload to TestFlight.",
-      "updated_at": "2026-09-17T22:48:06+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-18T01:14:45+00:00"
+    },
+    "apple.widget-refresh-build": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Connection restored; Expo build list still shows10 as latest, confirming failed build12 upload created no cloud build. Retried production build noninteractively with both refreshed profiles.",
+      "evidence": [
+        "EAS build list readback; profile8FF85X8C9R and profileV8KCVRBSMJ decoded with matching widget App Group entitlements."
+      ],
+      "next_action": "Wait for cloud build ID and completion; verify archive before Apple upload.",
+      "updated_at": "2026-09-18T01:18:45+00:00"
     }
   },
   "events": [
@@ -3590,6 +3601,100 @@
         ],
         "next_action": "Sign in to Apple Developer in the prepared Codex browser. Agent then assigns App Group, refreshes signing and completes TestFlight build/upload.",
         "updated_at": "2026-09-17T22:51:27+00:00"
+      }
+    },
+    {
+      "sequence": 186,
+      "at": "2026-09-17T23:05:35+00:00",
+      "gate": "apple.widget-refresh-signing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner reported Apple sign-in complete; authenticated Developer account for team CWQ9AWJF8T verified in browser. Registering widget App Group and updating profiles.",
+        "evidence": [],
+        "next_action": "Assign group to main app and widget, refresh provisioning, then build.",
+        "updated_at": "2026-09-17T23:05:35+00:00"
+      }
+    },
+    {
+      "sequence": 187,
+      "at": "2026-09-17T23:10:52+00:00",
+      "gate": "apple.widget-refresh-signing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Registered group.com.astrojams.newsworthy.widgets and saved assignment to both app and widget bundle IDs in Apple Developer. Existing API credentials are now refreshing provisioning for production EAS build.",
+        "evidence": [
+          "Apple Developer UI confirmed one selected App Group on each identifier and returned to identifier list after save; group identifier YN5LD3TTQS."
+        ],
+        "next_action": "Verify regenerated profiles and signed archive contain the App Group.",
+        "updated_at": "2026-09-17T23:10:52+00:00"
+      }
+    },
+    {
+      "sequence": 188,
+      "at": "2026-09-17T23:21:38+00:00",
+      "gate": "apple.widget-refresh",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Widget centering and foreground refresh fixes are merged in PR103; current release branch is based on main 43fc2e2. App Group setup completed. Fresh npm test run passed all214 tests including web export; production EAS preparation underway.",
+        "evidence": [
+          "PR103; PR104; store/widget-refresh-verification.json; npm test passed 214/214 on 2026-09-18."
+        ],
+        "next_action": "Finish EAS build, verify both signed App Group entitlements, upload to TestFlight, then read back beta availability.",
+        "updated_at": "2026-09-17T23:21:38+00:00"
+      }
+    },
+    {
+      "sequence": 189,
+      "at": "2026-09-18T01:14:45+00:00",
+      "gate": "apple.widget-refresh-signing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "App Group registered and assigned to both targets; EAS regenerated both active provisioning profiles using the existing ASC API key.",
+        "evidence": [
+          "Main profile8FF85X8C9R and widget profileV8KCVRBSMJ; main profile decoded with exact group.com.astrojams.newsworthy.widgets entitlement. EAS confirmed credentials ready."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-18T01:14:45+00:00"
+      }
+    },
+    {
+      "sequence": 190,
+      "at": "2026-09-18T01:14:46+00:00",
+      "gate": "apple.widget-refresh-build",
+      "result": {
+        "state": "failed",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EAS reserved build12 and refreshed profiles, but local source archive upload failed with ENOTFOUND api.expo.dev before returning a cloud build ID.",
+        "evidence": [
+          "Production EAS command exited1; compressed archive1.6MB, metadata and tarball upload failed."
+        ],
+        "next_action": "Confirm restored DNS and no cloud build; retry production build with existing refreshed credentials.",
+        "updated_at": "2026-09-18T01:14:46+00:00"
+      }
+    },
+    {
+      "sequence": 191,
+      "at": "2026-09-18T01:18:45+00:00",
+      "gate": "apple.widget-refresh-build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Connection restored; Expo build list still shows10 as latest, confirming failed build12 upload created no cloud build. Retried production build noninteractively with both refreshed profiles.",
+        "evidence": [
+          "EAS build list readback; profile8FF85X8C9R and profileV8KCVRBSMJ decoded with matching widget App Group entitlements."
+        ],
+        "next_action": "Wait for cloud build ID and completion; verify archive before Apple upload.",
+        "updated_at": "2026-09-18T01:18:45+00:00"
       }
     }
   ],
