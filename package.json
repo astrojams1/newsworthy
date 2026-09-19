@@ -2,7 +2,7 @@
   "name": "newsworthy",
   "version": "1.0.0",
   "private": true,
-  "description": "Newsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why.",
+  "description": "World news, rated by significance.",
   "type": "module",
   "engines": {
     "node": "22.x"

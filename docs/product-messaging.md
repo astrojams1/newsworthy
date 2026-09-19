@@ -5,17 +5,21 @@ README and agent documentation. Keep descriptions of availability accurate.
 
 ## Core copy
 
-**Newsworthy is a calm global status indicator: a number out of 10 and one
-sentence explaining why.**
+**World news, rated by significance.**
 
-Constant news can leave us anxious. Switching off entirely can leave us out of
-touch. Newsworthy offers a calmer middle ground. Check in, then get on with your day.
+Newsworthy uses AI to assess the significance of world news. Each reading has a
+score from 1 to 10, a brief explanation and an update time.
 
-- No doomscrolling.
-- No subscription.
-- No in-app purchases.
-- No ads.
-- No engagement, addiction or growth-hacking tactics.
+The share image contains only the dash and wordmark on a flat pale mint background.
+The link title is “Newsworthy”; its description is the core copy above.
+
+Describe the product directly. Avoid emotional framing about anxiety, switching
+off, breathing room or getting on with your day. Do not use “no doomscrolling”
+or a list of absent features as a tagline. Subscription, purchase and advertising
+facts belong in relevant help and policy sections.
+
+Product constraints remain: no feed, subscriptions, in-app purchases, ads, or
+engagement, addiction or growth-hacking tactics.
 
 ## Voice and claims
 
@@ -54,7 +58,8 @@ widgets and the complete app package without updating local Xcode.
 
 - `apps/client/app/`: shared reading screen, search metadata, social tags and WebSite data.
 - `public/privacy.html`, `public/support.html`: policy and help; each has its own metadata.
-- `public/social-card.svg`: editable source for the evergreen social preview PNG.
+- `scripts/generate-brand.mjs`: evergreen share-art source; generates
+  `public/social-card.svg`, `public/social-card.png` and `public/brand/share.png`.
 - `public/robots.txt`, `public/sitemap.xml`: crawler access and public page discovery.
 - `public/llms.txt`: public facts for AI readers; a voluntary reference, not a
   guaranteed discovery or ranking mechanism.

@@ -1,11 +1,9 @@
 # Newsworthy
 
-Newsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why.
+World news, rated by significance.
 
-Constant news can leave us anxious; switching off entirely can leave us out of
-touch. Check in, then get on with your day.
-
-No doomscrolling. No subscription. No in-app purchases. No ads. No engagement, addiction or growth-hacking tactics.
+Newsworthy uses AI to assess world news with a score from 1 to 10, a brief
+explanation and an update time.
 
 [Open Newsworthy](https://newsworthy-indol.vercel.app/) ·
 [Privacy](https://newsworthy-indol.vercel.app/privacy) ·

@@ -32,7 +32,8 @@ A static icon must not imply that an old score is current. Widgets can refresh a
 - `--ink-muted` and `--ink-faint` are for plain or lightly tinted surfaces. `--ink-on-gradient-muted` is for secondary text on stronger gradient backgrounds.
 - `data-level="1"` through `"10"` applies a reading palette. Omit it for the brand default. `data-brand` makes a brand background visible.
 - `data-appearance` is only used by the design preview to show both appearances together. The production app follows the system without a manual override.
-- The HTML manifest supplies fixed install icons. Social previews use fixed brand art, not a cached news score.
+- The HTML manifest supplies fixed install icons. Social previews use a flat pale mint canvas with only the dash and wordmark,
+  not a cached news score. Descriptions belong in metadata, not on the image.
 
 The design test verifies AA text contrast across the opaque gradient stops and control surfaces in both appearances. The live web background uses the same colors in layered radial washes. The number and sentence remain the source of meaning, independent of color.
 

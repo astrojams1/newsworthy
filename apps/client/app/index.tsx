@@ -48,7 +48,7 @@ export default function Home() {
     <AppIcon color={theme.accent} />
   </Pressable> : null;
   return <>
-    {process.env.EXPO_OS === 'web' && <Head><title>Newsworthy — A calm global status indicator</title></Head>}
+    {process.env.EXPO_OS === 'web' && <Head><title>Newsworthy</title></Head>}
     <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: '',
       headerLeft: () => brand, headerRight: () => shareButton,
       // A transparent bar does not hide iOS 26+ glass around individual items.
