@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-19",
+  "scope": "Website link-preview artwork and factual public copy. Native UI and widgets are unchanged.",
+  "baseCommit": "4087e23",
+  "checks": {
+    "designGate": "41 passed, including single-wordmark artwork, flat brand background, dash pixels and matching PNG exports.",
+    "npmTest": "219 passed, including production Expo homepage export and discovery/metadata checks. Worktree-local dependencies were installed before the successful run.",
+    "visual": "Generated 1200x630 PNG inspected; desktop support page inspected in browser in dark appearance.",
+    "metadata": "Discovery regression verifies homepage title/description and versioned Open Graph/Twitter image URLs on home, privacy and support."
+  },
+  "nativeVerification": {
+    "ios": "Not run for this website-only change. Native reading screen and WidgetKit source unchanged.",
+    "android": "Not run for this website-only change. Native reading screen and RemoteViews source unchanged."
+  },
+  "untested": [
+    "Third-party messaging/social app cache refresh and image crops. Platforms control when previously shared URLs are fetched again."
+  ]
+}

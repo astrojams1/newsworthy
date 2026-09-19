@@ -1,11 +1,13 @@
 # Newsworthy
 
-Newsworthy is a calm global status indicator: a number out of 10 and one sentence explaining why.
+World news, rated by significance.
 
-No doomscrolling. No subscription. No in-app purchases. No ads. No engagement, addiction or growth-hacking tactics.
+Newsworthy uses AI to assess world news with a score from 1 to 10, a brief
+explanation and an update time.
 
-The product helps people stay connected without constant anxious consumption
-or switching off entirely. Check in, then get on with your day.
+Product constraints: no feed, subscriptions, in-app purchases, ads, or engagement,
+addiction or growth-hacking tactics.
+
 See `docs/product-messaging.md` for shared claims and `README.md` for current
 release status. Calm presentation must not change the rating calibration.
 

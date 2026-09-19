@@ -1,14 +1,13 @@
 # Newsworthy
 
-> A calm global status indicator: a number out of 10 and one sentence explaining why.
+> World news, rated by significance.
 
-Newsworthy helps people stay connected to the world without constant anxious
-news consumption or switching off entirely. Check in, then get on with your day.
-
-No doomscrolling. No subscription. No in-app purchases. No ads. No engagement,
-addiction or growth-hacking tactics.
+Newsworthy uses AI to assess the significance of world news. Each reading has a
+score from 1 to 10, a brief explanation and an update time.
 
 ## Product facts
+
+- There are no subscriptions, in-app purchases or ads.
 
 - An AI model assesses public news. Higher scores mean more consequential news;
   the displayed score fades as developments age.
