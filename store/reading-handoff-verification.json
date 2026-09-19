@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-19",
+  "scope": "Read newer widget snapshots immediately on app launch/resume and remove unsolicited refresh status text.",
+  "baseCommit": "87e1d9a",
+  "releaseState": "SOURCE_ONLY_REQUIRES_NEW_NATIVE_BUILD",
+  "checks": {
+    "widgetSync": "6 passed: first render from widget, legacy cache migration, stale disk/network protection, synchronous resume during pending request, score decay, optional/corrupt native caches and app-to-widget refresh.",
+    "designGate": "40 passed, including loading, saved, failed and retry states across web/iOS/Android.",
+    "typeScript": "passed",
+    "npmTest": "218 passed, including production web export",
+    "browser": "Exported production web UI inspected at desktop and 390x844, light/dark. Neutral initial state has no loading copy; the populated screen contains the reading and original update time without extra status labels. No page errors reported. This does not establish native parity.",
+    "iosWidgetCompile": "Production WidgetKit source compiled and linked for arm64 iOS16.4 simulator with Xcode16.2. This is compile evidence only."
+  },
+  "nativeVerification": {
+    "ios": "No updated app package installed. Existing TestFlight build13 does not contain this change. Widget compilation alone does not verify the Expo native bridge or WidgetKit handoff.",
+    "android": "No Java runtime installed; updated native module and launcher flow not compiled or exercised."
+  },
+  "untested": [
+    "Physical iPhone cold launch and warm resume after widget-only refresh, including offline launch and a pending app request",
+    "iOS Expo bridge in a complete custom build with App Group entitlement",
+    "Android custom build and launcher-to-app handoff, including offline launch and pending worker/app requests",
+    "Native reading and small/expanded widgets in both appearances, score10, enlarged text, resize and theme change without refresh"
+  ]
+}

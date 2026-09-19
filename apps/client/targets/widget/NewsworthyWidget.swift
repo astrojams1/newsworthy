@@ -68,7 +68,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
     }
 }
 
-struct AppReading: Decodable {
+struct AppReading: Codable {
     let reading: Reading
     let fetchedAt: Double
 }
@@ -130,10 +130,14 @@ struct Provider: TimelineProvider {
                 completion(timeline(reading: app.reading, saved: false))
                 return
             }
-            // Keep the extension cache separate; only the app writes the shared snapshot.
+            // Each process owns its shared key, so concurrent writes cannot erase
+            // the other process's newer snapshot. The app reads both on opening.
             if let encoded = try? JSONEncoder().encode(reading) {
                 UserDefaults.standard.set(encoded, forKey: cacheKey)
                 UserDefaults.standard.set(startedAt, forKey: cacheKey + ":fetchedAt")
+            }
+            if let encoded = try? JSONEncoder().encode(AppReading(reading: reading, fetchedAt: startedAt)) {
+                UserDefaults(suiteName: WidgetConfig.appGroup)?.set(encoded, forKey: cacheKey + ":widget")
             }
             completion(timeline(reading: reading, saved: false))
         }.resume()

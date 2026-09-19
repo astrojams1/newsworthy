@@ -34,6 +34,7 @@ public class RatingWidget extends AppWidgetProvider {
     static final String SAVED = CACHE + ":saved";
 
     static final String REVISION = CACHE + ":revision";
+    static final String FETCHED_AT = CACHE + ":fetchedAt";
 
     @Override public void onReceive(Context context, Intent intent) {
         if ((context.getPackageName() + ".SYNC_WIDGET_READING").equals(intent.getAction())) {
@@ -42,7 +43,7 @@ public class RatingWidget extends AppWidgetProvider {
                 JSONObject snapshot = new JSONObject(intent.getStringExtra("payload"));
                 JSONObject reading = snapshot.getJSONObject("reading");
                 if (valid(reading)) {
-                    acceptAppReading(context, reading);
+                    acceptAppReading(context, reading, snapshot.getLong("fetchedAt"));
                     refresh(context);
                 }
             } catch (Exception ignored) { }
@@ -51,19 +52,21 @@ public class RatingWidget extends AppWidgetProvider {
         super.onReceive(context, intent);
     }
 
-    private static synchronized void acceptAppReading(Context context, JSONObject reading) {
+    private static synchronized void acceptAppReading(Context context, JSONObject reading, long fetchedAt) {
         android.content.SharedPreferences cache = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE);
+        if (cache.getLong(FETCHED_AT, 0) > fetchedAt) return;
         cache.edit().putString(CACHE, reading.toString()).putBoolean(SAVED, false)
+            .putLong(FETCHED_AT, fetchedAt)
             .putLong(REVISION, cache.getLong(REVISION, 0) + 1).apply();
         renderAll(context);
     }
 
     // A worker started before the app refresh must not replace it or mark it saved.
-    static synchronized void completeRefresh(Context context, JSONObject reading, long revision) {
+    static synchronized void completeRefresh(Context context, JSONObject reading, long revision, long fetchedAt) {
         android.content.SharedPreferences cache = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE);
-        if (cache.getLong(REVISION, 0) != revision) return;
+        if (cache.getLong(REVISION, 0) != revision || cache.getLong(FETCHED_AT, 0) > fetchedAt) return;
         android.content.SharedPreferences.Editor edit = cache.edit().putBoolean(SAVED, reading == null);
-        if (reading != null) edit.putString(CACHE, reading.toString());
+        if (reading != null) edit.putString(CACHE, reading.toString()).putLong(FETCHED_AT, fetchedAt);
         edit.apply();
         renderAll(context);
     }

@@ -5,6 +5,23 @@ import { checkWidgetDesign, widgetSources, contract } from './helpers/widget-con
 import { renderReading, renderShareIcon, nodes } from './helpers/render-reading.js';
 import { themeForLevel } from '../apps/client/lib/palette.js';
 
+test('reading refreshes never add loading, saved or retry text to an existing message', () => {
+  for (const platform of ['web', 'ios', 'android']) for (const saved of [false, true]) {
+    for (const loading of [false, true]) for (const failed of [false, true]) {
+      const tree = nodes(renderReading({ platform, width: 390, height: 844, saved, loading, failed }));
+      const text = JSON.stringify(tree.filter(n => n.type === 'Text').map(n => n.props.children));
+      assert.doesNotMatch(text, /Checking|Loading|Saved reading|Try again|unavailable/);
+      assert.match(text, /A quiet day for the world/);
+      assert.match(text, /Updated/);
+    }
+    const empty = nodes(renderReading({ platform, width: 390, height: 844, score: null, loading: true, failed: true }));
+    assert.equal(empty.find(n => n.props.testID === 'rating-explanation').props.children, '');
+    const failed = nodes(renderReading({ platform, width: 390, height: 844, score: null, failed: true }));
+    assert.equal(failed.find(n => n.props.testID === 'rating-explanation').props.children, 'The latest rating is unavailable.');
+    assert.ok(failed.some(n => n.type === 'Text' && n.props.children === 'Try again'));
+  }
+});
+
 test('native widget implementations satisfy the same compact/expanded design contract', () => {
   checkWidgetDesign();
 });

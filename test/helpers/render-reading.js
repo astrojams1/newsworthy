@@ -24,7 +24,7 @@ export function renderShareIcon({ platform, color, sourceOverride }) {
   return exports.AppIcon({ color });
 }
 
-export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, sourceOverride }) {
+export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, failed = false, loading = false, sourceOverride }) {
   const reading = score == null ? null : { score, explanation: 'A quiet day for the world.', created_at: '2026-09-16T09:00:00Z' };
   const mocks = {
     react: { ...react, useEffect() {}, useState: value => [value, () => {}] },
@@ -35,7 +35,7 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     '@/components/brand-mark': { BrandMark: 'BrandMark' },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(score, dark) },
-    '@/components/reading-provider': { useCurrentReading: () => ({ reading, saved, failed: false, loading: false }) },
+    '@/components/reading-provider': { useCurrentReading: () => ({ reading, saved, failed, loading }) },
     '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
     'expo-router/react-navigation': { useHeaderHeight: () => 44 },
     '@/lib/config': { website: 'https://example.test', privacyUrl: '/privacy', supportUrl: '/support' },
