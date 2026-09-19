@@ -8,6 +8,17 @@ Read `CLAUDE.md` for repository workflow and technical constraints, and
   work; never assume the local `main` is current.
 - Branch off `main`, open a PR into `main`, and run `npm test` before pushing.
   Do not push directly to `main`. Vercel preview builds are currently skipped.
+- Keep extra development workspaces inside the primary Newsworthy checkout at
+  `.worktrees/<task-name>/`. Do not create sibling `newsworthy-*` folders in
+  `~/code` or elsewhere in the home directory. When already in a worktree, use
+  the primary checkout's `.worktrees` directory rather than nesting another one.
+- Exclude `/.worktrees/` through the repository's local `.git/info/exclude`
+  before creating workspaces; never commit or upload workspace copies. Use
+  `git worktree add`, `move`, and `remove` to keep Git's records consistent.
+- Remove completed workspaces once their changes are safely merged. Before
+  cleanup, check for unmerged commits, uncommitted changes, and local-only files
+  (including ignored files); preserve unfinished work and useful artifacts first.
+  Do not move or remove a workspace that an active task or process is using.
 - Preserve the calm indicator: a number out of 10 and one sentence explaining why.
   No doomscrolling, subscriptions, in-app purchases, ads, or engagement,
   addiction or growth-hacking tactics.
