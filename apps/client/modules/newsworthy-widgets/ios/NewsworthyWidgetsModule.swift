@@ -5,6 +5,14 @@ import WidgetKit
 public class NewsworthyWidgetsModule: Module {
     public func definition() -> ModuleDefinition {
         Name("NewsworthyWidgets")
+        Function("getReadings") { (apiBaseURL: String) -> [String] in
+            guard let identifier = Bundle.main.bundleIdentifier,
+                  let defaults = UserDefaults(suiteName: "group.\(identifier).widgets") else { return [] }
+            let key = "widget.reading.v1:\(apiBaseURL)"
+            return [key, key + ":widget"].compactMap { name in
+                defaults.data(forKey: name).flatMap { String(data: $0, encoding: .utf8) }
+            }
+        }
         AsyncFunction("syncReading") { (apiBaseURL: String, payload: String) in
             guard let identifier = Bundle.main.bundleIdentifier,
                   let defaults = UserDefaults(suiteName: "group.\(identifier).widgets"),

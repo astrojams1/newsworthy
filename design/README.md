@@ -123,6 +123,19 @@ requests a WidgetKit timeline reload; Android sends an explicit app-private
 broadcast and renders from the updated cache. Background fetches remain enabled.
 See `store/widget-refresh-verification.json` for this change's verification scope.
 
+The app also reads native widget snapshots synchronously on launch and resume,
+before waiting for a network request. iOS publishes the extension's fetched
+reading to a separate App Group key; Android exposes the widget's own cache.
+Message timestamps take precedence when choosing a reading, with request time
+breaking ties for score decay. Older disk or network responses must not replace
+a newer widget message. Legacy app caches remain readable.
+
+Refreshes do not add loading sentences, a saved-reading prefix, or retry text to
+an existing reading. Its original update time remains visible. An empty first
+launch uses the neutral dash without loading copy; only a completed failure with
+no reading shows an unavailable message and retry control. Verification and
+remaining native release checks live in `store/reading-handoff-verification.json`.
+
 ## Platform references
 
 - [Android RemoteViews](https://developer.android.com/reference/android/widget/RemoteViews)

@@ -17,6 +17,7 @@ public class RatingWidgetWorker extends Worker {
     @NonNull @Override public Result doWork() {
         HttpURLConnection connection = null;
         JSONObject display = null;
+        long fetchedAt = System.currentTimeMillis();
         long revision = getApplicationContext().getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE)
             .getLong(RatingWidget.REVISION, 0);
         try {
@@ -46,7 +47,7 @@ public class RatingWidgetWorker extends Worker {
         } finally {
             if (connection != null) connection.disconnect();
         }
-        RatingWidget.completeRefresh(getApplicationContext(), display, revision);
+        RatingWidget.completeRefresh(getApplicationContext(), display, revision, fetchedAt);
         return Result.success();
     }
 }
