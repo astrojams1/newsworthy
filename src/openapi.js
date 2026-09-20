@@ -105,7 +105,7 @@ export function openapiDocument({ baseUrl }) {
                     },
                     explanation: {
                       type: 'string',
-                      description: 'One sentence, at most 150 characters including spaces and punctuation, reporting what happened.',
+                      description: 'One sentence, at most 100 characters including spaces and punctuation, reporting what happened.',
                     },
                     // Optional, and never a rejection: a mismatch stores a
                     // reading flagged unverified rather than refusing one.

@@ -315,6 +315,10 @@ Reply with a single JSON object and nothing else — no prose, no markdown fence
 
 Report one development in a natural, complete sentence: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations such as US and NATO. Keep useful specifics when they fit. Omit side stories, jargon and vague claims of significance. No em dashes or semicolons. Cut secondary details rather than squeezing them into fragments or stacked clauses. Do not pad to the limit. Report the event independently of its score, without explaining the rating or telling readers how to feel or act.`;
 
+// v13 lowers only the sentence budget after a 148-character reading was
+// clipped on the user's medium widget. See docs/prompt-evaluations/v13.md.
+const V13_OUTPUT_CONTRACT = V12_OUTPUT_CONTRACT.replace('150 characters', '100 characters');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -399,6 +403,13 @@ const REGISTRY = {
     added: '2026-09-20',
     instructions: V11_INSTRUCTIONS,
     outputContract: V12_OUTPUT_CONTRACT,
+  },
+  13: {
+    version: 13,
+    label: 'widget-sentence-100-characters-v13',
+    added: '2026-09-20',
+    instructions: V11_INSTRUCTIONS,
+    outputContract: V13_OUTPUT_CONTRACT,
   },
 };
 

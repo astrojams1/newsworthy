@@ -675,6 +675,14 @@ Claude or the live search workflow. It supports the writing revision, not a
 claim about production quality or scoring. The reusable update process is in
 [the repository skill](.agents/skills/newsworthy-prompt-update/SKILL.md).
 
+**v13 reduces the widget sentence budget to 100 characters.** A 148-character
+reading was visibly clipped in the user's medium widget. Only the character
+budget changes from v12; the same writing guidance and all rating instructions
+remain. Caller and OpenAPI descriptions agree. This is generation guidance,
+not new server truncation or a rejection rule. The [evaluation](docs/prompt-evaluations/v13.md)
+records the writing comparison and its limits; native fit and caller adoption
+are separate checks.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.

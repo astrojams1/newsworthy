@@ -92,7 +92,7 @@ content-type: application/json
 
 {
   "score": <integer 1-10>,
-  "explanation": "<one sentence, at most 150 characters including spaces and punctuation>",
+  "explanation": "<one sentence, at most 100 characters including spaces and punctuation>",
   "prompt_sha256": "<64 lowercase hex characters, defined in section 3>"
 }
 \`\`\`
@@ -171,7 +171,7 @@ body must be a JSON object
 \`\`\`
 
 Length is not among them. The explanation has no maximum a caller can trip: text
-beyond 400 characters is truncated and stored, never rejected, and the 150-character
+beyond 400 characters is truncated and stored, never rejected, and the 100-character
 guidance in the prompt is a style instruction rather than a limit the server
 enforces. So a 422 on a submission whose score and sentence are both well formed
 means the request did not arrive as it was sent — a query string truncated or
