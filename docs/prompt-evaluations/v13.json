@@ -1,0 +1,881 @@
+{
+  "design": {
+    "scope": "Writing-only comparison on reconstructed notes, including the user-reported clipping case. No live reporting or rating submissions.",
+    "arms": {
+      "v12": "One sentence, at most 150 characters including spaces and punctuation.\n\nReport one development in a natural, complete sentence: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations such as US and NATO. Keep useful specifics when they fit. Omit side stories, jargon and vague claims of significance. No em dashes or semicolons. Cut secondary details rather than squeezing them into fragments or stacked clauses. Do not pad to the limit. Report the event independently of its score, without explaining the rating or telling readers how to feel or act.",
+      "v13": "One sentence, at most 100 characters including spaces and punctuation.\n\nReport one development in a natural, complete sentence: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations such as US and NATO. Keep useful specifics when they fit. Omit side stories, jargon and vague claims of significance. No em dashes or semicolons. Cut secondary details rather than squeezing them into fragments or stacked clauses. Do not pad to the limit. Report the event independently of its score, without explaining the rating or telling readers how to feel or act."
+    },
+    "cases": [
+      {
+        "id": "sanctions",
+        "notes": [
+          "Trump signed the Sanctioning Russia and Iran Act.",
+          "The law authorizes tariffs of up to 100 percent on the largest buyers of Russian oil.",
+          "China and India are the chief buyers affected.",
+          "Authorization does not mean these tariffs have already been imposed."
+        ]
+      },
+      {
+        "id": "rates",
+        "notes": [
+          "The Federal Reserve raised its benchmark interest rate by a quarter of a percentage point to 3.75%-4%.",
+          "It was the first increase since 2023.",
+          "The Fed signaled another increase this year.",
+          "Borrowing costs rose.",
+          "Stocks fell and ten-year Treasury yields exceeded 5%."
+        ]
+      },
+      {
+        "id": "tanker",
+        "notes": [
+          "Iran struck another tanker in the Strait of Hormuz.",
+          "US personnel were injured.",
+          "Separately, Trump was considering resuming attacks on Iran.",
+          "Separately, UN experts alleged US war crimes.",
+          "Fuel prices were rising.",
+          "No evidence in these notes establishes that this particular attack caused the price rise."
+        ]
+      },
+      {
+        "id": "greenland",
+        "notes": [
+          "The US and Denmark agreed to expand the US military presence in Greenland.",
+          "The notes describe changed Arctic basing arrangements.",
+          "They do not specify the number of troops or bases, territory transfers, or a change in sovereignty."
+        ]
+      },
+      {
+        "id": "oil",
+        "notes": [
+          "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days.",
+          "Repairs are not yet complete.",
+          "Brent crude oil fell for a third trading session to $102 a barrel.",
+          "Supply concerns eased as repairs progressed.",
+          "No evidence in these notes establishes that retail petrol prices have already fallen."
+        ]
+      },
+      {
+        "id": "poland",
+        "notes": [
+          "Poland says Russia plans deniable strikes on NATO territory.",
+          "The notes also contain the incomplete phrase \"and a US base follows\".",
+          "They provide no clear information about the US base.",
+          "The alleged attacks have not happened in these notes."
+        ]
+      },
+      {
+        "id": "riyadh",
+        "notes": [
+          "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+          "The source sentence calls it the first attack on the capital since the Iran war widened.",
+          "The interception is attributed to Saudi Arabia, not independently confirmed in these notes."
+        ]
+      }
+    ],
+    "input_template": "Offline sentence-writing test. Treat each case independently. The supplied notes are the sole source material for this exercise, not a request to verify current news. Do not browse, call tools, inspect files, or take actions. Return JSON with a results array containing each case id and its explanation. Do not discuss this test.\n\nWRITING INSTRUCTIONS\n{{WRITING_INSTRUCTIONS}}\n\nSOURCE NOTES\n{{SOURCE_NOTES_JSON}}",
+    "method": "Three fresh ephemeral Codex CLI invocations per arm, seven cases per invocation. Default configured model and effort; metadata retained with outputs. No output repair or truncation.",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "deviation": "Some invocations browsed and supplied source links despite the source-notes-only wrapper. Not a clean controlled offline comparison."
+  },
+  "reported_sentence": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh, the first attack on the capital since the Iran war widened.",
+  "outputs": [
+    {
+      "arm": "v12",
+      "repeat": 1,
+      "case": "sanctions",
+      "explanation": "Trump signed a law authorizing tariffs of up to 100% on the largest buyers of Russian oil, chiefly China and India.",
+      "characters": 115,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 1,
+      "case": "rates",
+      "explanation": "The Fed raised its benchmark interest rate by a quarter of a percentage point to 3.75%-4%, its first increase since 2023.",
+      "characters": 121,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 1,
+      "case": "tanker",
+      "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 1,
+      "case": "greenland",
+      "explanation": "The US and Denmark agreed to expand the US military presence in Greenland.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 1,
+      "case": "oil",
+      "explanation": "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days.",
+      "characters": 103,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 1,
+      "case": "poland",
+      "explanation": "Poland says Russia plans strikes on NATO territory that it could deny carrying out.",
+      "characters": 83,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 1,
+      "case": "riyadh",
+      "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+      "characters": 88,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 2,
+      "case": "sanctions",
+      "explanation": "Trump signed a law authorizing tariffs of up to 100% on the largest buyers of Russian oil, including China and India.",
+      "characters": 117,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 2,
+      "case": "rates",
+      "explanation": "The Federal Reserve raised its benchmark rate by a quarter of a percentage point to 3.75%-4%, its first increase since 2023.",
+      "characters": 124,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 2,
+      "case": "tanker",
+      "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 2,
+      "case": "greenland",
+      "explanation": "The US and Denmark agreed to expand the US military presence in Greenland.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 2,
+      "case": "oil",
+      "explanation": "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days.",
+      "characters": 103,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 2,
+      "case": "poland",
+      "explanation": "Poland says Russia plans attacks on NATO territory designed to hide its involvement.",
+      "characters": 84,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 2,
+      "case": "riyadh",
+      "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+      "characters": 88,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 3,
+      "case": "sanctions",
+      "explanation": "Trump signed a law authorizing tariffs of up to 100% on major buyers of Russian oil, including China and India.",
+      "characters": 111,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 3,
+      "case": "rates",
+      "explanation": "The Fed raised its benchmark interest rate by a quarter point to 3.75%-4%, its first increase since 2023.",
+      "characters": 105,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 3,
+      "case": "tanker",
+      "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 3,
+      "case": "greenland",
+      "explanation": "The US and Denmark agreed to expand the US military presence in Greenland.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 3,
+      "case": "oil",
+      "explanation": "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days.",
+      "characters": 103,
+      "within100": false,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 3,
+      "case": "poland",
+      "explanation": "Poland says Russia plans attacks on NATO territory that it could deny carrying out.",
+      "characters": 83,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v12",
+      "repeat": 3,
+      "case": "riyadh",
+      "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+      "characters": 88,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 1,
+      "case": "sanctions",
+      "explanation": "Trump signed a law authorizing tariffs of up to 100% on major buyers of Russian oil.",
+      "characters": 84,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 1,
+      "case": "rates",
+      "explanation": "The Fed raised its benchmark rate by a quarter point to 3.75%-4%, increasing borrowing costs.",
+      "characters": 93,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 1,
+      "case": "tanker",
+      "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 1,
+      "case": "greenland",
+      "explanation": "The US and Denmark agreed to expand the US military presence in Greenland.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 1,
+      "case": "oil",
+      "explanation": "Saudi Arabia said it would restore half its damaged East-West oil pipeline's capacity within days.",
+      "characters": 98,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 1,
+      "case": "poland",
+      "explanation": "Poland says Russia plans strikes on NATO territory that it could deny carrying out.",
+      "characters": 83,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 1,
+      "case": "riyadh",
+      "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+      "characters": 88,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 2,
+      "case": "sanctions",
+      "explanation": "Trump signed a law authorizing tariffs of up to 100% on major buyers of Russian oil.",
+      "characters": 84,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 2,
+      "case": "rates",
+      "explanation": "The Fed raised its benchmark rate by a quarter of a percentage point to 3.75%-4%.",
+      "characters": 81,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 2,
+      "case": "tanker",
+      "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 2,
+      "case": "greenland",
+      "explanation": "The US and Denmark agreed to expand the US military presence in Greenland.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 2,
+      "case": "oil",
+      "explanation": "Saudi Arabia said it would restore half its damaged East-West oil pipeline's capacity within days.",
+      "characters": 98,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 2,
+      "case": "poland",
+      "explanation": "Poland says Russia plans attacks on NATO territory that it could deny carrying out.",
+      "characters": 83,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 2,
+      "case": "riyadh",
+      "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+      "characters": 88,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 3,
+      "case": "sanctions",
+      "explanation": "Trump signed a law allowing tariffs of up to 100% on major buyers of Russian oil.",
+      "characters": 81,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 3,
+      "case": "rates",
+      "explanation": "The Fed raised its benchmark rate by a quarter point to 3.75%-4%, lifting borrowing costs.",
+      "characters": 90,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 3,
+      "case": "tanker",
+      "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 3,
+      "case": "greenland",
+      "explanation": "The US and Denmark agreed to expand the US military presence in Greenland.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 3,
+      "case": "oil",
+      "explanation": "Saudi Arabia said it would restore half its damaged East-West oil pipeline's capacity within days.",
+      "characters": 98,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 3,
+      "case": "poland",
+      "explanation": "Poland says Russia plans strikes on NATO territory that it could deny carrying out.",
+      "characters": 83,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    },
+    {
+      "arm": "v13",
+      "repeat": 3,
+      "case": "riyadh",
+      "explanation": "Saudi Arabia said it shot down a Houthi ballistic missile aimed at Riyadh.",
+      "characters": 74,
+      "within100": true,
+      "within150": true,
+      "semicolon": false,
+      "em_dash": false
+    }
+  ],
+  "raw_responses": [
+    {
+      "arm": "v12",
+      "repeat": 1,
+      "response": {
+        "results": [
+          {
+            "id": "sanctions",
+            "explanation": "Trump signed a law authorizing tariffs of up to 100% on the largest buyers of Russian oil, chiefly China and India."
+          },
+          {
+            "id": "rates",
+            "explanation": "The Fed raised its benchmark interest rate by a quarter of a percentage point to 3.75%-4%, its first increase since 2023."
+          },
+          {
+            "id": "tanker",
+            "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel."
+          },
+          {
+            "id": "greenland",
+            "explanation": "The US and Denmark agreed to expand the US military presence in Greenland."
+          },
+          {
+            "id": "oil",
+            "explanation": "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days."
+          },
+          {
+            "id": "poland",
+            "explanation": "Poland says Russia plans strikes on NATO territory that it could deny carrying out."
+          },
+          {
+            "id": "riyadh",
+            "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh."
+          }
+        ],
+        "sources": [
+          "Supplied notes for each case.",
+          "[Senator Katie Britt's account of the law signing](https://www.britt.senate.gov/news/press-releases/u-s-senator-katie-britt-joins-president-trump-in-oval-office-for-signing-of-the-lindsey-o-graham-sanctioning-russia-and-iran-act-of-2026/)"
+        ]
+      }
+    },
+    {
+      "arm": "v12",
+      "repeat": 2,
+      "response": {
+        "results": [
+          {
+            "id": "sanctions",
+            "explanation": "Trump signed a law authorizing tariffs of up to 100% on the largest buyers of Russian oil, including China and India."
+          },
+          {
+            "id": "rates",
+            "explanation": "The Federal Reserve raised its benchmark rate by a quarter of a percentage point to 3.75%-4%, its first increase since 2023."
+          },
+          {
+            "id": "tanker",
+            "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel."
+          },
+          {
+            "id": "greenland",
+            "explanation": "The US and Denmark agreed to expand the US military presence in Greenland."
+          },
+          {
+            "id": "oil",
+            "explanation": "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days."
+          },
+          {
+            "id": "poland",
+            "explanation": "Poland says Russia plans attacks on NATO territory designed to hide its involvement."
+          },
+          {
+            "id": "riyadh",
+            "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh."
+          }
+        ],
+        "sources": {
+          "all_cases": "Supplied source notes for each case.",
+          "greenland": "[Associated Press](https://apnews.com/article/4cf77cb4608b685a70410bd679479193)"
+        }
+      }
+    },
+    {
+      "arm": "v12",
+      "repeat": 3,
+      "response": {
+        "results": [
+          {
+            "id": "sanctions",
+            "explanation": "Trump signed a law authorizing tariffs of up to 100% on major buyers of Russian oil, including China and India."
+          },
+          {
+            "id": "rates",
+            "explanation": "The Fed raised its benchmark interest rate by a quarter point to 3.75%-4%, its first increase since 2023."
+          },
+          {
+            "id": "tanker",
+            "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel."
+          },
+          {
+            "id": "greenland",
+            "explanation": "The US and Denmark agreed to expand the US military presence in Greenland."
+          },
+          {
+            "id": "oil",
+            "explanation": "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days."
+          },
+          {
+            "id": "poland",
+            "explanation": "Poland says Russia plans attacks on NATO territory that it could deny carrying out."
+          },
+          {
+            "id": "riyadh",
+            "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh."
+          }
+        ]
+      }
+    },
+    {
+      "arm": "v13",
+      "repeat": 1,
+      "response": {
+        "results": [
+          {
+            "id": "sanctions",
+            "explanation": "Trump signed a law authorizing tariffs of up to 100% on major buyers of Russian oil.",
+            "source": "Supplied sanctions notes"
+          },
+          {
+            "id": "rates",
+            "explanation": "The Fed raised its benchmark rate by a quarter point to 3.75%-4%, increasing borrowing costs.",
+            "source": "Supplied rates notes"
+          },
+          {
+            "id": "tanker",
+            "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+            "source": "Supplied tanker notes"
+          },
+          {
+            "id": "greenland",
+            "explanation": "The US and Denmark agreed to expand the US military presence in Greenland.",
+            "source": "Supplied Greenland notes"
+          },
+          {
+            "id": "oil",
+            "explanation": "Saudi Arabia said it would restore half its damaged East-West oil pipeline's capacity within days.",
+            "source": "Supplied oil notes"
+          },
+          {
+            "id": "poland",
+            "explanation": "Poland says Russia plans strikes on NATO territory that it could deny carrying out.",
+            "source": "Supplied Poland notes"
+          },
+          {
+            "id": "riyadh",
+            "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+            "source": "Supplied Riyadh notes"
+          }
+        ]
+      }
+    },
+    {
+      "arm": "v13",
+      "repeat": 2,
+      "response": {
+        "results": [
+          {
+            "id": "sanctions",
+            "explanation": "Trump signed a law authorizing tariffs of up to 100% on major buyers of Russian oil."
+          },
+          {
+            "id": "rates",
+            "explanation": "The Fed raised its benchmark rate by a quarter of a percentage point to 3.75%-4%."
+          },
+          {
+            "id": "tanker",
+            "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel."
+          },
+          {
+            "id": "greenland",
+            "explanation": "The US and Denmark agreed to expand the US military presence in Greenland."
+          },
+          {
+            "id": "oil",
+            "explanation": "Saudi Arabia said it would restore half its damaged East-West oil pipeline's capacity within days."
+          },
+          {
+            "id": "poland",
+            "explanation": "Poland says Russia plans attacks on NATO territory that it could deny carrying out."
+          },
+          {
+            "id": "riyadh",
+            "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh."
+          }
+        ]
+      }
+    },
+    {
+      "arm": "v13",
+      "repeat": 3,
+      "response": {
+        "results": [
+          {
+            "id": "sanctions",
+            "explanation": "Trump signed a law allowing tariffs of up to 100% on major buyers of Russian oil."
+          },
+          {
+            "id": "rates",
+            "explanation": "The Fed raised its benchmark rate by a quarter point to 3.75%-4%, lifting borrowing costs."
+          },
+          {
+            "id": "tanker",
+            "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel."
+          },
+          {
+            "id": "greenland",
+            "explanation": "The US and Denmark agreed to expand the US military presence in Greenland."
+          },
+          {
+            "id": "oil",
+            "explanation": "Saudi Arabia said it would restore half its damaged East-West oil pipeline's capacity within days."
+          },
+          {
+            "id": "poland",
+            "explanation": "Poland says Russia plans strikes on NATO territory that it could deny carrying out."
+          },
+          {
+            "id": "riyadh",
+            "explanation": "Saudi Arabia said it shot down a Houthi ballistic missile aimed at Riyadh."
+          }
+        ]
+      }
+    }
+  ],
+  "additional_run": {
+    "reason": "Started while certificate errors appeared to block initial runs; original runs later completed.",
+    "response": {
+      "results": [
+        {
+          "id": "sanctions",
+          "explanation": "Trump signed a law allowing tariffs of up to 100% on the largest buyers of Russian oil.",
+          "source": "Supplied sanctions notes."
+        },
+        {
+          "id": "rates",
+          "explanation": "The Fed raised its benchmark rate by a quarter point to 3.75%-4%, its first increase since 2023.",
+          "source": "Supplied rates notes."
+        },
+        {
+          "id": "tanker",
+          "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+          "source": "Supplied tanker notes."
+        },
+        {
+          "id": "greenland",
+          "explanation": "The US and Denmark agreed to expand the US military presence in Greenland.",
+          "source": "Supplied Greenland notes and [AP](https://apnews.com/article/4cf77cb4608b685a70410bd679479193)."
+        },
+        {
+          "id": "oil",
+          "explanation": "Saudi Arabia said it would restore half its East-West oil pipeline's capacity within days.",
+          "source": "Supplied oil notes."
+        },
+        {
+          "id": "poland",
+          "explanation": "Poland says Russia plans strikes on NATO territory while hiding its role.",
+          "source": "Supplied Poland notes."
+        },
+        {
+          "id": "riyadh",
+          "explanation": "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+          "source": "Supplied Riyadh notes."
+        }
+      ]
+    },
+    "counts": [
+      {
+        "case": "sanctions",
+        "characters": 87,
+        "within100": true,
+        "semicolon": false,
+        "em_dash": false
+      },
+      {
+        "case": "rates",
+        "characters": 96,
+        "within100": true,
+        "semicolon": false,
+        "em_dash": false
+      },
+      {
+        "case": "tanker",
+        "characters": 74,
+        "within100": true,
+        "semicolon": false,
+        "em_dash": false
+      },
+      {
+        "case": "greenland",
+        "characters": 74,
+        "within100": true,
+        "semicolon": false,
+        "em_dash": false
+      },
+      {
+        "case": "oil",
+        "characters": 90,
+        "within100": true,
+        "semicolon": false,
+        "em_dash": false
+      },
+      {
+        "case": "poland",
+        "characters": 73,
+        "within100": true,
+        "semicolon": false,
+        "em_dash": false
+      },
+      {
+        "case": "riyadh",
+        "characters": 88,
+        "within100": true,
+        "semicolon": false,
+        "em_dash": false
+      }
+    ]
+  },
+  "tested_100_character_proposal_prompt_text": "Summary\n\nRate how much the current news warrants attention right now, 1-10.\n\nSources\n\nCurrent top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.\n\nMarkets confirm late and are shut two thirds of the time. Their silence is not evidence against an event.\n\nScale\n\n1. Nothing new; skip the news.\n2. Ongoing story; nothing changed today.\n3. Significant elsewhere; changes nothing for you.\n4. Touches you indirectly; no action yet.\n5. Changes a decision you'll make soon.\n6. Act today; plans need adjusting.\n7. Major shock breaking right now.\n8. Severe disruption, broad and immediate.\n9. Systemic crisis; check news constantly.\n10. Extreme global threat; drop everything.\n\nExamples\n\n2 — Standing war continues, ceasefire holding, nothing new.\n3 — Foreign flood kills hundreds; no domestic effect.\n3 — Corporate settlement, billions, no user action needed.\n3 — Trade dispute escalates by one more round.\n\nOutput\n\nReply with a single JSON object and nothing else — no prose, no markdown fences:\n{\"score\": <integer 1-10>, \"explanation\": \"<one sentence, at most 100 characters including spaces and punctuation>\"}\n\nReport one development in a natural, complete sentence: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations such as US and NATO. Keep useful specifics when they fit. Omit side stories, jargon and vague claims of significance. No em dashes or semicolons. Cut secondary details rather than squeezing them into fragments or stacked clauses. Do not pad to the limit. Report the event independently of its score, without explaining the rating or telling readers how to feel or act.",
+  "selected_prompt_text": "Summary\n\nRate how much the current news warrants attention right now, 1-10.\n\nSources\n\nCurrent top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.\n\nMarkets confirm late and are shut two thirds of the time. Their silence is not evidence against an event.\n\nScale\n\n1. Nothing new; skip the news.\n2. Ongoing story; nothing changed today.\n3. Significant elsewhere; changes nothing for you.\n4. Touches you indirectly; no action yet.\n5. Changes a decision you'll make soon.\n6. Act today; plans need adjusting.\n7. Major shock breaking right now.\n8. Severe disruption, broad and immediate.\n9. Systemic crisis; check news constantly.\n10. Extreme global threat; drop everything.\n\nExamples\n\n2 — Standing war continues, ceasefire holding, nothing new.\n3 — Foreign flood kills hundreds; no domestic effect.\n3 — Corporate settlement, billions, no user action needed.\n3 — Trade dispute escalates by one more round.\n\nOutput\n\nReply with a single JSON object and nothing else — no prose, no markdown fences:\n{\"score\": <integer 1-10>, \"explanation\": \"<one sentence, at most 140 characters including spaces and punctuation>\"}\n\nReport one development in a natural, complete sentence: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations such as US and NATO. Keep useful specifics when they fit. Omit side stories, jargon and vague claims of significance. No em dashes or semicolons. Cut secondary details rather than squeezing them into fragments or stacked clauses. Do not pad to the limit. Report the event independently of its score, without explaining the rating or telling readers how to feel or act.",
+  "selection": {
+    "characters": 140,
+    "reason": "User explicitly chose 140 characters and requested updating and merging PR #110, ending the proposed 95% fit study.",
+    "generation_evaluation_at_selected_limit": false,
+    "native_fit_rate_measured": false,
+    "previous_100_character_proposal_never_deployed": true
+  }
+}

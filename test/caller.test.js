@@ -280,7 +280,7 @@ test('caller and Action length guidance agree without adding an API rejection', 
   const text = build();
   const schema = openapiDocument({ baseUrl: 'https://example.test' })
     .paths['/api/readings'].post.requestBody.content['application/json'].schema;
-  const guidance = /at most 150 characters including spaces and punctuation/;
+  const guidance = /at most 140 characters including spaces and punctuation/;
   assert.match(renderPrompt(latestVersion()).text, guidance);
   assert.match(text, guidance);
   assert.match(schema.properties.explanation.description, guidance);
