@@ -241,7 +241,7 @@ struct ReadingContent: View {
                                     explanationCapHeight: bodyFont.capHeight) {
                     score(size: size)
                     if family == .systemMedium {
-                        Text(entry.reading?.explanation ?? "The latest rating will appear when a connection is available.")
+                        Text(entry.reading?.explanation ?? "")
                             .font(.system(size: explanationSize))
                             .lineSpacing(max(0, explanationLineHeight - bodyFont.lineHeight))
                             .lineLimit(max(1, Int(geometry.size.height / explanationLineHeight)))
@@ -254,10 +254,10 @@ struct ReadingContent: View {
             Group {
                 if let date = entry.reading?.updatedAt {
                     // Preserve the saved reading's absolute timestamp.
-                    Text("\(entry.saved ? "Saved · " : "")\(date.formatted(.dateTime.month(.abbreviated).day())) · \(date.formatted(date: .omitted, time: .shortened))")
-                        .accessibilityLabel("\(entry.saved ? "Saved reading from" : "Updated") \(date.formatted(date: .abbreviated, time: .shortened))")
+                    Text("\(date.formatted(.dateTime.month(.abbreviated).day())) · \(date.formatted(date: .omitted, time: .shortened))")
+                        .accessibilityLabel("Updated \(date.formatted(date: .abbreviated, time: .shortened))")
                 } else {
-                    Text("Waiting for a reading")
+                    Text("")
                 }
             }
             .font(.system(size: 11)).foregroundStyle(Color("NewsworthyGradientMuted"))

@@ -154,7 +154,6 @@ public class RatingWidget extends AppWidgetProvider {
     }
 
     static void renderAll(Context context) {
-        boolean saved = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE).getBoolean(SAVED, true);
         JSONObject reading = null;
         try {
             JSONObject cached = new JSONObject(context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE).getString(CACHE, ""));
@@ -186,7 +185,7 @@ public class RatingWidget extends AppWidgetProvider {
                 views.setContentDescription(R.id.widget_score, reading.optInt("score") + " out of 10");
                 views.setTextViewText(R.id.widget_explanation, reading.optString("explanation"));
                 String date = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(readingDate(reading));
-                views.setTextViewText(R.id.widget_updated, (saved ? "Saved · " : "Updated ") + date);
+                views.setTextViewText(R.id.widget_updated, "Updated " + date);
             }
             views.setViewVisibility(R.id.widget_explanation, compact ? View.GONE : View.VISIBLE);
             manager.updateAppWidget(id, views);

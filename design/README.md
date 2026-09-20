@@ -169,3 +169,14 @@ current score. Palette resources remain adaptive when the host changes theme.
 Native verification and remaining launcher/device states are recorded in
 `store/widget-layout-verification.json`; a browser study is not evidence for the
 native implementation. Web and the main native reading screen are unchanged.
+
+## Reading status copy
+
+Do not add saving, saved, checking, loading, waiting, or refresh status copy to
+the reading screen or either native widget, including their accessibility labels.
+Keep the original update time with a cached reading. Empty widgets show the
+neutral dash with no placeholder sentence or timestamp message. The app retains
+its actionable unavailable/retry state only after a failed request with no reading,
+and feedback from an explicit Share action. New visible copy requires owner approval.
+Regression coverage lives in `test/surface-design.test.js`. Source changes require
+a replacement native build before the installed app can change.

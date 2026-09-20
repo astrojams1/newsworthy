@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-18T20:18:05+00:00
+Updated: 2026-09-20T09:41:10+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -68,6 +68,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.widget-refresh-build | done | agent | observed | Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary. | — |
 | apple.widget-refresh-upload | done | agent | observed | EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate. | — |
 | apple.widget-refresh-testflight | done | agent | observed | Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing. | — |
+| design.quiet-reading-status | in_progress | agent | observed | Main-screen Saved reading label originated in PR75; PR106 removed it after TestFlight build13. Remaining saved and waiting copy removed from both widget sources; approved-copy regression gate added. | Complete npm test, PR and replacement TestFlight build. Native installed-app and actual WidgetKit/Android launcher verification remains untested. |
 
 ## Evidence and history
 
@@ -1972,3 +1973,13 @@ Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes sav
 Centering and app-to-widget refresh fixes merged in PR103 and released to TestFlight1.0.0 build13. Original App Review build7 remains WAITING_FOR_REVIEW. Native simulator layout checks and signed IPA verification recorded; physical-device widget synchronization and Android launcher checks remain untested.
 
 - PR103; EAS build8b146213-5d8c-4aa8-8818-cbeb7bb02311; Apple build0fe8e3e6-81cc-40a6-a539-38e70d97e9cd IN_BETA_TESTING; store/widget-refresh-verification.json.
+
+### 201. design.quiet-reading-status — in_progress
+
+2026-09-20T09:41:10+00:00 · observed · agent
+
+Main-screen Saved reading label originated in PR75; PR106 removed it after TestFlight build13. Remaining saved and waiting copy removed from both widget sources; approved-copy regression gate added.
+
+- Fetched origin/main 02eb9e1; EAS latest finished iOS build13 from548a13e; 45 design checks pass.
+
+Next: Complete npm test, PR and replacement TestFlight build. Native installed-app and actual WidgetKit/Android launcher verification remains untested.
