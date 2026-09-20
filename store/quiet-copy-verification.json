@@ -13,17 +13,21 @@
     "designGate": "45 passed, including deliberate reintroduction of Saved reading, Saving reading and Refreshing copy.",
     "typeScript": "passed",
     "iosWidgetCompile": "Production WidgetKit source compiled and linked for arm64 iOS16.4 simulator with Xcode16.2; compile evidence only.",
-    "npmTest": "224 passed, 2 failed: isolated local export omitted index.html, causing HTTP404 in discovery and mobile tests. Clean CI verification pending."
+    "npmTest": "226 passed in clean GitHub CI35504520827. Earlier local run passed224, failed two HTTP404 checks because its export omitted index.html; corrected export restored the home route.",
+    "ci": "https://github.com/astrojams1/newsworthy/actions/runs/35504520827",
+    "nativeExports": "CI iOS/Android exports and prebuild passed; not native visual verification."
   },
   "nativeVerification": {
     "ios": "Replacement full app and actual WidgetKit cold launch, cached/offline reading, light/dark and accessibility states not yet tested.",
     "android": "Modified RemoteViews source/XML covered by design contract; native build and actual launcher states not tested."
   },
   "release": {
-    "state": "SOURCE_UPLOADED_FINGERPRINT_PENDING",
+    "state": "IN_PROGRESS",
     "sourceCommit": "005bfe7",
-    "next": "Complete tests, push PR, finish and verify replacement iOS build, upload to TestFlight.",
+    "next": "Finish and verify build14, upload to TestFlight and confirm availability.",
     "buildNumber": "14",
-    "dirtyTree": "Application source committed at005bfe7; only verification and ledger documentation changed afterward."
+    "dirtyTree": "Application source committed at005bfe7; only verification and ledger documentation changed afterward.",
+    "cloudBuildId": "47548539-5a58-4e33-8e39-73ff6bbcf1a6",
+    "pullRequest": "https://github.com/astrojams1/newsworthy/pull/111"
   }
 }

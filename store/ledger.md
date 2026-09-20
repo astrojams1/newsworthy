@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-20T09:52:50+00:00
+Updated: 2026-09-20T10:21:58+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -68,7 +68,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.widget-refresh-build | done | agent | observed | Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary. | — |
 | apple.widget-refresh-upload | done | agent | observed | EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate. | — |
 | apple.widget-refresh-testflight | done | agent | observed | Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing. | — |
-| design.quiet-reading-status | in_progress | agent | observed | Approved-copy design gate45 passed; TypeScript passed; production WidgetKit source compiled. First npm test run passed224 of226: local web export omitted index.html, causing two404 failures; re-exporting with correct workspace dependency links and cleared cache. | Verify web export includes home route, rerun npm test, push PR, finish replacement TestFlight build. Actual native UI remains untested. |
+| design.quiet-reading-status | done | agent | observed | Removed remaining unsolicited widget saved/waiting copy. Approved-copy regression gate45 and full suite226 pass in clean CI, as do TypeScript, native exports and prebuild. Production WidgetKit source compiles; actual updated native visuals remain unverified. | — |
+| apple.quiet-reading-build | waiting_provider | provider | observed | Replacement iOS build14 created on EAS from committed application source005bfe7, including the main-screen removal missing from TestFlight13. | Inspect completed IPA, upload exact build14 to TestFlight, verify availability. Actual physical-device and WidgetKit states remain untested. |
 
 ## Evidence and history
 
@@ -1993,3 +1994,21 @@ Approved-copy design gate45 passed; TypeScript passed; production WidgetKit sour
 - store/quiet-copy-verification.json; full test log and native compile inspected locally.
 
 Next: Verify web export includes home route, rerun npm test, push PR, finish replacement TestFlight build. Actual native UI remains untested.
+
+### 203. design.quiet-reading-status — done
+
+2026-09-20T10:21:51+00:00 · observed · agent
+
+Removed remaining unsolicited widget saved/waiting copy. Approved-copy regression gate45 and full suite226 pass in clean CI, as do TypeScript, native exports and prebuild. Production WidgetKit source compiles; actual updated native visuals remain unverified.
+
+- PR111; GitHub CI35504520827; store/quiet-copy-verification.json
+
+### 204. apple.quiet-reading-build — waiting_provider
+
+2026-09-20T10:21:58+00:00 · observed · provider
+
+Replacement iOS build14 created on EAS from committed application source005bfe7, including the main-screen removal missing from TestFlight13.
+
+- EAS build47548539-5a58-4e33-8e39-73ff6bbcf1a6; store/quiet-copy-verification.json
+
+Next: Inspect completed IPA, upload exact build14 to TestFlight, verify availability. Actual physical-device and WidgetKit states remain untested.
