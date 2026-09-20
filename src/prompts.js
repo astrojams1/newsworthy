@@ -317,7 +317,7 @@ Report one development in a natural, complete sentence: who did what, with its c
 
 // v13 lowers only the sentence budget after a 148-character reading was
 // clipped on the user's medium widget. See docs/prompt-evaluations/v13.md.
-const V13_OUTPUT_CONTRACT = V12_OUTPUT_CONTRACT.replace('150 characters', '100 characters');
+const V13_OUTPUT_CONTRACT = V12_OUTPUT_CONTRACT.replace('150 characters', '140 characters');
 
 const REGISTRY = {
   1: {
@@ -406,7 +406,7 @@ const REGISTRY = {
   },
   13: {
     version: 13,
-    label: 'widget-sentence-100-characters-v13',
+    label: 'widget-sentence-140-characters-v13',
     added: '2026-09-20',
     instructions: V11_INSTRUCTIONS,
     outputContract: V13_OUTPUT_CONTRACT,

@@ -80,7 +80,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [7, 'e760cfdc6c2106ee'], [8, 'e841c5d77cd6bb33'], [9, '994b299f1c979f97'],
     [10, 'dad2824d4df0cb4e'], [11, 'b07394a17c224513'],
     [12, 'ec634a23074c59b3'],
-    [13, '5b0c259f56a123d7'],
+    [13, 'b715e9198306b184'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -232,11 +232,12 @@ test('v12 ships the evaluated sentence contract without changing calibration', a
 test('v13 reduces the widget sentence budget without changing rating or writing guidance', async () => {
   const previous = renderPrompt(12);
   const current = renderPrompt(13);
-  assert.equal(current.text, previous.text.replace('150 characters', '100 characters'));
+  assert.equal(current.text, previous.text.replace('150 characters', '140 characters'));
   const evaluation = JSON.parse(await readFile('docs/prompt-evaluations/v13.json', 'utf8'));
-  assert.equal(current.text, evaluation.published_prompt_text);
+  assert.equal(current.text, evaluation.selected_prompt_text);
+  assert.equal(evaluation.tested_100_character_proposal_prompt_text, previous.text.replace('150 characters', '100 characters'));
   assert.equal(evaluation.reported_sentence.length, 148);
-  assert.ok(evaluation.reported_sentence.length > 100, 'the clipped reading exceeds the new budget');
+  assert.ok(evaluation.reported_sentence.length > 140, 'the clipped reading exceeds the new budget');
   const cases = evaluation.design.cases.map(({ id }) => id).sort();
   for (const arm of ['v12', 'v13']) {
     for (const repeat of [1, 2, 3]) {
