@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-18T20:18:05+00:00",
+  "updated_at": "2026-09-20T10:21:58+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -649,6 +649,28 @@
       ],
       "next_action": "",
       "updated_at": "2026-09-18T20:18:03+00:00"
+    },
+    "design.quiet-reading-status": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Removed remaining unsolicited widget saved/waiting copy. Approved-copy regression gate45 and full suite226 pass in clean CI, as do TypeScript, native exports and prebuild. Production WidgetKit source compiles; actual updated native visuals remain unverified.",
+      "evidence": [
+        "PR111; GitHub CI35504520827; store/quiet-copy-verification.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-20T10:21:51+00:00"
+    },
+    "apple.quiet-reading-build": {
+      "state": "waiting_provider",
+      "owner": "provider",
+      "basis": "observed",
+      "summary": "Replacement iOS build14 created on EAS from committed application source005bfe7, including the main-screen removal missing from TestFlight13.",
+      "evidence": [
+        "EAS build47548539-5a58-4e33-8e39-73ff6bbcf1a6; store/quiet-copy-verification.json"
+      ],
+      "next_action": "Inspect completed IPA, upload exact build14 to TestFlight, verify availability. Actual physical-device and WidgetKit states remain untested.",
+      "updated_at": "2026-09-20T10:21:58+00:00"
     }
   },
   "events": [
@@ -3861,6 +3883,70 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-18T20:18:05+00:00"
+      }
+    },
+    {
+      "sequence": 201,
+      "at": "2026-09-20T09:41:10+00:00",
+      "gate": "design.quiet-reading-status",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Main-screen Saved reading label originated in PR75; PR106 removed it after TestFlight build13. Remaining saved and waiting copy removed from both widget sources; approved-copy regression gate added.",
+        "evidence": [
+          "Fetched origin/main 02eb9e1; EAS latest finished iOS build13 from548a13e; 45 design checks pass."
+        ],
+        "next_action": "Complete npm test, PR and replacement TestFlight build. Native installed-app and actual WidgetKit/Android launcher verification remains untested.",
+        "updated_at": "2026-09-20T09:41:10+00:00"
+      }
+    },
+    {
+      "sequence": 202,
+      "at": "2026-09-20T09:52:50+00:00",
+      "gate": "design.quiet-reading-status",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Approved-copy design gate45 passed; TypeScript passed; production WidgetKit source compiled. First npm test run passed224 of226: local web export omitted index.html, causing two404 failures; re-exporting with correct workspace dependency links and cleared cache.",
+        "evidence": [
+          "store/quiet-copy-verification.json; full test log and native compile inspected locally."
+        ],
+        "next_action": "Verify web export includes home route, rerun npm test, push PR, finish replacement TestFlight build. Actual native UI remains untested.",
+        "updated_at": "2026-09-20T09:52:50+00:00"
+      }
+    },
+    {
+      "sequence": 203,
+      "at": "2026-09-20T10:21:51+00:00",
+      "gate": "design.quiet-reading-status",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Removed remaining unsolicited widget saved/waiting copy. Approved-copy regression gate45 and full suite226 pass in clean CI, as do TypeScript, native exports and prebuild. Production WidgetKit source compiles; actual updated native visuals remain unverified.",
+        "evidence": [
+          "PR111; GitHub CI35504520827; store/quiet-copy-verification.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-20T10:21:51+00:00"
+      }
+    },
+    {
+      "sequence": 204,
+      "at": "2026-09-20T10:21:58+00:00",
+      "gate": "apple.quiet-reading-build",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Replacement iOS build14 created on EAS from committed application source005bfe7, including the main-screen removal missing from TestFlight13.",
+        "evidence": [
+          "EAS build47548539-5a58-4e33-8e39-73ff6bbcf1a6; store/quiet-copy-verification.json"
+        ],
+        "next_action": "Inspect completed IPA, upload exact build14 to TestFlight, verify availability. Actual physical-device and WidgetKit states remain untested.",
+        "updated_at": "2026-09-20T10:21:58+00:00"
       }
     }
   ],

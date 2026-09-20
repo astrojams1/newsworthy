@@ -10,15 +10,48 @@ test('reading refreshes never add loading, saved or retry text to an existing me
     for (const loading of [false, true]) for (const failed of [false, true]) {
       const tree = nodes(renderReading({ platform, width: 390, height: 844, saved, loading, failed }));
       const text = JSON.stringify(tree.filter(n => n.type === 'Text').map(n => n.props.children));
-      assert.doesNotMatch(text, /Checking|Loading|Saved reading|Try again|unavailable/);
+      assert.doesNotMatch(text, /Checking|Loading|Sav(?:ed|ing)|Waiting|Refreshing|Syncing|Try again|unavailable/i);
       assert.match(text, /A quiet day for the world/);
       assert.match(text, /Updated/);
+      assertApprovedReadingCopy(tree);
     }
     const empty = nodes(renderReading({ platform, width: 390, height: 844, score: null, loading: true, failed: true }));
     assert.equal(empty.find(n => n.props.testID === 'rating-explanation').props.children, '');
     const failed = nodes(renderReading({ platform, width: 390, height: 844, score: null, failed: true }));
     assert.equal(failed.find(n => n.props.testID === 'rating-explanation').props.children, 'The latest rating is unavailable.');
     assert.ok(failed.some(n => n.type === 'Text' && n.props.children === 'Try again'));
+  }
+});
+
+function assertApprovedReadingCopy(tree) {
+  const text = tree.filter(n => n.type === 'Text')
+    .map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
+  assert.equal(text.length, 7, 'only approved reading, timestamp and footer text');
+  assert.deepEqual(text.slice(0, 3), ['3', contract.denominatorText, 'A quiet day for the world.']);
+  assert.match(text[3], /^Updated (?:just now|\d+ (?:min ago|hr ago|days ago))$/);
+  assert.deepEqual(text.slice(4), ['Privacy', '·', 'Support']);
+}
+
+for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · ']) {
+  test(`reading gate rejects unsolicited status: ${status}`, () => {
+    const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
+    const sourceOverride = source.replace('>Updated {relative}', `>${status}Updated {relative}`);
+    assert.notEqual(sourceOverride, source, 'regression fixture must change the rendered timestamp');
+    assert.throws(() => assertApprovedReadingCopy(nodes(renderReading({
+      platform: 'ios', width: 390, height: 844, saved: true, loading: true, sourceOverride,
+    }))));
+  });
+}
+
+test('widgets keep cached timestamps and empty states free of status copy', () => {
+  const { swift, java, compact, expanded, light } = widgetSources();
+  assert.match(java, /setTextViewText\(R.id.widget_updated, "Updated " \+ date\)/);
+  assert.match(swift, /Text\("\\\(date.formatted/);
+  assert.match(swift, /accessibilityLabel\("Updated /);
+  assert.match(swift, /Text\(entry.reading\?\.explanation \?\? ""\)/);
+  for (const source of [swift, java, compact, expanded, light]) {
+    assert.doesNotMatch(source, /"[^"\n]*(?:Saved ·|Saved reading|Saving reading|Waiting for a reading|Checking|Loading|latest rating will appear)[^"\n]*"/i);
+    assert.doesNotMatch(source, /@string\/widget_waiting/);
   }
 });
 

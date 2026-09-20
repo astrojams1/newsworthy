@@ -22,12 +22,12 @@
         </LinearLayout>
         <TextView android:id="@+id/widget_explanation" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
             android:layout_marginStart="16dp" android:gravity="top|start" android:includeFontPadding="false"
-            android:text="@string/widget_waiting" android:textSize="14sp" android:lineHeight="20sp" android:maxLines="4"
+            android:text="" android:textSize="14sp" android:lineHeight="20sp" android:maxLines="4"
             android:ellipsize="end" android:textColor="@color/widget_ink"/>
       </LinearLayout>
     </LinearLayout>
     <TextView android:id="@+id/widget_updated" android:layout_width="match_parent" android:layout_height="32dp"
-        android:text="@string/widget_waiting" android:textSize="10sp" android:maxLines="2"
+        android:text="" android:textSize="10sp" android:maxLines="2"
         android:autoSizeTextType="uniform" android:autoSizeMinTextSize="6sp" android:autoSizeMaxTextSize="10sp"
         android:autoSizeStepGranularity="1sp" android:gravity="bottom" android:textColor="@color/widget_muted"/>
 </LinearLayout>
