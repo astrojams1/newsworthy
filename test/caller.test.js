@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { callerInstructions } from '../src/caller.js';
+import { openapiDocument } from '../src/openapi.js';
 import { latestVersion, renderPrompt } from '../src/prompts.js';
 
 const build = () =>
@@ -273,4 +274,17 @@ test('a caller-side cache is named, since no-store cannot reach one', () => {
   const text = build();
   assert.match(text, /own fetch layer caches by URL/);
   assert.match(text, /A distinct query parameter per\s+run/);
+});
+
+test('caller and Action length guidance agree without adding an API rejection', () => {
+  const text = build();
+  const schema = openapiDocument({ baseUrl: 'https://example.test' })
+    .paths['/api/readings'].post.requestBody.content['application/json'].schema;
+  const guidance = /at most 150 characters including spaces and punctuation/;
+  assert.match(renderPrompt(latestVersion()).text, guidance);
+  assert.match(text, guidance);
+  assert.match(schema.properties.explanation.description, guidance);
+  assert.doesNotMatch(text, /25[- ]word/);
+  assert.equal(schema.properties.explanation.maxLength, undefined, 'generation guidance is not a new rejection');
+  assert.match(text, /beyond 400 characters is truncated and stored, never rejected/);
 });

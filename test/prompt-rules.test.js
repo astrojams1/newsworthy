@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { renderPrompt, latestVersion, allPrompts } from '../src/prompts.js';
 import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
 
@@ -78,6 +79,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [4, 'cce0a516da847bf4'], [5, '6470f557ee94563d'], [6, 'cb27cb79f8f78ac2'],
     [7, 'e760cfdc6c2106ee'], [8, 'e841c5d77cd6bb33'], [9, '994b299f1c979f97'],
     [10, 'dad2824d4df0cb4e'], [11, 'b07394a17c224513'],
+    [12, 'ec634a23074c59b3'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -151,14 +153,17 @@ test('the caller surface serves the current prompt and nothing else', async () =
 
       const prompt = await (await fetch(`${base}/api/prompt?${token}${query}`)).json();
       assert.equal(prompt.version, current.version, `/api/prompt?${query} served v${prompt.version}`);
+      assert.equal(prompt.text, current.text);
+      assert.equal(createHash('sha256').update(prompt.text, 'utf8').digest('hex'), current.digest);
     }
 
     // And what the page says matches what a submission gets stamped with,
     // which is the invariant the parameter broke.
     const stored = await (await fetch(
-      `${base}/api/readings?${token}&score=4&explanation=A+thing+happened`)).json();
+      `${base}/api/readings?${token}&score=4&explanation=A+thing+happened&prompt_sha256=${current.digest}`)).json();
     assert.equal(stored.prompt_version, current.version);
     assert.equal(stored.prompt_hash, current.hash);
+    assert.equal(stored.prompt_verified, true, 'the served bytes verify against the stamped version');
   });
 });
 
@@ -205,4 +210,19 @@ test('v11 removes the conflict rather than forbidding its symptom', () => {
   assert.equal(v10.text.split('\nOutput')[0], v11.text.split('\nOutput')[0]);
   assert.deepEqual(rungsOf(v11.text), rungsOf(v9.text));
   assert.deepEqual(examplesOf(v11.text), examplesOf(v9.text));
+});
+
+test('v12 ships the evaluated sentence contract without changing calibration', async () => {
+  const previous = renderPrompt(11);
+  const current = renderPrompt(12);
+  const evaluation = JSON.parse(await readFile('docs/prompt-evaluations/v12.json', 'utf8'));
+  assert.equal(current.text, evaluation.published_prompt_text, 'ship the exact evaluated candidate');
+  assert.equal(current.text.split('\nOutput')[0], previous.text.split('\nOutput')[0]);
+  assert.deepEqual(rungsOf(current.text), rungsOf(previous.text));
+  assert.deepEqual(examplesOf(current.text), examplesOf(previous.text));
+  const output = current.text.split('\nOutput')[1];
+  assert.match(output, /at most 150 characters including spaces and punctuation/);
+  assert.doesNotMatch(output, /25 words/);
+  assert.match(output, /No em dashes or semicolons/);
+  assert.match(output, /independently of its score/);
 });

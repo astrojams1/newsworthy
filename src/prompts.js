@@ -305,6 +305,16 @@ The sentence is the same on a quiet day as on a busy one: the biggest thing that
 // is rated changes and readings stay comparable across all three.
 const V11_INSTRUCTIONS = V9_INSTRUCTIONS;
 
+// v12 changes sentence writing only. The tested 150-character contract keeps
+// useful specifics and familiar abbreviations; evidence and limitations live
+// in docs/prompt-evaluations/v12.md. All rating instructions stay byte-identical.
+const V12_OUTPUT_CONTRACT = `Output
+
+Reply with a single JSON object and nothing else — no prose, no markdown fences:
+{"score": <integer 1-10>, "explanation": "<one sentence, at most 150 characters including spaces and punctuation>"}
+
+Report one development in a natural, complete sentence: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations such as US and NATO. Keep useful specifics when they fit. Omit side stories, jargon and vague claims of significance. No em dashes or semicolons. Cut secondary details rather than squeezing them into fragments or stacked clauses. Do not pad to the limit. Report the event independently of its score, without explaining the rating or telling readers how to feel or act.`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -382,6 +392,13 @@ const REGISTRY = {
     added: '2026-08-28',
     instructions: V11_INSTRUCTIONS,
     outputContract: V11_OUTPUT_CONTRACT,
+  },
+  12: {
+    version: 12,
+    label: 'plain-sentence-150-characters-v12',
+    added: '2026-09-20',
+    instructions: V11_INSTRUCTIONS,
+    outputContract: V12_OUTPUT_CONTRACT,
   },
 };
 

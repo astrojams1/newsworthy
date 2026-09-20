@@ -31,6 +31,7 @@ Read `CLAUDE.md` for repository workflow and technical constraints, and
   or rendered-prop tests alone do not establish native visual parity; record
   actual native verification and any untested states in the release ledger.
 - Follow `PROMPT-RULES.md`; never edit a published rating prompt in place or
-  alter the scale to fit marketing copy.
+  alter the scale to fit marketing copy. For prompt changes, use the repository
+  skill at `.agents/skills/newsworthy-prompt-update/SKILL.md`.
 - Public AI-reader facts live in `public/llms.txt`. Authorized rating instructions
   live in `src/caller.js`; keep the rating and provenance contract intact.
