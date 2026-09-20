@@ -435,7 +435,7 @@ raised after auth has passed, so nothing the table exists for is lost.
 
 There are only four, and all are about a field being absent or malformed. There
 is no length rule: past 400 characters `explanation` is truncated and stored,
-and the prompt's 25-word guidance is style, not a limit the server enforces. A
+and the prompt's 150-character guidance is style, not a limit the server enforces. A
 422 on a submission whose score and sentence are both well formed therefore means
 the request did not arrive as it was sent — so the fix is to send it again, not
 to shorten the sentence.
@@ -663,6 +663,17 @@ The reusable part is the method, not the conclusions: five wordings of one
 prohibition were shipped across nine months of versions, each judged by a rate
 measured on readings nobody could attribute to the text being judged. A prompt
 change is not evaluable until the readings answering it are verified.
+
+**v12 changes sentence writing, not calibration.** Output now requests at most
+150 characters including spaces and punctuation, one clear development, familiar
+abbreviations and useful specifics, without em dashes or semicolons. Everything
+before Output is byte-identical to v11. The caller reference and OpenAPI wording
+match; ingestion still truncates only beyond 400 characters and has the same
+four rejection rules. The [evaluation](docs/prompt-evaluations/v12.md) contains
+72 actual generations on reconstructed notes with GPT-6 Astra, not production
+Claude or the live search workflow. It supports the writing revision, not a
+claim about production quality or scoring. The reusable update process is in
+[the repository skill](.agents/skills/newsworthy-prompt-update/SKILL.md).
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
