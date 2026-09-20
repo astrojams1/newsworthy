@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-20T10:21:58+00:00
+Updated: 2026-09-20T12:12:44+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -69,7 +69,9 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.widget-refresh-upload | done | agent | observed | EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate. | — |
 | apple.widget-refresh-testflight | done | agent | observed | Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing. | — |
 | design.quiet-reading-status | done | agent | observed | Removed remaining unsolicited widget saved/waiting copy. Approved-copy regression gate45 and full suite226 pass in clean CI, as do TypeScript, native exports and prebuild. Production WidgetKit source compiles; actual updated native visuals remain unverified. | — |
-| apple.quiet-reading-build | waiting_provider | provider | observed | Replacement iOS build14 created on EAS from committed application source005bfe7, including the main-screen removal missing from TestFlight13. | Inspect completed IPA, upload exact build14 to TestFlight, verify availability. Actual physical-device and WidgetKit states remain untested. |
+| apple.quiet-reading-build | done | agent | observed | iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy. | — |
+| apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
+| apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 
 ## Evidence and history
 
@@ -2012,3 +2014,47 @@ Replacement iOS build14 created on EAS from committed application source005bfe7,
 - EAS build47548539-5a58-4e33-8e39-73ff6bbcf1a6; store/quiet-copy-verification.json
 
 Next: Inspect completed IPA, upload exact build14 to TestFlight, verify availability. Actual physical-device and WidgetKit states remain untested.
+
+### 205. apple.quiet-reading-build — done
+
+2026-09-20T11:52:23+00:00 · observed · agent
+
+iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy.
+
+- EAS47548539-5a58-4e33-8e39-73ff6bbcf1a6; SHA25636eaf6a8d8a1a239d4c4064f7304ff8475662655fcd67e4560d3bc29ddb04bbb; store/quiet-copy-verification.json
+
+### 206. apple.quiet-reading-upload — in_progress
+
+2026-09-20T11:52:27+00:00 · observed · agent
+
+First noninteractive submit found no attached Expo submission key. Existing local Apple key recovered from earlier release setup; retrying exact build14 cloud submission. API confirms existing review build7 remains WAITING_FOR_REVIEW.
+
+- Local submit log; fresh Apple API readback; existing release credential reference reused without creating a key.
+
+Next: Read EAS submission result, then Apple processing state and existing Release QA availability.
+
+### 207. apple.quiet-reading-upload — waiting_provider
+
+2026-09-20T11:56:51+00:00 · observed · provider
+
+EAS accepted submission of exact iOS build14 using the existing local Apple key. App source is identical to merged PR111; upload completion and Apple processing remain separate.
+
+- Submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c; build47548539-5a58-4e33-8e39-73ff6bbcf1a6
+
+Next: Read submission completion, Apple build14 processing and existing Release QA group availability.
+
+### 208. apple.quiet-reading-upload — done
+
+2026-09-20T12:12:41+00:00 · observed · agent
+
+EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID.
+
+- EAS submission readback FINISHED/error null; Apple builda3547c29-b153-4571-851a-b29ff6ab701a VALID.
+
+### 209. apple.quiet-reading-testflight — done
+
+2026-09-20T12:12:44+00:00 · observed · agent
+
+iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification.
+
+- Fresh Apple API readback; store/quiet-copy-verification.json; merged PR111.
