@@ -2,7 +2,7 @@
   "date": "2026-09-19",
   "scope": "Read newer widget snapshots immediately on app launch/resume and remove unsolicited refresh status text.",
   "baseCommit": "87e1d9a",
-  "releaseState": "SOURCE_ONLY_REQUIRES_NEW_NATIVE_BUILD",
+  "releaseState": "TESTFLIGHT_BUILD14_AVAILABLE_NATIVE_BEHAVIOR_UNVERIFIED",
   "checks": {
     "widgetSync": "6 passed: first render from widget, legacy cache migration, stale disk/network protection, synchronous resume during pending request, score decay, optional/corrupt native caches and app-to-widget refresh.",
     "designGate": "40 passed, including loading, saved, failed and retry states across web/iOS/Android.",
@@ -20,5 +20,12 @@
     "iOS Expo bridge in a complete custom build with App Group entitlement",
     "Android custom build and launcher-to-app handoff, including offline launch and pending worker/app requests",
     "Native reading and small/expanded widgets in both appearances, score10, enlarged text, resize and theme change without refresh"
-  ]
+  ],
+  "releaseUpdate": {
+    "date": "2026-09-20",
+    "build": "14",
+    "state": "IN_BETA_TESTING",
+    "evidence": "store/quiet-copy-verification.json",
+    "scope": "The earlier source fix is now included in a signed TestFlight package. Original native runtime checks remain untested."
+  }
 }

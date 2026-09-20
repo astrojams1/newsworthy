@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-20T11:56:51+00:00",
+  "updated_at": "2026-09-20T12:12:44+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -673,15 +673,26 @@
       "updated_at": "2026-09-20T11:52:23+00:00"
     },
     "apple.quiet-reading-upload": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "EAS accepted submission of exact iOS build14 using the existing local Apple key. App source is identical to merged PR111; upload completion and Apple processing remain separate.",
+      "summary": "EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID.",
       "evidence": [
-        "Submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c; build47548539-5a58-4e33-8e39-73ff6bbcf1a6"
+        "EAS submission readback FINISHED/error null; Apple builda3547c29-b153-4571-851a-b29ff6ab701a VALID."
       ],
-      "next_action": "Read submission completion, Apple build14 processing and existing Release QA group availability.",
-      "updated_at": "2026-09-20T11:56:51+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-20T12:12:41+00:00"
+    },
+    "apple.quiet-reading-testflight": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification.",
+      "evidence": [
+        "Fresh Apple API readback; store/quiet-copy-verification.json; merged PR111."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-20T12:12:44+00:00"
     }
   },
   "events": [
@@ -4006,6 +4017,38 @@
         ],
         "next_action": "Read submission completion, Apple build14 processing and existing Release QA group availability.",
         "updated_at": "2026-09-20T11:56:51+00:00"
+      }
+    },
+    {
+      "sequence": 208,
+      "at": "2026-09-20T12:12:41+00:00",
+      "gate": "apple.quiet-reading-upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID.",
+        "evidence": [
+          "EAS submission readback FINISHED/error null; Apple builda3547c29-b153-4571-851a-b29ff6ab701a VALID."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-20T12:12:41+00:00"
+      }
+    },
+    {
+      "sequence": 209,
+      "at": "2026-09-20T12:12:44+00:00",
+      "gate": "apple.quiet-reading-testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification.",
+        "evidence": [
+          "Fresh Apple API readback; store/quiet-copy-verification.json; merged PR111."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-20T12:12:44+00:00"
       }
     }
   ],

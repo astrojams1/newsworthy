@@ -25,9 +25,9 @@
     "android": "Modified RemoteViews source/XML covered by design contract; native build and actual launcher states not tested."
   },
   "release": {
-    "state": "SUBMISSION_QUEUED",
+    "state": "IN_BETA_TESTING",
     "sourceCommit": "b4ebc82f35e15bf15b2849058dc46759da3848e2",
-    "next": "Complete exact build14 upload and verify TestFlight availability.",
+    "next": "Install TestFlight1.0.0(14) and verify physical-device launch/resume, saved/offline states and actual widgets.",
     "buildNumber": "14",
     "dirtyTree": "Application source matches merged PR111; release-record-only edits were made during build preparation.",
     "cloudBuildId": "47548539-5a58-4e33-8e39-73ff6bbcf1a6",
@@ -60,6 +60,13 @@
       ]
     },
     "appReview": "WAITING_FOR_REVIEW with build7; unchanged.",
-    "submissionId": "749e28ca-b0f6-47dc-8597-bbf7fb0a781c"
+    "submissionId": "749e28ca-b0f6-47dc-8597-bbf7fb0a781c",
+    "uploadState": "COMPLETE",
+    "appleBuildId": "a3547c29-b153-4571-851a-b29ff6ab701a",
+    "appleProcessingState": "VALID",
+    "testFlightGroup": "Release QA",
+    "testFlightGroupId": "312a8585-2ca2-413e-bb5f-75d0ba487e13",
+    "testFlightGroupAssignment": "ACCEPTED",
+    "testNotes": "SAVED_AND_VERIFIED"
   }
 }
