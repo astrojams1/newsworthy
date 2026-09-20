@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-20",
+  "scope": "Remove unsolicited saved, saving, waiting and refresh status text across app and widgets.",
+  "sourceCommit": "005bfe7",
+  "diagnosis": {
+    "introduced": "30f26db / PR75 on 2026-09-15",
+    "mainScreenRemoved": "3e60ba6 / PR106 on 2026-09-19",
+    "latestExistingIOSBuild": "13",
+    "latestExistingIOSSource": "548a13e74ea474013ae6e1da7215690ed397c73e",
+    "build13Artifact": "Existing IPA still includes Checking the latest rating. Source predates main-screen removal."
+  },
+  "checks": {
+    "designGate": "45 passed, including deliberate reintroduction of Saved reading, Saving reading and Refreshing copy.",
+    "typeScript": "passed",
+    "iosWidgetCompile": "Production WidgetKit source compiled and linked for arm64 iOS16.4 simulator with Xcode16.2; compile evidence only.",
+    "npmTest": "224 passed, 2 failed: isolated local export omitted index.html, causing HTTP404 in discovery and mobile tests. Clean CI verification pending."
+  },
+  "nativeVerification": {
+    "ios": "Replacement full app and actual WidgetKit cold launch, cached/offline reading, light/dark and accessibility states not yet tested.",
+    "android": "Modified RemoteViews source/XML covered by design contract; native build and actual launcher states not tested."
+  },
+  "release": {
+    "state": "SOURCE_UPLOADED_FINGERPRINT_PENDING",
+    "sourceCommit": "005bfe7",
+    "next": "Complete tests, push PR, finish and verify replacement iOS build, upload to TestFlight.",
+    "buildNumber": "14",
+    "dirtyTree": "Application source committed at005bfe7; only verification and ledger documentation changed afterward."
+  }
+}

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-20T09:41:10+00:00",
+  "updated_at": "2026-09-20T09:52:50+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -654,12 +654,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Main-screen Saved reading label originated in PR75; PR106 removed it after TestFlight build13. Remaining saved and waiting copy removed from both widget sources; approved-copy regression gate added.",
+      "summary": "Approved-copy design gate45 passed; TypeScript passed; production WidgetKit source compiled. First npm test run passed224 of226: local web export omitted index.html, causing two404 failures; re-exporting with correct workspace dependency links and cleared cache.",
       "evidence": [
-        "Fetched origin/main 02eb9e1; EAS latest finished iOS build13 from548a13e; 45 design checks pass."
+        "store/quiet-copy-verification.json; full test log and native compile inspected locally."
       ],
-      "next_action": "Complete npm test, PR and replacement TestFlight build. Native installed-app and actual WidgetKit/Android launcher verification remains untested.",
-      "updated_at": "2026-09-20T09:41:10+00:00"
+      "next_action": "Verify web export includes home route, rerun npm test, push PR, finish replacement TestFlight build. Actual native UI remains untested.",
+      "updated_at": "2026-09-20T09:52:50+00:00"
     }
   },
   "events": [
@@ -3888,6 +3888,22 @@
         ],
         "next_action": "Complete npm test, PR and replacement TestFlight build. Native installed-app and actual WidgetKit/Android launcher verification remains untested.",
         "updated_at": "2026-09-20T09:41:10+00:00"
+      }
+    },
+    {
+      "sequence": 202,
+      "at": "2026-09-20T09:52:50+00:00",
+      "gate": "design.quiet-reading-status",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Approved-copy design gate45 passed; TypeScript passed; production WidgetKit source compiled. First npm test run passed224 of226: local web export omitted index.html, causing two404 failures; re-exporting with correct workspace dependency links and cleared cache.",
+        "evidence": [
+          "store/quiet-copy-verification.json; full test log and native compile inspected locally."
+        ],
+        "next_action": "Verify web export includes home route, rerun npm test, push PR, finish replacement TestFlight build. Actual native UI remains untested.",
+        "updated_at": "2026-09-20T09:52:50+00:00"
       }
     }
   ],
