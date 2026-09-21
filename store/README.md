@@ -3,15 +3,13 @@
 One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
-Last checked **September 17, 2026**. Neither app is publicly released.
-Apple **build 7 is Waiting for Review**. The supplied physical-device recording
-shows the launch, live reading, small/medium widgets and corrected plain header.
-The six-part response and 66-second demonstration were posted to App Review;
-the same response is saved in Notes. Both version and submission states were
-verified through the API. See [submission evidence](apple-review-resubmission.json),
-[video verification](apple-physical-review-video.json) and
-[the response](apple-review-response.md). Review approval is still pending.
-Internal TestFlight group **Release QA** includes build 7.
+**September 21, 2026 update:** the owner supplied Apple's Guideline 4.2
+rejection of **build 7** for minimum functionality. The owner reports submitting the reconsideration reply; provider readback
+is pending. Do not send a duplicate.
+See [the exact reply and handoff](apple-4.2-reconsideration.md).
+Neither app is publicly released. Earlier submission/video evidence remains
+historical; the September 17 Waiting for Review result is superseded.
+
 The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
 captures show the approved design and Privacy/Support footer.
@@ -87,10 +85,10 @@ still blocks app creation. See the ledger for current gates and exact next actio
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** submission `4f28761f-3096-4f0d-aa37-df83332f818f` and
-  version 1.0.0 both report **WAITING_FOR_REVIEW**, with **build 7** selected.
-  The Guideline 2.1 response/video was posted and verified. This proves receipt
-  and queuing, not approval. Automatic release after approval remains configured.
+- **Apple review:** the owner supplied the September 21 **Guideline 4.2
+  rejection** of build7. The owner reports submitting the reconsideration reply; see
+  [reply status](apple-4.2-reconsideration.md). Live API readback confirms version **REJECTED** and submission
+  **UNRESOLVED_ISSUES**; earlier WAITING_FOR_REVIEW evidence is historical.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.
 
 ## Reproduce the artwork

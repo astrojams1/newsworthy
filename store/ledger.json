@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-20T12:12:44+00:00",
+  "updated_at": "2026-09-21T10:07:25+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -180,13 +180,13 @@
     "apple.review": {
       "state": "waiting_provider",
       "owner": "provider",
-      "basis": "observed",
-      "summary": "Build7 resubmitted after the six-part reply and video. App Store version and review submission both read back WAITING_FOR_REVIEW.",
+      "basis": "user_reported",
+      "summary": "Owner reports submitting the authorized Guideline4.2 reconsideration reply. Provider message and review-state readback remain pending; do not send a duplicate.",
       "evidence": [
-        "store/apple-review-resubmission.json; submission4f28761f-3096-4f0d-aa37-df83332f818f; build eff31b5d-6c18-492d-874c-d7a0e4392bf6."
+        "store/apple-4.2-reconsideration.md; owner message: I submitted the reply."
       ],
-      "next_action": "Read Apple review result; address any new request. Approval and public availability remain unverified.",
-      "updated_at": "2026-09-17T04:34:59+00:00"
+      "next_action": "Read Apple response and exact review state when browser access returns. Continue separate account readiness gates.",
+      "updated_at": "2026-09-21T10:00:57+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -693,6 +693,17 @@
       ],
       "next_action": "",
       "updated_at": "2026-09-20T12:12:44+00:00"
+    },
+    "apple.review-state": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission.",
+      "evidence": [
+        "GET appStoreVersions/267c6f52-d22d-4cb0-bb4c-d22f280b4499 and reviewSubmissions/4f28761f-3096-4f0d-aa37-df83332f818f returned HTTP200; store/release.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-21T10:07:25+00:00"
     }
   },
   "events": [
@@ -4049,6 +4060,54 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-20T12:12:44+00:00"
+      }
+    },
+    {
+      "sequence": 210,
+      "at": "2026-09-21T09:59:25+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "user_reported",
+        "summary": "Owner supplied September21 Guideline4.2 minimum-functionality rejection of build7. Earlier Waiting for Review state is superseded. Reconsideration reply authorized, unsent.",
+        "evidence": [
+          "store/apple-4.2-reconsideration.md; owner-pasted Apple message and SEND IT instruction"
+        ],
+        "next_action": "Restore browser control, check conversation for existing reply, send authorized text once and verify readback.",
+        "updated_at": "2026-09-21T09:59:25+00:00"
+      }
+    },
+    {
+      "sequence": 211,
+      "at": "2026-09-21T10:00:57+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "user_reported",
+        "summary": "Owner reports submitting the authorized Guideline4.2 reconsideration reply. Provider message and review-state readback remain pending; do not send a duplicate.",
+        "evidence": [
+          "store/apple-4.2-reconsideration.md; owner message: I submitted the reply."
+        ],
+        "next_action": "Read Apple response and exact review state when browser access returns. Continue separate account readiness gates.",
+        "updated_at": "2026-09-21T10:00:57+00:00"
+      }
+    },
+    {
+      "sequence": 212,
+      "at": "2026-09-21T10:07:25+00:00",
+      "gate": "apple.review-state",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission.",
+        "evidence": [
+          "GET appStoreVersions/267c6f52-d22d-4cb0-bb4c-d22f280b4499 and reviewSubmissions/4f28761f-3096-4f0d-aa37-df83332f818f returned HTTP200; store/release.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-21T10:07:25+00:00"
       }
     }
   ],

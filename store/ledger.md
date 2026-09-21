@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-20T12:12:44+00:00
+Updated: 2026-09-21T10:07:25+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,7 +25,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Apple build7 is VALID and selected for App Store version1.0.0; API relationship readback confirmed eff31b5d-6c18-492d-874c-d7a0e4392bf6. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | Build7 resubmitted after the six-part reply and video. App Store version and review submission both read back WAITING_FOR_REVIEW. | Read Apple review result; address any new request. Approval and public availability remain unverified. |
+| apple.review | waiting_provider | provider | user_reported | Owner reports submitting the authorized Guideline4.2 reconsideration reply. Provider message and review-state readback remain pending; do not send a duplicate. | Read Apple response and exact review state when browser access returns. Continue separate account readiness gates. |
 | apple.release | waiting_provider | provider | observed | Build7 is Waiting for Review after response/video resubmission. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, complete paid-sale account readiness, and verify public paid availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
@@ -72,6 +72,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.quiet-reading-build | done | agent | observed | iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy. | — |
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
+| apple.review-state | done | agent | observed | Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission. | — |
 
 ## Evidence and history
 
@@ -2058,3 +2059,31 @@ EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple 
 iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification.
 
 - Fresh Apple API readback; store/quiet-copy-verification.json; merged PR111.
+
+### 210. apple.review — in_progress
+
+2026-09-21T09:59:25+00:00 · user_reported · agent
+
+Owner supplied September21 Guideline4.2 minimum-functionality rejection of build7. Earlier Waiting for Review state is superseded. Reconsideration reply authorized, unsent.
+
+- store/apple-4.2-reconsideration.md; owner-pasted Apple message and SEND IT instruction
+
+Next: Restore browser control, check conversation for existing reply, send authorized text once and verify readback.
+
+### 211. apple.review — waiting_provider
+
+2026-09-21T10:00:57+00:00 · user_reported · provider
+
+Owner reports submitting the authorized Guideline4.2 reconsideration reply. Provider message and review-state readback remain pending; do not send a duplicate.
+
+- store/apple-4.2-reconsideration.md; owner message: I submitted the reply.
+
+Next: Read Apple response and exact review state when browser access returns. Continue separate account readiness gates.
+
+### 212. apple.review-state — done
+
+2026-09-21T10:07:25+00:00 · observed · agent
+
+Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission.
+
+- GET appStoreVersions/267c6f52-d22d-4cb0-bb4c-d22f280b4499 and reviewSubmissions/4f28761f-3096-4f0d-aa37-df83332f818f returned HTTP200; store/release.json

@@ -107,13 +107,14 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 ## Work the agent can do
 
-**Apple build 7 is Waiting for Review.** The supplied physical recording shows
-TestFlight 1.0.0(7), app launch, live reading, small/medium Home Screen widgets
-and the corrected plain title/share header in light appearance. The video and
-six-part reply were posted to App Review, Notes were saved, and both provider
-review states were verified. No further invitation or recording transfer is
-currently requested. See [submission evidence](apple-review-resubmission.json)
-and [the exact verification scope](apple-physical-review-video.json).
+**Apple rejected build7 under Guideline 4.2 on September 21**, according to the
+owner's pasted message. The owner reports submitting the
+[reconsideration reply](apple-4.2-reconsideration.md). No further reply is needed
+now. Do not duplicate it. Message readback is pending. Apple’s API confirms
+REJECTED / UNRESOLVED_ISSUES; inspect Apple’s response when access returns.
+A reply alone does not confirm re-queuing.
+The earlier physical recording and Guideline 2.1 response remain historical
+evidence. Newer TestFlight builds do not establish a replacement App Review submission.
 
 Android corrective preview APK10 passed emulator checks for maximum-text widget
 labels and background appearance changes. Production **AAB11** is downloaded
@@ -123,7 +124,7 @@ and the remaining native score10 case are separate from emulator coverage.
 
 The remaining technical release work is:
 
-- Read Apple's review result and address any new request. Verify paid-sale
+- Read back the owner-submitted reconsideration reply and await Apple’s response. Verify paid-sale
   readiness and public availability after approval.
 - When Google enables **Create app**, create Newsworthy as **paid**, configure
   US$1.00 pricing, upload AAB11 and the prepared listing/artwork, complete privacy

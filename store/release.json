@@ -20,13 +20,13 @@
     "dsaCompliance": "ACTIVE",
     "w9Status": "ACTIVE",
     "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
-    "reviewState": "WAITING_FOR_REVIEW",
+    "reviewState": "REJECTED",
     "reviewSubmittedDate": "2026-09-17T04:33:40.475Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,
     "availableInNewTerritories": true,
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
-    "reviewSubmissionState": "WAITING_FOR_REVIEW",
+    "reviewSubmissionState": "UNRESOLVED_ISSUES",
     "replacementBuildRequired": false,
     "replacementBuilds": [
       {
@@ -146,7 +146,18 @@
     "reviewResubmittedAt": "2026-09-17T04:33:40.475Z",
     "reviewResubmissionEvidence": "store/apple-review-resubmission.json",
     "firstReviewSubmittedDate": "2026-09-16T07:50:46.874Z",
-    "reviewStatusObservedAt": "2026-09-17T04:33:43.363Z"
+    "reviewStatusObservedAt": "2026-09-21T10:07:15.390018+00:00",
+    "latestReviewReport": {
+      "date": "2026-09-21",
+      "basis": "user_reported",
+      "reviewedBuild": "7",
+      "outcome": "REJECTED",
+      "guideline": "4.2 Minimum Functionality",
+      "replyStatus": "SUBMITTED_BY_OWNER_PENDING_READBACK",
+      "evidence": "store/apple-4.2-reconsideration.md",
+      "note": "Live API readback confirms version REJECTED and submission UNRESOLVED_ISSUES. Reply submission is owner-reported; message readback pending."
+    },
+    "previousReviewStatusObservedAt": "2026-09-17T04:33:43.363Z"
   },
   "google": {
     "productionBuild": "4dc57992-b1e5-4517-8197-215b66789963",
