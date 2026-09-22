@@ -1,0 +1,4 @@
+interface:
+  display_name: "Newsworthy user research"
+  short_description: "Find unmet news needs and maintain evidence ledgers"
+  default_prompt: "Use $newsworthy-user-research to investigate public news-app complaints and update the run and opportunity ledgers."

@@ -35,3 +35,7 @@ Read `CLAUDE.md` for repository workflow and technical constraints, and
   skill at `.agents/skills/newsworthy-prompt-update/SKILL.md`.
 - Public AI-reader facts live in `public/llms.txt`. Authorized rating instructions
   live in `src/caller.js`; keep the rating and provenance contract intact.
+- For public news-app complaint research and product discovery, use
+  `.agents/skills/newsworthy-user-research/SKILL.md`; retain evidence and search
+  lessons in `docs/user-research/runs.md` and decisions in
+  `docs/user-research/opportunities.md`.
