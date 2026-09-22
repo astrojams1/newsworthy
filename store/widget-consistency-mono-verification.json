@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-22",
+  "baseCommit": "611201b",
+  "scope": "Shared widget refresh, timestamp ordering, score-bound background identity, monospace score and denominator, compact slash spacing, and third-sentence-line baseline.",
+  "releaseState": "SOURCE_FIX_NOT_RELEASED",
+  "checks": {
+    "designGate": "67 passed, including pixel measurements of untouched actual Home Screen captures and rejection of the earlier misaligned captures.",
+    "swiftStore": "Production Swift actor compiled and executed: coalesced sizes, sibling reload, restart, stale response, same-message decay, concurrent app update, offline and invalid cache.",
+    "typeScript": "passed",
+    "fullSuite": "npm test passed: 248 passed, 1 explicitly opt-in native Swift test skipped; production web export completed. The production Swift actor was also compiled and tested separately.",
+    "fontParity": "Native iOS probe resolved React Native ui-monospace/300 and UIFont.monospacedSystemFont/light to the identical .AppleSystemUIFontMonospaced-Light name, attributes and cap height. Current React Native source maps ui-monospace to UIFontDescriptorSystemDesignMonospaced. Updated app bundle rendered and captured in the simulator."
+  },
+  "nativeVerification": {
+    "ios": "Actual small and medium Home Screen widgets on iPhone 16 Pro Max / iOS 18.3. Previous cap-height approximation put the numeral 3 pixels above and below the sentence anchors; the subsequent guessed -1-point denominator offset put its 1 digit 3 pixels below line three. Both are superseded. The final implementation sizes from Core Text glyph outlines and independently aligns the lower edge of each denominator glyph, rounding measured corrections to device pixels. Untouched light/dark screenshots at live score 3 measure numeral and first capital tops at row 423; numeral, slash, 1, 0 and the flat-bottom line-three letter all end at row 572 using the 50% normalized-contrast contour. A second live reading (7:06 PM) was verified with new sentence anchors and the same zero pixel differences. Both widgets showed matching new timestamps after the updated app opened. These measurements prove the captured states, not every score or accessibility configuration.",
+    "android": "Design/source contract checked; no Android SDK or Java runtime available for a new native capture.",
+    "iosBuildProvenance": "Compiled production NewsworthyWidget.swift, WidgetReadingStore.swift and WidgetConfig.swift with Xcode 16.2 swiftc, iPhoneSimulator 18.2 SDK, arm64 iOS 16.4 simulator target, application-extension and linker entry _NSExtensionMain. Installed that extension and the freshly exported production iOS JavaScript bundle in a copy of the existing simulator Newsworthy app, retaining its unchanged native app/framework binaries, Assets.car and AppIntents metadata. Local simulator package version 1501, ad hoc signing with the configured App Group. This verifies current widget code and app interface on native iOS, not a complete rebuilt release binary.",
+    "iosApp": "Re-exported and installed the current production iOS JavaScript bundle and assets inside the existing native simulator package. The updated app uses SF Mono Light via ui-monospace/300, replacing heavier Menlo and matching the widget. Captured the current interface and observed live API loading and shared reading handoff to the widgets."
+  },
+  "untested": [
+    "Complete rebuilt Expo/native release package",
+    "Long-running WidgetKit OS refresh scheduling and transitions between different live scores",
+    "Android launcher rendering and synchronized instance refresh",
+    "Physical devices",
+    "Native score 10, enlarged text and resize"
+  ],
+  "captureStatus": "ACTUAL_WIDGETKIT_HOME_SCREEN_CAPTURED",
+  "captures": [
+    "store/source/widget-consistency-mono/ios-widget-aligned-light.png",
+    "store/source/widget-consistency-mono/ios-widget-aligned-dark.png",
+    "store/source/widget-consistency-mono/ios-widget-current-light.png",
+    "store/source/widget-consistency-mono/ios-app-matching-font.png"
+  ],
+  "sourceSha256": {
+    "apps/client/targets/widget/NewsworthyWidget.swift": "24ce7aca6bf962cec0993a457a8a58ad6596baf3ba0f7144836fdb685d06d753",
+    "apps/client/targets/widget/WidgetReadingStore.swift": "a5dc4fa76eb44277df9f1cdb67f0c5b6d83cea1aa16f3d458e81763d7d9012b7",
+    "test/native/widget-gallery.swift": "257e1e401319d2d292dcf05cbe957ea21bd9fa8fa286548a2e80c6d5d9eca152",
+    "apps/client/app/index.tsx": "2faa81217e6429a9e7f7f3765f2980552fd75227453aee395e5a53ab81ea5eac"
+  },
+  "nativeFontMetrics": {
+    "font": "SF Mono Light at 12pt",
+    "regularSpaceWidth": 29.478515625,
+    "thinSpaceWidth": 29.28515625,
+    "noExtraBlankWidth": 22.060546875,
+    "decision": "Use \u221510: natural glyph side bearings retain a visible gap; SF Mono does not meaningfully narrow Unicode thin/hair spaces."
+  },
+  "pixelProof": "store/source/widget-consistency-mono/alignment-proof.json",
+  "visualProof": "store/source/widget-consistency-mono/alignment-proof.html"
+}

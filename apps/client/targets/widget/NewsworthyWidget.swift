@@ -3,25 +3,7 @@ import SwiftUI
 import Foundation
 import AppIntents
 import UIKit
-
-struct Reading: Codable {
-    let score: Int
-    let explanation: String
-    let created_at: String
-
-    var updatedAt: Date? {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = formatter.date(from: created_at) { return date }
-        formatter.formatOptions = [.withInternetDateTime]
-        return formatter.date(from: created_at)
-    }
-
-    var isValid: Bool {
-        (1...10).contains(score) && !explanation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && explanation.count <= 2000 && updatedAt != nil
-    }
-}
+import CoreText
 
 struct ReadingEntry: TimelineEntry {
     let date: Date
@@ -68,84 +50,30 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
     }
 }
 
-struct AppReading: Codable {
-    let reading: Reading
-    let fetchedAt: Double
-}
-
 struct Provider: TimelineProvider {
-    private var cacheKey: String { "widget.reading.v1:\(WidgetConfig.apiBaseURL)" }
-
-    private func appReading() -> AppReading? {
-        guard let data = UserDefaults(suiteName: WidgetConfig.appGroup)?.data(forKey: cacheKey),
-              let snapshot = try? JSONDecoder().decode(AppReading.self, from: data),
-              snapshot.reading.isValid, snapshot.fetchedAt.isFinite else { return nil }
-        return snapshot
-    }
-
-    private func cached() -> Reading? {
-        if let app = appReading(), app.fetchedAt >= UserDefaults.standard.double(forKey: cacheKey + ":fetchedAt") {
-            return app.reading
-        }
-        return locallyCached()
-    }
-
-    private func locallyCached() -> Reading? {
-        guard let data = UserDefaults.standard.data(forKey: cacheKey),
-              let reading = try? JSONDecoder().decode(Reading.self, from: data), reading.isValid else { return nil }
-        return reading
-    }
+    private static let store = WidgetReadingStore(
+        apiBaseURL: WidgetConfig.apiBaseURL,
+        sharedSuite: WidgetConfig.appGroup,
+        onChange: { WidgetCenter.shared.reloadTimelines(ofKind: "NewsworthyRating") }
+    )
 
     func placeholder(in context: Context) -> ReadingEntry {
         ReadingEntry(date: Date(), reading: nil, saved: false)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (ReadingEntry) -> Void) {
-        completion(ReadingEntry(date: Date(), reading: cached(), saved: true))
+        Task {
+            let snapshot = await Self.store.cached()
+            completion(ReadingEntry(date: Date(), reading: snapshot?.reading, saved: true))
+        }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<ReadingEntry>) -> Void) {
-        let startedAt = Date().timeIntervalSince1970 * 1000
-        // An app-triggered reload can use the just-fetched reading even offline.
-        if let app = appReading(), startedAt - app.fetchedAt < 60_000,
-           app.fetchedAt >= UserDefaults.standard.double(forKey: cacheKey + ":fetchedAt") {
-            completion(timeline(reading: app.reading, saved: false))
-            return
+        Task {
+            let result = await Self.store.refresh()
+            completion(Timeline(entries: [ReadingEntry(date: Date(), reading: result.reading, saved: result.saved)],
+                                policy: .after(Date().addingTimeInterval(30 * 60))))
         }
-        guard let url = URL(string: "\(WidgetConfig.apiBaseURL)/api/current") else {
-            completion(timeline(reading: cached(), saved: true))
-            return
-        }
-        var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 15)
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        URLSession.shared.dataTask(with: request) { data, response, _ in
-            guard let response = response as? HTTPURLResponse, response.statusCode == 200,
-                  let data = data, data.count <= 65_536,
-                  let reading = try? JSONDecoder().decode(Reading.self, from: data), reading.isValid else {
-                completion(timeline(reading: cached(), saved: true))
-                return
-            }
-            // A request already in flight must not undo a later app refresh.
-            if let app = appReading(), app.fetchedAt > startedAt {
-                completion(timeline(reading: app.reading, saved: false))
-                return
-            }
-            // Each process owns its shared key, so concurrent writes cannot erase
-            // the other process's newer snapshot. The app reads both on opening.
-            if let encoded = try? JSONEncoder().encode(reading) {
-                UserDefaults.standard.set(encoded, forKey: cacheKey)
-                UserDefaults.standard.set(startedAt, forKey: cacheKey + ":fetchedAt")
-            }
-            if let encoded = try? JSONEncoder().encode(AppReading(reading: reading, fetchedAt: startedAt)) {
-                UserDefaults(suiteName: WidgetConfig.appGroup)?.set(encoded, forKey: cacheKey + ":widget")
-            }
-            completion(timeline(reading: reading, saved: false))
-        }.resume()
-    }
-
-    private func timeline(reading: Reading?, saved: Bool) -> Timeline<ReadingEntry> {
-        Timeline(entries: [ReadingEntry(date: Date(), reading: reading, saved: saved)],
-                 policy: .after(Date().addingTimeInterval(30 * 60)))
     }
 }
 
@@ -153,17 +81,29 @@ struct Provider: TimelineProvider {
 // Dynamic Type independently; the already-large score remains legible and stable.
 private enum WidgetTypography {
     static let scoreSize: CGFloat = 69
+    static let numeralLines: CGFloat = 3
     static let explanationSize: CGFloat = 14
     static let explanationLineHeight: CGFloat = 20
     static let denominatorSize: CGFloat = 12
     static let columnGap: CGFloat = 16
+
+    // Cap height excludes curved-digit overshoot and the slash's lower stroke.
+    // Use the same native font's actual outlines for visible-edge alignment.
+    static func inkBounds(_ text: String, font: UIFont) -> CGRect {
+        let line = CTLineCreateWithAttributedString(NSAttributedString(string: text, attributes: [.font: font]))
+        return CTLineGetBoundsWithOptions(line, [.useGlyphPathBounds])
+    }
+
+    static func baselineLift(_ text: String, font: UIFont, scale: CGFloat) -> CGFloat {
+        (-inkBounds(text, font: font).minY * scale).rounded() / scale
+    }
 }
 
 // Align actual capital tops, using SwiftUI's measured baselines. A Text frame
 // includes ascenders/leading; treating its top as the numeral top wastes space.
 private struct WidgetReadingLayout: Layout {
     let compact: Bool
-    let scoreCapHeight: CGFloat
+    let scoreInkHeight: CGFloat
     let explanationCapHeight: CGFloat
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
@@ -177,9 +117,9 @@ private struct WidgetReadingLayout: Layout {
         let textProposal = ProposedViewSize(width: width, height: bounds.height)
         let text = !compact && subviews.count > 1 ? subviews[1].dimensions(in: textProposal) : nil
         let textHeight = text.map { $0.height - $0[.firstTextBaseline] + explanationCapHeight } ?? 0
-        let contentHeight = max(scoreCapHeight, textHeight)
+        let contentHeight = max(scoreInkHeight, textHeight)
         let top = max(0, (bounds.height - contentHeight) / 2)
-        number.place(at: CGPoint(x: bounds.minX, y: bounds.minY + top + scoreCapHeight - score[.firstTextBaseline]),
+        number.place(at: CGPoint(x: bounds.minX, y: bounds.minY + top + scoreInkHeight - score[.firstTextBaseline]),
                      anchor: .topLeading, proposal: .unspecified)
         if let text = text {
             subviews[1].place(at: CGPoint(x: bounds.minX + score.width + WidgetTypography.columnGap,
@@ -199,26 +139,49 @@ struct ReadingView: View {
 struct ReadingContent: View {
     let entry: ReadingEntry
     let family: WidgetFamily
+    @Environment(\.displayScale) private var displayScale
     @ScaledMetric(relativeTo: .caption) private var explanationSize = WidgetTypography.explanationSize
     @ScaledMetric(relativeTo: .caption) private var explanationLineHeight = WidgetTypography.explanationLineHeight
+
+    private var numeral: String { entry.reading.map { String($0.score) } ?? "–" }
+    private var sizingNumeral: String { entry.reading.map { String($0.score) } ?? "0" }
 
     // A very narrow/short host may need a smaller number, regardless of family.
     // Measure the two-digit case so readings never jump size when the score changes.
     private func scoreSize(in size: CGSize) -> CGFloat {
-        let font = UIFont.monospacedDigitSystemFont(ofSize: WidgetTypography.scoreSize, weight: .light)
-        let width = ("10" as NSString).size(withAttributes: [.font: font]).width
-        let denominator = (" ∕ 10" as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: WidgetTypography.denominatorSize, weight: .light)]).width
-        let scale = min(1, max(0.4, min(size.height / font.capHeight, (size.width - denominator) / width)))
-        return WidgetTypography.scoreSize * scale
+        let font = UIFont.monospacedSystemFont(ofSize: WidgetTypography.scoreSize, weight: .light)
+        let bodyFont = UIFont.systemFont(ofSize: explanationSize)
+        let targetCapHeight = bodyFont.capHeight + (WidgetTypography.numeralLines - 1) * explanationLineHeight
+        let inkHeight = WidgetTypography.inkBounds(sizingNumeral, font: font).height
+        let idealSize = WidgetTypography.scoreSize * targetCapHeight / inkHeight
+        let fittedFont = UIFont.monospacedSystemFont(ofSize: idealSize, weight: .light)
+        let width = ("10" as NSString).size(withAttributes: [.font: fittedFont]).width
+        let denominator = ("∕10" as NSString).size(withAttributes: [.font: UIFont.monospacedSystemFont(ofSize: WidgetTypography.denominatorSize, weight: .light)]).width
+        let scale = min(1, max(0.4, min(size.height / targetCapHeight, (size.width - denominator) / width)))
+        return idealSize * scale
     }
 
     private func score(size: CGFloat) -> some View {
-        (Text(entry.reading.map { String($0.score) } ?? "–")
-            .font(.system(size: size, weight: .light)).monospacedDigit()
+        let numberFont = UIFont.monospacedSystemFont(ofSize: size, weight: .light)
+        let denominatorFont = UIFont.monospacedSystemFont(ofSize: WidgetTypography.denominatorSize, weight: .light)
+        return (Text(numeral)
+            .font(Font(numberFont))
             .tracking(-size * 0.04)
-         + Text(" ∕ 10")
-            .font(.system(size: WidgetTypography.denominatorSize, weight: .light)).monospacedDigit()
+            .baselineOffset(WidgetTypography.baselineLift(numeral, font: numberFont, scale: displayScale))
+         + Text("∕")
+            .font(Font(denominatorFont))
             .tracking(0)
+            .baselineOffset(WidgetTypography.baselineLift("∕", font: denominatorFont, scale: displayScale))
+            .foregroundColor(Color("NewsworthyGradientMuted"))
+         + Text("1")
+            .font(Font(denominatorFont))
+            .tracking(0)
+            .baselineOffset(WidgetTypography.baselineLift("1", font: denominatorFont, scale: displayScale))
+            .foregroundColor(Color("NewsworthyGradientMuted"))
+         + Text("0")
+            .font(Font(denominatorFont))
+            .tracking(0)
+            .baselineOffset(WidgetTypography.baselineLift("0", font: denominatorFont, scale: displayScale))
             .foregroundColor(Color("NewsworthyGradientMuted")))
             .lineLimit(1).fixedSize()
             .accessibilityElement(children: .ignore)
@@ -235,9 +198,10 @@ struct ReadingContent: View {
             }
             GeometryReader { geometry in
                 let size = scoreSize(in: geometry.size)
-                let scoreFont = UIFont.monospacedDigitSystemFont(ofSize: size, weight: .light)
+                let scoreFont = UIFont.monospacedSystemFont(ofSize: size, weight: .light)
                 let bodyFont = UIFont.systemFont(ofSize: explanationSize)
-                WidgetReadingLayout(compact: family == .systemSmall, scoreCapHeight: scoreFont.capHeight,
+                WidgetReadingLayout(compact: family == .systemSmall,
+                                    scoreInkHeight: WidgetTypography.inkBounds(sizingNumeral, font: scoreFont).height,
                                     explanationCapHeight: bodyFont.capHeight) {
                     score(size: size)
                     if family == .systemMedium {
@@ -267,6 +231,9 @@ struct ReadingContent: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .foregroundStyle(Color("NewsworthyInk"))
         .modifier(WidgetSurface(score: entry.reading?.score))
+        // WidgetKit extracts the container background separately. Replace the whole
+        // surface when the score changes so its retained background changes too.
+        .id(entry.reading?.score)
     }
 }
 
@@ -278,7 +245,7 @@ struct WidgetSurface: ViewModifier {
     }
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
-            content.containerBackground(for: .widget) { background }
+            content.padding(16).containerBackground(for: .widget) { background }
         } else {
             content.padding().background(background)
         }
@@ -294,6 +261,7 @@ struct ConfigurableNewsworthyWidget: Widget {
         .configurationDisplayName("Newsworthy")
         .description("A number out of 10. See the news rating and when it was updated.")
         .supportedFamilies([.systemSmall, .systemMedium])
+        .contentMarginsDisabled()
     }
 }
 

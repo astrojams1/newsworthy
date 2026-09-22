@@ -1,8 +1,12 @@
 {
-  "denominatorText": "∕ 10",
+  "denominatorText": "\u221510",
   "header": {
     "shareIconSize": 24,
-    "shareOpticalOffsetY": { "web": -2, "ios": -2, "android": 0 },
+    "shareOpticalOffsetY": {
+      "web": -2,
+      "ios": -2,
+      "android": 0
+    },
     "minimumTouchTarget": 48
   },
   "widget": {
@@ -11,7 +15,7 @@
     "expandedScore": 69,
     "denominatorSize": 12,
     "trackingEm": -0.04,
-    "androidDenominatorGap": 6,
+    "androidDenominatorGap": 2,
     "minimumDp": 120,
     "minimumCells": 2,
     "expandedMinWidth": 250,
@@ -20,15 +24,22 @@
     "explanationSize": 14,
     "explanationLineHeight": 20,
     "numeralLines": 3,
-    "columnGap": 16
+    "columnGap": 16,
+    "iosNumeralAlignment": "glyph-ink-bounds"
   },
   "reading": {
     "weight": "300",
     "trackingEm": -0.055,
     "denominatorPortrait": 20,
     "denominatorLandscape": 17,
-    "denominatorGap": 9,
+    "denominatorGap": 3,
     "maximumScore": 224,
     "minimumPortraitScore": 64
+  },
+  "scoreFont": {
+    "web": "monospace",
+    "ios": "ui-monospace",
+    "android": "monospace",
+    "iosWidget": "monospaced"
   }
 }

@@ -1,0 +1,254 @@
+{
+  "source": "apps/client/targets/widget/NewsworthyWidget.swift",
+  "sourceSha256": "24ce7aca6bf962cec0993a457a8a58ad6596baf3ba0f7144836fdb685d06d753",
+  "device": "iPhone 16 Pro Max, iOS 18.3, 3× scale",
+  "method": "Untouched actual WidgetKit Home Screen screenshots. Zero-based physical-pixel rows. Measure each glyph at its 50% contrast contour after normalizing against its own ink color and the surrounding gradient; compare W on line one and the flat-bottom T on line three. A faint antialias fringe is not a typographic edge. No screenshot pixels changed.",
+  "scope": "Live score 3, default text size, small and medium widgets, light and dark. Other scores, Dynamic Type sizes and physical devices are not proven by these captures. Also rechecked the next live reading after opening the updated app; all five edge comparisons again had zero mismatch.",
+  "regions": {
+    "numeral": [
+      160,
+      400,
+      275,
+      590
+    ],
+    "firstCapital": [
+      393,
+      400,
+      435,
+      470
+    ],
+    "thirdCapital": [
+      393,
+      535,
+      421,
+      585
+    ],
+    "slash": [
+      275,
+      535,
+      303,
+      585
+    ],
+    "one": [
+      300,
+      535,
+      323,
+      585
+    ],
+    "zero": [
+      323,
+      535,
+      345,
+      585
+    ]
+  },
+  "captures": [
+    {
+      "mode": "light",
+      "file": "store/source/widget-consistency-mono/ios-widget-aligned-light.png",
+      "sha256": "c67c33bdf84245228b5d9f6c95880f4b4a576d1eddc91da3ed5c114f0e1974eb",
+      "metrics": {
+        "numeral": {
+          "left": 177,
+          "top": 423,
+          "right": 271,
+          "bottom": 572,
+          "pixels": 4377
+        },
+        "firstCapital": {
+          "left": 397,
+          "top": 423,
+          "right": 433,
+          "bottom": 452,
+          "pixels": 380
+        },
+        "thirdCapital": {
+          "left": 397,
+          "top": 543,
+          "right": 419,
+          "bottom": 572,
+          "pixels": 195
+        },
+        "slash": {
+          "left": 281,
+          "top": 544,
+          "right": 297,
+          "bottom": 572,
+          "pixels": 97
+        },
+        "one": {
+          "left": 304,
+          "top": 548,
+          "right": 321,
+          "bottom": 572,
+          "pixels": 103
+        },
+        "zero": {
+          "left": 326,
+          "top": 546,
+          "right": 341,
+          "bottom": 572,
+          "pixels": 173
+        }
+      },
+      "topMismatchPixels": 0,
+      "baselineMismatchPixels": {
+        "numeral": 0,
+        "slash": 0,
+        "one": 0,
+        "zero": 0
+      }
+    },
+    {
+      "mode": "dark",
+      "file": "store/source/widget-consistency-mono/ios-widget-aligned-dark.png",
+      "sha256": "abf83639dccbb4c488143f57c11d39b40719bfad06b0b3bd64389f6a142575e5",
+      "metrics": {
+        "numeral": {
+          "left": 177,
+          "top": 423,
+          "right": 271,
+          "bottom": 572,
+          "pixels": 4378
+        },
+        "firstCapital": {
+          "left": 397,
+          "top": 423,
+          "right": 433,
+          "bottom": 452,
+          "pixels": 380
+        },
+        "thirdCapital": {
+          "left": 397,
+          "top": 543,
+          "right": 419,
+          "bottom": 572,
+          "pixels": 195
+        },
+        "slash": {
+          "left": 281,
+          "top": 544,
+          "right": 297,
+          "bottom": 572,
+          "pixels": 97
+        },
+        "one": {
+          "left": 304,
+          "top": 548,
+          "right": 321,
+          "bottom": 572,
+          "pixels": 103
+        },
+        "zero": {
+          "left": 326,
+          "top": 546,
+          "right": 341,
+          "bottom": 572,
+          "pixels": 172
+        }
+      },
+      "topMismatchPixels": 0,
+      "baselineMismatchPixels": {
+        "numeral": 0,
+        "slash": 0,
+        "one": 0,
+        "zero": 0
+      }
+    },
+    {
+      "mode": "light",
+      "reading": "Next live reading at Sep 22 · 7:06 PM; first capital I, line-three flat-bottom t",
+      "file": "store/source/widget-consistency-mono/ios-widget-current-light.png",
+      "sha256": "65c36ed40862765573c05fed4cdeee59ababdafd6b8798c15dd278c86f782f7f",
+      "regions": {
+        "numeral": [
+          160,
+          400,
+          275,
+          590
+        ],
+        "firstCapital": [
+          395,
+          410,
+          405,
+          465
+        ],
+        "thirdCapital": [
+          580,
+          535,
+          599,
+          583
+        ],
+        "slash": [
+          275,
+          535,
+          303,
+          585
+        ],
+        "one": [
+          300,
+          535,
+          323,
+          585
+        ],
+        "zero": [
+          323,
+          535,
+          345,
+          585
+        ]
+      },
+      "metrics": {
+        "numeral": {
+          "left": 177,
+          "top": 423,
+          "right": 271,
+          "bottom": 572,
+          "pixels": 4377
+        },
+        "firstCapital": {
+          "left": 399,
+          "top": 423,
+          "right": 401,
+          "bottom": 452,
+          "pixels": 90
+        },
+        "thirdCapital": {
+          "left": 584,
+          "top": 545,
+          "right": 595,
+          "bottom": 572,
+          "pixels": 126
+        },
+        "slash": {
+          "left": 281,
+          "top": 544,
+          "right": 297,
+          "bottom": 572,
+          "pixels": 97
+        },
+        "one": {
+          "left": 304,
+          "top": 548,
+          "right": 321,
+          "bottom": 572,
+          "pixels": 103
+        },
+        "zero": {
+          "left": 326,
+          "top": 546,
+          "right": 341,
+          "bottom": 572,
+          "pixels": 173
+        }
+      },
+      "topMismatchPixels": 0,
+      "baselineMismatchPixels": {
+        "numeral": 0,
+        "slash": 0,
+        "one": 0,
+        "zero": 0
+      }
+    }
+  ]
+}
