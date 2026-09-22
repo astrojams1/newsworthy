@@ -3,7 +3,7 @@
     <string name="widget_name">NEWSWORTHY</string>
     <string name="widget_description">The news rating and its update time. Tap to open Newsworthy.</string>
     <string name="widget_empty_score">–</string>
-    <string name="widget_denominator">"∕ 10"</string>
+    <string name="widget_denominator">"∕ 10"</string>
     <color name="widget_surface">@color/nw_surface</color>
     <color name="widget_ink">@color/nw_ink</color>
     <color name="widget_muted">@color/nw_gradient_muted</color>

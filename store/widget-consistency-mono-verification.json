@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-22",
+  "baseCommit": "611201b",
+  "scope": "Shared widget refresh, timestamp ordering, score-bound background identity, monospace score and denominator, thin space, and third-sentence-line baseline.",
+  "releaseState": "SOURCE_FIX_NOT_RELEASED",
+  "checks": {
+    "designGate": "55 passed, including deliberate regressions for font, gap, palette identity and third baseline.",
+    "swiftStore": "Production Swift actor compiled and executed: coalesced sizes, sibling reload, restart, stale response, same-message decay, concurrent app update, offline and invalid cache.",
+    "typeScript": "passed",
+    "fullSuite": "Initial run: 234 passed; native compiler timed out under load, and web export omitted index.html with dependencies resolved from the parent checkout. Rerun pending with worktree-local dependencies."
+  },
+  "nativeVerification": {
+    "ios": "Native SwiftUI test host uses the production ReadingContent and generated named-color assets. Capture pending. This does not verify WidgetKit scheduling, background extraction, App Group entitlement, or device installation.",
+    "android": "Design/source contract checked; no Android SDK or Java runtime available for a new native capture."
+  },
+  "untested": [
+    "Updated full Expo package and native module bridges",
+    "WidgetKit Home Screen synchronization, score/background update and OS reload scheduling",
+    "Android launcher rendering and synchronized instance refresh",
+    "Physical devices",
+    "Native score 10, enlarged text, resize, and theme change without refresh"
+  ]
+}

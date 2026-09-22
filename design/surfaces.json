@@ -1,8 +1,12 @@
 {
-  "denominatorText": "∕ 10",
+  "denominatorText": "∕ 10",
   "header": {
     "shareIconSize": 24,
-    "shareOpticalOffsetY": { "web": -2, "ios": -2, "android": 0 },
+    "shareOpticalOffsetY": {
+      "web": -2,
+      "ios": -2,
+      "android": 0
+    },
     "minimumTouchTarget": 48
   },
   "widget": {
@@ -30,5 +34,11 @@
     "denominatorGap": 9,
     "maximumScore": 224,
     "minimumPortraitScore": 64
+  },
+  "scoreFont": {
+    "web": "monospace",
+    "ios": "Menlo",
+    "android": "monospace",
+    "iosWidget": "monospaced"
   }
 }

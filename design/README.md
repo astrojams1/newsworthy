@@ -72,15 +72,16 @@ change to the navigation-bar slots or the title's horizontal position.
 
 `design/surfaces.json` records the approved typography and widget size rules.
 The full reading deliberately uses larger digits than widgets. Compact and expanded widgets use the same 69-point base numeral and a
-12-point `∕ 10`. Expanded descriptions use 14-point text on a 20-point line
+12-point `∕ 10`. Expanded descriptions use 14-point text on a 20-point line
 rhythm beside the numeral, with truncation at the available height.
-All reading surfaces use U+2215 DIVISION SLASH followed by U+0020 SPACE
-for the displayed denominator. The regular space keeps the slash clear of the “1”;
+All reading surfaces use U+2215 DIVISION SLASH followed by U+2009 THIN SPACE
+for the displayed denominator. The thin space keeps the gap small but visible;
 the division slash’s stroke sits optically alongside the lining numerals instead of the ordinary
 slash’s descending tail. Keep the denominator in one text run, on the existing
 score baseline; do not add per-platform vertical offsets. Shared/copied readings
 retain plain `/10`, and the app accessibility label remains “out of 10”.
-Native system fonts, launcher cell geometry, iOS's optional hidden name, timestamp
+Monospaced score/denominator fonts (Menlo in the iOS app, the system monospace
+face in SwiftUI, and monospace on Android/web), launcher cell geometry, iOS's optional hidden name, timestamp
 formatting, and the app's larger-screen spacing are intentional platform variants.
 Do not make one surface look identical by copying another platform's screenshot.
 
@@ -180,3 +181,30 @@ its actionable unavailable/retry state only after a failed request with no readi
 and feedback from an explicit Share action. New visible copy requires owner approval.
 Regression coverage lives in `test/surface-design.test.js`. Source changes require
 a replacement native build before the installed app can change.
+
+## Widget consistency and three-line score alignment
+
+Both iOS families and appearance configurations share a single refresh actor.
+Concurrent requests are coalesced; a changed reading publishes one App Group
+snapshot and requests a reload of every Newsworthy widget. Reloads reuse a
+recent snapshot for 60 seconds to avoid recursive fetch/reload loops. Message
+timestamps take priority, with request timestamps resolving same-message decay.
+Legacy extension caches remain readable. Android renders all instances under the
+same lock and rejects responses carrying an older message. Operating systems
+still schedule presentation; refresh requests do not guarantee simultaneous paint.
+
+The iOS container's identity follows the displayed score, so the number and
+WidgetKit's separately extracted background are replaced together. Every surface
+continues to select its palette from the displayed reading. The approved colors
+are unchanged; levels 1 and 3 intentionally have similar green palettes.
+
+All rating numbers and denominators now use a true monospaced face. Both widget
+sizes derive their ideal numeral size from three sentence lines: the numeral cap
+height equals the sentence cap height plus two line heights. This aligns capital
+tops and the rating/denominator baseline with sentence line three. Host constraints
+may shrink the numeral; those constrained/enlarged states need separate native
+checks. The 69-point value is the reference font used to measure this ratio, not
+a hard ceiling that prevents the baseline from reaching line three.
+
+Verification for this revision is recorded in
+`store/widget-consistency-mono-verification.json`.

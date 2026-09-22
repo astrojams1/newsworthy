@@ -62,6 +62,15 @@ test('native widget implementations satisfy the same compact/expanded design con
 // Prove the checker rejects the actual categories of bugs, rather than merely
 // accepting today's source. Each mutation is isolated and must fail specifically.
 const regressions = [
+  ['iOS score above third baseline', s => { s.swift = s.swift.replace('return idealSize * scale', 'return WidgetTypography.scoreSize * scale'); }, /measured baseline size/],
+  ['Android score above third baseline', s => { s.java = s.java.replace('targetCapHeight / -numberInk.top', '1'); }, /third baseline/],
+  ['wide Android denominator space', s => { s.light = s.light.replace('∕ 10', '∕ 10'); }, /optically aligned division slash/],
+  ['wide iOS denominator space', s => { s.swift = s.swift.replaceAll('∕ 10', '∕ 10'); }, /iOS adaptive denominator/],
+  ['proportional Android digits', s => { s.compact = s.compact.replaceAll('monospace', 'sans-serif-light'); }, /monospace typography/],
+  ['proportional iOS digits', s => { s.swift = s.swift.replaceAll('design: .monospaced', 'design: .default'); }, /monospace face/],
+  ['stale iOS background identity', s => { s.swift = s.swift.replace('.id(entry.reading?.score)', '.id(1)'); }, /background change identity/],
+  ['wrong iOS level', s => { s.swift = s.swift.replace('WidgetSurface(score: entry.reading?.score)', 'WidgetSurface(score: 1)'); }, /background change identity/],
+  ['wrong Android level', s => { s.java = s.java.replace('LevelPalette.background(reading == null ? 0 : reading.optInt("score"))', 'LevelPalette.background(1)'); }, /palette follows displayed score/],
   ['expanded body top aligned', s => { s.expanded = s.expanded.replace('android:gravity="center_vertical"', 'android:gravity="top"'); }, /expanded content centered vertically/],
   ['expanded text fills centered body', s => { s.expanded = s.expanded.replace('android:layout_weight="1" android:layout_height="wrap_content"', 'android:layout_weight="1" android:layout_height="match_parent"'); }, /expanded text fits centered row/],
   ['only iOS compact centered', s => { s.swift = s.swift.replace('let top = max(0, (bounds.height - contentHeight) / 2)', 'let top = compact ? max(0, (bounds.height - contentHeight) / 2) : 0'); }, /iOS both families centered vertically/],
@@ -69,10 +78,10 @@ const regressions = [
   ['expanded text moved below number', s => { s.expanded = s.expanded.replace('android:orientation="horizontal" android:baselineAligned="false"', 'android:orientation="vertical" android:baselineAligned="false"'); }, /expanded description direction/],
   ['iOS text moved below number', s => { s.swift = s.swift.replace('bounds.minX + score.width + WidgetTypography.columnGap', 'bounds.minX'); }, /iOS explanation beside numeral/],
   ['iOS lost optical top alignment', s => { s.swift = s.swift.replace('scoreCapHeight - score[.firstTextBaseline]', '0'); }, /iOS optical score top/],
-  ['low-hanging Android slash', s => { s.light = s.light.replace('∕ 10', '/10'); }, /optically aligned division slash/],
-  ['low-hanging iOS slash', s => { s.swift = s.swift.replaceAll('∕ 10', '/10'); }, /iOS adaptive denominator/],
-  ['crowded Android slash', s => { s.light = s.light.replace('∕ 10', '∕10'); }, /optically aligned division slash/],
-  ['crowded iOS slash', s => { s.swift = s.swift.replaceAll('∕ 10', '∕10'); }, /iOS adaptive denominator/],
+  ['low-hanging Android slash', s => { s.light = s.light.replace('∕ 10', '/10'); }, /optically aligned division slash/],
+  ['low-hanging iOS slash', s => { s.swift = s.swift.replaceAll('∕ 10', '/10'); }, /iOS adaptive denominator/],
+  ['crowded Android slash', s => { s.light = s.light.replace('∕ 10', '∕10'); }, /optically aligned division slash/],
+  ['crowded iOS slash', s => { s.swift = s.swift.replaceAll('∕ 10', '∕10'); }, /iOS adaptive denominator/],
   ['full-size /10', s => { s.compact = s.compact.replace('android:textSize="12sp"', 'android:textSize="52sp"'); }, /compact denominator size/],
   ['lost baseline', s => { s.expanded = s.expanded.replace('android:baselineAligned="true"', 'android:baselineAligned="false"'); }, /expanded denominator baseline/],
   ['different compact score', s => { s.compact = s.compact.replace('69sp', '40sp'); }, /compact score size/],
@@ -107,6 +116,8 @@ function inspectReading(options) {
   const theme = themeForLevel(options.score, options.dark);
   assert.equal(score.parent.props.style.alignItems, 'baseline');
   assert.equal(score.props.style.fontWeight, c.weight);
+  assert.equal(score.props.style.fontFamily, contract.scoreFont[options.platform]);
+  assert.equal(denominator.props.style.fontFamily, contract.scoreFont[options.platform]);
   assert.equal(denominator.props.style.fontWeight, c.weight);
   assert.equal(score.props.style.letterSpacing, score.props.style.fontSize * c.trackingEm);
   assert.equal(denominator.props.style.fontSize, landscape ? c.denominatorLandscape : c.denominatorPortrait);
@@ -123,7 +134,7 @@ function inspectReading(options) {
   assert.ok(score.props.style.fontSize <= c.maximumScore);
   if (!landscape) assert.ok(score.props.style.fontSize >= c.minimumPortraitScore);
   // Copy out data: vm object prototypes are intentionally from another realm.
-  return JSON.parse(JSON.stringify({ score: score.props.style, denominator: denominator.props.style,
+  return JSON.parse(JSON.stringify({ score: { ...score.props.style, fontFamily: 'monospace' }, denominator: { ...denominator.props.style, fontFamily: 'monospace' },
     explanation: explanation.props.style, alignment: score.parent.props.style,
     gradient: gradient.props, number: score.props.children }));
 }
@@ -223,14 +234,22 @@ test('header gate rejects iOS glass returning on either control', () => {
 
 test('reading gate rejects the low-hanging text slash returning', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  const sourceOverride = source.replace('>∕ 10</Text>', '>/10</Text>');
+  const sourceOverride = source.replace('>∕ 10</Text>', '>/10</Text>');
   assert.notEqual(sourceOverride, source);
   assert.throws(() => inspectReading({ sourceOverride, platform: 'web', width: 390, height: 844, score: 3, dark: false }), /all reading design roles/);
 });
 
 test('reading gate rejects the slash touching the ten', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  const sourceOverride = source.replace('>∕ 10</Text>', '>∕10</Text>');
+  const sourceOverride = source.replace('>∕ 10</Text>', '>∕10</Text>');
   assert.notEqual(sourceOverride, source);
   assert.throws(() => inspectReading({ sourceOverride, platform: 'web', width: 390, height: 844, score: 10, dark: false }), /all reading design roles/);
+});
+
+test('reading gate rejects a full-width space or proportional score face', () => {
+  const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
+  for (const sourceOverride of [source.replace('∕ 10', '∕ 10'), source.replaceAll('fontFamily: scoreFont', "fontFamily: 'sans-serif'")]) {
+    assert.notEqual(sourceOverride, source);
+    assert.throws(() => inspectReading({ sourceOverride, platform: 'ios', width: 390, height: 844, score: 3, dark: false }));
+  }
 });
