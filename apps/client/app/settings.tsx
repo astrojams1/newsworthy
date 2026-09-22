@@ -94,7 +94,7 @@ export default function Settings() {
               </View>
             </>}
           </View>
-          {enabled && <Text style={note}>A notification when a new development is rated {threshold} or higher.</Text>}
+          {enabled && <Text style={note}>New developments rated {threshold} or higher.</Text>}
           {notice !== '' && <Text accessibilityLiveRegion="polite" style={{ ...note, color: theme.danger }}>{notice}</Text>}
         </View>}
       </View>

@@ -55,7 +55,7 @@ for (const platform of ['ios', 'android']) {
     assert.deepEqual(scores.map(n => [Number(n.props.testID.slice(10)), n.props.accessibilityState.checked]),
       THRESHOLD_CHOICES.map(v => [v, v === 8]));
     assert.deepEqual(THRESHOLD_CHOICES, [5, 6, 7, 8, 9, 10]);
-    assert.ok(text(on).includes('A notification when a new development is rated 8 or higher.'), 'the chosen score is explained in one line');
+    assert.ok(text(on).includes('New developments rated 8 or higher.'), 'the chosen score is explained in one line');
     for (const score of scores) {
       assert.equal(score.props.accessibilityRole, 'radio');
       assert.match(score.props.accessibilityLabel, /^Minimum score \d+ out of 10$/);
