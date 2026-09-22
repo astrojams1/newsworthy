@@ -50,9 +50,18 @@ public class RatingWidget extends AppWidgetProvider {
         super.onReceive(context, intent);
     }
 
+    private static boolean olderThanCache(android.content.SharedPreferences cache, JSONObject reading, long fetchedAt) {
+        try {
+            JSONObject previous = new JSONObject(cache.getString(CACHE, ""));
+            if (!valid(previous)) return false;
+            int order = readingDate(reading).compareTo(readingDate(previous));
+            return order < 0 || (order == 0 && cache.getLong(FETCHED_AT, 0) > fetchedAt);
+        } catch (Exception ignored) { return false; }
+    }
+
     private static synchronized void acceptAppReading(Context context, JSONObject reading, long fetchedAt) {
         android.content.SharedPreferences cache = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE);
-        if (cache.getLong(FETCHED_AT, 0) > fetchedAt) return;
+        if (olderThanCache(cache, reading, fetchedAt)) return;
         cache.edit().putString(CACHE, reading.toString()).putBoolean(SAVED, false)
             .putLong(FETCHED_AT, fetchedAt)
             .putLong(REVISION, cache.getLong(REVISION, 0) + 1).apply();
@@ -62,7 +71,7 @@ public class RatingWidget extends AppWidgetProvider {
     // A worker started before the app refresh must not replace it or mark it saved.
     static synchronized void completeRefresh(Context context, JSONObject reading, long revision, long fetchedAt) {
         android.content.SharedPreferences cache = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE);
-        if (cache.getLong(REVISION, 0) != revision || cache.getLong(FETCHED_AT, 0) > fetchedAt) return;
+        if (cache.getLong(REVISION, 0) != revision || (reading != null && olderThanCache(cache, reading, fetchedAt))) return;
         android.content.SharedPreferences.Editor edit = cache.edit().putBoolean(SAVED, reading == null);
         if (reading != null) edit.putString(CACHE, reading.toString()).putLong(FETCHED_AT, fetchedAt);
         edit.apply();
@@ -152,33 +161,38 @@ public class RatingWidget extends AppWidgetProvider {
         android.util.DisplayMetrics display = context.getResources().getDisplayMetrics();
         float density = display.density;
         Paint number = new Paint(Paint.ANTI_ALIAS_FLAG);
-        number.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        number.setTypeface(Typeface.create("monospace", Typeface.NORMAL));
         number.setTextSize(scoreSize * density);
+        Paint text = new Paint(Paint.ANTI_ALIAS_FLAG);
+        text.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+        text.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, display));
+        Rect numberInk = new Rect(), textInk = new Rect();
+        number.getTextBounds("0", 0, 1, numberInk);
+        text.getTextBounds("H", 0, 1, textInk);
+        int lineHeight = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 20, display));
+        // Capital tops align; the number's baseline lands on sentence line three.
+        float targetCapHeight = -textInk.top + 2 * lineHeight;
+        number.setTextSize(number.getTextSize() * targetCapHeight / -numberInk.top);
         Paint denominator = new Paint(number);
         denominator.setTextSize(12 * density);
         float availableHeight = Math.max(24, height - 74) * density;
         float availableWidth = Math.max(36, width - 24 - (compact ? 0 : 112)) * density;
         float fit = Math.min(1, Math.min(availableHeight / number.getFontSpacing(),
-            (availableWidth - denominator.measureText("∕ 10") - 6 * density) / number.measureText("10")));
-        number.setTextSize(scoreSize * density * Math.max(0.4f, fit));
+            (availableWidth - denominator.measureText("∕10") - 2 * density) / number.measureText("10")));
+        number.setTextSize(number.getTextSize() * Math.max(0.4f, fit));
         views.setTextViewTextSize(R.id.widget_score, TypedValue.COMPLEX_UNIT_PX, number.getTextSize());
         views.setTextViewTextSize(R.id.widget_denominator, TypedValue.COMPLEX_UNIT_PX, denominator.getTextSize());
         if (!compact) {
-            Paint text = new Paint(Paint.ANTI_ALIAS_FLAG);
-            text.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
-            text.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, display));
-            Rect numberInk = new Rect(), textInk = new Rect();
             number.getTextBounds("0", 0, 1, numberInk);
             text.getTextBounds("H", 0, 1, textInk);
             int top = Math.max(0, Math.round((-number.ascent() + numberInk.top) - (-text.ascent() + textInk.top)));
-            int lineHeight = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 20, display));
             views.setViewPadding(R.id.widget_explanation, 0, top, 0, 0);
             views.setInt(R.id.widget_explanation, "setLineHeight", lineHeight);
             views.setInt(R.id.widget_explanation, "setMaxLines", Math.max(1, Math.min(4, (int)((availableHeight - top) / lineHeight))));
         }
     }
 
-    static void renderAll(Context context) {
+    static synchronized void renderAll(Context context) {
         JSONObject reading = null;
         try {
             JSONObject cached = new JSONObject(context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE).getString(CACHE, ""));

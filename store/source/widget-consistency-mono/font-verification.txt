@@ -1,0 +1,3 @@
+React Native ui-monospace + 300: .AppleSystemUIFontMonospaced-Light [__C.UIFontDescriptorAttributeName(_rawValue: NSFontSizeAttribute): 69, __C.UIFontDescriptorAttributeName(_rawValue: NSFontNameAttribute): .AppleSystemUIFontMonospaced-Light]
+Widget UIFont.monospacedSystemFont + light: .AppleSystemUIFontMonospaced-Light [__C.UIFontDescriptorAttributeName(_rawValue: NSFontSizeAttribute): 69, __C.UIFontDescriptorAttributeName(_rawValue: NSFontNameAttribute): .AppleSystemUIFontMonospaced-Light]
+PASS: same native font, weight and glyph metrics
