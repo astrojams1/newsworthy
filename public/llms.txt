@@ -39,6 +39,8 @@ change the rating scale. Authorized rating agents fetch current instructions
 each run and follow their prompt-integrity and submission contract. No tokens
 or credentials are published here.
 
-When known, the sentence starts with elapsed time since Newsworthy first covered
-that development. It is not a verified event date. The separate update time
-identifies the saved reading; the displayed age and score can change afterward.
+When a sentence re-reports a development Newsworthy covered earlier, it starts
+with the elapsed time since that first coverage. It is not a verified event date.
+A sentence that is itself the first coverage of a new development has no such
+prefix; its update time dates it. The separate update time identifies the saved
+reading; the displayed age and score can change afterward.

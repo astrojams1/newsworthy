@@ -30,8 +30,10 @@ engagement, addiction or growth-hacking tactics.
 - Ratings update periodically and can be wrong. Higher means more consequential;
   the displayed score fades as developments age.
 - A sentence’s age prefix means time since Newsworthy first covered that
-  development, not a verified event date or the age of the broader story. Unknown
-  ages have no prefix. The existing 140-character display budget includes the prefix.
+  development, not a verified event date or the age of the broader story. A
+  sentence that is itself the first coverage of a new development has no prefix;
+  its update time dates it. Unknown ages have no prefix. The existing
+  140-character display budget includes the prefix.
 - A saved reading keeps its original update timestamp. Updated clients recompute
   the sentence age from the saved first-coverage timestamp. Widgets can refresh later than
   the app, depending on the operating system. Do not promise real-time updates.
