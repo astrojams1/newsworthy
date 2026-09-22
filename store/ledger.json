@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-22T12:10:38+00:00",
+  "updated_at": "2026-09-22T16:59:22+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -748,6 +748,83 @@
       ],
       "next_action": "",
       "updated_at": "2026-09-22T12:06:00+00:00"
+    },
+    "apple.testflight-16": {
+      "state": "failed",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "EAS build 16 failed: existing app provisioning profile lacks Push Notifications capability and aps-environment entitlement required by the merged expo-notifications feature.",
+      "evidence": [
+        "EAS fdf9d5e5-54fd-4579-97fb-0a990c159ee3 XCODE_BUILD_ERROR; application source 8bfea2d."
+      ],
+      "next_action": "Enable required app capability and refresh existing signing profile, then rebuild and verify the replacement. EAS APNs delivery key is separately absent.",
+      "updated_at": "2026-09-22T16:29:22+00:00"
+    },
+    "apple.testflight-17": {
+      "state": "failed",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Canceled retry build 17 because installed EAS skipped Apple authentication in non-interactive mode and reused the same profile. Cancellation confirmed.",
+      "evidence": [
+        "EAS 9fb326e4-37aa-4375-83a0-0e67548c790c cancellation succeeded; no upload."
+      ],
+      "next_action": "Complete explicit credential configuration using the existing ASC key, verify push capability and profile entitlements, then rebuild.",
+      "updated_at": "2026-09-22T16:31:32+00:00"
+    },
+    "apple.push-signing": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Direct Apple API enabled PUSH_NOTIFICATIONS after EAS reported a non-persisted capability change. Replacement profile G6W87MV6Y4 includes production aps-environment and the existing widgets App Group; exact profile bytes assigned and read back from EAS. Existing distribution certificate reused.",
+      "evidence": [
+        "Apple bundle TQHNQXNM9M capability readback; signed provisioning profile decoded and assertions passed; EAS assigned profile bytes matched Apple."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-22T16:36:25+00:00"
+    },
+    "apple.testflight-18": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "iOS 1.0.0 build 18 is VALID and IN_BETA_TESTING in existing Release QA with one tester. Beta notes saved and verified. APNs delivery key remains absent and physical-device verification is pending.",
+      "evidence": [
+        "Apple build 83b11cd7-1828-4859-9fb4-40b6a9e6f938; group 312a8585-2ca2-413e-bb5f-75d0ba487e13; readback 2026-09-22T16:58:52Z; store/testflight-18.json."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-22T16:59:22+00:00"
+    },
+    "apple.testflight-18-build": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "EAS finished iOS 1.0.0 build 18 successfully after the signing repair.",
+      "evidence": [
+        "EAS a9d8b5be-4634-4df0-a4da-e5d90e5f2a56 FINISHED at 2026-09-22T16:43:23Z; main 8bfea2d."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-22T16:44:18+00:00"
+    },
+    "apple.testflight-18-upload": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Apple direct upload succeeded for verified iOS 1.0.0 build 18.",
+      "evidence": [
+        "Delivery UUID 83b11cd7-1828-4859-9fb4-40b6a9e6f938; 19596640 bytes; Apple UPLOAD SUCCEEDED at 2026-09-22T16:54:25Z."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-22T16:55:14+00:00"
+    },
+    "apple.testflight-18-provenance": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection.",
+      "evidence": [
+        "store/testflight-18.json; root scaffold content was an empty expo object; no diff to apps/client or mobile.release.json."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-22T16:48:58+00:00"
     }
   },
   "events": [
@@ -4296,6 +4373,230 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-22T12:10:38+00:00"
+      }
+    },
+    {
+      "sequence": 222,
+      "at": "2026-09-22T16:24:24+00:00",
+      "gate": "apple.testflight-16",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner requested fresh TestFlight. Preparing latest fetched main 8bfea2d with appearance settings, opt-in notification controls and sentence-age fix; existing latest build is 15.",
+        "evidence": [
+          "User request 2026-09-23; EAS build list; origin/main 8bfea2d."
+        ],
+        "next_action": "Finish checks, create signed iOS production build, upload exact artifact and verify availability in existing Release QA group.",
+        "updated_at": "2026-09-22T16:24:24+00:00"
+      }
+    },
+    {
+      "sequence": 223,
+      "at": "2026-09-22T16:25:47+00:00",
+      "gate": "apple.testflight-16",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "EAS accepted iOS 1.0.0 build 16 from latest main 8bfea2d. Tests passed 277 with one skipped, all 67 design checks, TypeScript, mobile configuration and live endpoints passed.",
+        "evidence": [
+          "EAS fdf9d5e5-54fd-4579-97fb-0a990c159ee3; production profile; clean application source, release-ledger edits in archive."
+        ],
+        "next_action": "Inspect finished signed IPA, upload exact build 16, verify Apple processing and Release QA group.",
+        "updated_at": "2026-09-22T16:25:47+00:00"
+      }
+    },
+    {
+      "sequence": 224,
+      "at": "2026-09-22T16:29:22+00:00",
+      "gate": "apple.testflight-16",
+      "result": {
+        "state": "failed",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EAS build 16 failed: existing app provisioning profile lacks Push Notifications capability and aps-environment entitlement required by the merged expo-notifications feature.",
+        "evidence": [
+          "EAS fdf9d5e5-54fd-4579-97fb-0a990c159ee3 XCODE_BUILD_ERROR; application source 8bfea2d."
+        ],
+        "next_action": "Enable required app capability and refresh existing signing profile, then rebuild and verify the replacement. EAS APNs delivery key is separately absent.",
+        "updated_at": "2026-09-22T16:29:22+00:00"
+      }
+    },
+    {
+      "sequence": 225,
+      "at": "2026-09-22T16:31:32+00:00",
+      "gate": "apple.testflight-17",
+      "result": {
+        "state": "failed",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Canceled retry build 17 because installed EAS skipped Apple authentication in non-interactive mode and reused the same profile. Cancellation confirmed.",
+        "evidence": [
+          "EAS 9fb326e4-37aa-4375-83a0-0e67548c790c cancellation succeeded; no upload."
+        ],
+        "next_action": "Complete explicit credential configuration using the existing ASC key, verify push capability and profile entitlements, then rebuild.",
+        "updated_at": "2026-09-22T16:31:32+00:00"
+      }
+    },
+    {
+      "sequence": 226,
+      "at": "2026-09-22T16:36:25+00:00",
+      "gate": "apple.push-signing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Direct Apple API enabled PUSH_NOTIFICATIONS after EAS reported a non-persisted capability change. Replacement profile G6W87MV6Y4 includes production aps-environment and the existing widgets App Group; exact profile bytes assigned and read back from EAS. Existing distribution certificate reused.",
+        "evidence": [
+          "Apple bundle TQHNQXNM9M capability readback; signed provisioning profile decoded and assertions passed; EAS assigned profile bytes matched Apple."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-22T16:36:25+00:00"
+      }
+    },
+    {
+      "sequence": 227,
+      "at": "2026-09-22T16:37:52+00:00",
+      "gate": "apple.testflight-18",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Replacement iOS 1.0.0 build 18 accepted with the verified signing profile. Same clean application source main 8bfea2d; only release evidence changed.",
+        "evidence": [
+          "EAS a9d8b5be-4634-4df0-a4da-e5d90e5f2a56; profile G6W87MV6Y4 verified production APNs and widget App Group."
+        ],
+        "next_action": "Verify signed IPA, submit exact build 18 and read back TestFlight availability.",
+        "updated_at": "2026-09-22T16:37:52+00:00"
+      }
+    },
+    {
+      "sequence": 228,
+      "at": "2026-09-22T16:44:18+00:00",
+      "gate": "apple.testflight-18-build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EAS finished iOS 1.0.0 build 18 successfully after the signing repair.",
+        "evidence": [
+          "EAS a9d8b5be-4634-4df0-a4da-e5d90e5f2a56 FINISHED at 2026-09-22T16:43:23Z; main 8bfea2d."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-22T16:44:18+00:00"
+      }
+    },
+    {
+      "sequence": 229,
+      "at": "2026-09-22T16:46:21+00:00",
+      "gate": "apple.testflight-18-upload",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Downloaded IPA passes ZIP integrity; app and widget report 1.0.0 (18), expected bundle IDs and matching App Groups. Signed app and provisioning profile both include production APNs entitlement. Submitting exact EAS build 18.",
+        "evidence": [
+          "store/testflight-18.json; SHA256 5144e55ff0fe726cd994684a4dbdefa7aa804bbc4a181b34a9293b8d8110b3dd."
+        ],
+        "next_action": "Verify upload receipt, Apple processing and Release QA availability.",
+        "updated_at": "2026-09-22T16:46:21+00:00"
+      }
+    },
+    {
+      "sequence": 230,
+      "at": "2026-09-22T16:47:28+00:00",
+      "gate": "apple.testflight-18-upload",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "EAS accepted exact build 18 submission using the existing Apple API key.",
+        "evidence": [
+          "Submission 801f9470-4d61-41a7-9299-5e6989823110; build a9d8b5be-4634-4df0-a4da-e5d90e5f2a56."
+        ],
+        "next_action": "Wait for upload completion and Apple VALID; save beta notes and attach to Release QA.",
+        "updated_at": "2026-09-22T16:47:28+00:00"
+      }
+    },
+    {
+      "sequence": 231,
+      "at": "2026-09-22T16:48:58+00:00",
+      "gate": "apple.testflight-18-provenance",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection.",
+        "evidence": [
+          "store/testflight-18.json; root scaffold content was an empty expo object; no diff to apps/client or mobile.release.json."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-22T16:48:58+00:00"
+      }
+    },
+    {
+      "sequence": 232,
+      "at": "2026-09-22T16:52:23+00:00",
+      "gate": "apple.testflight-18-upload",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple altool validation succeeded. EAS submission remained IN_QUEUE for over five minutes; canceled it and verified CANCELED before starting direct Apple upload of the verified IPA.",
+        "evidence": [
+          "EAS submission 801f9470-4d61-41a7-9299-5e6989823110 CANCELED; Apple VERIFY SUCCEEDED; store/testflight-18.json."
+        ],
+        "next_action": "Read direct upload receipt and Apple processing; assign build 18 to Release QA.",
+        "updated_at": "2026-09-22T16:52:23+00:00"
+      }
+    },
+    {
+      "sequence": 233,
+      "at": "2026-09-22T16:55:14+00:00",
+      "gate": "apple.testflight-18-upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Apple direct upload succeeded for verified iOS 1.0.0 build 18.",
+        "evidence": [
+          "Delivery UUID 83b11cd7-1828-4859-9fb4-40b6a9e6f938; 19596640 bytes; Apple UPLOAD SUCCEEDED at 2026-09-22T16:54:25Z."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-22T16:55:14+00:00"
+      }
+    },
+    {
+      "sequence": 234,
+      "at": "2026-09-22T16:55:14+00:00",
+      "gate": "apple.testflight-18",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple accepted build 18 upload; waiting for processing before assigning to existing Release QA.",
+        "evidence": [
+          "Delivery UUID 83b11cd7-1828-4859-9fb4-40b6a9e6f938; upload succeeded; build API resource not visible yet."
+        ],
+        "next_action": "Read build 18 VALID, save beta notes, attach to Release QA and verify IN_BETA_TESTING.",
+        "updated_at": "2026-09-22T16:55:14+00:00"
+      }
+    },
+    {
+      "sequence": 235,
+      "at": "2026-09-22T16:59:22+00:00",
+      "gate": "apple.testflight-18",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "iOS 1.0.0 build 18 is VALID and IN_BETA_TESTING in existing Release QA with one tester. Beta notes saved and verified. APNs delivery key remains absent and physical-device verification is pending.",
+        "evidence": [
+          "Apple build 83b11cd7-1828-4859-9fb4-40b6a9e6f938; group 312a8585-2ca2-413e-bb5f-75d0ba487e13; readback 2026-09-22T16:58:52Z; store/testflight-18.json."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-22T16:59:22+00:00"
       }
     }
   ],

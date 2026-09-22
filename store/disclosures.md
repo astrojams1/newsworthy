@@ -37,7 +37,7 @@ security use, rather than claiming the app requests device location. There is no
 in-app support form or message collection; optional support opens the user's
 external email client. No advertising or behavioral profiling is implemented.
 
-- **Optional notifications (added September 22, 2026, not yet in a store build):**
+- **Optional notifications (included in iOS TestFlight build 18; not publicly released):**
   when a person turns notifications on in Settings, the app sends its Expo push
   token and chosen minimum score to `PUT /api/push/subscriptions`, and the
   database keeps that row until the switch is turned off or Expo reports the

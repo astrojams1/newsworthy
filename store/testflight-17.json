@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-09-22T16:39:31.678598+00:00",
+  "scope": "Fresh TestFlight from latest fetched main; no app code changes in this release task.",
+  "version": "1.0.0",
+  "build": "17",
+  "sourceCommit": "8bfea2de2f4ff583d17edb7b1a63077c92cd0947",
+  "applicationSourceDirty": false,
+  "archiveDirtyNote": "Release evidence and an EAS-generated empty root app.json were present during archive preparation; apps/client source and app configuration were unchanged. Empty root scaffolding removed after build.",
+  "profile": "production",
+  "checks": {
+    "npmTest": {
+      "passed": 277,
+      "skipped": 1,
+      "failed": 0
+    },
+    "design": {
+      "passed": 67,
+      "failed": 0
+    },
+    "typeScript": "passed",
+    "mobileConfiguration": "passed",
+    "liveEndpoints": "passed"
+  },
+  "nativeVerification": {
+    "physicalDevice": "Build 16 not installed or visually verified in this task.",
+    "widgets": "Build 16 widget sizes, themes and larger text remain unverified on a physical device.",
+    "notifications": "EAS readback confirms no APNs push key configured for the app. Delivery is not enabled; permission, registration and notification controls remain unverified on a physical device.",
+    "android": "Outside this TestFlight request."
+  },
+  "appReview": {
+    "selectedBuild": "7",
+    "state": "REJECTED",
+    "changedByThisTask": false
+  },
+  "buildStatus": "CANCELED",
+  "easBuildId": "9fb326e4-37aa-4375-83a0-0e67548c790c",
+  "failure": "Installed EAS skipped Apple authentication in non-interactive mode despite ASC environment configuration and reused the profile missing push entitlement; cancellation requested before repeating the known failure.",
+  "supersededBy": "18"
+}

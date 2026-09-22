@@ -7,11 +7,14 @@ Resume from [the release ledger](ledger.md) with the reusable
 rejection of **build 7** for minimum functionality. The owner reports submitting the reconsideration reply; provider readback
 is pending. Do not send a duplicate.
 See [the exact reply and handoff](apple-4.2-reconsideration.md).
-**September 22 TestFlight update:** iOS **1.0.0 (15)** was built from merged
-main `65cafc3` with widget alignment and story-age changes. Apple processed it
-as VALID, and it is IN_BETA_TESTING in Release QA; test notes were saved and
-verified. See [build 15 evidence](testflight-15.json).
-Physical-device verification of this build remains pending.
+**September 23 TestFlight update:** iOS **1.0.0 (18)** was built from merged
+main `8bfea2d` with appearance settings, notification controls and the sentence-age
+fix. Apple processed it as VALID, and it is IN_BETA_TESTING in Release QA; test
+notes were saved and verified. See [build 18 evidence](testflight-18.json).
+Its signed app and widget entitlements are verified. Notification delivery is
+not enabled because EAS has no APNs delivery key. Physical-device settings,
+notification and widget verification remain pending. Build 16 failed signing;
+build 17 was canceled before the corrected profile was used for build 18.
 
 Neither app is publicly released. Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.

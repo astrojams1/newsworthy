@@ -204,10 +204,13 @@ access. Internal testing alone does not meet this requirement. See
   registered device receives anything. Both are account-owner steps; neither
   belongs in this repository. `EXPO_ACCESS_TOKEN` on Vercel is optional and
   only lets Expo enforce that this server is the one sending.
-- Not verified: no custom build carrying `expo-notifications` has been made yet,
-  so permission prompts, token registration, delivery, the Android icon and the
-  foreground banner are all unverified on devices. Record results in the store
-  ledger, and reevaluate the store privacy labels first (`store/disclosures.md`).
+- iOS build 18 includes `expo-notifications`. Its app provisioning profile now
+  includes the production push entitlement and existing widget App Group. EAS
+  still has no APNs delivery key configured, so notification delivery is not
+  enabled. Permission prompts, token registration, delivery, the Android icon
+  and foreground behavior remain unverified on devices. See
+  [`store/testflight-18.json`](../store/testflight-18.json); reevaluate the store
+  privacy labels before public release (`store/disclosures.md`).
 
 ## Widgets
 

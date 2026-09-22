@@ -1,0 +1,40 @@
+{
+  "observedAt": "2026-09-22T16:39:31.678269+00:00",
+  "scope": "Fresh TestFlight from latest fetched main; no app code changes in this release task.",
+  "version": "1.0.0",
+  "build": "16",
+  "sourceCommit": "8bfea2de2f4ff583d17edb7b1a63077c92cd0947",
+  "applicationSourceDirty": false,
+  "archiveDirtyNote": "Only release-ledger entries changed before archive preparation.",
+  "profile": "production",
+  "checks": {
+    "npmTest": {
+      "passed": 277,
+      "skipped": 1,
+      "failed": 0
+    },
+    "design": {
+      "passed": 67,
+      "failed": 0
+    },
+    "typeScript": "passed",
+    "mobileConfiguration": "passed",
+    "liveEndpoints": "passed"
+  },
+  "nativeVerification": {
+    "physicalDevice": "Build 16 not installed or visually verified in this task.",
+    "widgets": "Build 16 widget sizes, themes and larger text remain unverified on a physical device.",
+    "notifications": "EAS readback confirms no APNs push key configured for the app. Delivery is not enabled; permission, registration and notification controls remain unverified on a physical device.",
+    "android": "Outside this TestFlight request."
+  },
+  "easBuildId": "fdf9d5e5-54fd-4579-97fb-0a990c159ee3",
+  "appReview": {
+    "selectedBuild": "7",
+    "state": "REJECTED",
+    "changedByThisTask": false
+  },
+  "buildStatus": "ERRORED",
+  "buildCompletedAt": "2026-09-22T16:27:19.329Z",
+  "failure": "Xcode rejected app provisioning profile: missing Push Notifications and aps-environment entitlement. No upload.",
+  "supersededBy": "17"
+}

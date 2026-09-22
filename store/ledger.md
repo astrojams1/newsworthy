@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-22T12:10:38+00:00
+Updated: 2026-09-22T16:59:22+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -77,6 +77,13 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
 | apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
+| apple.testflight-16 | failed | agent | observed | EAS build 16 failed: existing app provisioning profile lacks Push Notifications capability and aps-environment entitlement required by the merged expo-notifications feature. | Enable required app capability and refresh existing signing profile, then rebuild and verify the replacement. EAS APNs delivery key is separately absent. |
+| apple.testflight-17 | failed | agent | observed | Canceled retry build 17 because installed EAS skipped Apple authentication in non-interactive mode and reused the same profile. Cancellation confirmed. | Complete explicit credential configuration using the existing ASC key, verify push capability and profile entitlements, then rebuild. |
+| apple.push-signing | done | agent | observed | Direct Apple API enabled PUSH_NOTIFICATIONS after EAS reported a non-persisted capability change. Replacement profile G6W87MV6Y4 includes production aps-environment and the existing widgets App Group; exact profile bytes assigned and read back from EAS. Existing distribution certificate reused. | — |
+| apple.testflight-18 | done | agent | observed | iOS 1.0.0 build 18 is VALID and IN_BETA_TESTING in existing Release QA with one tester. Beta notes saved and verified. APNs delivery key remains absent and physical-device verification is pending. | — |
+| apple.testflight-18-build | done | agent | observed | EAS finished iOS 1.0.0 build 18 successfully after the signing repair. | — |
+| apple.testflight-18-upload | done | agent | observed | Apple direct upload succeeded for verified iOS 1.0.0 build 18. | — |
+| apple.testflight-18-provenance | done | agent | observed | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
 
 ## Evidence and history
 
@@ -2175,3 +2182,133 @@ Next: Read processed build15, save test notes and assign to Release QA; verify I
 iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified.
 
 - Apple buildcdc91a98-a0a3-4ce0-8958-7884c990da8d; group312a8585-2ca2-413e-bb5f-75d0ba487e13; readback2026-09-22T12:10:04Z; store/testflight-15.json.
+
+### 222. apple.testflight-16 — in_progress
+
+2026-09-22T16:24:24+00:00 · observed · agent
+
+Owner requested fresh TestFlight. Preparing latest fetched main 8bfea2d with appearance settings, opt-in notification controls and sentence-age fix; existing latest build is 15.
+
+- User request 2026-09-23; EAS build list; origin/main 8bfea2d.
+
+Next: Finish checks, create signed iOS production build, upload exact artifact and verify availability in existing Release QA group.
+
+### 223. apple.testflight-16 — waiting_provider
+
+2026-09-22T16:25:47+00:00 · observed · provider
+
+EAS accepted iOS 1.0.0 build 16 from latest main 8bfea2d. Tests passed 277 with one skipped, all 67 design checks, TypeScript, mobile configuration and live endpoints passed.
+
+- EAS fdf9d5e5-54fd-4579-97fb-0a990c159ee3; production profile; clean application source, release-ledger edits in archive.
+
+Next: Inspect finished signed IPA, upload exact build 16, verify Apple processing and Release QA group.
+
+### 224. apple.testflight-16 — failed
+
+2026-09-22T16:29:22+00:00 · observed · agent
+
+EAS build 16 failed: existing app provisioning profile lacks Push Notifications capability and aps-environment entitlement required by the merged expo-notifications feature.
+
+- EAS fdf9d5e5-54fd-4579-97fb-0a990c159ee3 XCODE_BUILD_ERROR; application source 8bfea2d.
+
+Next: Enable required app capability and refresh existing signing profile, then rebuild and verify the replacement. EAS APNs delivery key is separately absent.
+
+### 225. apple.testflight-17 — failed
+
+2026-09-22T16:31:32+00:00 · observed · agent
+
+Canceled retry build 17 because installed EAS skipped Apple authentication in non-interactive mode and reused the same profile. Cancellation confirmed.
+
+- EAS 9fb326e4-37aa-4375-83a0-0e67548c790c cancellation succeeded; no upload.
+
+Next: Complete explicit credential configuration using the existing ASC key, verify push capability and profile entitlements, then rebuild.
+
+### 226. apple.push-signing — done
+
+2026-09-22T16:36:25+00:00 · observed · agent
+
+Direct Apple API enabled PUSH_NOTIFICATIONS after EAS reported a non-persisted capability change. Replacement profile G6W87MV6Y4 includes production aps-environment and the existing widgets App Group; exact profile bytes assigned and read back from EAS. Existing distribution certificate reused.
+
+- Apple bundle TQHNQXNM9M capability readback; signed provisioning profile decoded and assertions passed; EAS assigned profile bytes matched Apple.
+
+### 227. apple.testflight-18 — waiting_provider
+
+2026-09-22T16:37:52+00:00 · observed · provider
+
+Replacement iOS 1.0.0 build 18 accepted with the verified signing profile. Same clean application source main 8bfea2d; only release evidence changed.
+
+- EAS a9d8b5be-4634-4df0-a4da-e5d90e5f2a56; profile G6W87MV6Y4 verified production APNs and widget App Group.
+
+Next: Verify signed IPA, submit exact build 18 and read back TestFlight availability.
+
+### 228. apple.testflight-18-build — done
+
+2026-09-22T16:44:18+00:00 · observed · agent
+
+EAS finished iOS 1.0.0 build 18 successfully after the signing repair.
+
+- EAS a9d8b5be-4634-4df0-a4da-e5d90e5f2a56 FINISHED at 2026-09-22T16:43:23Z; main 8bfea2d.
+
+### 229. apple.testflight-18-upload — in_progress
+
+2026-09-22T16:46:21+00:00 · observed · agent
+
+Downloaded IPA passes ZIP integrity; app and widget report 1.0.0 (18), expected bundle IDs and matching App Groups. Signed app and provisioning profile both include production APNs entitlement. Submitting exact EAS build 18.
+
+- store/testflight-18.json; SHA256 5144e55ff0fe726cd994684a4dbdefa7aa804bbc4a181b34a9293b8d8110b3dd.
+
+Next: Verify upload receipt, Apple processing and Release QA availability.
+
+### 230. apple.testflight-18-upload — waiting_provider
+
+2026-09-22T16:47:28+00:00 · observed · provider
+
+EAS accepted exact build 18 submission using the existing Apple API key.
+
+- Submission 801f9470-4d61-41a7-9299-5e6989823110; build a9d8b5be-4634-4df0-a4da-e5d90e5f2a56.
+
+Next: Wait for upload completion and Apple VALID; save beta notes and attach to Release QA.
+
+### 231. apple.testflight-18-provenance — done
+
+2026-09-22T16:48:58+00:00 · observed · agent
+
+Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection.
+
+- store/testflight-18.json; root scaffold content was an empty expo object; no diff to apps/client or mobile.release.json.
+
+### 232. apple.testflight-18-upload — in_progress
+
+2026-09-22T16:52:23+00:00 · observed · agent
+
+Apple altool validation succeeded. EAS submission remained IN_QUEUE for over five minutes; canceled it and verified CANCELED before starting direct Apple upload of the verified IPA.
+
+- EAS submission 801f9470-4d61-41a7-9299-5e6989823110 CANCELED; Apple VERIFY SUCCEEDED; store/testflight-18.json.
+
+Next: Read direct upload receipt and Apple processing; assign build 18 to Release QA.
+
+### 233. apple.testflight-18-upload — done
+
+2026-09-22T16:55:14+00:00 · observed · agent
+
+Apple direct upload succeeded for verified iOS 1.0.0 build 18.
+
+- Delivery UUID 83b11cd7-1828-4859-9fb4-40b6a9e6f938; 19596640 bytes; Apple UPLOAD SUCCEEDED at 2026-09-22T16:54:25Z.
+
+### 234. apple.testflight-18 — waiting_provider
+
+2026-09-22T16:55:14+00:00 · observed · provider
+
+Apple accepted build 18 upload; waiting for processing before assigning to existing Release QA.
+
+- Delivery UUID 83b11cd7-1828-4859-9fb4-40b6a9e6f938; upload succeeded; build API resource not visible yet.
+
+Next: Read build 18 VALID, save beta notes, attach to Release QA and verify IN_BETA_TESTING.
+
+### 235. apple.testflight-18 — done
+
+2026-09-22T16:59:22+00:00 · observed · agent
+
+iOS 1.0.0 build 18 is VALID and IN_BETA_TESTING in existing Release QA with one tester. Beta notes saved and verified. APNs delivery key remains absent and physical-device verification is pending.
+
+- Apple build 83b11cd7-1828-4859-9fb4-40b6a9e6f938; group 312a8585-2ca2-413e-bb5f-75d0ba487e13; readback 2026-09-22T16:58:52Z; store/testflight-18.json.
