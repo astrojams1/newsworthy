@@ -298,7 +298,12 @@ development's own level starts one. History from before the judge existed reads
 the same way until `/api/admin/judge` backfills it.
 
 **The sentence comes from the newest reading.** Its prefix shows that development’s
-first-coverage age independently of the score’s decay. Its wording comes from the
+first-coverage age independently of the score’s decay — only when the reading
+re-reports a development covered earlier. A reading that opens a development gets
+no prefix: its age is the update time already printed beside it, and "54 minutes
+ago:" on a new development repeated that. `firstCoverage()` answers null there,
+so every client, native widgets included, drops the prefix without a rebuild.
+Its wording comes from the
 newest reading, and the two answer different questions: the number is a level,
 and the sentence is what happened. Pairing the median row's sentence with the
 number was an early cut and it read as an app that had stopped. So a story still

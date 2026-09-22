@@ -9,8 +9,11 @@ The score still follows the existing smoothing and decay rules. Its winning
 development can differ from the newest sentence’s development. Sentence age
 therefore follows the newest row’s stored `development_of` root, never the score’s
 `since` anchor. Roots can predate the 48-hour judge window. Unjudged readings and
-missing roots have unknown age and no prefix. Historical judgements and stored
-sentences are not rewritten.
+missing roots have unknown age and no prefix. A reading that opens a new
+development has no prefix either: its first coverage is the reading itself, and
+the update time already dates it, so `explanation_since` is null. The prefix
+appears when a later reading re-reports that development. Historical judgements
+and stored sentences are not rewritten.
 
 ## Caller sequence
 

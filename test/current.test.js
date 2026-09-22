@@ -615,8 +615,8 @@ test('a break opens a development and is shown whole, at once', async () => {
     assert.equal(body.basis, 'new');
     assert.equal(body.score, 9);
     assert.equal(body.explanation_text, 'volcano erupts overnight');
-    assert.equal(body.explanation, 'Just now: volcano erupts overnight');
-    assert.equal(body.explanation_since, body.created_at);
+    assert.equal(body.explanation, 'volcano erupts overnight', 'a new development carries no age prefix');
+    assert.equal(body.explanation_since, null, 'its first coverage is the reading itself, already dated by created_at');
     assert.equal(body.story, 'volcano');
     assert.equal(body.score_from, undefined, 'the field is gone; `since` dates the number');
   });

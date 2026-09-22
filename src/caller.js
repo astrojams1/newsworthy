@@ -96,7 +96,9 @@ suppress the next scheduled run. It carries \`preparation\` (an opaque, single-u
 reference valid for 30 minutes), \`development\` (new, same or unjudged),
 \`first_covered_at\`, a sample \`prefix\`, \`display_character_limit: 140\`,
 \`reserved_prefix_characters: 20\` and \`max_explanation_characters: 120\`.
-An unjudged development has unknown age; a new one starts its clock when stored.
+An unjudged development has unknown age. A new one has \`first_covered_at: null\`
+and an empty prefix: the app shows no age on the reading that opens a
+development, and starts its clock when that reading is stored.
 
 The caller finalizes the SAME development's sentence within 120 characters,
 including spaces and punctuation, keeping the score and facts unchanged. It

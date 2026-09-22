@@ -3,10 +3,16 @@ import { history, recentStories, ratingsByIds, savePreparation } from './db.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { agePrefix, DISPLAY_CHARACTER_LIMIT, AGE_PREFIX_RESERVE, EXPLANATION_CHARACTER_LIMIT } from '../apps/client/lib/story-age.js';
 
-/** Unjudged readings have unknown age; an outage must not masquerade as new. */
+/**
+ * Unjudged readings have unknown age; an outage must not masquerade as new.
+ * A reading that opens its own development has none to show either: its age is
+ * the reading's own timestamp, which every surface already prints beside it, so
+ * "54 minutes ago:" on a new development only repeated the update time. The
+ * prefix is for a sentence re-reporting a development first covered earlier.
+ */
 export async function firstCoverage(reading) {
   if (reading.judge_version == null) return null;
-  if (reading.development_of == null) return reading.created_at;
+  if (reading.development_of == null) return null;
   const [root] = await ratingsByIds([reading.development_of]);
   return root?.created_at ?? null;
 }

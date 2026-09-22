@@ -46,13 +46,15 @@ test('all app surfaces recompute the story age without changing the reading time
   assert.equal(reading.created_at, '2026-09-18T00:05:00.000Z');
 });
 
-test('first coverage looks up the sentence root even outside the 48-hour history window', async () => {
+test('first coverage looks up the sentence root even outside the 48-hour history window, and none for a new development', async () => {
   const prompt = renderPrompt(latestVersion());
   const row = await insertRating({ status:'ok', source:'external', score:5, explanation:'old development',
     prompt_version:prompt.version, prompt_text:prompt.text, prompt_hash:prompt.hash,
     judge_version:2, created_at:start });
   assert.equal(await firstCoverage({ judge_version:2, development_of:row.id, created_at:new Date().toISOString() }), row.created_at);
   assert.equal(await firstCoverage({ judge_version:null, development_of:row.id, created_at:start }), null);
+  assert.equal(await firstCoverage({ judge_version:2, development_of:null, created_at:start }), null,
+    'a reading opening its own development carries no age: the update time already dates it');
   assert.equal(await firstCoverage({ judge_version:2, development_of:999999999, created_at:start }), null);
 });
 
