@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-22T22:24:58+00:00
+Updated: 2026-09-22T22:47:12+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -11,7 +11,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | Gate | State | Owner | Evidence basis | Result | Next action |
 |---|---|---|---|---|---|
 | scope | done | agent | observed | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
-| web.deploy | done | agent | observed | Merged PR96 deployed successfully; production health reports main76fc23b with healthy database. | — |
+| web.deploy | done | agent | observed | Merged Settings fixes a694734 are deployed on production. Health and database checks passed; current reading, Settings, privacy and support responded successfully. Browser check passed dark appearance, back navigation and reopening Settings. | — |
 | apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
 | apple.address | waiting_provider | provider | observed | Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved. | Await Apple correction or support response, then verify Business legal entity before paid release. |
 | apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
@@ -84,8 +84,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-18-build | done | agent | observed | EAS finished iOS 1.0.0 build 18 successfully after the signing repair. | — |
 | apple.testflight-18-upload | done | agent | observed | Apple direct upload succeeded for verified iOS 1.0.0 build 18. | — |
 | apple.testflight-18-provenance | done | agent | observed | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
-| ui.settings-feedback | in_progress | agent | observed | Settings source fix: navigation materials follow app appearance, stale deep-link back override cleared, and notification saves use stable text below controls. 282 tests and 70 design checks passed, TypeScript and web export passed. Native Expo Go iOS 18.3.1 settings/navigation/permission-denial checks passed; iOS 26 glass, successful real push saves, Android and replacement release build remain unverified. Owner now requests a TestFlight replacement; using the supported ledger state while retaining the earlier event. | Ship a replacement native build and verify iOS 26 transitions plus successful notification toggle/threshold saves on device; verify Android and enlarged native text. |
-| apple.testflight-settings | in_progress | agent | observed | Owner requests Settings fixes in TestFlight. PR123 passed CI; preparing the merged source and a signed production iOS build for existing Release QA. | Complete copy review, merge PR123, build exact merged source, verify signed archive and upload to Apple. |
+| ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
+| apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
 
 ## Evidence and history
 
@@ -2346,3 +2346,89 @@ Owner requests Settings fixes in TestFlight. PR123 passed CI; preparing the merg
 - User request: add to testflight; PR123 checks passed; Apple latest build18 VALID and IN_BETA_TESTING.
 
 Next: Complete copy review, merge PR123, build exact merged source, verify signed archive and upload to Apple.
+
+### 239. apple.testflight-settings — waiting_provider
+
+2026-09-22T22:30:51+00:00 · observed · provider
+
+PR123 merged as a694734. EAS accepted iOS production build19 from clean application source; credentials and archive upload succeeded.
+
+- store/testflight-19.json; /tmp/newsworthy-settings/build.json
+
+Next: Wait for build19 to finish, download and verify IPA and entitlements, then upload and attach to existing Release QA.
+
+### 240. web.deploy — done
+
+2026-09-22T22:34:07+00:00 · observed · agent
+
+Merged Settings fixes a694734 are deployed on production. Health and database checks passed; current reading, Settings, privacy and support responded successfully. Browser check passed dark appearance, back navigation and reopening Settings.
+
+- Production /healthz git_commit a694734; supported in-app browser inspected /settings and / on September23.
+
+### 241. apple.testflight-settings — in_progress
+
+2026-09-22T22:36:58+00:00 · observed · agent
+
+EAS finished signed iOS1.0.0 build19 successfully from merged Settings source a694734. Downloading the IPA for archive and Apple validation.
+
+- EAS ab4371dd-b34f-419f-a652-22a91e5a5773 FINISHED; store/testflight-19.json.
+
+Next: Verify the downloaded archive, app/widget signing and bundled Settings marker, then upload with the existing Apple API credential.
+
+### 242. apple.testflight-settings — in_progress
+
+2026-09-22T22:38:40+00:00 · observed · agent
+
+Build19 IPA passed ZIP integrity, app/widget 1.0.0(19) metadata, matching App Groups and production push-entitlement checks. New Settings save-feedback marker is present in the release JavaScript bundle.
+
+- store/testflight-19.json artifact SHA256 and verified bundle identifiers.
+
+Next: Complete Apple preflight, upload the verified IPA, then wait for processing and attach Release QA.
+
+### 243. apple.testflight-settings — in_progress
+
+2026-09-22T22:40:15+00:00 · observed · agent
+
+Apple preflight for build19 returned VERIFY SUCCEEDED; deep strict codesign verification passed. Uploading this exact verified IPA using the existing Apple API key.
+
+- store/testflight-19.json; Apple altool preflight succeeded September23.
+
+Next: Read upload receipt, wait for VALID processing, attach build19 to Release QA and verify availability.
+
+### 244. apple.testflight-settings — waiting_provider
+
+2026-09-22T22:41:53+00:00 · observed · provider
+
+Apple accepted the verified iOS1.0.0(19) upload. Waiting for processing before Release QA assignment.
+
+- Delivery UUID 07b4c611-13c5-4830-b018-fe861223d395; altool UPLOAD SUCCEEDED; store/testflight-19.json.
+
+Next: Read build19 VALID, save beta notes, attach existing Release QA group and verify IN_BETA_TESTING.
+
+### 245. apple.testflight-settings — in_progress
+
+2026-09-22T22:46:25+00:00 · observed · agent
+
+Apple processed build19 as VALID. Saving Settings test notes and attaching the existing Release QA group.
+
+- Apple build07b4c611-13c5-4830-b018-fe861223d395, version19, processingState VALID readback.
+
+Next: Verify group membership, saved notes and IN_BETA_TESTING; record final evidence and merge release-record PR.
+
+### 246. apple.testflight-settings — done
+
+2026-09-22T22:47:12+00:00 · observed · agent
+
+iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED.
+
+- store/testflight-19.json; Apple build07b4c611-13c5-4830-b018-fe861223d395; EAS ab4371dd-b34f-419f-a652-22a91e5a5773.
+
+### 247. ui.settings-feedback — waiting_user
+
+2026-09-22T22:47:12+00:00 · observed · user
+
+Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent.
+
+- store/settings-feedback-verification.json; store/testflight-19.json.
+
+Next: Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results.

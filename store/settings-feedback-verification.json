@@ -2,7 +2,7 @@
   "date": "2026-09-23",
   "baseCommit": "b2d6f22",
   "scope": "Settings navigation theme and notification save feedback",
-  "releaseState": "SOURCE_FIX_NOT_RELEASED",
+  "releaseState": "TESTFLIGHT_BUILD_AVAILABLE",
   "checks": {
     "fullSuite": "npm test: 282 passed, 1 opt-in native Swift test skipped; production web export completed.",
     "designGate": "npm run test:design: 70 passed.",
@@ -19,7 +19,7 @@
     "iOS 26 Liquid Glass transitions on a physical device",
     "Android native layout and transitions",
     "Native enlarged text",
-    "Complete replacement release build",
+    "Native behavior of signed TestFlight build 19",
     "Real APNs notification subscription save/delivery"
   ],
   "sourceSha256": {
@@ -33,5 +33,12 @@
     "store/source/settings-feedback/ios-saving-permission.png",
     "store/source/settings-feedback/ios-settings-dark.png",
     "store/source/settings-feedback/ios-settings-light.png"
-  ]
+  ],
+  "testFlight": {
+    "version": "1.0.0",
+    "build": "19",
+    "state": "IN_BETA_TESTING",
+    "evidence": "store/testflight-19.json",
+    "physicalDeviceVerification": "pending"
+  }
 }
