@@ -1,0 +1,73 @@
+{
+  "observedAt": "2026-09-22T12:10:04.344Z",
+  "scope": "Updated iOS TestFlight from latest merged main; no new app code in this release task.",
+  "version": "1.0.0",
+  "build": "15",
+  "sourceCommit": "65cafc3cd39855977c9ff4d03329a10114c266a8",
+  "applicationSourceDirty": false,
+  "archiveDirtyNote": "Only release-ledger entries were edited during archive preparation.",
+  "easBuildId": "2f8440c5-571b-4aa7-bf6d-3569e0fff3b6",
+  "profile": "production",
+  "buildStatus": "FINISHED",
+  "checks": {
+    "npmTest": {
+      "passed": 256,
+      "skipped": 1,
+      "failed": 0
+    },
+    "design": {
+      "passed": 67,
+      "failed": 0
+    },
+    "typeScript": "passed",
+    "mobileConfiguration": "passed",
+    "liveEndpoints": "Current reading API provides explanation_since; privacy and support returned HTTP200.",
+    "applePreflight": "Validation ran while EAS completed upload; Apple returned redundant binary409 for build15. No direct upload was performed."
+  },
+  "nativeVerification": {
+    "physicalDevice": "Build15 not installed or visually verified in this task.",
+    "widgets": "New story-age text wrapping, both sizes/themes and larger text remain unverified on an installed build15.",
+    "android": "Outside this TestFlight update scope."
+  },
+  "testFlight": {
+    "state": "IN_BETA_TESTING",
+    "groupId": "312a8585-2ca2-413e-bb5f-75d0ba487e13",
+    "groupName": "Release QA",
+    "groupAttached": true,
+    "notesVerified": true,
+    "notes": "Updated to the latest merged app version.\n\n- Improved score, denominator and sentence alignment in the app and Home Screen widgets.\n- Added wording that shows how long the reported development has been covered, with age updating as time passes.\n\nPlease check both widget sizes, light and dark appearance, larger text, and reopening after being offline. Widget refresh timing remains controlled by iOS.\n"
+  },
+  "appReview": {
+    "selectedBuild": "7",
+    "state": "REJECTED",
+    "changedByThisTask": false
+  },
+  "buildCompletedAt": "2026-09-22T11:57:52.350Z",
+  "artifact": {
+    "file": "artifacts/store-submission/newsworthy-ios15.ipa",
+    "bytes": 19319623,
+    "sha256": "809403621664382a6d30192afcde7451b71f5e4c0a18d8e44d06f1c461acc1b8",
+    "verified": [
+      {
+        "bundleIdentifier": "com.astrojams.newsworthy",
+        "version": "1.0.0",
+        "build": "15",
+        "appGroups": [
+          "group.com.astrojams.newsworthy.widgets"
+        ]
+      },
+      {
+        "bundleIdentifier": "com.astrojams.newsworthy.widget",
+        "version": "1.0.0",
+        "build": "15",
+        "appGroups": [
+          "group.com.astrojams.newsworthy.widgets"
+        ]
+      }
+    ]
+  },
+  "submissionId": "12c4aa47-2b07-4b04-801d-e4d3d1bed202",
+  "uploadState": "FINISHED",
+  "appleBuildId": "cdc91a98-a0a3-4ce0-8958-7884c990da8d",
+  "appleProcessingState": "VALID"
+}
