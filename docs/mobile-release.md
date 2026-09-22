@@ -189,8 +189,8 @@ access. Internal testing alone does not meet this requirement. See
 ## Push notifications
 
 - The settings screen (`apps/client/app/settings.tsx`) offers a notification for
-  readings at or above a chosen score — off by default, 8 when turned on. The
-  screen and the header gear exist only in the native apps. Turning it on asks for the notification permission, fetches the
+  readings at or above a chosen score — off by default, 8 when turned on. It is
+  hidden on web. Turning it on asks for the notification permission, fetches the
   device's Expo push token with the EAS project ID from `mobile.release.json`,
   and registers it at `PUT /api/push/subscriptions`; turning it off deletes it.
 - `expo-notifications` is a native module: it needs a custom build, not Expo Go,

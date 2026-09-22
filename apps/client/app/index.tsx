@@ -49,15 +49,13 @@ export default function Home() {
     }
   };
   const brand = <BrandMark />;
-  const shareButton = reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
+  const shareButton = reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
     <AppIcon color={theme.accent} />
   </Pressable> : null;
-  // Settings exist for the native apps: the website has no notification to
-  // offer and follows the system appearance, so its header keeps brand and share.
-  const settingsButton = process.env.EXPO_OS === 'web' ? null : <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
+  const settingsButton = <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
     <SettingsIcon color={theme.accent} />
   </Pressable>;
-  const headerRight = settingsButton ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>{shareButton}{settingsButton}</View> : shareButton;
+  const headerRight = <View style={{ flexDirection: 'row', alignItems: 'center' }}>{shareButton}{settingsButton}</View>;
   return <>
     {process.env.EXPO_OS === 'web' && <Head><title>Newsworthy</title></Head>}
     <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: '',
@@ -66,7 +64,7 @@ export default function Home() {
       unstable_headerLeftItems: process.env.EXPO_OS === 'ios' ? () => [
         { type: 'custom', element: brand, hidesSharedBackground: true },
       ] : undefined,
-      unstable_headerRightItems: process.env.EXPO_OS === 'ios' && settingsButton ? () => [
+      unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => [
         ...(shareButton ? [{ type: 'custom' as const, element: shareButton, hidesSharedBackground: true }] : []),
         { type: 'custom' as const, element: settingsButton, hidesSharedBackground: true },
       ] : undefined }} />

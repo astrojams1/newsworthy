@@ -169,18 +169,13 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
   const options = tree.find(n => n.type === 'Screen').props.options;
   assert.equal(options.headerTransparent, true);
   const left = options.headerLeft();
-  const right = options.headerRight();
+  const rightGroup = options.headerRight();
   assert.equal(left.type, 'BrandMark');
-  // Native: share (when there is a reading) then settings. Web: share alone —
-  // the website has no settings to open.
-  let share = right;
-  let settings = null;
-  if (platform !== 'web') {
-    assert.equal(right.props.style.flexDirection, 'row');
-    [share, settings] = right.props.children;
-    assert.equal(settings.props.accessibilityLabel, 'Settings');
-    assert.equal(nodes(settings).some(n => n.type === 'SettingsIcon'), true);
-  }
+  // The right side is share (when there is a reading) then settings, always.
+  assert.equal(rightGroup.props.style.flexDirection, 'row');
+  const [share, settings] = rightGroup.props.children;
+  assert.equal(settings.props.accessibilityLabel, 'Settings');
+  assert.equal(nodes(settings).some(n => n.type === 'SettingsIcon'), true);
   if (platform === 'ios') {
     const leftItems = options.unstable_headerLeftItems();
     const rightItems = options.unstable_headerRightItems();
@@ -196,7 +191,7 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
     assert.equal(options.unstable_headerRightItems, undefined);
   }
   for (const control of [share, settings]) {
-    if (!control) { if (control === share) assert.equal(score, null); continue; }
+    if (!control) { assert.equal(score, null); continue; }
     assert.equal(control.props.accessibilityRole, 'button');
     assert.equal(typeof control.props.onPress, 'function');
     assert.ok(control.props.style.minWidth >= contract.header.minimumTouchTarget && control.props.style.minHeight >= contract.header.minimumTouchTarget);

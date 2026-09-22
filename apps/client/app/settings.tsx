@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
-import { Redirect } from 'expo-router';
+import Head from 'expo-router/head';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
@@ -48,8 +48,6 @@ export default function Settings() {
       setNotice(NOTICES.offline);
     }
   };
-  // Native only: the website offers no notification and follows the system appearance.
-  if (process.env.EXPO_OS === 'web') return <Redirect href="/" />;
   const label = { color: theme.ink, fontSize: 17 } as const;
   const heading = { color: theme.muted, fontSize: 13, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 } as const;
   const card = { backgroundColor: theme.elevated, borderRadius: 16, borderWidth: 1, borderColor: theme.rule, overflow: 'hidden' } as const;
@@ -58,6 +56,7 @@ export default function Settings() {
     borderTopWidth: index === 0 ? 0 : 1, borderTopColor: theme.rule } as const);
   const note = { color: theme.muted, fontSize: 14, lineHeight: 20, marginTop: 12 } as const;
   return <>
+    {process.env.EXPO_OS === 'web' && <Head><title>Settings · Newsworthy</title></Head>}
     <ScrollView style={{ flex: 1, backgroundColor: theme.tinted }} contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ paddingHorizontal: horizontal, paddingTop: 24, paddingBottom: insets.bottom + 32, alignItems: 'center' }}>
       <View style={{ width: '100%', maxWidth: 440, gap: 28 }}>

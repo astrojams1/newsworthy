@@ -515,18 +515,17 @@ matches `preview` rather than negating `production` so an unset `VERCEL_ENV`
 still builds. Nothing here reads a preview URL — work is verified against
 production after merge.
 
-**Settings are a native screen, and the theme is one of them.** `/settings`
-(the gear in the header, beside share) chooses the appearance — System, Light
-or Dark, System by default — and turns on a push notification for high
-readings. The website has neither: it offers no notification and follows the
-system appearance, so its header keeps brand and share and the route sends a
-visitor home. `apps/client/lib/preferences.js` owns
+**Settings are a screen, and the theme is one of them.** `/settings` (the gear in
+the header, beside share) chooses the appearance —
+System, Light or Dark, System by default — and, in the native apps only, turns
+on a push notification for high readings. `apps/client/lib/preferences.js` owns
 the shape and the defaults, `components/preferences-provider.tsx` persists it
 in AsyncStorage, and `ReadingProvider` derives `dark` from the choice, so every
-`useTheme()` caller follows it without knowing it exists. The choice goes
-through `Appearance.setColorScheme`, so the share sheet and alerts follow too.
-Widgets follow the operating system regardless: they have no access to the
-app's store.
+`useTheme()` caller follows it without knowing it exists. On web the choice is
+written to `data-appearance` on the document, which `tokens.css` already
+honoured for the static policy pages; on native it goes through
+`Appearance.setColorScheme`, so the share sheet and alerts follow too. Widgets
+follow the operating system regardless: they have no access to the app's store.
 
 **Push notifications are opt-in, off by default, and 8 when turned on.** The
 app registers its Expo push token at `PUT /api/push/subscriptions` with the
