@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, Switch, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import Head from 'expo-router/head';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
+import { Toggle } from '@/components/toggle';
 import { MAX_THRESHOLD, MIN_THRESHOLD, THEME_CHOICES, clampThreshold, type ThemePreference } from '@/lib/preferences';
 import { disablePush, enablePush, pushSupported, updatePushThreshold } from '@/lib/push';
 
@@ -74,8 +75,7 @@ export default function Settings() {
           <View style={card}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, gap: 16 }}>
               <Text style={{ ...label, flex: 1 }}>Notify me about high readings</Text>
-              <Switch testID="notifications-switch" accessibilityLabel="Notify me about high readings" value={enabled} disabled={busy}
-                onValueChange={toggle} trackColor={{ false: theme.rule, true: theme.accent }} ios_backgroundColor={theme.rule} />
+              <Toggle testID="notifications-switch" accessibilityLabel="Notify me about high readings" value={enabled} disabled={busy} onValueChange={toggle} />
             </View>
             {enabled && <>
               <View style={{ height: 1, backgroundColor: theme.rule, marginVertical: 12 }} />

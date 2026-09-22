@@ -23,7 +23,8 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
   const current = preferences.parsePreferences(stored);
   const mocks = {
     react: { ...react, useEffect() {}, useState: value => [value, () => {}] },
-    'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', Switch: 'Switch', useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
+    'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
+    '@/components/toggle': { Toggle: 'Toggle' },
     'expo-router/head': { __esModule: true, default: 'Head' },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
@@ -53,3 +54,20 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
 }
 
 export { nodes } from './render-reading.js';
+
+/** The iOS-style toggle on its own, with Animated stood in by plain values. */
+export function renderToggle({ platform = 'web', value = false, disabled = false, dark = false } = {}) {
+  const toggleSource = readFileSync(new URL('../../apps/client/components/toggle.tsx', import.meta.url), 'utf8');
+  class Value { constructor(v) { this.v = v; } interpolate({ outputRange }) { return outputRange[this.v]; } }
+  const mocks = {
+    react: { ...react, useEffect() {}, useRef: current => ({ current }) },
+    'react-native': { Pressable: 'Pressable', Animated: { Value, View: 'Animated.View', timing: () => ({ start() {} }) } },
+    '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
+  };
+  const exports = {};
+  vm.runInNewContext(compile(toggleSource), {
+    exports, process: { env: { EXPO_OS: platform } },
+    require: name => { if (name === 'react/jsx-runtime') return require(name); if (!(name in mocks)) throw new Error(`Unreviewed renderer dependency: ${name}`); return mocks[name]; },
+  });
+  return { tree: exports.Toggle({ value, disabled, accessibilityLabel: 'Notify me about high readings', onValueChange() {} }), ON_COLOR: exports.ON_COLOR };
+}
