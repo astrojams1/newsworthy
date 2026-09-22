@@ -7,6 +7,11 @@ Resume from [the release ledger](ledger.md) with the reusable
 rejection of **build 7** for minimum functionality. The owner reports submitting the reconsideration reply; provider readback
 is pending. Do not send a duplicate.
 See [the exact reply and handoff](apple-4.2-reconsideration.md).
+**September 22 TestFlight update:** iOS **1.0.0 (15)** was built from merged
+main `65cafc3` with widget alignment and story-age changes. Upload and Apple
+processing are in progress; see [build 15 evidence](testflight-15.json).
+Physical-device verification of this build remains pending.
+
 Neither app is publicly released. Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.
 
