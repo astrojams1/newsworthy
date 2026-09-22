@@ -183,7 +183,7 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
     assert.equal(leftItems[0].hidesSharedBackground, true, 'brand must not acquire iOS glass');
     assert.equal(leftItems[0].element, left);
     assert.equal(rightItems.length, score == null ? 1 : 2);
-    for (const item of rightItems) assert.equal(item.hidesSharedBackground, true, 'header controls must not acquire iOS glass');
+    for (const item of rightItems) assert.equal(item.hidesSharedBackground, false, 'share and settings sit in the iOS glass capsule');
     assert.equal(rightItems.at(-1).element, settings);
     if (share) assert.equal(rightItems[0].element, share);
   } else {
@@ -232,13 +232,16 @@ test('header gate rejects missing optical correction and shifting the balanced A
   }
 });
 
-test('header gate rejects iOS glass returning on either control', () => {
+test('header gate rejects iOS glass moving: onto the wordmark, or off the controls', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  for (const element of ['brand', 'shareButton', 'settingsButton']) {
-    const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: true`,
-      `element: ${element}, hidesSharedBackground: false`);
+  const brandGlass = source.replace('element: brand, hidesSharedBackground: true', 'element: brand, hidesSharedBackground: false');
+  assert.notEqual(brandGlass, source);
+  assert.throws(() => inspectHeader({ sourceOverride: brandGlass }), /must not acquire iOS glass/);
+  for (const element of ['shareButton', 'settingsButton']) {
+    const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: false`,
+      `element: ${element}, hidesSharedBackground: true`);
     assert.notEqual(sourceOverride, source);
-    assert.throws(() => inspectHeader({ sourceOverride }), /must not acquire iOS glass/);
+    assert.throws(() => inspectHeader({ sourceOverride }), /sit in the iOS glass capsule/);
   }
 });
 

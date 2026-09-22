@@ -60,13 +60,15 @@ export default function Home() {
     {process.env.EXPO_OS === 'web' && <Head><title>Newsworthy</title></Head>}
     <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: '',
       headerLeft: () => brand, headerRight: () => headerRight,
-      // A transparent bar does not hide iOS 26+ glass around individual items.
+      // iOS 26+ draws glass around header items. The wordmark stays out of it —
+      // a text mark in a capsule reads as a button — while share and settings
+      // share one capsule, which is what the glass is for.
       unstable_headerLeftItems: process.env.EXPO_OS === 'ios' ? () => [
         { type: 'custom', element: brand, hidesSharedBackground: true },
       ] : undefined,
       unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => [
-        ...(shareButton ? [{ type: 'custom' as const, element: shareButton, hidesSharedBackground: true }] : []),
-        { type: 'custom' as const, element: settingsButton, hidesSharedBackground: true },
+        ...(shareButton ? [{ type: 'custom' as const, element: shareButton, hidesSharedBackground: false }] : []),
+        { type: 'custom' as const, element: settingsButton, hidesSharedBackground: false },
       ] : undefined }} />
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
     <ReadingGradient score={reading?.score} dark={theme.dark} />
