@@ -7,10 +7,10 @@
     "designGate": "55 passed, including deliberate regressions for font, gap, palette identity and third baseline.",
     "swiftStore": "Production Swift actor compiled and executed: coalesced sizes, sibling reload, restart, stale response, same-message decay, concurrent app update, offline and invalid cache.",
     "typeScript": "passed",
-    "fullSuite": "Initial run: 234 passed; native compiler timed out under load, and web export omitted index.html with dependencies resolved from the parent checkout. Rerun pending with worktree-local dependencies."
+    "fullSuite": "Initial local run: 234 passed; two route checks failed because the web export omitted index.html with parent-checkout dependencies, and the native compiler test timed out under machine load. The standalone production Swift test subsequently passed. Worktree dependency installation and final full rerun remain incomplete."
   },
   "nativeVerification": {
-    "ios": "Native SwiftUI test host uses the production ReadingContent and generated named-color assets. Capture pending. This does not verify WidgetKit scheduling, background extraction, App Group entitlement, or device installation.",
+    "ios": "Production SwiftUI widget source compiled into a native test host. Named-color catalog compiled through the macOS asset compiler after the local iOS asset compiler rejected the installed simulator/runtime combination. The host installed on iOS18.3 but launch stalled; retry on iOS17.5 also stalled. No updated widget screenshot or native visual parity is claimed.",
     "android": "Design/source contract checked; no Android SDK or Java runtime available for a new native capture."
   },
   "untested": [
@@ -19,5 +19,6 @@
     "Android launcher rendering and synchronized instance refresh",
     "Physical devices",
     "Native score 10, enlarged text, resize, and theme change without refresh"
-  ]
+  ],
+  "captureStatus": "UNAVAILABLE: simulator launch failures. The existing Home Screen capture was moved to ignored artifacts and is not presented as the new UI."
 }
