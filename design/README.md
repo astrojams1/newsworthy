@@ -31,7 +31,7 @@ A static icon must not imply that an old score is current. Widgets can refresh a
 - `--accent` is a readable derivative of the palette, for links, focus rings, and charts. The raw swatch is for decorative fills.
 - `--ink-muted` and `--ink-faint` are for plain or lightly tinted surfaces. `--ink-on-gradient-muted` is for secondary text on stronger gradient backgrounds.
 - `data-level="1"` through `"10"` applies a reading palette. Omit it for the brand default. `data-brand` makes a brand background visible.
-- `data-appearance` is only used by the design preview to show both appearances together. The production app follows the system without a manual override.
+- `data-appearance` reflects the app’s Light or Dark setting. Follow device removes the override and uses the system appearance; the design preview also uses this attribute.
 - The HTML manifest supplies fixed install icons. Social previews use a flat pale mint canvas with only the dash and wordmark,
   not a cached news score. Descriptions belong in metadata, not on the image.
 

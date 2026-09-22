@@ -25,3 +25,6 @@ apps/client/android/
 
 # EAS records the source commit separately; omit packed repository history.
 /.git
+
+# Local development workspaces are never app build inputs.
+/.worktrees/
