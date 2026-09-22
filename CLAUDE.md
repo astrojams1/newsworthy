@@ -515,8 +515,8 @@ matches `preview` rather than negating `production` so an unset `VERCEL_ENV`
 still builds. Nothing here reads a preview URL — work is verified against
 production after merge.
 
-**Settings are a screen, and the theme is one of them.** `/settings` (linked from
-the front page footer beside Privacy and Support) chooses the appearance —
+**Settings are a screen, and the theme is one of them.** `/settings` (the gear in
+the header, beside share) chooses the appearance —
 System, Light or Dark, System by default — and, in the native apps only, turns
 on a push notification for high readings. `apps/client/lib/preferences.js` owns
 the shape and the defaults, `components/preferences-provider.tsx` persists it

@@ -68,7 +68,6 @@ export default function Settings() {
               </Pressable>;
             })}
           </View>
-          <Text style={note}>System follows your device’s light or dark setting.</Text>
         </View>
         {pushSupported && <View>
           <Text accessibilityRole="header" style={heading}>Notifications</Text>

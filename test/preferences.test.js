@@ -34,7 +34,7 @@ test('the website shows the appearance choice and no notification setting', () =
   assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
     [['System', true], ['Light', false], ['Dark', false]]);
   assert.ok(!all.some(n => n.type === 'Switch'), 'push notifications are a native feature');
-  assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓', 'System follows your device’s light or dark setting.']);
+  assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓']);
   // Vertical: each option is its own full-width row, the checked one marked.
   assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
   assert.deepEqual(radios.map(n => nodes(n).find(c => c.type === 'Text' && c.props.children === '✓').props.style.opacity), [1, 0, 0]);
@@ -48,8 +48,7 @@ for (const platform of ['ios', 'android']) {
     assert.equal(toggle.props.value, false);
     assert.equal(toggle.props.accessibilityLabel, 'Notify me about high readings');
     assert.equal(all.find(n => n.props?.testID === 'threshold-value'), undefined, 'the score is shown only once notifications are on');
-    assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓',
-      'System follows your device’s light or dark setting.', 'Notifications', 'Notify me about high readings']);
+    assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓', 'Notifications', 'Notify me about high readings']);
     const on = nodes(renderSettings({ platform, stored: { notifications: { enabled: true, threshold: 8, token: 'ExponentPushToken[on-on-on-on]' } } }).tree);
     assert.equal(on.find(n => n.props?.testID === 'threshold-value').props.children, 8);
     const steps = on.filter(n => n.type?.name === 'StepButton');

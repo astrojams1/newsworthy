@@ -53,7 +53,7 @@ See [Mobile release guide](docs/mobile-release.md) for EAS cloud builds, widget
 extensions, signing and the remaining store setup. Expo Go can verify the core
 native interface; widgets require a custom development build.
 
-Settings, linked below the reading, choose the appearance (System, Light or
+Settings, the gear in the header, choose the appearance (System, Light or
 Dark) and, in the mobile apps, an optional notification for readings at or above
 a chosen score — off by default. Native delivery needs push credentials on EAS;
 see the [mobile release guide](docs/mobile-release.md#push-notifications).

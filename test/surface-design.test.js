@@ -26,10 +26,10 @@ test('reading refreshes never add loading, saved or retry text to an existing me
 function assertApprovedReadingCopy(tree) {
   const text = tree.filter(n => n.type === 'Text')
     .map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
-  assert.equal(text.length, 9, 'only approved reading, timestamp and footer text');
+  assert.equal(text.length, 7, 'only approved reading, timestamp and footer text');
   assert.deepEqual(text.slice(0, 3), ['3', contract.denominatorText, 'A quiet day for the world.']);
   assert.match(text[3], /^Updated (?:just now|\d+ (?:min ago|hr ago|days ago))$/);
-  assert.deepEqual(text.slice(4), ['Settings', '·', 'Privacy', '·', 'Support']);
+  assert.deepEqual(text.slice(4), ['Privacy', '·', 'Support']);
 }
 
 for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · ']) {
@@ -169,30 +169,35 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
   const options = tree.find(n => n.type === 'Screen').props.options;
   assert.equal(options.headerTransparent, true);
   const left = options.headerLeft();
-  const right = options.headerRight();
+  const rightGroup = options.headerRight();
   assert.equal(left.type, 'BrandMark');
+  // The right side is share (when there is a reading) then settings, always.
+  assert.equal(rightGroup.props.style.flexDirection, 'row');
+  const [share, settings] = rightGroup.props.children;
+  assert.equal(settings.props.accessibilityLabel, 'Settings');
+  assert.equal(nodes(settings).some(n => n.type === 'SettingsIcon'), true);
   if (platform === 'ios') {
     const leftItems = options.unstable_headerLeftItems();
     const rightItems = options.unstable_headerRightItems();
     assert.equal(leftItems.length, 1);
     assert.equal(leftItems[0].hidesSharedBackground, true, 'brand must not acquire iOS glass');
     assert.equal(leftItems[0].element, left);
-    assert.equal(rightItems.length, score == null ? 0 : 1);
-    if (right) {
-      assert.equal(rightItems[0].hidesSharedBackground, true, 'share must not acquire iOS glass');
-      assert.equal(rightItems[0].element, right);
-    }
+    assert.equal(rightItems.length, score == null ? 1 : 2);
+    for (const item of rightItems) assert.equal(item.hidesSharedBackground, true, 'header controls must not acquire iOS glass');
+    assert.equal(rightItems.at(-1).element, settings);
+    if (share) assert.equal(rightItems[0].element, share);
   } else {
     assert.equal(options.unstable_headerLeftItems, undefined);
     assert.equal(options.unstable_headerRightItems, undefined);
   }
-  if (right) {
-    assert.equal(right.props.accessibilityLabel, 'Share this reading');
-    assert.equal(right.props.accessibilityRole, 'button');
-    assert.equal(typeof right.props.onPress, 'function');
-    assert.ok(right.props.style.minWidth >= contract.header.minimumTouchTarget && right.props.style.minHeight >= contract.header.minimumTouchTarget);
-    assert.equal(right.props.style.transform, undefined, 'optical correction must not move the touch target');
-  } else assert.equal(score, null);
+  for (const control of [share, settings]) {
+    if (!control) { assert.equal(score, null); continue; }
+    assert.equal(control.props.accessibilityRole, 'button');
+    assert.equal(typeof control.props.onPress, 'function');
+    assert.ok(control.props.style.minWidth >= contract.header.minimumTouchTarget && control.props.style.minHeight >= contract.header.minimumTouchTarget);
+    assert.equal(control.props.style.transform, undefined, 'optical correction must not move the touch target');
+  }
+  if (share) assert.equal(share.props.accessibilityLabel, 'Share this reading');
 }
 
 test('native header keeps plain brand/share controls and accessible touch targets', () => {
@@ -229,7 +234,7 @@ test('header gate rejects missing optical correction and shifting the balanced A
 
 test('header gate rejects iOS glass returning on either control', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  for (const element of ['brand', 'shareButton']) {
+  for (const element of ['brand', 'shareButton', 'settingsButton']) {
     const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: true`,
       `element: ${element}, hidesSharedBackground: false`);
     assert.notEqual(sourceOverride, source);

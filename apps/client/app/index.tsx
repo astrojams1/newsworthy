@@ -1,8 +1,9 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View, Share, useWindowDimensions } from 'react-native';
-import { Stack, Link } from 'expo-router';
+import { Stack, Link, useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { AppIcon } from '@/components/app-icon';
+import { SettingsIcon } from '@/components/settings-icon';
 import { BrandMark } from '@/components/brand-mark';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
@@ -14,6 +15,7 @@ import { website, privacyUrl, supportUrl } from '@/lib/config';
 
 export default function Home() {
   const theme = useTheme();
+  const router = useRouter();
   const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace';
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -47,20 +49,25 @@ export default function Home() {
     }
   };
   const brand = <BrandMark />;
-  const shareButton = reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
+  const shareButton = reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
     <AppIcon color={theme.accent} />
   </Pressable> : null;
+  const settingsButton = <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
+    <SettingsIcon color={theme.accent} />
+  </Pressable>;
+  const headerRight = <View style={{ flexDirection: 'row', alignItems: 'center' }}>{shareButton}{settingsButton}</View>;
   return <>
     {process.env.EXPO_OS === 'web' && <Head><title>Newsworthy</title></Head>}
     <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: '',
-      headerLeft: () => brand, headerRight: () => shareButton,
+      headerLeft: () => brand, headerRight: () => headerRight,
       // A transparent bar does not hide iOS 26+ glass around individual items.
       unstable_headerLeftItems: process.env.EXPO_OS === 'ios' ? () => [
         { type: 'custom', element: brand, hidesSharedBackground: true },
       ] : undefined,
-      unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => shareButton ? [
-        { type: 'custom', element: shareButton, hidesSharedBackground: true },
-      ] : [] : undefined }} />
+      unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => [
+        ...(shareButton ? [{ type: 'custom' as const, element: shareButton, hidesSharedBackground: true }] : []),
+        { type: 'custom' as const, element: settingsButton, hidesSharedBackground: true },
+      ] : undefined }} />
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
     <ReadingGradient score={reading?.score} dark={theme.dark} />
     <ScrollView key={fontScale} contentInsetAdjustmentBehavior="never" style={{ flex: 1, backgroundColor: 'transparent' }}
@@ -80,7 +87,7 @@ export default function Home() {
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-        {[["Settings", "/settings"], ["Privacy", privacyUrl], ["Support", supportUrl]].map(([label, url], index) => <Fragment key={label}>
+        {[["Privacy", privacyUrl], ["Support", supportUrl]].map(([label, url], index) => <Fragment key={label}>
           {index > 0 && <Text accessible={false} aria-hidden style={{ color: theme.muted, fontSize: 12 }}>·</Text>}
           <Link href={url} asChild>
           <Pressable accessibilityRole="link" style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', paddingHorizontal: 10 }}>
