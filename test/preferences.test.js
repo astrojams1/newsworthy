@@ -50,6 +50,11 @@ for (const platform of ['ios', 'android']) {
     assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓', 'Notifications', 'Notify me about high readings']);
     const on = nodes(renderSettings({ platform, stored: { notifications: { enabled: true, threshold: 8, token: 'ExponentPushToken[on-on-on-on]' } } }).tree);
     assert.equal(on.find(n => n.props?.testID === 'threshold-value').props.children, 8);
+    // Every setting is one row of the same height, whatever control it holds.
+    const rows = [...on.filter(n => n.props?.accessibilityRole === 'radio'), ...['notifications-row', 'threshold-row'].map(id => on.find(n => n.props?.testID === id))];
+    assert.equal(rows.length, 5);
+    assert.deepEqual(rows.map(n => n.props.style.height), Array(5).fill(56));
+    assert.deepEqual(rows.map(n => n.props.style.minHeight), Array(5).fill(undefined), 'a fixed height, not a minimum a control can exceed');
     const steps = on.filter(n => n.type?.name === 'StepButton');
     assert.deepEqual(steps.map(n => [n.props.name, n.props.disabled]),
       [['Lower minimum score', false], ['Raise minimum score', false]], 'both named steps are available at 8');

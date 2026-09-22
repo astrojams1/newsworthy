@@ -8,6 +8,8 @@ import { Toggle } from '@/components/toggle';
 import { MAX_THRESHOLD, MIN_THRESHOLD, THEME_CHOICES, clampThreshold, type ThemePreference } from '@/lib/preferences';
 import { disablePush, enablePush, pushSupported, updatePushThreshold } from '@/lib/push';
 
+const ROW_HEIGHT = 56;
+
 const NOTICES = {
   denied: 'Notifications are turned off for Newsworthy in your device settings.',
   unavailable: 'Notifications are not available on this device.',
@@ -50,7 +52,10 @@ export default function Settings() {
   if (process.env.EXPO_OS === 'web') return <Redirect href="/" />;
   const label = { color: theme.ink, fontSize: 17 } as const;
   const heading = { color: theme.muted, fontSize: 13, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 } as const;
-  const card = { backgroundColor: theme.elevated, borderRadius: 16, borderWidth: 1, borderColor: theme.rule, padding: 16 } as const;
+  const card = { backgroundColor: theme.elevated, borderRadius: 16, borderWidth: 1, borderColor: theme.rule, overflow: 'hidden' } as const;
+  // One height for every setting, whatever control it carries.
+  const row = (index: number) => ({ height: ROW_HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, gap: 16,
+    borderTopWidth: index === 0 ? 0 : 1, borderTopColor: theme.rule } as const);
   const note = { color: theme.muted, fontSize: 14, lineHeight: 20, marginTop: 12 } as const;
   return <>
     <ScrollView style={{ flex: 1, backgroundColor: theme.tinted }} contentInsetAdjustmentBehavior="automatic"
@@ -58,13 +63,11 @@ export default function Settings() {
       <View style={{ width: '100%', maxWidth: 440, gap: 28 }}>
         <View accessibilityRole="radiogroup" accessibilityLabel="Appearance">
           <Text accessibilityRole="header" style={heading}>Appearance</Text>
-          <View testID="theme-options" style={{ ...card, padding: 0, overflow: 'hidden' }}>
+          <View testID="theme-options" style={card}>
             {THEME_CHOICES.map(({ value, label: name }, index) => {
               const checked = preferences.theme === value;
               return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={name} accessibilityState={{ checked, selected: checked }}
-                testID={`theme-${value}`} onPress={() => setTheme(value as ThemePreference)}
-                style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16,
-                  borderTopWidth: index === 0 ? 0 : 1, borderTopColor: theme.rule }}>
+                testID={`theme-${value}`} onPress={() => setTheme(value as ThemePreference)} style={row(index)}>
                 <Text style={label}>{name}</Text>
                 <Text accessible={false} style={{ color: theme.accent, fontSize: 18, opacity: checked ? 1 : 0 }}>✓</Text>
               </Pressable>;
@@ -74,13 +77,12 @@ export default function Settings() {
         {pushSupported && <View>
           <Text accessibilityRole="header" style={heading}>Notifications</Text>
           <View style={card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, gap: 16 }}>
+            <View testID="notifications-row" style={row(0)}>
               <Text style={{ ...label, flex: 1 }}>Notify me about high readings</Text>
               <Toggle testID="notifications-switch" accessibilityLabel="Notify me about high readings" value={enabled} disabled={busy} onValueChange={toggle} />
             </View>
             {enabled && <>
-              <View style={{ height: 1, backgroundColor: theme.rule, marginVertical: 12 }} />
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, gap: 16 }}>
+              <View testID="threshold-row" style={row(1)}>
                 <Text style={{ ...label, flex: 1 }}>Minimum score</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <StepButton glyph="−" name="Lower minimum score" testID="threshold-down" disabled={threshold <= MIN_THRESHOLD} onPress={() => step(-1)} />
