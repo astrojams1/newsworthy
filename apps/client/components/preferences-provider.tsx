@@ -1,6 +1,8 @@
-import { createContext, use, useCallback, useEffect, useRef, useState, type PropsWithChildren } from 'react';
+import { createContext, use, useCallback, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DEFAULT_PREFERENCES, STORAGE_KEY, parsePreferences, type Preferences, type ThemePreference } from '@/lib/preferences';
+import { createSubscriptionController } from '@/lib/subscription';
+import { disablePush, enablePush, updatePushThreshold } from '@/lib/push';
 
 type Notifications = Preferences['notifications'];
 type PreferencesValue = {
@@ -10,6 +12,10 @@ type PreferencesValue = {
   loaded: boolean;
   setTheme(theme: ThemePreference): void;
   setNotifications(update: Partial<Notifications>): void;
+  // The device's registration, serialised here rather than on the settings
+  // screen: a screen can be closed with a request in flight and reopened with
+  // a fresh queue, and the provider is the thing that lives as long as the app.
+  subscription: ReturnType<typeof createSubscriptionController>;
 };
 
 const PreferencesContext = createContext<PreferencesValue | null>(null);
@@ -38,7 +44,12 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
   const setTheme = useCallback((theme: ThemePreference) => save({ ...current.current, theme }), [save]);
   const setNotifications = useCallback((update: Partial<Notifications>) =>
     save({ ...current.current, notifications: { ...current.current.notifications, ...update } }), [save]);
-  return <PreferencesContext value={{ preferences, loaded, setTheme, setNotifications }}>{children}</PreferencesContext>;
+  const subscription = useMemo(() => createSubscriptionController({
+    read: () => current.current.notifications,
+    write: setNotifications,
+    api: { enablePush, disablePush, updatePushThreshold },
+  }), [setNotifications]);
+  return <PreferencesContext value={{ preferences, loaded, setTheme, setNotifications, subscription }}>{children}</PreferencesContext>;
 }
 
 export function usePreferences() {

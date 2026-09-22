@@ -109,24 +109,33 @@ export function messageFor({ score, newest }) {
 }
 
 /**
- * Send one batch of messages through Expo and return the per-message tickets.
- * `fetchImpl` and `url` are injectable so a test can stand in for Expo.
+ * Send messages through Expo in batches of its documented maximum. Returns
+ * the per-message tickets for every batch Expo answered, and the error that
+ * stopped a later batch if one did — the caller keeps the answered ones as
+ * progress rather than throwing them away. `fetchImpl` and `url` are
+ * injectable so a test can stand in for Expo.
+ *
+ * @returns {Promise<{tickets: Array<{to: string, status?: string, details?: object}>, error: Error | null}>}
  */
 export async function sendExpoPush(messages, { fetchImpl = fetch, url = expoPushUrl() } = {}) {
   const tickets = [];
   for (let i = 0; i < messages.length; i += CHUNK) {
     const chunk = messages.slice(i, i + CHUNK);
-    const headers = { 'content-type': 'application/json', accept: 'application/json' };
-    // Optional: an access token lets Expo enforce that only this server sends
-    // to this project's tokens. Not required for delivery.
-    if (process.env.EXPO_ACCESS_TOKEN) headers.authorization = `Bearer ${process.env.EXPO_ACCESS_TOKEN}`;
-    const res = await fetchImpl(url, { method: 'POST', headers, body: JSON.stringify(chunk) });
-    if (!res.ok) throw new Error(`Expo push responded ${res.status}`);
-    const parsed = await res.json();
-    const data = Array.isArray(parsed?.data) ? parsed.data : [];
-    for (let j = 0; j < chunk.length; j += 1) tickets.push({ to: chunk[j].to, ...(data[j] ?? {}) });
+    try {
+      const headers = { 'content-type': 'application/json', accept: 'application/json' };
+      // Optional: an access token lets Expo enforce that only this server sends
+      // to this project's tokens. Not required for delivery.
+      if (process.env.EXPO_ACCESS_TOKEN) headers.authorization = `Bearer ${process.env.EXPO_ACCESS_TOKEN}`;
+      const res = await fetchImpl(url, { method: 'POST', headers, body: JSON.stringify(chunk) });
+      if (!res.ok) throw new Error(`Expo push responded ${res.status}`);
+      const parsed = await res.json();
+      const data = Array.isArray(parsed?.data) ? parsed.data : [];
+      for (let j = 0; j < chunk.length; j += 1) tickets.push({ to: chunk[j].to, ...(data[j] ?? {}) });
+    } catch (err) {
+      return { tickets, error: err instanceof Error ? err : new Error(String(err)) };
+    }
   }
-  return tickets;
+  return { tickets, error: null };
 }
 
 export function expoPushUrl() {
@@ -137,13 +146,15 @@ export function expoPushUrl() {
  * After a reading is stored: announce the front page's number to every device
  * whose threshold it now meets, once per development and threshold. Never
  * throws — a push failure is logged and must not turn a stored reading into
- * an error. A failed send gives its claims back, so the next reading of the
- * same development tries again rather than finding it silently spent.
+ * an error. A send that fails part-way keeps the recipients Expo answered for
+ * and gives the claim back, so the next reading of the same development
+ * reaches the rest and only the rest.
  *
  * @returns {Promise<{sent: number, score: number|null, thresholds: number[]}>}
  */
 export async function notifyReading(reading, { fetchImpl, url, now } = {}) {
   const result = { sent: 0, score: null, thresholds: [] };
+  /** @type {Array<{root: number, threshold: number, delivered: string[], pending: string[]}>} */
   let claims = [];
   try {
     if (!reading || reading.status !== 'ok' || reading.deduped) return result;
@@ -153,30 +164,35 @@ export async function notifyReading(reading, { fetchImpl, url, now } = {}) {
     const subscribers = await pushSubscriptionsFor(current.score);
     if (subscribers.length === 0) return result;
 
-    const recipients = [];
     for (const threshold of [...new Set(subscribers.map((s) => s.threshold))]) {
-      const claimed = await claimPushDelivery({ root: current.root, threshold, readingId: reading.id, score: current.score });
-      if (!claimed) continue;
-      claims.push({ root: current.root, threshold });
+      const claim = await claimPushDelivery({ root: current.root, threshold, readingId: reading.id, score: current.score });
+      if (!claim) continue;
+      const done = new Set(claim.delivered);
+      const pending = subscribers.filter((s) => s.threshold === threshold && !done.has(s.token)).map((s) => s.token);
+      claims.push({ root: current.root, threshold, delivered: [], pending });
       result.thresholds.push(threshold);
-      for (const s of subscribers) if (s.threshold === threshold) recipients.push(s);
     }
-    if (recipients.length === 0) return result;
+    const recipients = claims.flatMap((c) => c.pending.map((token) => ({ token, claim: c })));
+    if (recipients.length === 0) {
+      // Everything was reached by an earlier attempt: close the claims.
+      for (const claim of claims) await completePushDelivery(claim);
+      claims = [];
+      return result;
+    }
 
     const message = messageFor(current);
-    const tickets = await sendExpoPush(recipients.map((r) => ({ to: r.token, ...message })), { fetchImpl, url });
-    // A token Expo no longer knows is a device that uninstalled, or a token
-    // that never was one. Either way the row has no future.
-    const dead = tickets
-      .filter((t) => t.status === 'error' && t.details?.error === 'DeviceNotRegistered')
-      .map((t) => t.to);
+    const { tickets, error } = await sendExpoPush(recipients.map((r) => ({ to: r.token, ...message })), { fetchImpl, url });
+    // Every token Expo answered for is progress, whatever the answer: a
+    // device Expo no longer knows has uninstalled, or never was one, and its
+    // row has no future — but it is not retried either.
+    const answered = new Map(tickets.map((t) => [t.to, t]));
+    for (const r of recipients) if (answered.has(r.token)) r.claim.delivered.push(r.token);
+    const dead = tickets.filter((t) => t.status === 'error' && t.details?.error === 'DeviceNotRegistered').map((t) => t.to);
     if (dead.length) await deletePushSubscriptions(dead);
     result.sent = tickets.filter((t) => t.status === 'ok').length;
 
-    for (const claim of claims) {
-      const count = recipients.filter((r) => r.threshold === claim.threshold).length;
-      await completePushDelivery({ ...claim, recipients: count });
-    }
+    if (error) throw error;
+    for (const claim of claims) await completePushDelivery(claim);
     claims = [];
     console.log(`push: reading ${reading.id} shows ${current.score}/10, sent to ${result.sent} of ${recipients.length} devices`);
   } catch (err) {

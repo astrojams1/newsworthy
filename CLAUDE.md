@@ -542,10 +542,13 @@ Expo's shape, and past `MAX_SUBSCRIPTIONS` the route answers 503 rather than
 let a public URL grow a table without limit. Tokens Expo reports as
 `DeviceNotRegistered` are deleted on the first send, so invented ones do not
 stay. The score can be chosen before the switch is on, so turning it on means
-something definite; the app serialises every request that touches its row and
-re-reads its own state when each one runs, because a threshold change queued
-behind a switch-off once reached the server after the DELETE and registered
-the device again while the app showed it as off.
+something definite. Every request that touches the row runs through one
+queue in `apps/client/lib/subscription.js` and re-reads the stored state when
+its turn comes, because a threshold change overlapping a switch-off once
+reached the server after the DELETE and registered the device again while the
+app showed it as off. The queue is the provider's, not the settings screen's:
+a screen owning its own queue was closed with a request in flight and reopened
+with an empty one, and the old request finished after the new screen's DELETE.
 
 **What is announced is the front page's number, not the reading's score.** The
 page smooths and ages readings and weighs a development against its story, so
@@ -566,13 +569,18 @@ one development, where a first cut that took the predecessor's *id* as the
 root announced three of them. An escalation the page shows reaches the devices
 waiting for the higher number and not, again, the ones that heard at the lower.
 
-**A claim is a lock, not a record.** The first cut claimed the pair before
-calling Expo and never let go, so one 503 silenced a development for every
-device at that threshold. A claim now carries `claimed_at` and a null
-`sent_at` until Expo answers; a failed send deletes its claims, and a claim
-older than `PUSH_CLAIM_STALE_MINUTES` with no send — a function frozen mid-way
-— is taken over by the next reading. Two functions storing readings at once
-still send once between them, because the insert is the arbiter. Delivery is
+**A claim is a lock, not a record, and it carries progress.** The first cut
+claimed the pair before calling Expo and never let go, so one 503 silenced a
+development for every device at that threshold. A claim now carries
+`claimed_at` and a null `sent_at` until every recipient is answered for; a
+failed send marks its claims `released`, and a claim older than
+`PUSH_CLAIM_STALE_MINUTES` with no send — a function frozen mid-way — is taken
+over by the next reading. Two functions storing readings at once still send
+once between them, because the insert is the arbiter. Expo takes a hundred
+messages per request, so a send can fail part-way: releasing the whole claim
+then sent the first batch's hundred devices the same development twice. The
+claim keeps `delivered`, the tokens Expo has answered for, and a retry reaches
+only the rest. Delivery is
 an HTTP call to Expo's push service (`NEWSWORTHY_PUSH_URL` points a test at a
 stand-in; `EXPO_ACCESS_TOKEN` is optional) and is awaited where the reading is
 stored, in `runRating` and the external route, for the same reason the

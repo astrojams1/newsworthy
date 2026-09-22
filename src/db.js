@@ -102,6 +102,9 @@ export function ensureSchema() {
     // is a send in flight or one that failed: the sender releases it on
     // failure, and a claim older than PUSH_CLAIM_STALE_MINUTES — a function
     // frozen mid-send — can be taken over by the next reading.
+    // `delivered` is progress: the tokens Expo has already answered for. A
+    // send that fails part-way keeps them, so the retry reaches only the rest —
+    // a second batch's 503 must not send the first batch's hundred again.
     await sql`
       CREATE TABLE IF NOT EXISTS push_deliveries (
         root       BIGINT      NOT NULL,
@@ -110,7 +113,9 @@ export function ensureSchema() {
         score      SMALLINT    NOT NULL,
         recipients INTEGER     NOT NULL DEFAULT 0,
         claimed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        released   BOOLEAN     NOT NULL DEFAULT false,
         sent_at    TIMESTAMPTZ,
+        delivered  TEXT[]      NOT NULL DEFAULT '{}',
         PRIMARY KEY (root, threshold)
       )`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_created_at ON ratings (created_at DESC)`;
@@ -613,40 +618,51 @@ export async function pushSubscriptionsFor(score) {
 export const PUSH_CLAIM_STALE_MINUTES = 10;
 
 /**
- * Claim a (development, threshold) pair for this reading. Returns false when
+ * Claim a (development, threshold) pair for this reading. Returns null when
  * the pair was already announced, or is being announced right now — which is
  * what makes a re-report of a development that is still loud a silent one,
  * and two functions storing readings at once send once between them. A claim
- * that was never completed, and is old enough that its sender cannot still be
- * running, is taken over rather than honoured.
+ * its sender gave back, or one so old its sender cannot still be running, is
+ * taken over rather than honoured, and comes with the tokens already reached
+ * so the retry finishes the job instead of repeating it.
+ *
+ * @returns {Promise<{delivered: string[]} | null>}
  */
 export async function claimPushDelivery({ root, threshold, readingId, score }) {
   await ensureSchema();
   const rows = await sql`
-    INSERT INTO push_deliveries (root, threshold, reading_id, score, claimed_at, sent_at)
-    VALUES (${root}, ${threshold}, ${readingId}, ${score}, now(), NULL)
+    INSERT INTO push_deliveries (root, threshold, reading_id, score, claimed_at, released, sent_at)
+    VALUES (${root}, ${threshold}, ${readingId}, ${score}, now(), false, NULL)
     ON CONFLICT (root, threshold) DO UPDATE
-      SET reading_id = EXCLUDED.reading_id, score = EXCLUDED.score, claimed_at = now()
+      SET reading_id = EXCLUDED.reading_id, score = EXCLUDED.score, claimed_at = now(), released = false
       WHERE push_deliveries.sent_at IS NULL
-        AND push_deliveries.claimed_at < now() - make_interval(mins => ${PUSH_CLAIM_STALE_MINUTES})
-    RETURNING root`;
-  return rows.length > 0;
+        AND (push_deliveries.released
+             OR push_deliveries.claimed_at < now() - make_interval(mins => ${PUSH_CLAIM_STALE_MINUTES}))
+    RETURNING delivered`;
+  if (rows.length === 0) return null;
+  return { delivered: Array.isArray(rows[0].delivered) ? rows[0].delivered : [] };
 }
 
-/** The send went through: the pair is announced for good. */
-export async function completePushDelivery({ root, threshold, recipients }) {
+/** Every recipient answered for: the pair is announced for good. */
+export async function completePushDelivery({ root, threshold, delivered = [] }) {
   await ensureSchema();
   await sql`
-    UPDATE push_deliveries SET sent_at = now(), recipients = ${recipients}
+    UPDATE push_deliveries
+       SET sent_at = now(), delivered = array_cat(delivered, ${delivered}::text[]),
+           recipients = cardinality(array_cat(delivered, ${delivered}::text[]))
      WHERE root = ${root} AND threshold = ${threshold}`;
 }
 
-/** The send failed: give the pairs back so the next reading can try again. */
+/**
+ * The send failed part-way: keep what was reached and give the pair back, so
+ * the next reading of the development finishes with the rest.
+ */
 export async function releasePushDeliveries(claims = []) {
   await ensureSchema();
-  for (const { root, threshold } of claims) {
+  for (const { root, threshold, delivered = [] } of claims) {
     await sql`
-      DELETE FROM push_deliveries
+      UPDATE push_deliveries
+         SET released = true, delivered = array_cat(delivered, ${delivered}::text[])
        WHERE root = ${root} AND threshold = ${threshold} AND sent_at IS NULL`;
   }
 }

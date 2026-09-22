@@ -201,23 +201,48 @@ test('a failed send gives its claim back, so the next reading of the development
   assert.equal((await notifyReading(third, { fetchImpl })).sent, 0, 'and once delivered it stays delivered');
 });
 
-test('a claim protects against a concurrent duplicate, and a stale one is taken over', async () => {
+test('a claim protects against a concurrent duplicate, keeps progress when released, and a stale one is taken over', async () => {
   await ensureSchema();
   await sql`DELETE FROM push_deliveries`;
   const claim = { root: 900, threshold: 8, readingId: 901, score: 8 };
-  assert.equal(await claimPushDelivery(claim), true);
-  assert.equal(await claimPushDelivery({ ...claim, readingId: 902 }), false, 'a second sender at the same moment sends nothing');
+  assert.deepEqual(await claimPushDelivery(claim), { delivered: [] });
+  assert.equal(await claimPushDelivery({ ...claim, readingId: 902 }), null, 'a second sender at the same moment sends nothing');
+  await releasePushDeliveries([{ ...claim, delivered: ['ExponentPushToken[one]'] }]);
+  assert.deepEqual(await claimPushDelivery({ ...claim, readingId: 902 }), { delivered: ['ExponentPushToken[one]'] }, 'released, it can be taken again with what was reached');
+  await completePushDelivery({ ...claim, delivered: ['ExponentPushToken[two]'] });
   await releasePushDeliveries([claim]);
-  assert.equal(await claimPushDelivery({ ...claim, readingId: 902 }), true, 'released, it can be taken again');
-  await completePushDelivery({ ...claim, recipients: 3 });
-  await releasePushDeliveries([claim]);
-  assert.equal(await claimPushDelivery({ ...claim, readingId: 903 }), false, 'a completed delivery is never released or retaken');
+  assert.equal(await claimPushDelivery({ ...claim, readingId: 903 }), null, 'a completed delivery is never released or retaken');
+  const [row] = await sql`SELECT recipients, delivered FROM push_deliveries WHERE root = 900`;
+  assert.deepEqual([Number(row.recipients), row.delivered], [2, ['ExponentPushToken[one]', 'ExponentPushToken[two]']]);
   // A sender that froze mid-send: its claim has no sent_at and ages out.
   const frozen = { root: 910, threshold: 8, readingId: 911, score: 8 };
-  assert.equal(await claimPushDelivery(frozen), true);
-  assert.equal(await claimPushDelivery({ ...frozen, readingId: 912 }), false);
+  assert.deepEqual(await claimPushDelivery(frozen), { delivered: [] });
+  assert.equal(await claimPushDelivery({ ...frozen, readingId: 912 }), null);
   await sql`UPDATE push_deliveries SET claimed_at = now() - make_interval(mins => ${PUSH_CLAIM_STALE_MINUTES + 1}) WHERE root = 910`;
-  assert.equal(await claimPushDelivery({ ...frozen, readingId: 912 }), true, 'stale, it is taken over');
+  assert.deepEqual(await claimPushDelivery({ ...frozen, readingId: 912 }), { delivered: [] }, 'stale, it is taken over');
+});
+
+test('a batch that fails after another succeeded retries only the devices not yet reached', async () => {
+  // The finding: releasing the whole claim after a second-batch 503 sent the
+  // first batch's hundred devices the same development twice.
+  await ensureSchema();
+  await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`;
+  const tokens = Array.from({ length: 101 }, (_, i) => `ExponentPushToken[device-${String(i).padStart(3, '0')}]`);
+  for (const token of tokens) await upsertPushSubscription({ token, threshold: 8, platform: 'ios' });
+  let batches = 0;
+  let outage = true;
+  const { received, fetchImpl } = relay(() => { batches += 1; return outage && batches === 2; });
+  const first = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports', created_at: minutesAgo(30), judge_version: 2, development_of: null, story: 'port' });
+  assert.deepEqual(await notifyReading(first, { fetchImpl }), { sent: 100, score: 8, thresholds: [8] }, 'the first batch landed, the second did not');
+  outage = false;
+  const second = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports for a third day', created_at: minutesAgo(20), judge_version: 2, development_of: first.id, story: 'port' });
+  assert.deepEqual(await notifyReading(second, { fetchImpl }), { sent: 1, score: 8, thresholds: [8] }, 'the retry reaches the one device left');
+  const counts = new Map();
+  for (const m of received) counts.set(m.to, (counts.get(m.to) ?? 0) + 1);
+  assert.equal(counts.size, 101, 'every device heard');
+  assert.ok([...counts.values()].every((n) => n === 1), 'and none heard twice');
+  const third = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports, talks resume', created_at: minutesAgo(10), judge_version: 2, development_of: first.id, story: 'port' });
+  assert.equal((await notifyReading(third, { fetchImpl })).sent, 0, 'delivered in full, it stays delivered');
 });
 
 test('the push is awaited where the reading is stored, not left in flight', async () => {

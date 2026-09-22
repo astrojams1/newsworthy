@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import Head from 'expo-router/head';
 import { Stack, useRouter } from 'expo-router';
@@ -7,9 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
 import { Toggle } from '@/components/toggle';
-import { THEME_CHOICES, THRESHOLD_CHOICES, type Preferences, type ThemePreference } from '@/lib/preferences';
+import { THEME_CHOICES, THRESHOLD_CHOICES, type ThemePreference } from '@/lib/preferences';
 import { CheckIcon } from '@/components/check-icon';
-import { disablePush, enablePush, pushSupported, updatePushThreshold } from '@/lib/push';
+import { pushSupported } from '@/lib/push';
 
 const ROW_MIN_HEIGHT = 56;
 
@@ -25,51 +25,25 @@ export default function Settings() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const horizontal = Math.max(20, Math.min((width || 390) * 0.05, 48));
-  const { preferences, setTheme, setNotifications } = usePreferences();
-  const { enabled, threshold, token } = preferences.notifications;
+  const { preferences, setTheme, subscription } = usePreferences();
+  const { enabled, threshold } = preferences.notifications;
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<'' | keyof typeof NOTICES>('');
-  // Every request that touches the server's row runs through one queue, and
-  // reads the newest local state when its turn comes rather than the state
-  // that was current when it was queued. Without both, a threshold change
-  // queued behind a switch-off could reach the server after the DELETE and
-  // register the device again while the app shows it as off.
-  const queue = useRef(Promise.resolve());
-  const latest = useRef<Preferences['notifications']>(preferences.notifications);
-  latest.current = preferences.notifications;
-  const store = (update: Partial<Preferences['notifications']>) => {
-    latest.current = { ...latest.current, ...update };
-    setNotifications(update);
-  };
-  const enqueue = (task: () => Promise<void>) => {
-    const run = queue.current.then(task, task);
-    queue.current = run.catch(() => {});
-    return run;
-  };
-  const toggle = (next: boolean) => enqueue(async () => {
+  // The registration itself is the provider's: its queue outlives this screen,
+  // so a request still in flight when the screen closes is finished in order
+  // with whatever the reopened screen asks next.
+  const toggle = async (next: boolean) => {
     setBusy(true); setNotice('');
     try {
-      if (next) {
-        const result = await enablePush(latest.current.threshold);
-        if (result.ok) store({ enabled: true, token: result.token });
-        else setNotice(result.reason);
-      } else if (!latest.current.token || await disablePush(latest.current.token)) {
-        store({ enabled: false, token: null });
-      } else setNotice('offline');
+      const result = await (next ? subscription.enable() : subscription.disable());
+      if (!result.ok) setNotice(result.reason);
     } finally { setBusy(false); }
-  });
-  // The score can be chosen before notifications are on, so turning them on
-  // means something definite. Only a device the server holds is re-registered.
-  const choose = (next: number) => enqueue(async () => {
-    if (next === latest.current.threshold) return;
+  };
+  const choose = async (next: number) => {
     setNotice('');
-    const previous = latest.current.threshold;
-    store({ threshold: next });
-    if (latest.current.enabled && latest.current.token && !(await updatePushThreshold(latest.current.token, next))) {
-      store({ threshold: previous });
-      setNotice('offline');
-    }
-  });
+    const result = await subscription.choose(next);
+    if (!result.ok) setNotice(result.reason);
+  };
   // Reached with nothing behind it — a reload on web, a deep link the
   // navigator could not anchor — the screen still needs a way out.
   const stranded = !router.canGoBack();

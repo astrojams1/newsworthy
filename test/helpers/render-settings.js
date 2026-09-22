@@ -18,8 +18,7 @@ const compiled = compile(source);
 export function renderSettings({ platform, width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {}, canGoBack = true, busy = false } = {}) {
   // Recorded as plain copies: values built inside the vm context carry that
   // context's prototypes, which strict deep equality would refuse.
-  const calls = { setTheme: [], setNotifications: [], enablePush: [], disablePush: [], updatePushThreshold: [], replace: [], openSettings: 0, notices: [] };
-  const plain = value => JSON.parse(JSON.stringify(value));
+  const calls = { setTheme: [], enable: 0, disable: 0, choose: [], replace: [], openSettings: 0, notices: [] };
   const current = preferences.parsePreferences(stored);
   const mocks = {
     // `busy` is the one piece of state a test drives; the notice setter is
@@ -36,17 +35,19 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
     '@/lib/preferences': preferences,
+    // `push.enable` / `push.disable` / `push.choose` are the outcomes the
+    // provider's controller would return; the controller itself is tested on
+    // its own in preferences.test.js.
     '@/components/preferences-provider': { usePreferences: () => ({
       preferences: current, loaded: true,
       setTheme: theme => calls.setTheme.push(theme),
-      setNotifications: update => calls.setNotifications.push(plain(update)),
+      subscription: {
+        enable: async () => { calls.enable += 1; return push.enable ?? { ok: true }; },
+        disable: async () => { calls.disable += 1; return push.disable ?? { ok: true }; },
+        choose: async next => { calls.choose.push(next); return push.choose ?? { ok: true }; },
+      },
     }) },
-    '@/lib/push': {
-      pushSupported,
-      enablePush: async threshold => { calls.enablePush.push(threshold); return typeof push.enable === 'function' ? push.enable() : (push.enable ?? { ok: true, token: 'ExponentPushToken[test-test-test]' }); },
-      disablePush: async token => { calls.disablePush.push(token); return typeof push.disable === 'function' ? push.disable() : (push.disable ?? true); },
-      updatePushThreshold: async (token, threshold) => { calls.updatePushThreshold.push(plain([token, threshold])); return typeof push.update === 'function' ? push.update() : (push.update ?? true); },
-    },
+    '@/lib/push': { pushSupported },
   };
   const exports = {};
   vm.runInNewContext(compiled, {

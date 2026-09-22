@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DEFAULT_PREFERENCES, STORAGE_KEY, THEME_CHOICES, THRESHOLD_CHOICES, clampThreshold, parsePreferences, resolveDark } from '../apps/client/lib/preferences.js';
 import { nodes, renderSettings, renderToggle } from './helpers/render-settings.js';
+import { createSubscriptionController } from '../apps/client/lib/subscription.js';
 
 test('system appearance and no notifications are the defaults, and a damaged store falls back field by field', () => {
   assert.deepEqual(THEME_CHOICES.map(c => [c.value, c.label]), [['system', 'Follow device'], ['light', 'Light'], ['dark', 'Dark']]);
@@ -77,7 +78,7 @@ for (const platform of ['ios', 'android']) {
     // Choosing Dark records the choice; nothing else is touched.
     all.find(n => n.props?.testID === 'theme-dark').props.onPress();
     assert.deepEqual(calls.setTheme, ['dark']);
-    assert.deepEqual(calls.setNotifications, []);
+    assert.deepEqual([calls.enable, calls.disable, calls.choose], [0, 0, []]);
   });
 }
 
@@ -88,90 +89,114 @@ test('while registering, the row shows progress and the switch is held', () => {
   assert.equal(all.find(n => n.props?.testID === 'notifications-row').props.disabled, true);
 });
 
-test('choosing a score is local while off, and re-registers a device that is on', async () => {
+test('the screen hands every registration change to the provider and shows what came back', async () => {
   const token = 'ExponentPushToken[on-on-on-on]';
-  const off = renderSettings({ platform: 'android' });
-  await nodes(off.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
-  assert.deepEqual(off.calls.setNotifications, [{ threshold: 9 }]);
-  assert.deepEqual(off.calls.updatePushThreshold, [], 'off: the server holds no row to update');
-
   const on = renderSettings({ platform: 'android', stored: { notifications: { enabled: true, threshold: 8, token } } });
   assert.equal(nodes(on.tree).find(n => n.type === 'Toggle').props.value, true);
   await nodes(on.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
-  assert.deepEqual(on.calls.setNotifications, [{ threshold: 9 }]);
-  assert.deepEqual(on.calls.updatePushThreshold, [[token, 9]]);
-  // Tapping the score already chosen changes nothing.
-  await nodes(on.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
-  assert.deepEqual(on.calls.updatePushThreshold, [[token, 9]]);
+  assert.deepEqual(on.calls.choose, [9]);
+  await nodes(on.tree).find(n => n.type === 'Toggle').props.onValueChange(false);
+  assert.deepEqual([on.calls.enable, on.calls.disable], [0, 1]);
+  assert.deepEqual(on.calls.notices.filter(Boolean), []);
+
+  const off = renderSettings({ platform: 'ios' });
+  await nodes(off.tree).find(n => n.type === 'Toggle').props.onValueChange(true);
+  assert.deepEqual([off.calls.enable, off.calls.disable], [1, 0]);
+
+  const stuck = renderSettings({ platform: 'android', push: { disable: { ok: false, reason: 'offline' }, choose: { ok: false, reason: 'offline' } },
+    stored: { notifications: { enabled: true, threshold: 8, token } } });
+  await nodes(stuck.tree).find(n => n.type === 'Toggle').props.onValueChange(false);
+  await nodes(stuck.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
+  assert.deepEqual(stuck.calls.notices.filter(Boolean), ['offline', 'offline'], 'a failure is said, not hidden');
   assert.deepEqual([clampThreshold(0), clampThreshold(8.6), clampThreshold(11)], [1, 9, 10]);
 });
 
-test('turning on with the chosen score, so the score chosen while off is the one registered', async () => {
-  const chosen = renderSettings({ platform: 'ios', stored: { notifications: { threshold: 7 } } });
-  await nodes(chosen.tree).find(n => n.type === 'Toggle').props.onValueChange(true);
-  assert.deepEqual(chosen.calls.enablePush, [7]);
+// ---- the controller: one queue for the life of the app, whatever screen asks
+
+function controllerWith(initial, api) {
+  let state = { enabled: false, threshold: 8, token: null, ...initial };
+  const writes = [];
+  const calls = { enable: [], disable: [], update: [] };
+  const controller = createSubscriptionController({
+    read: () => state,
+    write: update => { writes.push(update); state = { ...state, ...update }; },
+    api: {
+      enablePush: async threshold => { calls.enable.push(threshold); return api.enable ? api.enable() : { ok: true, token: 'ExponentPushToken[test-test-test]' }; },
+      disablePush: async token => { calls.disable.push(token); return api.disable ? api.disable() : true; },
+      updatePushThreshold: async (token, threshold) => { calls.update.push([token, threshold]); return api.update ? api.update() : true; },
+    },
+  });
+  return { controller, calls, writes, state: () => state };
+}
+const settle = () => new Promise(resolve => setImmediate(resolve));
+
+test('turning on registers the score chosen beforehand; a refusal changes nothing', async () => {
+  const granted = controllerWith({ threshold: 7 }, {});
+  assert.deepEqual(await granted.controller.enable(), { ok: true });
+  assert.deepEqual(granted.calls.enable, [7]);
+  assert.deepEqual(granted.state(), { enabled: true, threshold: 7, token: 'ExponentPushToken[test-test-test]' });
+
+  const denied = controllerWith({}, { enable: () => ({ ok: false, reason: 'denied' }) });
+  assert.deepEqual(await denied.controller.enable(), { ok: false, reason: 'denied' });
+  assert.deepEqual(denied.writes, [], 'no registration is claimed that did not happen');
+
+  const stuck = controllerWith({ enabled: true, token: 'ExponentPushToken[on-on-on-on]' }, { disable: () => false });
+  assert.deepEqual(await stuck.controller.disable(), { ok: false, reason: 'offline' });
+  assert.equal(stuck.state().enabled, true, 'a device the server still holds stays shown as on');
 });
 
-test('a switch-off cannot be undone by a score change queued behind it', async () => {
-  // The finding: a threshold PUT overlapping the DELETE could land after it
-  // and register the device again while the app showed it as off.
+test('choosing a score is local while off, and re-registers a device that is on', async () => {
+  const off = controllerWith({}, {});
+  assert.deepEqual(await off.controller.choose(9), { ok: true });
+  assert.deepEqual(off.writes, [{ threshold: 9 }]);
+  assert.deepEqual(off.calls.update, [], 'off: the server holds no row to update');
   const token = 'ExponentPushToken[on-on-on-on]';
-  let finishDisable;
-  const disable = () => new Promise(resolve => { finishDisable = resolve; });
-  const { tree, calls } = renderSettings({ platform: 'ios', push: { disable }, stored: { notifications: { enabled: true, threshold: 8, token } } });
-  const all = nodes(tree);
-  const settle = () => new Promise(resolve => setImmediate(resolve));
-  const off = all.find(n => n.type === 'Toggle').props.onValueChange(false);
-  const nine = all.find(n => n.props?.testID === 'threshold-9').props.onPress();
-  await settle();
-  assert.deepEqual(calls.disablePush, [token], 'the delete is in flight');
-  assert.deepEqual(calls.updatePushThreshold, [], 'the score change waits its turn');
-  finishDisable(true);
-  await off; await nine;
-  assert.deepEqual(calls.setNotifications, [{ enabled: false, token: null }, { threshold: 9 }]);
-  assert.deepEqual(calls.updatePushThreshold, [], 'by its turn the device is off, so nothing reaches the server');
-
-  // The other order: a score change already in flight, then the switch-off,
-  // which waits for it and deletes last.
-  let finishUpdate;
-  const update = () => new Promise(resolve => { finishUpdate = resolve; });
-  const second = renderSettings({ platform: 'ios', push: { update }, stored: { notifications: { enabled: true, threshold: 8, token } } });
-  const nodes2 = nodes(second.tree);
-  const change = nodes2.find(n => n.props?.testID === 'threshold-9').props.onPress();
-  const switchOff = nodes2.find(n => n.type === 'Toggle').props.onValueChange(false);
-  await settle();
-  assert.deepEqual(second.calls.updatePushThreshold, [[token, 9]], 'the update is in flight');
-  assert.deepEqual(second.calls.disablePush, [], 'the delete waits for the update');
-  finishUpdate(true);
-  await change; await switchOff;
-  assert.deepEqual(second.calls.updatePushThreshold, [[token, 9]]);
-  assert.deepEqual(second.calls.disablePush, [token], 'and runs once the update is done');
+  const on = controllerWith({ enabled: true, token }, {});
+  await on.controller.choose(9);
+  assert.deepEqual(on.calls.update, [[token, 9]]);
+  await on.controller.choose(9);
+  assert.deepEqual(on.calls.update, [[token, 9]], 'the score already chosen changes nothing');
+  const failed = controllerWith({ enabled: true, token }, { update: () => false });
+  assert.deepEqual(await failed.controller.choose(9), { ok: false, reason: 'offline' });
+  assert.equal(failed.state().threshold, 8, 'a score the server did not take is not kept');
 });
 
-test('turning notifications on registers the device at the chosen score, and a refusal leaves it off', async () => {
-  const granted = renderSettings({ platform: 'ios', stored: { notifications: { threshold: 7 } } });
-  await nodes(granted.tree).find(n => n.type === 'Toggle').props.onValueChange(true);
-  assert.deepEqual(granted.calls.enablePush, [7]);
-  assert.deepEqual(granted.calls.setNotifications, [{ enabled: true, token: 'ExponentPushToken[test-test-test]' }]);
+test('a switch-off cannot be undone by a score change in flight, from this screen or a reopened one', async () => {
+  // The findings: a threshold PUT overlapping the DELETE could land after it
+  // and register the device again; and a queue owned by the screen was reset
+  // when the screen was reopened. The controller is the provider's, so a
+  // second screen instance is just another caller of the same queue.
+  const token = 'ExponentPushToken[on-on-on-on]';
+  let finishUpdate;
+  const first = controllerWith({ enabled: true, token }, { update: () => new Promise(resolve => { finishUpdate = resolve; }) });
+  const screenA = first.controller;
+  const change = screenA.choose(9);
+  await settle();
+  assert.deepEqual(first.calls.update, [[token, 9]], 'the update is in flight');
+  // The screen closes and reopens: the new instance asks the same controller.
+  const screenB = first.controller;
+  const off = screenB.disable();
+  await settle();
+  assert.deepEqual(first.calls.disable, [], 'the delete waits for the update');
+  finishUpdate(true);
+  assert.deepEqual(await change, { ok: true });
+  assert.deepEqual(await off, { ok: true });
+  assert.deepEqual(first.calls.disable, [token], 'and runs once the update is done');
+  assert.deepEqual(first.state(), { enabled: false, threshold: 9, token: null });
 
-  const denied = renderSettings({ platform: 'ios', push: { enable: { ok: false, reason: 'denied' } } });
-  await nodes(denied.tree).find(n => n.type === 'Toggle').props.onValueChange(true);
-  assert.deepEqual(denied.calls.setNotifications, [], 'the switch does not claim a registration that did not happen');
-  assert.deepEqual(denied.calls.notices.filter(Boolean), ['denied']);
-  // A refusal is explained with a way to fix it: the device's own settings.
-  const shown = renderSettings({ platform: 'ios' });
-  // The notice is state the mock cannot flip, so exercise the control by
-  // rendering the source with the notice forced on.
-  assert.ok(nodes(shown.tree).every(n => n.props?.testID !== 'open-device-settings'), 'no button until there is a refusal');
-
-  const off = renderSettings({ platform: 'android', stored: { notifications: { enabled: true, threshold: 8, token: 'ExponentPushToken[on-on-on-on]' } } });
-  await nodes(off.tree).find(n => n.type === 'Toggle').props.onValueChange(false);
-  assert.deepEqual(off.calls.disablePush, ['ExponentPushToken[on-on-on-on]']);
-  assert.deepEqual(off.calls.setNotifications, [{ enabled: false, token: null }]);
-
-  const stuck = renderSettings({ platform: 'android', push: { disable: false }, stored: { notifications: { enabled: true, threshold: 8, token: 'ExponentPushToken[on-on-on-on]' } } });
-  await nodes(stuck.tree).find(n => n.type === 'Toggle').props.onValueChange(false);
-  assert.deepEqual(stuck.calls.setNotifications, [], 'a device the server still holds stays shown as on');
+  // The other order: the delete in flight, then a score change, which by its
+  // turn finds the device off and never reaches the server.
+  let finishDisable;
+  const second = controllerWith({ enabled: true, token }, { disable: () => new Promise(resolve => { finishDisable = resolve; }) });
+  const off2 = second.controller.disable();
+  const nine = second.controller.choose(9);
+  await settle();
+  assert.deepEqual(second.calls.disable, [token]);
+  assert.deepEqual(second.calls.update, [], 'the score change waits its turn');
+  finishDisable(true);
+  await off2; await nine;
+  assert.deepEqual(second.calls.update, [], 'by its turn the device is off, so nothing reaches the server');
+  assert.deepEqual(second.state(), { enabled: false, threshold: 9, token: null });
 });
 
 test('the notification switch is an iOS-style toggle in the accent colour on every platform', () => {
