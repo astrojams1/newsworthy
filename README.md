@@ -28,6 +28,12 @@ updated periodically, and can be wrong.
 
 ## Run it
 
+For public complaint research and product discovery, use the repository's
+[user research skill](.agents/skills/newsworthy-user-research/SKILL.md).
+Its [run ledger](docs/user-research/runs.md) retains sources and search lessons;
+the [opportunity ledger](docs/user-research/opportunities.md) tracks evidence for
+adding, removing, changing or preserving functionality.
+
 ### iOS, Android and web
 
 `apps/client` is the shared **Expo / React Native** interface. Mobile screens
