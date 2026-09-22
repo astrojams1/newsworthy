@@ -1,0 +1,84 @@
+{
+  "observedAt": "2026-09-22T16:58:52.964Z",
+  "scope": "Fresh TestFlight from latest fetched main; no app code changes in this release task.",
+  "version": "1.0.0",
+  "build": "18",
+  "sourceCommit": "8bfea2de2f4ff583d17edb7b1a63077c92cd0947",
+  "applicationSourceDirty": false,
+  "archiveDirtyNote": "Release evidence and an EAS-generated empty root app.json were present during archive preparation; apps/client source and app configuration were unchanged. Empty root scaffolding removed after build.",
+  "profile": "production",
+  "checks": {
+    "npmTest": {
+      "passed": 277,
+      "skipped": 1,
+      "failed": 0
+    },
+    "design": {
+      "passed": 67,
+      "failed": 0
+    },
+    "typeScript": "passed",
+    "mobileConfiguration": "passed",
+    "liveEndpoints": "passed",
+    "applePreflight": "VERIFY SUCCEEDED"
+  },
+  "nativeVerification": {
+    "physicalDevice": "Build 16 not installed or visually verified in this task.",
+    "widgets": "Build 16 widget sizes, themes and larger text remain unverified on a physical device.",
+    "notifications": "EAS readback confirms no APNs push key configured for the app. Delivery is not enabled; permission, registration and notification controls remain unverified on a physical device.",
+    "android": "Outside this TestFlight request."
+  },
+  "appReview": {
+    "selectedBuild": "7",
+    "state": "REJECTED",
+    "changedByThisTask": false
+  },
+  "buildStatus": "FINISHED",
+  "signingRepair": {
+    "profile": "G6W87MV6Y4",
+    "apsEnvironment": "production",
+    "appGroup": "group.com.astrojams.newsworthy.widgets",
+    "easProfileBytesVerified": true
+  },
+  "easBuildId": "a9d8b5be-4634-4df0-a4da-e5d90e5f2a56",
+  "buildCompletedAt": "2026-09-22T16:43:23.202Z",
+  "artifact": {
+    "file": "artifacts/store-submission/newsworthy-ios18.ipa",
+    "bytes": 19596640,
+    "sha256": "5144e55ff0fe726cd994684a4dbdefa7aa804bbc4a181b34a9293b8d8110b3dd",
+    "verified": [
+      {
+        "bundleIdentifier": "com.astrojams.newsworthy",
+        "version": "1.0.0",
+        "build": "18",
+        "appGroups": [
+          "group.com.astrojams.newsworthy.widgets"
+        ]
+      },
+      {
+        "bundleIdentifier": "com.astrojams.newsworthy.widget",
+        "version": "1.0.0",
+        "build": "18",
+        "appGroups": [
+          "group.com.astrojams.newsworthy.widgets"
+        ]
+      }
+    ]
+  },
+  "submissionId": "801f9470-4d61-41a7-9299-5e6989823110",
+  "easSubmissionStatus": "CANCELED_QUEUE_REPLACED_BY_DIRECT_UPLOAD",
+  "uploadMethod": "Apple altool",
+  "uploadState": "UPLOAD_SUCCEEDED",
+  "deliveryId": "83b11cd7-1828-4859-9fb4-40b6a9e6f938",
+  "appleBuildId": "83b11cd7-1828-4859-9fb4-40b6a9e6f938",
+  "appleProcessingState": "VALID",
+  "testFlight": {
+    "state": "IN_BETA_TESTING",
+    "groupId": "312a8585-2ca2-413e-bb5f-75d0ba487e13",
+    "groupAttached": true,
+    "notesVerified": true,
+    "notes": "Updated from the latest merged app version.\n\n- New Settings screen with Follow device, Light and Dark appearance choices.\n- Opt-in high-reading notification controls. Notification delivery is not enabled yet: the Apple push key is not configured on EAS.\n- Sentence age appears only for developments covered earlier.\n\nPlease check Settings navigation, appearance persistence, sharing, both widget sizes, larger text, and reopening after being offline. Widgets follow the device appearance and iOS controls refresh timing.\n",
+    "groupName": "Release QA",
+    "testerCount": 1
+  }
+}

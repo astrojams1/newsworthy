@@ -160,14 +160,16 @@
     "previousReviewStatusObservedAt": "2026-09-17T04:33:43.363Z",
     "latestTestFlight": {
       "version": "1.0.0",
-      "build": "15",
-      "easBuildId": "2f8440c5-571b-4aa7-bf6d-3569e0fff3b6",
-      "submissionId": "12c4aa47-2b07-4b04-801d-e4d3d1bed202",
-      "appleBuildId": "cdc91a98-a0a3-4ce0-8958-7884c990da8d",
+      "build": "18",
+      "easBuildId": "a9d8b5be-4634-4df0-a4da-e5d90e5f2a56",
+      "submissionId": "801f9470-4d61-41a7-9299-5e6989823110",
+      "submissionStatus": "CANCELED_QUEUE_REPLACED_BY_DIRECT_UPLOAD",
+      "appleBuildId": "83b11cd7-1828-4859-9fb4-40b6a9e6f938",
       "state": "IN_BETA_TESTING",
-      "observedAt": "2026-09-22T12:10:04.344Z",
-      "evidence": "store/testflight-15.json",
-      "physicalDeviceVerification": "pending"
+      "observedAt": "2026-09-22T16:58:52.964Z",
+      "evidence": "store/testflight-18.json",
+      "physicalDeviceVerification": "pending",
+      "notificationDelivery": "APNS_KEY_NOT_CONFIGURED"
     }
   },
   "google": {
