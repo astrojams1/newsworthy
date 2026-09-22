@@ -223,10 +223,10 @@ test('share artwork aligns optically with the title without moving its touch tar
   }
 });
 
-test('header gate rejects missing optical correction and shifting the balanced Android glyph', () => {
+test('header gate rejects missing optical correction on iOS and a lift on the balanced glyphs', () => {
   const source = readFileSync(new URL('../apps/client/components/app-icon.tsx', import.meta.url), 'utf8');
-  for (const [platform, expression] of [['web', '0'], ['ios', '0'], ['android', '-2']]) {
-    const sourceOverride = source.replace("process.env.EXPO_OS === 'android' ? 0 : -2", expression);
+  for (const [platform, expression] of [['web', '-2'], ['ios', '0'], ['android', '-2']]) {
+    const sourceOverride = source.replace("process.env.EXPO_OS === 'ios' ? -2 : 0", expression);
     assert.notEqual(sourceOverride, source);
     assert.throws(() => inspectShareIcon(platform, false, sourceOverride), /platform optical alignment/);
   }

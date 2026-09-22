@@ -11,9 +11,11 @@ export function AppIcon({ color }: { color: string }) {
     : { uri: process.env.EXPO_OS === 'android'
       ? `data:image/svg+xml;base64,${fromByteArray(Uint8Array.from(svg, char => char.charCodeAt(0)))}`
       : `data:image/svg+xml,${encodeURIComponent(svg)}` };
-  // The tray-and-arrow glyph carries more ink below its geometric center.
-  // Lift the artwork to align optically with the capitals; keep the hit area still.
-  // Android's three-node share glyph is vertically balanced already.
-  const opticalOffsetY = process.env.EXPO_OS === 'android' ? 0 : -2;
+  // iOS's square.and.arrow.up symbol carries more ink below its geometric
+  // center; lift it to align optically with the capitals, keeping the hit area
+  // still. The drawn tray glyph and Android's three-node glyph are balanced:
+  // measured on the web export, the tray's ink centre matched the wordmark's
+  // within half a point only once the lift was removed.
+  const opticalOffsetY = process.env.EXPO_OS === 'ios' ? -2 : 0;
   return <Image source={source} tintColor={color} accessibilityElementsHidden importantForAccessibility="no" style={{ width: 24, height: 24, transform: [{ translateY: opticalOffsetY }] }} />;
 }
