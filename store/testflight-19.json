@@ -1,0 +1,94 @@
+{
+  "observedAt": "2026-09-22T22:46:21.848Z",
+  "scope": "Settings header/theme and notification save-feedback fixes in TestFlight",
+  "version": "1.0.0",
+  "build": "19",
+  "sourceCommit": "a694734137e4b95171c1b0083d2e83f863b9677e",
+  "applicationSourceDirty": false,
+  "profile": "production",
+  "easBuildId": "ab4371dd-b34f-419f-a652-22a91e5a5773",
+  "buildStatus": "FINISHED",
+  "checks": {
+    "npmTest": {
+      "passed": 282,
+      "skipped": 1,
+      "failed": 0
+    },
+    "design": {
+      "passed": 70,
+      "failed": 0
+    },
+    "typeScript": "passed",
+    "mobileConfiguration": "passed",
+    "githubCI": "Both PR123 workflows passed including native exports/prebuild",
+    "liveEndpoints": "Health/database/current/settings/privacy/support passed on deployed a694734; browser Settings dark/back/reopen smoke passed.",
+    "releaseBundle": "Settings notifications-status marker verified inside main.jsbundle",
+    "applePreflight": "VERIFY SUCCEEDED",
+    "codeSignature": "codesign --verify --deep --strict passed"
+  },
+  "nativeVerification": {
+    "ios": "See store/settings-feedback-verification.json: Expo Go iOS18.3.1 Settings checks passed; not this signed IPA.",
+    "physicalDevice": "iOS26 glass/navigation and notification settings remain unverified in this build.",
+    "widgets": "No new physical-device widget verification for this build.",
+    "notifications": "Fresh EAS API readback confirms no APNs delivery key configured for the app. Delivery remains unavailable; signing entitlement is separate.",
+    "android": "Outside this TestFlight request."
+  },
+  "appReview": {
+    "selectedBuild": "7",
+    "state": "REJECTED",
+    "changedByThisTask": false
+  },
+  "pushCredentialReadback": [
+    {
+      "bundleIdentifier": "com.astrojams.newsworthy",
+      "pushKeyConfigured": false
+    },
+    {
+      "bundleIdentifier": "com.astrojams.newsworthy.widget",
+      "pushKeyConfigured": false
+    }
+  ],
+  "buildCompletedAt": "2026-09-22T22:36:18.234Z",
+  "buildUrl": "https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/ab4371dd-b34f-419f-a652-22a91e5a5773",
+  "artifact": {
+    "file": "artifacts/store-submission/newsworthy-ios19.ipa",
+    "bytes": 19596848,
+    "sha256": "67c73e26bec6f7f8acdc6c7385ba0c239326a3679b99517f86f12d5cf9bf09f2",
+    "verified": [
+      {
+        "bundleIdentifier": "com.astrojams.newsworthy",
+        "version": "1.0.0",
+        "build": "19",
+        "appGroups": [
+          "group.com.astrojams.newsworthy.widgets"
+        ]
+      },
+      {
+        "bundleIdentifier": "com.astrojams.newsworthy.widget",
+        "version": "1.0.0",
+        "build": "19",
+        "appGroups": [
+          "group.com.astrojams.newsworthy.widgets"
+        ]
+      }
+    ]
+  },
+  "signingVerified": {
+    "appAndWidgetAppGroups": true,
+    "appProductionPushEntitlement": true,
+    "provisioningProfileProductionPushEntitlement": true
+  },
+  "uploadMethod": "Apple altool using existing API credential",
+  "uploadState": "UPLOAD_SUCCEEDED",
+  "deliveryId": "07b4c611-13c5-4830-b018-fe861223d395",
+  "appleBuildId": "07b4c611-13c5-4830-b018-fe861223d395",
+  "appleProcessingState": "VALID",
+  "testFlight": {
+    "state": "IN_BETA_TESTING",
+    "groupId": "312a8585-2ca2-413e-bb5f-75d0ba487e13",
+    "groupName": "Release QA",
+    "groupAttached": true,
+    "notesVerified": true,
+    "notes": "Settings improvements:\n- Header and navigation themes now follow the selected appearance.\n- Notification saves show “Saving…” below the controls, keeping the switch row stable.\n- Both the notification switch and minimum score use the same save feedback, followed by enabled/disabled confirmation.\n\nPlease check entering and leaving Settings on iOS 26, switching appearance, and changing notification settings. Simulator checks covered iOS 18.3; iOS 26 glass transitions and real push saves still need device verification.\n\nNotification delivery remains unavailable because the Apple push delivery key is not configured on EAS. Widgets continue to follow the device appearance.\n"
+  }
+}

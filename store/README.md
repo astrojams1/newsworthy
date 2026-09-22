@@ -7,14 +7,15 @@ Resume from [the release ledger](ledger.md) with the reusable
 rejection of **build 7** for minimum functionality. The owner reports submitting the reconsideration reply; provider readback
 is pending. Do not send a duplicate.
 See [the exact reply and handoff](apple-4.2-reconsideration.md).
-**September 23 TestFlight update:** iOS **1.0.0 (18)** was built from merged
-main `8bfea2d` with appearance settings, notification controls and the sentence-age
-fix. Apple processed it as VALID, and it is IN_BETA_TESTING in Release QA; test
-notes were saved and verified. See [build 18 evidence](testflight-18.json).
-Its signed app and widget entitlements are verified. Notification delivery is
-not enabled because EAS has no APNs delivery key. Physical-device settings,
-notification and widget verification remain pending. Build 16 failed signing;
-build 17 was canceled before the corrected profile was used for build 18.
+**September 23 TestFlight update:** iOS **1.0.0 (19)** is VALID and
+IN_BETA_TESTING in Release QA, with test notes saved and verified. It was built
+from merged main `a694734` and includes the Settings navigation theme and
+notification save-feedback fixes. See [build 19 evidence](testflight-19.json).
+The signed app and widget, matching App Groups, production push entitlement and
+new Settings bundle marker are verified. Native Settings checks passed in Expo
+Go on iOS 18.3.1; iOS 26 glass transitions, physical-device notification saves
+and widgets remain unverified for build 19. Notification delivery remains
+unavailable because EAS has no APNs delivery key. Build 18 remains historical.
 
 Neither app is publicly released. Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.
