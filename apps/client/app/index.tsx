@@ -13,7 +13,7 @@ import { website, privacyUrl, supportUrl } from '@/lib/config';
 
 export default function Home() {
   const theme = useTheme();
-  const scoreFont = process.env.EXPO_OS === 'ios' ? 'Menlo' : 'monospace';
+  const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace';
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const dimensions = useWindowDimensions();

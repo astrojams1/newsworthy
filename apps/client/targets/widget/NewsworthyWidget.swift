@@ -3,6 +3,7 @@ import SwiftUI
 import Foundation
 import AppIntents
 import UIKit
+import CoreText
 
 struct ReadingEntry: TimelineEntry {
     let date: Date
@@ -84,16 +85,25 @@ private enum WidgetTypography {
     static let explanationSize: CGFloat = 14
     static let explanationLineHeight: CGFloat = 20
     static let denominatorSize: CGFloat = 12
-    // Small SF Mono glyphs appeared high in the actual Home Screen widget.
-    static let denominatorBaselineOffset: CGFloat = -1
     static let columnGap: CGFloat = 16
+
+    // Cap height excludes curved-digit overshoot and the slash's lower stroke.
+    // Use the same native font's actual outlines for visible-edge alignment.
+    static func inkBounds(_ text: String, font: UIFont) -> CGRect {
+        let line = CTLineCreateWithAttributedString(NSAttributedString(string: text, attributes: [.font: font]))
+        return CTLineGetBoundsWithOptions(line, [.useGlyphPathBounds])
+    }
+
+    static func baselineLift(_ text: String, font: UIFont, scale: CGFloat) -> CGFloat {
+        (-inkBounds(text, font: font).minY * scale).rounded() / scale
+    }
 }
 
 // Align actual capital tops, using SwiftUI's measured baselines. A Text frame
 // includes ascenders/leading; treating its top as the numeral top wastes space.
 private struct WidgetReadingLayout: Layout {
     let compact: Bool
-    let scoreCapHeight: CGFloat
+    let scoreInkHeight: CGFloat
     let explanationCapHeight: CGFloat
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
@@ -107,9 +117,9 @@ private struct WidgetReadingLayout: Layout {
         let textProposal = ProposedViewSize(width: width, height: bounds.height)
         let text = !compact && subviews.count > 1 ? subviews[1].dimensions(in: textProposal) : nil
         let textHeight = text.map { $0.height - $0[.firstTextBaseline] + explanationCapHeight } ?? 0
-        let contentHeight = max(scoreCapHeight, textHeight)
+        let contentHeight = max(scoreInkHeight, textHeight)
         let top = max(0, (bounds.height - contentHeight) / 2)
-        number.place(at: CGPoint(x: bounds.minX, y: bounds.minY + top + scoreCapHeight - score[.firstTextBaseline]),
+        number.place(at: CGPoint(x: bounds.minX, y: bounds.minY + top + scoreInkHeight - score[.firstTextBaseline]),
                      anchor: .topLeading, proposal: .unspecified)
         if let text = text {
             subviews[1].place(at: CGPoint(x: bounds.minX + score.width + WidgetTypography.columnGap,
@@ -129,8 +139,12 @@ struct ReadingView: View {
 struct ReadingContent: View {
     let entry: ReadingEntry
     let family: WidgetFamily
+    @Environment(\.displayScale) private var displayScale
     @ScaledMetric(relativeTo: .caption) private var explanationSize = WidgetTypography.explanationSize
     @ScaledMetric(relativeTo: .caption) private var explanationLineHeight = WidgetTypography.explanationLineHeight
+
+    private var numeral: String { entry.reading.map { String($0.score) } ?? "–" }
+    private var sizingNumeral: String { entry.reading.map { String($0.score) } ?? "0" }
 
     // A very narrow/short host may need a smaller number, regardless of family.
     // Measure the two-digit case so readings never jump size when the score changes.
@@ -138,7 +152,8 @@ struct ReadingContent: View {
         let font = UIFont.monospacedSystemFont(ofSize: WidgetTypography.scoreSize, weight: .light)
         let bodyFont = UIFont.systemFont(ofSize: explanationSize)
         let targetCapHeight = bodyFont.capHeight + (WidgetTypography.numeralLines - 1) * explanationLineHeight
-        let idealSize = WidgetTypography.scoreSize * targetCapHeight / font.capHeight
+        let inkHeight = WidgetTypography.inkBounds(sizingNumeral, font: font).height
+        let idealSize = WidgetTypography.scoreSize * targetCapHeight / inkHeight
         let fittedFont = UIFont.monospacedSystemFont(ofSize: idealSize, weight: .light)
         let width = ("10" as NSString).size(withAttributes: [.font: fittedFont]).width
         let denominator = ("∕10" as NSString).size(withAttributes: [.font: UIFont.monospacedSystemFont(ofSize: WidgetTypography.denominatorSize, weight: .light)]).width
@@ -147,13 +162,26 @@ struct ReadingContent: View {
     }
 
     private func score(size: CGFloat) -> some View {
-        (Text(entry.reading.map { String($0.score) } ?? "–")
-            .font(.system(size: size, weight: .light, design: .monospaced))
+        let numberFont = UIFont.monospacedSystemFont(ofSize: size, weight: .light)
+        let denominatorFont = UIFont.monospacedSystemFont(ofSize: WidgetTypography.denominatorSize, weight: .light)
+        return (Text(numeral)
+            .font(Font(numberFont))
             .tracking(-size * 0.04)
-         + Text("∕10")
-            .font(.system(size: WidgetTypography.denominatorSize, weight: .light, design: .monospaced))
+            .baselineOffset(WidgetTypography.baselineLift(numeral, font: numberFont, scale: displayScale))
+         + Text("∕")
+            .font(Font(denominatorFont))
             .tracking(0)
-            .baselineOffset(WidgetTypography.denominatorBaselineOffset)
+            .baselineOffset(WidgetTypography.baselineLift("∕", font: denominatorFont, scale: displayScale))
+            .foregroundColor(Color("NewsworthyGradientMuted"))
+         + Text("1")
+            .font(Font(denominatorFont))
+            .tracking(0)
+            .baselineOffset(WidgetTypography.baselineLift("1", font: denominatorFont, scale: displayScale))
+            .foregroundColor(Color("NewsworthyGradientMuted"))
+         + Text("0")
+            .font(Font(denominatorFont))
+            .tracking(0)
+            .baselineOffset(WidgetTypography.baselineLift("0", font: denominatorFont, scale: displayScale))
             .foregroundColor(Color("NewsworthyGradientMuted")))
             .lineLimit(1).fixedSize()
             .accessibilityElement(children: .ignore)
@@ -172,7 +200,8 @@ struct ReadingContent: View {
                 let size = scoreSize(in: geometry.size)
                 let scoreFont = UIFont.monospacedSystemFont(ofSize: size, weight: .light)
                 let bodyFont = UIFont.systemFont(ofSize: explanationSize)
-                WidgetReadingLayout(compact: family == .systemSmall, scoreCapHeight: scoreFont.capHeight,
+                WidgetReadingLayout(compact: family == .systemSmall,
+                                    scoreInkHeight: WidgetTypography.inkBounds(sizingNumeral, font: scoreFont).height,
                                     explanationCapHeight: bodyFont.capHeight) {
                     score(size: size)
                     if family == .systemMedium {

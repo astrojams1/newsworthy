@@ -25,7 +25,7 @@
     "explanationLineHeight": 20,
     "numeralLines": 3,
     "columnGap": 16,
-    "iosDenominatorBaselineOffset": -1
+    "iosNumeralAlignment": "glyph-ink-bounds"
   },
   "reading": {
     "weight": "300",
@@ -38,7 +38,7 @@
   },
   "scoreFont": {
     "web": "monospace",
-    "ios": "Menlo",
+    "ios": "ui-monospace",
     "android": "monospace",
     "iosWidget": "monospaced"
   }

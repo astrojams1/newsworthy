@@ -124,17 +124,24 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(java, /static synchronized void renderAll/, 'all Android instances render one snapshot without interleaving');
 
   const swift = code(sources.swift);
-  assert.deepEqual(extract(swift, /static let denominatorBaselineOffset: CGFloat = (-?\d+)/, 'iOS denominator optical baseline'), [c.iosDenominatorBaselineOffset], 'iOS denominator optical baseline');
-  assert.match(swift, /baselineOffset\(WidgetTypography.denominatorBaselineOffset\)/, 'iOS denominator optical correction is applied');
+  assert.match(swift, /CTLineGetBoundsWithOptions\(line, \[\.useGlyphPathBounds\]\)/, 'iOS measures visible glyph outlines');
+  assert.match(swift, /targetCapHeight \/ inkHeight/, 'iOS sizes numeral from visible ink height');
+  assert.match(swift, /font\(Font\(numberFont\)\)/, 'iOS renders the measured numeral font');
+  assert.match(swift, /font\(Font\(denominatorFont\)\)/, 'iOS renders the measured denominator font');
+  for (const run of ['numeral', '"∕"', '"1"', '"0"']) {
+    assert.ok(swift.includes('baselineOffset(WidgetTypography.baselineLift(' + run + ','), 'iOS aligns each visible glyph bottom');
+  }
+  assert.match(swift, /-inkBounds\(text, font: font\).minY \* scale\).rounded\(\) \/ scale/, 'iOS snaps glyph corrections to device pixels');
+  assert.doesNotMatch(swift, /denominatorBaselineOffset/, 'iOS rejects guessed denominator offsets');
   assert.match(swift, /content.padding\(16\).containerBackground/, 'iOS content stays inside rounded widget corners');
   assert.match(swift, /\.contentMarginsDisabled\(\)/, 'iOS explicit padding replaces automatic margins');
   assert.deepEqual(extract(swift, /static let scoreSize: CGFloat = (\d+)/, 'iOS shared numeral'), [c.compactScore]);
   assert.deepEqual(extract(swift, /static let denominatorSize: CGFloat = (\d+)/, 'iOS denominator size'), [c.denominatorSize]);
   assert.deepEqual(extract(swift, /static let explanationSize: CGFloat = (\d+)/, 'iOS explanation size'), [c.explanationSize]);
   assert.deepEqual(extract(swift, /static let explanationLineHeight: CGFloat = (\d+)/, 'iOS line rhythm'), [c.explanationLineHeight]);
-  assert.match(swift, /\+ Text\("∕10"\)[\s\S]*?foregroundColor\(Color\("NewsworthyGradientMuted"\)\)/, 'iOS adaptive denominator');
-  assert.match(swift, /font\(\.system\(size: size, weight: \.light, design: \.monospaced\)\)/, 'iOS score uses a monospace face');
-  assert.match(swift, /font\(\.system\(size: WidgetTypography.denominatorSize, weight: \.light, design: \.monospaced\)\)/, 'iOS denominator uses a monospace face');
+  assert.match(swift, /\+ Text\("∕"\)[\s\S]*?foregroundColor\(Color\("NewsworthyGradientMuted"\)\)[\s\S]*?\+ Text\("1"\)[\s\S]*?\+ Text\("0"\)/, 'iOS adaptive denominator');
+  assert.match(swift, /let numberFont = UIFont.monospacedSystemFont\(ofSize: size, weight: \.light\)/, 'iOS score uses a monospace face');
+  assert.match(swift, /let denominatorFont = UIFont.monospacedSystemFont\(ofSize: WidgetTypography.denominatorSize, weight: \.light\)/, 'iOS denominator uses a monospace face');
   assert.doesNotMatch(swift, /monospacedDigitSystemFont/, 'measurement must use the full monospace face');
   assert.match(swift, /\.modifier\(WidgetSurface\(score: entry.reading\?\.score\)\)\s*\.id\(entry.reading\?\.score\)/, 'iOS score and extracted background change identity together');
   assert.match(swift, /score.map \{ String\(format: "Level%02d", \$0\) \}/, 'iOS palette follows displayed score');
@@ -145,10 +152,10 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(swift, /WidgetReadingLayout\(compact: family == \.systemSmall/, 'same score layout across families');
   assert.match(swift, /bounds\.minX \+ score\.width \+ WidgetTypography\.columnGap/, 'iOS explanation beside numeral');
   assert.equal(c.contentVerticalAlignment, 'center');
-  assert.match(swift, /let contentHeight = max\(scoreCapHeight, textHeight\)/, 'iOS centers the whole reading');
+  assert.match(swift, /let contentHeight = max\(scoreInkHeight, textHeight\)/, 'iOS centers the whole reading');
   assert.match(swift, /let top = max\(0, \(bounds.height - contentHeight\) \/ 2\)/, 'iOS both families centered vertically');
   assert.match(swift, /y: bounds.minY \+ top \+ explanationCapHeight/, 'iOS sentence shares centered offset');
-  assert.match(swift, /scoreCapHeight - score\[\.firstTextBaseline\]/, 'iOS optical score top');
+  assert.match(swift, /scoreInkHeight - score\[\.firstTextBaseline\]/, 'iOS optical score top');
   assert.match(swift, /explanationCapHeight - text\[\.firstTextBaseline\]/, 'iOS optical sentence top');
   assert.match(swift, /lineLimit\(max\(1, Int\(geometry\.size\.height \/ explanationLineHeight\)\)\)/, 'iOS bounded context limit');
   assert.match(swift, /if entry\.showAppName/, 'title setting retained');

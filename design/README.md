@@ -77,13 +77,13 @@ rhythm beside the numeral, with truncation at the available height.
 All reading surfaces use U+2215 DIVISION SLASH immediately followed by `10`.
 The monospace glyph side bearings provide the small visible gap;
 the division slash’s stroke sits optically alongside the lining numerals instead of the ordinary
-slash’s descending tail. Keep the denominator in one text run, on the existing
-score baseline. The iOS widget denominator has a one-point downward optical
-correction, verified in the actual Home Screen widget, because the smaller SF Mono
-glyphs appeared high alongside sentence line three. Shared/copied readings
+slash’s descending tail. Keep the denominator compact. In the iOS widget each glyph uses its own measured
+ink bounds to align its visible bottom to sentence line three; there is no guessed
+vertical offset. The slash and numerals retain their natural monospace advances. Shared/copied readings
 retain plain `/10`, and the app accessibility label remains “out of 10”.
-Monospaced score/denominator fonts (Menlo in the iOS app, the system monospace
-face in SwiftUI, and monospace on Android/web), launcher cell geometry, iOS's optional hidden name, timestamp
+Monospaced score/denominator fonts (SF Mono Light in both the iOS app and widget,
+requested as `ui-monospace`/300 in React Native and the native monospaced light
+font in SwiftUI; monospace on Android/web), launcher cell geometry, iOS's optional hidden name, timestamp
 formatting, and the app's larger-screen spacing are intentional platform variants.
 Do not make one surface look identical by copying another platform's screenshot.
 
@@ -201,9 +201,13 @@ continues to select its palette from the displayed reading. The approved colors
 are unchanged; levels 1 and 3 intentionally have similar green palettes.
 
 All rating numbers and denominators now use a true monospaced face. Both widget
-sizes derive their ideal numeral size from three sentence lines: the numeral cap
-height equals the sentence cap height plus two line heights. This aligns capital
-tops and the rating/denominator baseline with sentence line three. Host constraints
+sizes derive their ideal numeral size from three sentence lines. iOS measures
+the actual glyph outlines with Core Text, including curved-digit overshoot, and
+makes that visible height equal the sentence cap height plus two line heights.
+Each denominator glyph receives its measured lower-edge correction rounded to a
+device pixel. This aligns the visible numeral top with the first capital and all
+four rating glyph bottoms with sentence line three. Android still uses cap-height
+measurement and needs its own native verification. Host constraints
 may shrink the numeral; those constrained/enlarged states need separate native
 checks. The 69-point value is the reference font used to measure this ratio, not
 a hard ceiling that prevents the baseline from reaching line three.
@@ -216,9 +220,15 @@ spaces almost the same advance. The denominator therefore uses `∕10`, with no
 extra blank: at 12 points it measures 22.06 points instead of 29.48. The slash and
 “1” remain visibly separated by their natural glyph side bearings.
 
-The score-to-denominator gap is also compact: iOS widgets concatenate the two
-text runs without a leading blank; Android uses 2dp and the shared app uses 3pt.
+The score-to-denominator gap is also compact: iOS widgets concatenate the numeral and denominator
+glyph runs without a leading blank; Android uses 2dp and the shared app uses 3pt.
 Actual WidgetKit Home Screen verification found automatic margins missing in
 the host. The iOS widget now owns 16-point content padding and disables automatic
 margins, keeping labels clear of the rounded corners. Actual light/dark captures
 and the local build provenance are recorded in the verification file above.
+
+Actual iOS captures and the pixel measurement report are in
+`store/source/widget-consistency-mono/alignment-proof.html`. The design gate now
+checks untouched screenshot pixels and rejects the earlier misaligned captures.
+Those checks establish the captured score-3/default-text states; they do not
+prove every score, text scale, operating-system version or physical device.
