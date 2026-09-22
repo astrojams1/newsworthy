@@ -186,6 +186,29 @@ access. Internal testing alone does not meet this requirement. See
   21 Expo Doctor checks, live API/policy/support checks, both native JavaScript
   exports and 175 repository tests (including the production web export).
 
+## Push notifications
+
+- The settings screen (`apps/client/app/settings.tsx`) offers a notification for
+  readings at or above a chosen score — off by default, 8 when turned on. It is
+  hidden on web. Turning it on asks for the notification permission, fetches the
+  device's Expo push token with the EAS project ID from `mobile.release.json`,
+  and registers it at `PUT /api/push/subscriptions`; turning it off deletes it.
+- `expo-notifications` is a native module: it needs a custom build, not Expo Go,
+  and the change cannot be delivered as a JavaScript-only update. The config
+  plugin adds the `aps-environment` entitlement and remote-notification
+  background mode on iOS, and `assets/notification-icon.png` (the dash, white on
+  transparent) with the brand colour as the Android status-bar icon.
+- **Credentials are a release gate.** Expo relays to APNs and FCM, so EAS needs
+  an Apple push key (`eas credentials`, iOS, push notifications) and a Firebase
+  service-account key for Android (`eas credentials`, Android, FCM V1) before a
+  registered device receives anything. Both are account-owner steps; neither
+  belongs in this repository. `EXPO_ACCESS_TOKEN` on Vercel is optional and
+  only lets Expo enforce that this server is the one sending.
+- Not verified: no custom build carrying `expo-notifications` has been made yet,
+  so permission prompts, token registration, delivery, the Android icon and the
+  foreground banner are all unverified on devices. Record results in the store
+  ledger, and reevaluate the store privacy labels first (`store/disclosures.md`).
+
 ## Widgets
 
 - iOS: `targets/widget` contains a SwiftUI/WidgetKit extension configured by
@@ -220,8 +243,11 @@ npx expo prebuild --no-install
 ```
 
 Before release, verify custom builds on devices: initial load, saved reading in
-flight mode, recovery, native sharing, light/dark mode, large text, Android back,
-widget addition/refresh/offline state and privacy/support links. Simulator Expo
+flight mode, recovery, native sharing, light/dark mode and the Settings
+appearance override (including share sheet and alerts), the notification switch
+(permission prompt, refusal, delivery of an 8 or above, threshold change, turning
+off), large text, Android back, widget addition/refresh/offline state and
+privacy/support links. Simulator Expo
 Go verification covers the native screen, not the app's signed binary or widgets.
 
 Detailed UI/accessibility evidence and remaining checks are in

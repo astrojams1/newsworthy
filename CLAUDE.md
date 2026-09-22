@@ -515,6 +515,49 @@ matches `preview` rather than negating `production` so an unset `VERCEL_ENV`
 still builds. Nothing here reads a preview URL — work is verified against
 production after merge.
 
+**Settings are a screen, and the theme is one of them.** `/settings` (linked from
+the front page footer beside Privacy and Support) chooses the appearance —
+System, Light or Dark, System by default — and, in the native apps only, turns
+on a push notification for high readings. `apps/client/lib/preferences.js` owns
+the shape and the defaults, `components/preferences-provider.tsx` persists it
+in AsyncStorage, and `ReadingProvider` derives `dark` from the choice, so every
+`useTheme()` caller follows it without knowing it exists. On web the choice is
+written to `data-appearance` on the document, which `tokens.css` already
+honoured for the static policy pages; on native it goes through
+`Appearance.setColorScheme`, so the share sheet and alerts follow too. Widgets
+follow the operating system regardless: they have no access to the app's store.
+
+**Push notifications are opt-in, off by default, and 8 when turned on.** The
+app registers its Expo push token at `PUT /api/push/subscriptions` with the
+lowest score it wants to hear about (`threshold`, 1–10) and deletes it with
+`DELETE` when the switch goes off. The token is the whole identity — nothing
+else about the device is stored — and the row is keyed by it, so a device can
+only ever hold one. The route is public, like `/api/current`, which is why
+`src/push.js` bounds it: a token has to match Expo's shape, and past
+`MAX_SUBSCRIPTIONS` the route answers 503 rather than let a public URL grow a
+table without limit. Tokens Expo reports as `DeviceNotRegistered` are deleted on
+the first send, so invented ones do not stay.
+
+A reading is announced **once per development and threshold**, whichever
+readings report it: `push_deliveries` is keyed on `(root, threshold)` and the
+insert that loses the race sends nothing. A judged reading's development is
+`development_of ?? id`, the front page's rule; an unjudged one announces a
+crossing — it stands in for its predecessor's development when the previous
+reading already met the threshold, and for itself otherwise — because paging a
+phone hourly through a judge outage about one story is the failure this exists
+to avoid. An escalation from 8 to 9 inside one development reaches the devices
+waiting for a 9 and not, again, the ones that heard at 8. Delivery is an HTTP
+call to Expo's push service (`NEWSWORTHY_PUSH_URL` points a test at a stand-in;
+`EXPO_ACCESS_TOKEN` is optional) and is awaited where the reading is stored, in
+`runRating` and the external route, for the same reason the rejection log is:
+a function may be frozen the moment its response ends. It never throws — a push
+failure must not turn a stored reading into an error row. The notification is
+the number and the sentence, nothing urgent.
+
+Native delivery needs credentials this repository cannot hold: an APNs key and
+an FCM service account uploaded to EAS. Until they are, the switch registers a
+token and nothing arrives — see `docs/mobile-release.md`.
+
 **Avoid native dependencies.** `better-sqlite3` broke the first deploy: npm
 skipped its install script, so the binding was missing and the import threw at
 cold start. Prefer pure-JS or HTTP-based drivers.
@@ -709,14 +752,15 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ## Testing
 
 ```bash
-npm test        # twelve files under test/; database tests run against PGlite,
+npm test        # fourteen files under test/; database tests run against PGlite,
                 # real Postgres in-process, so the SQL is exercised not mocked
                 # test/with-server.js is the shared harness, not a suite
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
 
-The twelve are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
-`parse`, `pricing`, `prompt-rules`, `rejections`, `scheduler` and `story`. A count of
+The fourteen are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
+`parse`, `preferences`, `pricing`, `prompt-rules`, `push`, `rejections`, `scheduler`
+and `story`. A count of
 individual tests
 is not kept here: it is wrong again after the next PR, and a stale number in a
 document read as authoritative is worse than no number.

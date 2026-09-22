@@ -1,15 +1,31 @@
 import { useEffect } from 'react';
+import { Appearance } from 'react-native';
+import { PreferencesProvider, usePreferences } from '@/components/preferences-provider';
 import { ReadingProvider, useCurrentReading } from '@/components/reading-provider';
 import { faviconSvg } from '../../../public/favicon';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
 export default function Layout() {
-  return <ReadingProvider><ThemedLayout /></ReadingProvider>;
+  return <PreferencesProvider><ReadingProvider><ThemedLayout /></ReadingProvider></PreferencesProvider>;
 }
 function ThemedLayout() {
   const theme = useTheme();
   const { reading } = useCurrentReading();
+  const { preferences: { theme: appearance } } = usePreferences();
+  useEffect(() => {
+    if (process.env.EXPO_OS === 'web') {
+      // tokens.css already honours data-appearance, so the static policy pages
+      // and this app agree; color-scheme keeps native form controls in step.
+      const root = document.documentElement;
+      if (appearance === 'system') { delete root.dataset.appearance; root.style.colorScheme = ''; }
+      else { root.dataset.appearance = appearance; root.style.colorScheme = appearance; }
+      return;
+    }
+    // Native: the override reaches system surfaces too (share sheet, alerts),
+    // and useColorScheme() reports it, so "System" restores the OS value.
+    Appearance.setColorScheme(appearance === 'system' ? 'unspecified' : appearance);
+  }, [appearance]);
   useEffect(() => {
     if (process.env.EXPO_OS !== 'web') return;
     if (reading) document.documentElement.dataset.level = String(reading.score);
@@ -27,6 +43,7 @@ function ThemedLayout() {
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
       <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
+      <Stack.Screen name="settings" options={{ title: 'Settings', headerBackTitle: 'Back', headerTitleStyle: { color: theme.ink } }} />
     </Stack>
   </>;
 }

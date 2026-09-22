@@ -53,6 +53,11 @@ See [Mobile release guide](docs/mobile-release.md) for EAS cloud builds, widget
 extensions, signing and the remaining store setup. Expo Go can verify the core
 native interface; widgets require a custom development build.
 
+Settings, linked below the reading, choose the appearance (System, Light or
+Dark) and, in the mobile apps, an optional notification for readings at or above
+a chosen score — off by default. Native delivery needs push credentials on EAS;
+see the [mobile release guide](docs/mobile-release.md#push-notifications).
+
 See [Accessibility verification](docs/accessibility-verification.md) for checks
 performed and remaining device/assistive-technology release checks. EAS and iOS
 signing are configured; store review and account requirements remain. This
@@ -345,6 +350,8 @@ scheduler runs, and only `ANTHROPIC_API_KEY` and `DATABASE_URL` are required.
 | `CALLER_TOKEN` | — | Lets an external agent use `/api/instructions`, `/api/prompt` and `/api/readings` without the admin token |
 | `NEWSWORTHY_MOCK` | — | `1` to fake readings without calling the API |
 | `ADMIN_TOKEN` | — | Locks `/admin` and `/api/admin/*` |
+| `EXPO_ACCESS_TOKEN` | — | Optional. Sent to Expo's push service so it can enforce that only this server notifies this app's devices |
+| `NEWSWORTHY_PUSH_URL` | Expo's push API | Tests point it at a stand-in |
 
 ## Tests
 

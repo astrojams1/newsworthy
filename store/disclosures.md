@@ -37,6 +37,18 @@ security use, rather than claiming the app requests device location. There is no
 in-app support form or message collection; optional support opens the user's
 external email client. No advertising or behavioral profiling is implemented.
 
+- **Optional notifications (added September 22, 2026, not yet in a store build):**
+  when a person turns notifications on in Settings, the app sends its Expo push
+  token and chosen minimum score to `PUT /api/push/subscriptions`, and the
+  database keeps that row until the switch is turned off or Expo reports the
+  token dead. A push token is a device identifier held server-side, so the
+  labels must be reevaluated before the first build carrying it ships: decide
+  whether Apple's **Device ID** / Google's **Device or other IDs** category
+  applies to a token used only to deliver the notifications the person asked
+  for, and answer the notification-permission and background-mode questions.
+  Nothing else about the device is stored. The public privacy policy already
+  describes the registration.
+
 If infrastructure or support collection changes, reevaluate the labels. The
 native manifest's empty client data-type array does not describe server logging.
 

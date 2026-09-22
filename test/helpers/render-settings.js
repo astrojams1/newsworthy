@@ -1,0 +1,55 @@
+// Execute the production settings screen with deterministic hook inputs, the
+// way render-reading.js does for the reading screen: rendered props, not layout.
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import vm from 'node:vm';
+import ts from 'typescript';
+import * as preferences from '../../apps/client/lib/preferences.js';
+import { themeForLevel } from '../../apps/client/lib/palette.js';
+
+const require = createRequire(import.meta.url);
+const react = require('react');
+const source = readFileSync(new URL('../../apps/client/app/settings.tsx', import.meta.url), 'utf8');
+const compile = text => ts.transpileModule(text, { compilerOptions: {
+  jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
+} }).outputText;
+const compiled = compile(source);
+
+export function renderSettings({ platform, width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {} } = {}) {
+  // Recorded as plain copies: values built inside the vm context carry that
+  // context's prototypes, which strict deep equality would refuse.
+  const calls = { setTheme: [], setNotifications: [], enablePush: [], disablePush: [], updatePushThreshold: [] };
+  const plain = value => JSON.parse(JSON.stringify(value));
+  const current = preferences.parsePreferences(stored);
+  const mocks = {
+    react: { ...react, useEffect() {}, useState: value => [value, () => {}] },
+    'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', Switch: 'Switch', useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
+    'expo-router/head': { __esModule: true, default: 'Head' },
+    'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
+    '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
+    '@/lib/preferences': preferences,
+    '@/components/preferences-provider': { usePreferences: () => ({
+      preferences: current, loaded: true,
+      setTheme: theme => calls.setTheme.push(theme),
+      setNotifications: update => calls.setNotifications.push(plain(update)),
+    }) },
+    '@/lib/push': {
+      pushSupported,
+      enablePush: async threshold => { calls.enablePush.push(threshold); return push.enable ?? { ok: true, token: 'ExponentPushToken[test-test-test]' }; },
+      disablePush: async token => { calls.disablePush.push(token); return push.disable ?? true; },
+      updatePushThreshold: async (token, threshold) => { calls.updatePushThreshold.push(plain([token, threshold])); return push.update ?? true; },
+    },
+  };
+  const exports = {};
+  vm.runInNewContext(compiled, {
+    exports, process: { env: { EXPO_OS: platform } },
+    require: name => {
+      if (name === 'react/jsx-runtime') return require(name);
+      if (!(name in mocks)) throw new Error(`Unreviewed renderer dependency: ${name}`);
+      return mocks[name];
+    },
+  });
+  return { tree: exports.default(), calls };
+}
+
+export { nodes } from './render-reading.js';

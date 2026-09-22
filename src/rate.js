@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { history, insertRating, ratingForSlot, recentStories } from './db.js';
+import { notifyReading } from './push.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { effectiveConfig } from './config.js';
 import { estimateCostUsd } from './pricing.js';
@@ -228,7 +229,7 @@ export async function runRating({
       priors: await history({ hours: PRIOR_HOURS }),
       stories: await recentStories(),
     });
-    return insertRating({
+    const saved = await insertRating({
       ...base,
       ...judgement,
       status: 'ok',
@@ -250,6 +251,10 @@ export async function runRating({
         estimateCostUsd({ model: response.model, ...usage }) ??
         estimateCostUsd({ model: base.model, ...usage }),
     });
+    // Tell the devices that asked. Awaited and never throwing: a push failure
+    // must not turn a stored reading into an error row.
+    await notifyReading(saved);
+    return saved;
   } catch (err) {
     return insertRating({
       ...base,

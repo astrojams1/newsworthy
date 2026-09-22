@@ -26,10 +26,10 @@ test('reading refreshes never add loading, saved or retry text to an existing me
 function assertApprovedReadingCopy(tree) {
   const text = tree.filter(n => n.type === 'Text')
     .map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
-  assert.equal(text.length, 7, 'only approved reading, timestamp and footer text');
+  assert.equal(text.length, 9, 'only approved reading, timestamp and footer text');
   assert.deepEqual(text.slice(0, 3), ['3', contract.denominatorText, 'A quiet day for the world.']);
   assert.match(text[3], /^Updated (?:just now|\d+ (?:min ago|hr ago|days ago))$/);
-  assert.deepEqual(text.slice(4), ['Privacy', '·', 'Support']);
+  assert.deepEqual(text.slice(4), ['Settings', '·', 'Privacy', '·', 'Support']);
 }
 
 for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · ']) {

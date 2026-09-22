@@ -80,7 +80,7 @@ export default function Home() {
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-        {[["Privacy", privacyUrl], ["Support", supportUrl]].map(([label, url], index) => <Fragment key={label}>
+        {[["Settings", "/settings"], ["Privacy", privacyUrl], ["Support", supportUrl]].map(([label, url], index) => <Fragment key={label}>
           {index > 0 && <Text accessible={false} aria-hidden style={{ color: theme.muted, fontSize: 12 }}>·</Text>}
           <Link href={url} asChild>
           <Pressable accessibilityRole="link" style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', paddingHorizontal: 10 }}>

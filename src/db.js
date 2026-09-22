@@ -83,6 +83,31 @@ export function ensureSchema() {
         score SMALLINT NOT NULL, prompt_version INTEGER NOT NULL,
         draft TEXT NOT NULL, judgement JSONB NOT NULL
       )`;
+    // Devices that asked to be told about a high reading, and the readings they
+    // were told about. One row per Expo push token — the token is the whole
+    // identity, so re-registering the same device is an update, not a second
+    // device. `threshold` is the lowest score the device wants to hear about.
+    await sql`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        token      TEXT        PRIMARY KEY,
+        threshold  SMALLINT    NOT NULL,
+        platform   TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )`;
+    // A development is announced once per threshold, however many readings
+    // report it. The primary key is the guard: the insert that loses the race
+    // is the one that sends nothing.
+    await sql`
+      CREATE TABLE IF NOT EXISTS push_deliveries (
+        root       BIGINT      NOT NULL,
+        threshold  SMALLINT    NOT NULL,
+        reading_id BIGINT      NOT NULL,
+        score      SMALLINT    NOT NULL,
+        recipients INTEGER     NOT NULL DEFAULT 0,
+        sent_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (root, threshold)
+      )`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_created_at ON ratings (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS rejections_created_at ON rejections (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_ok_created_at ON ratings (created_at DESC) WHERE status = 'ok'`;
@@ -536,4 +561,79 @@ export async function takePreparation(id, score, promptVersion) {
   if (!rows[0]) return null;
   const judgement = typeof rows[0].judgement === 'string' ? JSON.parse(rows[0].judgement) : rows[0].judgement;
   return { judgement, draft: rows[0].draft };
+}
+
+// ---- push subscriptions ---------------------------------------------------
+// Which devices want to hear about a high reading, and what has been sent.
+
+/** The number of devices registered, for the cap on a public write route. */
+export async function countPushSubscriptions() {
+  await ensureSchema();
+  const rows = await sql`SELECT COUNT(*) AS n FROM push_subscriptions`;
+  return num(rows[0]?.n) ?? 0;
+}
+
+/** Register a device, or move an existing one to a new threshold. */
+export async function upsertPushSubscription({ token, threshold, platform }) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO push_subscriptions (token, threshold, platform, created_at, updated_at)
+    VALUES (${token}, ${threshold}, ${platform ?? null}, now(), now())
+    ON CONFLICT (token) DO UPDATE
+      SET threshold = EXCLUDED.threshold, platform = EXCLUDED.platform, updated_at = now()
+    RETURNING token, threshold, platform, created_at, updated_at`;
+  return shape(rows[0]);
+}
+
+/** Remove devices — the one that turned notifications off, or the ones Expo
+ *  reported as no longer registered. Unknown tokens are a no-op. */
+export async function deletePushSubscriptions(tokens = []) {
+  if (tokens.length === 0) return 0;
+  await ensureSchema();
+  const rows = await sql`DELETE FROM push_subscriptions WHERE token = ANY(${tokens}) RETURNING token`;
+  return rows.length;
+}
+
+/** Every device whose threshold this score meets. */
+export async function pushSubscriptionsFor(score) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT token, threshold, platform FROM push_subscriptions
+     WHERE threshold <= ${score}
+     ORDER BY threshold ASC, created_at ASC`;
+  return rows.map(shape);
+}
+
+/**
+ * Claim a (development, threshold) pair for this reading. Returns false when
+ * the pair was already announced, which is what makes a re-report of a
+ * development that is still loud a silent one.
+ */
+export async function claimPushDelivery({ root, threshold, readingId, score }) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO push_deliveries (root, threshold, reading_id, score)
+    VALUES (${root}, ${threshold}, ${readingId}, ${score})
+    ON CONFLICT DO NOTHING
+    RETURNING root`;
+  return rows.length > 0;
+}
+
+export async function recordPushRecipients({ root, threshold, recipients }) {
+  await ensureSchema();
+  await sql`
+    UPDATE push_deliveries SET recipients = ${recipients}
+     WHERE root = ${root} AND threshold = ${threshold}`;
+}
+
+/** The newest successful reading before `before`, for the unjudged fallback. */
+export async function previousOkRating(before) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT id, created_at, score, story, development_of, judge_version
+      FROM ratings
+     WHERE status = 'ok' AND (created_at, id) < (${before.created_at}, ${before.id})
+     ORDER BY created_at DESC, id DESC
+     LIMIT 1`;
+  return shape(rows[0]);
 }

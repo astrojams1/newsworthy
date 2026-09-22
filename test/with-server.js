@@ -26,6 +26,9 @@ export const PORTS = {
   storyBackfill: 8829,
   storySettings: 8831,
   storyBoard: 8833,
+  push: 8839,
+  pushDeliveries: 8841,
+  pushRelay: 8843, // the stand-in for Expo's push service, not a Newsworthy server
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall
