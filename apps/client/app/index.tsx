@@ -9,6 +9,7 @@ import { useTheme } from '@/lib/theme';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { useHeaderHeight } from 'expo-router/react-navigation';
+import { displayExplanation } from '@/lib/story-age';
 import { website, privacyUrl, supportUrl } from '@/lib/config';
 
 export default function Home() {
@@ -30,9 +31,10 @@ export default function Home() {
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
   const minutes = reading ? Math.max(0, Math.floor((now - Date.parse(reading.created_at)) / 60000)) : 0;
   const relative = minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
+  const explanation = reading ? displayExplanation(reading, now) : null;
   const shareReading = async () => {
     if (!reading) return;
-    const message = `${reading.score}/10 · ${reading.explanation}\nUpdated ${new Date(reading.created_at).toLocaleString()}\n${website}`;
+    const message = `${reading.score}/10 · ${displayExplanation(reading)}\nUpdated ${new Date(reading.created_at).toLocaleString()}\n${website}`;
     try {
       if (process.env.EXPO_OS === 'web') {
         if (navigator.share) await navigator.share({ title: 'Newsworthy', text: message });
@@ -71,7 +73,7 @@ export default function Home() {
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', marginLeft: 9 }}>∕ 10</Text>
         </View>
-        <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{reading?.explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Text>
+        <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Text>
         {reading && <Text selectable style={{ color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Updated {relative}</Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}

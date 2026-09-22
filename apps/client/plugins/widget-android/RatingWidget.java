@@ -13,9 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.util.TypedValue;
 import android.widget.RemoteViews;
-import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import java.util.concurrent.TimeUnit;
 import androidx.work.WorkManager;
@@ -92,14 +90,17 @@ public class RatingWidget extends AppWidgetProvider {
         // Chaining one-time jobs from onUpdate caused PACKAGE_CHANGED -> onUpdate
         // -> refresh loops that recreated the launcher widget every second.
         PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(RatingWidgetWorker.class, 30, TimeUnit.MINUTES)
-            .setConstraints(new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()).build();
+            .build();
         WorkManager work = WorkManager.getInstance(context);
         work.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.KEEP, request);
         work.cancelUniqueWork(LEGACY_WORK);
     }
 
     static Date readingDate(JSONObject data) {
-        String raw = data.optString("created_at");
+        return parseDate(data.optString("created_at"));
+    }
+
+    static Date parseDate(String raw) {
         for (String pattern : new String[]{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", "yyyy-MM-dd'T'HH:mm:ssXXX"}) {
             SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
             format.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -109,6 +110,30 @@ public class RatingWidget extends AppWidgetProvider {
             if (date != null && position.getIndex() == raw.length()) return date;
         }
         return null;
+    }
+
+    static String displayedExplanation(JSONObject reading, long now) {
+        String prefix = "";
+        boolean hasBody = reading.opt("explanation_text") instanceof String;
+        Date start = parseDate(reading.optString("explanation_since", ""));
+        if (hasBody && start != null && start.getTime() <= now) {
+            long minutes = (now - start.getTime()) / 60_000;
+            if (minutes < 1) prefix = "Just now: ";
+            else {
+                long value = minutes < 60 ? minutes : minutes < 2880 ? minutes / 60
+                    : minutes < 525600 ? minutes / 1440 : minutes / 525600;
+                String unit = minutes < 60 ? "minute" : minutes < 2880 ? "hour"
+                    : minutes < 525600 ? "day" : "year";
+                prefix = value + " " + unit + (value == 1 ? "" : "s") + " ago: ";
+            }
+        }
+        String body = reading.optString(hasBody ? "explanation_text" : "explanation", "");
+        int limit = 140 - prefix.length();
+        if (body.codePointCount(0, body.length()) <= limit) return prefix + body;
+        String cut = body.substring(0, body.offsetByCodePoints(0, limit - 1));
+        int space = cut.lastIndexOf(' ');
+        if (space >= 0 && cut.codePointCount(0, space) > limit / 2) cut = cut.substring(0, space);
+        return prefix + cut.trim() + "…";
     }
 
     static boolean valid(JSONObject data) {
@@ -183,7 +208,7 @@ public class RatingWidget extends AppWidgetProvider {
                 // an inline ForegroundColorSpan retained the old theme's color.
                 views.setTextViewText(R.id.widget_score, number);
                 views.setContentDescription(R.id.widget_score, reading.optInt("score") + " out of 10");
-                views.setTextViewText(R.id.widget_explanation, reading.optString("explanation"));
+                views.setTextViewText(R.id.widget_explanation, displayedExplanation(reading, System.currentTimeMillis()));
                 String date = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(readingDate(reading));
                 views.setTextViewText(R.id.widget_updated, "Updated " + date);
             }

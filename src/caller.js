@@ -67,7 +67,7 @@ exactly as written.
 
 The prompt's own output contract asks for a single JSON object and nothing
 else. That fixes the shape of the verdict. It does not end the caller's work:
-the object is the payload for section 2.
+the object is a draft for the preparation step below, then the final payload for section 2.
 
 A caller whose web search fails, or returns nothing, submits nothing at all. A
 score that could not be researched is worse than no score, and the server
@@ -79,6 +79,40 @@ fetches; NPR, Al Jazeera, CNBC and CNN answer. Figures that arrive through a
 summarizing fetch tool are unreliable digit by digit — a prediction-market read
 came back summing past 100% and pointing the wrong way for its contract, and
 was correctly discarded rather than rated on.
+
+### Preparing the sentence
+
+After research and rating, the caller sends its draft score and explanation to
+\`POST ${baseUrl}/api/readings/prepare\` with the same caller authentication.
+This matches the draft against recorded developments before wording is finalized.
+The score is unchanged by this lookup. The body is:
+
+\`\`\`
+{"score": <integer 1-10>, "explanation": "<draft sentence>"}
+\`\`\`
+
+The response has \`stored: false\`: preparation is not submission and does not
+suppress the next scheduled run. It carries \`preparation\` (an opaque, single-use
+reference valid for 30 minutes), \`development\` (new, same or unjudged),
+\`first_covered_at\`, a sample \`prefix\`, \`display_character_limit: 140\`,
+\`reserved_prefix_characters: 20\` and \`max_explanation_characters: 120\`.
+An unjudged development has unknown age; a new one starts its clock when stored.
+
+The caller finalizes the SAME development's sentence within 120 characters,
+including spaces and punctuation, keeping the score and facts unchanged. It
+counts characters with a code tool, not by estimating. The final explanation
+contains no timestamp: the app adds and updates it from the stored first-coverage
+time. For example, \`31 hours ago: \` counts toward the FULL 140-character budget;
+the 20-character reserve also allows that prefix to grow while a reading is saved.
+This means first coverage of this development, not a claim about when it happened.
+
+The final submission includes the returned \`preparation\` alongside score,
+explanation and prompt_sha256. Changing to another development requires preparing
+again. An expired, reused, missing or invalid reference falls back to the normal
+server-side match without adding a rejection rule. The caller can repeat preparation
+if it needs refreshed context. Judge failure leaves age unknown rather than new.
+The same endpoint accepts GET query parameters score and explanation for fetch-only
+clients; POST avoids URL length limits. No admin access or full history is needed.
 
 ## 2. Submission
 
@@ -92,7 +126,8 @@ content-type: application/json
 
 {
   "score": <integer 1-10>,
-  "explanation": "<one sentence, at most 140 characters including spaces and punctuation>",
+  "explanation": "<sentence body, at most 120 characters including spaces and punctuation>",
+  "preparation": "<reference returned by /api/readings/prepare>",
   "prompt_sha256": "<64 lowercase hex characters, defined in section 3>"
 }
 \`\`\`
@@ -126,7 +161,7 @@ its own tooling reports before any request goes out is looking at a limit on its
 side, and the POST form, which carries the sentence in a body instead of a URL,
 is not subject to one.
 
-Those two fields are the whole reading. \`prompt_sha256\` says nothing about the
+Those two fields are the whole reading. The preparation reference reuses the server’s draft match; it is not a caller-supplied timestamp or story identity. \`prompt_sha256\` says nothing about the
 news — it reports which text this caller received, and section 3 defines it.
 
 The prompt version is stamped by the server from whatever is current, and is not a field a caller sets: a caller that
@@ -172,8 +207,7 @@ body must be a JSON object
 
 Length is not among them. The explanation has no maximum a caller can trip: text
 beyond 400 characters is truncated and stored, never rejected, and the 140-character
-guidance in the prompt is a style instruction rather than a limit the server
-enforces. So a 422 on a submission whose score and sentence are both well formed
+guidance in the prompt covers the displayed prefix and sentence together. Stored prose is not rejected for length; the display caps the combined text with an ellipsis if a legacy or overlong sentence does not fit. So a 422 on a submission whose score and sentence are both well formed
 means the request did not arrive as it was sent — a query string truncated or
 rewritten in transit, most often — and the answer is to send it again, not to
 shorten the sentence. A caller that shortens its explanation in response to a

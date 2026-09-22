@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { displayExplanation } from '../../apps/client/lib/story-age.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
 
 const require = createRequire(import.meta.url);
@@ -24,8 +25,8 @@ export function renderShareIcon({ platform, color, sourceOverride }) {
   return exports.AppIcon({ color });
 }
 
-export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, failed = false, loading = false, sourceOverride }) {
-  const reading = score == null ? null : { score, explanation: 'A quiet day for the world.', created_at: '2026-09-16T09:00:00Z' };
+export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, failed = false, loading = false, sourceOverride, readingOverride, now = Date.now() }) {
+  const reading = readingOverride ?? (score == null ? null : { score, explanation: 'A quiet day for the world.', created_at: '2026-09-16T09:00:00Z' });
   const mocks = {
     react: { ...react, useEffect() {}, useState: value => [value, () => {}] },
     'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', Share: {}, useWindowDimensions: () => ({ width, height, fontScale }) },
@@ -38,11 +39,12 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     '@/components/reading-provider': { useCurrentReading: () => ({ reading, saved, failed, loading }) },
     '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
     'expo-router/react-navigation': { useHeaderHeight: () => 44 },
+    '@/lib/story-age': { displayExplanation },
     '@/lib/config': { website: 'https://example.test', privacyUrl: '/privacy', supportUrl: '/support' },
   };
   const exports = {};
   vm.runInNewContext(sourceOverride ? compile(sourceOverride) : compiled, {
-    exports, process: { env: { EXPO_OS: platform } },
+    exports, Date: class extends Date { static now() { return now; } }, process: { env: { EXPO_OS: platform } },
     require: name => {
       if (name === 'react/jsx-runtime') return require(name);
       if (!(name in mocks)) throw new Error(`Unreviewed renderer dependency: ${name}`);

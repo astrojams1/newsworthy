@@ -6,6 +6,9 @@ Read `CLAUDE.md` for repository workflow and technical constraints, and
 - Before starting any new feature, run `git fetch origin` and inspect the latest
   target branch. Start from the fetched `origin/main`, preserving existing local
   work; never assume the local `main` is current.
+- Before creating every PR, use `.agents/skills/newsworthy-pr-copy-review/SKILL.md`
+  to check README, product/marketing copy, help, caller contracts and release
+  claims against the change. Repeat affected checks if PR scope changes.
 - Branch off `main`, open a PR into `main`, and run `npm test` before pushing.
   Do not push directly to `main`. Vercel preview builds are currently skipped.
 - Keep extra development workspaces inside the primary Newsworthy checkout at

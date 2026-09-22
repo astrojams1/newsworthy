@@ -48,7 +48,7 @@ test('widgets keep cached timestamps and empty states free of status copy', () =
   assert.match(java, /setTextViewText\(R.id.widget_updated, "Updated " \+ date\)/);
   assert.match(swift, /Text\("\\\(date.formatted/);
   assert.match(swift, /accessibilityLabel\("Updated /);
-  assert.match(swift, /Text\(entry.reading\?\.explanation \?\? ""\)/);
+  assert.match(swift, /Text\(entry.reading\?\.displayedExplanation\(at: entry.date\) \?\? ""\)/);
   for (const source of [swift, java, compact, expanded, light]) {
     assert.doesNotMatch(source, /"[^"\n]*(?:Saved ·|Saved reading|Saving reading|Waiting for a reading|Checking|Loading|latest rating will appear)[^"\n]*"/i);
     assert.doesNotMatch(source, /@string\/widget_waiting/);

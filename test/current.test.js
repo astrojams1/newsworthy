@@ -589,7 +589,7 @@ test('the score is smoothed, the sentence is not', async () => {
 
     assert.equal(body.basis, 'aged', 'one development, already ageing');
     assert.equal(body.score, 5, 'the level it broke at, barely aged in the same second');
-    assert.equal(body.explanation, 'hormuz tanker strike newest', 'but the newest sentence');
+    assert.equal(body.explanation_text, 'hormuz tanker strike newest', 'but the newest sentence');
     assert.equal(body.level, 5);
     assert.ok(body.since, 'and the development the number is about is dated');
     assert.ok(body.created_at >= body.since, 'the page is dated from the reading, not the development');
@@ -614,7 +614,9 @@ test('a break opens a development and is shown whole, at once', async () => {
     const body = await (await fetch(`${base}/api/current`)).json();
     assert.equal(body.basis, 'new');
     assert.equal(body.score, 9);
-    assert.equal(body.explanation, 'volcano erupts overnight');
+    assert.equal(body.explanation_text, 'volcano erupts overnight');
+    assert.equal(body.explanation, 'Just now: volcano erupts overnight');
+    assert.equal(body.explanation_since, body.created_at);
     assert.equal(body.story, 'volcano');
     assert.equal(body.score_from, undefined, 'the field is gone; `since` dates the number');
   });

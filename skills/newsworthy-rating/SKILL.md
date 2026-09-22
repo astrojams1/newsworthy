@@ -36,6 +36,29 @@ Do not cache them between runs. A complete submission includes `score`,
 received prompt as described in the instructions. A failed search produces no
 submission. Success means the API confirms that the reading was stored.
 
+## Order of work
+
+1. Fetch the current instructions and exact prompt with a fresh cache-buster;
+   calculate its SHA-256 with a code tool as specified there.
+2. Research current news, choose the development and score it using the published
+   scale. No successful search means no submission.
+3. Draft the sentence and send score/explanation to `/api/readings/prepare`,
+   authenticated with the caller token. Newsworthy checks history and returns
+   the first-coverage time and a short-lived preparation reference. This is not
+   a stored reading and does not finish the task.
+4. Finalize the same development's sentence within the returned character budget.
+   The total is 140 characters INCLUDING the age prefix, colon and space; reserve
+   20 for that prefix, leaving 120 for the explanation. Count with a code tool.
+   Do not add a timestamp to the submitted explanation, change the score because
+   the story is old, or infer an event date from its first-coverage time.
+5. Submit score, explanation, prompt_sha256 and the preparation reference to
+   `/api/readings`. Confirm the API stored it. If the development changes during
+   editing, prepare it again. Follow the live instructions for expiry/fallbacks.
+
+The service performs the history lookup; the caller does not need admin
+credentials or the full archive. The app calculates the prefix from the stored
+time so a saved sentence keeps aging. Missing age evidence produces no prefix.
+
 ## Why this exists
 
 The rating costs real money and the work is not specific to that app. A reading

@@ -8,6 +8,8 @@ struct Reading: Codable {
     let score: Int
     let explanation: String
     let created_at: String
+    var explanation_text: String? = nil
+    var explanation_since: String? = nil
 
     var updatedAt: Date? {
         let formatter = ISO8601DateFormatter()
@@ -15,6 +17,34 @@ struct Reading: Codable {
         if let date = formatter.date(from: created_at) { return date }
         formatter.formatOptions = [.withInternetDateTime]
         return formatter.date(from: created_at)
+    }
+
+    func displayedExplanation(at now: Date) -> String {
+        var prefix = ""
+        if explanation_text != nil, let raw = explanation_since {
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            var start = formatter.date(from: raw)
+            if start == nil { formatter.formatOptions = [.withInternetDateTime]; start = formatter.date(from: raw) }
+            if let start, start <= now {
+                let minutes = Int(now.timeIntervalSince(start) / 60)
+                if minutes < 1 { prefix = "Just now: " }
+                else {
+                    let (value, unit): (Int, String) = minutes < 60 ? (minutes, "minute")
+                        : minutes < 2880 ? (minutes / 60, "hour")
+                        : minutes < 525600 ? (minutes / 1440, "day") : (minutes / 525600, "year")
+                    prefix = "\(value) \(unit)\(value == 1 ? "" : "s") ago: "
+                }
+            }
+        }
+        let body = explanation_text ?? explanation
+        let limit = 140 - prefix.unicodeScalars.count
+        if body.unicodeScalars.count <= limit { return prefix + body }
+        var cut = String(String.UnicodeScalarView(body.unicodeScalars.prefix(limit - 1)))
+        if let space = cut.lastIndex(of: " "), cut[..<space].unicodeScalars.count > limit / 2 {
+            cut = String(cut[..<space])
+        }
+        return prefix + cut.trimmingCharacters(in: .whitespacesAndNewlines) + "…"
     }
 
     var isValid: Bool {
@@ -144,8 +174,12 @@ struct Provider: TimelineProvider {
     }
 
     private func timeline(reading: Reading?, saved: Bool) -> Timeline<ReadingEntry> {
-        Timeline(entries: [ReadingEntry(date: Date(), reading: reading, saved: saved)],
-                 policy: .after(Date().addingTimeInterval(30 * 60)))
+        let now = Date()
+        // Future entries keep the saved reading aging if WidgetKit delays refresh.
+        // Minute entries cover the first hour, then hourly entries cover a day.
+        let minutes = Array(0...60) + (2...24).map { $0 * 60 }
+        let entries = minutes.map { ReadingEntry(date: now.addingTimeInterval(Double($0 * 60)), reading: reading, saved: saved) }
+        return Timeline(entries: entries, policy: .after(now.addingTimeInterval(30 * 60)))
     }
 }
 
@@ -241,7 +275,7 @@ struct ReadingContent: View {
                                     explanationCapHeight: bodyFont.capHeight) {
                     score(size: size)
                     if family == .systemMedium {
-                        Text(entry.reading?.explanation ?? "")
+                        Text(entry.reading?.displayedExplanation(at: entry.date) ?? "")
                             .font(.system(size: explanationSize))
                             .lineSpacing(max(0, explanationLineHeight - bodyFont.lineHeight))
                             .lineLimit(max(1, Int(geometry.size.height / explanationLineHeight)))

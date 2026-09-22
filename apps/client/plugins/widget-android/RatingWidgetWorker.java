@@ -15,6 +15,7 @@ public class RatingWidgetWorker extends Worker {
     public RatingWidgetWorker(@NonNull Context context, @NonNull WorkerParameters params) { super(context, params); }
 
     @NonNull @Override public Result doWork() {
+        RatingWidget.renderAll(getApplicationContext()); // Advance cached age even while offline.
         HttpURLConnection connection = null;
         JSONObject display = null;
         long fetchedAt = System.currentTimeMillis();
@@ -41,6 +42,10 @@ public class RatingWidgetWorker extends Worker {
             if (!RatingWidget.valid(data)) throw new Exception("Invalid reading");
             display = new JSONObject().put("score", data.getInt("score"))
                 .put("explanation", data.getString("explanation")).put("created_at", data.getString("created_at"));
+            if (data.opt("explanation_text") instanceof String) {
+                display.put("explanation_text", data.getString("explanation_text"))
+                    .put("explanation_since", data.opt("explanation_since"));
+            }
 
         } catch (Exception ignored) {
             // Preserve the original reading and timestamp; the next scheduled update retries.

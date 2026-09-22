@@ -15,6 +15,7 @@ export const ADMIN_TOKEN = 'test-admin-token';
 /** One port per spawn site: `node --test` runs files concurrently, and
  *  child.kill() is an async SIGTERM, so a reused port can still be held. */
 export const PORTS = {
+  preparation: 8835,
   ingestSoftErrors: 8811,
   currentSmoothing: 8817,
   currentScoreFrom: 8819,

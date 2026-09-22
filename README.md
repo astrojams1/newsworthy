@@ -14,17 +14,22 @@ See [Product messaging](docs/product-messaging.md) for shared copy and claims.
 A model checks the current top headlines every four hours by default, rates how
 worthwhile it is to look at the news right now on a deliberately harsh 1–10 scale,
 and writes one sentence explaining why. Higher scores mean more consequential
-news; the displayed score fades as developments age. Ratings are AI judgments,
+news; the displayed score fades as developments age. The sentence starts with time since Newsworthy first covered that development
+when known; this is separate from the reading’s update time. Ratings are AI judgments,
 updated periodically, and can be wrong.
 
 ```
                              4 /10
 
-           Major chipmaker halted a fab; expect
-              hardware price moves within weeks.
+           31 hours ago: The Fed raised rates a
+            quarter point, lifting borrowing costs.
 
                     Updated 3 minutes ago
 ```
+
+Before opening a PR, use the repository’s
+[copy accuracy review skill](.agents/skills/newsworthy-pr-copy-review/SKILL.md).
+See [story age](docs/story-age.md) for the timestamp meaning and caller workflow.
 
 ## Run it
 
