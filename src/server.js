@@ -177,19 +177,29 @@ async function readJsonBody(req, limitBytes = 8_192) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 
+/**
+ * A route the Expo export wrote as a page — `settings.html` for `/settings` —
+ * is reached two ways: the app navigates to it client-side, which never asks
+ * the server, and a reload or a shared link asks the server for `/settings`
+ * by name. The first cut served files by exact name only, so the gear worked
+ * and a reload answered 404. An extensionless path that names no file is
+ * tried as its `.html` page before giving up.
+ */
 async function serveStatic(res, name) {
   const safe = normalize(name).replace(/^(\.\.[/\\])+/, '');
   const path = join(PUBLIC_DIR, safe);
   if (!path.startsWith(PUBLIC_DIR)) return json(res, 403, { error: 'forbidden' });
-  try {
-    const body = await readFile(path);
-    const ext = safe.slice(safe.lastIndexOf('.'));
-    res.writeHead(200, { 'content-type': MIME[ext] ?? 'application/octet-stream' });
-    res.end(body);
-  } catch {
-    res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
-    res.end('Not found');
+  const extensionless = !safe.slice(safe.lastIndexOf('/') + 1).includes('.');
+  for (const candidate of extensionless ? [path, `${path}.html`] : [path]) {
+    try {
+      const body = await readFile(candidate);
+      const ext = candidate.slice(candidate.lastIndexOf('.'));
+      res.writeHead(200, { 'content-type': MIME[ext] ?? 'application/octet-stream' });
+      return res.end(body);
+    } catch { /* try the next spelling */ }
   }
+  res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
+  res.end('Not found');
 }
 
 const server = createServer(async (req, res) => {

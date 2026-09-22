@@ -58,11 +58,15 @@ test('only the public reading grants native CORS, including error responses and 
     }
     const stranger = await fetch(`${base}/api/current`, { headers: { Origin: 'https://untrusted.invalid' } });
     assert.equal(stranger.headers.get('access-control-allow-origin'), null);
-    for (const path of ['/', '/privacy', '/support']) {
+    // '/settings' is an exported page reached by reload or shared link as
+    // well as by the gear: the server must find settings.html for it.
+    for (const path of ['/', '/privacy', '/support', '/settings']) {
       const response = await fetch(`${base}${path}`);
       assert.equal(response.status, 200, path);
       assert.match(response.headers.get('content-type'), /html/);
     }
+    assert.equal((await fetch(`${base}/no-such-page`)).status, 404, 'a missing page is still missing');
+    assert.equal((await fetch(`${base}/api/no-such-route`)).status, 404);
   });
 });
 
