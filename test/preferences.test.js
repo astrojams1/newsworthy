@@ -124,3 +124,20 @@ test('the notification switch is an iOS-style toggle in the accent colour on eve
     assert.ok(31 + tree.props.hitSlop.top + tree.props.hitSlop.bottom >= 48);
   }
 });
+
+test('a settings screen with nothing behind it still offers a way back', () => {
+  for (const platform of ['web', 'ios', 'android']) {
+    const stranded = renderSettings({ platform, canGoBack: false });
+    const screen = nodes(stranded.tree).find(n => n.type === 'Screen');
+    const back = screen.props.options.headerLeft();
+    assert.equal(back.props.accessibilityRole, 'button');
+    assert.equal(back.props.accessibilityLabel, 'Back');
+    assert.ok(back.props.style.minWidth >= 48 && back.props.style.minHeight >= 48);
+    assert.ok(nodes(back).some(n => n.type === 'BackIcon'));
+    back.props.onPress();
+    assert.deepEqual(stranded.calls.replace, ['/'], 'it goes home rather than popping a stack that has nothing to pop');
+    // Reached from the reading screen, the navigator's own back button serves.
+    const pushed = renderSettings({ platform, canGoBack: true });
+    assert.equal(nodes(pushed.tree).find(n => n.type === 'Screen'), undefined);
+  }
+});

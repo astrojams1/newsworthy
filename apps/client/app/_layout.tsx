@@ -6,6 +6,10 @@ import { faviconSvg } from '../../../public/favicon';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
+// A deep link or a cold start on /settings still gets the reading screen
+// underneath it, so the native back button exists rather than depending on
+// how the screen was reached.
+export const unstable_settings = { initialRouteName: 'index' };
 export default function Layout() {
   return <PreferencesProvider><ReadingProvider><ThemedLayout /></ReadingProvider></PreferencesProvider>;
 }

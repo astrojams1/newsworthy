@@ -15,10 +15,10 @@ const compile = text => ts.transpileModule(text, { compilerOptions: {
 } }).outputText;
 const compiled = compile(source);
 
-export function renderSettings({ platform, width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {} } = {}) {
+export function renderSettings({ platform, width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {}, canGoBack = true } = {}) {
   // Recorded as plain copies: values built inside the vm context carry that
   // context's prototypes, which strict deep equality would refuse.
-  const calls = { setTheme: [], setNotifications: [], enablePush: [], disablePush: [], updatePushThreshold: [] };
+  const calls = { setTheme: [], setNotifications: [], enablePush: [], disablePush: [], updatePushThreshold: [], replace: [] };
   const plain = value => JSON.parse(JSON.stringify(value));
   const current = preferences.parsePreferences(stored);
   const mocks = {
@@ -27,6 +27,8 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
     '@/components/toggle': { Toggle: 'Toggle' },
     '@/components/check-icon': { CheckIcon: 'CheckIcon' },
     'expo-router/head': { __esModule: true, default: 'Head' },
+    'expo-router': { Stack: { Screen: 'Screen' }, useRouter: () => ({ canGoBack: () => canGoBack, replace: href => calls.replace.push(href) }) },
+    '@/components/back-icon': { BackIcon: 'BackIcon' },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
     '@/lib/preferences': preferences,
