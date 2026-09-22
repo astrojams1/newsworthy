@@ -526,7 +526,9 @@ written to `data-appearance` on the document, which `tokens.css` already
 honoured for the static policy pages; on native it goes through
 `Appearance.setColorScheme`, so the share sheet and alerts follow too. Widgets
 follow the operating system regardless — they have no access to the app's
-store — and the screen says so under the choice. Every row shares one minimum
+store — which the support page says and the screen does not: a line about
+widgets under a choice that sets the app's appearance raised the question
+it answered. Every row shares one minimum
 height rather than a fixed one, so enlarged text grows the rows together.
 
 **Push notifications are opt-in, off by default, and 8 when turned on.** The

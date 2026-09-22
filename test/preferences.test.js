@@ -34,7 +34,7 @@ test('the website shows the appearance choice and no notification setting', () =
   assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
     [['Follow device', true], ['Light', false], ['Dark', false]]);
   assert.ok(!all.some(n => n.type === 'Toggle'), 'push notifications are a native feature');
-  assert.deepEqual(text(all), ['Appearance', 'Follow device', 'Light', 'Dark', 'Widgets follow your device’s appearance.']);
+  assert.deepEqual(text(all), ['Appearance', 'Follow device', 'Light', 'Dark']);
   // Vertical: each option is its own full-width row, the checked one marked.
   assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
   assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');

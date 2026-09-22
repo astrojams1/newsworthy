@@ -102,7 +102,6 @@ export default function Settings() {
               </Pressable>;
             })}
           </View>
-          <Text style={note}>Widgets follow your device’s appearance.</Text>
         </View>
         {pushSupported && <View>
           <Text accessibilityRole="header" style={heading}>Notifications</Text>
