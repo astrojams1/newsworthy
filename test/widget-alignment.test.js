@@ -7,8 +7,18 @@ const root=new URL('../',import.meta.url);
 const proof=JSON.parse(readFileSync(new URL('store/source/widget-consistency-mono/alignment-proof.json',root)));
 const sha=file=>createHash('sha256').update(readFileSync(new URL(file,root))).digest('hex');
 
-test('native pixel evidence belongs to the current iOS widget source',()=>{
-  assert.equal(sha(proof.source),proof.sourceSha256,'Widget changed: refresh the native capture evidence or explicitly review its scope');
+test('native pixel evidence retains its source provenance and reviewed layout scope',()=>{
+  if (sha(proof.source) === proof.sourceSha256) return;
+  const review=JSON.parse(readFileSync(new URL('store/story-age-verification.json',root)));
+  assert.equal(review.capturedSourceSha256,proof.sourceSha256,'Review must refer to the actual captured source');
+  assert.equal(sha(proof.source),review.sourceSha256,'Widget changed: refresh captures or review their scope');
+  const source=readFileSync(new URL(proof.source,root),'utf8');
+  // The sole permitted text-binding substitution is excluded from geometry.
+  // Full-source hash above still requires explicit review for any further edit.
+  const geometry=source.slice(source.indexOf('// One three-line numeral size'))
+    .replace('Text(entry.reading?.displayedExplanation(at: entry.date) ?? "")','Text(entry.reading?.explanation ?? "")');
+  assert.equal(createHash('sha256').update(geometry).digest('hex'),review.geometrySha256,
+    'Captured layout and font geometry must stay identical');
 });
 for(const capture of proof.captures) test(`actual ${capture.mode} Home Screen: numeral top and all rating glyph bottoms match sentence anchors`,async()=>{
   assert.equal(sha(capture.file),capture.sha256,'Native screenshot must remain unchanged');

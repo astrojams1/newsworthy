@@ -297,13 +297,14 @@ ages. The score-only fallback still applies on top: a level two clear of the
 development's own level starts one. History from before the judge existed reads
 the same way until `/api/admin/judge` backfills it.
 
-**Only the score is smoothed and aged.** The sentence always comes from the
+**The sentence comes from the newest reading.** Its prefix shows that development’s
+first-coverage age independently of the score’s decay. Its wording comes from the
 newest reading, and the two answer different questions: the number is a level,
 and the sentence is what happened. Pairing the median row's sentence with the
 number was an early cut and it read as an app that had stopped. So a story still
 on top in the evening is still named in the evening, with a smaller number
-beside it — never "nothing new". `score_from` names the row the score came from
-when the number is one row rather than a decayed level, and is never displayed.
+beside it — never "nothing new". The score’s `since` anchor and the sentence’s
+`explanation_since` timestamp answer separate questions.
 
 `basis` is one of `new` (the newest reading opened or escalated the development
 the number is about, at full value), `routine` (it did, but its story's age

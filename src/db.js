@@ -43,7 +43,7 @@ export function ensureSchema() {
     // NULL means the caller returned no digest, false means it returned one
     // that did not match the text we served. The two are different findings.
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS prompt_verified BOOLEAN`;
-    // Which development this reading reports, judged once on arrival and never
+    // Which development this reading reports, judged once before storage and never
     // recomputed (src/story.js). NULL development_of on a judged row means the
     // reading opened a development; judge_version NULL means no judgement was
     // made at all, which the display rule treats as "inherit", not as "new".

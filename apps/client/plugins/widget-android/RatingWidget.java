@@ -101,7 +101,7 @@ public class RatingWidget extends AppWidgetProvider {
         PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(RatingWidgetWorker.class, 30, TimeUnit.MINUTES)
             .build();
         WorkManager work = WorkManager.getInstance(context);
-        work.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.KEEP, request);
+        work.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, request);
         work.cancelUniqueWork(LEGACY_WORK);
     }
 

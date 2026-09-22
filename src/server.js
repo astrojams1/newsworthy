@@ -445,7 +445,7 @@ const server = createServer(async (req, res) => {
           return json(res, 200, await prepareReading(submission));
         }
         const prepared = await takePreparation(body.preparation, submission.score, submission.prompt_version);
-        // Which development this reading reports, decided once here and stored.
+        // Reuse the prepared match, or decide it here for compatible callers.
         // It cannot change the score or reject the reading — a judge failure
         // stores the reading unjudged, carrying the reason — so the four
         // rejection rules stay four.

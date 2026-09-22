@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-22",
+  "source": "apps/client/targets/widget/NewsworthyWidget.swift",
+  "sourceSha256": "a2bc49b377687635e4bd4f9c6d45ea359fc6ed36634eb034e35b28a6cb411693",
+  "capturedSourceSha256": "24ce7aca6bf962cec0993a457a8a58ad6596baf3ba0f7144836fdb685d06d753",
+  "geometrySha256": "f6f50dea4514065b1201ffde70655fa25165081752cdfd2397929a856b904227",
+  "scope": "Previous pixel captures validate their captured sentences and unchanged layout/font geometry. This review permits only the age formatter text binding and timeline change; it does not verify new text wrapping or new screenshots.",
+  "nativeVisualParity": "not_verified_for_story_age",
+  "swiftStoreAndFormatter": "Compiled and executed production Swift store with age rollover, Unicode budget, metadata round trip and legacy decode cases.",
+  "android": "Not compiled or visually verified; Java source and shared design contract reviewed.",
+  "replacementNativeBuild": "pending",
+  "web": "Production web export rendered in Chromium at 390x844 and 1280x900. Fixed fixture advanced from 31 to 32 hours while created_at and raw sentence stayed constant; no browser errors. Initial dependency symlinks resolved the route from another checkout; discarded that build and verified a fresh npm ci export.",
+  "writingEvaluation": "docs/prompt-evaluations/v14.md",
+  "webCapture": "store/source/story-age/web-31-hours.png",
+  "iosTypecheck": "Complete production widget sources typechecked for arm64 iOS 16.4 simulator with Xcode 16.2 / iPhoneSimulator 18.2 SDK. This is not a native visual test or installed release build."
+}
