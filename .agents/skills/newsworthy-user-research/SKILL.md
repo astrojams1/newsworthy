@@ -21,9 +21,29 @@ engagement mechanics or softened rating scale. Admin remains web-only.
 
 Read the [run ledger](../../../docs/user-research/runs.md), the latest run's
 limitations and next experiments, and the [opportunity ledger](../../../docs/user-research/opportunities.md).
-Choose a question that would change a product decision or resolve weak evidence.
-Record the repository commit, skill revision, date, scope and research budget.
-Use the repository's fetched-main/branch/worktree workflow for committed updates.
+Before choosing a question, reconcile the ledger with recent repository changes:
+
+- Fetch `origin` and inspect `origin/main`, preserving local work. Compare the
+  latest run's recorded base commit with fetched main using the commit history
+  and relevant diffs; do not rely on the local checkout or PR titles alone.
+- Check changes against existing opportunity IDs, including implemented and
+  declined entries. Read the affected implementation, tests and release evidence
+  to establish whether a need is now served, partly addressed, superseded or
+  still unresolved. Separate merged code, deployed behavior, native verification
+  and public store availability; active branches are not completed fixes.
+- Record the compared commits, relevant changes and per-opportunity effects in
+  the run. Update coverage, status and priority with a dated decision-history
+  entry, preserving earlier evidence. An implemented feature does not prove its
+  user problem is solved. If no relevant change exists, record that explicitly;
+  if the prior baseline cannot be resolved, record the bounded history inspected
+  and the uncertainty rather than assuming the ledger is current.
+
+Choose a question that would change a product decision or resolve weak evidence
+remaining after this reconciliation. Record the repository commit, skill
+revision, date, scope and research budget. Use the repository's fetched-main/
+branch/worktree workflow for committed updates. Before finalizing, fetch again;
+if main moved, reconcile intervening relevant changes so the run does not
+re-propose a fix merged during the research.
 
 For an ordinary run, start with roughly 12–20 search queries and inspect 10–15
 promising source pages. This is a budget, not a quota. A requested quick pass

@@ -15,6 +15,12 @@ Create `runs/YYYY-MM-DD-NN.md`, choosing the next unused daily suffix. Record:
 - **Provenance:** date/time zone, repository base commit, skill version (commit or
   hash; for a first uncommitted version identify that explicitly), tools, scope,
   time/query budget, status and actual stop reason.
+- **Repository reconciliation:** previous run's base, fetched-main commit and
+  comparison range; relevant commits/diffs and inspected implementation, tests
+  and release evidence; effects on existing opportunity IDs, coverage, status
+  and priority (or explicitly no relevant changes). Separate implementation from
+  deployment, native verification and availability. Record an unresolved baseline
+  and any intervening main changes checked before finalizing.
 - **Search log:** exact queries, source/date/language filters, inspected candidates,
   admitted evidence IDs, inaccessible/excluded leads and pivot rationale. Do not
   invent total-result denominators or count uninspected search hits as reviewed.

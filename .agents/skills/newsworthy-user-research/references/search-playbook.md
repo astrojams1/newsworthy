@@ -68,3 +68,17 @@ Do not spend the whole run retrying one domain.
   counting those pitches as independent demand.
 
 Pilot evidence and remaining gaps: [2026-09-22 pilot](../../../../docs/user-research/runs/2026-09-22-01.md).
+
+## Lessons from run 02, 2026-09-22
+
+- Read replies and resolution notes before treating a request as an absent
+  feature. [E-08](../../../../docs/user-research/runs/2026-09-22-02.md#e-20260922-02-08)
+  asks for a links-only mode; a product-side reply describes an existing setting.
+  Record that reply separately from independent verification of the behavior.
+- “Trust” can hide a more specific failure. Follow reported source-access and
+  mismatch workarounds across communities; [E-03](../../../../docs/user-research/runs/2026-09-22-02.md#e-20260922-02-03)
+  distinguishes summarizing a headline from reading an article. A citation link
+  alone is not evidence that the underlying content was accessed or supports it.
+- Date operators and fresh crawl labels did not guarantee recent comments.
+  Preserve unknown publication dates on readable support pages rather than
+  dating them from linked stories or screenshots.
