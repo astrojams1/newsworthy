@@ -139,7 +139,7 @@ struct ReadingContent: View {
         let idealSize = WidgetTypography.scoreSize * targetCapHeight / font.capHeight
         let fittedFont = UIFont.monospacedSystemFont(ofSize: idealSize, weight: .light)
         let width = ("10" as NSString).size(withAttributes: [.font: fittedFont]).width
-        let denominator = (" ∕ 10" as NSString).size(withAttributes: [.font: UIFont.monospacedSystemFont(ofSize: WidgetTypography.denominatorSize, weight: .light)]).width
+        let denominator = (" ∕10" as NSString).size(withAttributes: [.font: UIFont.monospacedSystemFont(ofSize: WidgetTypography.denominatorSize, weight: .light)]).width
         let scale = min(1, max(0.4, min(size.height / targetCapHeight, (size.width - denominator) / width)))
         return idealSize * scale
     }
@@ -148,7 +148,7 @@ struct ReadingContent: View {
         (Text(entry.reading.map { String($0.score) } ?? "–")
             .font(.system(size: size, weight: .light, design: .monospaced))
             .tracking(-size * 0.04)
-         + Text(" ∕ 10")
+         + Text(" ∕10")
             .font(.system(size: WidgetTypography.denominatorSize, weight: .light, design: .monospaced))
             .tracking(0)
             .foregroundColor(Color("NewsworthyGradientMuted")))

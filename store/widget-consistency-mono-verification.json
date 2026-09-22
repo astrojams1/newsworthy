@@ -1,16 +1,16 @@
 {
   "date": "2026-09-22",
   "baseCommit": "611201b",
-  "scope": "Shared widget refresh, timestamp ordering, score-bound background identity, monospace score and denominator, thin space, and third-sentence-line baseline.",
+  "scope": "Shared widget refresh, timestamp ordering, score-bound background identity, monospace score and denominator, compact slash spacing, and third-sentence-line baseline.",
   "releaseState": "SOURCE_FIX_NOT_RELEASED",
   "checks": {
-    "designGate": "55 passed, including deliberate regressions for font, gap, palette identity and third baseline.",
+    "designGate": "55 passed after the final spacing correction.",
     "swiftStore": "Production Swift actor compiled and executed: coalesced sizes, sibling reload, restart, stale response, same-message decay, concurrent app update, offline and invalid cache.",
     "typeScript": "passed",
     "fullSuite": "Initial local run: 234 passed; two route checks failed because the web export omitted index.html with parent-checkout dependencies, and the native compiler test timed out under machine load. The standalone production Swift test subsequently passed. Worktree dependency installation and final full rerun remain incomplete."
   },
   "nativeVerification": {
-    "ios": "Captured production ReadingContent layout and typography in a SwiftUI host on iPhone16ProMax iOS18.3. The host supplies the three-stop background outside WidgetKit and resolves named colors from the production asset catalog values because the installed actool cannot compile assets for the available iOS simulator runtimes. This is a native UI capture with a sample reading, not a WidgetKit Home Screen capture. Both sizes, light/dark, score3, original timestamp, monospace denominator and third-line baseline inspected.",
+    "ios": "Captured production ReadingContent layout and typography in a SwiftUI host on iPhone16ProMax iOS18.3. The host supplies the three-stop background outside WidgetKit and resolves named colors from the production asset catalog values because the installed actool cannot compile assets for the available iOS simulator runtimes. This is a native UI capture with a sample reading, not a WidgetKit Home Screen capture. Both sizes, light/dark, score3, original timestamp, monospace denominator, compact slash spacing and third-line baseline inspected.",
     "android": "Design/source contract checked; no Android SDK or Java runtime available for a new native capture."
   },
   "untested": [
@@ -25,8 +25,15 @@
     "store/source/widget-consistency-mono/ios-native.png"
   ],
   "sourceSha256": {
-    "apps/client/targets/widget/NewsworthyWidget.swift": "44fd23f00d3e140fae17ba73e36f0b08dd697a8b2ca8623a348d23f3f42419a8",
+    "apps/client/targets/widget/NewsworthyWidget.swift": "b0aa2afdd2ae2edc625ca93ea47ec630c9c5099f1db652db038ac7bad985eeaf",
     "apps/client/targets/widget/WidgetReadingStore.swift": "a5dc4fa76eb44277df9f1cdb67f0c5b6d83cea1aa16f3d458e81763d7d9012b7",
     "test/native/widget-gallery.swift": "257e1e401319d2d292dcf05cbe957ea21bd9fa8fa286548a2e80c6d5d9eca152"
+  },
+  "nativeFontMetrics": {
+    "font": "SF Mono Light at 12pt",
+    "regularSpaceWidth": 29.478515625,
+    "thinSpaceWidth": 29.28515625,
+    "noExtraBlankWidth": 22.060546875,
+    "decision": "Use \u221510: natural glyph side bearings retain a visible gap; SF Mono does not meaningfully narrow Unicode thin/hair spaces."
   }
 }

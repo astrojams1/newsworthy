@@ -72,10 +72,10 @@ change to the navigation-bar slots or the title's horizontal position.
 
 `design/surfaces.json` records the approved typography and widget size rules.
 The full reading deliberately uses larger digits than widgets. Compact and expanded widgets use the same 69-point base numeral and a
-12-point `∕ 10`. Expanded descriptions use 14-point text on a 20-point line
+12-point `∕10`. Expanded descriptions use 14-point text on a 20-point line
 rhythm beside the numeral, with truncation at the available height.
-All reading surfaces use U+2215 DIVISION SLASH followed by U+2009 THIN SPACE
-for the displayed denominator. The thin space keeps the gap small but visible;
+All reading surfaces use U+2215 DIVISION SLASH immediately followed by `10`.
+The monospace glyph side bearings provide the small visible gap;
 the division slash’s stroke sits optically alongside the lining numerals instead of the ordinary
 slash’s descending tail. Keep the denominator in one text run, on the existing
 score baseline; do not add per-platform vertical offsets. Shared/copied readings
@@ -208,3 +208,8 @@ a hard ceiling that prevents the baseline from reaching line three.
 
 Verification for this revision is recorded in
 `store/widget-consistency-mono-verification.json`.
+
+Native font measurement found that SF Mono gives regular, thin, hair and narrow
+spaces almost the same advance. The denominator therefore uses `∕10`, with no
+extra blank: at 12 points it measures 22.06 points instead of 29.48. The slash and
+“1” remain visibly separated by their natural glyph side bearings.
