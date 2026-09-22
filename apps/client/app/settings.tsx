@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
 import { Toggle } from '@/components/toggle';
-import { MAX_THRESHOLD, MIN_THRESHOLD, THEME_CHOICES, clampThreshold, type ThemePreference } from '@/lib/preferences';
+import { THEME_CHOICES, THRESHOLD_CHOICES, type ThemePreference } from '@/lib/preferences';
+import { CheckIcon } from '@/components/check-icon';
 import { disablePush, enablePush, pushSupported, updatePushThreshold } from '@/lib/push';
 
 const ROW_HEIGHT = 56;
@@ -38,8 +39,7 @@ export default function Settings() {
       } else setNotice(NOTICES.offline);
     } finally { setBusy(false); }
   };
-  const step = async (delta: number) => {
-    const next = clampThreshold(threshold + delta);
+  const choose = async (next: number) => {
     if (next === threshold || busy) return;
     setNotice('');
     setNotifications({ threshold: next });
@@ -68,7 +68,7 @@ export default function Settings() {
               return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={name} accessibilityState={{ checked, selected: checked }}
                 testID={`theme-${value}`} onPress={() => setTheme(value as ThemePreference)} style={row(index)}>
                 <Text style={label}>{name}</Text>
-                <Text accessible={false} style={{ color: theme.accent, fontSize: 18, opacity: checked ? 1 : 0 }}>✓</Text>
+                {checked && <CheckIcon color={theme.accent} />}
               </Pressable>;
             })}
           </View>
@@ -81,15 +81,16 @@ export default function Settings() {
               <Toggle testID="notifications-switch" accessibilityLabel="Notify me about high readings" value={enabled} disabled={busy} onValueChange={toggle} />
             </View>
             {enabled && <>
-              <View testID="threshold-row" style={row(1)}>
-                <Text style={{ ...label, flex: 1 }}>Minimum score</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <StepButton glyph="−" name="Lower minimum score" testID="threshold-down" disabled={threshold <= MIN_THRESHOLD} onPress={() => step(-1)} />
-                  <Text testID="threshold-value" accessibilityLiveRegion="polite" accessibilityLabel={`${threshold} out of 10`}
-                    style={{ color: theme.ink, fontSize: 24, fontWeight: '300', minWidth: 56, textAlign: 'center',
-                      fontFamily: process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace', fontVariant: ['tabular-nums'] }}>{threshold}</Text>
-                  <StepButton glyph="+" name="Raise minimum score" testID="threshold-up" disabled={threshold >= MAX_THRESHOLD} onPress={() => step(1)} />
-                </View>
+              <View testID="threshold-row" accessibilityRole="radiogroup" accessibilityLabel="Minimum score" style={{ ...row(1), gap: 4, paddingHorizontal: 8 }}>
+                {THRESHOLD_CHOICES.map(value => {
+                  const checked = value === threshold;
+                  return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={`Minimum score ${value} out of 10`} accessibilityState={{ checked, selected: checked }}
+                    testID={`threshold-${value}`} onPress={() => choose(value)}
+                    style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: checked ? theme.accent : 'transparent' }}>
+                    <Text style={{ color: checked ? theme.tinted : theme.ink, fontSize: 17, fontWeight: checked ? '600' : '400',
+                      fontFamily: process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace', fontVariant: ['tabular-nums'] }}>{value}</Text>
+                  </Pressable>;
+                })}
               </View>
             </>}
           </View>
@@ -98,12 +99,4 @@ export default function Settings() {
       </View>
     </ScrollView>
   </>;
-}
-
-function StepButton({ glyph, name, testID, disabled, onPress }: { glyph: string; name: string; testID: string; disabled: boolean; onPress(): void }) {
-  const theme = useTheme();
-  return <Pressable accessibilityRole="button" accessibilityLabel={name} accessibilityState={{ disabled }} disabled={disabled} testID={testID} onPress={onPress}
-    style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 12, borderWidth: 1, borderColor: theme.rule, opacity: disabled ? 0.35 : 1 }}>
-    <Text style={{ color: theme.ink, fontSize: 22, fontWeight: '300' }}>{glyph}</Text>
-  </Pressable>;
 }

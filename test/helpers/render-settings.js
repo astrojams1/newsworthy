@@ -6,6 +6,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as preferences from '../../apps/client/lib/preferences.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
+import tokens from '../../public/tokens.js';
 
 const require = createRequire(import.meta.url);
 const react = require('react');
@@ -25,6 +26,7 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
     react: { ...react, useEffect() {}, useState: value => [value, () => {}] },
     'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
     '@/components/toggle': { Toggle: 'Toggle' },
+    '@/components/check-icon': { CheckIcon: 'CheckIcon' },
     'expo-router/head': { __esModule: true, default: 'Head' },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
@@ -63,6 +65,7 @@ export function renderToggle({ platform = 'web', value = false, disabled = false
     react: { ...react, useEffect() {}, useRef: current => ({ current }) },
     'react-native': { Pressable: 'Pressable', Animated: { Value, View: 'Animated.View', timing: () => ({ start() {} }) } },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
+    '../../../public/tokens.js': { __esModule: true, default: tokens },
   };
   const exports = {};
   vm.runInNewContext(compile(toggleSource), {

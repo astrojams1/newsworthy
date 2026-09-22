@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_PREFERENCES, STORAGE_KEY, THEME_CHOICES, clampThreshold, parsePreferences, resolveDark } from '../apps/client/lib/preferences.js';
+import { DEFAULT_PREFERENCES, STORAGE_KEY, THEME_CHOICES, THRESHOLD_CHOICES, clampThreshold, parsePreferences, resolveDark } from '../apps/client/lib/preferences.js';
+import tokens from '../public/tokens.js';
 import { nodes, renderSettings, renderToggle } from './helpers/render-settings.js';
 
 test('system appearance and no notifications are the defaults, and a damaged store falls back field by field', () => {
@@ -34,10 +35,10 @@ test('the website shows the appearance choice and no notification setting', () =
   assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
     [['System', true], ['Light', false], ['Dark', false]]);
   assert.ok(!all.some(n => n.type === 'Toggle'), 'push notifications are a native feature');
-  assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓']);
+  assert.deepEqual(text(all), ['Appearance', 'System', 'Light', 'Dark']);
   // Vertical: each option is its own full-width row, the checked one marked.
   assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
-  assert.deepEqual(radios.map(n => nodes(n).find(c => c.type === 'Text' && c.props.children === '✓').props.style.opacity), [1, 0, 0]);
+  assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');
 });
 
 for (const platform of ['ios', 'android']) {
@@ -48,17 +49,22 @@ for (const platform of ['ios', 'android']) {
     assert.equal(toggle.props.value, false);
     assert.equal(toggle.props.accessibilityLabel, 'Notify me about high readings');
     assert.equal(all.find(n => n.props?.testID === 'threshold-value'), undefined, 'the score is shown only once notifications are on');
-    assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓', 'Notifications', 'Notify me about high readings']);
+    assert.deepEqual(text(all), ['Appearance', 'System', 'Light', 'Dark', 'Notifications', 'Notify me about high readings']);
     const on = nodes(renderSettings({ platform, stored: { notifications: { enabled: true, threshold: 8, token: 'ExponentPushToken[on-on-on-on]' } } }).tree);
-    assert.equal(on.find(n => n.props?.testID === 'threshold-value').props.children, 8);
+    // The score is one tap: a row of the scores worth a notification, 8 chosen.
+    const scores = on.filter(n => /^threshold-\d+$/.test(n.props?.testID ?? ''));
+    assert.deepEqual(scores.map(n => [Number(n.props.testID.slice(10)), n.props.accessibilityState.checked]),
+      THRESHOLD_CHOICES.map(v => [v, v === 8]));
+    assert.deepEqual(THRESHOLD_CHOICES, [5, 6, 7, 8, 9, 10]);
+    for (const score of scores) {
+      assert.equal(score.props.accessibilityRole, 'radio');
+      assert.match(score.props.accessibilityLabel, /^Minimum score \d+ out of 10$/);
+    }
     // Every setting is one row of the same height, whatever control it holds.
-    const rows = [...on.filter(n => n.props?.accessibilityRole === 'radio'), ...['notifications-row', 'threshold-row'].map(id => on.find(n => n.props?.testID === id))];
+    const rows = [...on.filter(n => n.props?.accessibilityRole === 'radio' && /^theme-/.test(n.props.testID)), ...['notifications-row', 'threshold-row'].map(id => on.find(n => n.props?.testID === id))];
     assert.equal(rows.length, 5);
     assert.deepEqual(rows.map(n => n.props.style.height), Array(5).fill(56));
     assert.deepEqual(rows.map(n => n.props.style.minHeight), Array(5).fill(undefined), 'a fixed height, not a minimum a control can exceed');
-    const steps = on.filter(n => n.type?.name === 'StepButton');
-    assert.deepEqual(steps.map(n => [n.props.name, n.props.disabled]),
-      [['Lower minimum score', false], ['Raise minimum score', false]], 'both named steps are available at 8');
     // Choosing Dark records the choice; nothing else is touched.
     all.find(n => n.props?.testID === 'theme-dark').props.onPress();
     assert.deepEqual(calls.setTheme, ['dark']);
@@ -66,28 +72,20 @@ for (const platform of ['ios', 'android']) {
   });
 }
 
-test('the stepper stays inside the scale and only re-registers a device that is on', async () => {
+test('choosing a score re-registers a device that is on, and is not offered while off', async () => {
   const token = 'ExponentPushToken[on-on-on-on]';
-  const top = renderSettings({ platform: 'ios', stored: { notifications: { enabled: true, token, threshold: 10 } } });
-  const up = nodes(top.tree).find(n => n.props?.testID === 'threshold-up');
-  const down = nodes(top.tree).find(n => n.props?.testID === 'threshold-down');
-  assert.equal(up.props.disabled, true);
-  assert.equal(down.props.disabled, false);
-  await down.props.onPress();
-  assert.deepEqual(top.calls.setNotifications, [{ threshold: 9 }]);
-  assert.deepEqual(top.calls.updatePushThreshold, [[token, 9]]);
-
-  const bottom = renderSettings({ platform: 'ios', stored: { notifications: { enabled: true, token, threshold: 1 } } });
-  assert.equal(nodes(bottom.tree).find(n => n.props?.testID === 'threshold-down').props.disabled, true);
-
   const on = renderSettings({ platform: 'android', stored: { notifications: { enabled: true, threshold: 8, token } } });
   assert.equal(nodes(on.tree).find(n => n.type === 'Toggle').props.value, true);
-  await nodes(on.tree).find(n => n.props?.testID === 'threshold-up').props.onPress();
+  await nodes(on.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
   assert.deepEqual(on.calls.setNotifications, [{ threshold: 9 }]);
   assert.deepEqual(on.calls.updatePushThreshold, [[token, 9]]);
-  // Off: no score to step, and the server holds no row to update.
+  // Tapping the score already chosen changes nothing.
+  await nodes(on.tree).find(n => n.props?.testID === 'threshold-8').props.onPress();
+  assert.deepEqual(on.calls.setNotifications, [{ threshold: 9 }]);
+  assert.deepEqual([clampThreshold(0), clampThreshold(8.6), clampThreshold(11)], [1, 9, 10]);
+  // Off: no score to choose, and the server holds no row to update.
   const off = nodes(renderSettings({ platform: 'android' }).tree);
-  assert.equal(off.find(n => n.props?.testID === 'threshold-up'), undefined);
+  assert.equal(off.find(n => n.props?.testID === 'threshold-9'), undefined);
 });
 
 test('turning notifications on registers the device at the chosen score, and a refusal leaves it off', async () => {
@@ -110,7 +108,7 @@ test('turning notifications on registers the device at the chosen score, and a r
   assert.deepEqual(stuck.calls.setNotifications, [], 'a device the server still holds stays shown as on');
 });
 
-test('the notification switch is an iOS-style toggle on every platform', () => {
+test('the notification switch is an iOS-style toggle in the brand colour on every platform', () => {
   for (const platform of ['web', 'ios', 'android']) for (const value of [false, true]) {
     const { tree, ON_COLOR } = renderToggle({ platform, value });
     assert.equal(tree.props.accessibilityRole, 'switch');
@@ -118,8 +116,8 @@ test('the notification switch is an iOS-style toggle on every platform', () => {
     assert.equal(tree.props.accessibilityLabel, 'Notify me about high readings');
     const [track, thumb] = nodes(tree).filter(n => n.type === 'Animated.View');
     assert.deepEqual([track.props.style.width, track.props.style.height, track.props.style.borderRadius], [51, 31, 15.5]);
-    assert.equal(track.props.style.backgroundColor === ON_COLOR, value, 'green only when on');
-    assert.equal(ON_COLOR, '#34C759');
+    assert.equal(track.props.style.backgroundColor === ON_COLOR, value, 'coloured only when on');
+    assert.equal(ON_COLOR, tokens.brand.primary, 'the brand mint, not a platform green');
     assert.deepEqual([thumb.props.style.width, thumb.props.style.height, thumb.props.style.backgroundColor], [27, 27, '#FFFFFF']);
     assert.equal(thumb.props.style.transform[0].translateX, value ? 22 : 2, 'the thumb sits at the end it reports');
     // The pill is shorter than 48 points; the slop makes up the touch target.

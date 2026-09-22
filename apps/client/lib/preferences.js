@@ -16,6 +16,9 @@ export const THEME_CHOICES = /** @type {const} */ ([
 export const MIN_THRESHOLD = 1;
 export const MAX_THRESHOLD = 10;
 export const DEFAULT_THRESHOLD = 8;
+// What the app offers. Below 5 is most days, which is not a notification
+// anyone asked for; the server still accepts the whole scale.
+export const THRESHOLD_CHOICES = /** @type {const} */ ([5, 6, 7, 8, 9, 10]);
 
 /** @type {Preferences} */
 export const DEFAULT_PREFERENCES = Object.freeze({

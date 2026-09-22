@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Pressable } from 'react-native';
 import { useTheme } from '@/lib/theme';
+import tokens from '../../../public/tokens.js';
 
 // An iOS-style switch on every platform: a 51×31 pill, a white thumb that
-// slides across it, green when on. Android's and the web's stock switches look
+// slides across it, the brand mint when on. Android's and the web's stock switches look
 // nothing like it, so the settings screen draws its own.
 export const TRACK_WIDTH = 51;
 export const TRACK_HEIGHT = 31;
 export const THUMB_SIZE = 27;
-export const ON_COLOR = '#34C759';
+export const ON_COLOR: string = tokens.brand.primary; // the brand mint, not iOS green
 const PAD = (TRACK_HEIGHT - THUMB_SIZE) / 2;
 
 export function Toggle({ value, onValueChange, disabled = false, accessibilityLabel, testID }: {
