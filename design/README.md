@@ -235,3 +235,24 @@ Actual iOS captures and the pixel measurement report are in
 checks untouched screenshot pixels and rejects the earlier misaligned captures.
 Those checks establish the captured score-3/default-text states; they do not
 prove every score, text scale, operating-system version or physical device.
+
+
+## Settings navigation and save feedback
+
+The root Expo navigator uses the same resolved light/dark appearance and palette
+as the screens. Its ThemeProvider supplies native header material appearance and
+the transition canvas; headerStyle/contentStyle alone do not set those. The
+reading header stays transparent over its gradient.
+
+Notification saves use the existing text below the controls: `Saving…`, then
+`Notify on readings 8 or higher enabled.` or `Notify on readings 8 or higher disabled.`
+with the selected threshold substituted. No spinner enters the switch row.
+Both notification controls are disabled until all queued changes finish, and
+pending state belongs to the provider so reopening Settings preserves feedback.
+Failures retain the previous subscription state and show the existing error.
+
+`test/surface-design.test.js` checks navigation theme propagation and unchanged
+row structure/styles during saving; `test/preferences.test.js` checks queued
+requests, failure, rollback and retry. These are not native layout or iOS glass
+rendering tests. Verification limits are recorded in
+`store/settings-feedback-verification.json` and the release ledger.

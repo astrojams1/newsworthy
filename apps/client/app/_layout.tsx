@@ -3,7 +3,7 @@ import { Appearance } from 'react-native';
 import { PreferencesProvider, usePreferences } from '@/components/preferences-provider';
 import { ReadingProvider, useCurrentReading } from '@/components/reading-provider';
 import { faviconSvg } from '../../../public/favicon';
-import { Stack } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
 // A deep link or a cold start on /settings still gets the reading screen
@@ -15,6 +15,13 @@ export default function Layout() {
 }
 function ThemedLayout() {
   const theme = useTheme();
+  const baseNavigationTheme = theme.dark ? DarkTheme : DefaultTheme;
+  // Native header materials and the canvas behind a screen transition read
+  // the navigator's theme, independently of headerStyle/contentStyle.
+  const navigationTheme = { ...baseNavigationTheme, colors: { ...baseNavigationTheme.colors,
+    primary: theme.accent, background: theme.tinted, card: theme.tinted,
+    text: theme.ink, border: theme.rule, notification: theme.accent,
+  } };
   const { reading } = useCurrentReading();
   const { preferences: { theme: appearance } } = usePreferences();
   useEffect(() => {
@@ -42,12 +49,12 @@ function ThemedLayout() {
     if (!chrome) { chrome = document.createElement('meta'); chrome.name = 'theme-color'; document.head.appendChild(chrome); }
     chrome.content = theme.center;
   }, [reading?.score, theme.dark, theme.center]);
-  return <>
+  return <ThemeProvider value={navigationTheme}>
     <StatusBar style={theme.dark ? 'light' : 'dark'} />
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
       <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
       <Stack.Screen name="settings" options={{ title: 'Settings', headerBackTitle: 'Back', headerTitleStyle: { color: theme.ink } }} />
     </Stack>
-  </>;
+  </ThemeProvider>;
 }

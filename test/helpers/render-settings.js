@@ -21,8 +21,7 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
   const calls = { setTheme: [], enable: 0, disable: 0, choose: [], replace: [], openSettings: 0, notices: [] };
   const current = preferences.parsePreferences(stored);
   const mocks = {
-    // `busy` is the one piece of state a test drives; the notice setter is
-    // recorded so a refusal's message can be asserted without a re-render.
+    // The provider owns pending requests; local state only holds a notice.
     react: { ...react, useEffect() {}, useRef: current => ({ current }),
       useState: value => value === false ? [busy, () => {}] : [value, next => { if (typeof next === 'string') calls.notices.push(next); }] },
     'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', ActivityIndicator: 'ActivityIndicator',
@@ -39,7 +38,7 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
     // provider's controller would return; the controller itself is tested on
     // its own in preferences.test.js.
     '@/components/preferences-provider': { usePreferences: () => ({
-      preferences: current, loaded: true,
+      preferences: current, loaded: true, savingNotifications: busy,
       setTheme: theme => calls.setTheme.push(theme),
       subscription: {
         enable: async () => { calls.enable += 1; return push.enable ?? { ok: true }; },

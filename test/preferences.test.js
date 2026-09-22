@@ -64,7 +64,7 @@ for (const platform of ['ios', 'android']) {
       assert.match(score.props.accessibilityLabel, /^Minimum score \d+ out of 10$/);
       assert.ok(score.props.style.minHeight >= 48, 'a score is a full touch target');
     }
-    assert.ok(text(all).includes('Notify when the reading reaches 8 or higher.'), 'the chosen score is explained in one line');
+    assert.ok(text(all).includes('Notify on readings 8 or higher disabled.'), 'the chosen score and saved state are explained');
     // The whole notification row toggles, not only the switch.
     const rowControl = all.find(n => n.props?.testID === 'notifications-row');
     assert.equal(rowControl.props.accessibilityRole, 'switch');
@@ -82,11 +82,13 @@ for (const platform of ['ios', 'android']) {
   });
 }
 
-test('while registering, the row shows progress and the switch is held', () => {
+test('while saving, progress appears below the controls and both controls are held', () => {
   const all = nodes(renderSettings({ platform: 'ios', busy: true }).tree);
-  assert.ok(all.some(n => n.type === 'ActivityIndicator'));
+  assert.ok(!all.some(n => n.type === 'ActivityIndicator'));
+  assert.equal(all.find(n => n.props?.testID === 'notifications-status').props.children, 'Saving…');
   assert.equal(all.find(n => n.type === 'Toggle').props.disabled, true);
   assert.equal(all.find(n => n.props?.testID === 'notifications-row').props.disabled, true);
+  assert.ok(all.filter(n => /^threshold-\d+$/.test(n.props?.testID ?? '')).every(n => n.props.disabled));
 });
 
 test('the screen hands every registration change to the provider and shows what came back', async () => {
@@ -113,11 +115,12 @@ test('the screen hands every registration change to the provider and shows what 
 
 // ---- the controller: one queue for the life of the app, whatever screen asks
 
-function controllerWith(initial, api) {
+function controllerWith(initial, api, onPendingChange) {
   let state = { enabled: false, threshold: 8, token: null, ...initial };
   const writes = [];
   const calls = { enable: [], disable: [], update: [] };
   const controller = createSubscriptionController({
+    onPendingChange,
     read: () => state,
     write: update => { writes.push(update); state = { ...state, ...update }; },
     api: {
@@ -229,6 +232,40 @@ test('a settings screen with nothing behind it still offers a way back', () => {
     assert.deepEqual(stranded.calls.replace, ['/'], 'it goes home rather than popping a stack that has nothing to pop');
     // Reached from the reading screen, the navigator's own back button serves.
     const pushed = renderSettings({ platform, canGoBack: true });
-    assert.equal(nodes(pushed.tree).find(n => n.type === 'Screen'), undefined);
+    assert.equal(nodes(pushed.tree).find(n => n.type === 'Screen').props.options.headerLeft, undefined,
+      'clear any earlier fallback rather than retaining its stale theme callback');
   }
+});
+
+
+test('save feedback spans queued work, navigation, failure and retry', async () => {
+  const pending = [];
+  let finishUpdate, finishDisable;
+  const instance = controllerWith({ enabled: true, token: 'ExponentPushToken[test]' }, {
+    update: () => new Promise(resolve => { finishUpdate = resolve; }),
+    disable: () => new Promise(resolve => { finishDisable = resolve; }),
+  }, value => pending.push(value));
+  const change = instance.controller.choose(9);
+  assert.deepEqual(pending, [true], 'feedback starts before the request is dispatched');
+  await settle();
+  const off = instance.controller.disable(); // a reopened screen uses this same controller
+  finishUpdate(false);
+  assert.deepEqual(await change, { ok: false, reason: 'offline' });
+  await settle();
+  assert.equal(instance.state().threshold, 8, 'failed threshold rolls back');
+  assert.deepEqual(pending, [true], 'no false saved state while another request remains');
+  finishDisable(true);
+  await off;
+  assert.deepEqual(pending, [true, false]);
+  await instance.controller.enable();
+  assert.deepEqual(pending, [true, false, true, false], 'retry shows progress too');
+});
+
+test('a rejected notification operation releases progress and the queue', async () => {
+  const pending = [];
+  const instance = controllerWith({}, { enable: () => { throw new Error('unavailable'); } }, value => pending.push(value));
+  await assert.rejects(instance.controller.enable(), /unavailable/);
+  assert.deepEqual(pending, [true, false]);
+  await instance.controller.choose(7);
+  assert.deepEqual(pending, [true, false, true, false]);
 });

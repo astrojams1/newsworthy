@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-23",
+  "baseCommit": "b2d6f22",
+  "scope": "Settings navigation theme and notification save feedback",
+  "releaseState": "SOURCE_FIX_NOT_RELEASED",
+  "checks": {
+    "fullSuite": "npm test: 282 passed, 1 opt-in native Swift test skipped; production web export completed.",
+    "designGate": "npm run test:design: 70 passed.",
+    "typeScript": "npm run check:app: passed.",
+    "regressions": "Navigation theme/canvas across web/iOS/Android and both appearances; notification row structure across narrow/regular widths and thresholds; queued saves, rollback, retry and rejection cleanup."
+  },
+  "nativeVerification": {
+    "ios": "Actual Expo Go SDK 57 / iPhone 16 Pro Max / iOS 18.3.1 simulator running this revision from Metro. Checked Light, Dark, Follow device, reading-to-settings and back, cold /settings deep link, theme changes after deep link, threshold 8 to 9 and back while disabled, Saving… while the native notification permission prompt is open, and denial restoring disabled text plus the existing error. The switch row did not gain a spinner or wrap during the pending permission request. Fixed an additional stale fallback back-button callback found during deep-link appearance testing. This runtime does not render iOS 26 Liquid Glass and is not a rebuilt release package.",
+    "android": "Not run; no Android native visual verification for this revision.",
+    "widgets": "Unchanged; neither widget was reverified for this revision.",
+    "iosBuildProvenance": "Expo 57.0.23 source served with npx expo start --go --ios --port 8089; Expo Go SDK 57; simulator A5157DDA-8EFA-441A-8DF1-B395DB92DFED, iOS 18.3.1 (22D8075). Native module binaries supplied by Expo Go. Installed Newsworthy/TestFlight packages unchanged."
+  },
+  "untested": [
+    "iOS 26 Liquid Glass transitions on a physical device",
+    "Android native layout and transitions",
+    "Native enlarged text",
+    "Complete replacement release build",
+    "Real APNs notification subscription save/delivery"
+  ],
+  "sourceSha256": {
+    "apps/client/app/_layout.tsx": "dcad18943794721fd9b55f4448bfece514a2f01ea582f981e3a7104391a6019a",
+    "apps/client/app/settings.tsx": "3288aa4a20022684231fce989e20a670d06cdb988b0e8109445b0885cd64291b",
+    "apps/client/components/preferences-provider.tsx": "69fc4b0233d1259ff2a8bdfb119328071a66be8e52863e1b1b3e82f2de4c0951",
+    "apps/client/lib/subscription.js": "45ac0a17878a7a7333f642c8edc120edd109c481628df296f485f44a4793aaad"
+  },
+  "captures": [
+    "store/source/settings-feedback/ios-permission-denied.png",
+    "store/source/settings-feedback/ios-saving-permission.png",
+    "store/source/settings-feedback/ios-settings-dark.png",
+    "store/source/settings-feedback/ios-settings-light.png"
+  ]
+}

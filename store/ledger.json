@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-22T16:59:22+00:00",
+  "updated_at": "2026-09-22T20:15:37.499Z",
   "steps": {
     "scope": {
       "state": "done",
@@ -825,6 +825,18 @@
       ],
       "next_action": "",
       "updated_at": "2026-09-22T16:48:58+00:00"
+    },
+    "ui.settings-feedback": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Settings source fix: navigation materials follow app appearance, stale deep-link back override cleared, and notification saves use stable text below controls. 282 tests and 70 design checks passed, TypeScript and web export passed. Native Expo Go iOS 18.3.1 settings/navigation/permission-denial checks passed; iOS 26 glass, successful real push saves, Android and replacement release build remain unverified.",
+      "evidence": [
+        "store/settings-feedback-verification.json",
+        "store/source/settings-feedback/"
+      ],
+      "next_action": "Ship a replacement native build and verify iOS 26 transitions plus successful notification toggle/threshold saves on device; verify Android and enlarged native text.",
+      "updated_at": "2026-09-22T20:15:37.499Z"
     }
   },
   "events": [
@@ -4597,6 +4609,23 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-22T16:59:22+00:00"
+      }
+    },
+    {
+      "sequence": 236,
+      "at": "2026-09-22T20:15:37.499Z",
+      "gate": "ui.settings-feedback",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Settings source fix: navigation materials follow app appearance, stale deep-link back override cleared, and notification saves use stable text below controls. 282 tests and 70 design checks passed, TypeScript and web export passed. Native Expo Go iOS 18.3.1 settings/navigation/permission-denial checks passed; iOS 26 glass, successful real push saves, Android and replacement release build remain unverified.",
+        "evidence": [
+          "store/settings-feedback-verification.json",
+          "store/source/settings-feedback/"
+        ],
+        "next_action": "Ship a replacement native build and verify iOS 26 transitions plus successful notification toggle/threshold saves on device; verify Android and enlarged native text.",
+        "updated_at": "2026-09-22T20:15:37.499Z"
       }
     }
   ],
