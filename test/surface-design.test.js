@@ -62,6 +62,9 @@ test('native widget implementations satisfy the same compact/expanded design con
 // Prove the checker rejects the actual categories of bugs, rather than merely
 // accepting today's source. Each mutation is isolated and must fail specifically.
 const regressions = [
+  ['iOS content touches rounded corners', s => { s.swift = s.swift.replace('content.padding(16).containerBackground', 'content.containerBackground'); }, /inside rounded widget corners/],
+  ['extra iOS gap before denominator', s => { s.swift = s.swift.replace('+ Text("∕10")', '+ Text(" ∕10")'); }, /iOS adaptive denominator/],
+  ['extra Android gap before denominator', s => { s.compact = s.compact.replace('layout_marginStart="2dp"', 'layout_marginStart="6dp"'); }, /compact denominator gap/],
   ['iOS score above third baseline', s => { s.swift = s.swift.replace('return idealSize * scale', 'return WidgetTypography.scoreSize * scale'); }, /measured baseline size/],
   ['Android score above third baseline', s => { s.java = s.java.replace('targetCapHeight / -numberInk.top', '1'); }, /third baseline/],
   ['wide Android denominator space', s => { s.light = s.light.replace('∕10', '∕ 10'); }, /optically aligned division slash/],

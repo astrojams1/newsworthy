@@ -213,3 +213,10 @@ Native font measurement found that SF Mono gives regular, thin, hair and narrow
 spaces almost the same advance. The denominator therefore uses `∕10`, with no
 extra blank: at 12 points it measures 22.06 points instead of 29.48. The slash and
 “1” remain visibly separated by their natural glyph side bearings.
+
+The score-to-denominator gap is also compact: iOS widgets concatenate the two
+text runs without a leading blank; Android uses 2dp and the shared app uses 3pt.
+Actual WidgetKit Home Screen verification found automatic margins missing in
+the host. The iOS widget now owns 16-point content padding and disables automatic
+margins, keeping labels clear of the rounded corners. Actual light/dark captures
+and the local build provenance are recorded in the verification file above.

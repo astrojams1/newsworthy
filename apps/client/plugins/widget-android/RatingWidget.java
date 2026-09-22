@@ -153,7 +153,7 @@ public class RatingWidget extends AppWidgetProvider {
         float availableHeight = Math.max(24, height - 74) * density;
         float availableWidth = Math.max(36, width - 24 - (compact ? 0 : 112)) * density;
         float fit = Math.min(1, Math.min(availableHeight / number.getFontSpacing(),
-            (availableWidth - denominator.measureText("∕10") - 6 * density) / number.measureText("10")));
+            (availableWidth - denominator.measureText("∕10") - 2 * density) / number.measureText("10")));
         number.setTextSize(number.getTextSize() * Math.max(0.4f, fit));
         views.setTextViewTextSize(R.id.widget_score, TypedValue.COMPLEX_UNIT_PX, number.getTextSize());
         views.setTextViewTextSize(R.id.widget_denominator, TypedValue.COMPLEX_UNIT_PX, denominator.getTextSize());

@@ -124,11 +124,13 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(java, /static synchronized void renderAll/, 'all Android instances render one snapshot without interleaving');
 
   const swift = code(sources.swift);
+  assert.match(swift, /content.padding\(16\).containerBackground/, 'iOS content stays inside rounded widget corners');
+  assert.match(swift, /\.contentMarginsDisabled\(\)/, 'iOS explicit padding replaces automatic margins');
   assert.deepEqual(extract(swift, /static let scoreSize: CGFloat = (\d+)/, 'iOS shared numeral'), [c.compactScore]);
   assert.deepEqual(extract(swift, /static let denominatorSize: CGFloat = (\d+)/, 'iOS denominator size'), [c.denominatorSize]);
   assert.deepEqual(extract(swift, /static let explanationSize: CGFloat = (\d+)/, 'iOS explanation size'), [c.explanationSize]);
   assert.deepEqual(extract(swift, /static let explanationLineHeight: CGFloat = (\d+)/, 'iOS line rhythm'), [c.explanationLineHeight]);
-  assert.match(swift, /\+ Text\(" ∕10"\)[\s\S]*?foregroundColor\(Color\("NewsworthyGradientMuted"\)\)/, 'iOS adaptive denominator');
+  assert.match(swift, /\+ Text\("∕10"\)[\s\S]*?foregroundColor\(Color\("NewsworthyGradientMuted"\)\)/, 'iOS adaptive denominator');
   assert.match(swift, /font\(\.system\(size: size, weight: \.light, design: \.monospaced\)\)/, 'iOS score uses a monospace face');
   assert.match(swift, /font\(\.system\(size: WidgetTypography.denominatorSize, weight: \.light, design: \.monospaced\)\)/, 'iOS denominator uses a monospace face');
   assert.doesNotMatch(swift, /monospacedDigitSystemFont/, 'measurement must use the full monospace face');

@@ -16,7 +16,7 @@
                 android:includeFontPadding="false" android:letterSpacing="-0.04" android:maxLines="1"
                 android:textColor="@color/widget_ink"/>
             <TextView android:id="@+id/widget_denominator" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_marginStart="6dp" android:text="@string/widget_denominator" android:maxLines="1" android:textSize="12sp"
+                android:layout_marginStart="2dp" android:text="@string/widget_denominator" android:maxLines="1" android:textSize="12sp"
                 android:includeFontPadding="false" android:fontFamily="monospace" android:textColor="@color/widget_muted"
                 android:importantForAccessibility="no"/>
         </LinearLayout>
