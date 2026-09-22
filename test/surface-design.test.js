@@ -169,30 +169,35 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
   const options = tree.find(n => n.type === 'Screen').props.options;
   assert.equal(options.headerTransparent, true);
   const left = options.headerLeft();
-  const right = options.headerRight();
+  const rightGroup = options.headerRight();
   assert.equal(left.type, 'BrandMark');
+  // The right side is share (when there is a reading) then settings, always.
+  assert.equal(rightGroup.props.style.flexDirection, 'row');
+  const [share, settings] = rightGroup.props.children;
+  assert.equal(settings.props.accessibilityLabel, 'Settings');
+  assert.equal(nodes(settings).some(n => n.type === 'SettingsIcon'), true);
   if (platform === 'ios') {
     const leftItems = options.unstable_headerLeftItems();
     const rightItems = options.unstable_headerRightItems();
     assert.equal(leftItems.length, 1);
     assert.equal(leftItems[0].hidesSharedBackground, true, 'brand must not acquire iOS glass');
     assert.equal(leftItems[0].element, left);
-    assert.equal(rightItems.length, score == null ? 0 : 1);
-    if (right) {
-      assert.equal(rightItems[0].hidesSharedBackground, true, 'share must not acquire iOS glass');
-      assert.equal(rightItems[0].element, right);
-    }
+    assert.equal(rightItems.length, score == null ? 1 : 2);
+    for (const item of rightItems) assert.equal(item.hidesSharedBackground, false, 'share and settings sit in the iOS glass capsule');
+    assert.equal(rightItems.at(-1).element, settings);
+    if (share) assert.equal(rightItems[0].element, share);
   } else {
     assert.equal(options.unstable_headerLeftItems, undefined);
     assert.equal(options.unstable_headerRightItems, undefined);
   }
-  if (right) {
-    assert.equal(right.props.accessibilityLabel, 'Share this reading');
-    assert.equal(right.props.accessibilityRole, 'button');
-    assert.equal(typeof right.props.onPress, 'function');
-    assert.ok(right.props.style.minWidth >= contract.header.minimumTouchTarget && right.props.style.minHeight >= contract.header.minimumTouchTarget);
-    assert.equal(right.props.style.transform, undefined, 'optical correction must not move the touch target');
-  } else assert.equal(score, null);
+  for (const control of [share, settings]) {
+    if (!control) { assert.equal(score, null); continue; }
+    assert.equal(control.props.accessibilityRole, 'button');
+    assert.equal(typeof control.props.onPress, 'function');
+    assert.ok(control.props.style.minWidth >= contract.header.minimumTouchTarget && control.props.style.minHeight >= contract.header.minimumTouchTarget);
+    assert.equal(control.props.style.transform, undefined, 'optical correction must not move the touch target');
+  }
+  if (share) assert.equal(share.props.accessibilityLabel, 'Share this reading');
 }
 
 test('native header keeps plain brand/share controls and accessible touch targets', () => {
@@ -218,22 +223,25 @@ test('share artwork aligns optically with the title without moving its touch tar
   }
 });
 
-test('header gate rejects missing optical correction and shifting the balanced Android glyph', () => {
+test('header gate rejects missing optical correction on iOS and a lift on the balanced glyphs', () => {
   const source = readFileSync(new URL('../apps/client/components/app-icon.tsx', import.meta.url), 'utf8');
-  for (const [platform, expression] of [['web', '0'], ['ios', '0'], ['android', '-2']]) {
-    const sourceOverride = source.replace("process.env.EXPO_OS === 'android' ? 0 : -2", expression);
+  for (const [platform, expression] of [['web', '-2'], ['ios', '0'], ['android', '-2']]) {
+    const sourceOverride = source.replace("process.env.EXPO_OS === 'ios' ? -2 : 0", expression);
     assert.notEqual(sourceOverride, source);
     assert.throws(() => inspectShareIcon(platform, false, sourceOverride), /platform optical alignment/);
   }
 });
 
-test('header gate rejects iOS glass returning on either control', () => {
+test('header gate rejects iOS glass moving: onto the wordmark, or off the controls', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  for (const element of ['brand', 'shareButton']) {
-    const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: true`,
-      `element: ${element}, hidesSharedBackground: false`);
+  const brandGlass = source.replace('element: brand, hidesSharedBackground: true', 'element: brand, hidesSharedBackground: false');
+  assert.notEqual(brandGlass, source);
+  assert.throws(() => inspectHeader({ sourceOverride: brandGlass }), /must not acquire iOS glass/);
+  for (const element of ['shareButton', 'settingsButton']) {
+    const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: false`,
+      `element: ${element}, hidesSharedBackground: true`);
     assert.notEqual(sourceOverride, source);
-    assert.throws(() => inspectHeader({ sourceOverride }), /must not acquire iOS glass/);
+    assert.throws(() => inspectHeader({ sourceOverride }), /sit in the iOS glass capsule/);
   }
 });
 

@@ -40,6 +40,12 @@ engagement, addiction or growth-hacking tactics.
 - The planned iOS and Android release is a one-time US$1 download to help offset
   the cost of running the service, with local store equivalents. Pricing must be
   configured and verified in each store before it is described as live.
+- Settings offer an appearance choice (Follow device, Light, Dark; following the
+  device by default)
+  and, in the mobile apps only, an optional notification for readings at or
+  above a chosen score — off by default, 8 when turned on, one notification per
+  development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,
+  and never as available until a build carrying it has been verified.
 - Do not claim that hosting processes no technical information.
 - Brand positioning must never soften, inflate or otherwise alter the rating
   scale. Published prompts are append-only; see `PROMPT-RULES.md`.
@@ -60,7 +66,7 @@ widgets and the complete app package without updating local Xcode.
 
 ## Where copy lives
 
-- `apps/client/app/`: shared reading screen, search metadata, social tags and WebSite data.
+- `apps/client/app/`: shared reading screen, settings screen, search metadata, social tags and WebSite data.
 - `public/privacy.html`, `public/support.html`: policy and help; each has its own metadata.
 - `scripts/generate-brand.mjs`: evergreen share-art source; generates
   `public/social-card.svg`, `public/social-card.png` and `public/brand/share.png`.

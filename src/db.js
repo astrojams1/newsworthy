@@ -83,6 +83,41 @@ export function ensureSchema() {
         score SMALLINT NOT NULL, prompt_version INTEGER NOT NULL,
         draft TEXT NOT NULL, judgement JSONB NOT NULL
       )`;
+    // Devices that asked to be told about a high reading, and the readings they
+    // were told about. One row per Expo push token — the token is the whole
+    // identity, so re-registering the same device is an update, not a second
+    // device. `threshold` is the lowest score the device wants to hear about.
+    await sql`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        token      TEXT        PRIMARY KEY,
+        threshold  SMALLINT    NOT NULL,
+        platform   TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )`;
+    // A development is announced once per threshold, however many readings
+    // report it. The primary key is the guard: the insert that loses the race
+    // is the one that sends nothing.
+    // `claimed_at` is a lock, `sent_at` the record. A claim with no `sent_at`
+    // is a send in flight or one that failed: the sender releases it on
+    // failure, and a claim older than PUSH_CLAIM_STALE_MINUTES — a function
+    // frozen mid-send — can be taken over by the next reading.
+    // `delivered` is progress: the tokens Expo has already answered for. A
+    // send that fails part-way keeps them, so the retry reaches only the rest —
+    // a second batch's 503 must not send the first batch's hundred again.
+    await sql`
+      CREATE TABLE IF NOT EXISTS push_deliveries (
+        root       BIGINT      NOT NULL,
+        threshold  SMALLINT    NOT NULL,
+        reading_id BIGINT      NOT NULL,
+        score      SMALLINT    NOT NULL,
+        recipients INTEGER     NOT NULL DEFAULT 0,
+        claimed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        released   BOOLEAN     NOT NULL DEFAULT false,
+        sent_at    TIMESTAMPTZ,
+        delivered  TEXT[]      NOT NULL DEFAULT '{}',
+        PRIMARY KEY (root, threshold)
+      )`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_created_at ON ratings (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS rejections_created_at ON rejections (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_ok_created_at ON ratings (created_at DESC) WHERE status = 'ok'`;
@@ -536,4 +571,116 @@ export async function takePreparation(id, score, promptVersion) {
   if (!rows[0]) return null;
   const judgement = typeof rows[0].judgement === 'string' ? JSON.parse(rows[0].judgement) : rows[0].judgement;
   return { judgement, draft: rows[0].draft };
+}
+
+// ---- push subscriptions ---------------------------------------------------
+// Which devices want to hear about a high reading, and what has been sent.
+
+/** The number of devices registered, for the cap on a public write route. */
+export async function countPushSubscriptions() {
+  await ensureSchema();
+  const rows = await sql`SELECT COUNT(*) AS n FROM push_subscriptions`;
+  return num(rows[0]?.n) ?? 0;
+}
+
+/** Register a device, or move an existing one to a new threshold. */
+export async function upsertPushSubscription({ token, threshold, platform }) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO push_subscriptions (token, threshold, platform, created_at, updated_at)
+    VALUES (${token}, ${threshold}, ${platform ?? null}, now(), now())
+    ON CONFLICT (token) DO UPDATE
+      SET threshold = EXCLUDED.threshold, platform = EXCLUDED.platform, updated_at = now()
+    RETURNING token, threshold, platform, created_at, updated_at`;
+  return shape(rows[0]);
+}
+
+/** Remove devices — the one that turned notifications off, or the ones Expo
+ *  reported as no longer registered. Unknown tokens are a no-op. */
+export async function deletePushSubscriptions(tokens = []) {
+  if (tokens.length === 0) return 0;
+  await ensureSchema();
+  const rows = await sql`DELETE FROM push_subscriptions WHERE token = ANY(${tokens}) RETURNING token`;
+  return rows.length;
+}
+
+/** Every device whose threshold this score meets. */
+export async function pushSubscriptionsFor(score) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT token, threshold, platform FROM push_subscriptions
+     WHERE threshold <= ${score}
+     ORDER BY threshold ASC, created_at ASC`;
+  return rows.map(shape);
+}
+
+/** How long a claim with no send recorded is trusted before it is taken over. */
+export const PUSH_CLAIM_STALE_MINUTES = 10;
+
+/**
+ * Claim a (development, threshold) pair for this reading. Returns null when
+ * the pair was already announced, or is being announced right now — which is
+ * what makes a re-report of a development that is still loud a silent one,
+ * and two functions storing readings at once send once between them. A claim
+ * its sender gave back, or one so old its sender cannot still be running, is
+ * taken over rather than honoured, and comes with the tokens already reached
+ * so the retry finishes the job instead of repeating it.
+ *
+ * @returns {Promise<{delivered: string[]} | null>}
+ */
+export async function claimPushDelivery({ root, threshold, readingId, score }) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO push_deliveries (root, threshold, reading_id, score, claimed_at, released, sent_at)
+    VALUES (${root}, ${threshold}, ${readingId}, ${score}, now(), false, NULL)
+    ON CONFLICT (root, threshold) DO UPDATE
+      SET reading_id = EXCLUDED.reading_id, score = EXCLUDED.score, claimed_at = now(), released = false
+      WHERE push_deliveries.sent_at IS NULL
+        AND (push_deliveries.released
+             OR push_deliveries.claimed_at < now() - make_interval(mins => ${PUSH_CLAIM_STALE_MINUTES}))
+    RETURNING delivered`;
+  if (rows.length === 0) return null;
+  return { delivered: Array.isArray(rows[0].delivered) ? rows[0].delivered : [] };
+}
+
+/** Every recipient answered for: the pair is announced for good. */
+export async function completePushDelivery({ root, threshold, delivered = [] }) {
+  await ensureSchema();
+  await sql`
+    UPDATE push_deliveries
+       SET sent_at = now(), delivered = array_cat(delivered, ${delivered}::text[]),
+           recipients = cardinality(array_cat(delivered, ${delivered}::text[]))
+     WHERE root = ${root} AND threshold = ${threshold}`;
+}
+
+/**
+ * The send failed part-way: keep what was reached and give the pair back, so
+ * the next reading of the development finishes with the rest.
+ */
+export async function releasePushDeliveries(claims = []) {
+  await ensureSchema();
+  for (const { root, threshold, delivered = [] } of claims) {
+    await sql`
+      UPDATE push_deliveries
+         SET released = true, delivered = array_cat(delivered, ${delivered}::text[])
+       WHERE root = ${root} AND threshold = ${threshold} AND sent_at IS NULL`;
+  }
+}
+
+/**
+ * First-report times for developments whose opening reading is older than the
+ * replay window. A story running since Tuesday would otherwise date from the
+ * edge of the window and read as younger than it is. Shared by /api/current
+ * and the push announcer, which has to see the page's number, not its own.
+ */
+export async function rootTimes(ascending) {
+  const present = new Set(ascending.map((r) => r.id));
+  const missing = [...new Set(
+    ascending
+      .filter((r) => r.judge_version != null && r.development_of != null)
+      .map((r) => r.development_of)
+      .filter((id) => !present.has(id)),
+  )];
+  const rows = await ratingsByIds(missing);
+  return new Map(rows.map((r) => [r.id, { t: Date.parse(r.created_at), story: r.story }]));
 }

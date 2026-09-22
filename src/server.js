@@ -5,7 +5,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { takePreparation, correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, recentStories, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { takePreparation, correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
@@ -18,6 +18,7 @@ import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
 import { prepareReading, firstCoverage } from './preparation.js';
 import { displayExplanation } from '../apps/client/lib/story-age.js';
+import { PushError, notifyReading, subscribe as subscribePush, unsubscribe as unsubscribePush } from './push.js';
 
 const PORT = Number(process.env.PORT) || 3000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
@@ -189,23 +190,6 @@ async function serveStatic(res, name) {
     res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     res.end('Not found');
   }
-}
-
-/**
- * First-report times for developments whose opening reading is older than the
- * replay window. A story running since Tuesday would otherwise date from the
- * edge of the window and read as younger than it is.
- */
-async function rootTimes(ascending) {
-  const present = new Set(ascending.map((r) => r.id));
-  const missing = [...new Set(
-    ascending
-      .filter((r) => r.judge_version != null && r.development_of != null)
-      .map((r) => r.development_of)
-      .filter((id) => !present.has(id)),
-  )];
-  const rows = await ratingsByIds(missing);
-  return new Map(rows.map((r) => [r.id, { t: Date.parse(r.created_at), story: r.story }]));
 }
 
 const server = createServer(async (req, res) => {
@@ -462,6 +446,9 @@ const server = createServer(async (req, res) => {
         // suppresses the next cron run by being recent, not by claiming a slot.
         const saved = await insertRating({ ...submission, ...judgement, slot: null,
           raw_output: prepared ? JSON.stringify({ draft: prepared.draft, explanation: submission.explanation }) : null });
+        // Awaited, like the rejection log: a serverless function may be frozen
+        // the moment the response ends, and a push left in flight goes nowhere.
+        await notifyReading(saved);
         const verified = saved.prompt_verified === true ? 'verified'
           : saved.prompt_verified === false ? 'DIGEST MISMATCH' : 'no digest';
         console.log(
@@ -499,6 +486,26 @@ const server = createServer(async (req, res) => {
         // anything; rejections now leave a row that outlives the log.
         if (err instanceof SubmissionError) {
           return rejection(res, url, 422, err.message, { method: req.method });
+        }
+        throw err;
+      }
+    }
+
+    // ---- push notifications --------------------------------------------
+    // The app registers its Expo push token with the lowest score it wants to
+    // hear about, and deletes it when notifications are turned off. Public,
+    // like /api/current: the token is the only identity a device has, and
+    // src/push.js bounds what an anonymous caller can write.
+    if (path === '/api/push/subscriptions' && (req.method === 'PUT' || req.method === 'DELETE')) {
+      try {
+        const body = await readJsonBody(req);
+        if (req.method === 'DELETE') return json(res, 200, { ok: true, ...(await unsubscribePush(body)) });
+        const saved = await subscribePush(body);
+        return json(res, 200, { ok: true, threshold: saved.threshold, platform: saved.platform });
+      } catch (err) {
+        if (err instanceof PushError) return json(res, err.status, { ok: false, error: err.message });
+        if (err instanceof SyntaxError || /body too large/.test(String(err?.message))) {
+          return json(res, 400, { ok: false, error: String(err.message) });
         }
         throw err;
       }
