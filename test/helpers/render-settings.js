@@ -6,7 +6,6 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as preferences from '../../apps/client/lib/preferences.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
-import tokens from '../../public/tokens.js';
 
 const require = createRequire(import.meta.url);
 const react = require('react');
@@ -65,12 +64,11 @@ export function renderToggle({ platform = 'web', value = false, disabled = false
     react: { ...react, useEffect() {}, useRef: current => ({ current }) },
     'react-native': { Pressable: 'Pressable', Animated: { Value, View: 'Animated.View', timing: () => ({ start() {} }) } },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
-    '../../../public/tokens.js': { __esModule: true, default: tokens },
   };
   const exports = {};
   vm.runInNewContext(compile(toggleSource), {
     exports, process: { env: { EXPO_OS: platform } },
     require: name => { if (name === 'react/jsx-runtime') return require(name); if (!(name in mocks)) throw new Error(`Unreviewed renderer dependency: ${name}`); return mocks[name]; },
   });
-  return { tree: exports.Toggle({ value, disabled, accessibilityLabel: 'Notify me about high readings', onValueChange() {} }), ON_COLOR: exports.ON_COLOR };
+  return { tree: exports.Toggle({ value, disabled, accessibilityLabel: 'Notify me about high readings', onValueChange() {} }), accent: themeForLevel(3, dark).accent };
 }

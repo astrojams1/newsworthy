@@ -1,15 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Pressable } from 'react-native';
 import { useTheme } from '@/lib/theme';
-import tokens from '../../../public/tokens.js';
 
 // An iOS-style switch on every platform: a 51×31 pill, a white thumb that
-// slides across it, the brand mint when on. Android's and the web's stock switches look
+// slides across it, the accent when on — the same colour that marks the
+// chosen appearance and score beside it. Android's and the web's stock switches look
 // nothing like it, so the settings screen draws its own.
 export const TRACK_WIDTH = 51;
 export const TRACK_HEIGHT = 31;
 export const THUMB_SIZE = 27;
-export const ON_COLOR: string = tokens.brand.primary; // the brand mint, not iOS green
 const PAD = (TRACK_HEIGHT - THUMB_SIZE) / 2;
 
 export function Toggle({ value, onValueChange, disabled = false, accessibilityLabel, testID }: {
@@ -21,7 +20,7 @@ export function Toggle({ value, onValueChange, disabled = false, accessibilityLa
     Animated.timing(position, { toValue: value ? 1 : 0, duration: 200, useNativeDriver: false }).start();
   }, [value, position]);
   const translateX = position.interpolate({ inputRange: [0, 1], outputRange: [PAD, TRACK_WIDTH - THUMB_SIZE - PAD] });
-  const backgroundColor = position.interpolate({ inputRange: [0, 1], outputRange: [theme.dark ? '#39393D' : '#E9E9EB', ON_COLOR] });
+  const backgroundColor = position.interpolate({ inputRange: [0, 1], outputRange: [theme.dark ? '#39393D' : '#E9E9EB', theme.accent] });
   return <Pressable accessibilityRole="switch" accessibilityLabel={accessibilityLabel} accessibilityState={{ checked: value, disabled }}
     disabled={disabled} testID={testID} onPress={() => onValueChange(!value)}
     // The pill is shorter than a 48-point target; the slop makes up the difference.

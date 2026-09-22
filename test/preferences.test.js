@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DEFAULT_PREFERENCES, STORAGE_KEY, THEME_CHOICES, THRESHOLD_CHOICES, clampThreshold, parsePreferences, resolveDark } from '../apps/client/lib/preferences.js';
-import tokens from '../public/tokens.js';
 import { nodes, renderSettings, renderToggle } from './helpers/render-settings.js';
 
 test('system appearance and no notifications are the defaults, and a damaged store falls back field by field', () => {
@@ -109,16 +108,16 @@ test('turning notifications on registers the device at the chosen score, and a r
   assert.deepEqual(stuck.calls.setNotifications, [], 'a device the server still holds stays shown as on');
 });
 
-test('the notification switch is an iOS-style toggle in the brand colour on every platform', () => {
-  for (const platform of ['web', 'ios', 'android']) for (const value of [false, true]) {
-    const { tree, ON_COLOR } = renderToggle({ platform, value });
+test('the notification switch is an iOS-style toggle in the accent colour on every platform', () => {
+  for (const platform of ['web', 'ios', 'android']) for (const value of [false, true]) for (const dark of [false, true]) {
+    const { tree, accent } = renderToggle({ platform, value, dark });
     assert.equal(tree.props.accessibilityRole, 'switch');
     assert.deepEqual(JSON.parse(JSON.stringify(tree.props.accessibilityState)), { checked: value, disabled: false });
     assert.equal(tree.props.accessibilityLabel, 'Notify me about high readings');
     const [track, thumb] = nodes(tree).filter(n => n.type === 'Animated.View');
     assert.deepEqual([track.props.style.width, track.props.style.height, track.props.style.borderRadius], [51, 31, 15.5]);
-    assert.equal(track.props.style.backgroundColor === ON_COLOR, value, 'coloured only when on');
-    assert.equal(ON_COLOR, tokens.brand.primary, 'the brand mint, not a platform green');
+    assert.equal(track.props.style.backgroundColor === accent, value, 'the accent only when on — the colour of the chosen rows beside it');
+    assert.notEqual(accent, '#34C759');
     assert.deepEqual([thumb.props.style.width, thumb.props.style.height, thumb.props.style.backgroundColor], [27, 27, '#FFFFFF']);
     assert.equal(thumb.props.style.transform[0].translateX, value ? 22 : 2, 'the thumb sits at the end it reports');
     // The pill is shorter than 48 points; the slop makes up the touch target.
