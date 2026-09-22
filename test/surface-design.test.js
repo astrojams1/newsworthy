@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { checkWidgetDesign, widgetSources, contract } from './helpers/widget-contract.js';
 import { renderReading, renderShareIcon, nodes } from './helpers/render-reading.js';
+import { renderSettings } from './helpers/render-settings.js';
+import { renderLayout } from './helpers/render-layout.js';
 import { themeForLevel } from '../apps/client/lib/palette.js';
 
 test('reading refreshes never add loading, saved or retry text to an existing message', () => {
@@ -265,5 +267,58 @@ test('reading gate rejects a full-width space or proportional score face', () =>
   for (const sourceOverride of [source.replace('∕10', '∕ 10'), source.replaceAll('fontFamily: scoreFont', "fontFamily: 'sans-serif'")]) {
     assert.notEqual(sourceOverride, source);
     assert.throws(() => inspectReading({ sourceOverride, platform: 'ios', width: 390, height: 844, score: 3, dark: false }));
+  }
+});
+
+
+test('navigation materials and transition canvas match the resolved app appearance', () => {
+  for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) for (const score of [null, 1, 8, 10]) {
+    const tree = renderLayout({ platform, dark, score });
+    const palette = themeForLevel(score, dark);
+    assert.equal(tree.type, 'ThemeProvider');
+    const navigation = tree.props.value;
+    assert.equal(navigation.dark, dark, 'native header materials follow the resolved app theme');
+    assert.equal(navigation.colors.background, palette.tinted, 'the transition canvas cannot flash a default background');
+    assert.equal(navigation.colors.card, palette.tinted);
+    assert.equal(navigation.colors.primary, palette.accent);
+    assert.equal(navigation.colors.text, palette.ink);
+    assert.ok(navigation.fonts.regular, 'retain router font defaults');
+    const all = nodes(tree);
+    const stack = all.find(n => n.props.screenOptions);
+    assert.equal(stack.props.screenOptions.contentStyle.backgroundColor, navigation.colors.background);
+    assert.equal(all.find(n => n.type === 'StatusBar').props.style, dark ? 'light' : 'dark');
+  }
+});
+
+test('notification saving never adds a control or changes the row geometry', () => {
+  for (const platform of ['ios', 'android']) for (const dark of [false, true]) for (const width of [320, 390, 440]) {
+    for (const enabled of [false, true]) for (const threshold of [5, 8, 10]) {
+      const stored = { notifications: { enabled, threshold, token: enabled ? 'ExponentPushToken[test]' : null } };
+      const render = busy => nodes(renderSettings({ platform, width, dark, stored, busy }).tree);
+      const idle = render(false), saving = render(true);
+      const byId = (all, id) => all.find(n => n.props.testID === id);
+      for (const id of ['notifications-row', 'threshold-row']) {
+        const before = byId(idle, id), during = byId(saving, id);
+        assert.deepEqual(JSON.parse(JSON.stringify(during.props.style)), JSON.parse(JSON.stringify(before.props.style)));
+        assert.deepEqual(nodes(during).map(n => n.type), nodes(before).map(n => n.type));
+        assert.equal(during.props.style.height, undefined, 'large text remains free to grow');
+      }
+      assert.equal(saving.some(n => n.type === 'ActivityIndicator'), false);
+      assert.equal(byId(saving, 'notifications-status').props.children, 'Saving…');
+      assert.equal(byId(saving, 'notifications-status').props.accessibilityLiveRegion, 'polite');
+      assert.equal(byId(idle, 'notifications-status').props.children, `Notify on readings ${threshold} or higher ${enabled ? 'enabled' : 'disabled'}.`);
+      assert.equal(byId(saving, 'notifications-row').props.disabled, true);
+      assert.ok(saving.filter(n => /^threshold-\d+$/.test(n.props.testID ?? '')).every(n => n.props.disabled));
+    }
+  }
+});
+
+test('deep-link back control follows appearance and clears when the native back stack arrives', () => {
+  for (const platform of ['web', 'ios', 'android']) for (const dark of [false, true]) {
+    const screen = canGoBack => nodes(renderSettings({ platform, dark, canGoBack }).tree).find(n => n.type === 'Screen');
+    const fallback = screen(false).props.options.headerLeft();
+    assert.equal(nodes(fallback).find(n => n.type === 'BackIcon').props.color, themeForLevel(3, dark).accent);
+    assert.ok(Object.hasOwn(screen(true).props.options, 'headerLeft'));
+    assert.equal(screen(true).props.options.headerLeft, undefined, 'reset persisted navigation options');
   }
 });

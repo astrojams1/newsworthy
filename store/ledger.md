@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-22T16:59:22+00:00
+Updated: 2026-09-22T22:24:58+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -84,6 +84,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-18-build | done | agent | observed | EAS finished iOS 1.0.0 build 18 successfully after the signing repair. | — |
 | apple.testflight-18-upload | done | agent | observed | Apple direct upload succeeded for verified iOS 1.0.0 build 18. | — |
 | apple.testflight-18-provenance | done | agent | observed | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
+| ui.settings-feedback | in_progress | agent | observed | Settings source fix: navigation materials follow app appearance, stale deep-link back override cleared, and notification saves use stable text below controls. 282 tests and 70 design checks passed, TypeScript and web export passed. Native Expo Go iOS 18.3.1 settings/navigation/permission-denial checks passed; iOS 26 glass, successful real push saves, Android and replacement release build remain unverified. Owner now requests a TestFlight replacement; using the supported ledger state while retaining the earlier event. | Ship a replacement native build and verify iOS 26 transitions plus successful notification toggle/threshold saves on device; verify Android and enlarged native text. |
+| apple.testflight-settings | in_progress | agent | observed | Owner requests Settings fixes in TestFlight. PR123 passed CI; preparing the merged source and a signed production iOS build for existing Release QA. | Complete copy review, merge PR123, build exact merged source, verify signed archive and upload to Apple. |
 
 ## Evidence and history
 
@@ -2312,3 +2314,35 @@ Next: Read build 18 VALID, save beta notes, attach to Release QA and verify IN_B
 iOS 1.0.0 build 18 is VALID and IN_BETA_TESTING in existing Release QA with one tester. Beta notes saved and verified. APNs delivery key remains absent and physical-device verification is pending.
 
 - Apple build 83b11cd7-1828-4859-9fb4-40b6a9e6f938; group 312a8585-2ca2-413e-bb5f-75d0ba487e13; readback 2026-09-22T16:58:52Z; store/testflight-18.json.
+
+### 236. ui.settings-feedback — waiting_verification
+
+2026-09-22T20:15:37.499Z · observed · agent
+
+Settings source fix: navigation materials follow app appearance, stale deep-link back override cleared, and notification saves use stable text below controls. 282 tests and 70 design checks passed, TypeScript and web export passed. Native Expo Go iOS 18.3.1 settings/navigation/permission-denial checks passed; iOS 26 glass, successful real push saves, Android and replacement release build remain unverified.
+
+- store/settings-feedback-verification.json
+- store/source/settings-feedback/
+
+Next: Ship a replacement native build and verify iOS 26 transitions plus successful notification toggle/threshold saves on device; verify Android and enlarged native text.
+
+### 237. ui.settings-feedback — in_progress
+
+2026-09-22T22:24:58+00:00 · observed · agent
+
+Settings source fix: navigation materials follow app appearance, stale deep-link back override cleared, and notification saves use stable text below controls. 282 tests and 70 design checks passed, TypeScript and web export passed. Native Expo Go iOS 18.3.1 settings/navigation/permission-denial checks passed; iOS 26 glass, successful real push saves, Android and replacement release build remain unverified. Owner now requests a TestFlight replacement; using the supported ledger state while retaining the earlier event.
+
+- store/settings-feedback-verification.json
+- store/source/settings-feedback/
+
+Next: Ship a replacement native build and verify iOS 26 transitions plus successful notification toggle/threshold saves on device; verify Android and enlarged native text.
+
+### 238. apple.testflight-settings — in_progress
+
+2026-09-22T22:24:58+00:00 · observed · agent
+
+Owner requests Settings fixes in TestFlight. PR123 passed CI; preparing the merged source and a signed production iOS build for existing Release QA.
+
+- User request: add to testflight; PR123 checks passed; Apple latest build18 VALID and IN_BETA_TESTING.
+
+Next: Complete copy review, merge PR123, build exact merged source, verify signed archive and upload to Apple.

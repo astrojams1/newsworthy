@@ -16,15 +16,20 @@
  * @param {object} deps
  * @param {() => State} deps.read the newest stored state
  * @param {(update: Partial<State>) => void} deps.write store a change
+ * @param {(pending: boolean) => void} [deps.onPendingChange] includes queued requests and survives screen navigation
  * @param {{ enablePush(threshold: number): Promise<{ ok: true, token: string } | { ok: false, reason: 'denied' | 'unavailable' | 'offline' }>,
  *           disablePush(token: string): Promise<boolean>,
  *           updatePushThreshold(token: string, threshold: number): Promise<boolean> }} deps.api
  */
-export function createSubscriptionController({ read, write, api }) {
+export function createSubscriptionController({ read, write, api, onPendingChange = () => {} }) {
   let queue = Promise.resolve();
+  let pending = 0;
   /** @template T @param {() => Promise<T>} task @returns {Promise<T>} */
   const serialize = (task) => {
-    const run = queue.then(task, task);
+    if (++pending === 1) onPendingChange(true);
+    const run = queue.then(task, task).finally(() => {
+      if (--pending === 0) onPendingChange(false);
+    });
     queue = run.then(() => {}, () => {});
     return run;
   };

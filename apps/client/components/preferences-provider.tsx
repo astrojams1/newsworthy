@@ -10,6 +10,7 @@ type PreferencesValue = {
   // False until the stored value has been read, so the first paint cannot
   // flash the default theme over a chosen one and then switch.
   loaded: boolean;
+  savingNotifications: boolean;
   setTheme(theme: ThemePreference): void;
   setNotifications(update: Partial<Notifications>): void;
   // The device's registration, serialised here rather than on the settings
@@ -23,6 +24,7 @@ const PreferencesContext = createContext<PreferencesValue | null>(null);
 export function PreferencesProvider({ children }: PropsWithChildren) {
   const [preferences, setPreferences] = useState<Preferences>(DEFAULT_PREFERENCES);
   const [loaded, setLoaded] = useState(false);
+  const [savingNotifications, setSavingNotifications] = useState(false);
   const current = useRef(preferences);
   useEffect(() => {
     let alive = true;
@@ -47,9 +49,10 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
   const subscription = useMemo(() => createSubscriptionController({
     read: () => current.current.notifications,
     write: setNotifications,
+    onPendingChange: setSavingNotifications,
     api: { enablePush, disablePush, updatePushThreshold },
   }), [setNotifications]);
-  return <PreferencesContext value={{ preferences, loaded, setTheme, setNotifications, subscription }}>{children}</PreferencesContext>;
+  return <PreferencesContext value={{ preferences, loaded, savingNotifications, setTheme, setNotifications, subscription }}>{children}</PreferencesContext>;
 }
 
 export function usePreferences() {

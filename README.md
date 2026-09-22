@@ -93,7 +93,8 @@ actually wired up. Start there when a deploy misbehaves.
 
 | Route | What's there |
 |---|---|
-| `/` | The rating, explanation and update time, a top-right share icon, and an About dialog with privacy and support. The number is the loudest development still live — each carries its own level, aged from when it was first reported |
+| `/` | The rating, explanation and update time, Share and Settings controls in the header, and Privacy and Support links below the reading. The number is the loudest development still live — each carries its own level, aged from when it was first reported |
+| `/settings` | App appearance and, on native, optional notification controls with save feedback |
 | `/privacy` | Privacy policy covering the website, apps and widgets |
 | `/support` | Help and contact: astrojams1@gmail.com |
 | `/llms.txt` | Public product facts and links for AI readers; rating instructions remain at `/api/instructions` |
