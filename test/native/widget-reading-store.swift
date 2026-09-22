@@ -24,6 +24,19 @@ final class Clock: @unchecked Sendable {
 @main
 struct StoreTests {
     static func main() async throws {
+        let since = "2026-09-16T18:05:00.000Z"
+        let origin = ISO8601DateFormatter().date(from: "2026-09-16T18:05:00Z")!
+        var aged = Reading(score: 1, explanation: "Legacy prefix.", created_at: "2026-09-18T00:05:00Z",
+                           explanation_text: "The Fed raised rates a quarter point.", explanation_since: since)
+        precondition(aged.displayedExplanation(at: origin.addingTimeInterval(31 * 3600)) == "31 hours ago: The Fed raised rates a quarter point.")
+        precondition(aged.displayedExplanation(at: origin.addingTimeInterval(32 * 3600)).hasPrefix("32 hours ago: "))
+        aged.explanation_text = String(repeating: "😀 ", count: 200)
+        let fitted = aged.displayedExplanation(at: origin.addingTimeInterval(31 * 3600))
+        precondition(fitted.unicodeScalars.count <= 140 && fitted.hasSuffix("…"))
+        let roundTrip = try JSONDecoder().decode(Reading.self, from: JSONEncoder().encode(aged))
+        precondition(roundTrip == aged)
+        let legacy = try JSONDecoder().decode(Reading.self, from: Data(#"{"score":1,"explanation":"Legacy sentence.","created_at":"2026-09-18T00:05:00Z"}"#.utf8))
+        precondition(legacy.displayedExplanation(at: origin) == "Legacy sentence.")
         let suite = "newsworthy.store.test.\(UUID().uuidString)"
         let shared = UserDefaults(suiteName: suite)!
         let local = UserDefaults(suiteName: suite + ".legacy")!

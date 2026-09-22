@@ -30,7 +30,12 @@ export async function fetchReading(apiBaseUrl, fetcher = fetch) {
     if (!response.ok) throw new Error(`Reading unavailable (${response.status})`);
     const data = await response.json();
     if (!validReading(data)) throw new Error('Invalid reading');
-    return { score: data.score, explanation: data.explanation, created_at: data.created_at };
+    return { score: data.score, explanation: data.explanation, created_at: data.created_at,
+      ...(typeof data.explanation_text === 'string' && data.explanation_text.length <= 2000
+        ? { explanation_text: data.explanation_text,
+          explanation_since: typeof data.explanation_since === 'string' && Number.isFinite(Date.parse(data.explanation_since))
+            ? data.explanation_since : null } : {}),
+    };
   } finally {
     clearTimeout(timeout);
   }

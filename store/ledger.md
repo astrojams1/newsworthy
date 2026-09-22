@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-21T10:07:25+00:00
+Updated: 2026-09-22T11:24:28+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -73,6 +73,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 | apple.review-state | done | agent | observed | Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission. | — |
+| story-age.native | todo | agent | observed | Story-age source adds local age formatting to Expo and both widgets; replacement native package and visual parity remain unverified. | Build replacement native packages and verify both widget sizes, themes, score 10, enlarged text, resizing and offline age transitions. |
 
 ## Evidence and history
 
@@ -2087,3 +2088,13 @@ Next: Read Apple response and exact review state when browser access returns. Co
 Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission.
 
 - GET appStoreVersions/267c6f52-d22d-4cb0-bb4c-d22f280b4499 and reviewSubmissions/4f28761f-3096-4f0d-aa37-df83332f818f returned HTTP200; store/release.json
+
+### 213. story-age.native — todo
+
+2026-09-22T11:24:28+00:00 · observed · agent
+
+Story-age source adds local age formatting to Expo and both widgets; replacement native package and visual parity remain unverified.
+
+- docs/story-age.md; store/story-age-verification.json
+
+Next: Build replacement native packages and verify both widget sizes, themes, score 10, enlarged text, resizing and offline age transitions.

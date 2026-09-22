@@ -70,7 +70,7 @@ function cleanString(value, { field, max, required = false }) {
  */
 export function submissionFromQuery(params) {
   const body = {};
-  for (const field of ['score', 'explanation', 'prompt_sha256']) {
+  for (const field of ['score', 'explanation', 'prompt_sha256', 'preparation']) {
     const value = params.get(field);
     if (value !== null) body[field] = value;
   }

@@ -5,7 +5,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, recentStories, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { takePreparation, correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, recentStories, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
@@ -16,6 +16,8 @@ import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyH
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
+import { prepareReading, firstCoverage } from './preparation.js';
+import { displayExplanation } from '../apps/client/lib/story-age.js';
 
 const PORT = Number(process.env.PORT) || 3000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
@@ -269,9 +271,13 @@ const server = createServer(async (req, res) => {
       // right now — so a story still on top this evening is still named this
       // evening, with a smaller number beside it.
       const newest = current.newest;
+      const explanationSince = await firstCoverage(newest);
+      const explanationFields = { explanation_text: newest.explanation, explanation_since: explanationSince };
       return json(res, 200, {
         score: current.score,
-        explanation: newest.explanation,
+        // Existing apps/widgets receive a complete sentence; newer ones re-age locally.
+        explanation: displayExplanation(explanationFields),
+        ...explanationFields,
         created_at: newest.created_at,
         source: newest.source ?? 'cron',
         // None of the rest is displayed; it is what makes a surprising number
@@ -413,7 +419,7 @@ const server = createServer(async (req, res) => {
     // GET is accepted alongside POST because some agents can only issue a
     // plain fetch: no custom headers, no request body. Those carry the token
     // and the reading in the query string instead.
-    if (path === '/api/readings' && (req.method === 'POST' || req.method === 'GET')) {
+    if ((path === '/api/readings' || path === '/api/readings/prepare') && (req.method === 'POST' || req.method === 'GET')) {
       // Auth is softened too. A caller that cannot read a 401 is stuck
       // permanently and silently, which is the worst of the failures here, and
       // nothing is disclosed: this route and its token requirement are
@@ -435,11 +441,15 @@ const server = createServer(async (req, res) => {
       }
       try {
         const submission = validateSubmission(body);
-        // Which development this reading reports, decided once here and stored.
+        if (path === '/api/readings/prepare') {
+          return json(res, 200, await prepareReading(submission));
+        }
+        const prepared = await takePreparation(body.preparation, submission.score, submission.prompt_version);
+        // Reuse the prepared match, or decide it here for compatible callers.
         // It cannot change the score or reject the reading — a judge failure
         // stores the reading unjudged, carrying the reason — so the four
         // rejection rules stay four.
-        const judgement = await judgeReading({
+        const judgement = prepared?.judgement ?? await judgeReading({
           score: submission.score,
           explanation: submission.explanation,
           created_at: new Date().toISOString(),
@@ -450,7 +460,8 @@ const server = createServer(async (req, res) => {
         });
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
-        const saved = await insertRating({ ...submission, ...judgement, slot: null });
+        const saved = await insertRating({ ...submission, ...judgement, slot: null,
+          raw_output: prepared ? JSON.stringify({ draft: prepared.draft, explanation: submission.explanation }) : null });
         const verified = saved.prompt_verified === true ? 'verified'
           : saved.prompt_verified === false ? 'DIGEST MISMATCH' : 'no digest';
         console.log(

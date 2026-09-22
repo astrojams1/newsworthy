@@ -21,6 +21,8 @@ release status. Calm presentation must not change the rating calibration.
   production branch.
 - A push to `main` deploys to production. Preview builds are currently skipped
   by `vercel.json`’s `ignoreCommand`; verify production after merge.
+- Before opening every PR, use `.agents/skills/newsworthy-pr-copy-review/SKILL.md`
+  and record the copy accuracy review in its description.
 - Run `npm test` before pushing. No cloud database is needed — see Testing.
 
 ## Layout
@@ -170,7 +172,7 @@ reports a *new* development — a 7 on a story the judge says has been running
 since morning is that story's noise, not a break. Drops are still never treated
 as shocks, and being slow to report calm still costs nothing.
 
-**Which development a reading reports is judged once, on arrival, and stored.**
+**Which development a reading reports is judged once and stored.**
 Text similarity was tried first, replayed over the stored series: it finds the
 coarse story well enough (134 of 155 readings matched their neighbour's story)
 but it cannot tell a re-report from a new development inside a running story. It
@@ -206,8 +208,9 @@ History was not re-judged. A stored judgement is never recomputed, and the board
 only shows developments from the last 72 hours, so the split names age off it
 within three days on their own.
 
-The rater does not change and does not know. The judge runs after a reading
-exists, sees only stored sentences, and cannot alter a score or reject a
+Research and score selection remain independent of history. The caller now
+prepares its drafted sentence through `/api/readings/prepare` before finalizing
+it. The judge sees the draft and stored sentences; it cannot alter a score or reject a
 submission — the four rejection rules stay four. Its prompts are append-only and
 pinned by hash for the same reason the rating prompts are: a stored judgement
 names the version that made it. Its spend is `judge_spend_usd`, counted apart
@@ -294,13 +297,14 @@ ages. The score-only fallback still applies on top: a level two clear of the
 development's own level starts one. History from before the judge existed reads
 the same way until `/api/admin/judge` backfills it.
 
-**Only the score is smoothed and aged.** The sentence always comes from the
+**The sentence comes from the newest reading.** Its prefix shows that development’s
+first-coverage age independently of the score’s decay. Its wording comes from the
 newest reading, and the two answer different questions: the number is a level,
 and the sentence is what happened. Pairing the median row's sentence with the
 number was an early cut and it read as an app that had stopped. So a story still
 on top in the evening is still named in the evening, with a smaller number
-beside it — never "nothing new". `score_from` names the row the score came from
-when the number is one row rather than a decayed level, and is never displayed.
+beside it — never "nothing new". The score’s `since` anchor and the sentence’s
+`explanation_since` timestamp answer separate questions.
 
 `basis` is one of `new` (the newest reading opened or escalated the development
 the number is about, at full value), `routine` (it did, but its story's age
@@ -716,3 +720,9 @@ The twelve are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
 individual tests
 is not kept here: it is wrong again after the next PR, and a stale number in a
 document read as authoritative is worse than no number.
+
+**Sentence age.** The prefix measures first coverage of the sentence’s development,
+not the score’s decay anchor or a verified event date. The 140-character display
+budget includes it; prompt v14 reserves 20 characters for the prefix and asks for
+a body of at most 120. See `docs/story-age.md` for preparation, compatibility and
+verification limits.

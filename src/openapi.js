@@ -76,12 +76,39 @@ export function openapiDocument({ baseUrl }) {
           },
         },
       },
+      '/api/readings/prepare': {
+        post: {
+          operationId: 'prepareReading',
+          summary: 'Match a draft before finalizing the sentence',
+          description: 'After research and rating, match the draft against stored developments. This is not a submission. Keep the same event and score when shortening the final sentence. The app adds an age prefix; 140 characters includes that prefix, with 120 available for the body.',
+          requestBody: { required: true, content: { 'application/json': { schema: {
+            type: 'object', required: ['score', 'explanation'], properties: {
+              score: { type: 'integer', minimum: 1, maximum: 10 },
+              explanation: { type: 'string', description: 'Draft describing the selected development.' },
+            },
+          } } } },
+          responses: {
+            200: { description: 'Draft matched; stored is false. Final submission is still required.', content: { 'application/json': { schema: {
+              type: 'object', properties: {
+                stored: { type: 'boolean', const: false }, preparation: { type: 'string' },
+                development: { type: 'string', enum: ['new', 'same', 'unjudged'] },
+                first_covered_at: { type: ['string', 'null'] }, prefix: { type: 'string' },
+                max_explanation_characters: { type: 'integer', const: 120 },
+                reserved_prefix_characters: { type: 'integer', const: 20 },
+                display_character_limit: { type: 'integer', const: 140 }, expires_at: { type: 'string' },
+              },
+            } } } },
+            401: { description: 'Missing or wrong caller token.' },
+            422: { description: 'Malformed draft; no reading stored.' },
+          },
+        },
+      },
       '/api/readings': {
         post: {
           operationId: 'submitReading',
           summary: 'Submit a reading',
           description:
-            'Call this after rating. The job is not finished until this returns 201 — ' +
+            'Call this after preparing and finalizing the sentence. The job is not finished until this returns 201 — ' +
             'producing a score without submitting it accomplishes nothing. ' +
             'If web search failed or returned nothing, submit nothing at all. ' +
             'The score and the sentence are the reading; prompt_sha256 reports which ' +
@@ -105,8 +132,9 @@ export function openapiDocument({ baseUrl }) {
                     },
                     explanation: {
                       type: 'string',
-                      description: 'One sentence, at most 140 characters including spaces and punctuation, reporting what happened.',
+                      description: 'Full display: at most 140 characters including spaces and punctuation AND the age prefix. Submit only the sentence body, at most 120 characters; the app supplies the prefix.',
                     },
+                    preparation: { type: 'string', description: 'Single-use reference from prepareReading, valid 30 minutes; missing/invalid/expired references fall back to normal matching.' },
                     // Optional, and never a rejection: a mismatch stores a
                     // reading flagged unverified rather than refusing one.
                     // This is the one caller-supplied field the server checks

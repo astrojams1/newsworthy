@@ -71,8 +71,11 @@ struct Provider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<ReadingEntry>) -> Void) {
         Task {
             let result = await Self.store.refresh()
-            completion(Timeline(entries: [ReadingEntry(date: Date(), reading: result.reading, saved: result.saved)],
-                                policy: .after(Date().addingTimeInterval(30 * 60))))
+            let now = Date()
+            // Advance a cached story’s age even when the OS delays a network refresh.
+            let minutes = Array(0...60) + (2...24).map { $0 * 60 }
+            let entries = minutes.map { ReadingEntry(date: now.addingTimeInterval(Double($0 * 60)), reading: result.reading, saved: result.saved) }
+            completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(30 * 60))))
         }
     }
 }
@@ -205,7 +208,7 @@ struct ReadingContent: View {
                                     explanationCapHeight: bodyFont.capHeight) {
                     score(size: size)
                     if family == .systemMedium {
-                        Text(entry.reading?.explanation ?? "")
+                        Text(entry.reading?.displayedExplanation(at: entry.date) ?? "")
                             .font(.system(size: explanationSize))
                             .lineSpacing(max(0, explanationLineHeight - bodyFont.lineHeight))
                             .lineLimit(max(1, Int(geometry.size.height / explanationLineHeight)))

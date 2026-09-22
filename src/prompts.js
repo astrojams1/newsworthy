@@ -319,6 +319,14 @@ Report one development in a natural, complete sentence: who did what, with its c
 // clipped on the user's medium widget. See docs/prompt-evaluations/v13.md.
 const V13_OUTPUT_CONTRACT = V12_OUTPUT_CONTRACT.replace('150 characters', '140 characters');
 
+// v14 reserves room for a live first-coverage prefix. Rating calibration is unchanged.
+const V14_OUTPUT_CONTRACT = `Output
+
+Reply with a single JSON object and nothing else — no prose, no markdown fences:
+{"score": <integer 1-10>, "explanation": "<one sentence, at most 120 characters including spaces and punctuation>"}
+
+Full display: at most 140 characters including spaces and punctuation, reserving 20 for an app-supplied age prefix. Submit no prefix. Report one development independently of its score: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations. Keep useful specifics. Cut secondary details, not grammar. No em dashes, semicolons, side stories, jargon, padding, rating justification or advice. Preserve facts, attribution and uncertainty when revising after the history match.`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -410,6 +418,13 @@ const REGISTRY = {
     added: '2026-09-20',
     instructions: V11_INSTRUCTIONS,
     outputContract: V13_OUTPUT_CONTRACT,
+  },
+  14: {
+    version: 14,
+    label: 'development-age-budget-v14',
+    added: '2026-09-22',
+    instructions: V11_INSTRUCTIONS,
+    outputContract: V14_OUTPUT_CONTRACT,
   },
 };
 

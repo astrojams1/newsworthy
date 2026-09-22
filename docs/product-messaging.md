@@ -29,7 +29,11 @@ engagement, addiction or growth-hacking tactics.
   measurement of personal safety, a complete briefing or an emergency alert.
 - Ratings update periodically and can be wrong. Higher means more consequential;
   the displayed score fades as developments age.
-- A saved reading keeps its original timestamp. Widgets can refresh later than
+- A sentence’s age prefix means time since Newsworthy first covered that
+  development, not a verified event date or the age of the broader story. Unknown
+  ages have no prefix. The existing 140-character display budget includes the prefix.
+- A saved reading keeps its original update timestamp. Updated clients recompute
+  the sentence age from the saved first-coverage timestamp. Widgets can refresh later than
   the app, depending on the operating system. Do not promise real-time updates.
 - The launcher icon is a white dash on near-black. The web favicon can show the
   score; planned home-screen widgets carry a rating and update time.
@@ -65,7 +69,9 @@ widgets and the complete app package without updating local Xcode.
   guaranteed discovery or ranking mechanism.
 - `src/caller.js`, `src/openapi.js`, `skills/newsworthy-rating/SKILL.md`: authorized
   rating-agent contract. A reading is score/explanation; a complete submission
-  also carries the computed `prompt_sha256` provenance proof.
+  also carries the computed `prompt_sha256` provenance proof. Callers prepare
+  the draft to obtain a history match before finalizing its sentence, then submit
+  that preparation reference; preparation alone never stores a reading.
 - `README.md`, `CLAUDE.md`, `AGENTS.md`: developer and coding-agent guidance.
 - `store/`: canonical mobile listing copy, native captures, artwork, upload scripts,
   release evidence and account-owner steps; `docs/store-listing.md` points there.

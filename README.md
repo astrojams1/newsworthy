@@ -14,17 +14,22 @@ See [Product messaging](docs/product-messaging.md) for shared copy and claims.
 A model checks the current top headlines every four hours by default, rates how
 worthwhile it is to look at the news right now on a deliberately harsh 1–10 scale,
 and writes one sentence explaining why. Higher scores mean more consequential
-news; the displayed score fades as developments age. Ratings are AI judgments,
+news; the displayed score fades as developments age. The sentence starts with time since Newsworthy first covered that development
+when known; this is separate from the reading’s update time. Ratings are AI judgments,
 updated periodically, and can be wrong.
 
 ```
                              4 /10
 
-           Major chipmaker halted a fab; expect
-              hardware price moves within weeks.
+           31 hours ago: The Fed raised rates a
+            quarter point, lifting borrowing costs.
 
                     Updated 3 minutes ago
 ```
+
+Before opening a PR, use the repository’s
+[copy accuracy review skill](.agents/skills/newsworthy-pr-copy-review/SKILL.md).
+See [story age](docs/story-age.md) for the timestamp meaning and caller workflow.
 
 ## Run it
 
@@ -88,7 +93,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/support` | Help and contact: astrojams1@gmail.com |
 | `/llms.txt` | Public product facts and links for AI readers; rating instructions remain at `/api/instructions` |
 | `/admin` | Web-only timeseries of the score, run log, prompt versions, "rate now" |
-| `/api/current` | `{ score, explanation, created_at, source, basis, level, story, since, fatigue, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about, at full value), `routine` (it did, but its story has been doing this for weeks and the score was discounted), `aged` (a decayed level) or `stale` (nothing recent). `story` and `since` name that development and when it broke; `fatigue` is the fraction of its score a routine development in that story keeps. No countdown: an external caller can post at any moment, so the next update is not predictable |
+| `/api/current` | `{ score, explanation, explanation_text, explanation_since, created_at, source, basis, level, story, since, fatigue, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about, at full value), `routine` (it did, but its story has been doing this for weeks and the score was discounted), `aged` (a decayed level) or `stale` (nothing recent). `explanation_text` is the unprefixed sentence and `explanation_since` is its first coverage (nullable), independently of the score. `story` and `since` name the score’s development and when it broke; `fatigue` is the fraction of its score a routine development in that story keeps. No countdown: an external caller can post at any moment, so the next update is not predictable |
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions, and `stories` — every story still live with the developments inside it, what each broke at, what that has decayed to, and which one the front page is about. Each story also says where it stands now: `age_days`, `routine` (the median its developments have scored), `fatigue` (the weight its next development would open at) and `breakthrough_at` (the score that would open whole). `stories` describes now, not the charted range |
 | `/api/admin/prompts` | Every prompt version, full text |
 | `/api/admin/settings` | `GET` the model, cadence, development half-life, story half-life and judge model with the priced options; `POST` to change them |
@@ -97,8 +102,9 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/admin/readings/:id/usage` | `POST` corrected token counts to reprice a reading whose rating is sound but whose usage was not; omitted fields are cleared and the cost is recomputed from what survives |
 | `/api/instructions` | The whole caller workflow, rating prompt embedded — hand an agent this URL |
 | `/api/prompt` | Just the current versioned prompt, as JSON |
+| `/api/readings/prepare` | Match a draft and return first coverage, character budget and a short-lived preparation reference; does not store a reading |
 | `/api/readings` | `POST` a reading from an external caller agent |
-| `/api/openapi.json` | The two caller endpoints as an OpenAPI schema, for a ChatGPT Custom GPT Action. Unauthenticated on purpose — it describes a token-gated API without containing a token, and a schema importer cannot present one |
+| `/api/openapi.json` | Instructions, preparation and submission as an OpenAPI schema, for a ChatGPT Custom GPT Action. Unauthenticated on purpose — it describes a token-gated API without containing a token, and a schema importer cannot present one |
 | `/api/cron` | The scheduled job — runs only if nothing arrived within the interval. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
 | `/healthz` | Liveness, plus whether the database, API key and cron secret are wired up |
 

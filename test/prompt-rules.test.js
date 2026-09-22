@@ -81,6 +81,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [10, 'dad2824d4df0cb4e'], [11, 'b07394a17c224513'],
     [12, 'ec634a23074c59b3'],
     [13, 'b715e9198306b184'],
+    [14, 'ee36003b3dead317'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -249,4 +250,14 @@ test('v13 reduces the widget sentence budget without changing rating or writing 
       }
     }
   }
+});
+
+test('v14 reserves age space without changing the rating calibration', () => {
+  const before = renderPrompt(13).text;
+  const after = renderPrompt(14).text;
+  assert.equal(after.split('\nOutput')[0], before.split('\nOutput')[0]);
+  assert.match(after, /at most 120 characters including spaces and punctuation/);
+  assert.match(after, /at most 140 characters including spaces and punctuation/);
+  assert.match(after, /reserving 20 for an app-supplied age prefix/);
+  assert.match(after, /Submit no prefix/);
 });

@@ -43,7 +43,7 @@ export function ensureSchema() {
     // NULL means the caller returned no digest, false means it returned one
     // that did not match the text we served. The two are different findings.
     await sql`ALTER TABLE ratings ADD COLUMN IF NOT EXISTS prompt_verified BOOLEAN`;
-    // Which development this reading reports, judged once on arrival and never
+    // Which development this reading reports, judged once before storage and never
     // recomputed (src/story.js). NULL development_of on a judged row means the
     // reading opened a development; judge_version NULL means no judgement was
     // made at all, which the display rule treats as "inherit", not as "new".
@@ -76,6 +76,12 @@ export function ensureSchema() {
         reason      TEXT        NOT NULL,  -- which rule fired, in its own words
         method      TEXT,                  -- 'GET' or 'POST'
         soft_errors BOOLEAN     NOT NULL DEFAULT false -- was the 200-shaped form on
+      )`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS reading_preparations (
+        id UUID PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL,
+        score SMALLINT NOT NULL, prompt_version INTEGER NOT NULL,
+        draft TEXT NOT NULL, judgement JSONB NOT NULL
       )`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_created_at ON ratings (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS rejections_created_at ON rejections (created_at DESC)`;
@@ -509,4 +515,25 @@ export async function setSetting(key, value) {
   await sql`
     INSERT INTO settings (key, value, updated_at) VALUES (${key}, ${String(value)}, now())
     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
+}
+
+/** Short-lived drafts are not readings and do not suppress scheduled runs. */
+export async function savePreparation({ id, score, draft, promptVersion, judgement, createdAt }) {
+  await ensureSchema();
+  await sql`DELETE FROM reading_preparations WHERE created_at < now() - interval '1 day'`;
+  await sql`INSERT INTO reading_preparations (id, created_at, score, prompt_version, draft, judgement)
+    VALUES (${id}::uuid, ${createdAt}, ${score}, ${promptVersion}, ${draft}, ${JSON.stringify(judgement)}::jsonb)`;
+}
+
+/** Atomic, single-use. Invalid/expired receipts fall back to ordinary judging. */
+export async function takePreparation(id, score, promptVersion) {
+  if (typeof id !== 'string' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id)) return null;
+  await ensureSchema();
+  const rows = await sql`DELETE FROM reading_preparations
+    WHERE id = ${id}::uuid AND score = ${score} AND prompt_version = ${promptVersion}
+      AND created_at > now() - interval '30 minutes'
+    RETURNING judgement, draft`;
+  if (!rows[0]) return null;
+  const judgement = typeof rows[0].judgement === 'string' ? JSON.parse(rows[0].judgement) : rows[0].judgement;
+  return { judgement, draft: rows[0].draft };
 }

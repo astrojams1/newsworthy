@@ -4,6 +4,8 @@ struct Reading: Codable, Equatable, Sendable {
     let score: Int
     let explanation: String
     let created_at: String
+    var explanation_text: String? = nil
+    var explanation_since: String? = nil
 
     var updatedAt: Date? {
         let formatter = ISO8601DateFormatter()
@@ -11,6 +13,34 @@ struct Reading: Codable, Equatable, Sendable {
         if let date = formatter.date(from: created_at) { return date }
         formatter.formatOptions = [.withInternetDateTime]
         return formatter.date(from: created_at)
+    }
+
+    func displayedExplanation(at now: Date) -> String {
+        var prefix = ""
+        if explanation_text != nil, let raw = explanation_since {
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            var start = formatter.date(from: raw)
+            if start == nil { formatter.formatOptions = [.withInternetDateTime]; start = formatter.date(from: raw) }
+            if let start, start <= now {
+                let minutes = Int(now.timeIntervalSince(start) / 60)
+                if minutes < 1 { prefix = "Just now: " }
+                else {
+                    let (value, unit): (Int, String) = minutes < 60 ? (minutes, "minute")
+                        : minutes < 2880 ? (minutes / 60, "hour")
+                        : minutes < 525600 ? (minutes / 1440, "day") : (minutes / 525600, "year")
+                    prefix = "\(value) \(unit)\(value == 1 ? "" : "s") ago: "
+                }
+            }
+        }
+        let body = explanation_text ?? explanation
+        let limit = 140 - prefix.unicodeScalars.count
+        if body.unicodeScalars.count <= limit { return prefix + body }
+        var cut = String(String.UnicodeScalarView(body.unicodeScalars.prefix(limit - 1)))
+        if let space = cut.lastIndex(of: " "), cut[..<space].unicodeScalars.count > limit / 2 {
+            cut = String(cut[..<space])
+        }
+        return prefix + cut.trimmingCharacters(in: .whitespacesAndNewlines) + "…"
     }
 
     var isValid: Bool {
