@@ -56,14 +56,15 @@ export default function Settings() {
       <View style={{ width: '100%', maxWidth: 440, gap: 28 }}>
         <View accessibilityRole="radiogroup" accessibilityLabel="Appearance">
           <Text accessibilityRole="header" style={heading}>Appearance</Text>
-          <View testID="theme-options" style={{ ...card, flexDirection: 'row', padding: 4 }}>
-            {THEME_CHOICES.map(({ value, label: name }) => {
+          <View testID="theme-options" style={{ ...card, padding: 0, overflow: 'hidden' }}>
+            {THEME_CHOICES.map(({ value, label: name }, index) => {
               const checked = preferences.theme === value;
               return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={name} accessibilityState={{ checked, selected: checked }}
                 testID={`theme-${value}`} onPress={() => setTheme(value as ThemePreference)}
-                style={{ flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 12,
-                  backgroundColor: checked ? theme.accent : 'transparent' }}>
-                <Text style={{ ...label, color: checked ? theme.tinted : theme.ink, fontWeight: checked ? '600' : '400' }}>{name}</Text>
+                style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16,
+                  borderTopWidth: index === 0 ? 0 : 1, borderTopColor: theme.rule }}>
+                <Text style={label}>{name}</Text>
+                <Text accessible={false} style={{ color: theme.accent, fontSize: 18, opacity: checked ? 1 : 0 }}>✓</Text>
               </Pressable>;
             })}
           </View>
@@ -77,20 +78,20 @@ export default function Settings() {
               <Switch testID="notifications-switch" accessibilityLabel="Notify me about high readings" value={enabled} disabled={busy}
                 onValueChange={toggle} trackColor={{ false: theme.rule, true: theme.accent }} ios_backgroundColor={theme.rule} />
             </View>
-            <View style={{ height: 1, backgroundColor: theme.rule, marginVertical: 12 }} />
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, gap: 16 }}>
-              <Text style={{ ...label, flex: 1 }}>Minimum score</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <StepButton glyph="−" name="Lower minimum score" testID="threshold-down" disabled={threshold <= MIN_THRESHOLD} onPress={() => step(-1)} />
-                <Text testID="threshold-value" accessibilityLiveRegion="polite" accessibilityLabel={`${threshold} out of 10`}
-                  style={{ color: theme.ink, fontSize: 24, fontWeight: '300', minWidth: 56, textAlign: 'center',
-                    fontFamily: process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace', fontVariant: ['tabular-nums'] }}>{threshold}</Text>
-                <StepButton glyph="+" name="Raise minimum score" testID="threshold-up" disabled={threshold >= MAX_THRESHOLD} onPress={() => step(1)} />
+            {enabled && <>
+              <View style={{ height: 1, backgroundColor: theme.rule, marginVertical: 12 }} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48, gap: 16 }}>
+                <Text style={{ ...label, flex: 1 }}>Minimum score</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <StepButton glyph="−" name="Lower minimum score" testID="threshold-down" disabled={threshold <= MIN_THRESHOLD} onPress={() => step(-1)} />
+                  <Text testID="threshold-value" accessibilityLiveRegion="polite" accessibilityLabel={`${threshold} out of 10`}
+                    style={{ color: theme.ink, fontSize: 24, fontWeight: '300', minWidth: 56, textAlign: 'center',
+                      fontFamily: process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace', fontVariant: ['tabular-nums'] }}>{threshold}</Text>
+                  <StepButton glyph="+" name="Raise minimum score" testID="threshold-up" disabled={threshold >= MAX_THRESHOLD} onPress={() => step(1)} />
+                </View>
               </View>
-            </View>
+            </>}
           </View>
-          <Text style={note}>One notification when a new development is rated {threshold} or higher. Nothing is sent for routine updates.</Text>
-          <Text style={{ ...note, marginTop: 6 }}>Ratings are AI judgments and not an emergency alert service.</Text>
           {notice !== '' && <Text accessibilityLiveRegion="polite" style={{ ...note, color: theme.danger }}>{notice}</Text>}
         </View>}
       </View>

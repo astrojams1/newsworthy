@@ -34,7 +34,10 @@ test('the website shows the appearance choice and no notification setting', () =
   assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
     [['System', true], ['Light', false], ['Dark', false]]);
   assert.ok(!all.some(n => n.type === 'Switch'), 'push notifications are a native feature');
-  assert.deepEqual(text(all), ['Appearance', 'System', 'Light', 'Dark', 'System follows your device’s light or dark setting.']);
+  assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓', 'System follows your device’s light or dark setting.']);
+  // Vertical: each option is its own full-width row, the checked one marked.
+  assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
+  assert.deepEqual(radios.map(n => nodes(n).find(c => c.type === 'Text' && c.props.children === '✓').props.style.opacity), [1, 0, 0]);
 });
 
 for (const platform of ['ios', 'android']) {
@@ -44,14 +47,14 @@ for (const platform of ['ios', 'android']) {
     const toggle = all.find(n => n.type === 'Switch');
     assert.equal(toggle.props.value, false);
     assert.equal(toggle.props.accessibilityLabel, 'Notify me about high readings');
-    assert.equal(all.find(n => n.props?.testID === 'threshold-value').props.children, 8);
-    assert.ok(text(all).includes('One notification when a new development is rated 8 or higher. Nothing is sent for routine updates.'));
-    assert.ok(text(all).includes('Ratings are AI judgments and not an emergency alert service.'));
-    for (const button of all.filter(n => n.props?.accessibilityRole === 'button')) {
-      assert.ok(button.props.accessibilityLabel, 'stepper buttons are named');
-      assert.equal(button.props.accessibilityState.disabled, false, 'both steps are available at 8');
-      assert.deepEqual([button.props.style.width, button.props.style.height], [48, 48]);
-    }
+    assert.equal(all.find(n => n.props?.testID === 'threshold-value'), undefined, 'the score is shown only once notifications are on');
+    assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓',
+      'System follows your device’s light or dark setting.', 'Notifications', 'Notify me about high readings']);
+    const on = nodes(renderSettings({ platform, stored: { notifications: { enabled: true, threshold: 8, token: 'ExponentPushToken[on-on-on-on]' } } }).tree);
+    assert.equal(on.find(n => n.props?.testID === 'threshold-value').props.children, 8);
+    const steps = on.filter(n => n.type?.name === 'StepButton');
+    assert.deepEqual(steps.map(n => [n.props.name, n.props.disabled]),
+      [['Lower minimum score', false], ['Raise minimum score', false]], 'both named steps are available at 8');
     // Choosing Dark records the choice; nothing else is touched.
     all.find(n => n.props?.testID === 'theme-dark').props.onPress();
     assert.deepEqual(calls.setTheme, ['dark']);
@@ -60,23 +63,27 @@ for (const platform of ['ios', 'android']) {
 }
 
 test('the stepper stays inside the scale and only re-registers a device that is on', async () => {
-  const top = renderSettings({ platform: 'ios', stored: { notifications: { threshold: 10 } } });
+  const token = 'ExponentPushToken[on-on-on-on]';
+  const top = renderSettings({ platform: 'ios', stored: { notifications: { enabled: true, token, threshold: 10 } } });
   const up = nodes(top.tree).find(n => n.props?.testID === 'threshold-up');
   const down = nodes(top.tree).find(n => n.props?.testID === 'threshold-down');
   assert.equal(up.props.disabled, true);
   assert.equal(down.props.disabled, false);
   await down.props.onPress();
   assert.deepEqual(top.calls.setNotifications, [{ threshold: 9 }]);
-  assert.deepEqual(top.calls.updatePushThreshold, [], 'off: the server holds no row to update');
+  assert.deepEqual(top.calls.updatePushThreshold, [[token, 9]]);
 
-  const bottom = renderSettings({ platform: 'ios', stored: { notifications: { threshold: 1 } } });
+  const bottom = renderSettings({ platform: 'ios', stored: { notifications: { enabled: true, token, threshold: 1 } } });
   assert.equal(nodes(bottom.tree).find(n => n.props?.testID === 'threshold-down').props.disabled, true);
 
-  const on = renderSettings({ platform: 'android', stored: { notifications: { enabled: true, threshold: 8, token: 'ExponentPushToken[on-on-on-on]' } } });
+  const on = renderSettings({ platform: 'android', stored: { notifications: { enabled: true, threshold: 8, token } } });
   assert.equal(nodes(on.tree).find(n => n.type === 'Switch').props.value, true);
   await nodes(on.tree).find(n => n.props?.testID === 'threshold-up').props.onPress();
   assert.deepEqual(on.calls.setNotifications, [{ threshold: 9 }]);
-  assert.deepEqual(on.calls.updatePushThreshold, [['ExponentPushToken[on-on-on-on]', 9]]);
+  assert.deepEqual(on.calls.updatePushThreshold, [[token, 9]]);
+  // Off: no score to step, and the server holds no row to update.
+  const off = nodes(renderSettings({ platform: 'android' }).tree);
+  assert.equal(off.find(n => n.props?.testID === 'threshold-up'), undefined);
 });
 
 test('turning notifications on registers the device at the chosen score, and a refusal leaves it off', async () => {
