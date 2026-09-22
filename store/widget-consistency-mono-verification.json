@@ -7,7 +7,7 @@
     "designGate": "55 passed after the final spacing correction.",
     "swiftStore": "Production Swift actor compiled and executed: coalesced sizes, sibling reload, restart, stale response, same-message decay, concurrent app update, offline and invalid cache.",
     "typeScript": "passed",
-    "fullSuite": "Initial local run: 234 passed; two route checks failed because the web export omitted index.html with parent-checkout dependencies, and the native compiler test timed out under machine load. The standalone production Swift test subsequently passed. Worktree dependency installation and final full rerun remain incomplete."
+    "fullSuite": "npm test passed: 236 passed, 1 explicitly opt-in native Swift test skipped; production web export completed. The production Swift actor was also compiled and tested separately."
   },
   "nativeVerification": {
     "ios": "Captured production ReadingContent layout and typography in a SwiftUI host on iPhone16ProMax iOS18.3. The host supplies the three-stop background outside WidgetKit and resolves named colors from the production asset catalog values because the installed actool cannot compile assets for the available iOS simulator runtimes. This is a native UI capture with a sample reading, not a WidgetKit Home Screen capture. Both sizes, light/dark, score3, original timestamp, monospace denominator, compact slash spacing and third-line baseline inspected.",
