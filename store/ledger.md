@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-22T12:01:20+00:00
+Updated: 2026-09-22T12:10:38+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -74,9 +74,9 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 | apple.review-state | done | agent | observed | Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission. | — |
 | story-age.native | todo | agent | observed | Story-age source adds local age formatting to Expo and both widgets; replacement native package and visual parity remain unverified. | Build replacement native packages and verify both widget sizes, themes, score 10, enlarged text, resizing and offline age transitions. |
-| apple.testflight-15 | waiting_provider | provider | observed | EAS is compiling iOS 1.0.0 build15 from origin/main 65cafc3. Application source is clean; only ledger edits were present during archive preparation. Tests passed256, skipped1; design, TypeScript and mobile configuration checks passed. | Verify finished signed package, upload exact build15 and read back Apple processing and Release QA group status. |
+| apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
-| apple.testflight-15-upload | waiting_provider | provider | observed | EAS accepted upload submission of exact iOS1.0.0 build15 using the existing Apple key. | Wait for upload completion and Apple VALID; add processed build15 to existing Release QA group and save beta notes. |
+| apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
 
 ## Evidence and history
 
@@ -2149,3 +2149,29 @@ EAS accepted upload submission of exact iOS1.0.0 build15 using the existing Appl
 - Submission12c4aa47-2b07-4b04-801d-e4d3d1bed202; build2f8440c5-571b-4aa7-bf6d-3569e0fff3b6.
 
 Next: Wait for upload completion and Apple VALID; add processed build15 to existing Release QA group and save beta notes.
+
+### 219. apple.testflight-15-upload — done
+
+2026-09-22T12:06:00+00:00 · observed · agent
+
+EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted.
+
+- Fresh EAS submission readback; Apple altool validation result; store/testflight-15.json.
+
+### 220. apple.testflight-15 — waiting_provider
+
+2026-09-22T12:06:20+00:00 · observed · provider
+
+Build15 upload finished successfully. Apple has received the binary, but the build15 API resource is not visible yet while processing. Existing Release QA group and membership confirmed.
+
+- EAS submission12c4aa47 FINISHED; Apple redundant-build preflight response; build15 API list empty at2026-09-22T12:06Z.
+
+Next: Read processed build15, save test notes and assign to Release QA; verify IN_BETA_TESTING.
+
+### 221. apple.testflight-15 — done
+
+2026-09-22T12:10:38+00:00 · observed · agent
+
+iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified.
+
+- Apple buildcdc91a98-a0a3-4ce0-8958-7884c990da8d; group312a8585-2ca2-413e-bb5f-75d0ba487e13; readback2026-09-22T12:10:04Z; store/testflight-15.json.

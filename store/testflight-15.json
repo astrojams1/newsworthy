@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-09-22T11:54:23.416471+00:00",
+  "observedAt": "2026-09-22T12:10:04.344Z",
   "scope": "Updated iOS TestFlight from latest merged main; no new app code in this release task.",
   "version": "1.0.0",
   "build": "15",
@@ -21,7 +21,8 @@
     },
     "typeScript": "passed",
     "mobileConfiguration": "passed",
-    "liveEndpoints": "Current reading API provides explanation_since; privacy and support returned HTTP200."
+    "liveEndpoints": "Current reading API provides explanation_since; privacy and support returned HTTP200.",
+    "applePreflight": "Validation ran while EAS completed upload; Apple returned redundant binary409 for build15. No direct upload was performed."
   },
   "nativeVerification": {
     "physicalDevice": "Build15 not installed or visually verified in this task.",
@@ -29,9 +30,12 @@
     "android": "Outside this TestFlight update scope."
   },
   "testFlight": {
-    "state": "UPLOAD_SCHEDULED",
+    "state": "IN_BETA_TESTING",
     "groupId": "312a8585-2ca2-413e-bb5f-75d0ba487e13",
-    "groupName": "Release QA"
+    "groupName": "Release QA",
+    "groupAttached": true,
+    "notesVerified": true,
+    "notes": "Updated to the latest merged app version.\n\n- Improved score, denominator and sentence alignment in the app and Home Screen widgets.\n- Added wording that shows how long the reported development has been covered, with age updating as time passes.\n\nPlease check both widget sizes, light and dark appearance, larger text, and reopening after being offline. Widget refresh timing remains controlled by iOS.\n"
   },
   "appReview": {
     "selectedBuild": "7",
@@ -62,5 +66,8 @@
       }
     ]
   },
-  "submissionId": "12c4aa47-2b07-4b04-801d-e4d3d1bed202"
+  "submissionId": "12c4aa47-2b07-4b04-801d-e4d3d1bed202",
+  "uploadState": "FINISHED",
+  "appleBuildId": "cdc91a98-a0a3-4ce0-8958-7884c990da8d",
+  "appleProcessingState": "VALID"
 }
