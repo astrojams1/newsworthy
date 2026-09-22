@@ -4,13 +4,13 @@
   "scope": "Shared widget refresh, timestamp ordering, score-bound background identity, monospace score and denominator, compact slash spacing, and third-sentence-line baseline.",
   "releaseState": "SOURCE_FIX_NOT_RELEASED",
   "checks": {
-    "designGate": "58 passed after leading-gap and actual WidgetKit padding corrections.",
+    "designGate": "59 passed after the denominator optical baseline correction.",
     "swiftStore": "Production Swift actor compiled and executed: coalesced sizes, sibling reload, restart, stale response, same-message decay, concurrent app update, offline and invalid cache.",
     "typeScript": "passed",
-    "fullSuite": "npm test passed: 239 passed, 1 explicitly opt-in native Swift test skipped; production web export completed. The production Swift actor was also compiled and tested separately."
+    "fullSuite": "npm test passed: 240 passed, 1 explicitly opt-in native Swift test skipped; production web export completed. The production Swift actor was also compiled and tested separately."
   },
   "nativeVerification": {
-    "ios": "Actual small and medium WidgetKit widgets captured on the iPhone 16 Pro Max iOS 18.3 Home Screen, using the live production API reading (score 3, created_at 2026-09-22T10:05:10.020Z; displayed Sep 22 \u00b7 6:05 PM). Both showed the same timestamp, score and level-3 palette. Inspected monospace numerals/denominator, reduced spacing and alignment with sentence line three. Switched light to dark and back: native named colors updated in place. Home Screen verification exposed missing automatic margins; production content now owns explicit 16-point padding with automatic margins disabled. Earlier ios-native.png remains a sample-reading test-host capture and is superseded by the Home Screen images.",
+    "ios": "Actual small and medium WidgetKit widgets captured on the iPhone 16 Pro Max iOS 18.3 Home Screen, using the live production API reading (score 3, created_at 2026-09-22T10:05:10.020Z; displayed Sep 22 \u00b7 6:05 PM). Both showed the same timestamp, score and level-3 palette. Inspected monospace numerals/denominator, reduced spacing and alignment with sentence line three. Switched light to dark and back: native named colors updated in place. Home Screen verification exposed missing automatic margins; production content now owns explicit 16-point padding with automatic margins disabled. Earlier ios-native.png remains a sample-reading test-host capture and is superseded by the Home Screen images. Follow-up: native layout instrumentation confirmed sentence line 3 and the combined score text shared a typographic baseline (sentence first=13.3333, last=73.3333 across four lines, 20-point advances). The user still found the denominator visually high. Applied a one-point downward optical correction to the denominator only and recaptured actual widgets; the numeral and sentence positions remain unchanged.",
     "android": "Design/source contract checked; no Android SDK or Java runtime available for a new native capture.",
     "iosBuildProvenance": "Compiled the unchanged production NewsworthyWidget.swift, WidgetReadingStore.swift and WidgetConfig.swift with Xcode 16.2 swiftc, iPhoneSimulator 18.2 SDK, arm64 iOS 16.4 simulator target, application-extension and linker entry _NSExtensionMain. Installed that extension in a copy of the existing simulator Newsworthy app, retaining its unchanged Assets.car and AppIntents metadata. Local simulator package version 1501, ad hoc signing with the configured App Group. This verifies the production extension in WidgetKit, not a newly built full Expo package or release binary."
   },
@@ -23,11 +23,11 @@
   ],
   "captureStatus": "ACTUAL_WIDGETKIT_HOME_SCREEN_CAPTURED",
   "captures": [
-    "store/source/widget-consistency-mono/ios-homescreen-light.png",
-    "store/source/widget-consistency-mono/ios-homescreen-dark.png"
+    "store/source/widget-consistency-mono/ios-homescreen-baseline-light.png",
+    "store/source/widget-consistency-mono/ios-homescreen-baseline-dark.png"
   ],
   "sourceSha256": {
-    "apps/client/targets/widget/NewsworthyWidget.swift": "5fb8f96c6966fc2a6d2fff870a1a1b16a12eb398e81112bcc5b0ea3682227674",
+    "apps/client/targets/widget/NewsworthyWidget.swift": "f0594c16e01e0ce488d49d8f78751dd55bc1081651d985f1accaca6c404a6367",
     "apps/client/targets/widget/WidgetReadingStore.swift": "a5dc4fa76eb44277df9f1cdb67f0c5b6d83cea1aa16f3d458e81763d7d9012b7",
     "test/native/widget-gallery.swift": "257e1e401319d2d292dcf05cbe957ea21bd9fa8fa286548a2e80c6d5d9eca152"
   },

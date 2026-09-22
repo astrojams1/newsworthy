@@ -78,7 +78,9 @@ All reading surfaces use U+2215 DIVISION SLASH immediately followed by `10`.
 The monospace glyph side bearings provide the small visible gap;
 the division slash’s stroke sits optically alongside the lining numerals instead of the ordinary
 slash’s descending tail. Keep the denominator in one text run, on the existing
-score baseline; do not add per-platform vertical offsets. Shared/copied readings
+score baseline. The iOS widget denominator has a one-point downward optical
+correction, verified in the actual Home Screen widget, because the smaller SF Mono
+glyphs appeared high alongside sentence line three. Shared/copied readings
 retain plain `/10`, and the app accessibility label remains “out of 10”.
 Monospaced score/denominator fonts (Menlo in the iOS app, the system monospace
 face in SwiftUI, and monospace on Android/web), launcher cell geometry, iOS's optional hidden name, timestamp

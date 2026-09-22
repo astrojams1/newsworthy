@@ -124,6 +124,8 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(java, /static synchronized void renderAll/, 'all Android instances render one snapshot without interleaving');
 
   const swift = code(sources.swift);
+  assert.deepEqual(extract(swift, /static let denominatorBaselineOffset: CGFloat = (-?\d+)/, 'iOS denominator optical baseline'), [c.iosDenominatorBaselineOffset], 'iOS denominator optical baseline');
+  assert.match(swift, /baselineOffset\(WidgetTypography.denominatorBaselineOffset\)/, 'iOS denominator optical correction is applied');
   assert.match(swift, /content.padding\(16\).containerBackground/, 'iOS content stays inside rounded widget corners');
   assert.match(swift, /\.contentMarginsDisabled\(\)/, 'iOS explicit padding replaces automatic margins');
   assert.deepEqual(extract(swift, /static let scoreSize: CGFloat = (\d+)/, 'iOS shared numeral'), [c.compactScore]);

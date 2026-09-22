@@ -84,6 +84,8 @@ private enum WidgetTypography {
     static let explanationSize: CGFloat = 14
     static let explanationLineHeight: CGFloat = 20
     static let denominatorSize: CGFloat = 12
+    // Small SF Mono glyphs appeared high in the actual Home Screen widget.
+    static let denominatorBaselineOffset: CGFloat = -1
     static let columnGap: CGFloat = 16
 }
 
@@ -151,6 +153,7 @@ struct ReadingContent: View {
          + Text("∕10")
             .font(.system(size: WidgetTypography.denominatorSize, weight: .light, design: .monospaced))
             .tracking(0)
+            .baselineOffset(WidgetTypography.denominatorBaselineOffset)
             .foregroundColor(Color("NewsworthyGradientMuted")))
             .lineLimit(1).fixedSize()
             .accessibilityElement(children: .ignore)

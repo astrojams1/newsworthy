@@ -1,5 +1,5 @@
 {
-  "denominatorText": "∕10",
+  "denominatorText": "\u221510",
   "header": {
     "shareIconSize": 24,
     "shareOpticalOffsetY": {
@@ -24,7 +24,8 @@
     "explanationSize": 14,
     "explanationLineHeight": 20,
     "numeralLines": 3,
-    "columnGap": 16
+    "columnGap": 16,
+    "iosDenominatorBaselineOffset": -1
   },
   "reading": {
     "weight": "300",
