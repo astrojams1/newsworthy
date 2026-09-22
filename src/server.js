@@ -5,7 +5,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { takePreparation, correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, ratingsByIds, recentAttempts, recentRatings, recentRejections, recentStories, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { takePreparation, correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
@@ -190,23 +190,6 @@ async function serveStatic(res, name) {
     res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     res.end('Not found');
   }
-}
-
-/**
- * First-report times for developments whose opening reading is older than the
- * replay window. A story running since Tuesday would otherwise date from the
- * edge of the window and read as younger than it is.
- */
-async function rootTimes(ascending) {
-  const present = new Set(ascending.map((r) => r.id));
-  const missing = [...new Set(
-    ascending
-      .filter((r) => r.judge_version != null && r.development_of != null)
-      .map((r) => r.development_of)
-      .filter((id) => !present.has(id)),
-  )];
-  const rows = await ratingsByIds(missing);
-  return new Map(rows.map((r) => [r.id, { t: Date.parse(r.created_at), story: r.story }]));
 }
 
 const server = createServer(async (req, res) => {

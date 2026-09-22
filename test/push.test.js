@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { CALLER_TOKEN as CALLER, PORTS, readings, withServer } from './with-server.js';
-import { DEFAULT_THRESHOLD, MAX_SUBSCRIPTIONS, developmentFor, messageFor, validateSubscription } from '../src/push.js';
+import { DEFAULT_THRESHOLD, MAX_SUBSCRIPTIONS, messageFor, notifyReading, validateSubscription } from '../src/push.js';
+import { PUSH_CLAIM_STALE_MINUTES, claimPushDelivery, completePushDelivery, ensureSchema, insertRating, releasePushDeliveries, upsertPushSubscription } from '../src/db.js';
+import { sql } from '../src/sql.js';
 
 const TOKENS = {
   a: 'ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]',
@@ -58,23 +60,8 @@ test('a subscription is one Expo token and a threshold, validated field by field
   assert.ok(MAX_SUBSCRIPTIONS > 0, 'a public write route is bounded');
 });
 
-test('which development a reading announces: judged rows name it, unjudged rows announce a crossing', () => {
-  const judgedNew = { id: 10, score: 8, judge_version: 2, development_of: null };
-  const judgedSame = { id: 11, score: 9, judge_version: 2, development_of: 10 };
-  assert.equal(developmentFor(judgedNew, null, 8), 10);
-  assert.equal(developmentFor(judgedSame, judgedNew, 8), 10, 'a re-report is its development, not itself');
-  // Unjudged: the previous reading below the threshold makes this a crossing,
-  // one at or above it makes this the same plateau.
-  const unjudged = { id: 12, score: 8, judge_version: null, development_of: null };
-  assert.equal(developmentFor(unjudged, { id: 9, score: 5, judge_version: null }, 8), 12);
-  assert.equal(developmentFor(unjudged, { id: 9, score: 8, judge_version: null }, 8), 9);
-  assert.equal(developmentFor(unjudged, judgedSame, 8), 10, 'the plateau is the previous reading’s development');
-  assert.equal(developmentFor(unjudged, judgedSame, 10), 12, 'and a plateau is judged per threshold');
-  assert.equal(developmentFor(unjudged, null, 8), 12);
-});
-
-test('the notification is the number and the sentence, nothing urgent', () => {
-  const message = messageFor({ id: 5, score: 8, explanation: 'A ceasefire took hold overnight.' });
+test('the notification is the number the page shows and the newest sentence, nothing urgent', () => {
+  const message = messageFor({ score: 8, newest: { id: 5, score: 9, explanation: 'A ceasefire took hold overnight.' } });
   assert.deepEqual(message, {
     title: 'Newsworthy · 8/10', body: 'A ceasefire took hold overnight.', sound: 'default', data: { reading_id: 5, score: 8 },
   });
@@ -98,7 +85,7 @@ test('devices register, move their threshold and leave; malformed requests are n
   });
 });
 
-test('a stored reading reaches the devices whose threshold it meets, once per development and threshold', async () => {
+test('devices hear the number the page shows, once per development and threshold', async () => {
   await withRelay(async (received, url) => {
     await withServer({ port: PORTS.pushDeliveries, env: { NEWSWORTHY_NO_SCHEDULER: '1', NEWSWORTHY_PUSH_URL: url } }, async (base) => {
       const push = call(base);
@@ -107,15 +94,18 @@ test('a stored reading reaches the devices whose threshold it meets, once per de
         assert.equal((await push('PUT', { token, threshold, platform: 'android' })).status, 200);
       }
       const sent = () => received.splice(0).map((m) => [m.to, m.title]);
+      const shown = async () => (await (await fetch(`${base}/api/current`)).json()).score;
 
       // Below every threshold: nothing.
       assert.equal((await submit(`token=${CALLER}&score=7&explanation=Talks+continue+over+the+border+dispute`)).status, 201);
       assert.deepEqual(sent(), []);
 
-      // An 8 reaches the 8s and not the 9. The unregistered device is dropped.
+      // An 8 opens a development and the page shows 8: the 8s hear, the 9 does
+      // not. The unregistered device is dropped.
       const first = await submit(`token=${CALLER}&score=8&explanation=Earthquake+levels+towns+across+the+northern+valley`);
       assert.equal(first.status, 201);
       assert.equal(first.body.development, 'new');
+      assert.equal(await shown(), 8);
       assert.deepEqual(sent(), [[TOKENS.a, 'Newsworthy · 8/10'], [TOKENS.gone, 'Newsworthy · 8/10']]);
       assert.deepEqual(await push('DELETE', { token: TOKENS.gone }), { status: 200, body: { ok: true, removed: 0 } },
         'Expo said the device is gone, so its row went with it');
@@ -125,19 +115,109 @@ test('a stored reading reaches the devices whose threshold it meets, once per de
       assert.equal(again.body.development, 'same');
       assert.deepEqual(sent(), []);
 
-      // It escalates to a 9: the device waiting for a 9 hears now, the one
-      // that already heard at 8 does not hear twice.
-      const worse = await submit(`token=${CALLER}&score=9&explanation=Earthquake+death+toll+across+the+northern+valley+passes+a+thousand`);
-      assert.equal(worse.body.development, 'same');
-      assert.deepEqual(sent(), [[TOKENS.b, 'Newsworthy · 9/10']]);
+      // A 9 on the same development is inside the page's noise margin: the
+      // page still shows 8, so the device waiting for a 9 is not told a 9.
+      const nudge = await submit(`token=${CALLER}&score=9&explanation=Earthquake+death+toll+across+the+northern+valley+passes+a+thousand`);
+      assert.equal(nudge.body.development, 'same');
+      assert.equal(await shown(), 8);
+      assert.deepEqual(sent(), []);
 
-      // A different development at 8 is news again for the 8.
+      // A 10 on the same development re-anchors it only once the median
+      // confirms the level — the page's own lag against a single loud reading.
+      // Until then the page shows 8 and no device is told a 10; when the page
+      // shows 10, the 9 hears, and the device that heard at 8 does not hear twice.
+      for (const [text, expected, announced] of [
+        ['Earthquake death toll across the northern valley passes ten thousand', 8, []],
+        ['Earthquake across the northern valley: toll passes ten thousand as aid stalls', 8, []],
+        ['Earthquake toll across the northern valley nears fifteen thousand', 10, [[TOKENS.b, 'Newsworthy · 10/10']]],
+      ]) {
+        const worse = await submit(`token=${CALLER}&score=10&explanation=${text.replaceAll(' ', '+')}`);
+        assert.equal(worse.body.development, 'same', text);
+        assert.equal(await shown(), expected, text);
+        assert.deepEqual(sent(), announced, text);
+      }
+
+      // A different development at 8 while the 10 is still the loudest: the
+      // page does not change, so nothing is announced — a notification would
+      // have opened on a 10 about something else.
       const other = await submit(`token=${CALLER}&score=8&explanation=Central+bank+halts+currency+trading+after+overnight+collapse`);
       assert.equal(other.body.development, 'new');
-      assert.deepEqual(sent(), [[TOKENS.a, 'Newsworthy · 8/10']]);
-      assert.deepEqual(received.map((m) => m.body), [], 'every message was consumed by the assertions above');
+      assert.equal(await shown(), 10);
+      assert.deepEqual(sent(), []);
     });
   });
+});
+
+// ---- in-process: the announcer against PGlite, with Expo stood in by a function
+
+const base = { prompt_version: 1, prompt_hash: 'abc', prompt_text: 'p', model: 'mock-model', status: 'ok' };
+const minutesAgo = (m) => new Date(Date.now() - m * 60_000).toISOString();
+function relay(fail = () => false) {
+  const received = [];
+  const fetchImpl = async (_url, { body }) => {
+    const messages = JSON.parse(body);
+    if (fail(messages)) return { ok: false, status: 503, json: async () => ({}) };
+    received.push(...messages);
+    return { ok: true, status: 200, json: async () => ({ data: messages.map(() => ({ status: 'ok', id: 't' })) }) };
+  };
+  return { received, fetchImpl };
+}
+
+test('a judge outage does not repeat: consecutive unjudged readings inherit one development', async () => {
+  // The finding: with the predecessor's id as the root, four unjudged 8s
+  // announced three times. The page's replay inherits through an outage, and
+  // the announcer now asks the page.
+  await ensureSchema();
+  await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`;
+  await upsertPushSubscription({ token: TOKENS.a, threshold: 8, platform: 'ios' });
+  const { received, fetchImpl } = relay();
+  const results = [];
+  for (const [minutes, text] of [[40, 'Dam breach floods the delta'], [30, 'Dam breach floods the delta, towns evacuated'],
+    [20, 'Dam breach floods the delta, toll rising'], [10, 'Dam breach floods the delta, aid arriving']]) {
+    const row = await insertRating({ ...base, score: 8, explanation: text, created_at: minutesAgo(minutes), judge_version: null });
+    results.push(await notifyReading(row, { fetchImpl }));
+  }
+  assert.deepEqual(results.map((r) => r.score), [8, 8, 8, 8], 'the page shows 8 throughout');
+  assert.deepEqual(results.map((r) => r.sent), [1, 0, 0, 0], 'announced once, on the crossing');
+  assert.equal(received.length, 1);
+});
+
+test('a failed send gives its claim back, so the next reading of the development tries again', async () => {
+  // The finding: a claim committed before Expo answered was never released,
+  // so one 503 silenced a development for every device at that threshold.
+  await ensureSchema();
+  await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`;
+  await upsertPushSubscription({ token: TOKENS.a, threshold: 8, platform: 'ios' });
+  let outage = true;
+  const { received, fetchImpl } = relay(() => outage);
+  const first = await insertRating({ ...base, score: 8, explanation: 'Refinery blast cuts fuel supply', created_at: minutesAgo(30), judge_version: 2, development_of: null, story: 'refinery' });
+  assert.deepEqual(await notifyReading(first, { fetchImpl }), { sent: 0, score: 8, thresholds: [8] }, 'claimed, then Expo failed');
+  assert.equal(received.length, 0);
+  outage = false;
+  const second = await insertRating({ ...base, score: 8, explanation: 'Refinery blast cuts fuel supply, prices jump', created_at: minutesAgo(20), judge_version: 2, development_of: first.id, story: 'refinery' });
+  assert.deepEqual(await notifyReading(second, { fetchImpl }), { sent: 1, score: 8, thresholds: [8] }, 'the released claim is taken again and delivered');
+  assert.deepEqual(received.map((m) => m.title), ['Newsworthy · 8/10']);
+  const third = await insertRating({ ...base, score: 8, explanation: 'Refinery blast cuts fuel supply, repairs begin', created_at: minutesAgo(10), judge_version: 2, development_of: first.id, story: 'refinery' });
+  assert.equal((await notifyReading(third, { fetchImpl })).sent, 0, 'and once delivered it stays delivered');
+});
+
+test('a claim protects against a concurrent duplicate, and a stale one is taken over', async () => {
+  await ensureSchema();
+  await sql`DELETE FROM push_deliveries`;
+  const claim = { root: 900, threshold: 8, readingId: 901, score: 8 };
+  assert.equal(await claimPushDelivery(claim), true);
+  assert.equal(await claimPushDelivery({ ...claim, readingId: 902 }), false, 'a second sender at the same moment sends nothing');
+  await releasePushDeliveries([claim]);
+  assert.equal(await claimPushDelivery({ ...claim, readingId: 902 }), true, 'released, it can be taken again');
+  await completePushDelivery({ ...claim, recipients: 3 });
+  await releasePushDeliveries([claim]);
+  assert.equal(await claimPushDelivery({ ...claim, readingId: 903 }), false, 'a completed delivery is never released or retaken');
+  // A sender that froze mid-send: its claim has no sent_at and ages out.
+  const frozen = { root: 910, threshold: 8, readingId: 911, score: 8 };
+  assert.equal(await claimPushDelivery(frozen), true);
+  assert.equal(await claimPushDelivery({ ...frozen, readingId: 912 }), false);
+  await sql`UPDATE push_deliveries SET claimed_at = now() - make_interval(mins => ${PUSH_CLAIM_STALE_MINUTES + 1}) WHERE root = 910`;
+  assert.equal(await claimPushDelivery({ ...frozen, readingId: 912 }), true, 'stale, it is taken over');
 });
 
 test('the push is awaited where the reading is stored, not left in flight', async () => {

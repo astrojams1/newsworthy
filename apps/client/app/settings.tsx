@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { useRef, useState } from 'react';
+import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import Head from 'expo-router/head';
 import { Stack, useRouter } from 'expo-router';
 import { BackIcon } from '@/components/back-icon';
@@ -7,11 +7,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
 import { Toggle } from '@/components/toggle';
-import { THEME_CHOICES, THRESHOLD_CHOICES, type ThemePreference } from '@/lib/preferences';
+import { THEME_CHOICES, THRESHOLD_CHOICES, type Preferences, type ThemePreference } from '@/lib/preferences';
 import { CheckIcon } from '@/components/check-icon';
 import { disablePush, enablePush, pushSupported, updatePushThreshold } from '@/lib/push';
 
-const ROW_HEIGHT = 56;
+const ROW_MIN_HEIGHT = 56;
 
 const NOTICES = {
   denied: 'Notifications are turned off for Newsworthy in your device settings.',
@@ -28,39 +28,59 @@ export default function Settings() {
   const { preferences, setTheme, setNotifications } = usePreferences();
   const { enabled, threshold, token } = preferences.notifications;
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState('');
-  const toggle = async (next: boolean) => {
-    if (busy) return;
+  const [notice, setNotice] = useState<'' | keyof typeof NOTICES>('');
+  // Every request that touches the server's row runs through one queue, and
+  // reads the newest local state when its turn comes rather than the state
+  // that was current when it was queued. Without both, a threshold change
+  // queued behind a switch-off could reach the server after the DELETE and
+  // register the device again while the app shows it as off.
+  const queue = useRef(Promise.resolve());
+  const latest = useRef<Preferences['notifications']>(preferences.notifications);
+  latest.current = preferences.notifications;
+  const store = (update: Partial<Preferences['notifications']>) => {
+    latest.current = { ...latest.current, ...update };
+    setNotifications(update);
+  };
+  const enqueue = (task: () => Promise<void>) => {
+    const run = queue.current.then(task, task);
+    queue.current = run.catch(() => {});
+    return run;
+  };
+  const toggle = (next: boolean) => enqueue(async () => {
     setBusy(true); setNotice('');
     try {
       if (next) {
-        const result = await enablePush(threshold);
-        if (result.ok) setNotifications({ enabled: true, token: result.token });
-        else setNotice(NOTICES[result.reason]);
-      } else if (!token || await disablePush(token)) {
-        setNotifications({ enabled: false, token: null });
-      } else setNotice(NOTICES.offline);
+        const result = await enablePush(latest.current.threshold);
+        if (result.ok) store({ enabled: true, token: result.token });
+        else setNotice(result.reason);
+      } else if (!latest.current.token || await disablePush(latest.current.token)) {
+        store({ enabled: false, token: null });
+      } else setNotice('offline');
     } finally { setBusy(false); }
-  };
-  const choose = async (next: number) => {
-    if (next === threshold || busy) return;
+  });
+  // The score can be chosen before notifications are on, so turning them on
+  // means something definite. Only a device the server holds is re-registered.
+  const choose = (next: number) => enqueue(async () => {
+    if (next === latest.current.threshold) return;
     setNotice('');
-    setNotifications({ threshold: next });
-    if (enabled && token && !(await updatePushThreshold(token, next))) {
-      setNotifications({ threshold });
-      setNotice(NOTICES.offline);
+    const previous = latest.current.threshold;
+    store({ threshold: next });
+    if (latest.current.enabled && latest.current.token && !(await updatePushThreshold(latest.current.token, next))) {
+      store({ threshold: previous });
+      setNotice('offline');
     }
-  };
-  const label = { color: theme.ink, fontSize: 17 } as const;
-  const heading = { color: theme.muted, fontSize: 13, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 } as const;
-  const card = { backgroundColor: theme.elevated, borderRadius: 16, borderWidth: 1, borderColor: theme.rule, overflow: 'hidden' } as const;
-  // One height for every setting, whatever control it carries.
-  const row = (index: number) => ({ height: ROW_HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, gap: 16,
-    borderTopWidth: index === 0 ? 0 : 1, borderTopColor: theme.rule } as const);
-  const note = { color: theme.muted, fontSize: 14, lineHeight: 20, marginTop: 12 } as const;
+  });
   // Reached with nothing behind it — a reload on web, a deep link the
   // navigator could not anchor — the screen still needs a way out.
   const stranded = !router.canGoBack();
+  const label = { color: theme.ink, fontSize: 17 } as const;
+  const heading = { color: theme.muted, fontSize: 13, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 } as const;
+  const card = { backgroundColor: theme.elevated, borderRadius: 16, borderWidth: 1, borderColor: theme.rule, overflow: 'hidden' } as const;
+  // One minimum for every setting, whatever control it carries: the rows match
+  // at the default text size and grow together when text is enlarged.
+  const row = (index: number) => ({ minHeight: ROW_MIN_HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 4, gap: 16,
+    borderTopWidth: index === 0 ? 0 : 1, borderTopColor: theme.rule } as const);
+  const note = { color: theme.muted, fontSize: 14, lineHeight: 20, marginTop: 12 } as const;
   return <>
     {process.env.EXPO_OS === 'web' && <Head><title>Settings · Newsworthy</title></Head>}
     {stranded && <Stack.Screen options={{ headerLeft: () => <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => router.replace('/')}
@@ -77,35 +97,42 @@ export default function Settings() {
               const checked = preferences.theme === value;
               return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={name} accessibilityState={{ checked, selected: checked }}
                 testID={`theme-${value}`} onPress={() => setTheme(value as ThemePreference)} style={row(index)}>
-                <Text style={label}>{name}</Text>
+                <Text style={{ ...label, flex: 1 }}>{name}</Text>
                 {checked && <CheckIcon color={theme.accent} />}
               </Pressable>;
             })}
           </View>
+          <Text style={note}>Widgets follow your device’s appearance.</Text>
         </View>
         {pushSupported && <View>
           <Text accessibilityRole="header" style={heading}>Notifications</Text>
           <View style={card}>
-            <View testID="notifications-row" style={row(0)}>
+            <Pressable testID="notifications-row" accessibilityRole="switch" accessibilityLabel="Notify me about high readings"
+              accessibilityState={{ checked: enabled, disabled: busy }} disabled={busy} onPress={() => toggle(!enabled)} style={row(0)}>
               <Text style={{ ...label, flex: 1 }}>Notify me about high readings</Text>
+              {busy && <ActivityIndicator testID="notifications-busy" color={theme.muted} />}
               <Toggle testID="notifications-switch" accessibilityLabel="Notify me about high readings" value={enabled} disabled={busy} onValueChange={toggle} />
+            </Pressable>
+            <View testID="threshold-row" accessibilityRole="radiogroup" accessibilityLabel="Minimum score" style={{ ...row(1), gap: 4, paddingHorizontal: 8 }}>
+              {THRESHOLD_CHOICES.map(value => {
+                const checked = value === threshold;
+                return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={`Minimum score ${value} out of 10`} accessibilityState={{ checked, selected: checked }}
+                  testID={`threshold-${value}`} onPress={() => choose(value)}
+                  style={{ flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: checked ? theme.accent : 'transparent' }}>
+                  <Text style={{ color: checked ? theme.tinted : theme.ink, fontSize: 17, fontWeight: checked ? '600' : '400',
+                    fontFamily: process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace', fontVariant: ['tabular-nums'] }}>{value}</Text>
+                </Pressable>;
+              })}
             </View>
-            {enabled && <>
-              <View testID="threshold-row" accessibilityRole="radiogroup" accessibilityLabel="Minimum score" style={{ ...row(1), gap: 4, paddingHorizontal: 8 }}>
-                {THRESHOLD_CHOICES.map(value => {
-                  const checked = value === threshold;
-                  return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={`Minimum score ${value} out of 10`} accessibilityState={{ checked, selected: checked }}
-                    testID={`threshold-${value}`} onPress={() => choose(value)}
-                    style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: checked ? theme.accent : 'transparent' }}>
-                    <Text style={{ color: checked ? theme.tinted : theme.ink, fontSize: 17, fontWeight: checked ? '600' : '400',
-                      fontFamily: process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace', fontVariant: ['tabular-nums'] }}>{value}</Text>
-                  </Pressable>;
-                })}
-              </View>
-            </>}
           </View>
-          {enabled && <Text style={note}>New developments rated {threshold} or higher.</Text>}
-          {notice !== '' && <Text accessibilityLiveRegion="polite" style={{ ...note, color: theme.danger }}>{notice}</Text>}
+          <Text style={note}>{enabled ? 'Notifying' : 'Notify'} when the reading reaches {threshold} or higher.</Text>
+          {notice !== '' && <View accessibilityLiveRegion="polite" style={{ marginTop: 4 }}>
+            <Text style={{ ...note, color: theme.danger }}>{NOTICES[notice]}</Text>
+            {notice === 'denied' && <Pressable accessibilityRole="button" accessibilityLabel="Open device settings" testID="open-device-settings" onPress={() => Linking.openSettings()}
+              style={{ alignSelf: 'flex-start', minHeight: 48, justifyContent: 'center' }}>
+              <Text style={{ color: theme.accent, fontSize: 15, fontWeight: '600' }}>Open device settings</Text>
+            </Pressable>}
+          </View>}
         </View>}
       </View>
     </ScrollView>

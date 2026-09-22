@@ -517,42 +517,67 @@ production after merge.
 
 **Settings are a screen, and the theme is one of them.** `/settings` (the gear in
 the header, beside share) chooses the appearance —
-System, Light or Dark, System by default — and, in the native apps only, turns
-on a push notification for high readings. `apps/client/lib/preferences.js` owns
+Follow device, Light or Dark, following the device by default — and, in the
+native apps only, turns on a push notification for high readings. `apps/client/lib/preferences.js` owns
 the shape and the defaults, `components/preferences-provider.tsx` persists it
 in AsyncStorage, and `ReadingProvider` derives `dark` from the choice, so every
 `useTheme()` caller follows it without knowing it exists. On web the choice is
 written to `data-appearance` on the document, which `tokens.css` already
 honoured for the static policy pages; on native it goes through
 `Appearance.setColorScheme`, so the share sheet and alerts follow too. Widgets
-follow the operating system regardless: they have no access to the app's store.
+follow the operating system regardless — they have no access to the app's
+store — and the screen says so under the choice. Every row shares one minimum
+height rather than a fixed one, so enlarged text grows the rows together.
 
 **Push notifications are opt-in, off by default, and 8 when turned on.** The
 app registers its Expo push token at `PUT /api/push/subscriptions` with the
-lowest score it wants to hear about (`threshold`, 1–10) and deletes it with
-`DELETE` when the switch goes off. The token is the whole identity — nothing
-else about the device is stored — and the row is keyed by it, so a device can
-only ever hold one. The route is public, like `/api/current`, which is why
-`src/push.js` bounds it: a token has to match Expo's shape, and past
-`MAX_SUBSCRIPTIONS` the route answers 503 rather than let a public URL grow a
-table without limit. Tokens Expo reports as `DeviceNotRegistered` are deleted on
-the first send, so invented ones do not stay.
+lowest score it wants to hear about (`threshold`, 1–10; the app offers 5–10)
+and deletes it with `DELETE` when the switch goes off. The token is the whole
+identity — nothing else about the device is stored — and the row is keyed by
+it, so a device can only ever hold one. The route is public, like
+`/api/current`, which is why `src/push.js` bounds it: a token has to match
+Expo's shape, and past `MAX_SUBSCRIPTIONS` the route answers 503 rather than
+let a public URL grow a table without limit. Tokens Expo reports as
+`DeviceNotRegistered` are deleted on the first send, so invented ones do not
+stay. The score can be chosen before the switch is on, so turning it on means
+something definite; the app serialises every request that touches its row and
+re-reads its own state when each one runs, because a threshold change queued
+behind a switch-off once reached the server after the DELETE and registered
+the device again while the app showed it as off.
 
-A reading is announced **once per development and threshold**, whichever
-readings report it: `push_deliveries` is keyed on `(root, threshold)` and the
-insert that loses the race sends nothing. A judged reading's development is
-`development_of ?? id`, the front page's rule; an unjudged one announces a
-crossing — it stands in for its predecessor's development when the previous
-reading already met the threshold, and for itself otherwise — because paging a
-phone hourly through a judge outage about one story is the failure this exists
-to avoid. An escalation from 8 to 9 inside one development reaches the devices
-waiting for a 9 and not, again, the ones that heard at 8. Delivery is an HTTP
-call to Expo's push service (`NEWSWORTHY_PUSH_URL` points a test at a stand-in;
-`EXPO_ACCESS_TOKEN` is optional) and is awaited where the reading is stored, in
-`runRating` and the external route, for the same reason the rejection log is:
-a function may be frozen the moment its response ends. It never throws — a push
-failure must not turn a stored reading into an error row. The notification is
-the number and the sentence, nothing urgent.
+**What is announced is the front page's number, not the reading's score.** The
+page smooths and ages readings and weighs a development against its story, so
+a raw 8 can display as a 4, and a notification saying 8 that opens on a 4 has
+lied. After a reading is stored, `notifyReading` computes the display exactly
+as `/api/current` does — same rows, same config, same `replay()`, the shared
+`rootTimes()` — and a device hears when that number reaches its threshold. The
+cost is the page's own lag: a lone 10 on a running 8 is inside the noise margin
+until the median confirms it, and no device is told a 10 the page is not
+showing. A new 8 while a 10 is still the loudest changes nothing on the page
+and announces nothing, because the tap would have opened on the 10.
+
+It is announced **once per development and threshold**: `push_deliveries` is
+keyed on `(root, threshold)`, the root being the development the page's number
+is about. That is what makes a judge outage quiet — the replay inherits an
+unjudged reading into its predecessor's development, so four unjudged 8s are
+one development, where a first cut that took the predecessor's *id* as the
+root announced three of them. An escalation the page shows reaches the devices
+waiting for the higher number and not, again, the ones that heard at the lower.
+
+**A claim is a lock, not a record.** The first cut claimed the pair before
+calling Expo and never let go, so one 503 silenced a development for every
+device at that threshold. A claim now carries `claimed_at` and a null
+`sent_at` until Expo answers; a failed send deletes its claims, and a claim
+older than `PUSH_CLAIM_STALE_MINUTES` with no send — a function frozen mid-way
+— is taken over by the next reading. Two functions storing readings at once
+still send once between them, because the insert is the arbiter. Delivery is
+an HTTP call to Expo's push service (`NEWSWORTHY_PUSH_URL` points a test at a
+stand-in; `EXPO_ACCESS_TOKEN` is optional) and is awaited where the reading is
+stored, in `runRating` and the external route, for the same reason the
+rejection log is: a function may be frozen the moment its response ends. It
+never throws — a push failure must not turn a stored reading into an error
+row. The notification is the number and the sentence, nothing urgent, and it
+does not banner while the app is open: the reading on screen refreshes instead.
 
 Native delivery needs credentials this repository cannot hold: an APNs key and
 an FCM service account uploaded to EAS. Until they are, the switch registers a

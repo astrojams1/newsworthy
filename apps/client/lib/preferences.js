@@ -8,7 +8,7 @@
 /** @typedef {{ theme: ThemePreference, notifications: NotificationPreferences }} Preferences */
 
 export const THEME_CHOICES = /** @type {const} */ ([
-  { value: 'system', label: 'System' },
+  { value: 'system', label: 'Follow device' },
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' },
 ]);

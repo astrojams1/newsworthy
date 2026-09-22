@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { readWidgetSnapshot, syncWidgets } from './widget-sync';
+import { onForegroundNotification } from './push';
 import { apiOrigin } from './config';
 import { fetchReading, latestSnapshot, readingSnapshot } from './reading';
 
@@ -66,12 +67,15 @@ export function useReading() {
     const interval = setInterval(() => { if (active()) void refresh(); }, 60_000);
     const subscription = AppState.addEventListener('change', (state) => { if (state === 'active') void refresh(); });
     const online = () => { if (active()) void refresh(); };
+    // A notification arriving while the app is open refreshes the reading it
+    // announces instead of interrupting with a banner.
+    const notified = onForegroundNotification(() => { if (active()) void refresh(); });
     if (process.env.EXPO_OS === 'web') {
       window.addEventListener('online', online);
       document.addEventListener('visibilitychange', online);
     }
     return () => {
-      alive.current = false; clearInterval(interval); subscription.remove();
+      alive.current = false; clearInterval(interval); subscription.remove(); notified();
       if (process.env.EXPO_OS === 'web') { window.removeEventListener('online', online); document.removeEventListener('visibilitychange', online); }
     };
   }, [refresh]);

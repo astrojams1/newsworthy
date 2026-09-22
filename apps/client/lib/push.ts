@@ -9,12 +9,18 @@ export const pushSupported = true;
 
 export type EnableResult = { ok: true; token: string } | { ok: false; reason: 'denied' | 'unavailable' | 'offline' };
 
-// A notification is shown while the app is open too. It is one number and one
-// sentence, and a person who asked for it should get it whether or not the
-// app happens to be in front.
+// While the app is open the reading is already on screen, so a banner and a
+// sound would interrupt someone looking at the thing being announced. The
+// notification goes to the list only, and the visible reading refreshes.
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false }),
+  handleNotification: async () => ({ shouldShowBanner: false, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
 });
+
+/** Run `refresh` when a notification arrives in the foreground. Returns the unsubscribe. */
+export function onForegroundNotification(refresh: () => void) {
+  const subscription = Notifications.addNotificationReceivedListener(() => refresh());
+  return () => subscription.remove();
+}
 
 async function permissionGranted(request: boolean) {
   const current = await Notifications.getPermissionsAsync();

@@ -34,6 +34,7 @@ test('fresh app readings reach widgets on launch, foreground and polling, includ
     './config': { apiOrigin: 'https://example.test' },
     './reading': { latestSnapshot, readingSnapshot, fetchReading: async () => { if (fail) throw Error('offline'); return value; } },
     './widget-sync': { syncWidgets, readWidgetSnapshot: () => null },
+    './push': { onForegroundNotification: () => () => {} },
   }, { process: { env: { EXPO_OS: 'ios' } }, setInterval: callback => { poll = callback; }, clearInterval() {} });
   useReading();
   const cleanup = effects[0]();
@@ -139,6 +140,7 @@ test('a newer widget message is the first app reading, survives old disk/network
     './config': { apiOrigin: 'https://example.test' },
     './reading': { latestSnapshot, readingSnapshot, fetchReading: () => new Promise(resolve => { resolveNetwork = resolve; }) },
     './widget-sync': { readWidgetSnapshot: () => widget, syncWidgets: async (_, value) => synced.push(value) },
+    './push': { onForegroundNotification: () => () => {} },
   }, { process: { env: { EXPO_OS: 'ios' } }, setInterval() {}, clearInterval() {} });
   const hook = useReading();
   assert.equal(hook.reading, newer, 'first render already matches the widget');

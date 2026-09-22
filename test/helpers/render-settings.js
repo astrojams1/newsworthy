@@ -15,15 +15,19 @@ const compile = text => ts.transpileModule(text, { compilerOptions: {
 } }).outputText;
 const compiled = compile(source);
 
-export function renderSettings({ platform, width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {}, canGoBack = true } = {}) {
+export function renderSettings({ platform, width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {}, canGoBack = true, busy = false } = {}) {
   // Recorded as plain copies: values built inside the vm context carry that
   // context's prototypes, which strict deep equality would refuse.
-  const calls = { setTheme: [], setNotifications: [], enablePush: [], disablePush: [], updatePushThreshold: [], replace: [] };
+  const calls = { setTheme: [], setNotifications: [], enablePush: [], disablePush: [], updatePushThreshold: [], replace: [], openSettings: 0, notices: [] };
   const plain = value => JSON.parse(JSON.stringify(value));
   const current = preferences.parsePreferences(stored);
   const mocks = {
-    react: { ...react, useEffect() {}, useState: value => [value, () => {}] },
-    'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
+    // `busy` is the one piece of state a test drives; the notice setter is
+    // recorded so a refusal's message can be asserted without a re-render.
+    react: { ...react, useEffect() {}, useRef: current => ({ current }),
+      useState: value => value === false ? [busy, () => {}] : [value, next => { if (typeof next === 'string') calls.notices.push(next); }] },
+    'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', ActivityIndicator: 'ActivityIndicator',
+      Linking: { openSettings: async () => { calls.openSettings += 1; } }, useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
     '@/components/toggle': { Toggle: 'Toggle' },
     '@/components/check-icon': { CheckIcon: 'CheckIcon' },
     'expo-router/head': { __esModule: true, default: 'Head' },
@@ -39,9 +43,9 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
     }) },
     '@/lib/push': {
       pushSupported,
-      enablePush: async threshold => { calls.enablePush.push(threshold); return push.enable ?? { ok: true, token: 'ExponentPushToken[test-test-test]' }; },
-      disablePush: async token => { calls.disablePush.push(token); return push.disable ?? true; },
-      updatePushThreshold: async (token, threshold) => { calls.updatePushThreshold.push(plain([token, threshold])); return push.update ?? true; },
+      enablePush: async threshold => { calls.enablePush.push(threshold); return typeof push.enable === 'function' ? push.enable() : (push.enable ?? { ok: true, token: 'ExponentPushToken[test-test-test]' }); },
+      disablePush: async token => { calls.disablePush.push(token); return typeof push.disable === 'function' ? push.disable() : (push.disable ?? true); },
+      updatePushThreshold: async (token, threshold) => { calls.updatePushThreshold.push(plain([token, threshold])); return typeof push.update === 'function' ? push.update() : (push.update ?? true); },
     },
   };
   const exports = {};

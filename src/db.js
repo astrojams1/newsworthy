@@ -98,6 +98,10 @@ export function ensureSchema() {
     // A development is announced once per threshold, however many readings
     // report it. The primary key is the guard: the insert that loses the race
     // is the one that sends nothing.
+    // `claimed_at` is a lock, `sent_at` the record. A claim with no `sent_at`
+    // is a send in flight or one that failed: the sender releases it on
+    // failure, and a claim older than PUSH_CLAIM_STALE_MINUTES — a function
+    // frozen mid-send — can be taken over by the next reading.
     await sql`
       CREATE TABLE IF NOT EXISTS push_deliveries (
         root       BIGINT      NOT NULL,
@@ -105,7 +109,8 @@ export function ensureSchema() {
         reading_id BIGINT      NOT NULL,
         score      SMALLINT    NOT NULL,
         recipients INTEGER     NOT NULL DEFAULT 0,
-        sent_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        claimed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        sent_at    TIMESTAMPTZ,
         PRIMARY KEY (root, threshold)
       )`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_created_at ON ratings (created_at DESC)`;
@@ -604,36 +609,62 @@ export async function pushSubscriptionsFor(score) {
   return rows.map(shape);
 }
 
+/** How long a claim with no send recorded is trusted before it is taken over. */
+export const PUSH_CLAIM_STALE_MINUTES = 10;
+
 /**
  * Claim a (development, threshold) pair for this reading. Returns false when
- * the pair was already announced, which is what makes a re-report of a
- * development that is still loud a silent one.
+ * the pair was already announced, or is being announced right now — which is
+ * what makes a re-report of a development that is still loud a silent one,
+ * and two functions storing readings at once send once between them. A claim
+ * that was never completed, and is old enough that its sender cannot still be
+ * running, is taken over rather than honoured.
  */
 export async function claimPushDelivery({ root, threshold, readingId, score }) {
   await ensureSchema();
   const rows = await sql`
-    INSERT INTO push_deliveries (root, threshold, reading_id, score)
-    VALUES (${root}, ${threshold}, ${readingId}, ${score})
-    ON CONFLICT DO NOTHING
+    INSERT INTO push_deliveries (root, threshold, reading_id, score, claimed_at, sent_at)
+    VALUES (${root}, ${threshold}, ${readingId}, ${score}, now(), NULL)
+    ON CONFLICT (root, threshold) DO UPDATE
+      SET reading_id = EXCLUDED.reading_id, score = EXCLUDED.score, claimed_at = now()
+      WHERE push_deliveries.sent_at IS NULL
+        AND push_deliveries.claimed_at < now() - make_interval(mins => ${PUSH_CLAIM_STALE_MINUTES})
     RETURNING root`;
   return rows.length > 0;
 }
 
-export async function recordPushRecipients({ root, threshold, recipients }) {
+/** The send went through: the pair is announced for good. */
+export async function completePushDelivery({ root, threshold, recipients }) {
   await ensureSchema();
   await sql`
-    UPDATE push_deliveries SET recipients = ${recipients}
+    UPDATE push_deliveries SET sent_at = now(), recipients = ${recipients}
      WHERE root = ${root} AND threshold = ${threshold}`;
 }
 
-/** The newest successful reading before `before`, for the unjudged fallback. */
-export async function previousOkRating(before) {
+/** The send failed: give the pairs back so the next reading can try again. */
+export async function releasePushDeliveries(claims = []) {
   await ensureSchema();
-  const rows = await sql`
-    SELECT id, created_at, score, story, development_of, judge_version
-      FROM ratings
-     WHERE status = 'ok' AND (created_at, id) < (${before.created_at}, ${before.id})
-     ORDER BY created_at DESC, id DESC
-     LIMIT 1`;
-  return shape(rows[0]);
+  for (const { root, threshold } of claims) {
+    await sql`
+      DELETE FROM push_deliveries
+       WHERE root = ${root} AND threshold = ${threshold} AND sent_at IS NULL`;
+  }
+}
+
+/**
+ * First-report times for developments whose opening reading is older than the
+ * replay window. A story running since Tuesday would otherwise date from the
+ * edge of the window and read as younger than it is. Shared by /api/current
+ * and the push announcer, which has to see the page's number, not its own.
+ */
+export async function rootTimes(ascending) {
+  const present = new Set(ascending.map((r) => r.id));
+  const missing = [...new Set(
+    ascending
+      .filter((r) => r.judge_version != null && r.development_of != null)
+      .map((r) => r.development_of)
+      .filter((id) => !present.has(id)),
+  )];
+  const rows = await ratingsByIds(missing);
+  return new Map(rows.map((r) => [r.id, { t: Date.parse(r.created_at), story: r.story }]));
 }

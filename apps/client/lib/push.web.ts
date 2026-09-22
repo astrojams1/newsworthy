@@ -5,3 +5,4 @@ export type EnableResult = { ok: true; token: string } | { ok: false; reason: 'd
 export async function enablePush(_threshold: number): Promise<EnableResult> { return { ok: false, reason: 'unavailable' }; }
 export async function updatePushThreshold(_token: string, _threshold: number) { return false; }
 export async function disablePush(_token: string) { return true; }
+export function onForegroundNotification(_refresh: () => void) { return () => {}; }
