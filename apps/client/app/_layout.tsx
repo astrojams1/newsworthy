@@ -14,16 +14,10 @@ function ThemedLayout() {
   const { reading } = useCurrentReading();
   const { preferences: { theme: appearance } } = usePreferences();
   useEffect(() => {
-    if (process.env.EXPO_OS === 'web') {
-      // tokens.css already honours data-appearance, so the static policy pages
-      // and this app agree; color-scheme keeps native form controls in step.
-      const root = document.documentElement;
-      if (appearance === 'system') { delete root.dataset.appearance; root.style.colorScheme = ''; }
-      else { root.dataset.appearance = appearance; root.style.colorScheme = appearance; }
-      return;
-    }
-    // Native: the override reaches system surfaces too (share sheet, alerts),
-    // and useColorScheme() reports it, so "System" restores the OS value.
+    // Native only — the website has no settings and follows the system. The
+    // override reaches system surfaces too (share sheet, alerts), and
+    // useColorScheme() reports it, so "System" restores the OS value.
+    if (process.env.EXPO_OS === 'web') return;
     Appearance.setColorScheme(appearance === 'system' ? 'unspecified' : appearance);
   }, [appearance]);
   useEffect(() => {

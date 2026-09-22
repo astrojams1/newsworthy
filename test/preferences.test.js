@@ -26,18 +26,11 @@ test('the chosen appearance wins and System follows the device', () => {
 
 const text = tree => tree.filter(n => n.type === 'Text').map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
 
-test('the website shows the appearance choice and no notification setting', () => {
-  const { tree } = renderSettings({ platform: 'web' });
-  const all = nodes(tree);
-  assert.ok(all.some(n => n.type === 'Head'), 'the page has its own title');
-  const radios = all.filter(n => n.props?.accessibilityRole === 'radio');
-  assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
-    [['System', true], ['Light', false], ['Dark', false]]);
-  assert.ok(!all.some(n => n.type === 'Toggle'), 'push notifications are a native feature');
-  assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓']);
-  // Vertical: each option is its own full-width row, the checked one marked.
-  assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
-  assert.deepEqual(radios.map(n => nodes(n).find(c => c.type === 'Text' && c.props.children === '✓').props.style.opacity), [1, 0, 0]);
+test('the website has no settings: the route sends a visitor home', () => {
+  const { tree, calls } = renderSettings({ platform: 'web' });
+  assert.equal(tree.type, 'Redirect');
+  assert.equal(tree.props.href, '/');
+  assert.deepEqual(calls.setTheme, []);
 });
 
 for (const platform of ['ios', 'android']) {
@@ -47,6 +40,12 @@ for (const platform of ['ios', 'android']) {
     const toggle = all.find(n => n.type === 'Toggle');
     assert.equal(toggle.props.value, false);
     assert.equal(toggle.props.accessibilityLabel, 'Notify me about high readings');
+    const radios = all.filter(n => n.props?.accessibilityRole === 'radio');
+    assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
+      [['System', true], ['Light', false], ['Dark', false]]);
+    // Vertical: each option is its own full-width row, the checked one marked.
+    assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
+    assert.deepEqual(radios.map(n => nodes(n).find(c => c.type === 'Text' && c.props.children === '✓').props.style.opacity), [1, 0, 0]);
     assert.equal(all.find(n => n.props?.testID === 'threshold-value'), undefined, 'the score is shown only once notifications are on');
     assert.deepEqual(text(all), ['Appearance', 'System', '✓', 'Light', '✓', 'Dark', '✓', 'Notifications', 'Notify me about high readings']);
     const on = nodes(renderSettings({ platform, stored: { notifications: { enabled: true, threshold: 8, token: 'ExponentPushToken[on-on-on-on]' } } }).tree);

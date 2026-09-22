@@ -25,7 +25,7 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
     react: { ...react, useEffect() {}, useState: value => [value, () => {}] },
     'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
     '@/components/toggle': { Toggle: 'Toggle' },
-    'expo-router/head': { __esModule: true, default: 'Head' },
+    'expo-router': { Redirect: 'Redirect' },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
     '@/lib/preferences': preferences,
