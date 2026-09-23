@@ -28,6 +28,14 @@ test('accepts 10 and rejects out-of-range scores', () => {
   assert.throws(() => parseVerdict('   '));
 });
 
+test('finishes a sentence the model left without an end', () => {
+  assert.equal(parseVerdict('{"score": 5, "explanation": "A thing happened"}').explanation, 'A thing happened.');
+  assert.equal(parseVerdict('{"score": 5, "explanation": "A thing happened,"}').explanation, 'A thing happened.');
+  assert.equal(parseVerdict('7/10 Quiet day').explanation, 'Quiet day.');
+  const long = parseVerdict(`{"score": 5, "explanation": "${'y'.repeat(500)}"}`).explanation;
+  assert.ok(long.endsWith('...') && long.length <= 400);
+});
+
 test('supplies an explanation when the model omits one', () => {
   assert.equal(parseVerdict('{"score": 4}').explanation, 'No explanation given.');
 });

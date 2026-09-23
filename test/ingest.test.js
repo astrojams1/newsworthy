@@ -75,6 +75,23 @@ test('caps and normalises free text rather than trusting its length', () => {
   assert.ok(!/\s{2,}/.test(r.explanation), 'whitespace collapsed');
 });
 
+test('a stored sentence always ends in punctuation', async () => {
+  const { completeSentence } = await import('../src/ingest.js');
+  const of = (explanation) => validateSubmission({ score: 4, explanation }).explanation;
+  assert.equal(of('The Fed raised rates a quarter point'), 'The Fed raised rates a quarter point.');
+  assert.equal(of('  Talks collapsed ,  '), 'Talks collapsed.', 'a dangling comma is replaced, not followed');
+  assert.equal(of('Strikes resumed overnight —'), 'Strikes resumed overnight.');
+  for (const done of ['Already done.', 'Really?', 'Ceasefire!', 'Cut short…', 'Cut short...',
+    'The minister said "no."', 'Rates rose (again).', 'She called it “over.”']) {
+    assert.equal(of(done), done, `${done} is already complete`);
+  }
+  assert.equal(of('The minister said "no"'), 'The minister said "no".');
+  const capped = of(`${'x'.repeat(1000)}`);
+  assert.ok(capped.endsWith('…') && capped.length <= 400, 'the length cap already ends the sentence');
+  assert.equal(completeSentence(null), null);
+  assert.equal(completeSentence(''), '');
+});
+
 test('a query-string submission maps onto the same validation as a body', async () => {
   const { submissionFromQuery } = await import('../src/ingest.js');
   const q = new URLSearchParams({

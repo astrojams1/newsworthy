@@ -5,6 +5,7 @@ import { PRIOR_HOURS, judgeReading } from './story.js';
 import { effectiveConfig } from './config.js';
 import { estimateCostUsd } from './pricing.js';
 import { latestVersion, renderPrompt } from './prompts.js';
+import { completeSentence } from './ingest.js';
 
 export const DEFAULT_MODEL = process.env.NEWSWORTHY_MODEL || 'claude-opus-5';
 export const INTERVAL_MINUTES = Number(process.env.NEWSWORTHY_INTERVAL_MINUTES) || 15;
@@ -72,7 +73,7 @@ function clampScore(value) {
 function cleanExplanation(value) {
   const text = String(value ?? '').replace(/\s+/g, ' ').trim();
   if (!text) return 'No explanation given.';
-  return text.length > 400 ? `${text.slice(0, 397)}...` : text;
+  return completeSentence(text.length > 400 ? `${text.slice(0, 397)}...` : text);
 }
 
 /**

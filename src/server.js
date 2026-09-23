@@ -9,7 +9,7 @@ import { takePreparation, correctUsage, failures, history, insertRating, latestA
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
-import { SubmissionError, submissionFromQuery, validateSubmission } from './ingest.js';
+import { SubmissionError, completeSentence, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
 import { openapiDocument } from './openapi.js';
 import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
@@ -266,7 +266,10 @@ const server = createServer(async (req, res) => {
       // evening, with a smaller number beside it.
       const newest = current.newest;
       const explanationSince = await firstCoverage(newest);
-      const explanationFields = { explanation_text: newest.explanation, explanation_since: explanationSince };
+      // Rows are stored with an end already; rows from before that rule get
+      // one here, so every client, native widgets included, receives a
+      // finished sentence without a rebuild.
+      const explanationFields = { explanation_text: completeSentence(newest.explanation), explanation_since: explanationSince };
       return json(res, 200, {
         score: current.score,
         // Existing apps/widgets receive a complete sentence; newer ones re-age locally.

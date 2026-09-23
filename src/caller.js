@@ -209,7 +209,9 @@ body must be a JSON object
 
 Length is not among them. The explanation has no maximum a caller can trip: text
 beyond 400 characters is truncated and stored, never rejected, and the 140-character
-guidance in the prompt covers the displayed prefix and sentence together. Stored prose is not rejected for length; the display caps the combined text with an ellipsis if a legacy or overlong sentence does not fit. So a 422 on a submission whose score and sentence are both well formed
+guidance in the prompt covers the displayed prefix and sentence together. Nor is
+punctuation: a sentence that arrives without an end is stored with a full stop
+added, and one ending in a dangling comma, colon or dash has it replaced by one. Stored prose is not rejected for length; the display caps the combined text with an ellipsis if a legacy or overlong sentence does not fit. So a 422 on a submission whose score and sentence are both well formed
 means the request did not arrive as it was sent — a query string truncated or
 rewritten in transit, most often — and the answer is to send it again, not to
 shorten the sentence. A caller that shortens its explanation in response to a

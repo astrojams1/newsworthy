@@ -35,7 +35,8 @@ The match is saved once and reused, so shortening cannot accidentally reset its
 age. References are server-backed, score/version-bound, single use and expire
 in 30 minutes. A missing, invalid or expired reference falls back to ordinary
 judging; the existing four rejection rules and 400-character ingestion handling
-are unchanged. The original draft is retained alongside the final text for audit.
+are unchanged. A stored sentence always ends in punctuation: one arriving without
+an end is finished with a full stop, which can take a 120-character body to 121. The original draft is retained alongside the final text for audit.
 A caller changing the event must prepare again. A new development starts its
 coverage clock when the final reading is stored. Unsubmitted drafts are removed
 after a day on subsequent preparations. Their judge calls can incur cost but are
