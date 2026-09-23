@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-23T23:36:30+00:00
+Updated: 2026-09-23T23:37:29+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -86,7 +86,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-18-provenance | done | agent | observed | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
 | ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
-| apple.notifications | waiting_user | user | observed | Build 21 is ready in TestFlight and server fixes are live. Apple push-key creation/configuration awaits the pending security confirmation. One iOS device is registered; no real notification has been sent. iPhone Mirroring is available but currently reports the phone is in use. | Confirm the prepared production Newsworthy push key. Agent configures Expo and tests using iPhone Mirroring once the phone is locked, or owner confirms labeled test receipt and opening. |
+| apple.notifications | waiting_user | user | observed | Build 21 is in TestFlight and the server fixes are live. Push-key registration awaits action-time security confirmation; one iOS registration exists but no real push test has been sent. iPhone Mirroring first reported the phone in use, then computer control reported the Mac locked and automatic unlock unavailable. | Confirm the prepared production Newsworthy push key and unlock the Mac. Agent configures Expo and tests through iPhone Mirroring with the phone locked, or owner confirms labeled test receipt/opening. |
 
 ## Evidence and history
 
@@ -2553,3 +2553,13 @@ Build 21 is ready in TestFlight and server fixes are live. Apple push-key creati
 - store/testflight-21.json; store/user-actions.md
 
 Next: Confirm the prepared production Newsworthy push key. Agent configures Expo and tests using iPhone Mirroring once the phone is locked, or owner confirms labeled test receipt and opening.
+
+### 261. apple.notifications — waiting_user
+
+2026-09-23T23:37:29+00:00 · observed · user
+
+Build 21 is in TestFlight and the server fixes are live. Push-key registration awaits action-time security confirmation; one iOS registration exists but no real push test has been sent. iPhone Mirroring first reported the phone in use, then computer control reported the Mac locked and automatic unlock unavailable.
+
+- store/testflight-21.json; store/user-actions.md
+
+Next: Confirm the prepared production Newsworthy push key and unlock the Mac. Agent configures Expo and tests through iPhone Mirroring with the phone locked, or owner confirms labeled test receipt/opening.

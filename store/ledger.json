@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-23T23:36:30+00:00",
+  "updated_at": "2026-09-23T23:37:29+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -851,12 +851,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Build 21 is ready in TestFlight and server fixes are live. Apple push-key creation/configuration awaits the pending security confirmation. One iOS device is registered; no real notification has been sent. iPhone Mirroring is available but currently reports the phone is in use.",
+      "summary": "Build 21 is in TestFlight and the server fixes are live. Push-key registration awaits action-time security confirmation; one iOS registration exists but no real push test has been sent. iPhone Mirroring first reported the phone in use, then computer control reported the Mac locked and automatic unlock unavailable.",
       "evidence": [
         "store/testflight-21.json; store/user-actions.md"
       ],
-      "next_action": "Confirm the prepared production Newsworthy push key. Agent configures Expo and tests using iPhone Mirroring once the phone is locked, or owner confirms labeled test receipt and opening.",
-      "updated_at": "2026-09-23T23:36:30+00:00"
+      "next_action": "Confirm the prepared production Newsworthy push key and unlock the Mac. Agent configures Expo and tests through iPhone Mirroring with the phone locked, or owner confirms labeled test receipt/opening.",
+      "updated_at": "2026-09-23T23:37:29+00:00"
     }
   },
   "events": [
@@ -5031,6 +5031,22 @@
         ],
         "next_action": "Confirm the prepared production Newsworthy push key. Agent configures Expo and tests using iPhone Mirroring once the phone is locked, or owner confirms labeled test receipt and opening.",
         "updated_at": "2026-09-23T23:36:30+00:00"
+      }
+    },
+    {
+      "sequence": 261,
+      "at": "2026-09-23T23:37:29+00:00",
+      "gate": "apple.notifications",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Build 21 is in TestFlight and the server fixes are live. Push-key registration awaits action-time security confirmation; one iOS registration exists but no real push test has been sent. iPhone Mirroring first reported the phone in use, then computer control reported the Mac locked and automatic unlock unavailable.",
+        "evidence": [
+          "store/testflight-21.json; store/user-actions.md"
+        ],
+        "next_action": "Confirm the prepared production Newsworthy push key and unlock the Mac. Agent configures Expo and tests through iPhone Mirroring with the phone locked, or owner confirms labeled test receipt/opening.",
+        "updated_at": "2026-09-23T23:37:29+00:00"
       }
     }
   ],

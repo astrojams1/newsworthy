@@ -26,8 +26,9 @@ TestFlight status separately. Two steps remain before review:
 
 The paired phone has Developer Mode off, so the command-line device tools
 cannot inspect its apps. A second path, iPhone Mirroring, is available but
-currently says “iPhone in Use — Lock your iPhone to connect.” Once the phone is
-locked, the agent can try that path for the TestFlight and delivery checks.
+first said “iPhone in Use — Lock your iPhone to connect.” The next check found
+the Mac locked, and automatic unlock was unavailable. With the Mac unlocked
+and iPhone locked, the agent can try that path for the TestFlight and delivery checks.
 Enabling Developer Mode is not required. The agent handles the key, test send,
 metadata and submission once the confirmation and physical test are complete.
 No generic submission approval is pending.

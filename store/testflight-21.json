@@ -57,7 +57,7 @@
     "notifications": "Apple and EAS have no push delivery key; prepared production topic key awaits browser security confirmation. No live push test sent.",
     "widgets": "Signed extension verified; no new physical widget test for this build.",
     "android": "Outside this iOS resubmission.",
-    "remoteDevicePath": "iPhone Mirroring is available but reported iPhone in Use; retry after the phone is locked. Command-line app inspection is blocked by Developer Mode being off."
+    "remoteDevicePath": "Command-line app inspection is blocked by Developer Mode being off. iPhone Mirroring launched but reported iPhone in Use; the next attempt reported the Mac locked and automatic unlock unavailable. Retry with the Mac unlocked and iPhone locked."
   },
   "appReview": {
     "selectedBuild": "7",
