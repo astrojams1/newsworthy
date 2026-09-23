@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-22T22:47:12+00:00
+Updated: 2026-09-23T23:06:34+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -86,6 +86,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-18-provenance | done | agent | observed | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
 | ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
+| apple.notifications | in_progress | agent | observed | Owner authorized finishing notifications and resubmission after Apple upheld 4.2. Receipt checks, explicit rejection retries and notification-tap routing are implemented; 291 automated tests pass with one existing skip, and all 70 design checks pass. Apple and EAS have no existing push key. Browser registration is prepared for a production-only Newsworthy topic key and awaits security confirmation. | Configure approved APNs key, deploy tested backend, build and verify replacement on TestFlight, update privacy/metadata, then resubmit the changed build. |
 
 ## Evidence and history
 
@@ -2432,3 +2433,13 @@ Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.
 - store/settings-feedback-verification.json; store/testflight-19.json.
 
 Next: Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results.
+
+### 248. apple.notifications — in_progress
+
+2026-09-23T23:06:34+00:00 · observed · agent
+
+Owner authorized finishing notifications and resubmission after Apple upheld 4.2. Receipt checks, explicit rejection retries and notification-tap routing are implemented; 291 automated tests pass with one existing skip, and all 70 design checks pass. Apple and EAS have no existing push key. Browser registration is prepared for a production-only Newsworthy topic key and awaits security confirmation.
+
+- September 24 Apple Developer and EAS key lists; local automated tests; branch codex/notification-release
+
+Next: Configure approved APNs key, deploy tested backend, build and verify replacement on TestFlight, update privacy/metadata, then resubmit the changed build.

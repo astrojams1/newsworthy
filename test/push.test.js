@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { CALLER_TOKEN as CALLER, PORTS, readings, withServer } from './with-server.js';
-import { DEFAULT_THRESHOLD, MAX_SUBSCRIPTIONS, messageFor, notifyReading, validateSubscription } from '../src/push.js';
+import { DEFAULT_THRESHOLD, MAX_SUBSCRIPTIONS, checkPushReceipts, messageFor, notifyReading, validateSubscription } from '../src/push.js';
 import { PUSH_CLAIM_STALE_MINUTES, claimPushDelivery, completePushDelivery, ensureSchema, insertRating, releasePushDeliveries, upsertPushSubscription } from '../src/db.js';
 import { sql } from '../src/sql.js';
 
@@ -63,7 +63,7 @@ test('a subscription is one Expo token and a threshold, validated field by field
 test('the notification is the number the page shows and the newest sentence, nothing urgent', () => {
   const message = messageFor({ score: 8, newest: { id: 5, score: 9, explanation: 'A ceasefire took hold overnight.' } });
   assert.deepEqual(message, {
-    title: 'Newsworthy · 8/10', body: 'A ceasefire took hold overnight.', sound: 'default', data: { reading_id: 5, score: 8 },
+    title: 'Newsworthy · 8/10', body: 'A ceasefire took hold overnight.', sound: 'default', channelId: 'readings', data: { reading_id: 5, score: 8 },
   });
 });
 
@@ -253,4 +253,56 @@ test('the push is awaited where the reading is stored, not left in flight', asyn
     assert.match(src, /await notifyReading\(/, `${file} waits for the push`);
     assert.ok(!/void notifyReading\(/.test(src), `${file} does not leave it racing the freeze`);
   }
+});
+
+test('rejected and missing Expo tickets retry without repeating accepted recipients', async () => {
+  await ensureSchema();
+  await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`; await sql`DELETE FROM push_receipts`;
+  for (const token of Object.values(TOKENS)) await upsertPushSubscription({ token, threshold: 8, platform: 'ios' });
+  const reading = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports', created_at: minutesAgo(10), judge_version: 2, development_of: null, story: 'port' });
+  const first = await notifyReading(reading, { fetchImpl: async () => ({ ok: true, json: async () => ({ data: [
+    { status: 'ok', id: 'accepted-a' }, { status: 'error', details: { error: 'InvalidCredentials' } },
+  ] }) }) });
+  assert.equal(first.sent, 1);
+  const { received, fetchImpl } = relay();
+  assert.equal((await notifyReading(reading, { fetchImpl })).sent, 2);
+  assert.deepEqual(received.map(m => m.to), [TOKENS.b, TOKENS.gone]);
+});
+
+test('receipts remove unregistered devices and retry only explicitly rejected delivery', async () => {
+  await ensureSchema();
+  await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`; await sql`DELETE FROM push_receipts`;
+  for (const token of Object.values(TOKENS)) await upsertPushSubscription({ token, threshold: 8, platform: 'ios' });
+  const reading = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports', created_at: minutesAgo(10), judge_version: 2, development_of: null, story: 'port' });
+  await notifyReading(reading, { fetchImpl: async () => ({ ok: true, json: async () => ({ data: [
+    { status: 'ok', id: 'a' }, { status: 'ok', id: 'b' }, { status: 'ok', id: 'gone' },
+  ] }) }) });
+  // No immediate polling: receipts are given time to become available.
+  assert.deepEqual(await checkPushReceipts({ fetchImpl: () => { throw Error('too soon'); } }), { accepted: 0, failed: 0, pending: 0, expired: 0 });
+  await sql`UPDATE push_receipts SET created_at = now() - interval '16 minutes'`;
+  const result = await checkPushReceipts({ fetchImpl: async (_url, { body }) => {
+    assert.deepEqual(JSON.parse(body).ids.sort(), ['a', 'b', 'gone']);
+    return { ok: true, json: async () => ({ data: {
+      a: { status: 'ok' }, b: { status: 'error', details: { error: 'InvalidCredentials' } },
+      gone: { status: 'error', details: { error: 'DeviceNotRegistered' } },
+    } }) };
+  } });
+  assert.deepEqual(result, { accepted: 1, failed: 2, pending: 0, expired: 0 });
+  assert.equal((await sql`SELECT * FROM push_receipts`).length, 0);
+  assert.equal((await sql`SELECT * FROM push_subscriptions WHERE token = ${TOKENS.gone}`).length, 0);
+  const { received, fetchImpl } = relay();
+  assert.equal((await notifyReading(reading, { fetchImpl })).sent, 1);
+  assert.deepEqual(received.map(m => m.to), [TOKENS.b]);
+});
+
+test('a missing receipt is retained, then expires without duplicating a possibly delivered alert', async () => {
+  await ensureSchema();
+  await sql`DELETE FROM push_receipts`;
+  await sql`INSERT INTO push_receipts (id, token, root, threshold, created_at)
+    VALUES ('unknown', ${TOKENS.a}, 1, 8, now() - interval '16 minutes')`;
+  const options = { fetchImpl: async () => ({ ok: true, json: async () => ({ data: {} }) }) };
+  assert.equal((await checkPushReceipts(options)).pending, 1);
+  await sql`UPDATE push_receipts SET created_at = now() - interval '25 hours'`;
+  assert.equal((await checkPushReceipts(options)).expired, 1);
+  assert.equal((await sql`SELECT * FROM push_receipts`).length, 0);
 });

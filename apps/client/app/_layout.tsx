@@ -3,7 +3,8 @@ import { Appearance } from 'react-native';
 import { PreferencesProvider, usePreferences } from '@/components/preferences-provider';
 import { ReadingProvider, useCurrentReading } from '@/components/reading-provider';
 import { faviconSvg } from '../../../public/favicon';
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter } from 'expo-router';
+import { onNotificationOpen } from '@/lib/push';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
 // A deep link or a cold start on /settings still gets the reading screen
@@ -22,7 +23,9 @@ function ThemedLayout() {
     primary: theme.accent, background: theme.tinted, card: theme.tinted,
     text: theme.ink, border: theme.rule, notification: theme.accent,
   } };
-  const { reading } = useCurrentReading();
+  const { reading, refresh } = useCurrentReading();
+  const router = useRouter();
+  useEffect(() => onNotificationOpen(() => { router.replace('/'); void refresh(); }), [router, refresh]);
   const { preferences: { theme: appearance } } = usePreferences();
   useEffect(() => {
     if (process.env.EXPO_OS === 'web') {

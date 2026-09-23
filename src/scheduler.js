@@ -1,6 +1,7 @@
 import { latestAttempt, latestRating } from './db.js';
 import { effectiveConfig } from './config.js';
 import { runRating, slotFor } from './rate.js';
+import { checkPushReceipts } from './push.js';
 
 // The in-process scheduler ticks at the finest supported cadence; the
 // configured interval is enforced by the slot, exactly as on Vercel Cron.
@@ -30,6 +31,7 @@ const SCHEDULED_REASONS = new Set(['vercel-cron', 'scheduled', 'startup']);
  * `reason` names the trigger and reaches the stored row, not just the log.
  */
 export async function tick(reason = 'scheduled', { slot, force = false } = {}) {
+  await checkPushReceipts();
   const { intervalMinutes } = await effectiveConfig();
   slot ??= slotFor(new Date(), intervalMinutes);
 
