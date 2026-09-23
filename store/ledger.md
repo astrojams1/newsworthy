@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-23T23:11:46+00:00
+Updated: 2026-09-23T23:13:29+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -21,7 +21,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.privacy | done | agent | observed | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
 | apple.listing | done | agent | observed | All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed. | — |
-| apple.build | waiting_provider | provider | observed | EAS accepted production iOS build20 from application commit f0bfde4. Existing app/widget signing profiles were reused. Receipt and tap-routing fixes are included; APNs delivery key and physical-device testing are separate pending gates. | Download finished IPA, verify signing/entitlements and upload to App Store Connect. |
+| apple.build | in_progress | agent | observed | Build20 was canceled before upload to Apple because packaged privacy declarations also need the notification identifiers/settings and existing diagnostics. App Store Connect labels are already published. A replacement build will include the synchronized native manifest. | Finish checks for manifest alignment and start build21; never upload canceled build20. |
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Apple build7 is VALID and selected for App Store version1.0.0; API relationship readback confirmed eff31b5d-6c18-492d-874c-d7a0e4392bf6. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
@@ -2461,3 +2461,13 @@ EAS accepted production iOS build20 from application commit f0bfde4. Existing ap
 - https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/7f4d8921-30c6-4db0-8461-1a90a53bcfcc
 
 Next: Download finished IPA, verify signing/entitlements and upload to App Store Connect.
+
+### 251. apple.build — in_progress
+
+2026-09-23T23:13:29+00:00 · observed · agent
+
+Build20 was canceled before upload to Apple because packaged privacy declarations also need the notification identifiers/settings and existing diagnostics. App Store Connect labels are already published. A replacement build will include the synchronized native manifest.
+
+- EAS confirmed canceled build7f4d8921-30c6-4db0-8461-1a90a53bcfcc; app.config.js privacy manifest
+
+Next: Finish checks for manifest alignment and start build21; never upload canceled build20.

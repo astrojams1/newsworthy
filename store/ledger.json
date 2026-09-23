@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-23T23:11:46+00:00",
+  "updated_at": "2026-09-23T23:13:29+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -133,15 +133,15 @@
       "updated_at": "2026-09-16T07:50:27+00:00"
     },
     "apple.build": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "in_progress",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "EAS accepted production iOS build20 from application commit f0bfde4. Existing app/widget signing profiles were reused. Receipt and tap-routing fixes are included; APNs delivery key and physical-device testing are separate pending gates.",
+      "summary": "Build20 was canceled before upload to Apple because packaged privacy declarations also need the notification identifiers/settings and existing diagnostics. App Store Connect labels are already published. A replacement build will include the synchronized native manifest.",
       "evidence": [
-        "https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/7f4d8921-30c6-4db0-8461-1a90a53bcfcc"
+        "EAS confirmed canceled build7f4d8921-30c6-4db0-8461-1a90a53bcfcc; app.config.js privacy manifest"
       ],
-      "next_action": "Download finished IPA, verify signing/entitlements and upload to App Store Connect.",
-      "updated_at": "2026-09-23T23:11:46+00:00"
+      "next_action": "Finish checks for manifest alignment and start build21; never upload canceled build20.",
+      "updated_at": "2026-09-23T23:13:29+00:00"
     },
     "apple.native": {
       "state": "done",
@@ -4871,6 +4871,22 @@
         ],
         "next_action": "Download finished IPA, verify signing/entitlements and upload to App Store Connect.",
         "updated_at": "2026-09-23T23:11:46+00:00"
+      }
+    },
+    {
+      "sequence": 251,
+      "at": "2026-09-23T23:13:29+00:00",
+      "gate": "apple.build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build20 was canceled before upload to Apple because packaged privacy declarations also need the notification identifiers/settings and existing diagnostics. App Store Connect labels are already published. A replacement build will include the synchronized native manifest.",
+        "evidence": [
+          "EAS confirmed canceled build7f4d8921-30c6-4db0-8461-1a90a53bcfcc; app.config.js privacy manifest"
+        ],
+        "next_action": "Finish checks for manifest alignment and start build21; never upload canceled build20.",
+        "updated_at": "2026-09-23T23:13:29+00:00"
       }
     }
   ],

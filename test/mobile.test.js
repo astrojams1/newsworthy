@@ -76,3 +76,19 @@ test('the first-coverage timestamp survives API normalization and offline cache 
   const result = await fetchReading('', async () => ({ok:true,json:async()=>input}));
   assert.deepEqual(JSON.parse(JSON.stringify(result)),input);
 });
+
+test('packaged privacy declarations include requested notifications and hosting diagnostics without tracking', async () => {
+  const { createRequire } = await import('node:module');
+  const config = createRequire(import.meta.url)('../apps/client/app.config.js');
+  const privacy = config.ios.privacyManifests;
+  assert.equal(privacy.NSPrivacyTracking, false);
+  assert.deepEqual(privacy.NSPrivacyCollectedDataTypes.map(d => d.NSPrivacyCollectedDataType).sort(), [
+    'NSPrivacyCollectedDataTypeDeviceID', 'NSPrivacyCollectedDataTypeOtherDataTypes',
+    'NSPrivacyCollectedDataTypeOtherDiagnosticData', 'NSPrivacyCollectedDataTypePerformanceData',
+  ]);
+  for (const data of privacy.NSPrivacyCollectedDataTypes) {
+    assert.equal(data.NSPrivacyCollectedDataTypeLinked, true);
+    assert.equal(data.NSPrivacyCollectedDataTypeTracking, false);
+    assert.deepEqual(data.NSPrivacyCollectedDataTypePurposes, ['NSPrivacyCollectedDataTypePurposeAppFunctionality']);
+  }
+});

@@ -8,7 +8,14 @@ module.exports = {
     entitlements: { 'com.apple.security.application-groups': [`group.${release.appId}.widgets`] },
     appleTeamId: process.env.APPLE_TEAM_ID || release.appleTeamId,
     infoPlist: { ITSAppUsesNonExemptEncryption: false },
-    privacyManifests: { NSPrivacyTracking: false, NSPrivacyCollectedDataTypes: [],
+    privacyManifests: { NSPrivacyTracking: false,
+      // Keep the packaged declaration aligned with App Store Connect: requested
+      // notification delivery plus operational hosting diagnostics, never tracking.
+      NSPrivacyCollectedDataTypes: ['DeviceID', 'OtherDataTypes', 'PerformanceData', 'OtherDiagnosticData'].map(type => ({
+        NSPrivacyCollectedDataType: `NSPrivacyCollectedDataType${type}`,
+        NSPrivacyCollectedDataTypeLinked: true, NSPrivacyCollectedDataTypeTracking: false,
+        NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+      })),
       NSPrivacyAccessedAPITypes: [{ NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults', NSPrivacyAccessedAPITypeReasons: ['CA92.1', '1C8F.1'] }] } },
   android: { package: release.appId, adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: design.identity.light.surface } },
   web: { output: 'static', favicon: './assets/favicon.png' },
