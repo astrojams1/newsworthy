@@ -9,14 +9,12 @@ Review devices: iPad Air 11-inch (M3) and iPhone 17 Pro Max.
 Apple says the available content does not provide sufficient utility.
 This supersedes the September 17 Waiting for Review observation.
 
-**Reply submitted by the owner**, reported in this task on September 21.
-Message readback is pending because computer control was unavailable.
-The subsequent Apple API readback confirms version **REJECTED** and submission
-**UNRESOLVED_ISSUES**; it does not expose the reply text. Do not
-send a duplicate. Await Apple's response; inspect the conversation and current
-review state when access returns. A posted reply does not by itself prove that
-the version has re-entered the review queue. The prior agent send attempts timed
-out before form interaction.
+**Reply and Apple's response verified in App Store Connect on September 24.**
+The owner sent the reply below on September 21. Apple upheld Guideline 4.2 in
+its September 23 response and requested a changed app. Do not send a duplicate
+appeal. Version 1.0.0 remains **REJECTED** and the submission has
+**UNRESOLVED_ISSUES**. The owner authorized finishing notifications and
+resubmitting; [the ledger](ledger.md) tracks that replacement separately.
 
 The statement about dozens of users is supplied by the owner, not independently
 verified research. Native widget statements concern the reviewed build7 and its

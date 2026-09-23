@@ -204,13 +204,15 @@ access. Internal testing alone does not meet this requirement. See
   registered device receives anything. Configure these through an authorized account session; neither key
   belongs in this repository. `EXPO_ACCESS_TOKEN` on Vercel is optional and
   only lets Expo enforce that this server is the one sending.
-- iOS build 19 includes `expo-notifications` and the Settings save-feedback
-  fixes. Its app provisioning profile includes the production push entitlement and existing widget App Group. EAS
-  still has no APNs delivery key configured, so notification delivery is not
-  enabled. Permission prompts, token registration, delivery, the Android icon
-  and foreground behavior remain unverified on devices. See
-  [`store/testflight-19.json`](../store/testflight-19.json); reevaluate the store
-  privacy labels before public release (`store/disclosures.md`).
+- iOS build 21 adds notification-tap routing and a corrected privacy manifest
+  to the Settings fixes in build 19. Its signed app and provisioning profile
+  include production push and the widget App Group. On September 24, one iOS
+  registration was observed, but Apple and EAS had no push delivery key.
+  A production Newsworthy-specific key is prepared, pending browser security
+  confirmation. Delivery, opening a real notification, foreground behavior and
+  the Android icon remain unverified on physical devices. See
+  [`store/testflight-21.json`](../store/testflight-21.json). App Privacy's four
+  published categories now match the manifest; see `store/disclosures.md`.
 
 - The server persists accepted Expo ticket IDs and checks delivery receipts on the
   existing 15-minute scheduler, even when a new rating is skipped. Explicit
