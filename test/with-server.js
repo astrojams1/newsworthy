@@ -29,6 +29,7 @@ export const PORTS = {
   push: 8839,
   pushDeliveries: 8841,
   pushRelay: 8843, // the stand-in for Expo's push service, not a Newsworthy server
+  sentencePunctuation: 8845,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall

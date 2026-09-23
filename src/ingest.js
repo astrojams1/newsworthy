@@ -24,6 +24,28 @@ import { latestVersion, renderPrompt } from './prompts.js';
 const MAX_EXPLANATION = 400;
 
 /**
+ * A reading's sentence always ends in punctuation.
+ *
+ * The prompt asks for one complete sentence, and most arrive as one, but a
+ * caller that trims to a character budget trims the full stop with it, and a
+ * model answering in JSON drops it often enough to notice. A sentence with no
+ * end reads as cut off, on a page whose whole job is to look settled. So the
+ * server finishes it: a sentence ending in nothing gets a full stop, and one
+ * ending in a dangling comma, colon or dash gets the full stop in its place.
+ * A closing quote or bracket after a full stop counts as an end, and so does
+ * the ellipsis the length cap leaves. Nothing else about the text changes,
+ * and this is not a rejection rule: the four stay four.
+ */
+const SENTENCE_END = /[.!?…]["'”’)\]]*$/;
+const DANGLING = /[\s,;:\-–—]+$/;
+
+export function completeSentence(text) {
+  if (typeof text !== 'string' || text === '') return text;
+  if (SENTENCE_END.test(text)) return text;
+  return `${text.replace(DANGLING, '')}.`;
+}
+
+/**
  * Whether the caller received the prompt we served, byte for byte.
  *
  * Five rewordings of "do not justify the score" produced the same rate of
@@ -85,11 +107,11 @@ export function validateSubmission(body = {}) {
     fail('score must be an integer from 1 to 10');
   }
 
-  const explanation = cleanString(body.explanation, {
+  const explanation = completeSentence(cleanString(body.explanation, {
     field: 'explanation',
     max: MAX_EXPLANATION,
     required: true,
-  });
+  }));
 
   // Always the current prompt. Never the caller's claim about it.
   const prompt = renderPrompt(latestVersion());

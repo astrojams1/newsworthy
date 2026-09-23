@@ -72,6 +72,30 @@ test('preparation receipts bind score and prompt, expire, and can be consumed on
   assert.equal(await takePreparation(expired.id,5,saved.promptVersion),null);
 });
 
+test('a sentence stored before the punctuation rule is served finished, on every field', async () => {
+  // The server runs in its own process with its own PGlite, so the legacy row
+  // is seeded into a file-backed database by a child that exits first; a row
+  // stored through the API would already carry its end.
+  const { mkdtemp } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { execFileSync } = await import('node:child_process');
+  const dir = await mkdtemp(join(tmpdir(), 'newsworthy-legacy-'));
+  execFileSync(process.execPath, ['--input-type=module', '-e', `
+    import { insertRating } from './src/db.js';
+    import { renderPrompt, latestVersion } from './src/prompts.js';
+    const p = renderPrompt(latestVersion());
+    await insertRating({ status:'ok', source:'external', score:4, explanation:'Legacy row without an end',
+      prompt_version:p.version, prompt_text:p.text, prompt_hash:p.hash, judge_version:null,
+      created_at:new Date(Date.now()-5*60000).toISOString() });`],
+  { env:{ ...process.env, NEWSWORTHY_SQL_DRIVER:'pglite', NEWSWORTHY_PGLITE_DIR:dir }, stdio:'ignore' });
+  await withServer({ port:PORTS.sentencePunctuation, env:{ NEWSWORTHY_NO_SCHEDULER:'1', NEWSWORTHY_PGLITE_DIR:dir } }, async base=>{
+    const current=await (await fetch(base+'/api/current')).json();
+    assert.equal(current.explanation_text,'Legacy row without an end.');
+    assert.equal(current.explanation,'Legacy row without an end.');
+  });
+});
+
 test('prepare then submit preserves the match without publishing the draft', async () => {
   await withServer({ port:PORTS.preparation,env:{NEWSWORTHY_NO_SCHEDULER:'1'} },async base=>{
     const post=async (path,body,token=CALLER_TOKEN)=>{
@@ -88,7 +112,7 @@ test('prepare then submit preserves the match without publishing the draft', asy
     assert.equal(prepared.body.first_covered_at,second.body.created_at);
     assert.equal(prepared.body.max_explanation_characters,120);
     const before=await (await fetch(base+'/api/current')).json();
-    assert.equal(before.explanation_text,'hormuz tanker strike alpha');
+    assert.equal(before.explanation_text,'hormuz tanker strike alpha.','stored with its end');
     const final=await post('/api/readings',{score:2,explanation:'A tanker was hit at Hormuz.',preparation:prepared.body.preparation});
     assert.equal(final.status,201);
     const current=await (await fetch(base+'/api/current')).json();

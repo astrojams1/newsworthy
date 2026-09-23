@@ -442,6 +442,19 @@ so it is the one refusal an unauthenticated request can provoke, and a row for
 it would turn a public URL into an unbounded database write. All four rules are
 raised after auth has passed, so nothing the table exists for is lost.
 
+**A sentence always ends in punctuation.** The prompt asks for one complete
+sentence and most arrive as one, but a caller trimming to the character budget
+trims the full stop with it, and a sentence with no end reads as cut off on a
+page whose job is to look settled. `completeSentence()` in `src/ingest.js`
+finishes it at storage on both paths — the caller route and the app's own
+parser — adding a full stop to a sentence that has no end and putting one in
+place of a dangling comma, colon or dash; an ellipsis, a question or exclamation
+mark, or a closing quote after any of those already counts. `/api/current`
+applies it again to `explanation_text`, so a row stored before the rule is
+served finished to every client, native widgets included, with no rebuild. It
+is not a fifth rejection rule, and the native formatters do not mirror it: they
+only ever see text the server has already finished.
+
 There are only four, and all are about a field being absent or malformed. There
 is no length rule: past 400 characters `explanation` is truncated and stored,
 and the prompt's 150-character guidance is style, not a limit the server enforces. A
