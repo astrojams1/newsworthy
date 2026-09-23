@@ -54,7 +54,8 @@ external email client. No advertising or behavioral profiling is implemented.
   Apple's category names verbatim into Google's questionnaire.
 
 If infrastructure or support collection changes, reevaluate the labels. The
-native manifest's empty client data-type array does not describe server logging.
+packaged native manifest now declares the same four data types and purposes.
+Future collection changes must update both records.
 
 References: [Apple privacy definitions](https://developer.apple.com/app-store/app-privacy-details/),
 [Vercel runtime logs](https://vercel.com/docs/logs/runtime),
