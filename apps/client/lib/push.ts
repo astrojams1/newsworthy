@@ -22,6 +22,23 @@ export function onForegroundNotification(refresh: () => void) {
   return () => subscription.remove();
 }
 
+/** Bring the reading to the front when an alert is tapped, including cold launch. */
+export function onNotificationOpen(open: () => void) {
+  let alive = true;
+  let handled: string | undefined;
+  const respond = (response: Notifications.NotificationResponse | null) => {
+    if (!alive || !response || response.actionIdentifier !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
+    const id = response.notification.request.identifier;
+    if (handled === id) return;
+    handled = id;
+    open();
+    void Notifications.clearLastNotificationResponseAsync().catch(() => {});
+  };
+  const subscription = Notifications.addNotificationResponseReceivedListener(respond);
+  void Notifications.getLastNotificationResponseAsync().then(respond).catch(() => {});
+  return () => { alive = false; subscription.remove(); };
+}
+
 async function permissionGranted(request: boolean) {
   const current = await Notifications.getPermissionsAsync();
   if (current.granted || current.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) return true;

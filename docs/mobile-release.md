@@ -201,7 +201,7 @@ access. Internal testing alone does not meet this requirement. See
 - **Credentials are a release gate.** Expo relays to APNs and FCM, so EAS needs
   an Apple push key (`eas credentials`, iOS, push notifications) and a Firebase
   service-account key for Android (`eas credentials`, Android, FCM V1) before a
-  registered device receives anything. Both are account-owner steps; neither
+  registered device receives anything. Configure these through an authorized account session; neither key
   belongs in this repository. `EXPO_ACCESS_TOKEN` on Vercel is optional and
   only lets Expo enforce that this server is the one sending.
 - iOS build 19 includes `expo-notifications` and the Settings save-feedback
@@ -211,6 +211,16 @@ access. Internal testing alone does not meet this requirement. See
   and foreground behavior remain unverified on devices. See
   [`store/testflight-19.json`](../store/testflight-19.json); reevaluate the store
   privacy labels before public release (`store/disclosures.md`).
+
+- The server persists accepted Expo ticket IDs and checks delivery receipts on the
+  existing 15-minute scheduler, even when a new rating is skipped. Explicit
+  failures can retry on the next reading of the same development; successful
+  recipients are not repeated. Missing receipts expire after 24 hours without
+  an automatic resend because delivery is unknown. Logs report aggregate
+  receipt outcomes, never device tokens. Expo acceptance and APNs acceptance
+  still do not prove that a person saw a notification.
+- Tapping a notification opens the current reading, including when Settings was
+  open. A foreground notification refreshes the reading without a banner or sound.
 
 ## Widgets
 

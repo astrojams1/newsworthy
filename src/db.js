@@ -118,6 +118,12 @@ export function ensureSchema() {
         delivered  TEXT[]      NOT NULL DEFAULT '{}',
         PRIMARY KEY (root, threshold)
       )`;
+    // Tickets are retained only until Expo's downstream delivery receipt is
+    // checked. A ticket alone does not establish acceptance by APNs/FCM.
+    await sql`CREATE TABLE IF NOT EXISTS push_receipts (
+      id TEXT PRIMARY KEY, token TEXT NOT NULL, root BIGINT NOT NULL,
+      threshold SMALLINT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_created_at ON ratings (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS rejections_created_at ON rejections (created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS ratings_ok_created_at ON ratings (created_at DESC) WHERE status = 'ok'`;
@@ -601,7 +607,38 @@ export async function deletePushSubscriptions(tokens = []) {
   if (tokens.length === 0) return 0;
   await ensureSchema();
   const rows = await sql`DELETE FROM push_subscriptions WHERE token = ANY(${tokens}) RETURNING token`;
+  await sql`DELETE FROM push_receipts WHERE token = ANY(${tokens})`;
+  for (const token of tokens) {
+    await sql`UPDATE push_deliveries SET delivered = array_remove(delivered, ${token})
+      WHERE ${token} = ANY(delivered)`;
+  }
   return rows.length;
+}
+
+export async function savePushReceipt({ id, token, root, threshold }) {
+  await ensureSchema();
+  await sql`INSERT INTO push_receipts (id, token, root, threshold)
+    VALUES (${id}, ${token}, ${root}, ${threshold}) ON CONFLICT (id) DO NOTHING`;
+}
+
+export async function duePushReceipts() {
+  await ensureSchema();
+  return await sql`SELECT * FROM push_receipts
+    WHERE created_at <= now() - interval '15 minutes' ORDER BY created_at LIMIT 1000`;
+}
+
+/** An explicit provider rejection permits retry; unknown delivery does not. */
+export async function finishPushReceipt(receipt, { retry = false } = {}) {
+  await ensureSchema();
+  // Delete and release atomically; duplicate receipt checks cannot undo a
+  // later successful retry. Never re-create a registration after opt-out.
+  await sql`WITH removed AS (
+    DELETE FROM push_receipts WHERE id = ${receipt.id} RETURNING token, root, threshold
+  ) UPDATE push_deliveries AS d
+    SET delivered = array_remove(d.delivered, r.token), sent_at = NULL, released = true
+    FROM removed AS r
+    WHERE ${retry} AND d.root = r.root AND d.threshold = r.threshold
+      AND EXISTS (SELECT 1 FROM push_subscriptions s WHERE s.token = r.token)`;
 }
 
 /** Every device whose threshold this score meets. */

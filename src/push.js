@@ -1,6 +1,7 @@
 import {
   claimPushDelivery, completePushDelivery, countPushSubscriptions, deletePushSubscriptions, history,
   pushSubscriptionsFor, releasePushDeliveries, rootTimes, upsertPushSubscription,
+  savePushReceipt, duePushReceipts, finishPushReceipt,
 } from './db.js';
 import { STORY_MEMORY_HOURS, currentDisplay } from './current.js';
 import { effectiveConfig } from './config.js';
@@ -44,6 +45,7 @@ export const MAX_THRESHOLD = 10;
 export const MAX_SUBSCRIPTIONS = 5000;
 
 export const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
+export const EXPO_RECEIPTS_URL = 'https://exp.host/--/api/v2/push/getReceipts';
 const CHUNK = 100; // Expo's documented maximum per request
 
 const TOKEN_PATTERN = /^Expo(?:nent)?PushToken\[[A-Za-z0-9_-]{8,128}\]$/;
@@ -104,6 +106,7 @@ export function messageFor({ score, newest }) {
     title: `Newsworthy · ${score}/10`,
     body: newest.explanation,
     sound: 'default',
+    channelId: 'readings',
     data: { reading_id: newest.id, score },
   };
 }
@@ -126,7 +129,7 @@ export async function sendExpoPush(messages, { fetchImpl = fetch, url = expoPush
       // Optional: an access token lets Expo enforce that only this server sends
       // to this project's tokens. Not required for delivery.
       if (process.env.EXPO_ACCESS_TOKEN) headers.authorization = `Bearer ${process.env.EXPO_ACCESS_TOKEN}`;
-      const res = await fetchImpl(url, { method: 'POST', headers, body: JSON.stringify(chunk) });
+      const res = await fetchImpl(url, { method: 'POST', headers, body: JSON.stringify(chunk), signal: AbortSignal.timeout(15000) });
       if (!res.ok) throw new Error(`Expo push responded ${res.status}`);
       const parsed = await res.json();
       const data = Array.isArray(parsed?.data) ? parsed.data : [];
@@ -140,6 +143,42 @@ export async function sendExpoPush(messages, { fetchImpl = fetch, url = expoPush
 
 export function expoPushUrl() {
   return process.env.NEWSWORTHY_PUSH_URL || EXPO_PUSH_URL;
+}
+
+/** Check downstream acceptance even on cron ticks that skip creating a reading. */
+export async function checkPushReceipts({ fetchImpl = fetch, url = process.env.NEWSWORTHY_PUSH_RECEIPTS_URL || EXPO_RECEIPTS_URL } = {}) {
+  const result = { accepted: 0, failed: 0, pending: 0, expired: 0 };
+  try {
+    const due = await duePushReceipts();
+    if (!due.length) return result;
+    const headers = { 'content-type': 'application/json', accept: 'application/json' };
+    if (process.env.EXPO_ACCESS_TOKEN) headers.authorization = `Bearer ${process.env.EXPO_ACCESS_TOKEN}`;
+    const response = await fetchImpl(url, { method: 'POST', headers,
+      body: JSON.stringify({ ids: due.map(r => r.id) }), signal: AbortSignal.timeout(15000) });
+    if (!response.ok) throw new Error(`Expo receipts responded ${response.status}`);
+    const { data } = await response.json();
+    for (const receipt of due) {
+      const status = data?.[receipt.id];
+      if (status?.status === 'ok') {
+        await finishPushReceipt(receipt);
+        result.accepted++;
+      } else if (status?.status === 'error') {
+        if (status.details?.error === 'DeviceNotRegistered') await deletePushSubscriptions([receipt.token]);
+        else await finishPushReceipt(receipt, { retry: true });
+        // Do not log the provider message: it can contain the device token.
+        result.failed++;
+      } else if (Date.now() - Date.parse(receipt.created_at) >= 24 * 60 * 60_000) {
+        // Expo expires receipts after 24h. Unknown delivery must not produce
+        // duplicate notifications. Surface the uncertainty in aggregate logs.
+        await finishPushReceipt(receipt);
+        result.expired++;
+      } else result.pending++;
+    }
+    console.log('push receipts:', result);
+  } catch (err) {
+    console.error('push receipt check failed:', err instanceof Error ? err.message : 'unknown error');
+  }
+  return result;
 }
 
 /**
@@ -182,16 +221,22 @@ export async function notifyReading(reading, { fetchImpl, url, now } = {}) {
 
     const message = messageFor(current);
     const { tickets, error } = await sendExpoPush(recipients.map((r) => ({ to: r.token, ...message })), { fetchImpl, url });
-    // Every token Expo answered for is progress, whatever the answer: a
-    // device Expo no longer knows has uninstalled, or never was one, and its
-    // row has no future — but it is not retried either.
     const answered = new Map(tickets.map((t) => [t.to, t]));
-    for (const r of recipients) if (answered.has(r.token)) r.claim.delivered.push(r.token);
+    for (const r of recipients) {
+      const ticket = answered.get(r.token);
+      if (ticket?.status === 'ok' && typeof ticket.id === 'string' && ticket.id) {
+        r.claim.delivered.push(r.token);
+        await savePushReceipt({ id: ticket.id, token: r.token, ...r.claim });
+      } else if (ticket?.details?.error === 'DeviceNotRegistered') {
+        r.claim.pending = r.claim.pending.filter(token => token !== r.token);
+      }
+    }
     const dead = tickets.filter((t) => t.status === 'error' && t.details?.error === 'DeviceNotRegistered').map((t) => t.to);
     if (dead.length) await deletePushSubscriptions(dead);
-    result.sent = tickets.filter((t) => t.status === 'ok').length;
+    result.sent = tickets.filter((t) => t.status === 'ok' && typeof t.id === 'string' && t.id).length;
 
     if (error) throw error;
+    if (claims.some(c => c.delivered.length !== c.pending.length)) throw new Error('Expo rejected or omitted one or more push tickets');
     for (const claim of claims) await completePushDelivery(claim);
     claims = [];
     console.log(`push: reading ${reading.id} shows ${current.score}/10, sent to ${result.sent} of ${recipients.length} devices`);

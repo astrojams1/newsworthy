@@ -16,7 +16,8 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
     '@/components/preferences-provider': { PreferencesProvider: 'PreferencesProvider', usePreferences: () => ({ preferences: { theme: 'system' } }) },
     '@/components/reading-provider': { ReadingProvider: 'ReadingProvider', useCurrentReading: () => ({ reading: null }) },
     '../../../public/favicon': {},
-    'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }), ThemeProvider: 'ThemeProvider', DefaultTheme: navigationTheme(false), DarkTheme: navigationTheme(true) },
+    'expo-router': { useRouter: () => ({ replace() {} }), Stack: Object.assign(() => {}, { Screen: 'Screen' }), ThemeProvider: 'ThemeProvider', DefaultTheme: navigationTheme(false), DarkTheme: navigationTheme(true) },
+    '@/lib/push': { onNotificationOpen: () => () => {} },
     'expo-status-bar': { StatusBar: 'StatusBar' },
     '@/lib/theme': { useTheme: () => theme },
   };
