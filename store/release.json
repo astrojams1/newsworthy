@@ -27,7 +27,7 @@
     "availableInNewTerritories": true,
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
     "reviewSubmissionState": "UNRESOLVED_ISSUES",
-    "replacementBuildRequired": false,
+    "replacementBuildRequired": true,
     "replacementBuilds": [
       {
         "id": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
@@ -64,8 +64,8 @@
       "state": "COMPLETE",
       "reason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets."
     },
-    "rejectionDetails": "GUIDELINE_2_1_NEW_DEVELOPER_INFORMATION_REQUEST",
-    "rejectionEvidenceBasis": "USER_SUPPLIED_REVIEW_MESSAGE",
+    "rejectionDetails": "GUIDELINE_4_2_MINIMUM_FUNCTIONALITY",
+    "rejectionEvidenceBasis": "APP_STORE_CONNECT_CORRESPONDENCE_READBACK",
     "reviewResponse": "SIX_PART_REPLY_AND_VIDEO_SENT_NOTES_VERIFIED",
     "testFlightQA": {
       "observedAt": "2026-09-17T04:33:43.363Z",
@@ -149,27 +149,27 @@
     "reviewStatusObservedAt": "2026-09-21T10:07:15.390018+00:00",
     "latestReviewReport": {
       "date": "2026-09-21",
-      "basis": "user_reported",
+      "basis": "observed",
       "reviewedBuild": "7",
       "outcome": "REJECTED",
       "guideline": "4.2 Minimum Functionality",
-      "replyStatus": "SUBMITTED_BY_OWNER_PENDING_READBACK",
+      "replyStatus": "VERIFIED_IN_APP_STORE_CONNECT",
       "evidence": "store/apple-4.2-reconsideration.md",
-      "note": "Live API readback confirms version REJECTED and submission UNRESOLVED_ISSUES. Reply submission is owner-reported; message readback pending."
+      "note": "September24 browser readback confirms owner reply and Apple response. Finish notification delivery and resubmit changed build; do not repeat appeal.",
+      "responseDate": "2026-09-23",
+      "responseOutcome": "GUIDELINE_4_2_UPHELD"
     },
     "previousReviewStatusObservedAt": "2026-09-17T04:33:43.363Z",
     "latestTestFlight": {
       "version": "1.0.0",
-      "build": "18",
-      "easBuildId": "a9d8b5be-4634-4df0-a4da-e5d90e5f2a56",
-      "submissionId": "801f9470-4d61-41a7-9299-5e6989823110",
-      "submissionStatus": "CANCELED_QUEUE_REPLACED_BY_DIRECT_UPLOAD",
-      "appleBuildId": "83b11cd7-1828-4859-9fb4-40b6a9e6f938",
+      "build": "21",
+      "easBuildId": "150a6415-299a-4af3-995d-cb501703073a",
+      "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
       "state": "IN_BETA_TESTING",
-      "observedAt": "2026-09-22T16:58:52.964Z",
-      "evidence": "store/testflight-18.json",
+      "observedAt": "2026-09-23T23:36:00.667Z",
+      "evidence": "store/testflight-21.json",
       "physicalDeviceVerification": "pending",
-      "notificationDelivery": "APNS_KEY_NOT_CONFIGURED"
+      "notificationDelivery": "APNS_KEY_PENDING_SECURITY_CONFIRMATION"
     }
   },
   "google": {

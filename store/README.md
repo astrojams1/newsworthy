@@ -3,26 +3,35 @@
 One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
-**September 21, 2026 update:** the owner supplied Apple's Guideline 4.2
-rejection of **build 7** for minimum functionality. The owner reports submitting the reconsideration reply; provider readback
-is pending. Do not send a duplicate.
-See [the exact reply and handoff](apple-4.2-reconsideration.md).
-**September 23 TestFlight update:** iOS **1.0.0 (19)** is VALID and
-IN_BETA_TESTING in Release QA, with test notes saved and verified. It was built
-from merged main `a694734` and includes the Settings navigation theme and
-notification save-feedback fixes. See [build 19 evidence](testflight-19.json).
-The signed app and widget, matching App Groups, production push entitlement and
-new Settings bundle marker are verified. Native Settings checks passed in Expo
-Go on iOS 18.3.1; iOS 26 glass transitions, physical-device notification saves
-and widgets remain unverified for build 19. Notification delivery remains
-unavailable because EAS has no APNs delivery key. Build 18 remains historical.
+**September 24, 2026 update:** App Store Connect correspondence confirms the
+owner's reconsideration reply and Apple's September 23 response upholding
+Guideline 4.2. Build 7 remains rejected. The owner authorized finishing
+notifications and resubmitting a changed build. Do not repeat the old appeal;
+see [the reply record](apple-4.2-reconsideration.md).
+
+**Build 21:** production iOS **1.0.0 (21)** passed Apple validation and uploaded
+successfully. It is VALID and IN_BETA_TESTING in Release QA, with test notes
+saved and verified. It includes notification-tap routing
+and the corrected privacy manifest. PR127 is merged, with the server's delivery
+receipt and retry fixes deployed. All 292 automated tests and 70 design checks
+passed (one existing automated test skipped). See [build evidence](testflight-21.json).
+
+The app/widget versions, signatures, App Groups, production push entitlement and
+privacy declarations are verified. One iOS device is registered, but a push key
+still needs the pending security confirmation and configuration, followed by a
+physical delivery/tap test. Archive and automated checks do not establish physical
+device behavior. [Owner steps](user-actions.md#current-ios-resubmission-notification-setup-and-device-check)
+separate those two remaining handoffs. Build 21 is ready to install in TestFlight;
+build 19 remains historical evidence.
 
 Neither app is publicly released. Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.
 
 The iPhone lead compares real small and medium widgets on a neutral canvas,
 without stock wallpaper or unrelated app icons. Updated iPhone/iPad reading
-captures show the approved design and Privacy/Support footer.
+captures show the earlier reading design with a Privacy/Support footer; the
+current app moves those links into Settings. These are historical captures,
+not build 21 screenshots.
 
 **Additional Android QA:** maximum system text size exposed compact-widget
 text clipping and stale app appearance after returning from Settings. AAB10
@@ -95,8 +104,8 @@ still blocks app creation. See the ledger for current gates and exact next actio
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** the owner supplied the September 21 **Guideline 4.2
-  rejection** of build7. The owner reports submitting the reconsideration reply; see
+- **Apple review:** September 24 browser readback confirms the owner reply and
+  Apple's September 23 decision upholding **Guideline 4.2**; see
   [reply status](apple-4.2-reconsideration.md). Live API readback confirms version **REJECTED** and submission
   **UNRESOLVED_ISSUES**; earlier WAITING_FOR_REVIEW evidence is historical.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.

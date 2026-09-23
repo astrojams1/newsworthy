@@ -1,10 +1,37 @@
 # Account-owner actions
 
-Google account and Apple API checked on **September 17, 2026**. Apple Business
-rows were last verified September 17. The list below
+Apple review, notification setup and privacy were checked on **September 24,
+2026**. Google account and Apple Business rows were last verified September 17. The list below
 separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
+
+## Current iOS resubmission: notification setup and device check
+
+The notification fixes are merged and deployed. Build 21 has passed archive
+and Apple validation; [build evidence](testflight-21.json) records upload and
+TestFlight status separately. Two steps remain before review:
+
+1. **Confirm the prepared push key.** The agent can create the production-only,
+   Newsworthy-specific Apple push key and configure Expo. Apple and Expo were
+   checked and contain no existing key. The browser tool requires action-time
+   confirmation because this creates a credential that lets Expo send
+   Newsworthy notifications. The prepared Apple page is waiting; no password
+   or 1Password action is needed from the owner.
+2. **Verify delivery on the physical iPhone.** Install build 21 from TestFlight. Open Newsworthy → Settings → turn on “Notify me about high
+   readings” and allow notifications. Return to the Home Screen and tell the
+   agent it is ready for a labeled delivery test. Confirm the test appears and
+   tapping it opens the reading. One iOS device is already registered at a
+   minimum score of 5; registration does not prove notification delivery.
+
+The paired phone has Developer Mode off, so the command-line device tools
+cannot inspect its apps. A second path, iPhone Mirroring, is available but
+first said “iPhone in Use — Lock your iPhone to connect.” The next check found
+the Mac locked, and automatic unlock was unavailable. With the Mac unlocked
+and iPhone locked, the agent can try that path for the TestFlight and delivery checks.
+Enabling Developer Mode is not required. The agent handles the key, test send,
+metadata and submission once the confirmation and physical test are complete.
+No generic submission approval is pending.
 
 ## 1. Google: verify a real Android device
 
@@ -83,9 +110,10 @@ as **Active** and says all regulatory requirements are complete at this time.
 The selected trader classification was not inspected; this records Apple's
 completion status without inferring the owner's legal status.
 
-App Privacy now explicitly reports publication by James Thompson. The published
-categories are performance and diagnostic data for app functionality, linked to
-users, with no tracking. No further publication approval is pending.
+The September 24 published App Privacy categories are Device ID, Other Data
+Types, Performance Data and Other Diagnostic Data, all for app functionality,
+linked to users, with no tracking. These include notification registration,
+preferences and temporary delivery records. No publication approval is pending.
 
 Apple App Review contact details, the reachable phone, no-login requirement,
 and review notes are now saved and verified. This is no longer an owner task.
@@ -107,12 +135,12 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 
 ## Work the agent can do
 
-**Apple rejected build7 under Guideline 4.2 on September 21**, according to the
-owner's pasted message. The owner reports submitting the
-[reconsideration reply](apple-4.2-reconsideration.md). No further reply is needed
-now. Do not duplicate it. Message readback is pending. Apple’s API confirms
-REJECTED / UNRESOLVED_ISSUES; inspect Apple’s response when access returns.
-A reply alone does not confirm re-queuing.
+**Apple rejected build 7 under Guideline 4.2 on September 21.** September 24
+browser readback confirms the owner-submitted
+[reconsideration reply](apple-4.2-reconsideration.md) and Apple's September 23
+response upholding the rejection. Do not duplicate that appeal. The current
+task is to finish notifications and submit the changed build. Apple still
+reports REJECTED / UNRESOLVED_ISSUES.
 The earlier physical recording and Guideline 2.1 response remain historical
 evidence. Newer TestFlight builds do not establish a replacement App Review submission.
 
@@ -124,7 +152,9 @@ and the remaining native score10 case are separate from emulator coverage.
 
 The remaining technical release work is:
 
-- Read back the owner-submitted reconsideration reply and await Apple’s response. Verify paid-sale
+- Configure the approved push key, verify physical notification delivery and
+  opening, update review notes/listing, select build 21 and resubmit. Verify
+  Waiting for Review separately from TestFlight availability. Verify paid-sale
   readiness and public availability after approval.
 - When Google enables **Create app**, create Newsworthy as **paid**, configure
   US$1.00 pricing, upload AAB11 and the prepared listing/artwork, complete privacy

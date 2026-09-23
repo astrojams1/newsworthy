@@ -1,0 +1,91 @@
+{
+  "observedAt": "2026-09-23T23:36:00.667Z",
+  "scope": "Notification receipt checks, retry handling, tap routing and privacy manifest",
+  "version": "1.0.0",
+  "build": "21",
+  "sourceCommit": "2d7f56dfc04862bd02c9c951d93910bf4849991e",
+  "applicationSourceDirty": false,
+  "mergedCommit": "3a2f0e0959543fcacc878391b6dba761ef2879cd",
+  "applicationSourceMatchesMergedCommit": true,
+  "profile": "production",
+  "easBuildId": "150a6415-299a-4af3-995d-cb501703073a",
+  "buildStatus": "FINISHED",
+  "buildCompletedAt": "2026-09-23T23:20:44.372Z",
+  "buildUrl": "https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/150a6415-299a-4af3-995d-cb501703073a",
+  "checks": {
+    "npmTest": {
+      "passed": 292,
+      "skipped": 1,
+      "failed": 0
+    },
+    "design": {
+      "passed": 70,
+      "failed": 0
+    },
+    "typeScript": "passed",
+    "githubCI": "Both PR127 checks passed, including native exports and prebuild",
+    "codeSignature": "codesign --verify --deep --strict passed",
+    "archiveIntegrity": "ZIP CRC passed",
+    "applePreflight": "VERIFY SUCCEEDED"
+  },
+  "artifact": {
+    "file": "artifacts/store-submission/newsworthy-ios21.ipa",
+    "bytes": 19597648,
+    "sha256": "638128d39a720a140bfab99ea84dc83f0f31ddc9c4c130021841b4cda565fe7f"
+  },
+  "signingVerified": {
+    "appAndWidgetBuildNumber": "21",
+    "appAndWidgetAppGroups": true,
+    "appProductionPushEntitlement": true,
+    "provisioningProfileProductionPushEntitlement": true,
+    "getTaskAllow": false
+  },
+  "privacyManifest": {
+    "categories": [
+      "DeviceID",
+      "OtherDataTypes",
+      "PerformanceData",
+      "OtherDiagnosticData"
+    ],
+    "purpose": "AppFunctionality",
+    "linked": true,
+    "tracking": false,
+    "matchesPublishedAppPrivacy": true
+  },
+  "nativeVerification": {
+    "physicalDevice": "Pending build21 testing; device registration alone is not receipt or tap verification.",
+    "notifications": "Apple and EAS have no push delivery key; prepared production topic key awaits browser security confirmation. No live push test sent.",
+    "widgets": "Signed extension verified; no new physical widget test for this build.",
+    "android": "Outside this iOS resubmission.",
+    "remoteDevicePath": "Command-line app inspection is blocked by Developer Mode being off. iPhone Mirroring launched but reported iPhone in Use; the next attempt reported the Mac locked and automatic unlock unavailable. Retry with the Mac unlocked and iPhone locked."
+  },
+  "appReview": {
+    "selectedBuild": "7",
+    "state": "REJECTED",
+    "resubmitted": false,
+    "reason": "Apple upheld Guideline4.2 in its September23 response; replacement notification delivery needs completion."
+  },
+  "production": {
+    "commit": "3a2f0e0959543fcacc878391b6dba761ef2879cd",
+    "deploymentId": "dpl_2d1c1kXXV4ej2Vp1r2znLRVW4DAT",
+    "state": "Ready",
+    "smoke": "Home, Settings, current API, health and privacy returned200; updated privacy copy present.",
+    "registeredIosDevices": 1,
+    "registeredThreshold": 5,
+    "deliveryRecordsAtCheck": 0,
+    "pendingReceiptsAtCheck": 0
+  },
+  "uploadState": "UPLOAD_SUCCEEDED",
+  "uploadMethod": "Apple altool using existing API credential",
+  "deliveryId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+  "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+  "appleProcessingState": "VALID",
+  "testFlight": {
+    "state": "IN_BETA_TESTING",
+    "groupId": "312a8585-2ca2-413e-bb5f-75d0ba487e13",
+    "groupName": "Release QA",
+    "groupAttached": true,
+    "notesVerified": true,
+    "notes": "Notification improvements:\n- Tapping a notification opens and refreshes the reading.\n- Delivery failures are checked and explicitly rejected notifications can retry.\n- Privacy declarations now include optional notification registration and preferences.\n\nPlease check Settings, appearance changes, enabling/disabling notifications and the minimum score. Push delivery is pending Apple push-key configuration; permission and registration alone do not verify delivery. We will send a clearly labeled delivery test after the key is configured. Confirm that it appears outside the app and opens the reading when tapped.\n\nNo login is required. The existing reading, sharing and Home Screen widgets remain available."
+  }
+}
