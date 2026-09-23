@@ -249,8 +249,8 @@ Before release, verify custom builds on devices: initial load, saved reading in
 flight mode, recovery, native sharing, light/dark mode and the Settings
 appearance override (including share sheet and alerts), the notification switch
 (permission prompt, refusal, delivery of an 8 or above, threshold change, turning
-off), large text, Android back, widget addition/refresh/offline state and
-privacy/support links. Simulator Expo
+off), large text, Android back, widget addition/refresh/offline state and the
+privacy/support links in Settings. Simulator Expo
 Go verification covers the native screen, not the app's signed binary or widgets.
 
 Detailed UI/accessibility evidence and remaining checks are in

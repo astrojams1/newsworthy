@@ -35,7 +35,7 @@ test('the website shows the appearance choice and no notification setting', () =
   assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
     [['Follow device', true], ['Light', false], ['Dark', false]]);
   assert.ok(!all.some(n => n.type === 'Toggle'), 'push notifications are a native feature');
-  assert.deepEqual(text(all), ['Appearance', 'Follow device', 'Light', 'Dark']);
+  assert.deepEqual(text(all), ['Appearance', 'Follow device', 'Light', 'Dark', 'About', 'Privacy', 'Support']);
   // Vertical: each option is its own full-width row, the checked one marked.
   assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
   assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');
@@ -81,6 +81,20 @@ for (const platform of ['ios', 'android']) {
     assert.deepEqual([calls.enable, calls.disable, calls.choose], [0, 0, []]);
   });
 }
+
+test('Privacy and Support are rows in Settings on every platform, opening the policy pages', () => {
+  for (const platform of ['web', 'ios', 'android']) {
+    const all = nodes(renderSettings({ platform }).tree);
+    const links = all.filter(n => n.type === 'Link');
+    assert.deepEqual(links.map(n => n.props.href), ['/privacy', '/support'], platform);
+    const rows = links.map(n => nodes(n).find(c => c.props?.accessibilityRole === 'link'));
+    assert.deepEqual(rows.map(n => n.props.accessibilityLabel), ['Privacy', 'Support']);
+    // The same row as every other setting: one minimum, growing with large text.
+    assert.deepEqual(rows.map(n => n.props.style.minHeight), [56, 56]);
+    assert.deepEqual(rows.map(n => n.props.style.height), [undefined, undefined]);
+    assert.ok(text(all).indexOf('About') > text(all).indexOf('Dark'), 'the links come after the settings themselves');
+  }
+});
 
 test('while saving, progress appears below the controls and both controls are held', () => {
   const all = nodes(renderSettings({ platform: 'ios', busy: true }).tree);

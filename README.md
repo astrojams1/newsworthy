@@ -55,8 +55,10 @@ native interface; widgets require a custom development build.
 
 Settings, the gear in the header, choose the appearance (Follow device, Light
 or Dark) and, in the mobile apps, an optional notification for readings at or above
-a chosen score — off by default. Native delivery needs push credentials on EAS;
-see the [mobile release guide](docs/mobile-release.md#push-notifications).
+a chosen score — off by default. The Privacy and Support links are there too,
+so the reading screen carries nothing but the reading. Native delivery needs
+push credentials on EAS; see the
+[mobile release guide](docs/mobile-release.md#push-notifications).
 
 See [Accessibility verification](docs/accessibility-verification.md) for checks
 performed and remaining device/assistive-technology release checks. EAS and iOS
@@ -93,8 +95,8 @@ actually wired up. Start there when a deploy misbehaves.
 
 | Route | What's there |
 |---|---|
-| `/` | The rating, explanation and update time, Share and Settings controls in the header, and Privacy and Support links below the reading. The number is the loudest development still live — each carries its own level, aged from when it was first reported |
-| `/settings` | App appearance and, on native, optional notification controls with save feedback |
+| `/` | The rating, explanation and update time, and Share and Settings controls in the header. The number is the loudest development still live — each carries its own level, aged from when it was first reported |
+| `/settings` | App appearance, on native optional notification controls with save feedback, and the Privacy and Support links |
 | `/privacy` | Privacy policy covering the website, apps and widgets |
 | `/support` | Help and contact: astrojams1@gmail.com |
 | `/llms.txt` | Public product facts and links for AI readers; rating instructions remain at `/api/instructions` |

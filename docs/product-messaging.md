@@ -48,6 +48,7 @@ engagement, addiction or growth-hacking tactics.
   above a chosen score — off by default, 8 when turned on, one notification per
   development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,
   and never as available until a build carrying it has been verified.
+- The Privacy and Support links live in Settings, not on the reading screen.
 - Do not claim that hosting processes no technical information.
 - Brand positioning must never soften, inflate or otherwise alter the rating
   scale. Published prompts are append-only; see `PROMPT-RULES.md`.

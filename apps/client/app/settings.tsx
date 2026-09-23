@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Linking, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import Head from 'expo-router/head';
-import { Stack, useRouter } from 'expo-router';
+import { Link, Stack, useRouter } from 'expo-router';
 import { BackIcon } from '@/components/back-icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
@@ -10,6 +10,9 @@ import { Toggle } from '@/components/toggle';
 import { THEME_CHOICES, THRESHOLD_CHOICES, type ThemePreference } from '@/lib/preferences';
 import { CheckIcon } from '@/components/check-icon';
 import { pushSupported } from '@/lib/push';
+import { privacyUrl, supportUrl } from '@/lib/config';
+
+const ABOUT_LINKS = [['Privacy', privacyUrl], ['Support', supportUrl]] as const;
 
 const ROW_MIN_HEIGHT = 56;
 
@@ -108,6 +111,16 @@ export default function Settings() {
             </Pressable>}
           </View>}
         </View>}
+        <View>
+          <Text accessibilityRole="header" style={heading}>About</Text>
+          <View testID="about-links" style={card}>
+            {ABOUT_LINKS.map(([name, url], index) => <Link key={name} href={url} asChild>
+              <Pressable accessibilityRole="link" accessibilityLabel={name} testID={`link-${name.toLowerCase()}`} style={row(index)}>
+                <Text style={{ ...label, flex: 1 }}>{name}</Text>
+              </Pressable>
+            </Link>)}
+          </View>
+        </View>
       </View>
     </ScrollView>
   </>;
