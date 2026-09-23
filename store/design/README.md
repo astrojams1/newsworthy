@@ -7,6 +7,10 @@ September 16, 2026: revised after owner feedback on the first Privacy/Support la
 - Tighter grouping of score, explanation, and reading timestamp.
 - Quiet Privacy · Support footer, with 48-point minimum touch targets.
 
+September 23, 2026: the Privacy · Support footer moved into Settings as an About
+card, so the reading screen carries only the reading. The captures below predate
+that move and still show the footer.
+
 These images are actual web-renderer captures at 390 × 844. They are design previews,
 not native verification or store listing screenshots. They show the live backend
 reading at capture time. Native builds and matching listing captures remain pending.

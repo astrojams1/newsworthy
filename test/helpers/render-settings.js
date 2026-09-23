@@ -29,7 +29,7 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
     '@/components/toggle': { Toggle: 'Toggle' },
     '@/components/check-icon': { CheckIcon: 'CheckIcon' },
     'expo-router/head': { __esModule: true, default: 'Head' },
-    'expo-router': { Stack: { Screen: 'Screen' }, useRouter: () => ({ canGoBack: () => canGoBack, replace: href => calls.replace.push(href) }) },
+    'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', useRouter: () => ({ canGoBack: () => canGoBack, replace: href => calls.replace.push(href) }) },
     '@/components/back-icon': { BackIcon: 'BackIcon' },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
@@ -47,6 +47,7 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
       },
     }) },
     '@/lib/push': { pushSupported },
+    '@/lib/config': { privacyUrl: '/privacy', supportUrl: '/support' },
   };
   const exports = {};
   vm.runInNewContext(compiled, {

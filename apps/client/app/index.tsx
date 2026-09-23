@@ -1,6 +1,6 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View, Share, useWindowDimensions } from 'react-native';
-import { Stack, Link, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { AppIcon } from '@/components/app-icon';
 import { SettingsIcon } from '@/components/settings-icon';
@@ -57,7 +57,12 @@ export default function Home() {
   </Pressable>;
   const headerRight = <View style={{ flexDirection: 'row', alignItems: 'center' }}>{shareButton}{settingsButton}</View>;
   return <>
-    {process.env.EXPO_OS === 'web' && <Head><title>Newsworthy</title></Head>}
+    {process.env.EXPO_OS === 'web' && <Head>
+      <title>Newsworthy</title>
+      {/* Privacy and Support are reached from Settings; these keep them discoverable from the front page for crawlers and store reviewers. */}
+      <link rel="privacy-policy" href={privacyUrl} />
+      <link rel="help" href={supportUrl} />
+    </Head>}
     <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: '',
       headerLeft: () => brand, headerRight: () => headerRight,
       // iOS 26+ draws glass around header items. The wordmark stays out of it —
@@ -87,16 +92,6 @@ export default function Home() {
         {reading && <Text selectable style={{ color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Updated {relative}</Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
-      </View>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-        {[["Privacy", privacyUrl], ["Support", supportUrl]].map(([label, url], index) => <Fragment key={label}>
-          {index > 0 && <Text accessible={false} aria-hidden style={{ color: theme.muted, fontSize: 12 }}>·</Text>}
-          <Link href={url} asChild>
-          <Pressable accessibilityRole="link" style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', paddingHorizontal: 10 }}>
-            <Text style={{ color: theme.muted, fontSize: 12 }}>{label}</Text>
-          </Pressable>
-          </Link>
-        </Fragment>)}
       </View>
     </ScrollView>
     </View>
