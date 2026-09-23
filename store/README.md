@@ -10,7 +10,8 @@ notifications and resubmitting a changed build. Do not repeat the old appeal;
 see [the reply record](apple-4.2-reconsideration.md).
 
 **Build 21:** production iOS **1.0.0 (21)** passed Apple validation and uploaded
-successfully; Apple processing is pending. It includes notification-tap routing
+successfully. It is VALID and IN_BETA_TESTING in Release QA, with test notes
+saved and verified. It includes notification-tap routing
 and the corrected privacy manifest. PR127 is merged, with the server's delivery
 receipt and retry fixes deployed. All 292 automated tests and 70 design checks
 passed (one existing automated test skipped). See [build evidence](testflight-21.json).
@@ -20,8 +21,8 @@ privacy declarations are verified. One iOS device is registered, but a push key
 still needs the pending security confirmation and configuration, followed by a
 physical delivery/tap test. Archive and automated checks do not establish physical
 device behavior. [Owner steps](user-actions.md#current-ios-resubmission-notification-setup-and-device-check)
-separate those two remaining handoffs. Build 19 remains available in Release QA
-until Apple processes build 21.
+separate those two remaining handoffs. Build 21 is ready to install in TestFlight;
+build 19 remains historical evidence.
 
 Neither app is publicly released. Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.

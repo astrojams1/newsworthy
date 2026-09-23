@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-09-23T23:29:06.806327+00:00",
+  "observedAt": "2026-09-23T23:36:00.667Z",
   "scope": "Notification receipt checks, retry handling, tap routing and privacy manifest",
   "version": "1.0.0",
   "build": "21",
@@ -56,7 +56,8 @@
     "physicalDevice": "Pending build21 testing; device registration alone is not receipt or tap verification.",
     "notifications": "Apple and EAS have no push delivery key; prepared production topic key awaits browser security confirmation. No live push test sent.",
     "widgets": "Signed extension verified; no new physical widget test for this build.",
-    "android": "Outside this iOS resubmission."
+    "android": "Outside this iOS resubmission.",
+    "remoteDevicePath": "iPhone Mirroring is available but reported iPhone in Use; retry after the phone is locked. Command-line app inspection is blocked by Developer Mode being off."
   },
   "appReview": {
     "selectedBuild": "7",
@@ -76,5 +77,15 @@
   },
   "uploadState": "UPLOAD_SUCCEEDED",
   "uploadMethod": "Apple altool using existing API credential",
-  "deliveryId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb"
+  "deliveryId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+  "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+  "appleProcessingState": "VALID",
+  "testFlight": {
+    "state": "IN_BETA_TESTING",
+    "groupId": "312a8585-2ca2-413e-bb5f-75d0ba487e13",
+    "groupName": "Release QA",
+    "groupAttached": true,
+    "notesVerified": true,
+    "notes": "Notification improvements:\n- Tapping a notification opens and refreshes the reading.\n- Delivery failures are checked and explicitly rejected notifications can retry.\n- Privacy declarations now include optional notification registration and preferences.\n\nPlease check Settings, appearance changes, enabling/disabling notifications and the minimum score. Push delivery is pending Apple push-key configuration; permission and registration alone do not verify delivery. We will send a clearly labeled delivery test after the key is configured. Confirm that it appears outside the app and opens the reading when tapped.\n\nNo login is required. The existing reading, sharing and Home Screen widgets remain available."
+  }
 }

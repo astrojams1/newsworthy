@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-23T23:32:46+00:00",
+  "updated_at": "2026-09-23T23:36:30+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -155,15 +155,15 @@
       "updated_at": "2026-09-16T07:50:27+00:00"
     },
     "apple.upload": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Apple validation and direct upload succeeded for build 21. Delivery UUID 6ce55c01-2cbf-4d35-b29f-b010df9502cb. Awaiting API build processing; selected App Review build remains 7.",
+      "summary": "Build 21 passed Apple validation and upload, then processed VALID as 6ce55c01-2cbf-4d35-b29f-b010df9502cb. App Review still selects rejected build 7; upload does not establish resubmission.",
       "evidence": [
         "store/testflight-21.json"
       ],
-      "next_action": "Read Apple processing state, attach valid build 21 to Release QA, and verify beta notes/group membership.",
-      "updated_at": "2026-09-23T23:32:46+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-23T23:36:30+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -499,12 +499,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build7 is available in Release QA and the physical recording visibly identifies installed1.0.0(7). The owner invitation and installation handoff are complete.",
+      "summary": "Build 21 is VALID and IN_BETA_TESTING in existing Release QA. Group association and beta notes read back successfully. Notes identify pending push-key configuration and request physical delivery/tap checks; no new invitation is required.",
       "evidence": [
-        "Video source second45; Applebuild eff31b5d-6c18-492d-874c-d7a0e4392bf6 is VALID and attached to internal Release QA."
+        "store/testflight-21.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-17T04:35:04+00:00"
+      "updated_at": "2026-09-23T23:36:30+00:00"
     },
     "google.large-text-build": {
       "state": "done",
@@ -851,12 +851,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Notification code merged and deployed; 292 tests and 70 design checks passed. One iOS device is registered at threshold 5. No APNs delivery key exists in Apple or Expo; the production Newsworthy-specific key is prepared and awaits action-time security confirmation. Physical receipt and tap verification remain pending.",
+      "summary": "Build 21 is ready in TestFlight and server fixes are live. Apple push-key creation/configuration awaits the pending security confirmation. One iOS device is registered; no real notification has been sent. iPhone Mirroring is available but currently reports the phone is in use.",
       "evidence": [
         "store/testflight-21.json; store/user-actions.md"
       ],
-      "next_action": "Owner confirms the pending push-key question; agent creates/configures the key, sends a labeled test, and owner confirms physical receipt and opening on build 21.",
-      "updated_at": "2026-09-23T23:31:06+00:00"
+      "next_action": "Confirm the prepared production Newsworthy push key. Agent configures Expo and tests using iPhone Mirroring once the phone is locked, or owner confirms labeled test receipt and opening.",
+      "updated_at": "2026-09-23T23:36:30+00:00"
     }
   },
   "events": [
@@ -4983,6 +4983,54 @@
         ],
         "next_action": "Read Apple processing state, attach valid build 21 to Release QA, and verify beta notes/group membership.",
         "updated_at": "2026-09-23T23:32:46+00:00"
+      }
+    },
+    {
+      "sequence": 258,
+      "at": "2026-09-23T23:36:30+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 21 passed Apple validation and upload, then processed VALID as 6ce55c01-2cbf-4d35-b29f-b010df9502cb. App Review still selects rejected build 7; upload does not establish resubmission.",
+        "evidence": [
+          "store/testflight-21.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-23T23:36:30+00:00"
+      }
+    },
+    {
+      "sequence": 259,
+      "at": "2026-09-23T23:36:30+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 21 is VALID and IN_BETA_TESTING in existing Release QA. Group association and beta notes read back successfully. Notes identify pending push-key configuration and request physical delivery/tap checks; no new invitation is required.",
+        "evidence": [
+          "store/testflight-21.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-23T23:36:30+00:00"
+      }
+    },
+    {
+      "sequence": 260,
+      "at": "2026-09-23T23:36:30+00:00",
+      "gate": "apple.notifications",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Build 21 is ready in TestFlight and server fixes are live. Apple push-key creation/configuration awaits the pending security confirmation. One iOS device is registered; no real notification has been sent. iPhone Mirroring is available but currently reports the phone is in use.",
+        "evidence": [
+          "store/testflight-21.json; store/user-actions.md"
+        ],
+        "next_action": "Confirm the prepared production Newsworthy push key. Agent configures Expo and tests using iPhone Mirroring once the phone is locked, or owner confirms labeled test receipt and opening.",
+        "updated_at": "2026-09-23T23:36:30+00:00"
       }
     }
   ],

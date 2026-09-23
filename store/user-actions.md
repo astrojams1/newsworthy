@@ -18,8 +18,7 @@ TestFlight status separately. Two steps remain before review:
    confirmation because this creates a credential that lets Expo send
    Newsworthy notifications. The prepared Apple page is waiting; no password
    or 1Password action is needed from the owner.
-2. **Verify delivery on the physical iPhone.** Install build 21 when TestFlight
-   offers it. Open Newsworthy → Settings → turn on “Notify me about high
+2. **Verify delivery on the physical iPhone.** Install build 21 from TestFlight. Open Newsworthy → Settings → turn on “Notify me about high
    readings” and allow notifications. Return to the Home Screen and tell the
    agent it is ready for a labeled delivery test. Confirm the test appears and
    tapping it opens the reading. One iOS device is already registered at a

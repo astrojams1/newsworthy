@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-23T23:32:46+00:00
+Updated: 2026-09-23T23:36:30+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -23,7 +23,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.listing | done | agent | observed | All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed. | — |
 | apple.build | done | agent | observed | Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled. | — |
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
-| apple.upload | waiting_provider | provider | observed | Apple validation and direct upload succeeded for build 21. Delivery UUID 6ce55c01-2cbf-4d35-b29f-b010df9502cb. Awaiting API build processing; selected App Review build remains 7. | Read Apple processing state, attach valid build 21 to Release QA, and verify beta notes/group membership. |
+| apple.upload | done | agent | observed | Build 21 passed Apple validation and upload, then processed VALID as 6ce55c01-2cbf-4d35-b29f-b010df9502cb. App Review still selects rejected build 7; upload does not establish resubmission. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
 | apple.review | in_progress | agent | observed | App Review correspondence read back: the owner reconsideration was received, and Apple upheld Guideline 4.2 on September 23. Version remains REJECTED; build 7 is still selected. User authorized finishing notifications and resubmitting a changed build. | Complete push-key configuration and physical delivery/tap verification, save revised review notes and listing, select valid build 21, then resubmit and verify Waiting for Review. |
 | apple.release | waiting_provider | provider | observed | Build7 is Waiting for Review after response/video resubmission. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, complete paid-sale account readiness, and verify public paid availability. |
@@ -54,7 +54,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | Final six-part Notes include the physical build7 demonstration filename and accurate product/setup/services/regions/rights information; API save and exact-value readback passed. | — |
 | apple.physical-recording | done | agent | observed | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
-| apple.testflight | done | agent | observed | Build7 is available in Release QA and the physical recording visibly identifies installed1.0.0(7). The owner invitation and installation handoff are complete. | — |
+| apple.testflight | done | agent | observed | Build 21 is VALID and IN_BETA_TESTING in existing Release QA. Group association and beta notes read back successfully. Notes identify pending push-key configuration and request physical delivery/tap checks; no new invitation is required. | — |
 | google.large-text-build | done | agent | observed | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
 | google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
 | apple.header-background | done | agent | observed | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
@@ -86,7 +86,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-18-provenance | done | agent | observed | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
 | ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
-| apple.notifications | waiting_user | user | observed | Notification code merged and deployed; 292 tests and 70 design checks passed. One iOS device is registered at threshold 5. No APNs delivery key exists in Apple or Expo; the production Newsworthy-specific key is prepared and awaits action-time security confirmation. Physical receipt and tap verification remain pending. | Owner confirms the pending push-key question; agent creates/configures the key, sends a labeled test, and owner confirms physical receipt and opening on build 21. |
+| apple.notifications | waiting_user | user | observed | Build 21 is ready in TestFlight and server fixes are live. Apple push-key creation/configuration awaits the pending security confirmation. One iOS device is registered; no real notification has been sent. iPhone Mirroring is available but currently reports the phone is in use. | Confirm the prepared production Newsworthy push key. Agent configures Expo and tests using iPhone Mirroring once the phone is locked, or owner confirms labeled test receipt and opening. |
 
 ## Evidence and history
 
@@ -2527,3 +2527,29 @@ Apple validation and direct upload succeeded for build 21. Delivery UUID 6ce55c0
 - store/testflight-21.json
 
 Next: Read Apple processing state, attach valid build 21 to Release QA, and verify beta notes/group membership.
+
+### 258. apple.upload — done
+
+2026-09-23T23:36:30+00:00 · observed · agent
+
+Build 21 passed Apple validation and upload, then processed VALID as 6ce55c01-2cbf-4d35-b29f-b010df9502cb. App Review still selects rejected build 7; upload does not establish resubmission.
+
+- store/testflight-21.json
+
+### 259. apple.testflight — done
+
+2026-09-23T23:36:30+00:00 · observed · agent
+
+Build 21 is VALID and IN_BETA_TESTING in existing Release QA. Group association and beta notes read back successfully. Notes identify pending push-key configuration and request physical delivery/tap checks; no new invitation is required.
+
+- store/testflight-21.json
+
+### 260. apple.notifications — waiting_user
+
+2026-09-23T23:36:30+00:00 · observed · user
+
+Build 21 is ready in TestFlight and server fixes are live. Apple push-key creation/configuration awaits the pending security confirmation. One iOS device is registered; no real notification has been sent. iPhone Mirroring is available but currently reports the phone is in use.
+
+- store/testflight-21.json; store/user-actions.md
+
+Next: Confirm the prepared production Newsworthy push key. Agent configures Expo and tests using iPhone Mirroring once the phone is locked, or owner confirms labeled test receipt and opening.
