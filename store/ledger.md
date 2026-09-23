@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-23T23:06:34+00:00
+Updated: 2026-09-23T23:11:46+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -18,10 +18,10 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.tax | done | user | observed | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
 | apple.bank | waiting_user | user | observed | Fresh Apple Business readback still has Add Bank Account and no payout account listed; Paid Apps Agreement remains Pending User Info. | Owner adds payout account privately in App Store Connect Business; verify paid agreement becomes Active. |
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
-| apple.privacy | done | user | observed | Owner published diagnostics/performance collection for app functionality, linked to user, no tracking. | — |
+| apple.privacy | done | agent | observed | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
 | apple.listing | done | agent | observed | All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed. | — |
-| apple.build | done | agent | observed | Corrected production iOS7 finished from clean8055d61, matches merged PR94 app source, and passed Apple validation. | — |
+| apple.build | waiting_provider | provider | observed | EAS accepted production iOS build20 from application commit f0bfde4. Existing app/widget signing profiles were reused. Receipt and tap-routing fixes are included; APNs delivery key and physical-device testing are separate pending gates. | Download finished IPA, verify signing/entitlements and upload to App Store Connect. |
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Apple build7 is VALID and selected for App Store version1.0.0; API relationship readback confirmed eff31b5d-6c18-492d-874c-d7a0e4392bf6. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
@@ -2443,3 +2443,21 @@ Owner authorized finishing notifications and resubmission after Apple upheld 4.2
 - September 24 Apple Developer and EAS key lists; local automated tests; branch codex/notification-release
 
 Next: Configure approved APNs key, deploy tested backend, build and verify replacement on TestFlight, update privacy/metadata, then resubmit the changed build.
+
+### 249. apple.privacy — done
+
+2026-09-23T23:11:46+00:00 · observed · agent
+
+Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories.
+
+- App Store Connect App Privacy page, September 24; store/disclosures.md
+
+### 250. apple.build — waiting_provider
+
+2026-09-23T23:11:46+00:00 · observed · provider
+
+EAS accepted production iOS build20 from application commit f0bfde4. Existing app/widget signing profiles were reused. Receipt and tap-routing fixes are included; APNs delivery key and physical-device testing are separate pending gates.
+
+- https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/7f4d8921-30c6-4db0-8461-1a90a53bcfcc
+
+Next: Download finished IPA, verify signing/entitlements and upload to App Store Connect.

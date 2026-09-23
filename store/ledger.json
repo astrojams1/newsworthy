@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-23T23:06:34+00:00",
+  "updated_at": "2026-09-23T23:11:46+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -101,15 +101,14 @@
     },
     "apple.privacy": {
       "state": "done",
-      "owner": "user",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Owner published diagnostics/performance collection for app functionality, linked to user, no tracking.",
+      "summary": "Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories.",
       "evidence": [
-        "App Privacy explicitly displayed Published by James Thompson",
-        "store/disclosures.md"
+        "App Store Connect App Privacy page, September 24; store/disclosures.md"
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "updated_at": "2026-09-23T23:11:46+00:00"
     },
     "apple.review-contact": {
       "state": "done",
@@ -134,15 +133,15 @@
       "updated_at": "2026-09-16T07:50:27+00:00"
     },
     "apple.build": {
-      "state": "done",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "Corrected production iOS7 finished from clean8055d61, matches merged PR94 app source, and passed Apple validation.",
+      "summary": "EAS accepted production iOS build20 from application commit f0bfde4. Existing app/widget signing profiles were reused. Receipt and tap-routing fixes are included; APNs delivery key and physical-device testing are separate pending gates.",
       "evidence": [
-        "EAS a151f9ee-9a5f-48b2-887a-f936bfe48db7; store/release.json nativeReplacementBuild. Simulator gallery remains separately identified by its build6 source."
+        "https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/7f4d8921-30c6-4db0-8461-1a90a53bcfcc"
       ],
-      "next_action": "",
-      "updated_at": "2026-09-17T04:35:02+00:00"
+      "next_action": "Download finished IPA, verify signing/entitlements and upload to App Store Connect.",
+      "updated_at": "2026-09-23T23:11:46+00:00"
     },
     "apple.native": {
       "state": "done",
@@ -4840,6 +4839,38 @@
         ],
         "next_action": "Configure approved APNs key, deploy tested backend, build and verify replacement on TestFlight, update privacy/metadata, then resubmit the changed build.",
         "updated_at": "2026-09-23T23:06:34+00:00"
+      }
+    },
+    {
+      "sequence": 249,
+      "at": "2026-09-23T23:11:46+00:00",
+      "gate": "apple.privacy",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories.",
+        "evidence": [
+          "App Store Connect App Privacy page, September 24; store/disclosures.md"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-23T23:11:46+00:00"
+      }
+    },
+    {
+      "sequence": 250,
+      "at": "2026-09-23T23:11:46+00:00",
+      "gate": "apple.build",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "EAS accepted production iOS build20 from application commit f0bfde4. Existing app/widget signing profiles were reused. Receipt and tap-routing fixes are included; APNs delivery key and physical-device testing are separate pending gates.",
+        "evidence": [
+          "https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/7f4d8921-30c6-4db0-8461-1a90a53bcfcc"
+        ],
+        "next_action": "Download finished IPA, verify signing/entitlements and upload to App Store Connect.",
+        "updated_at": "2026-09-23T23:11:46+00:00"
       }
     }
   ],
