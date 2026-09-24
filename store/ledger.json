@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T08:54:02+00:00",
+  "updated_at": "2026-09-24T09:33:42+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -896,12 +896,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner simulator test of PR134 showed no glass on the share/settings capsule or the back button. The transparent navigator canvas (corner-wedge fix) was the only change reaching both bars and is reverted; corner wedges are open again. Remaining fixes: transparent Settings bar over a neutral page, iOS wordmark drawn by the page.",
+      "summary": "PR134 reduced at owner request to one fix: on iOS the wordmark is drawn by the reading screen instead of as a bar item, so no square plate morphs into Settings' Back button (and it no longer re-animates after the pop). Settings bar, Settings background and navigator canvas are back to main. The other defects from the September24 recording (header band on push, corner wedges on pop) remain open. Missing glass in the owner's simulator was not explained by this PR's diff and is unresolved.",
       "evidence": [
-        "PR134; owner simulator report September24. design72 checks passed after revert. Glass restoration after the revert is not yet observed."
+        "PR134; owner screen recording and simulator report September24. design70 checks passed. Not verified on a native build."
       ],
-      "next_action": "Owner re-tests the reverted build in the simulator for glass, then push/pop and back-swipe on iOS 26; choose another approach for the corner wedges.",
-      "updated_at": "2026-09-24T08:54:02+00:00"
+      "next_action": "Owner checks main and this branch in the same simulator for glass; verify the push to Settings on a physical iOS 26 build shows no plate around the wordmark.",
+      "updated_at": "2026-09-24T09:33:42+00:00"
     }
   },
   "events": [
@@ -5573,6 +5573,22 @@
         ],
         "next_action": "Owner re-tests the reverted build in the simulator for glass, then push/pop and back-swipe on iOS 26; choose another approach for the corner wedges.",
         "updated_at": "2026-09-24T08:54:02+00:00"
+      }
+    },
+    {
+      "sequence": 292,
+      "at": "2026-09-24T09:33:42+00:00",
+      "gate": "apple.settings-transition",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR134 reduced at owner request to one fix: on iOS the wordmark is drawn by the reading screen instead of as a bar item, so no square plate morphs into Settings' Back button (and it no longer re-animates after the pop). Settings bar, Settings background and navigator canvas are back to main. The other defects from the September24 recording (header band on push, corner wedges on pop) remain open. Missing glass in the owner's simulator was not explained by this PR's diff and is unresolved.",
+        "evidence": [
+          "PR134; owner screen recording and simulator report September24. design70 checks passed. Not verified on a native build."
+        ],
+        "next_action": "Owner checks main and this branch in the same simulator for glass; verify the push to Settings on a physical iOS 26 build shows no plate around the wordmark.",
+        "updated_at": "2026-09-24T09:33:42+00:00"
       }
     }
   ],

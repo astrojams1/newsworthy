@@ -6,15 +6,15 @@ import ts from 'typescript';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
 const require = createRequire(import.meta.url);
 const source = readFileSync(new URL('../../apps/client/app/_layout.tsx', import.meta.url), 'utf8');
-export function renderLayout({ platform = 'ios', dark = false, score = 3, iosVersion = '26.0', sourceOverride } = {}) {
+export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {}) {
   const theme = themeForLevel(score, dark);
   // Keep the defaults distinct from our palette: forgetting an override fails.
   const navigationTheme = dark => ({ dark, colors: { background: dark ? '#000' : '#fff' }, fonts: { regular: { fontFamily: 'System' } } });
   const mocks = {
     react: { ...require('react'), useEffect() {} },
-    'react-native': { Appearance: {}, View: 'View', Platform: { OS: platform, Version: platform === 'ios' ? iosVersion : 36 } },
+    'react-native': { Appearance: {} },
     '@/components/preferences-provider': { PreferencesProvider: 'PreferencesProvider', usePreferences: () => ({ preferences: { theme: 'system' } }) },
-    '@/components/reading-provider': { ReadingProvider: 'ReadingProvider', useCurrentReading: () => ({ reading: score == null ? null : { score } }) },
+    '@/components/reading-provider': { ReadingProvider: 'ReadingProvider', useCurrentReading: () => ({ reading: null }) },
     '../../../public/favicon': {},
     'expo-router': { useRouter: () => ({ replace() {} }), Stack: Object.assign(() => {}, { Screen: 'Screen' }), ThemeProvider: 'ThemeProvider', DefaultTheme: navigationTheme(false), DarkTheme: navigationTheme(true) },
     '@/lib/push': { onNotificationOpen: () => () => {} },
@@ -22,7 +22,7 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3, iosVer
     '@/lib/theme': { useTheme: () => theme },
   };
   const exports = {};
-  const compiled = ts.transpileModule(sourceOverride ?? source, { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const compiled = ts.transpileModule(source, { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
   vm.runInNewContext(compiled, { exports, process: { env: { EXPO_OS: platform } }, require: name => {
     if (name === 'react/jsx-runtime') return require(name);
     if (!(name in mocks)) throw new Error(`Unreviewed layout dependency: ${name}`);

@@ -244,20 +244,6 @@ as the screens. Its ThemeProvider supplies native header material appearance and
 the transition canvas; headerStyle/contentStyle alone do not set those. The
 reading header stays transparent over its gradient.
 
-Settings is a flat, neutral page (`tinted`) under a transparent bar; the
-reading gradient belongs to the reading. An opaque Settings bar is drawn by the
-navigation bar, which does not slide with the page, so on iOS it snapped a flat
-band across the reading screen at the start of a push. iOS 26 blurs content
-scrolled under the bar itself; on earlier iOS, Android and web the bar's
-background is a `tinted` view inside the screen, so it slides with the page.
-
-The navigator's canvas stays an opaque `tinted`. A transparent canvas over a
-gradient drawn beneath the stack was tried so iOS 26's rounded corners on a
-moving screen would show the gradient instead of dark wedges during a pop. A
-simulator build with it showed no glass on any bar item or the back button, and
-it was the only change reaching both screens' bars, so it was reverted; the
-corner wedges remain open.
-
 On iOS the wordmark is drawn by the reading screen, centred in the bar's row
 with a 20-point leading margin, rather than as a bar item. As a custom item
 without glass it still grew a square-cornered plate during a push that morphed
@@ -271,8 +257,7 @@ Both notification controls are disabled until all queued changes finish, and
 pending state belongs to the provider so reopening Settings preserves feedback.
 Failures retain the previous subscription state and show the existing error.
 
-`test/surface-design.test.js` checks navigation theme propagation, the opaque
-canvas, the neutral Settings page under its transparent bar, the iOS
+`test/surface-design.test.js` checks navigation theme propagation, the iOS
 wordmark's placement, and unchanged row structure/styles during saving; `test/preferences.test.js` checks queued
 requests, failure, rollback and retry. These are not native layout or iOS glass
 rendering tests. Verification limits are recorded in

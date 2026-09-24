@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Appearance, Platform, View } from 'react-native';
+import { Appearance } from 'react-native';
 import { PreferencesProvider, usePreferences } from '@/components/preferences-provider';
 import { ReadingProvider, useCurrentReading } from '@/components/reading-provider';
 import { faviconSvg } from '../../../public/favicon';
@@ -18,18 +18,12 @@ function ThemedLayout() {
   const theme = useTheme();
   const baseNavigationTheme = theme.dark ? DarkTheme : DefaultTheme;
   // Native header materials and the canvas behind a screen transition read
-  // the navigator's theme, independently of headerStyle/contentStyle. Keep the
-  // canvas opaque: a transparent one, tried so the reading gradient beneath
-  // could fill iOS 26's rounded corners mid-transition, coincided with no
-  // glass on any bar item or the back button in the simulator.
+  // the navigator's theme, independently of headerStyle/contentStyle.
   const navigationTheme = { ...baseNavigationTheme, colors: { ...baseNavigationTheme.colors,
     primary: theme.accent, background: theme.tinted, card: theme.tinted,
     text: theme.ink, border: theme.rule, notification: theme.accent,
   } };
   const { reading, refresh } = useCurrentReading();
-  // iOS 26 blurs content scrolling under a transparent bar itself; earlier
-  // systems and the other platforms get the page's own colour behind the bar.
-  const liquidGlass = process.env.EXPO_OS === 'ios' && Number.parseInt(String(Platform.Version), 10) >= 26;
   const router = useRouter();
   useEffect(() => onNotificationOpen(() => { router.replace('/'); void refresh(); }), [router, refresh]);
   const { preferences: { theme: appearance } } = usePreferences();
@@ -63,13 +57,7 @@ function ThemedLayout() {
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
       <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
-      {/* Settings' bar is transparent over the page's colour: an opaque bar is
-          drawn by the navigation bar, which does not slide with the page, and
-          snapped a flat band over the reading screen on push. Its background,
-          where one is needed, is a view inside the screen, so it slides too. */}
-      <Stack.Screen name="settings" options={{ title: 'Settings', headerBackTitle: 'Back', headerTitleStyle: { color: theme.ink },
-        headerTransparent: true, headerStyle: { backgroundColor: 'transparent' },
-        headerBackground: liquidGlass ? undefined : () => <View testID="settings-bar" style={{ position: 'absolute', inset: 0, backgroundColor: theme.tinted }} /> }} />
+      <Stack.Screen name="settings" options={{ title: 'Settings', headerBackTitle: 'Back', headerTitleStyle: { color: theme.ink } }} />
     </Stack>
   </ThemeProvider>;
 }

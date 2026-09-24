@@ -289,77 +289,22 @@ test('reading gate rejects a full-width space or proportional score face', () =>
 });
 
 
-function inspectLayout({ platform, dark, score, iosVersion, sourceOverride }) {
-  const tree = renderLayout({ platform, dark, score, iosVersion, sourceOverride });
-  const palette = themeForLevel(score, dark);
-  assert.equal(tree.type, 'ThemeProvider');
-  const navigation = tree.props.value;
-  assert.equal(navigation.dark, dark, 'native header materials follow the resolved app theme');
-  assert.equal(navigation.colors.card, palette.tinted);
-  assert.equal(navigation.colors.primary, palette.accent);
-  assert.equal(navigation.colors.text, palette.ink);
-  assert.ok(navigation.fonts.regular, 'retain router font defaults');
-  const all = nodes(tree);
-  const stack = all.find(n => n.props.screenOptions);
-  assert.equal(stack.props.screenOptions.contentStyle.backgroundColor, palette.tinted, 'a screen never flashes a default background');
-  // Reported 2026-09-24: a transparent canvas, tried so a gradient beneath the
-  // navigator could fill iOS 26's rounded transition corners, coincided with
-  // no glass on any bar item or the back button in the simulator.
-  assert.equal(navigation.colors.background, palette.tinted, 'the transition canvas stays opaque');
-  assert.equal(all.find(n => n.type === 'StatusBar').props.style, dark ? 'light' : 'dark');
-  // Reported 2026-09-24: an opaque Settings bar is drawn by the navigation bar,
-  // which does not slide, and snapped a flat band over the gradient on push.
-  const settings = all.find(n => n.type === 'Screen' && n.props.name === 'settings').props.options;
-  assert.equal(settings.headerTransparent, true, 'Settings bar slides with its page');
-  assert.equal(settings.headerStyle.backgroundColor, 'transparent', 'Settings bar slides with its page');
-  if (platform === 'ios' && Number.parseInt(iosVersion, 10) >= 26) {
-    assert.equal(settings.headerBackground, undefined, 'iOS 26 blurs scrolled content under the bar itself');
-  } else {
-    const bar = settings.headerBackground();
-    assert.equal(bar.props.testID, 'settings-bar', 'content scrolled under the bar is covered by the page colour');
-    assert.equal(bar.props.style.backgroundColor, palette.tinted, 'content scrolled under the bar is covered by the page colour');
-  }
-}
-
 test('navigation materials and transition canvas match the resolved app appearance', () => {
-  for (const [platform, iosVersion] of [['ios', '26.0'], ['ios', '18.6'], ['android'], ['web']]) {
-    for (const dark of [false, true]) for (const score of [null, 1, 8, 10]) inspectLayout({ platform, dark, score, iosVersion });
-  }
-});
-
-test('layout gate rejects a transparent transition canvas or an opaque Settings bar', () => {
-  const source = readFileSync(new URL('../apps/client/app/_layout.tsx', import.meta.url), 'utf8');
-  const cases = [
-    [source.replace('background: theme.tinted, card:', "background: 'transparent', card:"), /transition canvas stays opaque/],
-    [source.replace('headerTransparent: true, headerStyle: { backgroundColor: \'transparent\' },\n        headerBackground', 'headerBackground'), /Settings bar slides with its page/],
-    [source.replace('headerBackground: liquidGlass ? undefined :', 'headerBackground:'), /iOS 26 blurs/],
-  ];
-  for (const [sourceOverride, message] of cases) {
-    assert.notEqual(sourceOverride, source);
-    assert.throws(() => inspectLayout({ platform: 'ios', dark: true, score: 3, iosVersion: '26.0', sourceOverride }), message);
-  }
-});
-
-function inspectSettingsCanvas({ platform, dark, sourceOverride }) {
-  const all = nodes(renderSettings({ platform, dark, sourceOverride }).tree);
-  const scroll = all.find(n => n.type === 'ScrollView');
-  // Settings is a neutral page: the reading gradient belongs to the reading.
-  assert.equal(scroll.props.style.backgroundColor, themeForLevel(3, dark).tinted, 'Settings is a flat neutral page');
-  assert.equal(all.some(n => n.type === 'ReadingGradient'), false, 'Settings is a flat neutral page');
-  // iOS insets the scroll view under a transparent bar; elsewhere padding does.
-  assert.equal(scroll.props.contentInsetAdjustmentBehavior, 'automatic');
-  assert.equal(scroll.props.contentContainerStyle.paddingTop, platform === 'ios' ? 24 : 44 + 24, 'content clears the transparent bar');
-}
-
-test('Settings is an opaque neutral page under a transparent bar', () => {
-  for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) inspectSettingsCanvas({ platform, dark });
-  const source = readFileSync(new URL('../apps/client/app/settings.tsx', import.meta.url), 'utf8');
-  for (const [sourceOverride, message] of [
-    [source.replace("style={{ flex: 1, backgroundColor: theme.tinted }} contentInsetAdjustmentBehavior", "style={{ flex: 1, backgroundColor: 'transparent' }} contentInsetAdjustmentBehavior"), /flat neutral page/],
-    [source.replace("paddingTop: (process.env.EXPO_OS === 'ios' ? 0 : headerHeight) + 24", 'paddingTop: 24'), /clears the transparent bar/],
-  ]) {
-    assert.notEqual(sourceOverride, source);
-    assert.throws(() => inspectSettingsCanvas({ platform: 'android', dark: true, sourceOverride }), message);
+  for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) for (const score of [null, 1, 8, 10]) {
+    const tree = renderLayout({ platform, dark, score });
+    const palette = themeForLevel(score, dark);
+    assert.equal(tree.type, 'ThemeProvider');
+    const navigation = tree.props.value;
+    assert.equal(navigation.dark, dark, 'native header materials follow the resolved app theme');
+    assert.equal(navigation.colors.background, palette.tinted, 'the transition canvas cannot flash a default background');
+    assert.equal(navigation.colors.card, palette.tinted);
+    assert.equal(navigation.colors.primary, palette.accent);
+    assert.equal(navigation.colors.text, palette.ink);
+    assert.ok(navigation.fonts.regular, 'retain router font defaults');
+    const all = nodes(tree);
+    const stack = all.find(n => n.props.screenOptions);
+    assert.equal(stack.props.screenOptions.contentStyle.backgroundColor, navigation.colors.background);
+    assert.equal(all.find(n => n.type === 'StatusBar').props.style, dark ? 'light' : 'dark');
   }
 });
 

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T08:54:02+00:00
+Updated: 2026-09-24T09:33:42+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -90,7 +90,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
 | apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
-| apple.settings-transition | in_progress | agent | observed | Owner simulator test of PR134 showed no glass on the share/settings capsule or the back button. The transparent navigator canvas (corner-wedge fix) was the only change reaching both bars and is reverted; corner wedges are open again. Remaining fixes: transparent Settings bar over a neutral page, iOS wordmark drawn by the page. | Owner re-tests the reverted build in the simulator for glass, then push/pop and back-swipe on iOS 26; choose another approach for the corner wedges. |
+| apple.settings-transition | in_progress | agent | observed | PR134 reduced at owner request to one fix: on iOS the wordmark is drawn by the reading screen instead of as a bar item, so no square plate morphs into Settings' Back button (and it no longer re-animates after the pop). Settings bar, Settings background and navigator canvas are back to main. The other defects from the September24 recording (header band on push, corner wedges on pop) remain open. Missing glass in the owner's simulator was not explained by this PR's diff and is unresolved. | Owner checks main and this branch in the same simulator for glass; verify the push to Settings on a physical iOS 26 build shows no plate around the wordmark. |
 
 ## Evidence and history
 
@@ -2850,3 +2850,13 @@ Owner simulator test of PR134 showed no glass on the share/settings capsule or t
 - PR134; owner simulator report September24. design72 checks passed after revert. Glass restoration after the revert is not yet observed.
 
 Next: Owner re-tests the reverted build in the simulator for glass, then push/pop and back-swipe on iOS 26; choose another approach for the corner wedges.
+
+### 292. apple.settings-transition — in_progress
+
+2026-09-24T09:33:42+00:00 · observed · agent
+
+PR134 reduced at owner request to one fix: on iOS the wordmark is drawn by the reading screen instead of as a bar item, so no square plate morphs into Settings' Back button (and it no longer re-animates after the pop). Settings bar, Settings background and navigator canvas are back to main. The other defects from the September24 recording (header band on push, corner wedges on pop) remain open. Missing glass in the owner's simulator was not explained by this PR's diff and is unresolved.
+
+- PR134; owner screen recording and simulator report September24. design70 checks passed. Not verified on a native build.
+
+Next: Owner checks main and this branch in the same simulator for glass; verify the push to Settings on a physical iOS 26 build shows no plate around the wordmark.
