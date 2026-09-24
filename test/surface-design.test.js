@@ -417,3 +417,16 @@ test('story timeline is off by default: with the setting off the screen is the r
     assert.equal(block.props.style.opacity, 1, 'the reading never fades');
   }
 });
+
+test('story timeline snaps on the web with CSS scroll snap, not a script that scrolls after the fact', () => {
+  const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
+  // A timer that waited for the scroll to go quiet and then scrolled fought iOS
+  // momentum scrolling: the page drifted, turned round and jumped.
+  assert.doesNotMatch(source, /setTimeout/, 'no deferred scroll on the home screen');
+  assert.doesNotMatch(source, /listener:/, 'the scroll handler only tracks position');
+  assert.match(source, /scrollSnapType: 'y mandatory'/);
+  // Two snap areas: the reading, and the timeline below the header's clearance.
+  assert.equal(source.match(/scrollSnapAlign: 'start'/g)?.length, 2);
+  assert.match(source, /scrollMarginTop: headerHeight \+ 32/);
+  assert.match(source, /snap = hasTimeline && timelineTop \? Math\.max\(1, timelineTop - headerHeight - 32\)/, 'the web snap point matches the native one');
+});
