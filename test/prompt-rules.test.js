@@ -82,6 +82,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [12, 'ec634a23074c59b3'],
     [13, 'b715e9198306b184'],
     [14, 'ee36003b3dead317'],
+    [15, 'a591b4ed45980b21'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -260,4 +261,27 @@ test('v14 reserves age space without changing the rating calibration', () => {
   assert.match(after, /at most 140 characters including spaces and punctuation/);
   assert.match(after, /reserving 20 for an app-supplied age prefix/);
   assert.match(after, /Submit no prefix/);
+});
+
+test('v15 changes sentence tone without changing calibration or budget', async () => {
+  const before = renderPrompt(14).text;
+  const after = renderPrompt(15).text;
+  assert.equal(after.split('\nOutput')[0], before.split('\nOutput')[0]);
+  assert.match(after, /at most 120 characters including spaces and punctuation/);
+  assert.match(after, /at most 140 characters including spaces and punctuation/);
+  assert.match(after, /reserving 20 for an app-supplied age prefix/);
+  assert.match(after, /reader with no background/);
+  assert.match(after, /At most one number/);
+  assert.doesNotMatch(after, /Keep useful specifics/);
+  const evaluation = JSON.parse(await readFile('docs/prompt-evaluations/v15.json', 'utf8'));
+  assert.equal(evaluation.design.arms.v15, after);
+  assert.equal(evaluation.design.arms.v14, before);
+  const cases = evaluation.design.cases.map(({ id }) => id).sort();
+  for (const arm of ['v14', 'v15']) {
+    for (const repeat of [1, 2]) {
+      const batch = evaluation.outputs.filter((row) => row.arm === arm && row.repeat === repeat);
+      assert.deepEqual(batch.map((row) => row.case).sort(), cases);
+      for (const row of batch) assert.equal(row.characters, [...row.explanation].length, 'counts reflect the unmodified outputs');
+    }
+  }
 });
