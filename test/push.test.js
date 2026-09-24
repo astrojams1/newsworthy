@@ -124,12 +124,12 @@ test('devices hear the number the page shows, once per development and threshold
 
       // A 10 on the same development re-anchors it only once the median
       // confirms the level — the page's own lag against a single loud reading.
-      // Even when the page shows 10, nobody hears: the sentence repeats an
-      // earlier summary, and only new ones announce.
+      // Until then the page shows 8 and no device is told a 10; when the page
+      // shows 10, the 9 hears, and the device that heard at 8 does not hear twice.
       for (const [text, expected, announced] of [
         ['Earthquake death toll across the northern valley passes ten thousand', 8, []],
         ['Earthquake across the northern valley: toll passes ten thousand as aid stalls', 8, []],
-        ['Earthquake toll across the northern valley nears fifteen thousand', 10, []],
+        ['Earthquake toll across the northern valley nears fifteen thousand', 10, [[TOKENS.b, 'Newsworthy · 10/10']]],
       ]) {
         const worse = await submit(`token=${CALLER}&score=10&explanation=${text.replaceAll(' ', '+')}`);
         assert.equal(worse.body.development, 'same', text);
@@ -182,7 +182,7 @@ test('a judge outage does not repeat: consecutive unjudged readings inherit one 
   assert.equal(received.length, 1);
 });
 
-test('a failed send gives its claim back, but a repeat of the summary never announces', async () => {
+test('a failed send gives its claim back, so the next reading of the development tries again', async () => {
   // The finding: a claim committed before Expo answered was never released,
   // so one 503 silenced a development for every device at that threshold.
   await ensureSchema();
@@ -195,8 +195,10 @@ test('a failed send gives its claim back, but a repeat of the summary never anno
   assert.equal(received.length, 0);
   outage = false;
   const second = await insertRating({ ...base, score: 8, explanation: 'Refinery blast cuts fuel supply, prices jump', created_at: minutesAgo(20), judge_version: 2, development_of: first.id, story: 'refinery' });
-  assert.deepEqual(await notifyReading(second, { fetchImpl }), { sent: 0, score: 8, thresholds: [] }, 'a repeat is not new');
-  assert.equal(received.length, 0);
+  assert.deepEqual(await notifyReading(second, { fetchImpl }), { sent: 1, score: 8, thresholds: [8] }, 'the released claim is taken again and delivered');
+  assert.deepEqual(received.map((m) => m.title), ['Newsworthy · 8/10']);
+  const third = await insertRating({ ...base, score: 8, explanation: 'Refinery blast cuts fuel supply, repairs begin', created_at: minutesAgo(10), judge_version: 2, development_of: first.id, story: 'refinery' });
+  assert.equal((await notifyReading(third, { fetchImpl })).sent, 0, 'and once delivered it stays delivered');
 });
 
 test('a claim protects against a concurrent duplicate, keeps progress when released, and a stale one is taken over', async () => {
@@ -233,12 +235,14 @@ test('a batch that fails after another succeeded retries only the devices not ye
   const first = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports', created_at: minutesAgo(30), judge_version: 2, development_of: null, story: 'port' });
   assert.deepEqual(await notifyReading(first, { fetchImpl }), { sent: 100, score: 8, thresholds: [8] }, 'the first batch landed, the second did not');
   outage = false;
-  assert.deepEqual(await notifyReading(first, { fetchImpl }), { sent: 1, score: 8, thresholds: [8] }, 'the retry reaches the one device left');
+  const second = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports for a third day', created_at: minutesAgo(20), judge_version: 2, development_of: first.id, story: 'port' });
+  assert.deepEqual(await notifyReading(second, { fetchImpl }), { sent: 1, score: 8, thresholds: [8] }, 'the retry reaches the one device left');
   const counts = new Map();
   for (const m of received) counts.set(m.to, (counts.get(m.to) ?? 0) + 1);
   assert.equal(counts.size, 101, 'every device heard');
   assert.ok([...counts.values()].every((n) => n === 1), 'and none heard twice');
-  assert.equal((await notifyReading(first, { fetchImpl })).sent, 0, 'delivered in full, it stays delivered');
+  const third = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports, talks resume', created_at: minutesAgo(10), judge_version: 2, development_of: first.id, story: 'port' });
+  assert.equal((await notifyReading(third, { fetchImpl })).sent, 0, 'delivered in full, it stays delivered');
 });
 
 test('the push is awaited where the reading is stored, not left in flight', async () => {

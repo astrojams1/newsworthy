@@ -37,9 +37,6 @@ struct StoreTests {
         precondition(roundTrip == aged)
         let legacy = try JSONDecoder().decode(Reading.self, from: Data(#"{"score":1,"explanation":"Legacy sentence.","created_at":"2026-09-18T00:05:00Z"}"#.utf8))
         precondition(legacy.displayedExplanation(at: origin) == "Legacy sentence.")
-        let fresh = Reading(score: 7, explanation: "New: A volcano erupted.", created_at: "2026-09-18T00:05:00Z",
-                            explanation_text: "A volcano erupted.", explanation_since: nil, explanation_new: true)
-        precondition(fresh.displayedExplanation(at: origin) == "New: A volcano erupted.")
         let suite = "newsworthy.store.test.\(UUID().uuidString)"
         let shared = UserDefaults(suiteName: suite)!
         let local = UserDefaults(suiteName: suite + ".legacy")!

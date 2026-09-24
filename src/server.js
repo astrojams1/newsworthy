@@ -269,9 +269,7 @@ const server = createServer(async (req, res) => {
       // Rows are stored with an end already; rows from before that rule get
       // one here, so every client, native widgets included, receives a
       // finished sentence without a rebuild.
-      // A sentence that is not a repeat of an earlier one has no age: it is new.
-      const explanationFields = { explanation_text: completeSentence(newest.explanation), explanation_since: explanationSince,
-        explanation_new: explanationSince == null };
+      const explanationFields = { explanation_text: completeSentence(newest.explanation), explanation_since: explanationSince };
       return json(res, 200, {
         score: current.score,
         // Existing apps/widgets receive a complete sentence; newer ones re-age locally.

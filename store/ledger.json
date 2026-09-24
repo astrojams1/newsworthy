@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T00:06:23+00:00",
+  "updated_at": "2026-09-24T06:20:53+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -48,12 +48,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved.",
+      "summary": "September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction.",
       "evidence": [
-        "Signed-in Chrome Business page; existing support case retained privately. Obsolete address must not be reused."
+        "Apple Business and signed-in Gmail support/receipt readbacks; private values excluded"
       ],
-      "next_action": "Await Apple correction or support response, then verify Business legal entity before paid release.",
-      "updated_at": "2026-09-17T03:33:19+00:00"
+      "next_action": "Await address-review response and verify the corrected legal record in Business.",
+      "updated_at": "2026-09-24T00:14:58+00:00"
     },
     "apple.agreement": {
       "state": "waiting_user",
@@ -81,12 +81,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Fresh Apple Business readback still has Add Bank Account and no payout account listed; Paid Apps Agreement remains Pending User Info.",
+      "summary": "September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active.",
       "evidence": [
-        "Signed-in Chrome Business rows September17; W9 and Digital Services Act remain Active. No private banking details in repo."
+        "Signed-in Apple Business Agreements readback"
       ],
-      "next_action": "Owner adds payout account privately in App Store Connect Business; verify paid agreement becomes Active.",
-      "updated_at": "2026-09-17T03:33:19+00:00"
+      "next_action": "Owner adds and verifies payout details in Apple Business; agent then reads back Active status.",
+      "updated_at": "2026-09-24T00:14:58+00:00"
     },
     "apple.dsa": {
       "state": "done",
@@ -158,12 +158,13 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 21 passed Apple validation/upload and processed VALID. It is now selected in the resubmitted review; both version and submission are WAITING_FOR_REVIEW.",
+      "summary": "Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate.",
       "evidence": [
-        "store/testflight-21.json; store/apple-review-build21.json"
+        "store/apple-review-build21.json",
+        "store/apple-review-build21-followup.md"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T00:06:23+00:00"
+      "updated_at": "2026-09-24T05:30:32+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -180,12 +181,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Build21 resubmitted with updated listing and review notes addressing4.2. Existing rejected item resolved then existing submission submitted. Apple independently reports version and submission WAITING_FOR_REVIEW; selected build21 verified.",
+      "summary": "Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC.",
       "evidence": [
-        "store/apple-review-build21.json"
+        "store/apple-review-resubmission-2026-09-24-video.json; store/apple-review-response-2026-09-24.md"
       ],
-      "next_action": "Await Apple review; preserve this submission. Verify paid-sale readiness/public availability separately after approval.",
-      "updated_at": "2026-09-24T00:02:17+00:00"
+      "next_action": "Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate.",
+      "updated_at": "2026-09-24T06:20:53+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -235,23 +236,23 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Fresh Play Console readback still shows real Android-device verification and contact-phone tasks; Create app remains disabled.",
+      "summary": "September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner.",
       "evidence": [
-        "September17 Play Console Home: AstroJams personal account, Action required for real mobile device and phone, disabled Create app. No app record exists."
+        "Play Console account8388544157780149515 Home/device-details readback"
       ],
-      "next_action": "Owner completes real-device verification in Play Console mobile app and then phone verification; agent creates paid Newsworthy and uploads AAB11 afterward.",
-      "updated_at": "2026-09-17T04:37:40+00:00"
+      "next_action": "Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled.",
+      "updated_at": "2026-09-24T00:14:58+00:00"
     },
     "google.build": {
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Production Android11 AAB finished from clean8055d61; downloaded and verified, superseding AAB10.",
+      "summary": "Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope.",
       "evidence": [
-        "store/release.json finalProductionBuild4dc57992-b1e5-4517-8197-215b66789963, byte count and SHA256. Not uploaded while account verification blocks app creation."
+        "store/android-notifications-12.json"
       ],
-      "next_action": "",
-      "updated_at": "2026-09-17T04:35:03+00:00"
+      "next_action": "Upload AAB12 when Google allows app creation; complete physical Android testing separately.",
+      "updated_at": "2026-09-24T05:28:12+00:00"
     },
     "google.native": {
       "state": "in_progress",
@@ -697,12 +698,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Independent Apple API readbacks confirm version and existing review submission WAITING_FOR_REVIEW, with build 21 selected. The earlier rejected/unresolved state is historical.",
+      "summary": "Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.",
       "evidence": [
-        "store/apple-review-build21.json"
+        "store/apple-review-resubmission-2026-09-24-video.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T00:06:23+00:00"
+      "updated_at": "2026-09-24T06:20:53+00:00"
     },
     "story-age.native": {
       "state": "todo",
@@ -857,6 +858,39 @@
       ],
       "next_action": "",
       "updated_at": "2026-09-24T00:02:17+00:00"
+    },
+    "google.notifications": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate.",
+      "evidence": [
+        "store/android-notifications-12.json"
+      ],
+      "next_action": "Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner.",
+      "updated_at": "2026-09-24T05:27:50+00:00"
+    },
+    "apple.gallery-current": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures.",
+      "evidence": [
+        "store/design/current-gallery-brief.md"
+      ],
+      "next_action": "Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets.",
+      "updated_at": "2026-09-24T05:41:58+00:00"
+    },
+    "apple.physical-recording-current": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed.",
+      "evidence": [
+        "store/apple-physical-review-video-2026-09-24.json; App Review message7, September24 2:17PM, one video attachment and Download control."
+      ],
+      "next_action": "",
+      "updated_at": "2026-09-24T06:20:53+00:00"
     }
   },
   "events": [
@@ -5175,6 +5209,311 @@
         ],
         "next_action": "Obtain review approval, verify paid-sale account readiness, and verify public paid availability.",
         "updated_at": "2026-09-24T00:06:23+00:00"
+      }
+    },
+    {
+      "sequence": 270,
+      "at": "2026-09-24T00:14:58+00:00",
+      "gate": "apple.address",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction.",
+        "evidence": [
+          "Apple Business and signed-in Gmail support/receipt readbacks; private values excluded"
+        ],
+        "next_action": "Await address-review response and verify the corrected legal record in Business.",
+        "updated_at": "2026-09-24T00:14:58+00:00"
+      }
+    },
+    {
+      "sequence": 271,
+      "at": "2026-09-24T00:14:58+00:00",
+      "gate": "apple.bank",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active.",
+        "evidence": [
+          "Signed-in Apple Business Agreements readback"
+        ],
+        "next_action": "Owner adds and verifies payout details in Apple Business; agent then reads back Active status.",
+        "updated_at": "2026-09-24T00:14:58+00:00"
+      }
+    },
+    {
+      "sequence": 272,
+      "at": "2026-09-24T00:14:58+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner.",
+        "evidence": [
+          "Play Console account8388544157780149515 Home/device-details readback"
+        ],
+        "next_action": "Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled.",
+        "updated_at": "2026-09-24T00:14:58+00:00"
+      }
+    },
+    {
+      "sequence": 273,
+      "at": "2026-09-24T00:14:58+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Previously verified AAB11 is historical. Its source predates Settings, notifications and subsequent native changes; it is not the current release candidate.",
+        "evidence": [
+          "git diff 8055d614e53f0665c3919b40a23d9fbaedcee90a..f4cdb7364a7639b8ed973f63619841d135b78114 -- apps/client; store/release.json"
+        ],
+        "next_action": "Configure Firebase/FCM, build current source, verify AAB and native behavior before upload.",
+        "updated_at": "2026-09-24T00:14:58+00:00"
+      }
+    },
+    {
+      "sequence": 274,
+      "at": "2026-09-24T00:14:58+00:00",
+      "gate": "google.notifications",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Firebase account inventory has no Newsworthy project. Current app config has no googleServicesFile. Project creation is prepared at the Firebase terms checkbox, awaiting required legal-agreement confirmation; no project or credential was created.",
+        "evidence": [
+          "Signed-in Firebase inventory/create-project form; apps/client/app.config.js; https://docs.expo.dev/push-notifications/fcm-credentials/"
+        ],
+        "next_action": "Confirm Firebase terms; agent completes project and Android registration, securely configures FCM delivery, then verifies the replacement app.",
+        "updated_at": "2026-09-24T00:14:58+00:00"
+      }
+    },
+    {
+      "sequence": 275,
+      "at": "2026-09-24T00:26:07+00:00",
+      "gate": "google.notifications",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner approved Firebase terms and scoped Android push access. Newsworthy Firebase project/app created on Spark with optional Analytics/Gemini disabled during setup. Dedicated FCM sender assigned in EAS; production/preview secret configuration file verified. Expo prebuild copies the correct Firebase package/project and enables the Google services Gradle plugin. No device delivery verified yet.",
+        "evidence": [
+          "Firebase Console project newsworthy-cad27; EAS credentials and environment readbacks; actual generated Android prebuild"
+        ],
+        "next_action": "Build the current source, verify the Android app and notification registration/delivery on an available supported device.",
+        "updated_at": "2026-09-24T00:26:07+00:00"
+      }
+    },
+    {
+      "sequence": 276,
+      "at": "2026-09-24T00:32:09+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "in_progress",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Current Android12 production AAB and matching preview APK are IN_PROGRESS in EAS from clean6c19cb9. Firebase config is supplied through EAS secret file; scoped FCM V1 credential assignment and enabled API were verified. AAB11 is historical.",
+        "evidence": [
+          "store/android-notifications-12.json; EAS3048aa1e-7330-42a1-bbdd-8fcc32448f3f and40920bd4-d852-47a1-9dc4-4d98fcf74871"
+        ],
+        "next_action": "Wait on these build IDs, verify downloaded AAB/APK, then install/test the preview.",
+        "updated_at": "2026-09-24T00:32:09+00:00"
+      }
+    },
+    {
+      "sequence": 277,
+      "at": "2026-09-24T05:05:44+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Production artifact downloaded and SHA-256/ZIP integrity verified; matching APK installation and delivery QA continue separately.",
+        "evidence": [
+          "store/android-notifications-12.json"
+        ],
+        "next_action": "Complete Android native notification verification, then upload AAB12 when Google allows app creation.",
+        "updated_at": "2026-09-24T05:05:44+00:00"
+      }
+    },
+    {
+      "sequence": 278,
+      "at": "2026-09-24T05:15:02+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Build21 is REJECTED / UNRESOLVED_ISSUES. New September24 message requests Guideline2.1 physical-device demonstration on latest OS and six-part information. Existing video is build7; connected phone unavailable and last metadata is iOS26.6.2.",
+        "evidence": [
+          "store/apple-review-build21-followup.md"
+        ],
+        "next_action": "Make a current physical iPhone available on the latest OS and capture build21 launch, reading, Settings/notifications and widgets; agent can prepare reply/Notes and resume review afterward.",
+        "updated_at": "2026-09-24T05:15:02+00:00"
+      }
+    },
+    {
+      "sequence": 279,
+      "at": "2026-09-24T05:27:50+00:00",
+      "gate": "google.notifications",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate.",
+        "evidence": [
+          "store/android-notifications-12.json"
+        ],
+        "next_action": "Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner.",
+        "updated_at": "2026-09-24T05:27:50+00:00"
+      }
+    },
+    {
+      "sequence": 280,
+      "at": "2026-09-24T05:28:12+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope.",
+        "evidence": [
+          "store/android-notifications-12.json"
+        ],
+        "next_action": "Upload AAB12 when Google allows app creation; complete physical Android testing separately.",
+        "updated_at": "2026-09-24T05:28:12+00:00"
+      }
+    },
+    {
+      "sequence": 281,
+      "at": "2026-09-24T05:30:32+00:00",
+      "gate": "apple.review-state",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Latest Apple API and browser readbacks confirm build21 selected, version REJECTED and submission UNRESOLVED_ISSUES. September24 message requests Guideline2.1 current physical-device video and six-part information. Earlier Waiting for Review receipt is historical.",
+        "evidence": [
+          "store/apple-review-build21-followup.md"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T05:30:32+00:00"
+      }
+    },
+    {
+      "sequence": 282,
+      "at": "2026-09-24T05:30:32+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate.",
+        "evidence": [
+          "store/apple-review-build21.json",
+          "store/apple-review-build21-followup.md"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T05:30:32+00:00"
+      }
+    },
+    {
+      "sequence": 283,
+      "at": "2026-09-24T05:41:58+00:00",
+      "gate": "apple.gallery-current",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures.",
+        "evidence": [
+          "store/design/current-gallery-brief.md"
+        ],
+        "next_action": "Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets.",
+        "updated_at": "2026-09-24T05:41:58+00:00"
+      }
+    },
+    {
+      "sequence": 284,
+      "at": "2026-09-24T05:55:10+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "user_reported",
+        "summary": "Owner reports an updated physical-device recording in iCloud Drive. The September17 build7 video remains attached in the current review thread; the generic September24 rejection does not explain whether it was overlooked or insufficient.",
+        "evidence": [
+          "Owner message September24; App Review September17 message attachment Download control verified; fresh API readback confirms six-part Notes."
+        ],
+        "next_action": "Locate and inspect updated recording, verify its demonstrated build and flows, prepare matching reply and Notes, then resubmit and verify state.",
+        "updated_at": "2026-09-24T05:55:10+00:00"
+      }
+    },
+    {
+      "sequence": 285,
+      "at": "2026-09-24T06:06:24+00:00",
+      "gate": "apple.physical-recording-current",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Updated September24 recording located in iCloud Drive, 38951259 bytes advertised. Finder download and local copy remain at zero transferred bytes. Alternate iCloud web sign-in with the existing vault credential reports the Apple Account locked for security reasons; no recovery or credential change attempted.",
+        "evidence": [
+          "Finder Download Now status Zero KB of39.0MB; source remains dataless; iCloud web locked-account notice. Original September17 Apple attachment downloaded and SHA256 matches its posted manifest."
+        ],
+        "next_action": "Allow iCloud transfer to complete or use an owner-provided local copy; inspect actual footage before upload. Pending owner question asks whether phone upload is complete. Account recovery, if needed, remains owner-only.",
+        "updated_at": "2026-09-24T06:06:24+00:00"
+      }
+    },
+    {
+      "sequence": 286,
+      "at": "2026-09-24T06:20:53+00:00",
+      "gate": "apple.physical-recording-current",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed.",
+        "evidence": [
+          "store/apple-physical-review-video-2026-09-24.json; App Review message7, September24 2:17PM, one video attachment and Download control."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T06:20:53+00:00"
+      }
+    },
+    {
+      "sequence": 287,
+      "at": "2026-09-24T06:20:53+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-09-24-video.json; store/apple-review-response-2026-09-24.md"
+        ],
+        "next_action": "Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate.",
+        "updated_at": "2026-09-24T06:20:53+00:00"
+      }
+    },
+    {
+      "sequence": 288,
+      "at": "2026-09-24T06:20:53+00:00",
+      "gate": "apple.review-state",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-09-24-video.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T06:20:53+00:00"
       }
     }
   ],

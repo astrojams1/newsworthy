@@ -46,8 +46,7 @@ engagement, addiction or growth-hacking tactics.
   device by default)
   and, in the mobile apps only, an optional notification for readings at or
   above a chosen score — off by default, 8 when turned on, one notification per
-  new development, about the number the front page shows rather than a raw reading.
-  A later report of a development already covered sends nothing. Describe it as optional and quiet; never as an alert service,
+  development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
 - Do not claim that hosting processes no technical information.

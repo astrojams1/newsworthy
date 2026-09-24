@@ -29,8 +29,7 @@ export function displayExplanation(reading, now = Date.now()) {
   if (!reading) return '';
   // Missing metadata means an old client/cache. Do not prepend a second age.
   const hasBody = typeof reading.explanation_text === 'string';
-  // A summary that repeats an earlier one says how old it is; one that does not says it is new.
-  const prefix = !hasBody ? '' : reading.explanation_new === true ? 'New: ' : agePrefix(reading.explanation_since, now);
+  const prefix = hasBody ? agePrefix(reading.explanation_since, now) : '';
   const body = hasBody ? reading.explanation_text : reading.explanation;
   return prefix + fitExplanation(body ?? '', DISPLAY_CHARACTER_LIMIT - Array.from(prefix).length);
 }

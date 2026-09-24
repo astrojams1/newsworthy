@@ -612,26 +612,21 @@ until the median confirms it, and no device is told a 10 the page is not
 showing. A new 8 while a 10 is still the loudest changes nothing on the page
 and announces nothing, because the tap would have opened on the 10.
 
-It is announced **only when the summary is new**. A summary that repeats an
-earlier one carries the age prefix; one that does not is new, and carries
-"New:" instead (`explanation_new` on `/api/current` is `explanation_since == null`).
-`notifyReading` applies the same test to the newest reading, and also requires
-the page's number to be about that reading's own development. A repeat
-announces nothing, whatever the score.
-
 It is announced **once per development and threshold**: `push_deliveries` is
 keyed on `(root, threshold)`, the root being the development the page's number
-is about. Several thresholds can still hear one development: its opening
-reading claims every threshold the page's number meets. The key also keeps a
-retry from repeating devices already reached.
+is about. That is what makes a judge outage quiet — the replay inherits an
+unjudged reading into its predecessor's development, so four unjudged 8s are
+one development, where a first cut that took the predecessor's *id* as the
+root announced three of them. An escalation the page shows reaches the devices
+waiting for the higher number and not, again, the ones that heard at the lower.
 
 **A claim is a lock, not a record, and it carries progress.** The first cut
 claimed the pair before calling Expo and never let go, so one 503 silenced a
 development for every device at that threshold. A claim now carries
 `claimed_at` and a null `sent_at` until every recipient is answered for; a
 failed send marks its claims `released`, and a claim older than
-`PUSH_CLAIM_STALE_MINUTES` with no send — a function frozen mid-way — can be
-taken over by a retry for the same new reading; a later repeat does not retry. Two functions storing readings at once still send
+`PUSH_CLAIM_STALE_MINUTES` with no send — a function frozen mid-way — is taken
+over by the next reading. Two functions storing readings at once still send
 once between them, because the insert is the arbiter. Expo takes a hundred
 messages per request, so a send can fail part-way: releasing the whole claim
 then sent the first batch's hundred devices the same development twice. The

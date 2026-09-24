@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T00:06:23+00:00
+Updated: 2026-09-24T06:20:53+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -13,25 +13,25 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | scope | done | agent | observed | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
 | web.deploy | done | agent | observed | PR127 merged as3a2f0e0; both GitHub checks passed. Vercel production alias now serves deploymentdpl_2d1c1kXXV4ej2Vp1r2znLRVW4DAT with receipt/retry fixes and updated privacy text. Home, Settings, current API, health and privacy return200. | — |
 | apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
-| apple.address | waiting_provider | provider | observed | Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved. | Await Apple correction or support response, then verify Business legal entity before paid release. |
+| apple.address | waiting_provider | provider | observed | September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction. | Await address-review response and verify the corrected legal record in Business. |
 | apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
 | apple.tax | done | user | observed | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
-| apple.bank | waiting_user | user | observed | Fresh Apple Business readback still has Add Bank Account and no payout account listed; Paid Apps Agreement remains Pending User Info. | Owner adds payout account privately in App Store Connect Business; verify paid agreement becomes Active. |
+| apple.bank | waiting_user | user | observed | September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active. | Owner adds and verifies payout details in Apple Business; agent then reads back Active status. |
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | agent | observed | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
 | apple.listing | done | agent | observed | EnglishUS description, subtitle, promotional text, keywords and URLs saved and read back. Review Notes describe optional notifications, setup, widgets, services, regions and historical build7 video; contact phone retained privately. | — |
 | apple.build | done | agent | observed | Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled. | — |
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
-| apple.upload | done | agent | observed | Build 21 passed Apple validation/upload and processed VALID. It is now selected in the resubmitted review; both version and submission are WAITING_FOR_REVIEW. | — |
+| apple.upload | done | agent | observed | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | Build21 resubmitted with updated listing and review notes addressing4.2. Existing rejected item resolved then existing submission submitted. Apple independently reports version and submission WAITING_FOR_REVIEW; selected build21 verified. | Await Apple review; preserve this submission. Verify paid-sale readiness/public availability separately after approval. |
+| apple.review | waiting_provider | provider | observed | Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC. | Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate. |
 | apple.release | waiting_provider | provider | observed | Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, verify paid-sale account readiness, and verify public paid availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
-| google.app | waiting_user | user | observed | Fresh Play Console readback still shows real Android-device verification and contact-phone tasks; Create app remains disabled. | Owner completes real-device verification in Play Console mobile app and then phone verification; agent creates paid Newsworthy and uploads AAB11 afterward. |
-| google.build | done | agent | observed | Production Android11 AAB finished from clean8055d61; downloaded and verified, superseding AAB10. | — |
+| google.app | waiting_user | user | observed | September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner. | Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled. |
+| google.build | done | agent | observed | Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope. | Upload AAB12 when Google allows app creation; complete physical Android testing separately. |
 | google.native | in_progress | agent | observed | Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified. | Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open. |
 | google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
@@ -72,7 +72,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.quiet-reading-build | done | agent | observed | iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy. | — |
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
-| apple.review-state | done | agent | observed | Independent Apple API readbacks confirm version and existing review submission WAITING_FOR_REVIEW, with build 21 selected. The earlier rejected/unresolved state is historical. | — |
+| apple.review-state | done | agent | observed | Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical. | — |
 | story-age.native | todo | agent | observed | Story-age source adds local age formatting to Expo and both widgets; replacement native package and visual parity remain unverified. | Build replacement native packages and verify both widget sizes, themes, score 10, enlarged text, resizing and offline age transitions. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
@@ -87,6 +87,9 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
 | apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
+| google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
+| apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
+| apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
 
 ## Evidence and history
 
@@ -2633,3 +2636,186 @@ Build 21 is Waiting for Review. No public Apple release yet; paid agreement bank
 - store/apple-review-build21.json; store/user-actions.md
 
 Next: Obtain review approval, verify paid-sale account readiness, and verify public paid availability.
+
+### 270. apple.address — waiting_provider
+
+2026-09-24T00:14:58+00:00 · observed · provider
+
+September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction.
+
+- Apple Business and signed-in Gmail support/receipt readbacks; private values excluded
+
+Next: Await address-review response and verify the corrected legal record in Business.
+
+### 271. apple.bank — waiting_user
+
+2026-09-24T00:14:58+00:00 · observed · user
+
+September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active.
+
+- Signed-in Apple Business Agreements readback
+
+Next: Owner adds and verifies payout details in Apple Business; agent then reads back Active status.
+
+### 272. google.app — waiting_user
+
+2026-09-24T00:14:58+00:00 · observed · user
+
+September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner.
+
+- Play Console account8388544157780149515 Home/device-details readback
+
+Next: Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled.
+
+### 273. google.build — in_progress
+
+2026-09-24T00:14:58+00:00 · observed · agent
+
+Previously verified AAB11 is historical. Its source predates Settings, notifications and subsequent native changes; it is not the current release candidate.
+
+- git diff 8055d614e53f0665c3919b40a23d9fbaedcee90a..f4cdb7364a7639b8ed973f63619841d135b78114 -- apps/client; store/release.json
+
+Next: Configure Firebase/FCM, build current source, verify AAB and native behavior before upload.
+
+### 274. google.notifications — waiting_user
+
+2026-09-24T00:14:58+00:00 · observed · user
+
+Firebase account inventory has no Newsworthy project. Current app config has no googleServicesFile. Project creation is prepared at the Firebase terms checkbox, awaiting required legal-agreement confirmation; no project or credential was created.
+
+- Signed-in Firebase inventory/create-project form; apps/client/app.config.js; https://docs.expo.dev/push-notifications/fcm-credentials/
+
+Next: Confirm Firebase terms; agent completes project and Android registration, securely configures FCM delivery, then verifies the replacement app.
+
+### 275. google.notifications — in_progress
+
+2026-09-24T00:26:07+00:00 · observed · agent
+
+Owner approved Firebase terms and scoped Android push access. Newsworthy Firebase project/app created on Spark with optional Analytics/Gemini disabled during setup. Dedicated FCM sender assigned in EAS; production/preview secret configuration file verified. Expo prebuild copies the correct Firebase package/project and enables the Google services Gradle plugin. No device delivery verified yet.
+
+- Firebase Console project newsworthy-cad27; EAS credentials and environment readbacks; actual generated Android prebuild
+
+Next: Build the current source, verify the Android app and notification registration/delivery on an available supported device.
+
+### 276. google.build — in_progress
+
+2026-09-24T00:32:09+00:00 · observed · provider
+
+Current Android12 production AAB and matching preview APK are IN_PROGRESS in EAS from clean6c19cb9. Firebase config is supplied through EAS secret file; scoped FCM V1 credential assignment and enabled API were verified. AAB11 is historical.
+
+- store/android-notifications-12.json; EAS3048aa1e-7330-42a1-bbdd-8fcc32448f3f and40920bd4-d852-47a1-9dc4-4d98fcf74871
+
+Next: Wait on these build IDs, verify downloaded AAB/APK, then install/test the preview.
+
+### 277. google.build — done
+
+2026-09-24T05:05:44+00:00 · observed · agent
+
+Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Production artifact downloaded and SHA-256/ZIP integrity verified; matching APK installation and delivery QA continue separately.
+
+- store/android-notifications-12.json
+
+Next: Complete Android native notification verification, then upload AAB12 when Google allows app creation.
+
+### 278. apple.review — waiting_user
+
+2026-09-24T05:15:02+00:00 · observed · user
+
+Build21 is REJECTED / UNRESOLVED_ISSUES. New September24 message requests Guideline2.1 physical-device demonstration on latest OS and six-part information. Existing video is build7; connected phone unavailable and last metadata is iOS26.6.2.
+
+- store/apple-review-build21-followup.md
+
+Next: Make a current physical iPhone available on the latest OS and capture build21 launch, reading, Settings/notifications and widgets; agent can prepare reply/Notes and resume review afterward.
+
+### 279. google.notifications — done
+
+2026-09-24T05:27:50+00:00 · observed · agent
+
+Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate.
+
+- store/android-notifications-12.json
+
+Next: Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner.
+
+### 280. google.build — done
+
+2026-09-24T05:28:12+00:00 · observed · agent
+
+Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope.
+
+- store/android-notifications-12.json
+
+Next: Upload AAB12 when Google allows app creation; complete physical Android testing separately.
+
+### 281. apple.review-state — done
+
+2026-09-24T05:30:32+00:00 · observed · agent
+
+Latest Apple API and browser readbacks confirm build21 selected, version REJECTED and submission UNRESOLVED_ISSUES. September24 message requests Guideline2.1 current physical-device video and six-part information. Earlier Waiting for Review receipt is historical.
+
+- store/apple-review-build21-followup.md
+
+### 282. apple.upload — done
+
+2026-09-24T05:30:32+00:00 · observed · agent
+
+Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate.
+
+- store/apple-review-build21.json
+- store/apple-review-build21-followup.md
+
+### 283. apple.gallery-current — in_progress
+
+2026-09-24T05:41:58+00:00 · observed · agent
+
+Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures.
+
+- store/design/current-gallery-brief.md
+
+Next: Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets.
+
+### 284. apple.review — in_progress
+
+2026-09-24T05:55:10+00:00 · user_reported · agent
+
+Owner reports an updated physical-device recording in iCloud Drive. The September17 build7 video remains attached in the current review thread; the generic September24 rejection does not explain whether it was overlooked or insufficient.
+
+- Owner message September24; App Review September17 message attachment Download control verified; fresh API readback confirms six-part Notes.
+
+Next: Locate and inspect updated recording, verify its demonstrated build and flows, prepare matching reply and Notes, then resubmit and verify state.
+
+### 285. apple.physical-recording-current — waiting_provider
+
+2026-09-24T06:06:24+00:00 · observed · provider
+
+Updated September24 recording located in iCloud Drive, 38951259 bytes advertised. Finder download and local copy remain at zero transferred bytes. Alternate iCloud web sign-in with the existing vault credential reports the Apple Account locked for security reasons; no recovery or credential change attempted.
+
+- Finder Download Now status Zero KB of39.0MB; source remains dataless; iCloud web locked-account notice. Original September17 Apple attachment downloaded and SHA256 matches its posted manifest.
+
+Next: Allow iCloud transfer to complete or use an owner-provided local copy; inspect actual footage before upload. Pending owner question asks whether phone upload is complete. Account recovery, if needed, remains owner-only.
+
+### 286. apple.physical-recording-current — done
+
+2026-09-24T06:20:53+00:00 · observed · agent
+
+Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed.
+
+- store/apple-physical-review-video-2026-09-24.json; App Review message7, September24 2:17PM, one video attachment and Download control.
+
+### 287. apple.review — waiting_provider
+
+2026-09-24T06:20:53+00:00 · observed · provider
+
+Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC.
+
+- store/apple-review-resubmission-2026-09-24-video.json; store/apple-review-response-2026-09-24.md
+
+Next: Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate.
+
+### 288. apple.review-state — done
+
+2026-09-24T06:20:53+00:00 · observed · agent
+
+Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.
+
+- store/apple-review-resubmission-2026-09-24-video.json

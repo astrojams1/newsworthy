@@ -5,7 +5,6 @@ import {
 } from './db.js';
 import { STORY_MEMORY_HOURS, currentDisplay } from './current.js';
 import { effectiveConfig } from './config.js';
-import { firstCoverage } from './preparation.js';
 
 /**
  * Push notifications for high readings.
@@ -23,9 +22,6 @@ import { firstCoverage } from './preparation.js';
  * that number reaches its threshold — once per development and threshold,
  * whichever readings report it, because the page's replay already answers
  * which development the number is about, through judge outages included.
- *
- * And only when the sentence is new: a repeat of an earlier summary, the one
- * shown with an age prefix, announces nothing.
  *
  * Delivery goes through Expo's push service, which relays to APNs and FCM.
  * That is an HTTP call and nothing native, so it runs in the same serverless
@@ -207,8 +203,6 @@ export async function notifyReading(reading, { fetchImpl, url, now } = {}) {
     const subscribers = await pushSubscriptionsFor(current.score);
     if (subscribers.length === 0) return result;
 
-    // Only a new sentence announces, and only when the number is about it.
-    if (current.root !== current.newest.id || await firstCoverage(current.newest) != null) return result;
     for (const threshold of [...new Set(subscribers.map((s) => s.threshold))]) {
       const claim = await claimPushDelivery({ root: current.root, threshold, readingId: reading.id, score: current.score });
       if (!claim) continue;
