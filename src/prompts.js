@@ -337,6 +337,15 @@ Reply with a single JSON object and nothing else — no prose, no markdown fence
 
 Full display: at most 140 characters including spaces and punctuation, reserving 20 for an app-supplied age prefix. Submit no prefix. Write calmly for a reader with no background: one development, who did what and what it means for daily life. At most one number, in plain terms. Explain or drop jargon, market figures and uncommon acronyms. No em dashes, semicolons, dramatic verbs, side stories, rating justification or advice. Preserve facts, attribution and uncertainty when revising after the history match.`;
 
+// v16 raises the body budget to 135 now that the app's only prefix is "New: ",
+// five characters, where v15 reserved 20 for an age like "31 hours ago: ".
+// Writing guidance and everything before Output are unchanged from v15.
+// See docs/prompt-evaluations/v16.md.
+const V16_OUTPUT_CONTRACT = V15_OUTPUT_CONTRACT
+  .replace('at most 120 characters', 'at most 135 characters')
+  .replace('reserving 20 for an app-supplied age prefix. Submit no prefix.',
+    'reserving 5 for the label "New: " that the app adds to a new development. Submit no label.');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -442,6 +451,13 @@ const REGISTRY = {
     added: '2026-09-24',
     instructions: V11_INSTRUCTIONS,
     outputContract: V15_OUTPUT_CONTRACT,
+  },
+  16: {
+    version: 16,
+    label: 'new-label-135-characters-v16',
+    added: '2026-09-24',
+    instructions: V11_INSTRUCTIONS,
+    outputContract: V16_OUTPUT_CONTRACT,
   },
 };
 

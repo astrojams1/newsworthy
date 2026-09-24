@@ -5,42 +5,40 @@ struct Reading: Codable, Equatable, Sendable {
     let explanation: String
     let created_at: String
     var explanation_text: String? = nil
-    var explanation_since: String? = nil
+    var explanation_new: Bool? = nil
 
-    var updatedAt: Date? {
+    private static func date(_ raw: String) -> Date? {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = formatter.date(from: created_at) { return date }
+        if let date = formatter.date(from: raw) { return date }
         formatter.formatOptions = [.withInternetDateTime]
-        return formatter.date(from: created_at)
+        return formatter.date(from: raw)
     }
 
-    func displayedExplanation(at now: Date) -> String {
-        var prefix = ""
-        if explanation_text != nil, let raw = explanation_since {
-            let formatter = ISO8601DateFormatter()
-            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            var start = formatter.date(from: raw)
-            if start == nil { formatter.formatOptions = [.withInternetDateTime]; start = formatter.date(from: raw) }
-            if let start, start <= now {
-                let minutes = Int(now.timeIntervalSince(start) / 60)
-                if minutes < 1 { prefix = "Just now: " }
-                else {
-                    let (value, unit): (Int, String) = minutes < 60 ? (minutes, "minute")
-                        : minutes < 2880 ? (minutes / 60, "hour")
-                        : minutes < 525600 ? (minutes / 1440, "day") : (minutes / 525600, "year")
-                    prefix = "\(value) \(unit)\(value == 1 ? "" : "s") ago: "
-                }
-            }
-        }
+    var updatedAt: Date? { Reading.date(created_at) }
+
+    /// When "New:" comes off a sentence that opened its own development: two hours after its reading was saved.
+    var newLabelExpiry: Date? {
+        guard explanation_new == true, explanation_text != nil else { return nil }
+        return updatedAt?.addingTimeInterval(2 * 3600)
+    }
+
+    /// The label ("New:" or empty) and the body, fitted together within 140 characters.
+    func explanationParts(at now: Date) -> (label: String, body: String) {
+        let label = newLabelExpiry.map { now < $0 } == true ? "New:" : ""
         let body = explanation_text ?? explanation
-        let limit = 140 - prefix.unicodeScalars.count
-        if body.unicodeScalars.count <= limit { return prefix + body }
+        let limit = 140 - (label.isEmpty ? 0 : label.unicodeScalars.count + 1)
+        if body.unicodeScalars.count <= limit { return (label, body) }
         var cut = String(String.UnicodeScalarView(body.unicodeScalars.prefix(limit - 1)))
         if let space = cut.lastIndex(of: " "), cut[..<space].unicodeScalars.count > limit / 2 {
             cut = String(cut[..<space])
         }
-        return prefix + cut.trimmingCharacters(in: .whitespacesAndNewlines) + "…"
+        return (label, cut.trimmingCharacters(in: .whitespacesAndNewlines) + "…")
+    }
+
+    func displayedExplanation(at now: Date) -> String {
+        let parts = explanationParts(at: now)
+        return parts.label.isEmpty ? parts.body : "\(parts.label) \(parts.body)"
     }
 
     var isValid: Bool {

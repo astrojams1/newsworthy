@@ -72,12 +72,20 @@ struct Provider: TimelineProvider {
         Task {
             let result = await Self.store.refresh()
             let now = Date()
-            // Advance a cached story’s age even when the OS delays a network refresh.
-            let minutes = Array(0...60) + (2...24).map { $0 * 60 }
-            let entries = minutes.map { ReadingEntry(date: now.addingTimeInterval(Double($0 * 60)), reading: result.reading, saved: result.saved) }
+            // A second entry takes "New:" off at its two-hour mark even when the OS delays a refresh.
+            let expiry = result.reading?.newLabelExpiry
+            let dates = [now] + (expiry.map { $0 > now ? [$0] : [] } ?? [])
+            let entries = dates.map { ReadingEntry(date: $0, reading: result.reading, saved: result.saved) }
             completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(30 * 60))))
         }
     }
+}
+
+/// A new development's sentence leads with a bold "New:"; everything else is plain.
+func explanationText(_ reading: Reading?, at date: Date) -> Text {
+    guard let parts = reading?.explanationParts(at: date) else { return Text(verbatim: "") }
+    if parts.label.isEmpty { return Text(verbatim: parts.body) }
+    return Text(verbatim: parts.label).bold() + Text(verbatim: " " + parts.body)
 }
 
 // One three-line numeral size for both families. The description can grow with
@@ -208,7 +216,7 @@ struct ReadingContent: View {
                                     explanationCapHeight: bodyFont.capHeight) {
                     score(size: size)
                     if family == .systemMedium {
-                        Text(entry.reading?.displayedExplanation(at: entry.date) ?? "")
+                        explanationText(entry.reading, at: entry.date)
                             .font(.system(size: explanationSize))
                             .lineSpacing(max(0, explanationLineHeight - bodyFont.lineHeight))
                             .lineLimit(max(1, Int(geometry.size.height / explanationLineHeight)))

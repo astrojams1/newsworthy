@@ -24,17 +24,25 @@ final class Clock: @unchecked Sendable {
 @main
 struct StoreTests {
     static func main() async throws {
-        let since = "2026-09-16T18:05:00.000Z"
         let origin = ISO8601DateFormatter().date(from: "2026-09-16T18:05:00Z")!
-        var aged = Reading(score: 1, explanation: "Legacy prefix.", created_at: "2026-09-18T00:05:00Z",
-                           explanation_text: "The Fed raised rates a quarter point.", explanation_since: since)
-        precondition(aged.displayedExplanation(at: origin.addingTimeInterval(31 * 3600)) == "31 hours ago: The Fed raised rates a quarter point.")
-        precondition(aged.displayedExplanation(at: origin.addingTimeInterval(32 * 3600)).hasPrefix("32 hours ago: "))
-        aged.explanation_text = String(repeating: "😀 ", count: 200)
-        let fitted = aged.displayedExplanation(at: origin.addingTimeInterval(31 * 3600))
-        precondition(fitted.unicodeScalars.count <= 140 && fitted.hasSuffix("…"))
-        let roundTrip = try JSONDecoder().decode(Reading.self, from: JSONEncoder().encode(aged))
-        precondition(roundTrip == aged)
+        var fresh = Reading(score: 7, explanation: "Unlabelled server copy.", created_at: "2026-09-16T18:05:00.000Z",
+                            explanation_text: "The Fed raised rates a quarter point.", explanation_new: true)
+        precondition(fresh.displayedExplanation(at: origin.addingTimeInterval(60)) == "New: The Fed raised rates a quarter point.")
+        precondition(fresh.explanationParts(at: origin.addingTimeInterval(119 * 60)).label == "New:")
+        precondition(fresh.displayedExplanation(at: origin.addingTimeInterval(2 * 3600)) == "The Fed raised rates a quarter point.",
+                     "New: comes off at two hours")
+        precondition(fresh.newLabelExpiry == origin.addingTimeInterval(2 * 3600))
+        var rereport = fresh
+        rereport.explanation_new = false
+        precondition(rereport.displayedExplanation(at: origin) == "The Fed raised rates a quarter point." && rereport.newLabelExpiry == nil)
+        fresh.explanation_text = String(repeating: "😀 ", count: 200)
+        let fitted = fresh.displayedExplanation(at: origin)
+        precondition(fitted.hasPrefix("New: ") && fitted.unicodeScalars.count <= 140 && fitted.hasSuffix("…"))
+        let roundTrip = try JSONDecoder().decode(Reading.self, from: JSONEncoder().encode(fresh))
+        precondition(roundTrip == fresh)
+        // A build before this change cached explanation_since; it decodes and shows no label.
+        let aged = try JSONDecoder().decode(Reading.self, from: Data(#"{"score":1,"explanation":"Old.","created_at":"2026-09-18T00:05:00Z","explanation_text":"Old.","explanation_since":"2026-09-16T18:05:00Z"}"#.utf8))
+        precondition(aged.displayedExplanation(at: origin) == "Old.")
         let legacy = try JSONDecoder().decode(Reading.self, from: Data(#"{"score":1,"explanation":"Legacy sentence.","created_at":"2026-09-18T00:05:00Z"}"#.utf8))
         precondition(legacy.displayedExplanation(at: origin) == "Legacy sentence.")
         let suite = "newsworthy.store.test.\(UUID().uuidString)"

@@ -94,25 +94,23 @@ The score is unchanged by this lookup. The body is:
 The response has \`stored: false\`: preparation is not submission and does not
 suppress the next scheduled run. It carries \`preparation\` (an opaque, single-use
 reference valid for 30 minutes), \`development\` (new, same or unjudged),
-\`first_covered_at\`, a sample \`prefix\`, \`display_character_limit: 140\`,
-\`reserved_prefix_characters: 20\` and \`max_explanation_characters: 120\`.
-An unjudged development has unknown age. A new one has \`first_covered_at: null\`
-and an empty prefix: the app shows no age on the reading that opens a
-development, and starts its clock when that reading is stored.
+a sample \`prefix\`, \`display_character_limit: 140\`,
+\`reserved_prefix_characters: 5\` and \`max_explanation_characters: 135\`.
+The app's only prefix is the label \`New: \`, shown in bold for two hours on a
+reading that opens a development. \`prefix\` is \`New: \` for a new development
+and empty for the same or an unjudged one; the app shows no age on any sentence.
 
-The caller finalizes the SAME development's sentence within 120 characters,
+The caller finalizes the SAME development's sentence within 135 characters,
 including spaces and punctuation, keeping the score and facts unchanged. It
 counts characters with a code tool, not by estimating. The final explanation
-contains no timestamp: the app adds and updates it from the stored first-coverage
-time. For example, \`31 hours ago: \` counts toward the FULL 140-character budget;
-the 20-character reserve also allows that prefix to grow while a reading is saved.
-This means first coverage of this development, not a claim about when it happened.
+contains no label or timestamp: the app adds \`New: \`, which counts toward the
+FULL 140-character budget.
 
 The final submission includes the returned \`preparation\` alongside score,
 explanation and prompt_sha256. Changing to another development requires preparing
 again. An expired, reused, missing or invalid reference falls back to the normal
 server-side match without adding a rejection rule. The caller can repeat preparation
-if it needs refreshed context. Judge failure leaves age unknown rather than new.
+if it needs refreshed context. Judge failure leaves the reading unlabelled rather than new.
 The same endpoint accepts GET query parameters score and explanation for fetch-only
 clients; POST avoids URL length limits. No admin access or full history is needed.
 
@@ -128,7 +126,7 @@ content-type: application/json
 
 {
   "score": <integer 1-10>,
-  "explanation": "<sentence body, at most 120 characters including spaces and punctuation>",
+  "explanation": "<sentence body, at most 135 characters including spaces and punctuation>",
   "preparation": "<reference returned by /api/readings/prepare>",
   "prompt_sha256": "<64 lowercase hex characters, defined in section 3>"
 }
@@ -209,7 +207,7 @@ body must be a JSON object
 
 Length is not among them. The explanation has no maximum a caller can trip: text
 beyond 400 characters is truncated and stored, never rejected, and the 140-character
-guidance in the prompt covers the displayed prefix and sentence together. Nor is
+guidance in the prompt covers the displayed label and sentence together. Nor is
 punctuation: a sentence that arrives without an end is stored with a full stop
 added, and one ending in a dangling comma, colon or dash has it replaced by one. Stored prose is not rejected for length; the display caps the combined text with an ellipsis if a legacy or overlong sentence does not fit. So a 422 on a submission whose score and sentence are both well formed
 means the request did not arrive as it was sent — a query string truncated or

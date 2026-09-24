@@ -72,8 +72,8 @@ test('only the public reading grants native CORS, including error responses and 
 });
 
 
-test('the first-coverage timestamp survives API normalization and offline cache storage', async () => {
-  const input = { ...reading, explanation_text: 'The Fed raised rates.', explanation_since: '2026-09-14T00:00:00Z' };
+test('the new-development flag survives API normalization and offline cache storage', async () => {
+  const input = { ...reading, explanation_text: 'The Fed raised rates.', explanation_new: true };
   const result = await fetchReading('', async () => ({ok:true,json:async()=>input}));
   assert.deepEqual(JSON.parse(JSON.stringify(result)),input);
 });

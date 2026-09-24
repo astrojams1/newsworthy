@@ -6,7 +6,7 @@ import { onForegroundNotification } from './push';
 import { apiOrigin } from './config';
 import { fetchReading, latestSnapshot, readingSnapshot } from './reading';
 
-export type Reading = { score: number; explanation: string; created_at: string; explanation_text?: string; explanation_since?: string | null };
+export type Reading = { score: number; explanation: string; created_at: string; explanation_text?: string; explanation_new?: boolean };
 // Match the previous web cache so an upgrade preserves its saved reading.
 const key = `newsworthy.current.v1:${apiOrigin}`;
 export function useReading() {

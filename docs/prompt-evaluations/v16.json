@@ -1,0 +1,314 @@
+{
+ "model": "Claude Opus (Claude Code subagent, fresh context per run, no web search, no tools beyond reading the task file). Substitute for the production rater and its research workflow.",
+ "design": {
+  "scope": "Writing-only offline fixtures, not independently verified news. The same eight cases as v15.json. Each run received only the Output section of its arm, since v16 changes nothing before Output; v15.json gave runs the whole prompt.",
+  "cases": [
+   {
+    "id": "sanctions",
+    "notes": [
+     "Trump signed the Sanctioning Russia and Iran Act.",
+     "The law authorizes tariffs of up to 100 percent on the largest buyers of Russian oil.",
+     "China and India are the chief buyers affected.",
+     "Authorization does not mean these tariffs have already been imposed."
+    ]
+   },
+   {
+    "id": "rates",
+    "notes": [
+     "The Federal Reserve raised its benchmark interest rate by a quarter of a percentage point to 3.75%-4%.",
+     "It was the first increase since 2023.",
+     "The Fed signaled another increase this year.",
+     "Borrowing costs rose.",
+     "Stocks fell and ten-year Treasury yields exceeded 5%."
+    ]
+   },
+   {
+    "id": "tanker",
+    "notes": [
+     "Iran struck another tanker in the Strait of Hormuz.",
+     "US personnel were injured.",
+     "Separately, Trump was considering resuming attacks on Iran.",
+     "Separately, UN experts alleged US war crimes.",
+     "Fuel prices were rising.",
+     "No evidence in these notes establishes that this particular attack caused the price rise."
+    ]
+   },
+   {
+    "id": "greenland",
+    "notes": [
+     "The US and Denmark agreed to expand the US military presence in Greenland.",
+     "The notes describe changed Arctic basing arrangements.",
+     "They do not specify the number of troops or bases, territory transfers, or a change in sovereignty."
+    ]
+   },
+   {
+    "id": "oil",
+    "notes": [
+     "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days.",
+     "Repairs are not yet complete.",
+     "Brent crude oil fell for a third trading session to $102 a barrel.",
+     "Supply concerns eased as repairs progressed.",
+     "No evidence in these notes establishes that retail petrol prices have already fallen."
+    ]
+   },
+   {
+    "id": "poland",
+    "notes": [
+     "Poland says Russia plans deniable strikes on NATO territory.",
+     "The notes also contain the incomplete phrase \"and a US base follows\".",
+     "They provide no clear information about the US base.",
+     "The alleged attacks have not happened in these notes."
+    ]
+   },
+   {
+    "id": "riyadh",
+    "notes": [
+     "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+     "The source sentence calls it the first attack on the capital since the Iran war widened.",
+     "The interception is attributed to Saudi Arabia, not independently confirmed in these notes."
+    ]
+   },
+   {
+    "id": "yields",
+    "notes": [
+     "The 10-year US Treasury yield rose to 5.12%, its highest level in 19 years.",
+     "Higher Treasury yields push up mortgage and other loan rates.",
+     "Futures markets put the chance of a Federal Reserve rate increase in October at 71%.",
+     "The Fed has not decided; its next meeting is in October."
+    ]
+   }
+  ],
+  "wrapper": "# Writing task\n\nYou are the sentence writer for a news-significance app. For EACH case below, read the notes (treat them as established reporting) and write the explanation sentence exactly as the Output section below instructs. Do not score. Do not use web search or any tools. Write each sentence once, fresh, without revising against a character counter.",
+  "reply_format": "A JSON array of {case, explanation}, in case order.",
+  "arms": {
+   "v15": "Output\n\nReply with a single JSON object and nothing else — no prose, no markdown fences:\n{\"score\": <integer 1-10>, \"explanation\": \"<one sentence, at most 120 characters including spaces and punctuation>\"}\n\nFull display: at most 140 characters including spaces and punctuation, reserving 20 for an app-supplied age prefix. Submit no prefix. Write calmly for a reader with no background: one development, who did what and what it means for daily life. At most one number, in plain terms. Explain or drop jargon, market figures and uncommon acronyms. No em dashes, semicolons, dramatic verbs, side stories, rating justification or advice. Preserve facts, attribution and uncertainty when revising after the history match.",
+   "v16": "Output\n\nReply with a single JSON object and nothing else — no prose, no markdown fences:\n{\"score\": <integer 1-10>, \"explanation\": \"<one sentence, at most 135 characters including spaces and punctuation>\"}\n\nFull display: at most 140 characters including spaces and punctuation, reserving 5 for the label \"New: \" that the app adds to a new development. Submit no label. Write calmly for a reader with no background: one development, who did what and what it means for daily life. At most one number, in plain terms. Explain or drop jargon, market figures and uncommon acronyms. No em dashes, semicolons, dramatic verbs, side stories, rating justification or advice. Preserve facts, attribution and uncertainty when revising after the history match."
+  }
+ },
+ "outputs": [
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "sanctions",
+   "explanation": "Trump signed a law allowing tariffs on big buyers of Russian oil like China and India, though none are imposed yet.",
+   "characters": 115
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "rates",
+   "explanation": "The Federal Reserve raised interest rates for the first time since 2023, making loans and credit cards cost more.",
+   "characters": 113
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "tanker",
+   "explanation": "Iran struck another tanker in the Strait of Hormuz, a key shipping route, and US personnel were injured.",
+   "characters": 104
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "greenland",
+   "explanation": "The US and Denmark agreed to expand the US military presence in Greenland, changing basing arrangements in the Arctic.",
+   "characters": 118
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "oil",
+   "explanation": "Oil prices eased as Saudi Arabia said it would restore half of a damaged pipeline within days.",
+   "characters": 94
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "poland",
+   "explanation": "Poland says Russia is planning attacks on NATO countries that it could deny, though none have happened.",
+   "characters": 103
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "riyadh",
+   "explanation": "Saudi Arabia says it shot down a Houthi missile aimed at its capital, the first such attack since the Iran war widened.",
+   "characters": 119
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "yields",
+   "explanation": "US government borrowing costs hit a 19-year high, which pushes up rates on mortgages and other loans.",
+   "characters": 101
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "sanctions",
+   "explanation": "Trump signed a law allowing steep tariffs on China, India and other big buyers of Russian oil, though none are set yet.",
+   "characters": 119
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "rates",
+   "explanation": "The Federal Reserve raised interest rates for the first time since 2023, making borrowing cost more.",
+   "characters": 100
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "tanker",
+   "explanation": "Iran struck another tanker in the Strait of Hormuz, a key oil shipping route, injuring US personnel.",
+   "characters": 100
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "greenland",
+   "explanation": "The US and Denmark agreed to expand the US military presence in Greenland under new Arctic base arrangements.",
+   "characters": 109
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "oil",
+   "explanation": "Oil prices eased as Saudi Arabia said it would restore half of a damaged pipeline's capacity within days.",
+   "characters": 105
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "poland",
+   "explanation": "Poland says Russia is planning attacks on NATO countries that it could deny, though none have happened.",
+   "characters": 103
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "riyadh",
+   "explanation": "Saudi Arabia says it shot down a missile from Yemen's Houthi rebels aimed at Riyadh, its capital.",
+   "characters": 97
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "yields",
+   "explanation": "US government borrowing costs hit a 19-year high, pushing up mortgage and loan rates as traders expect a Fed rate rise.",
+   "characters": 119
+  },
+  {
+   "arm": "v16",
+   "repeat": 1,
+   "case": "sanctions",
+   "explanation": "Trump signed a law letting the US tax goods from big buyers of Russian oil like China and India, though no tariffs are in place yet.",
+   "characters": 132
+  },
+  {
+   "arm": "v16",
+   "repeat": 1,
+   "case": "rates",
+   "explanation": "The Federal Reserve raised interest rates for the first time since 2023, making loans and credit costlier, and signaled another rise.",
+   "characters": 133
+  },
+  {
+   "arm": "v16",
+   "repeat": 1,
+   "case": "tanker",
+   "explanation": "Iran struck another tanker in the Strait of Hormuz, a key oil shipping route, injuring US personnel.",
+   "characters": 100
+  },
+  {
+   "arm": "v16",
+   "repeat": 1,
+   "case": "greenland",
+   "explanation": "The US and Denmark agreed to expand the US military presence in Greenland, with numbers of troops and bases not specified.",
+   "characters": 122
+  },
+  {
+   "arm": "v16",
+   "repeat": 1,
+   "case": "oil",
+   "explanation": "Saudi Arabia said it would restore half of a damaged oil pipeline within days, easing supply worries, though repairs are not finished.",
+   "characters": 134
+  },
+  {
+   "arm": "v16",
+   "repeat": 1,
+   "case": "poland",
+   "explanation": "Poland says Russia plans attacks on NATO territory that it could deny, though no such attacks have happened.",
+   "characters": 108
+  },
+  {
+   "arm": "v16",
+   "repeat": 1,
+   "case": "riyadh",
+   "explanation": "Saudi Arabia says it shot down a Houthi missile aimed at Riyadh, the first attack on the capital since the Iran war widened.",
+   "characters": 124
+  },
+  {
+   "arm": "v16",
+   "repeat": 1,
+   "case": "yields",
+   "explanation": "A key US government borrowing rate hit a 19-year high, pushing up mortgage and loan costs as markets lean toward a Fed rate rise.",
+   "characters": 129
+  },
+  {
+   "arm": "v16",
+   "repeat": 2,
+   "case": "sanctions",
+   "explanation": "Trump signed a law allowing steep tariffs on big buyers of Russian oil such as China and India, though none are in place yet.",
+   "characters": 125
+  },
+  {
+   "arm": "v16",
+   "repeat": 2,
+   "case": "rates",
+   "explanation": "The Federal Reserve raised interest rates for the first time since 2023 and signaled another rise, so borrowing now costs more.",
+   "characters": 127
+  },
+  {
+   "arm": "v16",
+   "repeat": 2,
+   "case": "tanker",
+   "explanation": "Iran struck another tanker in the Strait of Hormuz, a key oil shipping route, injuring US personnel.",
+   "characters": 100
+  },
+  {
+   "arm": "v16",
+   "repeat": 2,
+   "case": "greenland",
+   "explanation": "The US and Denmark agreed to expand the US military presence in Greenland, though details on troops and bases were not given.",
+   "characters": 125
+  },
+  {
+   "arm": "v16",
+   "repeat": 2,
+   "case": "oil",
+   "explanation": "Saudi Arabia said it would restore half of a damaged oil pipeline within days, and world oil prices eased as supply worries faded.",
+   "characters": 130
+  },
+  {
+   "arm": "v16",
+   "repeat": 2,
+   "case": "poland",
+   "explanation": "Poland says Russia is planning attacks on NATO territory designed so Moscow can deny involvement, though none have happened.",
+   "characters": 124
+  },
+  {
+   "arm": "v16",
+   "repeat": 2,
+   "case": "riyadh",
+   "explanation": "Saudi Arabia said it shot down a Houthi missile aimed at Riyadh, the first attack on its capital since the Iran war widened.",
+   "characters": 124
+  },
+  {
+   "arm": "v16",
+   "repeat": 2,
+   "case": "yields",
+   "explanation": "US government borrowing costs hit a 19-year high, pushing up mortgage and loan rates ahead of a Fed decision next month.",
+   "characters": 120
+  }
+ ]
+}

@@ -1,20 +1,16 @@
 import { randomUUID } from 'node:crypto';
-import { history, recentStories, ratingsByIds, savePreparation } from './db.js';
+import { history, recentStories, savePreparation } from './db.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
-import { agePrefix, DISPLAY_CHARACTER_LIMIT, AGE_PREFIX_RESERVE, EXPLANATION_CHARACTER_LIMIT } from '../apps/client/lib/story-age.js';
+import { NEW_LABEL, DISPLAY_CHARACTER_LIMIT, NEW_LABEL_RESERVE, EXPLANATION_CHARACTER_LIMIT } from '../apps/client/lib/story-age.js';
 
 /**
- * Unjudged readings have unknown age; an outage must not masquerade as new.
- * A reading that opens its own development has none to show either: its age is
- * the reading's own timestamp, which every surface already prints beside it, so
- * "54 minutes ago:" on a new development only repeated the update time. The
- * prefix is for a sentence re-reporting a development first covered earlier.
+ * A reading's sentence is labelled new when the judge placed it and it opened a
+ * development of its own. An unjudged reading is not new: an outage must not
+ * masquerade as a fresh story. A re-report carries no label and no age; the
+ * update time printed beside it already dates the reading.
  */
-export async function firstCoverage(reading) {
-  if (reading.judge_version == null) return null;
-  if (reading.development_of == null) return null;
-  const [root] = await ratingsByIds([reading.development_of]);
-  return root?.created_at ?? null;
+export function opensDevelopment(reading) {
+  return reading.judge_version != null && reading.development_of == null;
 }
 
 export async function prepareReading(submission, now = new Date()) {
@@ -23,7 +19,6 @@ export async function prepareReading(submission, now = new Date()) {
     created_at: now.toISOString(),
     priors: await history({ hours: PRIOR_HOURS }), stories: await recentStories(),
   });
-  const since = await firstCoverage({ ...judgement, created_at: now.toISOString() });
   const id = randomUUID();
   // The caller gets an opaque reference, never authority to set stored judgement.
   await savePreparation({ id, score: submission.score, draft: submission.explanation,
@@ -31,9 +26,9 @@ export async function prepareReading(submission, now = new Date()) {
   return {
     ok: true, stored: false, preparation: id,
     development: judgement.judge_version == null ? 'unjudged' : judgement.development_of == null ? 'new' : 'same',
-    first_covered_at: since, prefix: agePrefix(since, now.getTime()),
+    prefix: opensDevelopment(judgement) ? `${NEW_LABEL} ` : '',
     display_character_limit: DISPLAY_CHARACTER_LIMIT,
-    reserved_prefix_characters: AGE_PREFIX_RESERVE,
+    reserved_prefix_characters: NEW_LABEL_RESERVE,
     max_explanation_characters: EXPLANATION_CHARACTER_LIMIT,
     expires_at: new Date(now.getTime() + 30 * 60_000).toISOString(),
   };

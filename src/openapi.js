@@ -80,7 +80,7 @@ export function openapiDocument({ baseUrl }) {
         post: {
           operationId: 'prepareReading',
           summary: 'Match a draft before finalizing the sentence',
-          description: 'After research and rating, match the draft against stored developments. This is not a submission. Keep the same event and score when shortening the final sentence. The app adds an age prefix; 140 characters includes that prefix, with 120 available for the body.',
+          description: 'After research and rating, match the draft against stored developments. This is not a submission. Keep the same event and score when shortening the final sentence. The app adds the label "New: " to a new development; 140 characters includes that label, with 135 available for the body.',
           requestBody: { required: true, content: { 'application/json': { schema: {
             type: 'object', required: ['score', 'explanation'], properties: {
               score: { type: 'integer', minimum: 1, maximum: 10 },
@@ -92,9 +92,9 @@ export function openapiDocument({ baseUrl }) {
               type: 'object', properties: {
                 stored: { type: 'boolean', const: false }, preparation: { type: 'string' },
                 development: { type: 'string', enum: ['new', 'same', 'unjudged'] },
-                first_covered_at: { type: ['string', 'null'] }, prefix: { type: 'string' },
-                max_explanation_characters: { type: 'integer', const: 120 },
-                reserved_prefix_characters: { type: 'integer', const: 20 },
+                prefix: { type: 'string' },
+                max_explanation_characters: { type: 'integer', const: 135 },
+                reserved_prefix_characters: { type: 'integer', const: 5 },
                 display_character_limit: { type: 'integer', const: 140 }, expires_at: { type: 'string' },
               },
             } } } },
@@ -132,7 +132,7 @@ export function openapiDocument({ baseUrl }) {
                     },
                     explanation: {
                       type: 'string',
-                      description: 'Full display: at most 140 characters including spaces and punctuation AND the age prefix. Submit only the sentence body, at most 120 characters; the app supplies the prefix.',
+                      description: 'Full display: at most 140 characters including spaces and punctuation AND the "New: " label. Submit only the sentence body, at most 135 characters; the app supplies the label.',
                     },
                     preparation: { type: 'string', description: 'Single-use reference from prepareReading, valid 30 minutes; missing/invalid/expired references fall back to normal matching.' },
                     // Optional, and never a rejection: a mismatch stores a

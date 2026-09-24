@@ -107,7 +107,11 @@ export function checkWidgetDesign(sources = widgetSources()) {
 
   const java = code(sources.java);
   // Runtime paint overrides bypass theme-resource reapplication on host changes.
-  assert.doesNotMatch(java, /\b(?:ForegroundColorSpan|RelativeSizeSpan|AbsoluteSizeSpan|SpannableString|setTextColor)\b|"setTextColor"/, 'widget text must retain XML theme/size bindings');
+  assert.doesNotMatch(java, /\b(?:ForegroundColorSpan|BackgroundColorSpan|RelativeSizeSpan|AbsoluteSizeSpan|setTextColor)\b|"setTextColor"/, 'widget text must retain XML theme/size bindings');
+  // The one span allowed is the bold "New:" label: weight only, so colour and
+  // size still come from XML and follow a host theme change.
+  const spans = java.match(/new \w+Span\([^)]*\)/g) ?? [];
+  assert.deepEqual(spans, ['new StyleSpan(Typeface.BOLD)'], 'widget text must retain XML theme/size bindings');
   assert.deepEqual(extract(java, /boolean compact\s*=\s*width\s*<\s*(\d+)\s*\|\|\s*height\s*<\s*(\d+)\s*;/, 'compact selection'), [c.expandedMinWidth, c.expandedMinHeight]);
   assert.deepEqual(extract(java, /float scoreSize\s*=\s*(\d+)\s*;/, 'Android runtime score'), [c.compactScore]);
   assert.equal(c.compactScore, c.expandedScore, 'shared numeral size');

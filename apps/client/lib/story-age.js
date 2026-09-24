@@ -1,19 +1,22 @@
 // Shared by the API and Expo. Native widget equivalents use the same fixtures.
 export const DISPLAY_CHARACTER_LIMIT = 140;
-export const AGE_PREFIX_RESERVE = 20;
-export const EXPLANATION_CHARACTER_LIMIT = DISPLAY_CHARACTER_LIMIT - AGE_PREFIX_RESERVE;
+/** Shown, bold, before a sentence that opened its own development. */
+export const NEW_LABEL = 'New:';
+/** "New: " — the label and the space after it. */
+export const NEW_LABEL_RESERVE = Array.from(`${NEW_LABEL} `).length;
+export const EXPLANATION_CHARACTER_LIMIT = DISPLAY_CHARACTER_LIMIT - NEW_LABEL_RESERVE;
+/** How long after its reading was saved a new development is still labelled new. */
+export const NEW_LABEL_MS = 2 * 3600_000;
 
-/** Age of this development's first coverage, never the score's decay anchor. */
-export function agePrefix(since, now = Date.now()) {
-  const start = typeof since === 'string' ? Date.parse(since) : NaN;
-  if (!Number.isFinite(start) || !Number.isFinite(now) || start > now) return '';
-  const minutes = Math.floor((now - start) / 60_000);
-  if (minutes < 1) return 'Just now: ';
-  const [value, unit] = minutes < 60 ? [minutes, 'minute']
-    : minutes < 2880 ? [Math.floor(minutes / 60), 'hour']
-      : minutes < 525600 ? [Math.floor(minutes / 1440), 'day']
-        : [Math.floor(minutes / 525600), 'year'];
-  return `${value} ${unit}${value === 1 ? '' : 's'} ago: `;
+/**
+ * A sentence is new when its reading opened a development and was saved within
+ * the last two hours. Past that the update time beside it says enough, and a
+ * reading an afternoon old labelled new would be false.
+ */
+export function isNew(reading, now = Date.now()) {
+  if (reading?.explanation_new !== true || typeof reading.explanation_text !== 'string') return false;
+  const saved = Date.parse(reading.created_at);
+  return Number.isFinite(saved) && Number.isFinite(now) && now - saved < NEW_LABEL_MS;
 }
 
 /** A display guard for legacy/overlong readings; stored prose is never changed. */
@@ -25,11 +28,17 @@ export function fitExplanation(text, limit) {
   return `${(space > limit / 2 ? Array.from(slice).slice(0, space).join('') : slice).trimEnd()}…`;
 }
 
+/** The label (empty when not new) and the body, fitted together within 140 characters. */
+export function explanationParts(reading, now = Date.now()) {
+  if (!reading) return { label: '', body: '' };
+  const label = isNew(reading, now) ? NEW_LABEL : '';
+  // Missing metadata means an old client/cache: its explanation is shown as stored.
+  const body = typeof reading.explanation_text === 'string' ? reading.explanation_text : reading.explanation;
+  return { label, body: fitExplanation(body ?? '', DISPLAY_CHARACTER_LIMIT - (label ? NEW_LABEL_RESERVE : 0)) };
+}
+
+/** Plain text, for sharing and any surface that cannot style the label. */
 export function displayExplanation(reading, now = Date.now()) {
-  if (!reading) return '';
-  // Missing metadata means an old client/cache. Do not prepend a second age.
-  const hasBody = typeof reading.explanation_text === 'string';
-  const prefix = hasBody ? agePrefix(reading.explanation_since, now) : '';
-  const body = hasBody ? reading.explanation_text : reading.explanation;
-  return prefix + fitExplanation(body ?? '', DISPLAY_CHARACTER_LIMIT - Array.from(prefix).length);
+  const { label, body } = explanationParts(reading, now);
+  return label ? `${label} ${body}` : body;
 }

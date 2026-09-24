@@ -16,7 +16,7 @@ test('native pixel evidence retains its source provenance and reviewed layout sc
   // The sole permitted text-binding substitution is excluded from geometry.
   // Full-source hash above still requires explicit review for any further edit.
   const geometry=source.slice(source.indexOf('// One three-line numeral size'))
-    .replace('Text(entry.reading?.displayedExplanation(at: entry.date) ?? "")','Text(entry.reading?.explanation ?? "")');
+    .replace('explanationText(entry.reading, at: entry.date)','Text(entry.reading?.explanation ?? "")');
   assert.equal(createHash('sha256').update(geometry).digest('hex'),review.geometrySha256,
     'Captured layout and font geometry must stay identical');
 });

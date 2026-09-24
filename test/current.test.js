@@ -615,8 +615,9 @@ test('a break opens a development and is shown whole, at once', async () => {
     assert.equal(body.basis, 'new');
     assert.equal(body.score, 9);
     assert.equal(body.explanation_text, 'volcano erupts overnight.');
-    assert.equal(body.explanation, 'volcano erupts overnight.', 'a new development carries no age prefix');
-    assert.equal(body.explanation_since, null, 'its first coverage is the reading itself, already dated by created_at');
+    assert.equal(body.explanation, 'volcano erupts overnight.', 'the legacy field is never labelled, so no cache keeps a stale "New:"');
+    assert.equal(body.explanation_new, true, 'it opened its own development; clients label it "New:" for two hours');
+    assert.equal(body.explanation_since, undefined, 'no age is shown, so none is sent');
     assert.equal(body.story, 'volcano');
     assert.equal(body.score_from, undefined, 'the field is gone; `since` dates the number');
   });

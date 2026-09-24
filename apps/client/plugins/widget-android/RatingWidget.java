@@ -1,5 +1,8 @@
 package com.example.newsworthy;
 
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.app.PendingIntent;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -121,28 +124,33 @@ public class RatingWidget extends AppWidgetProvider {
         return null;
     }
 
-    static String displayedExplanation(JSONObject reading, long now) {
-        String prefix = "";
+    static final String NEW_LABEL = "New:";
+    static final long NEW_LABEL_MS = 2 * 3_600_000L;
+
+    /** A sentence that opened its own development is new for two hours after its reading was saved. */
+    static boolean isNew(JSONObject reading, long now) {
+        if (!(reading.opt("explanation_text") instanceof String) || !reading.optBoolean("explanation_new", false)) return false;
+        Date saved = readingDate(reading);
+        return saved != null && now - saved.getTime() < NEW_LABEL_MS;
+    }
+
+    /** "New:" in bold before a new development's sentence; the body fitted so both stay within 140 characters. */
+    static CharSequence displayedExplanation(JSONObject reading, long now) {
         boolean hasBody = reading.opt("explanation_text") instanceof String;
-        Date start = parseDate(reading.optString("explanation_since", ""));
-        if (hasBody && start != null && start.getTime() <= now) {
-            long minutes = (now - start.getTime()) / 60_000;
-            if (minutes < 1) prefix = "Just now: ";
-            else {
-                long value = minutes < 60 ? minutes : minutes < 2880 ? minutes / 60
-                    : minutes < 525600 ? minutes / 1440 : minutes / 525600;
-                String unit = minutes < 60 ? "minute" : minutes < 2880 ? "hour"
-                    : minutes < 525600 ? "day" : "year";
-                prefix = value + " " + unit + (value == 1 ? "" : "s") + " ago: ";
-            }
-        }
+        String label = isNew(reading, now) ? NEW_LABEL : "";
         String body = reading.optString(hasBody ? "explanation_text" : "explanation", "");
-        int limit = 140 - prefix.length();
-        if (body.codePointCount(0, body.length()) <= limit) return prefix + body;
-        String cut = body.substring(0, body.offsetByCodePoints(0, limit - 1));
-        int space = cut.lastIndexOf(' ');
-        if (space >= 0 && cut.codePointCount(0, space) > limit / 2) cut = cut.substring(0, space);
-        return prefix + cut.trim() + "…";
+        int limit = 140 - (label.isEmpty() ? 0 : label.length() + 1);
+        if (body.codePointCount(0, body.length()) > limit) {
+            String cut = body.substring(0, body.offsetByCodePoints(0, limit - 1));
+            int space = cut.lastIndexOf(' ');
+            if (space >= 0 && cut.codePointCount(0, space) > limit / 2) cut = cut.substring(0, space);
+            body = cut.trim() + "…";
+        }
+        if (label.isEmpty()) return body;
+        SpannableString text = new SpannableString(label + " " + body);
+        // Weight only: a color span kept the old theme's color after a theme switch.
+        text.setSpan(new StyleSpan(Typeface.BOLD), 0, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return text;
     }
 
     static boolean valid(JSONObject data) {

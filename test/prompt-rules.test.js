@@ -83,6 +83,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [13, 'b715e9198306b184'],
     [14, 'ee36003b3dead317'],
     [15, 'a591b4ed45980b21'],
+    [16, 'c7f2d04f4911974b'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -278,6 +279,31 @@ test('v15 changes sentence tone without changing calibration or budget', async (
   assert.equal(evaluation.design.arms.v14, before);
   const cases = evaluation.design.cases.map(({ id }) => id).sort();
   for (const arm of ['v14', 'v15']) {
+    for (const repeat of [1, 2]) {
+      const batch = evaluation.outputs.filter((row) => row.arm === arm && row.repeat === repeat);
+      assert.deepEqual(batch.map((row) => row.case).sort(), cases);
+      for (const row of batch) assert.equal(row.characters, [...row.explanation].length, 'counts reflect the unmodified outputs');
+    }
+  }
+});
+
+test('v16 raises the body budget to 135 for the "New: " label without changing calibration or writing', async () => {
+  const before = renderPrompt(15).text;
+  const after = renderPrompt(16).text;
+  assert.equal(after.split('\nOutput')[0], before.split('\nOutput')[0]);
+  assert.equal(after, before.replace('at most 120 characters', 'at most 135 characters')
+    .replace('reserving 20 for an app-supplied age prefix. Submit no prefix.',
+      'reserving 5 for the label "New: " that the app adds to a new development. Submit no label.'));
+  assert.match(after, /at most 140 characters including spaces and punctuation/);
+  assert.doesNotMatch(after, /age prefix/);
+  const { EXPLANATION_CHARACTER_LIMIT, NEW_LABEL_RESERVE } = await import('../apps/client/lib/story-age.js');
+  assert.equal(EXPLANATION_CHARACTER_LIMIT, 135);
+  assert.equal(NEW_LABEL_RESERVE, 5);
+  const evaluation = JSON.parse(await readFile('docs/prompt-evaluations/v16.json', 'utf8'));
+  assert.equal(evaluation.design.arms.v16, after.slice(after.lastIndexOf('Output\n')));
+  assert.equal(evaluation.design.arms.v15, before.slice(before.lastIndexOf('Output\n')));
+  const cases = evaluation.design.cases.map(({ id }) => id).sort();
+  for (const arm of ['v15', 'v16']) {
     for (const repeat of [1, 2]) {
       const batch = evaluation.outputs.filter((row) => row.arm === arm && row.repeat === repeat);
       assert.deepEqual(batch.map((row) => row.case).sort(), cases);

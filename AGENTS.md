@@ -330,19 +330,20 @@ ages. The score-only fallback still applies on top: a level two clear of the
 development's own level starts one. History from before the judge existed reads
 the same way until `/api/admin/judge` backfills it.
 
-**The sentence comes from the newest reading.** Its prefix shows that development’s
-first-coverage age independently of the score’s decay — only when the reading
-re-reports a development covered earlier. A reading that opens a development gets
-no prefix: its age is the update time already printed beside it, and "54 minutes
-ago:" on a new development repeated that. `firstCoverage()` answers null there,
-so every client, native widgets included, drops the prefix without a rebuild.
-Its wording comes from the
+**The sentence comes from the newest reading.** When that reading opened a
+development of its own, the sentence leads with a bold **New:** for two hours
+after it was saved, independently of the score’s decay; any other sentence has
+no prefix. That replaced an age prefix ("31 hours ago:") on re-reports, which
+counted how old the rest was where the reader wanted to see what was new.
+`opensDevelopment()` in `src/preparation.js` decides it from the stored
+judgement — judged, and `development_of` null — so a judge outage is never
+"new". Its wording comes from the
 newest reading, and the two answer different questions: the number is a level,
 and the sentence is what happened. Pairing the median row's sentence with the
 number was an early cut and it read as an app that had stopped. So a story still
 on top in the evening is still named in the evening, with a smaller number
 beside it — never "nothing new". The score’s `since` anchor and the sentence’s
-`explanation_since` timestamp answer separate questions.
+`explanation_new` flag answer separate questions.
 
 `basis` is one of `new` (the newest reading opened or escalated the development
 the number is about, at full value), `routine` (it did, but its story's age
@@ -829,6 +830,12 @@ dropped. The 120/140-character budget and everything before Output are v14's.
 The [record](docs/prompt-evaluations/v15.md) compares v14 and v15 on eight cards
 with fresh Claude generations, not the production research workflow.
 
+**v16 gives the age reserve back to the sentence.** The app's only prefix is now a
+bold "New:" on a new development, five characters, so the body budget rises from
+120 to 135 and the reserve falls from 20 to 5. Everything else, writing guidance
+included, is v15's. The [record](docs/prompt-evaluations/v16.md) compares v15 and
+v16 on the same eight cards: v16 spent the room keeping caveats v15 had cut.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.
@@ -864,8 +871,9 @@ individual tests
 is not kept here: it is wrong again after the next PR, and a stale number in a
 document read as authoritative is worse than no number.
 
-**Sentence age.** The prefix measures first coverage of the sentence’s development,
-not the score’s decay anchor or a verified event date. The 140-character display
-budget includes it; prompt v14 reserves 20 characters for the prefix and asks for
-a body of at most 120. See `docs/story-age.md` for preparation, compatibility and
-verification limits.
+**The “New:” label.** It marks the first coverage of the sentence’s development,
+for two hours from the reading’s `created_at`, not the score’s decay anchor or a
+verified event date. It is bold and otherwise styled as the sentence, on the web,
+in the apps and in both widgets. The 140-character display budget includes it;
+prompt v16 reserves 5 characters for "New: " and asks for a body of at most 135.
+See `docs/story-age.md` for preparation, compatibility and verification limits.
