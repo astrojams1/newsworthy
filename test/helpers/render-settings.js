@@ -43,7 +43,7 @@ function expand(tree) {
 export function renderSettings({ platform, screen = 'index', width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {}, canGoBack = true, busy = false, sourceOverride, listOverride } = {}) {
   // Recorded as plain copies: values built inside the vm context carry that
   // context's prototypes, which strict deep equality would refuse.
-  const calls = { setTheme: [], enable: 0, disable: 0, choose: [], replace: [], back: 0, openSettings: 0, notices: [] };
+  const calls = { setTheme: [], enable: 0, disable: 0, choose: [], replace: [], back: 0, dismissTo: [], openSettings: 0, notices: [] };
   const current = preferences.parsePreferences(stored);
   const theme = themeForLevel(3, dark);
   const mocks = {
@@ -56,7 +56,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
     '@/components/check-icon': { CheckIcon: 'CheckIcon' },
     '@/components/glyph': { Glyph: 'Glyph' },
     'expo-router/head': { __esModule: true, default: 'Head' },
-    'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', Redirect: 'Redirect', useRouter: () => ({ canGoBack: () => canGoBack, back: () => { calls.back += 1; }, replace: href => calls.replace.push(href) }) },
+    'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', Redirect: 'Redirect', useRouter: () => ({ canGoBack: () => canGoBack, back: () => { calls.back += 1; }, replace: href => calls.replace.push(href), dismissTo: href => calls.dismissTo.push(href) }) },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => theme },
     '@/lib/preferences': preferences,

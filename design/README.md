@@ -247,7 +247,11 @@ reading header stays transparent over its gradient.
 Settings rises over the reading as a sheet on iOS and Android (`presentation:
 'modal'`) and is an ordinary page on the web. It has its own stack: an overview
 with no visible title and a single close control (an X, in glass on iOS 26), and
-Appearance and Notifications as pages inside the sheet. Opening Settings no
+Appearance and Notifications as pages inside the sheet. Close goes straight back to the reading
+(`router.dismissTo('/')`) whatever is stacked behind the overview: a back action
+left a second overview in place after a web link to an alerts page redirected to
+it, so the first Close did nothing visible. `test/web-settings.test.js` checks
+this in a real browser. Opening Settings no
 longer pushes a screen beside the reading, so nothing in the reading's header
 morphs into a back button. The overview groups rows under sentence-case section
 titles in the muted ink, level with the row icons. Every overview row has a

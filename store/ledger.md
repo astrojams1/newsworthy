@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T10:39:58+00:00
+Updated: 2026-09-24T11:00:54+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -90,7 +90,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
 | apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
-| apple.settings-transition | in_progress | agent | observed | PR134 Notifications page revised at owner request: one group with the High-score alerts switch and a Threshold row that opens its own page of choices (5 to 10); the explanatory line stays below; the idle on/off status line is removed, leaving only Saving… while a change is in flight. | Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' "Notify me about high readings" wording for the next submission. |
+| apple.settings-transition | in_progress | agent | observed | Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off. | Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission. |
 
 ## Evidence and history
 
@@ -2890,3 +2890,13 @@ PR134 Notifications page revised at owner request: one group with the High-score
 - PR134. design70 checks and preferences tests passed. Not verified on a native build.
 
 Next: Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' "Notify me about high readings" wording for the next submission.
+
+### 296. apple.settings-transition — in_progress
+
+2026-09-24T11:00:54+00:00 · observed · agent
+
+Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off.
+
+- PR134 owner review comment 2026-09-24T10:55Z. npm test295 passed (one existing skip), design70 passed. dismissTo on native not re-verified after the change.
+
+Next: Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission.

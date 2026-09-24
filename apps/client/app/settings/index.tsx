@@ -18,9 +18,11 @@ export default function Settings() {
   const { enabled, threshold } = preferences.notifications;
   const appearance = THEME_CHOICES.find(choice => choice.value === preferences.theme)?.label ?? 'Follow device';
   const notifications = enabled ? `${threshold} or higher` : 'Off';
-  // Closing returns to the reading. Reached with nothing behind it — a reload
-  // on web, a deep link the navigator could not anchor — it replaces instead.
-  const close = () => router.canGoBack() ? router.back() : router.replace('/');
+  // Closing returns to the reading in one step, however Settings was reached.
+  // A back action was not enough: a web link to an alerts page redirects here
+  // and left a second overview behind, so the first Close only popped that.
+  // dismissTo pops to the reading, or replaces with it when none is behind.
+  const close = () => router.dismissTo('/');
   const closeButton = <Pressable testID="settings-close" accessibilityRole="button" accessibilityLabel="Close settings" onPress={close}
     style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center', marginRight: process.env.EXPO_OS === 'web' ? 12 : 0 }}>
     <Glyph name="close" color={theme.ink} size={20} />

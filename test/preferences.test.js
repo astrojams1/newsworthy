@@ -295,9 +295,10 @@ test('Settings closes with an X and no title, back to the reading from wherever 
       assert.deepEqual(nodes(close).filter(n => n.type === 'Glyph').map(n => n.props.name), ['close']);
       assert.equal(options.headerLeft, undefined, 'the sheet has no back button of its own');
       close.props.onPress();
-      // Opened from the reading, closing dismisses the sheet; reached with
-      // nothing behind it, it goes home rather than popping an empty stack.
-      assert.deepEqual([opened.calls.back, opened.calls.replace], canGoBack ? [1, []] : [0, ['/']]);
+      // Straight back to the reading, whatever is stacked behind the overview:
+      // a back action left a redirected web link's second overview in place.
+      // test/web-settings.test.js checks the real navigation in a browser.
+      assert.deepEqual([opened.calls.dismissTo, opened.calls.back, opened.calls.replace], [['/'], 0, []]);
       if (platform === 'ios') {
         const items = options.unstable_headerRightItems();
         assert.equal(items.length, 1);
