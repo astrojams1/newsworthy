@@ -3,26 +3,25 @@
 One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
-**September 24, 2026 update:** App Store Connect correspondence confirms the
-owner's reconsideration reply and Apple's September 23 response upholding
-Guideline 4.2. Build 7 remains rejected. The owner authorized finishing
-notifications and resubmitting a changed build. Do not repeat the old appeal;
-see [the reply record](apple-4.2-reconsideration.md).
+**September 24, 2026 update:** iOS **1.0.0 (21)** was resubmitted after the
+notification changes. Apple reports both the version and submission
+**WAITING_FOR_REVIEW**, with build 21 selected. See the
+[submission receipt](apple-review-build21.json). Apple's September 23 decision
+upholding Guideline 4.2 for build 7 and the owner's earlier appeal are historical;
+do not send that appeal again.
 
-**Build 21:** production iOS **1.0.0 (21)** passed Apple validation and uploaded
-successfully. It is VALID and IN_BETA_TESTING in Release QA, with test notes
-saved and verified. It includes notification-tap routing
-and the corrected privacy manifest. PR127 is merged, with the server's delivery
-receipt and retry fixes deployed. All 292 automated tests and 70 design checks
-passed (one existing automated test skipped). See [build evidence](testflight-21.json).
+Build 21 is VALID and IN_BETA_TESTING in Release QA. Its notification-tap routing,
+privacy manifest and the server's receipt/retry fixes are merged and deployed.
+The production push key is configured in Expo. A labeled test returned both an
+Expo ticket and an APNs receipt with status OK. All 292 automated tests and 70
+design checks passed (one existing automated test skipped).
 
-The app/widget versions, signatures, App Groups, production push entitlement and
-privacy declarations are verified. One iOS device is registered, but a push key
-still needs the pending security confirmation and configuration, followed by a
-physical delivery/tap test. Archive and automated checks do not establish physical
-device behavior. [Owner steps](user-actions.md#current-ios-resubmission-notification-setup-and-device-check)
-separate those two remaining handoffs. Build 21 is ready to install in TestFlight;
-build 19 remains historical evidence.
+Physical iPhone testing through iPhone Mirroring verified installation, launch,
+reading/Settings, retained minimum score 5, and notification registration removal
+and restoration when switched off/on. The app is restored to enabled at score 5.
+The Mac has iPhone notification mirroring disabled, so visual presentation and
+notification tapping were not observed; automated cold/live tap handling passed.
+Provider acceptance is not a visual-delivery claim. See [build evidence](testflight-21.json).
 
 Neither app is publicly released. Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.
@@ -82,7 +81,7 @@ still blocks app creation. See the ledger for current gates and exact next actio
   Apple Business now confirms the W-9 is **Active**; banking remains outstanding. The address-correction request
   has been sent and acknowledged by Apple,
   but the obsolete legal address still needs Apple approval/correction.
-- **Apple binary:** production **build 7** passed Apple validation, uploaded,
+- **Apple binary:** production **build 21** passed Apple validation, uploaded,
   processed `VALID`, and is selected for version 1.0.0. Production and Apple build
   IDs plus hashes are in `release.json`. Earlier builds remain historical evidence.
 - **Apple age rating:** declaration saved and verified through the API. It
@@ -104,10 +103,9 @@ still blocks app creation. See the ledger for current gates and exact next actio
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** September 24 browser readback confirms the owner reply and
-  Apple's September 23 decision upholding **Guideline 4.2**; see
-  [reply status](apple-4.2-reconsideration.md). Live API readback confirms version **REJECTED** and submission
-  **UNRESOLVED_ISSUES**; earlier WAITING_FOR_REVIEW evidence is historical.
+- **Apple review:** build 21 was resubmitted September 24. The version and
+  submission both report **WAITING_FOR_REVIEW**; see the
+  [receipt](apple-review-build21.json). Build 7 rejection/appeal evidence is historical.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.
 
 ## Reproduce the artwork

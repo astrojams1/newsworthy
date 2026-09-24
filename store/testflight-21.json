@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-09-23T23:36:00.667Z",
+  "observedAt": "2026-09-24T00:00:49.454115+00:00",
   "scope": "Notification receipt checks, retry handling, tap routing and privacy manifest",
   "version": "1.0.0",
   "build": "21",
@@ -53,17 +53,18 @@
     "matchesPublishedAppPrivacy": true
   },
   "nativeVerification": {
-    "physicalDevice": "Pending build21 testing; device registration alone is not receipt or tap verification.",
-    "notifications": "Apple and EAS have no push delivery key; prepared production topic key awaits browser security confirmation. No live push test sent.",
+    "physicalDevice": "Physical iPhone via iPhone Mirroring: TestFlight21 installation, app launch, reading and Settings observed; threshold5 retained. Disabling showed saved confirmation and server registrations0; re-enabling showed saved confirmation and registrations1. Original enabled/threshold5 state restored.",
+    "notifications": "Production key configured. Expo ticket and APNs delivery receipt both OK; physical banner and tap not observed. Automated cold/live notification-response tests passed.",
     "widgets": "Signed extension verified; no new physical widget test for this build.",
     "android": "Outside this iOS resubmission.",
-    "remoteDevicePath": "Command-line app inspection is blocked by Developer Mode being off. iPhone Mirroring launched but reported iPhone in Use; the next attempt reported the Mac locked and automatic unlock unavailable. Retry with the Mac unlocked and iPhone locked."
+    "remoteDevicePath": "iPhone Mirroring connected after Resume. Command-line access was unnecessary. Mac notification mirroring was inspected and left disabled."
   },
   "appReview": {
-    "selectedBuild": "7",
-    "state": "REJECTED",
-    "resubmitted": false,
-    "reason": "Apple upheld Guideline4.2 in its September23 response; replacement notification delivery needs completion."
+    "selectedBuild": "21",
+    "state": "WAITING_FOR_REVIEW",
+    "resubmitted": true,
+    "submittedDate": "2026-09-23T23:59:45.868Z",
+    "evidence": "store/apple-review-build21.json"
   },
   "production": {
     "commit": "3a2f0e0959543fcacc878391b6dba761ef2879cd",
@@ -86,6 +87,28 @@
     "groupName": "Release QA",
     "groupAttached": true,
     "notesVerified": true,
-    "notes": "Notification improvements:\n- Tapping a notification opens and refreshes the reading.\n- Delivery failures are checked and explicitly rejected notifications can retry.\n- Privacy declarations now include optional notification registration and preferences.\n\nPlease check Settings, appearance changes, enabling/disabling notifications and the minimum score. Push delivery is pending Apple push-key configuration; permission and registration alone do not verify delivery. We will send a clearly labeled delivery test after the key is configured. Confirm that it appears outside the app and opens the reading when tapped.\n\nNo login is required. The existing reading, sharing and Home Screen widgets remain available."
+    "notesSummary": "Push credentials configured; Expo/APNs acceptance and physical registration toggling verified. Visual presentation and opening remain unobserved; current TestFlight notes explain that limit."
+  },
+  "pushCredentials": {
+    "status": "CONFIGURED",
+    "appleKeyId": "M46ZV25ZUP",
+    "environment": "production",
+    "topics": [
+      "com.astrojams.newsworthy"
+    ],
+    "assignedToExpoApp": true,
+    "keyMaterialInRepository": false,
+    "ownerApproval": "Explicit approval in task before creation and storage with Expo"
+  },
+  "notificationTest": {
+    "sentAt": null,
+    "timeNote": "Exact send timestamp was not retained; test and receipt were observed during the September24 release session.",
+    "ticketId": "01a0d0af-ea03-7498-a1aa-52abfcedbc5d",
+    "expoTicketStatus": "ok",
+    "apnsReceiptStatus": "ok",
+    "method": "Clearly labeled test using Expo push API; no production news reading changed",
+    "visualPresentation": "NOT_OBSERVED",
+    "notificationTap": "NOT_OBSERVED",
+    "limitation": "Mac iPhone notification mirroring is disabled; iPhone Mirroring does not expose phone Notification Center through the attempted gesture. OS notification preferences were not changed."
   }
 }

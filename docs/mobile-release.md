@@ -206,13 +206,15 @@ access. Internal testing alone does not meet this requirement. See
   only lets Expo enforce that this server is the one sending.
 - iOS build 21 adds notification-tap routing and a corrected privacy manifest
   to the Settings fixes in build 19. Its signed app and provisioning profile
-  include production push and the widget App Group. On September 24, one iOS
-  registration was observed, but Apple and EAS had no push delivery key.
-  A production Newsworthy-specific key is prepared, pending browser security
-  confirmation. Delivery, opening a real notification, foreground behavior and
-  the Android icon remain unverified on physical devices. See
+  include production push and the widget App Group. The production-only,
+  Newsworthy-specific APNs key is configured in Expo. On September 24, a labeled
+  test returned Expo ticket OK and APNs receipt OK. Physical iPhone launch and
+  notification registration removal/restoration were verified. Visual notification
+  presentation and tapping remain unobserved because Mac notification mirroring
+  is disabled; cold/live tap handling has automated coverage. Android delivery
+  remains outside this iOS check. See
   [`store/testflight-21.json`](../store/testflight-21.json). App Privacy's four
-  published categories now match the manifest; see `store/disclosures.md`.
+  published categories match the manifest; see `store/disclosures.md`.
 
 - The server persists accepted Expo ticket IDs and checks delivery receipts on the
   existing 15-minute scheduler, even when a new rating is skipped. Explicit

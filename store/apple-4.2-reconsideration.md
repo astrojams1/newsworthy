@@ -12,9 +12,10 @@ This supersedes the September 17 Waiting for Review observation.
 **Reply and Apple's response verified in App Store Connect on September 24.**
 The owner sent the reply below on September 21. Apple upheld Guideline 4.2 in
 its September 23 response and requested a changed app. Do not send a duplicate
-appeal. Version 1.0.0 remains **REJECTED** and the submission has
-**UNRESOLVED_ISSUES**. The owner authorized finishing notifications and
-resubmitting; [the ledger](ledger.md) tracks that replacement separately.
+appeal. That rejection is superseded by the September 24 resubmission of
+**build 21**, which adds optional notifications. Both the version and submission
+now report **WAITING_FOR_REVIEW**. See [the receipt](apple-review-build21.json)
+and [the ledger](ledger.md).
 
 The statement about dozens of users is supplied by the owner, not independently
 verified research. Native widget statements concern the reviewed build7 and its

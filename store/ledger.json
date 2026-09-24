@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-23T23:37:29+00:00",
+  "updated_at": "2026-09-24T00:06:23+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -125,12 +125,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed.",
+      "summary": "EnglishUS description, subtitle, promotional text, keywords and URLs saved and read back. Review Notes describe optional notifications, setup, widgets, services, regions and historical build7 video; contact phone retained privately.",
       "evidence": [
-        "store/apple-gallery-verification.json; capture provenance in store/source/iphone-6.9 and ipad-13"
+        "store/listing.json; store/scripts/apple.mjs metadata and review-notes readback"
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T07:50:27+00:00"
+      "updated_at": "2026-09-24T00:02:17+00:00"
     },
     "apple.build": {
       "state": "done",
@@ -158,12 +158,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 21 passed Apple validation and upload, then processed VALID as 6ce55c01-2cbf-4d35-b29f-b010df9502cb. App Review still selects rejected build 7; upload does not establish resubmission.",
+      "summary": "Build 21 passed Apple validation/upload and processed VALID. It is now selected in the resubmitted review; both version and submission are WAITING_FOR_REVIEW.",
       "evidence": [
-        "store/testflight-21.json"
+        "store/testflight-21.json; store/apple-review-build21.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-23T23:36:30+00:00"
+      "updated_at": "2026-09-24T00:06:23+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -177,26 +177,26 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "App Review correspondence read back: the owner reconsideration was received, and Apple upheld Guideline 4.2 on September 23. Version remains REJECTED; build 7 is still selected. User authorized finishing notifications and resubmitting a changed build.",
+      "summary": "Build21 resubmitted with updated listing and review notes addressing4.2. Existing rejected item resolved then existing submission submitted. Apple independently reports version and submission WAITING_FOR_REVIEW; selected build21 verified.",
       "evidence": [
-        "September 24 signed-in App Store Connect correspondence; store/testflight-21.json"
+        "store/apple-review-build21.json"
       ],
-      "next_action": "Complete push-key configuration and physical delivery/tap verification, save revised review notes and listing, select valid build 21, then resubmit and verify Waiting for Review.",
-      "updated_at": "2026-09-23T23:29:07+00:00"
+      "next_action": "Await Apple review; preserve this submission. Verify paid-sale readiness/public availability separately after approval.",
+      "updated_at": "2026-09-24T00:02:17+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Build7 is Waiting for Review after response/video resubmission. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates.",
+      "summary": "Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates.",
       "evidence": [
-        "Both App Store version and review-submission API readbacks WAITING_FOR_REVIEW September17. Business still requests a bank account."
+        "store/apple-review-build21.json; store/user-actions.md"
       ],
-      "next_action": "Obtain review approval, complete paid-sale account readiness, and verify public paid availability.",
-      "updated_at": "2026-09-17T04:35:00+00:00"
+      "next_action": "Obtain review approval, verify paid-sale account readiness, and verify public paid availability.",
+      "updated_at": "2026-09-24T00:06:23+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -499,12 +499,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 21 is VALID and IN_BETA_TESTING in existing Release QA. Group association and beta notes read back successfully. Notes identify pending push-key configuration and request physical delivery/tap checks; no new invitation is required.",
+      "summary": "Build 21 is VALID and IN_BETA_TESTING in Release QA. Updated notes document configured push credentials, provider acceptance and physical app/registration checks, with visual notification/tap unobserved. No new invitation is required.",
       "evidence": [
         "store/testflight-21.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-23T23:36:30+00:00"
+      "updated_at": "2026-09-24T00:06:23+00:00"
     },
     "google.large-text-build": {
       "state": "done",
@@ -697,12 +697,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission.",
+      "summary": "Independent Apple API readbacks confirm version and existing review submission WAITING_FOR_REVIEW, with build 21 selected. The earlier rejected/unresolved state is historical.",
       "evidence": [
-        "GET appStoreVersions/267c6f52-d22d-4cb0-bb4c-d22f280b4499 and reviewSubmissions/4f28761f-3096-4f0d-aa37-df83332f818f returned HTTP200; store/release.json"
+        "store/apple-review-build21.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-21T10:07:25+00:00"
+      "updated_at": "2026-09-24T00:06:23+00:00"
     },
     "story-age.native": {
       "state": "todo",
@@ -848,15 +848,15 @@
       "updated_at": "2026-09-22T22:47:12+00:00"
     },
     "apple.notifications": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Build 21 is in TestFlight and the server fixes are live. Push-key registration awaits action-time security confirmation; one iOS registration exists but no real push test has been sent. iPhone Mirroring first reported the phone in use, then computer control reported the Mac locked and automatic unlock unavailable.",
+      "summary": "Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored.",
       "evidence": [
-        "store/testflight-21.json; store/user-actions.md"
+        "store/testflight-21.json"
       ],
-      "next_action": "Confirm the prepared production Newsworthy push key and unlock the Mac. Agent configures Expo and tests through iPhone Mirroring with the phone locked, or owner confirms labeled test receipt/opening.",
-      "updated_at": "2026-09-23T23:37:29+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-24T00:02:17+00:00"
     }
   },
   "events": [
@@ -5047,6 +5047,134 @@
         ],
         "next_action": "Confirm the prepared production Newsworthy push key and unlock the Mac. Agent configures Expo and tests through iPhone Mirroring with the phone locked, or owner confirms labeled test receipt/opening.",
         "updated_at": "2026-09-23T23:37:29+00:00"
+      }
+    },
+    {
+      "sequence": 262,
+      "at": "2026-09-23T23:47:45+00:00",
+      "gate": "apple.notifications",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner confirmed creating and storing the Newsworthy production push key with Expo. Apple key M46ZV25ZUP created for production, topic com.astrojams.newsworthy only; EAS assigned it to Newsworthy. Key material is secured outside Git. iPhone Mirroring now works and build 21 installation is underway.",
+        "evidence": [
+          "Apple Developer registration and EAS credential assignment readback; physical TestFlight shows build 21 update"
+        ],
+        "next_action": "Verify build 21 installation, send labeled push test, confirm provider receipt and physical notification opening, then update metadata and resubmit.",
+        "updated_at": "2026-09-23T23:47:45+00:00"
+      }
+    },
+    {
+      "sequence": 263,
+      "at": "2026-09-24T00:02:17+00:00",
+      "gate": "apple.notifications",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored.",
+        "evidence": [
+          "store/testflight-21.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T00:02:17+00:00"
+      }
+    },
+    {
+      "sequence": 264,
+      "at": "2026-09-24T00:02:17+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build21 resubmitted with updated listing and review notes addressing4.2. Existing rejected item resolved then existing submission submitted. Apple independently reports version and submission WAITING_FOR_REVIEW; selected build21 verified.",
+        "evidence": [
+          "store/apple-review-build21.json"
+        ],
+        "next_action": "Await Apple review; preserve this submission. Verify paid-sale readiness/public availability separately after approval.",
+        "updated_at": "2026-09-24T00:02:17+00:00"
+      }
+    },
+    {
+      "sequence": 265,
+      "at": "2026-09-24T00:02:17+00:00",
+      "gate": "apple.listing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EnglishUS description, subtitle, promotional text, keywords and URLs saved and read back. Review Notes describe optional notifications, setup, widgets, services, regions and historical build7 video; contact phone retained privately.",
+        "evidence": [
+          "store/listing.json; store/scripts/apple.mjs metadata and review-notes readback"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T00:02:17+00:00"
+      }
+    },
+    {
+      "sequence": 266,
+      "at": "2026-09-24T00:06:23+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 21 passed Apple validation/upload and processed VALID. It is now selected in the resubmitted review; both version and submission are WAITING_FOR_REVIEW.",
+        "evidence": [
+          "store/testflight-21.json; store/apple-review-build21.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T00:06:23+00:00"
+      }
+    },
+    {
+      "sequence": 267,
+      "at": "2026-09-24T00:06:23+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 21 is VALID and IN_BETA_TESTING in Release QA. Updated notes document configured push credentials, provider acceptance and physical app/registration checks, with visual notification/tap unobserved. No new invitation is required.",
+        "evidence": [
+          "store/testflight-21.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T00:06:23+00:00"
+      }
+    },
+    {
+      "sequence": 268,
+      "at": "2026-09-24T00:06:23+00:00",
+      "gate": "apple.review-state",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Independent Apple API readbacks confirm version and existing review submission WAITING_FOR_REVIEW, with build 21 selected. The earlier rejected/unresolved state is historical.",
+        "evidence": [
+          "store/apple-review-build21.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T00:06:23+00:00"
+      }
+    },
+    {
+      "sequence": 269,
+      "at": "2026-09-24T00:06:23+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates.",
+        "evidence": [
+          "store/apple-review-build21.json; store/user-actions.md"
+        ],
+        "next_action": "Obtain review approval, verify paid-sale account readiness, and verify public paid availability.",
+        "updated_at": "2026-09-24T00:06:23+00:00"
       }
     }
   ],
