@@ -1,0 +1,314 @@
+{
+ "model": "Claude Opus (Claude Code subagent, fresh context per run, no tools used beyond reading the task file, no web search). Substitute for the production rater and its research workflow.",
+ "live_reading_motivating_change": "The 10-year Treasury yield hit 5.12%, a 19-year high, raising loan costs as October Fed hike odds rose to 71%.",
+ "design": {
+  "scope": "Writing-only offline fixtures, not independently verified news. Seven cases reused from v14.json plus one reconstructed from the live 2026-09-24 reading.",
+  "cases": [
+   {
+    "id": "sanctions",
+    "notes": [
+     "Trump signed the Sanctioning Russia and Iran Act.",
+     "The law authorizes tariffs of up to 100 percent on the largest buyers of Russian oil.",
+     "China and India are the chief buyers affected.",
+     "Authorization does not mean these tariffs have already been imposed."
+    ]
+   },
+   {
+    "id": "rates",
+    "notes": [
+     "The Federal Reserve raised its benchmark interest rate by a quarter of a percentage point to 3.75%-4%.",
+     "It was the first increase since 2023.",
+     "The Fed signaled another increase this year.",
+     "Borrowing costs rose.",
+     "Stocks fell and ten-year Treasury yields exceeded 5%."
+    ]
+   },
+   {
+    "id": "tanker",
+    "notes": [
+     "Iran struck another tanker in the Strait of Hormuz.",
+     "US personnel were injured.",
+     "Separately, Trump was considering resuming attacks on Iran.",
+     "Separately, UN experts alleged US war crimes.",
+     "Fuel prices were rising.",
+     "No evidence in these notes establishes that this particular attack caused the price rise."
+    ]
+   },
+   {
+    "id": "greenland",
+    "notes": [
+     "The US and Denmark agreed to expand the US military presence in Greenland.",
+     "The notes describe changed Arctic basing arrangements.",
+     "They do not specify the number of troops or bases, territory transfers, or a change in sovereignty."
+    ]
+   },
+   {
+    "id": "oil",
+    "notes": [
+     "Saudi Arabia said it would restore half the capacity of its damaged East-West oil pipeline within days.",
+     "Repairs are not yet complete.",
+     "Brent crude oil fell for a third trading session to $102 a barrel.",
+     "Supply concerns eased as repairs progressed.",
+     "No evidence in these notes establishes that retail petrol prices have already fallen."
+    ]
+   },
+   {
+    "id": "poland",
+    "notes": [
+     "Poland says Russia plans deniable strikes on NATO territory.",
+     "The notes also contain the incomplete phrase \"and a US base follows\".",
+     "They provide no clear information about the US base.",
+     "The alleged attacks have not happened in these notes."
+    ]
+   },
+   {
+    "id": "riyadh",
+    "notes": [
+     "Saudi Arabia said its air defenses shot down a Houthi ballistic missile aimed at Riyadh.",
+     "The source sentence calls it the first attack on the capital since the Iran war widened.",
+     "The interception is attributed to Saudi Arabia, not independently confirmed in these notes."
+    ]
+   },
+   {
+    "id": "yields",
+    "notes": [
+     "The 10-year US Treasury yield rose to 5.12%, its highest level in 19 years.",
+     "Higher Treasury yields push up mortgage and other loan rates.",
+     "Futures markets put the chance of a Federal Reserve rate increase in October at 71%.",
+     "The Fed has not decided; its next meeting is in October."
+    ]
+   }
+  ],
+  "wrapper": "You are standing in for the Newsworthy rater in a writing test. Below, between the PROMPT markers, is the exact rating prompt. Do not do any web search or read any files. For each case, treat its notes as the complete result of your research and write the explanation sentence that prompt asks for. Scoring is not under test; give only the sentence.",
+  "arms": {
+   "v14": "Summary\n\nRate how much the current news warrants attention right now, 1-10.\n\nSources\n\nCurrent top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.\n\nMarkets confirm late and are shut two thirds of the time. Their silence is not evidence against an event.\n\nScale\n\n1. Nothing new; skip the news.\n2. Ongoing story; nothing changed today.\n3. Significant elsewhere; changes nothing for you.\n4. Touches you indirectly; no action yet.\n5. Changes a decision you'll make soon.\n6. Act today; plans need adjusting.\n7. Major shock breaking right now.\n8. Severe disruption, broad and immediate.\n9. Systemic crisis; check news constantly.\n10. Extreme global threat; drop everything.\n\nExamples\n\n2 — Standing war continues, ceasefire holding, nothing new.\n3 — Foreign flood kills hundreds; no domestic effect.\n3 — Corporate settlement, billions, no user action needed.\n3 — Trade dispute escalates by one more round.\n\nOutput\n\nReply with a single JSON object and nothing else — no prose, no markdown fences:\n{\"score\": <integer 1-10>, \"explanation\": \"<one sentence, at most 120 characters including spaces and punctuation>\"}\n\nFull display: at most 140 characters including spaces and punctuation, reserving 20 for an app-supplied age prefix. Submit no prefix. Report one development independently of its score: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations. Keep useful specifics. Cut secondary details, not grammar. No em dashes, semicolons, side stories, jargon, padding, rating justification or advice. Preserve facts, attribution and uncertainty when revising after the history match.",
+   "v15": "Summary\n\nRate how much the current news warrants attention right now, 1-10.\n\nSources\n\nCurrent top news. Liquid prediction markets — Polymarket, Kalshi, Metaculus — read for one-day moves rather than standing levels, since a long-running risk priced at 90% is not news and 20% to 60% in a day is. The Hacker News front page for technology the wires under-report. At most two searches on markets and one on Hacker News; the rest on news. Anything unavailable is skipped without comment.\n\nMarkets confirm late and are shut two thirds of the time. Their silence is not evidence against an event.\n\nScale\n\n1. Nothing new; skip the news.\n2. Ongoing story; nothing changed today.\n3. Significant elsewhere; changes nothing for you.\n4. Touches you indirectly; no action yet.\n5. Changes a decision you'll make soon.\n6. Act today; plans need adjusting.\n7. Major shock breaking right now.\n8. Severe disruption, broad and immediate.\n9. Systemic crisis; check news constantly.\n10. Extreme global threat; drop everything.\n\nExamples\n\n2 — Standing war continues, ceasefire holding, nothing new.\n3 — Foreign flood kills hundreds; no domestic effect.\n3 — Corporate settlement, billions, no user action needed.\n3 — Trade dispute escalates by one more round.\n\nOutput\n\nReply with a single JSON object and nothing else — no prose, no markdown fences:\n{\"score\": <integer 1-10>, \"explanation\": \"<one sentence, at most 120 characters including spaces and punctuation>\"}\n\nFull display: at most 140 characters including spaces and punctuation, reserving 20 for an app-supplied age prefix. Submit no prefix. Write calmly for a reader with no background: one development, who did what and what it means for daily life. At most one number, in plain terms. Explain or drop jargon, market figures and uncommon acronyms. No em dashes, semicolons, dramatic verbs, side stories, rating justification or advice. Preserve facts, attribution and uncertainty when revising after the history match."
+  }
+ },
+ "outputs": [
+  {
+   "arm": "v14",
+   "repeat": 1,
+   "case": "sanctions",
+   "explanation": "Trump signed a law authorizing tariffs of up to 100% on the largest buyers of Russian oil, chiefly China and India.",
+   "characters": 115
+  },
+  {
+   "arm": "v14",
+   "repeat": 1,
+   "case": "rates",
+   "explanation": "The Fed raised rates a quarter point to 3.75%-4%, its first hike since 2023, and signaled another this year.",
+   "characters": 108
+  },
+  {
+   "arm": "v14",
+   "repeat": 1,
+   "case": "tanker",
+   "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+   "characters": 74
+  },
+  {
+   "arm": "v14",
+   "repeat": 1,
+   "case": "greenland",
+   "explanation": "The US and Denmark agreed to expand the US military presence in Greenland, changing Arctic basing arrangements.",
+   "characters": 111
+  },
+  {
+   "arm": "v14",
+   "repeat": 1,
+   "case": "oil",
+   "explanation": "Saudi Arabia said it would restore half its damaged East-West pipeline's capacity within days, and Brent fell to $102.",
+   "characters": 118
+  },
+  {
+   "arm": "v14",
+   "repeat": 1,
+   "case": "poland",
+   "explanation": "Poland says Russia plans deniable strikes on NATO territory.",
+   "characters": 60
+  },
+  {
+   "arm": "v14",
+   "repeat": 1,
+   "case": "riyadh",
+   "explanation": "Saudi Arabia said it downed a Houthi missile aimed at Riyadh, the first on the capital since the Iran war widened.",
+   "characters": 114
+  },
+  {
+   "arm": "v14",
+   "repeat": 1,
+   "case": "yields",
+   "explanation": "The 10-year Treasury yield rose to 5.12%, a 19-year high, pushing up mortgage and other loan rates.",
+   "characters": 99
+  },
+  {
+   "arm": "v14",
+   "repeat": 2,
+   "case": "sanctions",
+   "explanation": "Trump signed a law authorizing tariffs of up to 100% on the largest buyers of Russian oil, chiefly China and India.",
+   "characters": 115
+  },
+  {
+   "arm": "v14",
+   "repeat": 2,
+   "case": "rates",
+   "explanation": "The Fed raised rates a quarter point to 3.75%-4%, its first hike since 2023, and signaled another increase this year.",
+   "characters": 117
+  },
+  {
+   "arm": "v14",
+   "repeat": 2,
+   "case": "tanker",
+   "explanation": "Iran struck another tanker in the Strait of Hormuz, injuring US personnel.",
+   "characters": 74
+  },
+  {
+   "arm": "v14",
+   "repeat": 2,
+   "case": "greenland",
+   "explanation": "The US and Denmark agreed to expand the US military presence in Greenland, changing Arctic basing arrangements.",
+   "characters": 111
+  },
+  {
+   "arm": "v14",
+   "repeat": 2,
+   "case": "oil",
+   "explanation": "Saudi Arabia said half its damaged East-West oil pipeline's capacity will return within days, and Brent fell to $102.",
+   "characters": 117
+  },
+  {
+   "arm": "v14",
+   "repeat": 2,
+   "case": "poland",
+   "explanation": "Poland says Russia is planning deniable strikes on NATO territory.",
+   "characters": 66
+  },
+  {
+   "arm": "v14",
+   "repeat": 2,
+   "case": "riyadh",
+   "explanation": "Saudi Arabia said it downed a Houthi missile aimed at Riyadh, the capital's first attack since the Iran war widened.",
+   "characters": 116
+  },
+  {
+   "arm": "v14",
+   "repeat": 2,
+   "case": "yields",
+   "explanation": "The 10-year US Treasury yield rose to 5.12%, a 19-year high, pushing up mortgage and other loan rates.",
+   "characters": 102
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "sanctions",
+   "explanation": "Trump signed a law allowing steep tariffs on big buyers of Russian oil like China and India, though none apply yet.",
+   "characters": 115
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "rates",
+   "explanation": "The Federal Reserve raised interest rates for the first time since 2023 and signaled another, raising borrowing costs.",
+   "characters": 118
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "tanker",
+   "explanation": "Iran struck another tanker in the Strait of Hormuz, a key oil shipping route, injuring US personnel.",
+   "characters": 100
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "greenland",
+   "explanation": "The US and Denmark agreed to expand the US military presence in Greenland, though the scale was not specified.",
+   "characters": 110
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "oil",
+   "explanation": "Oil prices fell as Saudi Arabia said repairs would restore half of a damaged pipeline's capacity within days.",
+   "characters": 109
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "poland",
+   "explanation": "Poland says Russia is planning attacks on NATO countries that Moscow could deny, though none have happened.",
+   "characters": 107
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "riyadh",
+   "explanation": "Saudi Arabia says it shot down a Houthi missile aimed at Riyadh, the capital's first attack since the Iran war widened.",
+   "characters": 119
+  },
+  {
+   "arm": "v15",
+   "repeat": 1,
+   "case": "yields",
+   "explanation": "US government borrowing costs hit a 19-year high, lifting mortgage and loan rates as markets bet on a Fed rate rise.",
+   "characters": 116
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "sanctions",
+   "explanation": "Trump signed a law allowing steep tariffs on China, India and other big Russian oil buyers, but none are in effect yet.",
+   "characters": 119
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "rates",
+   "explanation": "The Federal Reserve raised interest rates for the first time since 2023, making loans costlier, and hinted at more.",
+   "characters": 115
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "tanker",
+   "explanation": "Iran struck another tanker in the Strait of Hormuz, a key shipping route for oil, and US personnel were injured.",
+   "characters": 112
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "greenland",
+   "explanation": "The US and Denmark agreed to expand the US military presence in Greenland, changing basing arrangements in the Arctic.",
+   "characters": 118
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "oil",
+   "explanation": "Oil prices fell for a third day as Saudi Arabia said it would restore half of a damaged pipeline's capacity within days.",
+   "characters": 120
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "poland",
+   "explanation": "Poland says Russia is planning attacks on NATO countries that it could deny, though none have happened yet.",
+   "characters": 107
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "riyadh",
+   "explanation": "Saudi Arabia says it shot down a Houthi missile aimed at Riyadh, the first on the capital since the Iran war widened.",
+   "characters": 117
+  },
+  {
+   "arm": "v15",
+   "repeat": 2,
+   "case": "yields",
+   "explanation": "The US government's borrowing costs hit their highest level in 19 years, pushing up mortgage and other loan rates.",
+   "characters": 114
+  }
+ ]
+}
