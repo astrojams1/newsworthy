@@ -34,7 +34,8 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
 // The settings sheet's own stack, rendered the same way.
 export function renderSettingsLayout({ platform = 'ios', dark = false } = {}) {
   const theme = themeForLevel(3, dark);
-  const mocks = { 'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }) }, '@/lib/theme': { useTheme: () => theme } };
+  const mocks = { 'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }) }, '@/lib/theme': { useTheme: () => theme },
+    'expo-router/react-navigation': { HeaderBackButton: 'HeaderBackButton' }, '@/components/back-icon': { BackIcon: 'BackIcon' } };
   const exports = {};
   const compiled = ts.transpileModule(readFileSync(new URL('../../apps/client/app/settings/_layout.tsx', import.meta.url), 'utf8'),
     { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;

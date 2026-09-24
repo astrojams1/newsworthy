@@ -1,5 +1,21 @@
 import { Stack } from 'expo-router';
+import { HeaderBackButton } from 'expo-router/react-navigation';
 import { useTheme } from '@/lib/theme';
+import { BackIcon } from '@/components/back-icon';
+
+// On the web the navigator tints its back arrow through an SVG filter whose id
+// never changes, and a browser can keep painting the arrow in the colour it had
+// when the page opened: choosing Dark on Appearance left a dark arrow on the
+// dark header. The app's own arrow carries its colour in the image itself, as
+// the check and gear icons do, so a new theme is a new image. Native headers
+// tint their own arrow and keep it.
+function webBackButton(color: string) {
+  return process.env.EXPO_OS === 'web'
+    ? { headerLeft: (props: React.ComponentProps<typeof HeaderBackButton> & { canGoBack?: boolean }) => props.canGoBack
+      ? <HeaderBackButton {...props} backImage={() => <BackIcon color={color} />} />
+      : null }
+    : {};
+}
 
 // Settings is its own stack inside the sheet, so Appearance and Notifications
 // open within it rather than over the reading. A reload or shared link on a
@@ -9,7 +25,7 @@ export const unstable_settings = { initialRouteName: 'index' };
 export default function SettingsLayout() {
   const theme = useTheme();
   return <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent, headerShadowVisible: false,
-    headerTitleStyle: { color: theme.ink }, headerBackButtonDisplayMode: 'minimal', contentStyle: { backgroundColor: theme.tinted } }}>
+    headerTitleStyle: { color: theme.ink }, headerBackButtonDisplayMode: 'minimal', contentStyle: { backgroundColor: theme.tinted }, ...webBackButton(theme.accent) }}>
     {/* The overview has no visible title: the sheet it sits in and its rows say
         what it is. Its only way out is its X, not a back arrow inherited from
         the reading behind it. */}

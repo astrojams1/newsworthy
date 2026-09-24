@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T12:12:26+00:00
+Updated: 2026-09-24T15:26:01+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -91,6 +91,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
 | apple.settings-transition | in_progress | agent | observed | Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off. | Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission. |
+| web.settings-back-arrow | waiting_user | user | observed | Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged. | Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows. |
 
 ## Evidence and history
 
@@ -2910,3 +2911,13 @@ PR137 replaces the story-age prefix with a bold "New:" on a sentence that opened
 - PR137; store/story-age-verification.json; store/source/story-age/web-new-label.png; npm test 297 passed (Swift native test skipped without xcrun), design 71 passed.
 
 Next: Build replacement native packages and verify on both widget sizes, light and dark, score 10 and enlarged text: bold "New:" on a new development, none on a re-report, and the label dropping at two hours (up to 30 minutes later on Android). Compile the Swift native test with xcrun.
+
+### 298. web.settings-back-arrow — waiting_user
+
+2026-09-24T15:26:01+00:00 · observed · user
+
+Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged.
+
+- test/web-settings.test.js drives /settings/appearance in Chromium through Dark, Light, Dark and asserts the arrow's own stroke follows the theme with no fixed-id tint filter; it fails on the old header. test/surface-design.test.js pins the web headerLeft. Headless Chromium repainted the old arrow correctly in screenshots, so the stale paint itself was not reproduced here.
+
+Next: Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows.
