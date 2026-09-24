@@ -70,7 +70,7 @@ still blocks app creation. See the ledger for current gates and exact next actio
 
 | File or folder | Purpose |
 |---|---|
-| [ledger.md](ledger.md) / [ledger.json](ledger.json) | Canonical resumable gates, evidence and event history |
+| [ledger.md](ledger.md) / [ledger.json](ledger.json) | Canonical resumable gates, evidence and event history. Change it only with `npm run ledger -- record …` ([scripts/ledger.mjs](scripts/ledger.mjs)); the Markdown is generated and a test fails if it drifts |
 | [listing.json](listing.json) | Canonical English copy, URLs, review notes, and US$1 paid-download target |
 | [assets/](assets/) | Upload-ready PNGs and dimension/platform manifest |
 | [source/](source/) | Original native captures and editable SVG layouts |

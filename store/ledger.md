@@ -1,12 +1,12 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T11:00:54+00:00
+Updated: 2026-09-24T12:12:26+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
 Objective: Release iOS and Android publicly as a one-time US$1 paid download with local equivalents, preserving the web app.
 
-Generated from the adjacent JSON ledger. Update through ledger.py, not this view.
+Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs, not this view.
 
 | Gate | State | Owner | Evidence basis | Result | Next action |
 |---|---|---|---|---|---|
@@ -73,7 +73,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 | apple.review-state | done | agent | observed | Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical. | — |
-| story-age.native | todo | agent | observed | Story-age source adds local age formatting to Expo and both widgets; replacement native package and visual parity remain unverified. | Build replacement native packages and verify both widget sizes, themes, score 10, enlarged text, resizing and offline age transitions. |
+| story-age.native | todo | agent | observed | PR137 replaces the story-age prefix with a bold "New:" on a sentence that opened its own development, for two hours after its reading was saved, in the app, the iOS widget (bold Text, timeline entry at expiry) and the Android widget (bold StyleSpan, 30-minute redraw). Prompt v16 raises the body budget to 135. Web export verified in Chromium; the Swift and Android widget sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown the label. | Build replacement native packages and verify on both widget sizes, light and dark, score 10 and enlarged text: bold "New:" on a new development, none on a re-report, and the label dropping at two hours (up to 30 minutes later on Android). Compile the Swift native test with xcrun. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
 | apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
@@ -2900,3 +2900,13 @@ Owner review of PR134 at 9790b65 found Close needed two clicks after a redirecte
 - PR134 owner review comment 2026-09-24T10:55Z. npm test295 passed (one existing skip), design70 passed. dismissTo on native not re-verified after the change.
 
 Next: Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission.
+
+### 297. story-age.native — todo
+
+2026-09-24T12:12:26+00:00 · observed · agent
+
+PR137 replaces the story-age prefix with a bold "New:" on a sentence that opened its own development, for two hours after its reading was saved, in the app, the iOS widget (bold Text, timeline entry at expiry) and the Android widget (bold StyleSpan, 30-minute redraw). Prompt v16 raises the body budget to 135. Web export verified in Chromium; the Swift and Android widget sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown the label.
+
+- PR137; store/story-age-verification.json; store/source/story-age/web-new-label.png; npm test 297 passed (Swift native test skipped without xcrun), design 71 passed.
+
+Next: Build replacement native packages and verify on both widget sizes, light and dark, score 10 and enlarged text: bold "New:" on a new development, none on a re-report, and the label dropping at two hours (up to 30 minutes later on Android). Compile the Swift native test with xcrun.

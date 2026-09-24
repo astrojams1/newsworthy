@@ -43,7 +43,11 @@ release status. Calm presentation must not change the rating calibration.
   the reported defect. Follow `design/surfaces.json` and `design/README.md` across
   web, iOS, Android and both widgets. Passing builds, shared palette generation,
   or rendered-prop tests alone do not establish native visual parity; record
-  actual native verification and any untested states in the release ledger.
+  actual native verification and any untested states in the release ledger
+  with `npm run ledger -- record --gate <id> --summary … [--state …]
+  [--evidence …] [--next …]` (`store/scripts/ledger.mjs`). It updates
+  `store/ledger.json` and regenerates `store/ledger.md`; never edit the
+  Markdown by hand.
 - Follow `PROMPT-RULES.md`; never edit a published rating prompt in place or
   alter the scale to fit marketing copy. For prompt changes, use the repository
   skill at `.agents/skills/newsworthy-prompt-update/SKILL.md`.
