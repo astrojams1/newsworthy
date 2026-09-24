@@ -178,19 +178,20 @@ async function readJsonBody(req, limitBytes = 8_192) {
 }
 
 /**
- * A route the Expo export wrote as a page — `settings.html` for `/settings` —
- * is reached two ways: the app navigates to it client-side, which never asks
- * the server, and a reload or a shared link asks the server for `/settings`
- * by name. The first cut served files by exact name only, so the gear worked
- * and a reload answered 404. An extensionless path that names no file is
- * tried as its `.html` page before giving up.
+ * A route the Expo export wrote as a page — `settings/appearance.html` for
+ * `/settings/appearance` — is reached two ways: the app navigates to it
+ * client-side, which never asks the server, and a reload or a shared link asks
+ * the server for the path by name. The first cut served files by exact name
+ * only, so the gear worked and a reload answered 404. An extensionless path
+ * that names no file is tried as its `.html` page, then as a directory's
+ * `index.html` — a route group's own page, `/settings`, is exported there.
  */
 async function serveStatic(res, name) {
   const safe = normalize(name).replace(/^(\.\.[/\\])+/, '');
   const path = join(PUBLIC_DIR, safe);
   if (!path.startsWith(PUBLIC_DIR)) return json(res, 403, { error: 'forbidden' });
   const extensionless = !safe.slice(safe.lastIndexOf('/') + 1).includes('.');
-  for (const candidate of extensionless ? [path, `${path}.html`] : [path]) {
+  for (const candidate of extensionless ? [path, `${path}.html`, join(path, 'index.html')] : [path]) {
     try {
       const body = await readFile(candidate);
       const ext = candidate.slice(candidate.lastIndexOf('.'));

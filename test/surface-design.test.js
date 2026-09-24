@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { checkWidgetDesign, widgetSources, contract } from './helpers/widget-contract.js';
 import { renderReading, renderShareIcon, nodes } from './helpers/render-reading.js';
 import { renderSettings } from './helpers/render-settings.js';
-import { renderLayout } from './helpers/render-layout.js';
+import { renderLayout, renderSettingsLayout } from './helpers/render-layout.js';
 import { themeForLevel } from '../apps/client/lib/palette.js';
 
 test('reading refreshes never add loading, saved or retry text to an existing message', () => {
@@ -294,31 +294,47 @@ test('notification saving never adds a control or changes the row geometry', () 
   for (const platform of ['ios', 'android']) for (const dark of [false, true]) for (const width of [320, 390, 440]) {
     for (const enabled of [false, true]) for (const threshold of [5, 8, 10]) {
       const stored = { notifications: { enabled, threshold, token: enabled ? 'ExponentPushToken[test]' : null } };
-      const render = busy => nodes(renderSettings({ platform, width, dark, stored, busy }).tree);
-      const idle = render(false), saving = render(true);
-      const byId = (all, id) => all.find(n => n.props.testID === id);
-      for (const id of ['notifications-row', 'threshold-row']) {
-        const before = byId(idle, id), during = byId(saving, id);
-        assert.deepEqual(JSON.parse(JSON.stringify(during.props.style)), JSON.parse(JSON.stringify(before.props.style)));
-        assert.deepEqual(nodes(during).map(n => n.type), nodes(before).map(n => n.type));
-        assert.equal(during.props.style.height, undefined, 'large text remains free to grow');
+      for (const [screen, ids] of [['notifications', ['notifications-row', 'threshold-row']], ['threshold', ['threshold-5', 'threshold-10']]]) {
+        const render = busy => nodes(renderSettings({ platform, screen, width, dark, stored, busy }).tree);
+        const idle = render(false), saving = render(true);
+        const byId = (all, id) => all.find(n => n.props.testID === id);
+        for (const id of ids) {
+          const before = byId(idle, id), during = byId(saving, id);
+          assert.deepEqual(JSON.parse(JSON.stringify(during.props.style)), JSON.parse(JSON.stringify(before.props.style)));
+          assert.deepEqual(nodes(during).map(n => n.type), nodes(before).map(n => n.type));
+          assert.equal(during.props.style.height, undefined, 'large text remains free to grow');
+        }
+        assert.equal(saving.some(n => n.type === 'ActivityIndicator'), false);
+        assert.equal(byId(saving, 'notifications-status').props.children, 'Saving…');
+        assert.equal(byId(saving, 'notifications-status').props.accessibilityLiveRegion, 'polite');
+        // Reported 2026-09-24: an idle line restating the switch ("Alerts at 8
+        // or higher are off.") was removed; idle, the status says nothing.
+        assert.equal(byId(idle, 'notifications-status').props.children, '');
       }
-      assert.equal(saving.some(n => n.type === 'ActivityIndicator'), false);
-      assert.equal(byId(saving, 'notifications-status').props.children, 'Saving…');
-      assert.equal(byId(saving, 'notifications-status').props.accessibilityLiveRegion, 'polite');
-      assert.equal(byId(idle, 'notifications-status').props.children, `Notify on readings ${threshold} or higher ${enabled ? 'enabled' : 'disabled'}.`);
-      assert.equal(byId(saving, 'notifications-row').props.disabled, true);
-      assert.ok(saving.filter(n => /^threshold-\d+$/.test(n.props.testID ?? '')).every(n => n.props.disabled));
+      const saving = nodes(renderSettings({ platform, screen: 'notifications', width, dark, stored, busy: true }).tree);
+      assert.equal(saving.find(n => n.props.testID === 'notifications-row').props.disabled, true);
+      const picker = nodes(renderSettings({ platform, screen: 'threshold', width, dark, stored, busy: true }).tree);
+      assert.ok(picker.filter(n => /^threshold-\d+$/.test(n.props.testID ?? '')).every(n => n.props.disabled));
     }
   }
 });
 
-test('deep-link back control follows appearance and clears when the native back stack arrives', () => {
-  for (const platform of ['web', 'ios', 'android']) for (const dark of [false, true]) {
-    const screen = canGoBack => nodes(renderSettings({ platform, dark, canGoBack }).tree).find(n => n.type === 'Screen');
-    const fallback = screen(false).props.options.headerLeft();
-    assert.equal(nodes(fallback).find(n => n.type === 'BackIcon').props.color, themeForLevel(3, dark).accent);
-    assert.ok(Object.hasOwn(screen(true).props.options, 'headerLeft'));
-    assert.equal(screen(true).props.options.headerLeft, undefined, 'reset persisted navigation options');
+test('Settings rises as a sheet on the phone and stays a page on the web', () => {
+  for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) {
+    const all = nodes(renderLayout({ platform, dark }));
+    const settings = all.find(n => n.type === 'Screen' && n.props.name === 'settings').props.options;
+    assert.equal(settings.presentation, platform === 'web' ? 'card' : 'modal');
+    assert.equal(settings.headerShown, false, 'the sheet draws its own stack header');
+    const stack = renderSettingsLayout({ platform, dark });
+    const screens = Object.fromEntries(nodes(stack).filter(n => n.type === 'Screen').map(n => [n.props.name, n.props.options]));
+    assert.deepEqual(Object.keys(screens), ['index', 'appearance', 'notifications', 'threshold']);
+    assert.equal(screens.index.headerTitle, '', 'the overview shows no title');
+    assert.equal(screens.index.headerBackVisible, false, 'the overview closes with its X, not a back arrow');
+    assert.equal(screens.index.headerLeft(), null, 'the web header draws no back arrow either');
+    assert.equal(screens.index.title, 'Settings', 'but is still named for assistive technology');
+    assert.deepEqual([screens.appearance.title, screens.notifications.title, screens.threshold.title], ['Appearance', 'Notifications', 'Threshold']);
+    const options = nodes(stack).find(n => n.props.screenOptions).props.screenOptions;
+    assert.equal(options.headerBackButtonDisplayMode, 'minimal');
+    assert.equal(options.contentStyle.backgroundColor, themeForLevel(3, dark).tinted);
   }
 });

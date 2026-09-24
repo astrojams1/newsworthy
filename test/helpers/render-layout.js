@@ -30,3 +30,18 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
   } });
   return exports.default().props.children.props.children.type();
 }
+
+// The settings sheet's own stack, rendered the same way.
+export function renderSettingsLayout({ platform = 'ios', dark = false } = {}) {
+  const theme = themeForLevel(3, dark);
+  const mocks = { 'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }) }, '@/lib/theme': { useTheme: () => theme } };
+  const exports = {};
+  const compiled = ts.transpileModule(readFileSync(new URL('../../apps/client/app/settings/_layout.tsx', import.meta.url), 'utf8'),
+    { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+  vm.runInNewContext(compiled, { exports, process: { env: { EXPO_OS: platform } }, require: name => {
+    if (name === 'react/jsx-runtime') return require(name);
+    if (!(name in mocks)) throw new Error(`Unreviewed layout dependency: ${name}`);
+    return mocks[name];
+  } });
+  return exports.default();
+}

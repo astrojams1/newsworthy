@@ -566,10 +566,15 @@ matches `preview` rather than negating `production` so an unset `VERCEL_ENV`
 still builds. Nothing here reads a preview URL — work is verified against
 production after merge.
 
-**Settings are a screen, and the theme is one of them.** `/settings` (the gear in
-the header, beside share) chooses the appearance —
+**Settings are a sheet, and the theme is one of them.** `/settings` (the gear in
+the header, beside share) rises over the reading as a sheet in the apps and is a
+page on the web; it closes with an X and has its own stack, so
+`/settings/appearance` chooses the appearance —
 Follow device, Light or Dark, following the device by default — and, in the
-native apps only, turns on a push notification for high readings. `apps/client/lib/preferences.js` owns
+native apps only, `/settings/notifications` turns on high-score alerts, with
+`/settings/threshold` choosing the score they wait for. The routes are exported as `settings/index.html` and
+`settings/<page>.html`, which is why `serveStatic` also tries a directory's
+`index.html`. `apps/client/lib/preferences.js` owns
 the shape and the defaults, `components/preferences-provider.tsx` persists it
 in AsyncStorage, and `ReadingProvider` derives `dark` from the choice, so every
 `useTheme()` caller follows it without knowing it exists. On web the choice is

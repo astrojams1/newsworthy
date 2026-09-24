@@ -58,9 +58,10 @@ test('only the public reading grants native CORS, including error responses and 
     }
     const stranger = await fetch(`${base}/api/current`, { headers: { Origin: 'https://untrusted.invalid' } });
     assert.equal(stranger.headers.get('access-control-allow-origin'), null);
-    // '/settings' is an exported page reached by reload or shared link as
-    // well as by the gear: the server must find settings.html for it.
-    for (const path of ['/', '/privacy', '/support', '/settings']) {
+    // Settings' pages are exported pages reached by reload or shared link as
+    // well as by the gear: the server must find settings/index.html for
+    // '/settings' and settings/appearance.html for its subpage.
+    for (const path of ['/', '/privacy', '/support', '/settings', '/settings/appearance', '/settings/notifications', '/settings/threshold']) {
       const response = await fetch(`${base}${path}`);
       assert.equal(response.status, 200, path);
       assert.match(response.headers.get('content-type'), /html/);

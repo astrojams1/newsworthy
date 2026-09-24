@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T06:20:53+00:00
+Updated: 2026-09-24T11:00:54+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -90,6 +90,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
 | apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
+| apple.settings-transition | in_progress | agent | observed | Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off. | Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission. |
 
 ## Evidence and history
 
@@ -2819,3 +2820,83 @@ Next: Await Apple review outcome; inspect its actual next message before assigni
 Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.
 
 - store/apple-review-resubmission-2026-09-24-video.json
+
+### 289. apple.settings-transition — in_progress
+
+2026-09-24T07:55:54+00:00 · observed · agent
+
+Owner iPhone recording of Settings push/pop shows four defects: flat header band snapping on push, square plate around the wordmark morphing into Back, wordmark enlarging then snapping after pop, and dark canvas wedges at iOS 26 rounded screen corners. Source fix: Settings on the reading gradient under a transparent bar, gradient transition canvas, iOS wordmark drawn by the page.
+
+- Owner screen recording September24 (frames 13, 112, 129 matched to owner screenshots). design72 checks and npm test294 passed (one existing skip); web export Settings checked in Chromium. Not verified on a native build: iOS 26 and earlier-iOS transitions, scroll-edge blur under the Settings bar, wordmark alignment, Android.
+
+Next: Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed.
+
+### 290. apple.settings-transition — in_progress
+
+2026-09-24T08:46:29+00:00 · observed · agent
+
+Owner iPhone recording of Settings push/pop shows four defects: flat header band snapping on push, square plate around the wordmark morphing into Back, wordmark enlarging then snapping after pop, and dark canvas wedges at iOS 26 rounded screen corners. Source fix: neutral Settings page under a transparent bar (owner removed the Settings gradient), gradient transition canvas, iOS wordmark drawn by the page.
+
+- PR134. Owner screen recording September24 (frames 13, 112, 129 matched to owner screenshots). design72 checks passed; web export Settings checked in Chromium on the earlier gradient revision. Not verified on a native build: iOS 26 and earlier-iOS transitions, scroll-edge blur under the Settings bar, wordmark alignment, Android.
+
+Next: Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed.
+
+### 291. apple.settings-transition — in_progress
+
+2026-09-24T08:54:02+00:00 · observed · agent
+
+Owner simulator test of PR134 showed no glass on the share/settings capsule or the back button. The transparent navigator canvas (corner-wedge fix) was the only change reaching both bars and is reverted; corner wedges are open again. Remaining fixes: transparent Settings bar over a neutral page, iOS wordmark drawn by the page.
+
+- PR134; owner simulator report September24. design72 checks passed after revert. Glass restoration after the revert is not yet observed.
+
+Next: Owner re-tests the reverted build in the simulator for glass, then push/pop and back-swipe on iOS 26; choose another approach for the corner wedges.
+
+### 292. apple.settings-transition — in_progress
+
+2026-09-24T09:33:42+00:00 · observed · agent
+
+PR134 reduced at owner request to one fix: on iOS the wordmark is drawn by the reading screen instead of as a bar item, so no square plate morphs into Settings' Back button (and it no longer re-animates after the pop). Settings bar, Settings background and navigator canvas are back to main. The other defects from the September24 recording (header band on push, corner wedges on pop) remain open. Missing glass in the owner's simulator was not explained by this PR's diff and is unresolved.
+
+- PR134; owner screen recording and simulator report September24. design70 checks passed. Not verified on a native build.
+
+Next: Owner checks main and this branch in the same simulator for glass; verify the push to Settings on a physical iOS 26 build shows no plate around the wordmark.
+
+### 293. apple.settings-transition — in_progress
+
+2026-09-24T10:22:56+00:00 · observed · agent
+
+PR134 now redesigns Settings at owner request, after a ChatGPT-style reference: a sheet on iOS/Android closed by an X with no title, sentence-case section titles, a leading icon on every row, Appearance and Notifications as pages inside the sheet, and link arrows on Privacy and Support. Opening Settings no longer pushes beside the reading, so the wordmark cannot morph into a back button; the page-drawn wordmark change is withdrawn. Missing glass in the owner's simulator is attributed by the owner to an older simulator without glass.
+
+- PR134. design70 checks and npm test293 passed (one existing skip); web export overview, Appearance page, close, reload and deep link checked in Chromium in light and dark. Not verified on a native build: sheet presentation, glass close button, subpage navigation, icons, Android.
+
+Next: Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, notification save) and on Android before release.
+
+### 294. apple.settings-transition — in_progress
+
+2026-09-24T10:32:49+00:00 · observed · agent
+
+PR134 Notifications page reworked at owner request: the switch is "High-score alerts" in its own section with an explanatory line, and the score picker is a separate "Threshold" section with the saved state beneath it. On the web the page redirects to the Settings overview.
+
+- PR134. design70 checks and npm test passed. Not verified on a native build.
+
+Next: Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' "Notify me about high readings" wording for the next submission.
+
+### 295. apple.settings-transition — in_progress
+
+2026-09-24T10:39:58+00:00 · observed · agent
+
+PR134 Notifications page revised at owner request: one group with the High-score alerts switch and a Threshold row that opens its own page of choices (5 to 10); the explanatory line stays below; the idle on/off status line is removed, leaving only Saving… while a change is in flight.
+
+- PR134. design70 checks and preferences tests passed. Not verified on a native build.
+
+Next: Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' "Notify me about high readings" wording for the next submission.
+
+### 296. apple.settings-transition — in_progress
+
+2026-09-24T11:00:54+00:00 · observed · agent
+
+Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off.
+
+- PR134 owner review comment 2026-09-24T10:55Z. npm test295 passed (one existing skip), design70 passed. dismissTo on native not re-verified after the change.
+
+Next: Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission.
