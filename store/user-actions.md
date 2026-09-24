@@ -6,32 +6,25 @@ separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current iOS resubmission: notification setup and device check
+## Current iOS resubmission: submitted
 
-The notification fixes are merged and deployed. Build 21 has passed archive
-and Apple validation; [build evidence](testflight-21.json) records upload and
-TestFlight status separately. Two steps remain before review:
+**Build 21 is Waiting for Review**, verified independently on the Apple version
+and submission. The production Newsworthy-specific push key was created with
+owner confirmation and assigned in Expo. No push-key approval or Mac-unlock
+handoff remains.
 
-1. **Confirm the prepared push key.** The agent can create the production-only,
-   Newsworthy-specific Apple push key and configure Expo. Apple and Expo were
-   checked and contain no existing key. The browser tool requires action-time
-   confirmation because this creates a credential that lets Expo send
-   Newsworthy notifications. The prepared Apple page is waiting; no password
-   or 1Password action is needed from the owner.
-2. **Verify delivery on the physical iPhone.** Install build 21 from TestFlight. Open Newsworthy → Settings → turn on “Notify me about high
-   readings” and allow notifications. Return to the Home Screen and tell the
-   agent it is ready for a labeled delivery test. Confirm the test appears and
-   tapping it opens the reading. One iOS device is already registered at a
-   minimum score of 5; registration does not prove notification delivery.
+A labeled test returned Expo ticket OK and APNs receipt OK. Physical iPhone
+checks through iPhone Mirroring verified build 21 installation, launch, reading,
+Settings and server registration removal/restoration when notifications were
+switched off/on. Notifications are restored to enabled with minimum score 5.
 
-The paired phone has Developer Mode off, so the command-line device tools
-cannot inspect its apps. A second path, iPhone Mirroring, is available but
-first said “iPhone in Use — Lock your iPhone to connect.” The next check found
-the Mac locked, and automatic unlock was unavailable. With the Mac unlocked
-and iPhone locked, the agent can try that path for the TestFlight and delivery checks.
-Enabling Developer Mode is not required. The agent handles the key, test send,
-metadata and submission once the confirmation and physical test are complete.
-No generic submission approval is pending.
+The Mac's iPhone notification mirroring is disabled and was left unchanged.
+Visual notification presentation and tapping remain unobserved. An optional
+owner check is to open the labeled “Newsworthy delivery test” notification on
+the iPhone and confirm that it opens the reading. This remaining verification
+limit did not prevent the authorized resubmission and is not a new approval
+request. See [build evidence](testflight-21.json) and the
+[Apple receipt](apple-review-build21.json).
 
 ## 1. Google: verify a real Android device
 
@@ -139,8 +132,8 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 browser readback confirms the owner-submitted
 [reconsideration reply](apple-4.2-reconsideration.md) and Apple's September 23
 response upholding the rejection. Do not duplicate that appeal. The current
-task is to finish notifications and submit the changed build. Apple still
-reports REJECTED / UNRESOLVED_ISSUES.
+changed build 21 has now been submitted; Apple reports WAITING_FOR_REVIEW
+for both the version and submission.
 The earlier physical recording and Guideline 2.1 response remain historical
 evidence. Newer TestFlight builds do not establish a replacement App Review submission.
 
@@ -152,9 +145,9 @@ and the remaining native score10 case are separate from emulator coverage.
 
 The remaining technical release work is:
 
-- Configure the approved push key, verify physical notification delivery and
-  opening, update review notes/listing, select build 21 and resubmit. Verify
-  Waiting for Review separately from TestFlight availability. Verify paid-sale
+- Await Apple review of build 21 and respond to any new request. Visual
+  notification presentation/opening remains unobserved; provider acceptance
+  and physical app/registration tests are recorded separately. Verify paid-sale
   readiness and public availability after approval.
 - When Google enables **Create app**, create Newsworthy as **paid**, configure
   US$1.00 pricing, upload AAB11 and the prepared listing/artwork, complete privacy

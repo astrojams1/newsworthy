@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-23T23:37:29+00:00
+Updated: 2026-09-24T00:06:23+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -20,13 +20,13 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | agent | observed | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
-| apple.listing | done | agent | observed | All five replacement Apple screenshots are COMPLETE: clean neutral small/medium widget composition first, revised iPhone light/dark and iPad light/dark reading screens. Old gallery removed. | — |
+| apple.listing | done | agent | observed | EnglishUS description, subtitle, promotional text, keywords and URLs saved and read back. Review Notes describe optional notifications, setup, widgets, services, regions and historical build7 video; contact phone retained privately. | — |
 | apple.build | done | agent | observed | Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled. | — |
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
-| apple.upload | done | agent | observed | Build 21 passed Apple validation and upload, then processed VALID as 6ce55c01-2cbf-4d35-b29f-b010df9502cb. App Review still selects rejected build 7; upload does not establish resubmission. | — |
+| apple.upload | done | agent | observed | Build 21 passed Apple validation/upload and processed VALID. It is now selected in the resubmitted review; both version and submission are WAITING_FOR_REVIEW. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | in_progress | agent | observed | App Review correspondence read back: the owner reconsideration was received, and Apple upheld Guideline 4.2 on September 23. Version remains REJECTED; build 7 is still selected. User authorized finishing notifications and resubmitting a changed build. | Complete push-key configuration and physical delivery/tap verification, save revised review notes and listing, select valid build 21, then resubmit and verify Waiting for Review. |
-| apple.release | waiting_provider | provider | observed | Build7 is Waiting for Review after response/video resubmission. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, complete paid-sale account readiness, and verify public paid availability. |
+| apple.review | waiting_provider | provider | observed | Build21 resubmitted with updated listing and review notes addressing4.2. Existing rejected item resolved then existing submission submitted. Apple independently reports version and submission WAITING_FOR_REVIEW; selected build21 verified. | Await Apple review; preserve this submission. Verify paid-sale readiness/public availability separately after approval. |
+| apple.release | waiting_provider | provider | observed | Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, verify paid-sale account readiness, and verify public paid availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
@@ -54,7 +54,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | Final six-part Notes include the physical build7 demonstration filename and accurate product/setup/services/regions/rights information; API save and exact-value readback passed. | — |
 | apple.physical-recording | done | agent | observed | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
-| apple.testflight | done | agent | observed | Build 21 is VALID and IN_BETA_TESTING in existing Release QA. Group association and beta notes read back successfully. Notes identify pending push-key configuration and request physical delivery/tap checks; no new invitation is required. | — |
+| apple.testflight | done | agent | observed | Build 21 is VALID and IN_BETA_TESTING in Release QA. Updated notes document configured push credentials, provider acceptance and physical app/registration checks, with visual notification/tap unobserved. No new invitation is required. | — |
 | google.large-text-build | done | agent | observed | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
 | google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
 | apple.header-background | done | agent | observed | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
@@ -72,7 +72,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.quiet-reading-build | done | agent | observed | iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy. | — |
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
-| apple.review-state | done | agent | observed | Fresh Apple API reads return version REJECTED and submission UNRESOLVED_ISSUES after the owner reported replying. A reply has not re-queued this submission. | — |
+| apple.review-state | done | agent | observed | Independent Apple API readbacks confirm version and existing review submission WAITING_FOR_REVIEW, with build 21 selected. The earlier rejected/unresolved state is historical. | — |
 | story-age.native | todo | agent | observed | Story-age source adds local age formatting to Expo and both widgets; replacement native package and visual parity remain unverified. | Build replacement native packages and verify both widget sizes, themes, score 10, enlarged text, resizing and offline age transitions. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
@@ -86,7 +86,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-18-provenance | done | agent | observed | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
 | ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
-| apple.notifications | waiting_user | user | observed | Build 21 is in TestFlight and the server fixes are live. Push-key registration awaits action-time security confirmation; one iOS registration exists but no real push test has been sent. iPhone Mirroring first reported the phone in use, then computer control reported the Mac locked and automatic unlock unavailable. | Confirm the prepared production Newsworthy push key and unlock the Mac. Agent configures Expo and tests through iPhone Mirroring with the phone locked, or owner confirms labeled test receipt/opening. |
+| apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
 
 ## Evidence and history
 
@@ -2563,3 +2563,73 @@ Build 21 is in TestFlight and the server fixes are live. Push-key registration a
 - store/testflight-21.json; store/user-actions.md
 
 Next: Confirm the prepared production Newsworthy push key and unlock the Mac. Agent configures Expo and tests through iPhone Mirroring with the phone locked, or owner confirms labeled test receipt/opening.
+
+### 262. apple.notifications — in_progress
+
+2026-09-23T23:47:45+00:00 · observed · agent
+
+Owner confirmed creating and storing the Newsworthy production push key with Expo. Apple key M46ZV25ZUP created for production, topic com.astrojams.newsworthy only; EAS assigned it to Newsworthy. Key material is secured outside Git. iPhone Mirroring now works and build 21 installation is underway.
+
+- Apple Developer registration and EAS credential assignment readback; physical TestFlight shows build 21 update
+
+Next: Verify build 21 installation, send labeled push test, confirm provider receipt and physical notification opening, then update metadata and resubmit.
+
+### 263. apple.notifications — done
+
+2026-09-24T00:02:17+00:00 · observed · agent
+
+Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored.
+
+- store/testflight-21.json
+
+### 264. apple.review — waiting_provider
+
+2026-09-24T00:02:17+00:00 · observed · provider
+
+Build21 resubmitted with updated listing and review notes addressing4.2. Existing rejected item resolved then existing submission submitted. Apple independently reports version and submission WAITING_FOR_REVIEW; selected build21 verified.
+
+- store/apple-review-build21.json
+
+Next: Await Apple review; preserve this submission. Verify paid-sale readiness/public availability separately after approval.
+
+### 265. apple.listing — done
+
+2026-09-24T00:02:17+00:00 · observed · agent
+
+EnglishUS description, subtitle, promotional text, keywords and URLs saved and read back. Review Notes describe optional notifications, setup, widgets, services, regions and historical build7 video; contact phone retained privately.
+
+- store/listing.json; store/scripts/apple.mjs metadata and review-notes readback
+
+### 266. apple.upload — done
+
+2026-09-24T00:06:23+00:00 · observed · agent
+
+Build 21 passed Apple validation/upload and processed VALID. It is now selected in the resubmitted review; both version and submission are WAITING_FOR_REVIEW.
+
+- store/testflight-21.json; store/apple-review-build21.json
+
+### 267. apple.testflight — done
+
+2026-09-24T00:06:23+00:00 · observed · agent
+
+Build 21 is VALID and IN_BETA_TESTING in Release QA. Updated notes document configured push credentials, provider acceptance and physical app/registration checks, with visual notification/tap unobserved. No new invitation is required.
+
+- store/testflight-21.json
+
+### 268. apple.review-state — done
+
+2026-09-24T00:06:23+00:00 · observed · agent
+
+Independent Apple API readbacks confirm version and existing review submission WAITING_FOR_REVIEW, with build 21 selected. The earlier rejected/unresolved state is historical.
+
+- store/apple-review-build21.json
+
+### 269. apple.release — waiting_provider
+
+2026-09-24T00:06:23+00:00 · observed · provider
+
+Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates.
+
+- store/apple-review-build21.json; store/user-actions.md
+
+Next: Obtain review approval, verify paid-sale account readiness, and verify public paid availability.
