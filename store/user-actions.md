@@ -1,7 +1,7 @@
 # Account-owner actions
 
 Apple review, notification setup and privacy were checked on **September 24,
-2026**. Google account and Apple Business rows were last verified September 17. The list below
+2026**. Google account and Apple Business were also rechecked September 24. The list below
 separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
@@ -58,8 +58,10 @@ the owner's phone call/SMS through the currently connected tools.
 Apple's confirmation page says it received the request and will review it and
 respond. The request asks Apple to update both the individual developer
 membership and App Store Connect legal entity to the current address supplied
-privately by the owner. Apple subsequently emailed a case number; keep that
-reference in the private support email.
+privately by the owner. Apple requested proof of the new address on September 18 and acknowledged
+receipt of requested documents on September 20. This confirms receipt, not
+approval or linkage of the generic receipt to a specific document. Keep the
+case reference and private documents in the support email/provider portal.
 
 The Business page still shows the obsolete address; submission is not approval
 or evidence that the record has changed. Await Apple's response and provide any
@@ -139,18 +141,26 @@ evidence. Newer TestFlight builds do not establish a replacement App Review subm
 
 Android corrective preview APK10 passed emulator checks for maximum-text widget
 labels and background appearance changes. Production **AAB11** is downloaded
-and verified. The owner-approved compact widget and neutral compact/expanded
+and verified as a historical artifact, but it predates Settings, notifications
+and subsequent native changes. It must be replaced before the planned release.
+The owner-approved compact widget and neutral compact/expanded
 gallery are complete; no further resizing is needed. Physical Android testing
 and the remaining native score10 case are separate from emulator coverage.
 
 The remaining technical release work is:
+
+- Configure Android Firebase/FCM, build the current source, and verify the native
+  app and notification behavior. The signed-in Firebase account has no Newsworthy
+  project. Its project-creation form is prepared at the Firebase terms checkbox;
+  the computer-control tool requires confirmation before accepting that agreement.
+  No new project, key or access grant has been created.
 
 - Await Apple review of build 21 and respond to any new request. Visual
   notification presentation/opening remains unobserved; provider acceptance
   and physical app/registration tests are recorded separately. Verify paid-sale
   readiness and public availability after approval.
 - When Google enables **Create app**, create Newsworthy as **paid**, configure
-  US$1.00 pricing, upload AAB11 and the prepared listing/artwork, complete privacy
+  US$1.00 pricing, upload a current verified AAB and refreshed listing/artwork, complete privacy
   and content-rating forms, and prepare the real closed test.
 - Collect genuine tester feedback and verify physical-device behavior. Apply for
   Google production access only after the required testing gate is satisfied.

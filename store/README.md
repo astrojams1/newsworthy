@@ -23,6 +23,11 @@ The Mac has iPhone notification mirroring disabled, so visual presentation and
 notification tapping were not observed; automated cold/live tap handling passed.
 Provider acceptance is not a visual-delivery claim. See [build evidence](testflight-21.json).
 
+**Android release update:** AAB11 is historical and must be replaced: it predates
+Settings, notifications and subsequent native changes. Firebase/FCM configuration
+and a current native build are pending. Google still disables app creation until
+physical-device and phone verification are complete (September 24 readback).
+
 Neither app is publicly released. Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.
 
@@ -92,8 +97,9 @@ still blocks app creation. See the ledger for current gates and exact next actio
   **identity verified successfully**. Real Android device verification remains;
   phone verification is disabled until that prerequisite is complete. **Create
   app is disabled**, so no Google app, price, listing, or release has been saved.
-- **Android binary:** production AAB11 downloaded and SHA-256/ZIP-validated
-  from clean PR94 source `8055d61`; it supersedes AAB10. Preview APK8 verified the
+- **Android binary (historical):** production AAB11 downloaded and SHA-256/ZIP-validated
+  from clean PR94 source `8055d61`; it supersedes AAB10 but now requires replacement
+  for Settings, notifications and later native changes. Preview APK8 verified the
   refresh-loop fix: zero widget recreations in 65 seconds versus 30 in 34 seconds
   before the fix. Installed APK9 additionally passed theme transitions and
   compact 2×2 rendering; its compact/expanded gallery is complete. Native APK

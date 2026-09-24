@@ -143,7 +143,7 @@
     "reviewResubmittedAt": "2026-09-23T23:59:45.868Z",
     "reviewResubmissionEvidence": "store/apple-review-build21.json",
     "firstReviewSubmittedDate": "2026-09-16T07:50:46.874Z",
-    "reviewStatusObservedAt": "2026-09-23T23:59:48.150Z",
+    "reviewStatusObservedAt": "2026-09-24T00:11:40.266Z",
     "latestReviewReport": {
       "date": "2026-09-21",
       "basis": "observed",
@@ -194,6 +194,13 @@
       "appleBuildId": "eff31b5d-6c18-492d-874c-d7a0e4392bf6",
       "testFlightState": "IN_BETA_TESTING",
       "testFlightGroupAttached": true
+    },
+    "businessStatusObservedDate": "2026-09-24",
+    "developerDocumentReceipt": {
+      "emailDate": "2026-09-20",
+      "observedDate": "2026-09-24",
+      "status": "RECEIVED_AWAITING_REVIEW",
+      "scope": "Generic acknowledgment does not name a specific case or document."
     }
   },
   "google": {
@@ -268,8 +275,8 @@
       "bytes": 104437651,
       "installedVersionCode": 9
     },
-    "productionBuildRequiresReplacement": false,
-    "productionReplacementReason": null,
+    "productionBuildRequiresReplacement": true,
+    "productionReplacementReason": "AAB11 predates Settings, notifications and later shared/native changes. Current app config lacks googleServicesFile, and no Newsworthy Firebase project exists in the signed-in account. Complete Firebase/FCM setup before the replacement build.",
     "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED",
     "finalProductionBuild": {
       "id": "4dc57992-b1e5-4517-8197-215b66789963",
@@ -316,7 +323,8 @@
       "bytes": 72474952,
       "sha256": "1e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202",
       "localArtifact": "artifacts/store-submission/newsworthy-android-production-v10.aab"
-    }
+    },
+    "accountStatusObservedDate": "2026-09-24"
   },
   "headerOpticalAlignment": {
     "date": "2026-09-17",

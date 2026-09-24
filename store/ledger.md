@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T00:06:23+00:00
+Updated: 2026-09-24T00:14:58+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -13,10 +13,10 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | scope | done | agent | observed | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
 | web.deploy | done | agent | observed | PR127 merged as3a2f0e0; both GitHub checks passed. Vercel production alias now serves deploymentdpl_2d1c1kXXV4ej2Vp1r2znLRVW4DAT with receipt/retry fixes and updated privacy text. Home, Settings, current API, health and privacy return200. | — |
 | apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
-| apple.address | waiting_provider | provider | observed | Apple Business still displays obsolete legal address on fresh September17 readback; prior submitted support correction remains unresolved. | Await Apple correction or support response, then verify Business legal entity before paid release. |
+| apple.address | waiting_provider | provider | observed | September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction. | Await address-review response and verify the corrected legal record in Business. |
 | apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
 | apple.tax | done | user | observed | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
-| apple.bank | waiting_user | user | observed | Fresh Apple Business readback still has Add Bank Account and no payout account listed; Paid Apps Agreement remains Pending User Info. | Owner adds payout account privately in App Store Connect Business; verify paid agreement becomes Active. |
+| apple.bank | waiting_user | user | observed | September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active. | Owner adds and verifies payout details in Apple Business; agent then reads back Active status. |
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | agent | observed | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
@@ -30,8 +30,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
-| google.app | waiting_user | user | observed | Fresh Play Console readback still shows real Android-device verification and contact-phone tasks; Create app remains disabled. | Owner completes real-device verification in Play Console mobile app and then phone verification; agent creates paid Newsworthy and uploads AAB11 afterward. |
-| google.build | done | agent | observed | Production Android11 AAB finished from clean8055d61; downloaded and verified, superseding AAB10. | — |
+| google.app | waiting_user | user | observed | September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner. | Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled. |
+| google.build | in_progress | agent | observed | Previously verified AAB11 is historical. Its source predates Settings, notifications and subsequent native changes; it is not the current release candidate. | Configure Firebase/FCM, build current source, verify AAB and native behavior before upload. |
 | google.native | in_progress | agent | observed | Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified. | Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open. |
 | google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
@@ -87,6 +87,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
 | apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
+| google.notifications | waiting_user | user | observed | Firebase account inventory has no Newsworthy project. Current app config has no googleServicesFile. Project creation is prepared at the Firebase terms checkbox, awaiting required legal-agreement confirmation; no project or credential was created. | Confirm Firebase terms; agent completes project and Android registration, securely configures FCM delivery, then verifies the replacement app. |
 
 ## Evidence and history
 
@@ -2633,3 +2634,53 @@ Build 21 is Waiting for Review. No public Apple release yet; paid agreement bank
 - store/apple-review-build21.json; store/user-actions.md
 
 Next: Obtain review approval, verify paid-sale account readiness, and verify public paid availability.
+
+### 270. apple.address — waiting_provider
+
+2026-09-24T00:14:58+00:00 · observed · provider
+
+September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction.
+
+- Apple Business and signed-in Gmail support/receipt readbacks; private values excluded
+
+Next: Await address-review response and verify the corrected legal record in Business.
+
+### 271. apple.bank — waiting_user
+
+2026-09-24T00:14:58+00:00 · observed · user
+
+September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active.
+
+- Signed-in Apple Business Agreements readback
+
+Next: Owner adds and verifies payout details in Apple Business; agent then reads back Active status.
+
+### 272. google.app — waiting_user
+
+2026-09-24T00:14:58+00:00 · observed · user
+
+September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner.
+
+- Play Console account8388544157780149515 Home/device-details readback
+
+Next: Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled.
+
+### 273. google.build — in_progress
+
+2026-09-24T00:14:58+00:00 · observed · agent
+
+Previously verified AAB11 is historical. Its source predates Settings, notifications and subsequent native changes; it is not the current release candidate.
+
+- git diff 8055d614e53f0665c3919b40a23d9fbaedcee90a..f4cdb7364a7639b8ed973f63619841d135b78114 -- apps/client; store/release.json
+
+Next: Configure Firebase/FCM, build current source, verify AAB and native behavior before upload.
+
+### 274. google.notifications — waiting_user
+
+2026-09-24T00:14:58+00:00 · observed · user
+
+Firebase account inventory has no Newsworthy project. Current app config has no googleServicesFile. Project creation is prepared at the Firebase terms checkbox, awaiting required legal-agreement confirmation; no project or credential was created.
+
+- Signed-in Firebase inventory/create-project form; apps/client/app.config.js; https://docs.expo.dev/push-notifications/fcm-credentials/
+
+Next: Confirm Firebase terms; agent completes project and Android registration, securely configures FCM delivery, then verifies the replacement app.
