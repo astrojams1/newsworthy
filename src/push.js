@@ -5,7 +5,7 @@ import {
 } from './db.js';
 import { STORY_MEMORY_HOURS, currentDisplay } from './current.js';
 import { effectiveConfig } from './config.js';
-import { opensDevelopment } from './preparation.js';
+import { firstCoverage } from './preparation.js';
 
 /**
  * Push notifications for high readings.
@@ -24,12 +24,8 @@ import { opensDevelopment } from './preparation.js';
  * whichever readings report it, because the page's replay already answers
  * which development the number is about, through judge outages included.
  *
- * And only for news that is new: the reading must open the development the
- * number is about — the sentence the page shows with no age prefix and marks
- * as new. A later reading re-reporting it, an escalation of an older
- * development, or an unjudged reading whose development is unknown starts no
- * announcement; a later reading can only finish one the opening reading began
- * and could not complete, so a failed send still reaches its devices.
+ * And only when the sentence is new: a repeat of an earlier summary, the one
+ * shown with an age prefix, announces nothing.
  *
  * Delivery goes through Expo's push service, which relays to APNs and FCM.
  * That is an HTTP call and nothing native, so it runs in the same serverless
@@ -211,9 +207,10 @@ export async function notifyReading(reading, { fetchImpl, url, now } = {}) {
     const subscribers = await pushSubscriptionsFor(current.score);
     if (subscribers.length === 0) return result;
 
-    const fresh = opensDevelopment(current.newest) && current.root === current.newest.id;
+    // Only a new sentence announces, and only when the number is about it.
+    if (current.root !== current.newest.id || await firstCoverage(current.newest) != null) return result;
     for (const threshold of [...new Set(subscribers.map((s) => s.threshold))]) {
-      const claim = await claimPushDelivery({ root: current.root, threshold, readingId: reading.id, score: current.score, resumeOnly: !fresh });
+      const claim = await claimPushDelivery({ root: current.root, threshold, readingId: reading.id, score: current.score });
       if (!claim) continue;
       const done = new Set(claim.delivered);
       const pending = subscribers.filter((s) => s.threshold === threshold && !done.has(s.token)).map((s) => s.token);

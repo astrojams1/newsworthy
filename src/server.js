@@ -16,7 +16,7 @@ import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyH
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
-import { prepareReading, firstCoverage, opensDevelopment } from './preparation.js';
+import { prepareReading, firstCoverage } from './preparation.js';
 import { displayExplanation } from '../apps/client/lib/story-age.js';
 import { PushError, notifyReading, subscribe as subscribePush, unsubscribe as unsubscribePush } from './push.js';
 
@@ -269,11 +269,9 @@ const server = createServer(async (req, res) => {
       // Rows are stored with an end already; rows from before that rule get
       // one here, so every client, native widgets included, receives a
       // finished sentence without a rebuild.
-      // `explanation_new` marks a sentence reporting a development nothing
-      // earlier covered: the reading with no age prefix because it opened one,
-      // not merely one whose age is unknown.
+      // A sentence that is not a repeat of an earlier one has no age: it is new.
       const explanationFields = { explanation_text: completeSentence(newest.explanation), explanation_since: explanationSince,
-        explanation_new: opensDevelopment(newest) };
+        explanation_new: explanationSince == null };
       return json(res, 200, {
         score: current.score,
         // Existing apps/widgets receive a complete sentence; newer ones re-age locally.

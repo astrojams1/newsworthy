@@ -124,8 +124,8 @@ test('devices hear the number the page shows, once per development and threshold
 
       // A 10 on the same development re-anchors it only once the median
       // confirms the level — the page's own lag against a single loud reading.
-      // Even when the page shows 10, nobody hears: the sentence re-reports a
-      // development first covered earlier, and only new developments announce.
+      // Even when the page shows 10, nobody hears: the sentence repeats an
+      // earlier summary, and only new ones announce.
       for (const [text, expected, announced] of [
         ['Earthquake death toll across the northern valley passes ten thousand', 8, []],
         ['Earthquake across the northern valley: toll passes ten thousand as aid stalls', 8, []],
@@ -163,11 +163,10 @@ function relay(fail = () => false) {
   return { received, fetchImpl };
 }
 
-test('a judge outage announces nothing: an unjudged reading is not known to be new', async () => {
-  // The first finding: with the predecessor's id as the root, four unjudged 8s
-  // announced three times. The page's replay inherits through an outage. Now
-  // only a reading the judge placed in no earlier development starts an
-  // announcement, and an unjudged one has not been placed at all.
+test('a judge outage does not repeat: consecutive unjudged readings inherit one development', async () => {
+  // The finding: with the predecessor's id as the root, four unjudged 8s
+  // announced three times. The page's replay inherits through an outage, and
+  // the announcer now asks the page.
   await ensureSchema();
   await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`;
   await upsertPushSubscription({ token: TOKENS.a, threshold: 8, platform: 'ios' });
@@ -179,11 +178,11 @@ test('a judge outage announces nothing: an unjudged reading is not known to be n
     results.push(await notifyReading(row, { fetchImpl }));
   }
   assert.deepEqual(results.map((r) => r.score), [8, 8, 8, 8], 'the page shows 8 throughout');
-  assert.deepEqual(results.map((r) => r.sent), [0, 0, 0, 0], 'nothing announced');
-  assert.equal(received.length, 0);
+  assert.deepEqual(results.map((r) => r.sent), [1, 0, 0, 0], 'announced once, on the crossing');
+  assert.equal(received.length, 1);
 });
 
-test('a failed send gives its claim back, so the next reading of the development tries again', async () => {
+test('a failed send gives its claim back, but a repeat of the summary never announces', async () => {
   // The finding: a claim committed before Expo answered was never released,
   // so one 503 silenced a development for every device at that threshold.
   await ensureSchema();
@@ -196,10 +195,8 @@ test('a failed send gives its claim back, so the next reading of the development
   assert.equal(received.length, 0);
   outage = false;
   const second = await insertRating({ ...base, score: 8, explanation: 'Refinery blast cuts fuel supply, prices jump', created_at: minutesAgo(20), judge_version: 2, development_of: first.id, story: 'refinery' });
-  assert.deepEqual(await notifyReading(second, { fetchImpl }), { sent: 1, score: 8, thresholds: [8] }, 'the released claim is taken again and delivered');
-  assert.deepEqual(received.map((m) => m.title), ['Newsworthy · 8/10']);
-  const third = await insertRating({ ...base, score: 8, explanation: 'Refinery blast cuts fuel supply, repairs begin', created_at: minutesAgo(10), judge_version: 2, development_of: first.id, story: 'refinery' });
-  assert.equal((await notifyReading(third, { fetchImpl })).sent, 0, 'and once delivered it stays delivered');
+  assert.deepEqual(await notifyReading(second, { fetchImpl }), { sent: 0, score: 8, thresholds: [] }, 'a repeat is not new');
+  assert.equal(received.length, 0);
 });
 
 test('a claim protects against a concurrent duplicate, keeps progress when released, and a stale one is taken over', async () => {
@@ -223,35 +220,6 @@ test('a claim protects against a concurrent duplicate, keeps progress when relea
   assert.deepEqual(await claimPushDelivery({ ...frozen, readingId: 912 }), { delivered: [] }, 'stale, it is taken over');
 });
 
-test('a later reading can finish an announcement but never start one', async () => {
-  await ensureSchema();
-  await sql`DELETE FROM push_deliveries`;
-  const claim = { root: 920, threshold: 8, readingId: 921, score: 8 };
-  assert.equal(await claimPushDelivery({ ...claim, resumeOnly: true }), null, 'nothing begun, nothing to finish');
-  assert.equal((await sql`SELECT * FROM push_deliveries WHERE root = 920`).length, 0, 'and no claim was created');
-  assert.deepEqual(await claimPushDelivery(claim), { delivered: [] });
-  assert.equal(await claimPushDelivery({ ...claim, readingId: 922, resumeOnly: true }), null, 'a live claim is honoured');
-  await releasePushDeliveries([{ ...claim, delivered: ['ExponentPushToken[one]'] }]);
-  assert.deepEqual(await claimPushDelivery({ ...claim, readingId: 922, resumeOnly: true }), { delivered: ['ExponentPushToken[one]'] },
-    'a released one is taken over with its progress');
-});
-
-test('a re-report that lifts the page past a threshold announces nothing', async () => {
-  // The development opened below every threshold, so no announcement began;
-  // the reading that lifts it carries an age prefix and is not new.
-  await ensureSchema();
-  await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`;
-  await upsertPushSubscription({ token: TOKENS.a, threshold: 5, platform: 'ios' });
-  const { received, fetchImpl } = relay();
-  const first = await insertRating({ ...base, score: 4, explanation: 'Grid failure darkens the capital', created_at: minutesAgo(30), judge_version: 2, development_of: null, story: 'grid' });
-  assert.deepEqual(await notifyReading(first, { fetchImpl }), { sent: 0, score: 4, thresholds: [] });
-  const shock = await insertRating({ ...base, score: 9, explanation: 'Grid failure spreads to three provinces', created_at: minutesAgo(20), judge_version: 2, development_of: first.id, story: 'grid' });
-  const result = await notifyReading(shock, { fetchImpl });
-  assert.ok(result.score >= 5, 'the page number meets the threshold');
-  assert.equal(result.sent, 0, 'but the sentence is not new');
-  assert.equal(received.length, 0);
-});
-
 test('a batch that fails after another succeeded retries only the devices not yet reached', async () => {
   // The finding: releasing the whole claim after a second-batch 503 sent the
   // first batch's hundred devices the same development twice.
@@ -265,14 +233,12 @@ test('a batch that fails after another succeeded retries only the devices not ye
   const first = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports', created_at: minutesAgo(30), judge_version: 2, development_of: null, story: 'port' });
   assert.deepEqual(await notifyReading(first, { fetchImpl }), { sent: 100, score: 8, thresholds: [8] }, 'the first batch landed, the second did not');
   outage = false;
-  const second = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports for a third day', created_at: minutesAgo(20), judge_version: 2, development_of: first.id, story: 'port' });
-  assert.deepEqual(await notifyReading(second, { fetchImpl }), { sent: 1, score: 8, thresholds: [8] }, 'the retry reaches the one device left');
+  assert.deepEqual(await notifyReading(first, { fetchImpl }), { sent: 1, score: 8, thresholds: [8] }, 'the retry reaches the one device left');
   const counts = new Map();
   for (const m of received) counts.set(m.to, (counts.get(m.to) ?? 0) + 1);
   assert.equal(counts.size, 101, 'every device heard');
   assert.ok([...counts.values()].every((n) => n === 1), 'and none heard twice');
-  const third = await insertRating({ ...base, score: 8, explanation: 'Port strike halts grain exports, talks resume', created_at: minutesAgo(10), judge_version: 2, development_of: first.id, story: 'port' });
-  assert.equal((await notifyReading(third, { fetchImpl })).sent, 0, 'delivered in full, it stays delivered');
+  assert.equal((await notifyReading(first, { fetchImpl })).sent, 0, 'delivered in full, it stays delivered');
 });
 
 test('the push is awaited where the reading is stored, not left in flight', async () => {

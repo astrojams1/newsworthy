@@ -661,21 +661,13 @@ export const PUSH_CLAIM_STALE_MINUTES = 10;
  * and two functions storing readings at once send once between them. A claim
  * its sender gave back, or one so old its sender cannot still be running, is
  * taken over rather than honoured, and comes with the tokens already reached
- * so the retry finishes the job instead of repeating it. With `resumeOnly`
- * no claim is created: only one already begun can be taken over.
+ * so the retry finishes the job instead of repeating it.
  *
  * @returns {Promise<{delivered: string[]} | null>}
  */
-export async function claimPushDelivery({ root, threshold, readingId, score, resumeOnly = false }) {
+export async function claimPushDelivery({ root, threshold, readingId, score }) {
   await ensureSchema();
-  // Only a development's opening reading may start an announcement; a later
-  // reading of it may finish one that was given back or went stale, never begin one.
-  const rows = resumeOnly ? await sql`
-    UPDATE push_deliveries
-       SET reading_id = ${readingId}, score = ${score}, claimed_at = now(), released = false
-     WHERE root = ${root} AND threshold = ${threshold} AND sent_at IS NULL
-       AND (released OR claimed_at < now() - make_interval(mins => ${PUSH_CLAIM_STALE_MINUTES}))
-    RETURNING delivered` : await sql`
+  const rows = await sql`
     INSERT INTO push_deliveries (root, threshold, reading_id, score, claimed_at, released, sent_at)
     VALUES (${root}, ${threshold}, ${readingId}, ${score}, now(), false, NULL)
     ON CONFLICT (root, threshold) DO UPDATE

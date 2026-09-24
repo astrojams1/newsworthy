@@ -10,16 +10,6 @@ import { agePrefix, DISPLAY_CHARACTER_LIMIT, AGE_PREFIX_RESERVE, EXPLANATION_CHA
  * "54 minutes ago:" on a new development only repeated the update time. The
  * prefix is for a sentence re-reporting a development first covered earlier.
  */
-/**
- * A judged reading the judge placed in no earlier development: brand new. The
- * same rows carry no age prefix, which is what a reader sees as "new". An
- * unjudged reading has no prefix either but is not known to be new — an
- * outage must not masquerade as news any more than as an old story.
- */
-export function opensDevelopment(reading) {
-  return reading?.judge_version != null && reading.development_of == null;
-}
-
 export async function firstCoverage(reading) {
   if (reading.judge_version == null) return null;
   if (reading.development_of == null) return null;

@@ -12,11 +12,9 @@ therefore follows the newest row’s stored `development_of` root, never the sco
 missing roots have unknown age and no prefix. A reading that opens a new
 development has no prefix either: its first coverage is the reading itself, and
 the update time already dates it, so `explanation_since` is null. The prefix
-appears when a later reading re-reports that development. `/api/current` also
-sends `explanation_new`, true only for a judged reading that opened its own
-development; the app marks that sentence “New”. Unjudged readings are not marked,
-because their development is unknown rather than new. Push notifications use the
-same test: see `AGENTS.md`. Historical judgements
+appears when a later reading re-reports that development. A sentence with no
+prefix is new: `/api/current` sends `explanation_new: true`, the app marks it
+“New”, and only such a reading can send a push notification. Historical judgements
 and stored sentences are not rewritten.
 
 ## Caller sequence
