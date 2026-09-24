@@ -4,6 +4,9 @@ import Head from 'expo-router/head';
 import { Link, Stack, useRouter } from 'expo-router';
 import { BackIcon } from '@/components/back-icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHeaderHeight } from 'expo-router/react-navigation';
+import { ReadingGradient } from '@/components/reading-gradient';
+import { useCurrentReading } from '@/components/reading-provider';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
 import { Toggle } from '@/components/toggle';
@@ -26,6 +29,8 @@ export default function Settings() {
   const theme = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
+  const { reading } = useCurrentReading();
   const { width } = useWindowDimensions();
   const horizontal = Math.max(20, Math.min((width || 390) * 0.05, 48));
   const { preferences, setTheme, subscription, savingNotifications: busy } = usePreferences();
@@ -64,8 +69,12 @@ export default function Settings() {
       style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center', marginLeft: process.env.EXPO_OS === 'web' ? 4 : 0 }}>
       <BackIcon color={theme.accent} />
     </Pressable> : undefined }} />
-    <ScrollView style={{ flex: 1, backgroundColor: theme.tinted }} contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ paddingHorizontal: horizontal, paddingTop: 24, paddingBottom: insets.bottom + 32, alignItems: 'center' }}>
+    {/* The header is transparent over the page's own gradient. iOS insets the
+        scroll view under it; elsewhere the content clears it explicitly. */}
+    <View style={{ flex: 1, backgroundColor: theme.surface }}>
+    <ReadingGradient score={reading?.score} dark={theme.dark} />
+    <ScrollView style={{ flex: 1, backgroundColor: 'transparent' }} contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ paddingHorizontal: horizontal, paddingTop: (process.env.EXPO_OS === 'ios' ? 0 : headerHeight) + 24, paddingBottom: insets.bottom + 32, alignItems: 'center' }}>
       <View style={{ width: '100%', maxWidth: 440, gap: 28 }}>
         <View accessibilityRole="radiogroup" accessibilityLabel="Appearance">
           <Text accessibilityRole="header" style={heading}>Appearance</Text>
@@ -123,5 +132,6 @@ export default function Settings() {
         </View>
       </View>
     </ScrollView>
+    </View>
   </>;
 }

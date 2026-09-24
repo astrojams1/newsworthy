@@ -64,19 +64,21 @@ export default function Home() {
       <link rel="help" href={supportUrl} />
     </Head>}
     <Stack.Screen options={{ headerTransparent: true, headerStyle: { backgroundColor: 'transparent' }, headerTitle: '',
-      headerLeft: () => brand, headerRight: () => headerRight,
-      // iOS 26+ draws glass around header items. The wordmark stays out of it —
-      // a text mark in a capsule reads as a button — while share and settings
-      // share one capsule, which is what the glass is for.
-      unstable_headerLeftItems: process.env.EXPO_OS === 'ios' ? () => [
-        { type: 'custom', element: brand, hidesSharedBackground: true },
-      ] : undefined,
+      // On iOS the wordmark is drawn by the page, not the bar. As a bar item,
+      // even without glass, iOS 26 morphed a square-cornered plate from it into
+      // Settings' back button and redrew it enlarged as it faded back in.
+      headerLeft: process.env.EXPO_OS === 'ios' ? undefined : () => brand, headerRight: () => headerRight,
+      // iOS 26+ draws glass around header items: share and settings share one
+      // capsule, which is what the glass is for.
       unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => [
         ...(shareButton ? [{ type: 'custom' as const, element: shareButton, hidesSharedBackground: false }] : []),
         { type: 'custom' as const, element: settingsButton, hidesSharedBackground: false },
       ] : undefined }} />
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
     <ReadingGradient score={reading?.score} dark={theme.dark} />
+    {/* Centred in the bar's row with the bar's 20-point leading margin, where the bar placed it. */}
+    {process.env.EXPO_OS === 'ios' && <View testID="brand-row" style={{ position: 'absolute', top: insets.top, height: Math.max(headerHeight - insets.top, 0),
+      left: insets.left + 20, justifyContent: 'center' }}>{brand}</View>}
     <ScrollView key={fontScale} contentInsetAdjustmentBehavior="never" style={{ flex: 1, backgroundColor: 'transparent' }}
       contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: insets.bottom + (landscape ? 16 : 32), paddingTop: headerHeight + (landscape ? 16 : 24) }}>
       <View style={{ flex: 1, justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', paddingBottom: landscape ? 16 : 56 }}>

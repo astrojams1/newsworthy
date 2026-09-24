@@ -167,23 +167,35 @@ test('rendered-prop test catches a platform-specific denominator regression', ()
 });
 
 function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
-  const tree = nodes(renderReading({ platform, score, width: 390, height: 844, sourceOverride }));
+  const insets = { top: 59, bottom: 34, left: 0, right: 0 };
+  const tree = nodes(renderReading({ platform, score, width: 390, height: 844, sourceOverride, insets, headerHeight: 113 }));
   const options = tree.find(n => n.type === 'Screen').props.options;
   assert.equal(options.headerTransparent, true);
-  const left = options.headerLeft();
+  const brandRow = tree.find(n => n.props.testID === 'brand-row');
+  if (platform === 'ios') {
+    // A bar item, glass or not, is morphed into the next screen's back button
+    // and re-animated on return; the page draws the wordmark instead.
+    assert.equal(options.headerLeft, undefined, 'iOS wordmark is drawn by the page, not the bar');
+    assert.equal(options.unstable_headerLeftItems, undefined, 'iOS wordmark is drawn by the page, not the bar');
+    assert.ok(brandRow, 'iOS wordmark is drawn by the page, not the bar');
+    assert.equal(nodes(brandRow.props.children).filter(n => n.type === 'BrandMark').length, 1);
+    // The row spans what the bar occupies below the status bar.
+    assert.deepEqual({ ...brandRow.props.style }, { position: 'absolute', top: insets.top, height: 113 - insets.top, left: 20, justifyContent: 'center' });
+    const screen = tree.find(n => n.type === 'View' && n.props.style?.flex === 1);
+    const order = nodes(screen.props.children, screen).filter(n => n.parent === screen).map(n => n.props.testID ?? n.type);
+    assert.ok(order.indexOf('brand-row') < order.indexOf('ScrollView'), 'wordmark is read before the reading');
+  } else {
+    assert.equal(brandRow, undefined);
+    assert.equal(options.headerLeft().type, 'BrandMark');
+  }
   const rightGroup = options.headerRight();
-  assert.equal(left.type, 'BrandMark');
   // The right side is share (when there is a reading) then settings, always.
   assert.equal(rightGroup.props.style.flexDirection, 'row');
   const [share, settings] = rightGroup.props.children;
   assert.equal(settings.props.accessibilityLabel, 'Settings');
   assert.equal(nodes(settings).some(n => n.type === 'SettingsIcon'), true);
   if (platform === 'ios') {
-    const leftItems = options.unstable_headerLeftItems();
     const rightItems = options.unstable_headerRightItems();
-    assert.equal(leftItems.length, 1);
-    assert.equal(leftItems[0].hidesSharedBackground, true, 'brand must not acquire iOS glass');
-    assert.equal(leftItems[0].element, left);
     assert.equal(rightItems.length, score == null ? 1 : 2);
     for (const item of rightItems) assert.equal(item.hidesSharedBackground, false, 'share and settings sit in the iOS glass capsule');
     assert.equal(rightItems.at(-1).element, settings);
@@ -234,11 +246,17 @@ test('header gate rejects missing optical correction on iOS and a lift on the ba
   }
 });
 
-test('header gate rejects iOS glass moving: onto the wordmark, or off the controls', () => {
+test('header gate rejects the iOS wordmark returning to the bar, or glass moving off the controls', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  const brandGlass = source.replace('element: brand, hidesSharedBackground: true', 'element: brand, hidesSharedBackground: false');
-  assert.notEqual(brandGlass, source);
-  assert.throws(() => inspectHeader({ sourceOverride: brandGlass }), /must not acquire iOS glass/);
+  // Reported 2026-09-24: as a bar item without glass, the wordmark still grew a
+  // square-cornered plate that morphed into Settings' back button, and was
+  // redrawn enlarged before snapping to size after the pop.
+  const barItem = source.replace("headerLeft: process.env.EXPO_OS === 'ios' ? undefined : () => brand", 'headerLeft: () => brand');
+  const glassless = source.replace('unstable_headerRightItems:', "unstable_headerLeftItems: process.env.EXPO_OS === 'ios' ? () => [{ type: 'custom', element: brand, hidesSharedBackground: true }] : undefined,\n      unstable_headerRightItems:");
+  for (const sourceOverride of [barItem, glassless]) {
+    assert.notEqual(sourceOverride, source);
+    assert.throws(() => inspectHeader({ sourceOverride }), /drawn by the page, not the bar/);
+  }
   for (const element of ['shareButton', 'settingsButton']) {
     const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: false`,
       `element: ${element}, hidesSharedBackground: true`);
@@ -271,22 +289,85 @@ test('reading gate rejects a full-width space or proportional score face', () =>
 });
 
 
+function inspectLayout({ platform, dark, score, iosVersion, sourceOverride }) {
+  const tree = renderLayout({ platform, dark, score, iosVersion, sourceOverride });
+  const palette = themeForLevel(score, dark);
+  assert.equal(tree.type, 'ThemeProvider');
+  const navigation = tree.props.value;
+  assert.equal(navigation.dark, dark, 'native header materials follow the resolved app theme');
+  assert.equal(navigation.colors.card, palette.tinted);
+  assert.equal(navigation.colors.primary, palette.accent);
+  assert.equal(navigation.colors.text, palette.ink);
+  assert.ok(navigation.fonts.regular, 'retain router font defaults');
+  const all = nodes(tree);
+  const stack = all.find(n => n.props.screenOptions);
+  assert.equal(stack.props.screenOptions.contentStyle.backgroundColor, palette.tinted, 'a screen never flashes a default background');
+  // Reported 2026-09-24: iOS 26 rounds a moving screen's corners, and the flat
+  // canvas showed as dark wedges around the reading screen during a pop. The
+  // canvas is the reading gradient itself, with no default colour to flash.
+  assert.equal(navigation.colors.background, 'transparent', 'transition canvas is the reading gradient');
+  const canvas = all.find(n => n.props.testID === 'transition-canvas');
+  assert.equal(stack.parent.props.testID, 'transition-canvas', 'transition canvas is the reading gradient');
+  assert.equal(canvas.props.style.backgroundColor, palette.surface, 'transition canvas is the reading gradient');
+  const gradient = nodes(canvas.props.children, canvas).find(n => n.type === 'ReadingGradient');
+  assert.equal(gradient?.props.score, score ?? undefined, 'transition canvas is the reading gradient');
+  assert.equal(gradient.props.dark, dark);
+  assert.equal(all.find(n => n.type === 'StatusBar').props.style, dark ? 'light' : 'dark');
+  // Reported 2026-09-24: an opaque Settings bar is drawn by the navigation bar,
+  // which does not slide, and snapped a flat band over the gradient on push.
+  const settings = all.find(n => n.type === 'Screen' && n.props.name === 'settings').props.options;
+  assert.equal(settings.headerTransparent, true, 'Settings bar slides with its page');
+  assert.equal(settings.headerStyle.backgroundColor, 'transparent', 'Settings bar slides with its page');
+  if (platform === 'ios' && Number.parseInt(iosVersion, 10) >= 26) {
+    assert.equal(settings.headerBackground, undefined, 'iOS 26 blurs scrolled content under the bar itself');
+  } else {
+    const slice = settings.headerBackground();
+    assert.equal(slice.type, 'ReadingGradientSlice', 'content scrolled under the bar is covered by the page gradient');
+    assert.deepEqual({ ...slice.props }, { score: score ?? undefined, dark, surface: palette.surface });
+  }
+}
+
 test('navigation materials and transition canvas match the resolved app appearance', () => {
-  for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) for (const score of [null, 1, 8, 10]) {
-    const tree = renderLayout({ platform, dark, score });
-    const palette = themeForLevel(score, dark);
-    assert.equal(tree.type, 'ThemeProvider');
-    const navigation = tree.props.value;
-    assert.equal(navigation.dark, dark, 'native header materials follow the resolved app theme');
-    assert.equal(navigation.colors.background, palette.tinted, 'the transition canvas cannot flash a default background');
-    assert.equal(navigation.colors.card, palette.tinted);
-    assert.equal(navigation.colors.primary, palette.accent);
-    assert.equal(navigation.colors.text, palette.ink);
-    assert.ok(navigation.fonts.regular, 'retain router font defaults');
-    const all = nodes(tree);
-    const stack = all.find(n => n.props.screenOptions);
-    assert.equal(stack.props.screenOptions.contentStyle.backgroundColor, navigation.colors.background);
-    assert.equal(all.find(n => n.type === 'StatusBar').props.style, dark ? 'light' : 'dark');
+  for (const [platform, iosVersion] of [['ios', '26.0'], ['ios', '18.6'], ['android'], ['web']]) {
+    for (const dark of [false, true]) for (const score of [null, 1, 8, 10]) inspectLayout({ platform, dark, score, iosVersion });
+  }
+});
+
+test('layout gate rejects a flat transition canvas or an opaque Settings bar', () => {
+  const source = readFileSync(new URL('../apps/client/app/_layout.tsx', import.meta.url), 'utf8');
+  const cases = [
+    [source.replace("background: 'transparent', card:", 'background: theme.tinted, card:'), /transition canvas is the reading gradient/],
+    [source.replace('<ReadingGradient score={reading?.score} dark={theme.dark} />', ''), /transition canvas is the reading gradient/],
+    [source.replace('headerTransparent: true, headerStyle: { backgroundColor: \'transparent\' },\n        headerBackground', 'headerBackground'), /Settings bar slides with its page/],
+    [source.replace('headerBackground: liquidGlass ? undefined :', 'headerBackground:'), /iOS 26 blurs/],
+  ];
+  for (const [sourceOverride, message] of cases) {
+    assert.notEqual(sourceOverride, source);
+    assert.throws(() => inspectLayout({ platform: 'ios', dark: true, score: 3, iosVersion: '26.0', sourceOverride }), message);
+  }
+});
+
+function inspectSettingsCanvas({ platform, dark, sourceOverride }) {
+  const all = nodes(renderSettings({ platform, dark, sourceOverride }).tree);
+  const scroll = all.find(n => n.type === 'ScrollView');
+  const page = scroll.parent;
+  assert.equal(page.props.style.backgroundColor, themeForLevel(3, dark).surface, 'Settings carries the reading gradient');
+  assert.equal(nodes(page.props.children, page).find(n => n.parent === page)?.type, 'ReadingGradient', 'Settings carries the reading gradient');
+  assert.equal(scroll.props.style.backgroundColor, 'transparent', 'Settings carries the reading gradient');
+  // iOS insets the scroll view under a transparent bar; elsewhere padding does.
+  assert.equal(scroll.props.contentInsetAdjustmentBehavior, 'automatic');
+  assert.equal(scroll.props.contentContainerStyle.paddingTop, platform === 'ios' ? 24 : 44 + 24, 'content clears the transparent bar');
+}
+
+test('Settings is an opaque page on the reading gradient under a transparent bar', () => {
+  for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) inspectSettingsCanvas({ platform, dark });
+  const source = readFileSync(new URL('../apps/client/app/settings.tsx', import.meta.url), 'utf8');
+  for (const [sourceOverride, message] of [
+    [source.replace("style={{ flex: 1, backgroundColor: 'transparent' }} contentInsetAdjustmentBehavior", 'style={{ flex: 1, backgroundColor: theme.tinted }} contentInsetAdjustmentBehavior'), /reading gradient/],
+    [source.replace("paddingTop: (process.env.EXPO_OS === 'ios' ? 0 : headerHeight) + 24", 'paddingTop: 24'), /clears the transparent bar/],
+  ]) {
+    assert.notEqual(sourceOverride, source);
+    assert.throws(() => inspectSettingsCanvas({ platform: 'android', dark: true, sourceOverride }), message);
   }
 });
 

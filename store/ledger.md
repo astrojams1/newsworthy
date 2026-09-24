@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T06:20:53+00:00
+Updated: 2026-09-24T07:55:54+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -90,6 +90,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
 | apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
+| apple.settings-transition | in_progress | agent | observed | Owner iPhone recording of Settings push/pop shows four defects: flat header band snapping on push, square plate around the wordmark morphing into Back, wordmark enlarging then snapping after pop, and dark canvas wedges at iOS 26 rounded screen corners. Source fix: Settings on the reading gradient under a transparent bar, gradient transition canvas, iOS wordmark drawn by the page. | Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed. |
 
 ## Evidence and history
 
@@ -2819,3 +2820,13 @@ Next: Await Apple review outcome; inspect its actual next message before assigni
 Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.
 
 - store/apple-review-resubmission-2026-09-24-video.json
+
+### 289. apple.settings-transition — in_progress
+
+2026-09-24T07:55:54+00:00 · observed · agent
+
+Owner iPhone recording of Settings push/pop shows four defects: flat header band snapping on push, square plate around the wordmark morphing into Back, wordmark enlarging then snapping after pop, and dark canvas wedges at iOS 26 rounded screen corners. Source fix: Settings on the reading gradient under a transparent bar, gradient transition canvas, iOS wordmark drawn by the page.
+
+- Owner screen recording September24 (frames 13, 112, 129 matched to owner screenshots). design72 checks and npm test294 passed (one existing skip); web export Settings checked in Chromium. Not verified on a native build: iOS 26 and earlier-iOS transitions, scroll-edge blur under the Settings bar, wordmark alignment, Android.
+
+Next: Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed.

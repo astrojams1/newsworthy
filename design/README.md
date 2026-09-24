@@ -244,6 +244,22 @@ as the screens. Its ThemeProvider supplies native header material appearance and
 the transition canvas; headerStyle/contentStyle alone do not set those. The
 reading header stays transparent over its gradient.
 
+Settings carries the reading gradient too, as an opaque page under a
+transparent bar. An opaque Settings bar is drawn by the navigation bar, which
+does not slide with the page, so on iOS it snapped a flat band across the
+reading screen at the start of a push. iOS 26 blurs content scrolled under the
+bar itself; on earlier iOS, Android and web the bar's background is the top of
+the same gradient (`ReadingGradientSlice`), so scrolled rows disappear under it
+without a band. The navigator's canvas is transparent over one more copy of the
+gradient drawn beneath the stack: iOS 26 rounds a moving screen's corners, and a
+flat canvas showed there as dark wedges around the reading screen during a pop.
+
+On iOS the wordmark is drawn by the reading screen, centred in the bar's row
+with a 20-point leading margin, rather than as a bar item. As a custom item
+without glass it still grew a square-cornered plate during a push that morphed
+into the back button, and was redrawn enlarged before snapping to size after a
+pop. Android and web keep it as the header's left element.
+
 Notification saves use the existing text below the controls: `Saving…`, then
 `Notify on readings 8 or higher enabled.` or `Notify on readings 8 or higher disabled.`
 with the selected threshold substituted. No spinner enters the switch row.
@@ -251,7 +267,8 @@ Both notification controls are disabled until all queued changes finish, and
 pending state belongs to the provider so reopening Settings preserves feedback.
 Failures retain the previous subscription state and show the existing error.
 
-`test/surface-design.test.js` checks navigation theme propagation and unchanged
+`test/surface-design.test.js` checks navigation theme propagation, the gradient
+canvas and transparent Settings bar, the iOS wordmark's placement, and unchanged
 row structure/styles during saving; `test/preferences.test.js` checks queued
 requests, failure, rollback and retry. These are not native layout or iOS glass
 rendering tests. Verification limits are recorded in

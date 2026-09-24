@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Appearance } from 'react-native';
+import { Appearance, Platform, View } from 'react-native';
 import { PreferencesProvider, usePreferences } from '@/components/preferences-provider';
 import { ReadingProvider, useCurrentReading } from '@/components/reading-provider';
 import { faviconSvg } from '../../../public/favicon';
@@ -7,6 +7,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter } from 'expo-r
 import { onNotificationOpen } from '@/lib/push';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
+import { ReadingGradient, ReadingGradientSlice } from '@/components/reading-gradient';
 // A deep link or a cold start on /settings still gets the reading screen
 // underneath it, so the native back button exists rather than depending on
 // how the screen was reached.
@@ -18,12 +19,18 @@ function ThemedLayout() {
   const theme = useTheme();
   const baseNavigationTheme = theme.dark ? DarkTheme : DefaultTheme;
   // Native header materials and the canvas behind a screen transition read
-  // the navigator's theme, independently of headerStyle/contentStyle.
+  // the navigator's theme, independently of headerStyle/contentStyle. The
+  // canvas is transparent over the reading gradient drawn below the navigator:
+  // iOS 26 rounds a moving screen's corners, and a flat canvas showed there as
+  // dark wedges around the reading screen while Settings was popped.
   const navigationTheme = { ...baseNavigationTheme, colors: { ...baseNavigationTheme.colors,
-    primary: theme.accent, background: theme.tinted, card: theme.tinted,
+    primary: theme.accent, background: 'transparent', card: theme.tinted,
     text: theme.ink, border: theme.rule, notification: theme.accent,
   } };
   const { reading, refresh } = useCurrentReading();
+  // iOS 26 blurs content scrolling under a transparent bar itself; earlier
+  // systems and the other platforms get the page's own gradient behind the bar.
+  const liquidGlass = process.env.EXPO_OS === 'ios' && Number.parseInt(String(Platform.Version), 10) >= 26;
   const router = useRouter();
   useEffect(() => onNotificationOpen(() => { router.replace('/'); void refresh(); }), [router, refresh]);
   const { preferences: { theme: appearance } } = usePreferences();
@@ -54,10 +61,18 @@ function ThemedLayout() {
   }, [reading?.score, theme.dark, theme.center]);
   return <ThemeProvider value={navigationTheme}>
     <StatusBar style={theme.dark ? 'light' : 'dark'} />
+    <View testID="transition-canvas" style={{ flex: 1, backgroundColor: theme.surface }}>
+    <ReadingGradient score={reading?.score} dark={theme.dark} />
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
       <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
-      <Stack.Screen name="settings" options={{ title: 'Settings', headerBackTitle: 'Back', headerTitleStyle: { color: theme.ink } }} />
+      {/* Settings carries the reading gradient too. Its bar is transparent: an
+          opaque one is drawn by the navigation bar, which does not slide with
+          the page, and snapped a flat band over the reading screen on push. */}
+      <Stack.Screen name="settings" options={{ title: 'Settings', headerBackTitle: 'Back', headerTitleStyle: { color: theme.ink },
+        headerTransparent: true, headerStyle: { backgroundColor: 'transparent' },
+        headerBackground: liquidGlass ? undefined : () => <ReadingGradientSlice score={reading?.score} dark={theme.dark} surface={theme.surface} /> }} />
     </Stack>
+    </View>
   </ThemeProvider>;
 }

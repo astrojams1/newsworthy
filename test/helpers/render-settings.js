@@ -15,7 +15,7 @@ const compile = text => ts.transpileModule(text, { compilerOptions: {
 } }).outputText;
 const compiled = compile(source);
 
-export function renderSettings({ platform, width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {}, canGoBack = true, busy = false } = {}) {
+export function renderSettings({ platform, width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {}, canGoBack = true, busy = false, sourceOverride } = {}) {
   // Recorded as plain copies: values built inside the vm context carry that
   // context's prototypes, which strict deep equality would refuse.
   const calls = { setTheme: [], enable: 0, disable: 0, choose: [], replace: [], openSettings: 0, notices: [] };
@@ -47,10 +47,13 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
       },
     }) },
     '@/lib/push': { pushSupported },
+    'expo-router/react-navigation': { useHeaderHeight: () => 44 },
+    '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
+    '@/components/reading-provider': { useCurrentReading: () => ({ reading: { score: 3 } }) },
     '@/lib/config': { privacyUrl: '/privacy', supportUrl: '/support' },
   };
   const exports = {};
-  vm.runInNewContext(compiled, {
+  vm.runInNewContext(sourceOverride ? compile(sourceOverride) : compiled, {
     exports, process: { env: { EXPO_OS: platform } },
     require: name => {
       if (name === 'react/jsx-runtime') return require(name);
