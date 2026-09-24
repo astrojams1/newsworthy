@@ -84,7 +84,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [14, 'ee36003b3dead317'],
     [15, 'a591b4ed45980b21'],
     [16, 'c7f2d04f4911974b'],
-    [17, 'e024bf639cf18bac'],
+    [17, '4bff3590dcbcc883'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -322,13 +322,13 @@ test('v16 raises the body budget to 135 for the "New: " label without changing c
 test('v17 adds house style and date exemptions to v16 and nothing else', async () => {
   const before = renderPrompt(16).text;
   const after = renderPrompt(17).text;
-  const [head, style] = after.split('\n\nSame style every run: ');
+  const [head, style] = after.split('\n\nStyle: ');
   assert.equal(head, before.replace(
     'At most one number, in plain terms.',
-    'At most one figure, in plain terms. Dates, years and ordinals are not figures.',
+    "At most one figure, in plain terms; dates, years and ordinals don't count.",
   ), 'v16 verbatim apart from the one-figure rule');
   // One convention per inconsistency found in stored and evaluated sentences.
-  for (const convention of [/dates as Jan 10, no weekday/, /US, UK, EU, UN, NATO, the Fed/, /3, 5%, \$2 billion/, /Said, not says/, /US spelling/, /Straight apostrophes/]) {
+  for (const convention of [/^Jan 10, Oct \(year only if not this one, no weekdays\)/, /US \(not American\), UK, EU, UN, NATO, the Fed/, /3, 5%, \$2 billion, a quarter point, other currencies in dollars/, /Claims: said/, /US spelling, straight apostrophes/]) {
     assert.match(style, convention);
   }
   const evaluation = JSON.parse(await readFile('docs/prompt-evaluations/v17.json', 'utf8'));

@@ -852,19 +852,19 @@ Stored and evaluated sentences wrote the same thing several ways: "January 10"
 beside "Jan 10", "United States" beside "US" and "American", "100 percent"
 beside "100%", "the Federal Reserve" beside "the Fed", "Poland says" beside
 "Saudi Arabia said", NATO spelled out in some runs. Output now ends with one
-style line: dates as `Jan 10`, US/UK/EU/UN/NATO/the Fed, digits for figures,
-`said` for claims, US spelling and straight apostrophes. The one-number rule
-now exempts dates, years and ordinals. A draft under the flat rule cut "first
-increase since 2023" to "first time in years". The rest of Output is v16's
-verbatim, and everything before it is unchanged.
+terse style line covering dates and months, short names, digits, other
+currencies in dollars, `said` for claims, US spelling and straight
+apostrophes. Dates, years and ordinals no longer count toward the one-figure
+rule. A draft under the flat rule cut "first increase since 2023" to "first
+time in years". The rest of Output is v16's verbatim.
 
-That took the prompt to 2,292 characters, past rule 7's 2,000. The limit is no
-longer fixed: an agent proposes a raise to the owner with the additions quoted
-and the new length and limit, and builds past it only after approval.
-`PROMPT-RULES.md` holds the approved limit, now 2,300, and a table of raises,
-and the rule 7 test reads the limit from there. A style reference file served
-beside the prompt was tried and dropped because it would grow without that
-check. The [record](docs/prompt-evaluations/v17.md) holds the catalog.
+The prompt is 2,253 characters. Rule 7's limit is now read from
+`PROMPT-RULES.md`, which says what to do when an improvement does not fit:
+write it tersely and tighten existing wording first, and propose a raise to
+the owner only when that cannot make room. The owner approved 2,300 for a
+looser first draft of v17. A style reference file served beside the prompt
+was tried and dropped because it would grow without that check. The
+[record](docs/prompt-evaluations/v17.md) holds the catalog.
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,

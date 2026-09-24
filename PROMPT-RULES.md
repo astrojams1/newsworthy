@@ -11,22 +11,21 @@ one, so a version that breaks a rule fails rather than ships.
 6. Append-only. Never edit a published version — add the next one.
 7. Under the approved character limit: 2,300.
 
-## Raising the character limit
+## When an improvement does not fit
 
-Rule 7 keeps prompts short, and short is the default. The limit rises only with
-the owner's explicit approval. Before any version goes past the limit, the
-agent proposes the raise to the owner, stating:
+The limit is not a reason to drop an improvement, and not by itself a reason
+to ask for a bigger one. When an addition does not fit, make room:
 
-- what the extra characters carry, quoted, and why it cannot fit in the
-  current limit;
-- the new prompt's length and the new limit.
+- write the addition as tersely as it will go;
+- tighten existing wording without changing what it asks for. Scale and
+  Examples are the author's and stay verbatim.
 
-A raise that has not been approved is not built into a published version. When
-one is approved, the number in rule 7 changes and a row is added below. The test
-for rule 7 reads the limit from this file, so the number in rule 7 is the one
-enforced.
+Only when that cannot make room does the agent propose a raise to the owner,
+quoting what the extra characters carry and stating the new length and limit.
+A raise is built only after approval. The number in rule 7 then changes and a
+row is added below. The rule 7 test reads the limit from this file.
 
 | Limit | Date | Approved for |
 | --- | --- | --- |
 | 2,000 | original | the first rule 7 |
-| 2,300 | 2026-09-24 | v17: one-figure exceptions and a house style line (2,292 characters) |
+| 2,300 | 2026-09-24 | v17: one-figure exceptions and a house style line |
