@@ -5,8 +5,8 @@ description: Update and evaluate Newsworthy's versioned rating prompt, synchroni
 
 # Newsworthy prompt update
 
-Work from the repository root. Read [AGENTS.md](../../../AGENTS.md),
-[CLAUDE.md](../../../CLAUDE.md), [PROMPT-RULES.md](../../../PROMPT-RULES.md),
+Work from the repository root. Read
+[AGENTS.md](../../../AGENTS.md), [PROMPT-RULES.md](../../../PROMPT-RULES.md),
 and [product messaging](../../../docs/product-messaging.md) first.
 This skill supports the user's requested scope: a proposal does not authorize
 publication; an explicit request to merge already authorizes the merge.

@@ -20,7 +20,7 @@ let running = false;
  * 'cron' reading filed each of its runs as a button press.
  *
  * An allowlist rather than a test for 'manual', because of which way each
- * fails. Mapping unknown reasons to 'cron' is the silent default CLAUDE.md
+ * fails. Mapping unknown reasons to 'cron' is the silent default AGENTS.md
  * records as the original bug: a new trigger, or a typo, becomes the schedule
  * without a word. Unknown means a person or a new call site, which is what
  * 'manual' already means.

@@ -16,7 +16,7 @@ appears when a later reading re-reports that development. `/api/current` also
 sends `explanation_new`, true only for a judged reading that opened its own
 development; the app marks that sentence “New”. Unjudged readings are not marked,
 because their development is unknown rather than new. Push notifications use the
-same test: see `CLAUDE.md`. Historical judgements
+same test: see `AGENTS.md`. Historical judgements
 and stored sentences are not rewritten.
 
 ## Caller sequence

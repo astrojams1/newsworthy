@@ -19,7 +19,7 @@ different words.
 
 Check the relevant claims against implementation and evidence:
 
-- README examples and setup instructions; `CLAUDE.md` and `AGENTS.md` workflow.
+- README examples and setup instructions; `AGENTS.md` workflow.
 - Shared app metadata, visible copy, help/privacy pages and `public/llms.txt`.
 - Store listing source, screenshots/captions and release ledgers when the change
   affects mobile behavior or availability. Source support, deployed web behavior,
