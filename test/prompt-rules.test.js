@@ -84,6 +84,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [14, 'ee36003b3dead317'],
     [15, 'a591b4ed45980b21'],
     [16, 'c7f2d04f4911974b'],
+    [17, '4bff3590dcbcc883'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -103,9 +104,15 @@ test('rule 6 — append-only: published versions are frozen', () => {
   assert.equal(new Set(allPrompts().map((p) => p.hash)).size, versions.length, 'hashes distinct');
 });
 
-test('rule 7 — under 2,000 characters', () => {
+test('rule 7 — under the approved character limit', async () => {
+  // The limit lives in PROMPT-RULES.md so raising it is one approved, recorded
+  // edit there rather than a number changed quietly here.
+  const rules = await readFile('PROMPT-RULES.md', 'utf8');
+  const limit = Number(rules.match(/^7\. Under the approved character limit: ([\d,]+)\.$/m)[1].replace(/,/g, ''));
+  const history = [...rules.matchAll(/^\| ([\d,]+) \|/gm)].map((m) => Number(m[1].replace(/,/g, '')));
+  assert.equal(history.at(-1), limit, 'every raise is recorded in the limit table');
   const { text } = renderPrompt(latestVersion());
-  assert.ok(text.length < 2000, `${text.length} characters`);
+  assert.ok(text.length < limit, `${text.length} characters, limit ${limit}; propose a raise to the owner first`);
 });
 
 test('the rules file lists exactly what is enforced here', async () => {
@@ -304,6 +311,31 @@ test('v16 raises the body budget to 135 for the "New: " label without changing c
   assert.equal(evaluation.design.arms.v15, before.slice(before.lastIndexOf('Output\n')));
   const cases = evaluation.design.cases.map(({ id }) => id).sort();
   for (const arm of ['v15', 'v16']) {
+    for (const repeat of [1, 2]) {
+      const batch = evaluation.outputs.filter((row) => row.arm === arm && row.repeat === repeat);
+      assert.deepEqual(batch.map((row) => row.case).sort(), cases);
+      for (const row of batch) assert.equal(row.characters, [...row.explanation].length, 'counts reflect the unmodified outputs');
+    }
+  }
+});
+
+test('v17 adds house style and date exemptions to v16 and nothing else', async () => {
+  const before = renderPrompt(16).text;
+  const after = renderPrompt(17).text;
+  const [head, style] = after.split('\n\nStyle: ');
+  assert.equal(head, before.replace(
+    'At most one number, in plain terms.',
+    "At most one figure, in plain terms; dates, years and ordinals don't count.",
+  ), 'v16 verbatim apart from the one-figure rule');
+  // One convention per inconsistency found in stored and evaluated sentences.
+  for (const convention of [/^Jan 10, Oct \(year only if not this one, no weekdays\)/, /US \(not American\), UK, EU, UN, NATO, the Fed/, /3, 5%, \$2 billion, a quarter point, other currencies in dollars/, /Claims: said/, /US spelling, straight apostrophes/]) {
+    assert.match(style, convention);
+  }
+  const evaluation = JSON.parse(await readFile('docs/prompt-evaluations/v17.json', 'utf8'));
+  assert.equal(evaluation.design.arms.v17, after);
+  assert.equal(evaluation.design.arms.v16, before);
+  const cases = evaluation.design.cases.map(({ id }) => id).sort();
+  for (const arm of ['v16', 'v17']) {
     for (const repeat of [1, 2]) {
       const batch = evaluation.outputs.filter((row) => row.arm === arm && row.repeat === repeat);
       assert.deepEqual(batch.map((row) => row.case).sort(), cases);

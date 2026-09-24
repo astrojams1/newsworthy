@@ -61,6 +61,19 @@ release status. Calm presentation must not change the rating calibration.
   branch and Vercel's production branch. Preview builds are skipped by
   `vercel.json`’s `ignoreCommand`; verify production after merge.
 - `npm test` needs no cloud database — see Testing.
+- The production admin token (`ADMIN_TOKEN`) is kept in the owner's 1Password
+  vault. Stored readings, rejections and every prompt version sit behind it at
+  `/api/admin/history` and `/api/admin/prompts`. When a task needs production
+  history, such as measuring a prompt change, ask the owner for the token or
+  read it with the 1Password CLI (`op`) where that is signed in, rather than
+  settling for the repository's fixtures. Pass it in the `x-admin-token` header,
+  never in a file, commit, log or PR.
+
+- This file is capped at 58,500 characters, enforced by
+  `test/agents-md.test.js`. An addition that does not fit is written tersely
+  and makes room by tightening or removing stale text here. Propose a raise to
+  the owner only when that cannot make room, stating what the addition says and
+  the new length and limit, and change this number only after approval.
 
 ## Layout
 
@@ -840,6 +853,25 @@ bold "New:" on a new development, five characters, so the body budget rises from
 included, is v15's. The [record](docs/prompt-evaluations/v16.md) compares v15 and
 v16 on the same eight cards: v16 spent the room keeping caveats v15 had cut.
 
+**v17 fixes house style so two readings of the same kind of news read alike.**
+Stored and evaluated sentences wrote the same thing several ways: "January 10"
+beside "Jan 10", "United States" beside "US" and "American", "100 percent"
+beside "100%", "the Federal Reserve" beside "the Fed", "Poland says" beside
+"Saudi Arabia said", NATO spelled out in some runs. Output now ends with one
+terse style line covering dates and months, short names, digits, other
+currencies in dollars, `said` for claims, US spelling and straight
+apostrophes. Dates, years and ordinals no longer count toward the one-figure
+rule. A draft under the flat rule cut "first increase since 2023" to "first
+time in years". The rest of Output is v16's verbatim.
+
+The prompt is 2,253 characters. Rule 7's limit is now read from
+`PROMPT-RULES.md`, which says what to do when an improvement does not fit:
+write it tersely and tighten existing wording first, and propose a raise to
+the owner only when that cannot make room. The owner approved 2,300 for a
+looser first draft of v17. A style reference file served beside the prompt
+was tried and dropped because it would grow without that check. The
+[record](docs/prompt-evaluations/v17.md) holds the catalog.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.
@@ -879,5 +911,5 @@ document read as authoritative is worse than no number.
 for two hours from the reading’s `created_at`, not the score’s decay anchor or a
 verified event date. It is bold and otherwise styled as the sentence, on the web,
 in the apps and in both widgets. The 140-character display budget includes it;
-prompt v16 reserves 5 characters for "New: " and asks for a body of at most 135.
+prompts v16 and later reserve 5 characters for "New: " and ask for a body of at most 135.
 See `docs/story-age.md` for preparation, compatibility and verification limits.

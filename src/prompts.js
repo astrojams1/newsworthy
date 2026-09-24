@@ -346,6 +346,18 @@ const V16_OUTPUT_CONTRACT = V15_OUTPUT_CONTRACT
   .replace('reserving 20 for an app-supplied age prefix. Submit no prefix.',
     'reserving 5 for the label "New: " that the app adds to a new development. Submit no label.');
 
+// v17 fixes house style so two readings of the same kind of news are written
+// the same way: dates, names, figures, currencies, attribution tense and
+// spelling had all varied across stored and evaluated sentences. It also stops
+// dates, years and ordinals counting toward the one-figure rule. The rest of
+// Output is v16's verbatim. See docs/prompt-evaluations/v17.md.
+const V17_OUTPUT_CONTRACT = `${V16_OUTPUT_CONTRACT.replace(
+  'At most one number, in plain terms.',
+  "At most one figure, in plain terms; dates, years and ordinals don't count.",
+)}
+
+Style: Jan 10, Oct (year only if not this one, no weekdays). US (not American), UK, EU, UN, NATO, the Fed. Digits: 3, 5%, $2 billion, a quarter point, other currencies in dollars. Claims: said. US spelling, straight apostrophes.`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -458,6 +470,13 @@ const REGISTRY = {
     added: '2026-09-24',
     instructions: V11_INSTRUCTIONS,
     outputContract: V16_OUTPUT_CONTRACT,
+  },
+  17: {
+    version: 17,
+    label: 'house-style-v17',
+    added: '2026-09-24',
+    instructions: V11_INSTRUCTIONS,
+    outputContract: V17_OUTPUT_CONTRACT,
   },
 };
 
