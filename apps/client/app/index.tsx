@@ -51,10 +51,15 @@ export default function Home() {
   // and a flick either way settles on one of the two.
   // At rest the timeline is announced by a quiet cue alone.
   const [timelineTop, setTimelineTop] = useState(0);
+  // The scroll view's own height, not the window's: on the web export the
+  // window dimensions can stay at the static-render fallback, which sized the
+  // reading taller than the screen and pushed the cue below the fold.
+  const [viewport, setViewport] = useState(0);
+  const screen = viewport || height;
   const hasTimeline = Boolean(reading) && developments.length > 0;
   // Where the timeline rests: its first entry a comfortable distance below the header.
   const snap = hasTimeline && timelineTop ? Math.max(1, timelineTop - headerHeight - 32) : 0;
-  const span = snap || height;
+  const span = snap || screen;
   // The reading is gone before any of it can reach the header, so in the
   // timeline the score and top story are entirely out of view, mid-scroll too.
   const readingGone = Math.min(span * 0.3, 160);
@@ -143,14 +148,17 @@ export default function Home() {
       ] : undefined }} />
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
     <ReadingGradient score={reading?.score} dark={theme.dark} />
-    <Animated.ScrollView ref={scroller} key={fontScale} contentInsetAdjustmentBehavior="never" style={{ flex: 1, backgroundColor: 'transparent' }}
+    <Animated.ScrollView ref={scroller} key={fontScale} contentInsetAdjustmentBehavior="never"
+      onLayout={(event) => setViewport(event.nativeEvent.layout.height)} style={{ flex: 1, backgroundColor: 'transparent' }}
       scrollEventThrottle={16} snapToOffsets={snap ? [0, snap] : undefined} snapToEnd={false} decelerationRate={snap ? 'fast' : 'normal'}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
         useNativeDriver: process.env.EXPO_OS !== 'web',
         listener: (event: { nativeEvent: { contentOffset: { y: number } } }) => settle(event.nativeEvent.contentOffset.y),
       })}
       contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: insets.bottom + (hasTimeline ? 48 : landscape ? 16 : 32) }}>
-      <Animated.View style={{ minHeight: height, justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: landscape ? 16 : 56 }}>
+      {/* With a timeline the reading keeps exactly the first screen; without one it
+          fills the scroll view and nothing scrolls, as before the timeline. */}
+      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: landscape ? 16 : 56 }}>
         <View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
           style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
           <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"
@@ -174,7 +182,7 @@ export default function Home() {
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
       {reading && <View onLayout={(event) => setTimelineTop(event.nativeEvent.layout.y)}
-        style={{ maxWidth: landscape ? 600 : 320 * fontScale, width: '100%', minHeight: hasTimeline ? height - headerHeight - 32 : 0 }}>
+        style={{ maxWidth: landscape ? 600 : 320 * fontScale, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0 }}>
         <Timeline developments={developments} opacity={timelineFade} theme={theme} now={now} scrollY={scrollY} offset={timelineTop} fadeAt={headerHeight} />
       </View>}
     </Animated.ScrollView>
