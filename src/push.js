@@ -5,6 +5,7 @@ import {
 } from './db.js';
 import { STORY_MEMORY_HOURS, currentDisplay } from './current.js';
 import { effectiveConfig } from './config.js';
+import { opensDevelopment } from './preparation.js';
 
 /**
  * Push notifications for high readings.
@@ -22,6 +23,13 @@ import { effectiveConfig } from './config.js';
  * that number reaches its threshold — once per development and threshold,
  * whichever readings report it, because the page's replay already answers
  * which development the number is about, through judge outages included.
+ *
+ * And only for news that is new: the reading must open the development the
+ * number is about — the sentence the page shows with no age prefix and marks
+ * as new. A later reading re-reporting it, an escalation of an older
+ * development, or an unjudged reading whose development is unknown starts no
+ * announcement; a later reading can only finish one the opening reading began
+ * and could not complete, so a failed send still reaches its devices.
  *
  * Delivery goes through Expo's push service, which relays to APNs and FCM.
  * That is an HTTP call and nothing native, so it runs in the same serverless
@@ -203,8 +211,9 @@ export async function notifyReading(reading, { fetchImpl, url, now } = {}) {
     const subscribers = await pushSubscriptionsFor(current.score);
     if (subscribers.length === 0) return result;
 
+    const fresh = opensDevelopment(current.newest) && current.root === current.newest.id;
     for (const threshold of [...new Set(subscribers.map((s) => s.threshold))]) {
-      const claim = await claimPushDelivery({ root: current.root, threshold, readingId: reading.id, score: current.score });
+      const claim = await claimPushDelivery({ root: current.root, threshold, readingId: reading.id, score: current.score, resumeOnly: !fresh });
       if (!claim) continue;
       const done = new Set(claim.delivered);
       const pending = subscribers.filter((s) => s.threshold === threshold && !done.has(s.token)).map((s) => s.token);

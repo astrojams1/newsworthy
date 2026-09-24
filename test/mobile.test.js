@@ -72,9 +72,19 @@ test('only the public reading grants native CORS, including error responses and 
 
 
 test('the first-coverage timestamp survives API normalization and offline cache storage', async () => {
-  const input = { ...reading, explanation_text: 'The Fed raised rates.', explanation_since: '2026-09-14T00:00:00Z' };
+  const input = { ...reading, explanation_text: 'The Fed raised rates.', explanation_since: '2026-09-14T00:00:00Z', explanation_new: false };
   const result = await fetchReading('', async () => ({ok:true,json:async()=>input}));
   assert.deepEqual(JSON.parse(JSON.stringify(result)),input);
+});
+
+test('only an explicit true marks a reading new; an older server never does', async () => {
+  const fresh = { ...reading, explanation_text: 'A volcano erupted.', explanation_since: null, explanation_new: true };
+  assert.equal((await fetchReading('', async () => ({ok:true,json:async()=>fresh}))).explanation_new, true);
+  const older = { ...reading, explanation_text: 'A volcano erupted.', explanation_since: null };
+  assert.equal((await fetchReading('', async () => ({ok:true,json:async()=>older}))).explanation_new, false);
+  for (const value of ['true', 1]) {
+    assert.equal((await fetchReading('', async () => ({ok:true,json:async()=>({ ...older, explanation_new: value })}))).explanation_new, false);
+  }
 });
 
 test('packaged privacy declarations include requested notifications and hosting diagnostics without tracking', async () => {

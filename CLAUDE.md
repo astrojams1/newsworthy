@@ -579,13 +579,22 @@ until the median confirms it, and no device is told a 10 the page is not
 showing. A new 8 while a 10 is still the loudest changes nothing on the page
 and announces nothing, because the tap would have opened on the 10.
 
+It is announced **only for a new development**: the newest reading must be
+judged, must have opened its own development (`opensDevelopment()` in
+`src/preparation.js` — the sentence with no age prefix, which the app marks
+"New"), and that development must be the one the page's number is about. A
+re-report, an escalation of an older development, or an unjudged reading
+starts no announcement even when it lifts the page past a threshold; a later
+reading may only take over a claim the opening reading began and released or
+left stale, so a failed send still reaches its devices. The cost is that a
+development opening below a threshold and escalating past it is never
+announced, and a judge outage announces nothing.
+
 It is announced **once per development and threshold**: `push_deliveries` is
 keyed on `(root, threshold)`, the root being the development the page's number
-is about. That is what makes a judge outage quiet — the replay inherits an
-unjudged reading into its predecessor's development, so four unjudged 8s are
-one development, where a first cut that took the predecessor's *id* as the
-root announced three of them. An escalation the page shows reaches the devices
-waiting for the higher number and not, again, the ones that heard at the lower.
+is about. Several thresholds can still hear one development: its opening
+reading claims every threshold the page's number meets. The key also keeps a
+retry from repeating devices already reached.
 
 **A claim is a lock, not a record, and it carries progress.** The first cut
 claimed the pair before calling Expo and never let go, so one 503 silenced a

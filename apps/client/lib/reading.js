@@ -34,7 +34,9 @@ export async function fetchReading(apiBaseUrl, fetcher = fetch) {
       ...(typeof data.explanation_text === 'string' && data.explanation_text.length <= 2000
         ? { explanation_text: data.explanation_text,
           explanation_since: typeof data.explanation_since === 'string' && Number.isFinite(Date.parse(data.explanation_since))
-            ? data.explanation_since : null } : {}),
+            ? data.explanation_since : null,
+          // Only an explicit true: an older server or cache never claims news is new.
+          explanation_new: data.explanation_new === true } : {}),
     };
   } finally {
     clearTimeout(timeout);

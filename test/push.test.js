@@ -124,12 +124,12 @@ test('devices hear the number the page shows, once per development and threshold
 
       // A 10 on the same development re-anchors it only once the median
       // confirms the level — the page's own lag against a single loud reading.
-      // Until then the page shows 8 and no device is told a 10; when the page
-      // shows 10, the 9 hears, and the device that heard at 8 does not hear twice.
+      // Even when the page shows 10, nobody hears: the sentence re-reports a
+      // development first covered earlier, and only new developments announce.
       for (const [text, expected, announced] of [
         ['Earthquake death toll across the northern valley passes ten thousand', 8, []],
         ['Earthquake across the northern valley: toll passes ten thousand as aid stalls', 8, []],
-        ['Earthquake toll across the northern valley nears fifteen thousand', 10, [[TOKENS.b, 'Newsworthy · 10/10']]],
+        ['Earthquake toll across the northern valley nears fifteen thousand', 10, []],
       ]) {
         const worse = await submit(`token=${CALLER}&score=10&explanation=${text.replaceAll(' ', '+')}`);
         assert.equal(worse.body.development, 'same', text);
@@ -163,10 +163,11 @@ function relay(fail = () => false) {
   return { received, fetchImpl };
 }
 
-test('a judge outage does not repeat: consecutive unjudged readings inherit one development', async () => {
-  // The finding: with the predecessor's id as the root, four unjudged 8s
-  // announced three times. The page's replay inherits through an outage, and
-  // the announcer now asks the page.
+test('a judge outage announces nothing: an unjudged reading is not known to be new', async () => {
+  // The first finding: with the predecessor's id as the root, four unjudged 8s
+  // announced three times. The page's replay inherits through an outage. Now
+  // only a reading the judge placed in no earlier development starts an
+  // announcement, and an unjudged one has not been placed at all.
   await ensureSchema();
   await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`;
   await upsertPushSubscription({ token: TOKENS.a, threshold: 8, platform: 'ios' });
@@ -178,8 +179,8 @@ test('a judge outage does not repeat: consecutive unjudged readings inherit one 
     results.push(await notifyReading(row, { fetchImpl }));
   }
   assert.deepEqual(results.map((r) => r.score), [8, 8, 8, 8], 'the page shows 8 throughout');
-  assert.deepEqual(results.map((r) => r.sent), [1, 0, 0, 0], 'announced once, on the crossing');
-  assert.equal(received.length, 1);
+  assert.deepEqual(results.map((r) => r.sent), [0, 0, 0, 0], 'nothing announced');
+  assert.equal(received.length, 0);
 });
 
 test('a failed send gives its claim back, so the next reading of the development tries again', async () => {
@@ -220,6 +221,35 @@ test('a claim protects against a concurrent duplicate, keeps progress when relea
   assert.equal(await claimPushDelivery({ ...frozen, readingId: 912 }), null);
   await sql`UPDATE push_deliveries SET claimed_at = now() - make_interval(mins => ${PUSH_CLAIM_STALE_MINUTES + 1}) WHERE root = 910`;
   assert.deepEqual(await claimPushDelivery({ ...frozen, readingId: 912 }), { delivered: [] }, 'stale, it is taken over');
+});
+
+test('a later reading can finish an announcement but never start one', async () => {
+  await ensureSchema();
+  await sql`DELETE FROM push_deliveries`;
+  const claim = { root: 920, threshold: 8, readingId: 921, score: 8 };
+  assert.equal(await claimPushDelivery({ ...claim, resumeOnly: true }), null, 'nothing begun, nothing to finish');
+  assert.equal((await sql`SELECT * FROM push_deliveries WHERE root = 920`).length, 0, 'and no claim was created');
+  assert.deepEqual(await claimPushDelivery(claim), { delivered: [] });
+  assert.equal(await claimPushDelivery({ ...claim, readingId: 922, resumeOnly: true }), null, 'a live claim is honoured');
+  await releasePushDeliveries([{ ...claim, delivered: ['ExponentPushToken[one]'] }]);
+  assert.deepEqual(await claimPushDelivery({ ...claim, readingId: 922, resumeOnly: true }), { delivered: ['ExponentPushToken[one]'] },
+    'a released one is taken over with its progress');
+});
+
+test('a re-report that lifts the page past a threshold announces nothing', async () => {
+  // The development opened below every threshold, so no announcement began;
+  // the reading that lifts it carries an age prefix and is not new.
+  await ensureSchema();
+  await sql`DELETE FROM ratings`; await sql`DELETE FROM push_subscriptions`; await sql`DELETE FROM push_deliveries`;
+  await upsertPushSubscription({ token: TOKENS.a, threshold: 5, platform: 'ios' });
+  const { received, fetchImpl } = relay();
+  const first = await insertRating({ ...base, score: 4, explanation: 'Grid failure darkens the capital', created_at: minutesAgo(30), judge_version: 2, development_of: null, story: 'grid' });
+  assert.deepEqual(await notifyReading(first, { fetchImpl }), { sent: 0, score: 4, thresholds: [] });
+  const shock = await insertRating({ ...base, score: 9, explanation: 'Grid failure spreads to three provinces', created_at: minutesAgo(20), judge_version: 2, development_of: first.id, story: 'grid' });
+  const result = await notifyReading(shock, { fetchImpl });
+  assert.ok(result.score >= 5, 'the page number meets the threshold');
+  assert.equal(result.sent, 0, 'but the sentence is not new');
+  assert.equal(received.length, 0);
 });
 
 test('a batch that fails after another succeeded retries only the devices not yet reached', async () => {

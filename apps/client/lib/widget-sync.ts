@@ -24,6 +24,7 @@ export async function syncWidgets(apiBaseURL: string, reading: Reading, fetchedA
     await native?.syncReading(apiBaseURL, JSON.stringify({ reading: {
       score: reading.score, explanation: reading.explanation, created_at: reading.created_at,
       explanation_text: reading.explanation_text, explanation_since: reading.explanation_since,
+      explanation_new: reading.explanation_new,
     }, fetchedAt }));
   } catch { /* A widget failure must not turn a fresh app reading into an error. */ }
 }

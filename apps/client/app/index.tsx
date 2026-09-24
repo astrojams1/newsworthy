@@ -35,6 +35,8 @@ export default function Home() {
   const minutes = reading ? Math.max(0, Math.floor((now - Date.parse(reading.created_at)) / 60000)) : 0;
   const relative = minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
   const explanation = reading ? displayExplanation(reading, now) : null;
+  // Brand new: the judge placed this sentence in no earlier development, so it has no age prefix.
+  const isNew = reading?.explanation_new === true;
   const shareReading = async () => {
     if (!reading) return;
     const message = `${reading.score}/10 · ${displayExplanation(reading)}\nUpdated ${new Date(reading.created_at).toLocaleString()}\n${website}`;
@@ -88,7 +90,12 @@ export default function Home() {
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </View>
-        <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Text>
+        {/* A sentence re-reporting earlier coverage leads with its age; one reporting a development nothing earlier covered says so here instead. */}
+        {isNew && <View testID="rating-new" accessible accessibilityLabel="New development"
+          style={{ marginTop: landscape ? 12 : 24, borderWidth: 1, borderColor: theme.accent, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 2 }}>
+          <Text maxFontSizeMultiplier={1.5} style={{ color: theme.accent, fontSize: 12, fontWeight: '600', letterSpacing: 1 }}>NEW</Text>
+        </View>}
+        <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: isNew ? (landscape ? 8 : 12) : (landscape ? 12 : 24) }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Text>
         {reading && <Text selectable style={{ color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Updated {relative}</Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
