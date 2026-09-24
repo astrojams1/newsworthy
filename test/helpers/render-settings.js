@@ -48,8 +48,6 @@ export function renderSettings({ platform, width = 390, height = 844, dark = fal
     }) },
     '@/lib/push': { pushSupported },
     'expo-router/react-navigation': { useHeaderHeight: () => 44 },
-    '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
-    '@/components/reading-provider': { useCurrentReading: () => ({ reading: { score: 3 } }) },
     '@/lib/config': { privacyUrl: '/privacy', supportUrl: '/support' },
   };
   const exports = {};

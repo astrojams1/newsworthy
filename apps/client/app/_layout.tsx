@@ -7,7 +7,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter } from 'expo-r
 import { onNotificationOpen } from '@/lib/push';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
-import { ReadingGradient, ReadingGradientSlice } from '@/components/reading-gradient';
+import { ReadingGradient } from '@/components/reading-gradient';
 // A deep link or a cold start on /settings still gets the reading screen
 // underneath it, so the native back button exists rather than depending on
 // how the screen was reached.
@@ -29,7 +29,7 @@ function ThemedLayout() {
   } };
   const { reading, refresh } = useCurrentReading();
   // iOS 26 blurs content scrolling under a transparent bar itself; earlier
-  // systems and the other platforms get the page's own gradient behind the bar.
+  // systems and the other platforms get the page's own colour behind the bar.
   const liquidGlass = process.env.EXPO_OS === 'ios' && Number.parseInt(String(Platform.Version), 10) >= 26;
   const router = useRouter();
   useEffect(() => onNotificationOpen(() => { router.replace('/'); void refresh(); }), [router, refresh]);
@@ -66,12 +66,13 @@ function ThemedLayout() {
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
       <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
-      {/* Settings carries the reading gradient too. Its bar is transparent: an
-          opaque one is drawn by the navigation bar, which does not slide with
-          the page, and snapped a flat band over the reading screen on push. */}
+      {/* Settings' bar is transparent over the page's colour: an opaque bar is
+          drawn by the navigation bar, which does not slide with the page, and
+          snapped a flat band over the reading screen on push. Its background,
+          where one is needed, is a view inside the screen, so it slides too. */}
       <Stack.Screen name="settings" options={{ title: 'Settings', headerBackTitle: 'Back', headerTitleStyle: { color: theme.ink },
         headerTransparent: true, headerStyle: { backgroundColor: 'transparent' },
-        headerBackground: liquidGlass ? undefined : () => <ReadingGradientSlice score={reading?.score} dark={theme.dark} surface={theme.surface} /> }} />
+        headerBackground: liquidGlass ? undefined : () => <View testID="settings-bar" style={{ position: 'absolute', inset: 0, backgroundColor: theme.tinted }} /> }} />
     </Stack>
     </View>
   </ThemeProvider>;

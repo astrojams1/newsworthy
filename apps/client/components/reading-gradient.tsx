@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { fromByteArray } from 'base64-js';
 import { readingGradientSvg } from '@/lib/reading-gradient';
@@ -19,17 +19,5 @@ export function ReadingGradient({ score, dark }: { score?: number; dark: boolean
     testID="reading-gradient" style={{ position: 'absolute', inset: 0 }}
     onLayout={({ nativeEvent: { layout } }) => setSize(current => current.width === layout.width && current.height === layout.height ? current : { width: layout.width, height: layout.height })}>
     {uri && <Image source={{ uri }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
-  </View>;
-}
-
-// The top of a full-screen gradient, clipped to whatever holds it: a header
-// background that continues the page beneath it instead of drawing a band.
-export function ReadingGradientSlice({ score, dark, surface }: { score?: number; dark: boolean; surface: string }) {
-  const { width, height } = useWindowDimensions();
-  return <View pointerEvents="none" accessible={false} testID="reading-gradient-slice"
-    style={{ position: 'absolute', inset: 0, overflow: 'hidden', backgroundColor: surface }}>
-    <View style={{ position: 'absolute', top: 0, left: 0, width, height }}>
-      <ReadingGradient score={score} dark={dark} />
-    </View>
   </View>;
 }

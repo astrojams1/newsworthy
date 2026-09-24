@@ -13,7 +13,7 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3, iosVer
   const mocks = {
     react: { ...require('react'), useEffect() {} },
     'react-native': { Appearance: {}, View: 'View', Platform: { OS: platform, Version: platform === 'ios' ? iosVersion : 36 } },
-    '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient', ReadingGradientSlice: 'ReadingGradientSlice' },
+    '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
     '@/components/preferences-provider': { PreferencesProvider: 'PreferencesProvider', usePreferences: () => ({ preferences: { theme: 'system' } }) },
     '@/components/reading-provider': { ReadingProvider: 'ReadingProvider', useCurrentReading: () => ({ reading: score == null ? null : { score } }) },
     '../../../public/favicon': {},

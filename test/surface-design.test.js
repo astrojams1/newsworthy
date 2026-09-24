@@ -321,9 +321,9 @@ function inspectLayout({ platform, dark, score, iosVersion, sourceOverride }) {
   if (platform === 'ios' && Number.parseInt(iosVersion, 10) >= 26) {
     assert.equal(settings.headerBackground, undefined, 'iOS 26 blurs scrolled content under the bar itself');
   } else {
-    const slice = settings.headerBackground();
-    assert.equal(slice.type, 'ReadingGradientSlice', 'content scrolled under the bar is covered by the page gradient');
-    assert.deepEqual({ ...slice.props }, { score: score ?? undefined, dark, surface: palette.surface });
+    const bar = settings.headerBackground();
+    assert.equal(bar.props.testID, 'settings-bar', 'content scrolled under the bar is covered by the page colour');
+    assert.equal(bar.props.style.backgroundColor, palette.tinted, 'content scrolled under the bar is covered by the page colour');
   }
 }
 
@@ -350,20 +350,19 @@ test('layout gate rejects a flat transition canvas or an opaque Settings bar', (
 function inspectSettingsCanvas({ platform, dark, sourceOverride }) {
   const all = nodes(renderSettings({ platform, dark, sourceOverride }).tree);
   const scroll = all.find(n => n.type === 'ScrollView');
-  const page = scroll.parent;
-  assert.equal(page.props.style.backgroundColor, themeForLevel(3, dark).surface, 'Settings carries the reading gradient');
-  assert.equal(nodes(page.props.children, page).find(n => n.parent === page)?.type, 'ReadingGradient', 'Settings carries the reading gradient');
-  assert.equal(scroll.props.style.backgroundColor, 'transparent', 'Settings carries the reading gradient');
+  // Settings is a neutral page: the reading gradient belongs to the reading.
+  assert.equal(scroll.props.style.backgroundColor, themeForLevel(3, dark).tinted, 'Settings is a flat neutral page');
+  assert.equal(all.some(n => n.type === 'ReadingGradient'), false, 'Settings is a flat neutral page');
   // iOS insets the scroll view under a transparent bar; elsewhere padding does.
   assert.equal(scroll.props.contentInsetAdjustmentBehavior, 'automatic');
   assert.equal(scroll.props.contentContainerStyle.paddingTop, platform === 'ios' ? 24 : 44 + 24, 'content clears the transparent bar');
 }
 
-test('Settings is an opaque page on the reading gradient under a transparent bar', () => {
+test('Settings is an opaque neutral page under a transparent bar', () => {
   for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) inspectSettingsCanvas({ platform, dark });
   const source = readFileSync(new URL('../apps/client/app/settings.tsx', import.meta.url), 'utf8');
   for (const [sourceOverride, message] of [
-    [source.replace("style={{ flex: 1, backgroundColor: 'transparent' }} contentInsetAdjustmentBehavior", 'style={{ flex: 1, backgroundColor: theme.tinted }} contentInsetAdjustmentBehavior'), /reading gradient/],
+    [source.replace("style={{ flex: 1, backgroundColor: theme.tinted }} contentInsetAdjustmentBehavior", "style={{ flex: 1, backgroundColor: 'transparent' }} contentInsetAdjustmentBehavior"), /flat neutral page/],
     [source.replace("paddingTop: (process.env.EXPO_OS === 'ios' ? 0 : headerHeight) + 24", 'paddingTop: 24'), /clears the transparent bar/],
   ]) {
     assert.notEqual(sourceOverride, source);

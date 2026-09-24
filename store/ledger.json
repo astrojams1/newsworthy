@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T07:55:54+00:00",
+  "updated_at": "2026-09-24T08:46:29+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -896,12 +896,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner iPhone recording of Settings push/pop shows four defects: flat header band snapping on push, square plate around the wordmark morphing into Back, wordmark enlarging then snapping after pop, and dark canvas wedges at iOS 26 rounded screen corners. Source fix: Settings on the reading gradient under a transparent bar, gradient transition canvas, iOS wordmark drawn by the page.",
+      "summary": "Owner iPhone recording of Settings push/pop shows four defects: flat header band snapping on push, square plate around the wordmark morphing into Back, wordmark enlarging then snapping after pop, and dark canvas wedges at iOS 26 rounded screen corners. Source fix: neutral Settings page under a transparent bar (owner removed the Settings gradient), gradient transition canvas, iOS wordmark drawn by the page.",
       "evidence": [
-        "Owner screen recording September24 (frames 13, 112, 129 matched to owner screenshots). design72 checks and npm test294 passed (one existing skip); web export Settings checked in Chromium. Not verified on a native build: iOS 26 and earlier-iOS transitions, scroll-edge blur under the Settings bar, wordmark alignment, Android."
+        "PR134. Owner screen recording September24 (frames 13, 112, 129 matched to owner screenshots). design72 checks passed; web export Settings checked in Chromium on the earlier gradient revision. Not verified on a native build: iOS 26 and earlier-iOS transitions, scroll-edge blur under the Settings bar, wordmark alignment, Android."
       ],
       "next_action": "Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed.",
-      "updated_at": "2026-09-24T07:55:54+00:00"
+      "updated_at": "2026-09-24T08:46:29+00:00"
     }
   },
   "events": [
@@ -5541,6 +5541,22 @@
         ],
         "next_action": "Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed.",
         "updated_at": "2026-09-24T07:55:54+00:00"
+      }
+    },
+    {
+      "sequence": 290,
+      "at": "2026-09-24T08:46:29+00:00",
+      "gate": "apple.settings-transition",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner iPhone recording of Settings push/pop shows four defects: flat header band snapping on push, square plate around the wordmark morphing into Back, wordmark enlarging then snapping after pop, and dark canvas wedges at iOS 26 rounded screen corners. Source fix: neutral Settings page under a transparent bar (owner removed the Settings gradient), gradient transition canvas, iOS wordmark drawn by the page.",
+        "evidence": [
+          "PR134. Owner screen recording September24 (frames 13, 112, 129 matched to owner screenshots). design72 checks passed; web export Settings checked in Chromium on the earlier gradient revision. Not verified on a native build: iOS 26 and earlier-iOS transitions, scroll-edge blur under the Settings bar, wordmark alignment, Android."
+        ],
+        "next_action": "Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed.",
+        "updated_at": "2026-09-24T08:46:29+00:00"
       }
     }
   ],
