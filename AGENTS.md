@@ -911,5 +911,5 @@ document read as authoritative is worse than no number.
 for two hours from the reading’s `created_at`, not the score’s decay anchor or a
 verified event date. It is bold and otherwise styled as the sentence, on the web,
 in the apps and in both widgets. The 140-character display budget includes it;
-prompt v16 reserves 5 characters for "New: " and asks for a body of at most 135.
+prompts v16 and later reserve 5 characters for "New: " and ask for a body of at most 135.
 See `docs/story-age.md` for preparation, compatibility and verification limits.
