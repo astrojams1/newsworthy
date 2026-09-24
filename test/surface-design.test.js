@@ -370,11 +370,18 @@ test('story timeline prototype sits a full screen below the reading, in the sent
   for (const platform of ['ios', 'android', 'web']) {
     const without = nodes(renderReading({ platform, width: 402, height: 874 }));
     const withTimeline = nodes(renderReading({ platform, width: 402, height: 874, timeline: [development] }));
-    const block = list => list.find(n => n.type === 'AnimatedView' && n.props?.style?.minHeight != null);
+    const block = list => list.find(n => n.type === 'AnimatedView' && n.props?.style?.maxWidth != null);
     // Nothing of the timeline is clipped into the first screen: the reading keeps all of it.
-    assert.equal(block(without).props.style.minHeight, 874);
     assert.equal(block(withTimeline).props.style.minHeight, 874);
+    // Without one, the reading fills the scroll view rather than a window-sized
+    // block plus padding, which scrolled on the web.
+    assert.equal(block(without).props.style.flex, 1);
+    assert.equal(block(without).props.style.minHeight, undefined);
     assert.equal(block(withTimeline).props.style.alignItems, 'center');
+    // The first screen is the scroll view's measured height, not the window's:
+    // the web export's window height can stay at its static fallback, which put
+    // the cue below the fold.
+    assert.equal(typeof withTimeline.find(n => n.type === 'ScrollView').props.onLayout, 'function');
     // A quiet cue announces the timeline instead.
     assert.ok(withTimeline.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
     assert.ok(!without.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
@@ -404,8 +411,9 @@ test('story timeline is off by default: with the setting off the screen is the r
     assert.ok(!off.some(n => n.props?.accessibilityLabel === 'Earlier developments'), 'no cue');
     const screen = off.find(n => n.type === 'Screen').props.options;
     assert.equal(screen.headerLeft().type, 'BrandMark', 'the wordmark is not a button');
-    const block = off.find(n => n.type === 'AnimatedView' && n.props?.style?.minHeight != null);
-    assert.equal(block.props.style.minHeight, 874);
+    const block = off.find(n => n.type === 'AnimatedView' && n.props?.style?.maxWidth != null);
+    assert.equal(block.props.style.flex, 1, 'the reading fills the scroll view, so nothing scrolls');
+    assert.equal(block.props.style.minHeight, undefined, 'not a window-sized block that overflows it');
     assert.equal(block.props.style.opacity, 1, 'the reading never fades');
   }
 });

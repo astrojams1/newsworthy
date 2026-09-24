@@ -28,7 +28,11 @@ every tag in the timeline is a name the judge could still reuse. It gathers deve
 at that span while the board keeps its 72 hours, and the replay's four weeks of
 rows already cover it. Its `limit` of 100 is a guard against a judge opening a
 development per reading, not the design's bound. On the home screen the reading keeps
-the whole first screen with a chevron beneath; the scroll snaps between the
+the whole first screen with a chevron beneath. "A screen" is the scroll view's
+measured height, not `useWindowDimensions()`: on the web export that stays at
+its 844pt static-render fallback, which put the chevron below the fold on any
+shorter viewport. With the timeline off, the reading fills the scroll view
+instead, so nothing scrolls. The scroll snaps between the
 reading and the top of the timeline, and the reading fades out over the first
 160pt so none of it reaches the header. Scrolled further, each tag line and
 sentence fades out on its own as it nears the header — from 28pt below its lower
