@@ -907,6 +907,10 @@ individual tests
 is not kept here: it is wrong again after the next PR, and a stale number in a
 document read as authoritative is worse than no number.
 
+**The story timeline** is off by default (`timeline` in `preferences.js`), one
+entry per development ordered by `opened`, one week long. See
+`docs/story-timeline.md` before changing it.
+
 **The “New:” label.** It marks the first coverage of the sentence’s development,
 for two hours from the reading’s `created_at`, not the score’s decay anchor or a
 verified event date. It is bold and otherwise styled as the sentence, on the web,

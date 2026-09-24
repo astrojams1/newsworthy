@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
 import { takePreparation, correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
-import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, activeStories, currentDisplay, displayedSeries } from './current.js';
+import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries } from './current.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, submissionFromQuery, validateSubmission } from './ingest.js';
@@ -220,7 +220,7 @@ const server = createServer(async (req, res) => {
 
     // Local Expo web development may read the public API. Native networking
     // does not require browser CORS. Admin and writes remain same-origin.
-    if (path === '/api/current') {
+    if (path === '/api/current' || path === '/api/timeline') {
       const origin = req.headers.origin;
       if (origin === 'http://localhost:8081' || origin === 'http://127.0.0.1:8081') {
         res.setHeader('Access-Control-Allow-Origin', origin);
@@ -291,6 +291,25 @@ const server = createServer(async (req, res) => {
         // a fresh story or a breakthrough; the number falls with the story's age.
         fatigue: current.fatigue,
         window: current.window,
+      });
+    }
+
+    // Prototype: the developments behind the front page, newest first, each
+    // tagged with its story. The same replay as /api/current and the admin
+    // board, so none of the three can disagree about which development leads.
+    if (path === '/api/timeline' && req.method === 'GET') {
+      const { halfLifeHours, storyHalfLifeDays } = await effectiveConfig();
+      const rows = await history({ hours: STORY_MEMORY_HOURS });
+      const ascending = rows.map((r) => ({ ...r, t: Date.parse(r.created_at) }));
+      const now = Date.now();
+      // One week by first coverage; the rows reach four weeks, so every
+      // development opened inside the window has been replayed.
+      const stories = ascending.length ? activeStories(ascending, {
+        now, halfLifeHours, storyHalfLifeDays, roots: await rootTimes(ascending), liveHours: TIMELINE_HOURS,
+      }) : [];
+      return json(res, 200, {
+        developments: developmentTimeline(stories, { now })
+          .map((d) => ({ ...d, explanation: completeSentence(d.explanation) })),
       });
     }
 
@@ -563,9 +582,10 @@ const server = createServer(async (req, res) => {
           roots: developmentRoots,
         }).map((story) => ({
           ...story,
-          developments: story.developments.map(({ since, ...rest }) => ({
+          developments: story.developments.map(({ since, opened, ...rest }) => ({
             ...rest,
             since: new Date(since).toISOString(),
+            opened: new Date(opened).toISOString(),
           })),
         })),
         // Each point carries what the front page would have shown at that

@@ -105,7 +105,14 @@ const STORY_HALF_LIFE_CHOICES = [3, 7, 14, 30];
 const STORY_MEMORY_DAYS = 28;
 const STORY_MEMORY_HOURS = STORY_MEMORY_DAYS * 24;
 
+/** How far back the front page's timeline reaches: one week. The judge draws
+ *  story names from two weeks (`recentStories()`), so every tag in the
+ *  timeline is a name the judge could still reuse. */
+const TIMELINE_DAYS = 7;
+const TIMELINE_HOURS = TIMELINE_DAYS * 24;
+
 export {
+  TIMELINE_DAYS, TIMELINE_HOURS,
   SHOCK_MARGIN, MIN_WINDOW, FLOOR, DEFAULT_HALF_LIFE_HOURS, HALF_LIFE_CHOICES, LOOKBACK_HOURS,
   DEFAULT_STORY_HALF_LIFE_DAYS, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_DAYS, STORY_MEMORY_HOURS,
 };
@@ -292,6 +299,10 @@ function replay(ascending, {
         routine: worth.routine,
         breakthrough: worth.breakthrough,
         since: known?.t ?? point.t,
+        // When it was first covered. `since` is the decay anchor and restarts
+        // on an escalation; this never moves, so a list of developments can
+        // place and date each one where it broke.
+        opened: known?.t ?? point.t,
         // The lowest level this development has shown since it was last
         // anchored, which is what a later rise is measured against.
         low: opening,
@@ -514,9 +525,15 @@ export function activeStories(ascending, {
   hours = 6,
   limit = 5,
   roots = new Map(),
+  // How long a development stays on the board: `LOOKBACK_HOURS`, the span it
+  // competes for the page. The timeline asks for longer.
+  liveHours = LOOKBACK_HOURS,
 } = {}) {
   const { points, developments, threads } = replay(ascending, { limit, hours, halfLifeHours, storyHalfLifeDays, roots });
   const loudest = loudestAt(developments, now, halfLifeHours);
+  // The development the newest reading reported, taken from the replay before
+  // anything is filtered: its sentence is the one on the page.
+  const onPage = points.at(-1)?.reports;
 
   // What each development was first and last heard saying, and how often. The
   // readings are grouped by `reports` — the development the reading itself
@@ -536,7 +553,7 @@ export function activeStories(ascending, {
   const byStory = new Map();
   for (const [root, development] of developments) {
     const ageMs = now - development.since;
-    if (ageMs > LOOKBACK_HOURS * 3600_000) continue;
+    if (ageMs > liveHours * 3600_000) continue;
 
     const heard = readings.get(root);
     const entry = {
@@ -550,6 +567,7 @@ export function activeStories(ascending, {
       breakthrough: development.breakthrough,
       displayed: Math.max(FLOOR, Math.min(10, Math.round(agedScore(development.anchor, ageMs, halfLifeHours)))),
       since: development.since,
+      opened: development.opened,
       age_hours: Math.round((ageMs / 3600_000) * 10) / 10,
       readings: heard?.count ?? 0,
       first: heard?.first?.explanation ?? null,
@@ -557,6 +575,8 @@ export function activeStories(ascending, {
       latest_at: heard?.latest?.created_at ?? null,
       // The one the front page number is about, right now.
       leading: root === loudest.root,
+      // The one whose newest sentence the front page shows.
+      on_page: root === onPage,
     };
 
     const key = entry.story ?? '';
@@ -592,4 +612,49 @@ export function activeStories(ascending, {
   stories.sort((a, b) => (b.leading - a.leading) || (b.displayed - a.displayed)
     || (Math.max(...b.developments.map((d) => d.since)) - Math.max(...a.developments.map((d) => d.since))));
   return stories;
+}
+
+/**
+ * The front page's timeline: every live development from `activeStories()`,
+ * newest first, each tagged with its story. Prototype.
+ *
+ * One entry per development, never per reading. A story that holds the top
+ * slot for ten hours is re-reported ten times and is still one development,
+ * shown once, at the time it was first covered and with the sentence it broke
+ * with. A development that drops out and returns keeps that one place, and so
+ * does one that escalates: ordering and age come from `opened`, which never
+ * moves, not from `since`, the decay anchor an escalation restarts.
+ *
+ * The development the newest reading reported is left out: its sentence is
+ * already on the page above, in newer words. `activeStories()` marks it from
+ * the replay by identity before anything is filtered, because a re-report is
+ * worded differently from the sentence the development opened with, and
+ * because the newest reading can re-report a development older than the live
+ * window, in which case nothing here is on the page and nothing is dropped.
+ *
+ * The same replay as the board, so the timeline cannot disagree with the page
+ * about which development is which. It reaches back `TIMELINE_DAYS` by first
+ * coverage — the stories passed in must have been gathered over at least that
+ * span (`liveHours`) — and ends there, because a timeline that scrolls forever
+ * is a feed. `limit` is a guard against a runaway judge opening a development
+ * per reading, not the design's bound; the week is.
+ *
+ * @returns {Array<{root: number, story: string|null, since: string,
+ *   score: number, displayed: number, leading: boolean, explanation: string}>}
+ */
+export function developmentTimeline(stories, { now = Date.now(), hours = TIMELINE_HOURS, limit = 100 } = {}) {
+  return stories
+    .flatMap((story) => story.developments)
+    .filter((d) => !d.on_page && now - d.opened <= hours * 3600_000 && typeof d.first === 'string' && d.first.trim())
+    .sort((a, b) => b.opened - a.opened)
+    .slice(0, limit)
+    .map((d) => ({
+      root: d.root,
+      story: d.story,
+      since: new Date(d.opened).toISOString(),
+      score: d.raw,
+      displayed: d.displayed,
+      leading: d.leading,
+      explanation: d.first,
+    }));
 }

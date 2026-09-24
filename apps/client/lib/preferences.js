@@ -5,7 +5,7 @@
 
 /** @typedef {'system' | 'light' | 'dark'} ThemePreference */
 /** @typedef {{ enabled: boolean, threshold: number, token: string | null }} NotificationPreferences */
-/** @typedef {{ theme: ThemePreference, notifications: NotificationPreferences }} Preferences */
+/** @typedef {{ theme: ThemePreference, notifications: NotificationPreferences, timeline: boolean }} Preferences */
 
 export const THEME_CHOICES = /** @type {const} */ ([
   { value: 'system', label: 'Follow device' },
@@ -26,6 +26,9 @@ export const DEFAULT_PREFERENCES = Object.freeze({
   // `token` is this device's push token once registered, kept so turning
   // notifications off can tell the server which row to delete.
   notifications: Object.freeze({ enabled: false, threshold: DEFAULT_THRESHOLD, token: null }),
+  // The story timeline below the reading. Off unless chosen: the product is
+  // one number and one sentence, and the timeline is an addition to it.
+  timeline: false,
 });
 
 // Versioned like the reading cache, so a future shape change can migrate
@@ -65,6 +68,8 @@ export function parsePreferences(raw) {
       threshold: validThreshold(notifications.threshold) ? notifications.threshold : DEFAULT_THRESHOLD,
       token: typeof notifications.token === 'string' && notifications.token !== '' ? notifications.token : null,
     },
+    // Only an explicit true turns it on; anything else is the default.
+    timeline: stored.timeline === true,
   };
 }
 

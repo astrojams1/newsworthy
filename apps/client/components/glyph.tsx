@@ -10,6 +10,7 @@ export const GLYPHS = {
   support: { sf: 'questionmark.circle', svg: () => '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>' },
   chevron: { sf: 'chevron.right', svg: () => '<path d="m9 18 6-6-6-6"/>' },
   external: { sf: 'arrow.up.right', svg: () => '<path d="M7 17 17 7M7 7h10v10"/>' },
+  timeline: { sf: 'list.bullet', svg: () => '<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>' },
   close: { sf: 'xmark', svg: () => '<path d="M18 6 6 18M6 6l12 12"/>' },
 } as const;
 

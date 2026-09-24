@@ -4,13 +4,13 @@ import { DEFAULT_PREFERENCES, STORAGE_KEY, THEME_CHOICES, THRESHOLD_CHOICES, cla
 import { nodes, renderSettings, renderToggle } from './helpers/render-settings.js';
 import { createSubscriptionController } from '../apps/client/lib/subscription.js';
 
-test('system appearance and no notifications are the defaults, and a damaged store falls back field by field', () => {
+test('system appearance, no notifications and no timeline are the defaults, and a damaged store falls back field by field', () => {
   assert.deepEqual(THEME_CHOICES.map(c => [c.value, c.label]), [['system', 'Follow device'], ['light', 'Light'], ['dark', 'Dark']]);
-  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null } });
+  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null }, timeline: false });
   assert.deepEqual(parsePreferences(null), DEFAULT_PREFERENCES);
   assert.deepEqual(parsePreferences('{not json'), DEFAULT_PREFERENCES);
-  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 } }), DEFAULT_PREFERENCES);
-  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' } };
+  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, timeline: 'yes' }), DEFAULT_PREFERENCES);
+  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, timeline: true };
   assert.deepEqual(parsePreferences(JSON.stringify(kept)), kept);
   // An "on" with no device registered is not on: the server has nothing to send to.
   assert.deepEqual(parsePreferences({ notifications: { enabled: true, threshold: 6 } }).notifications, { enabled: false, threshold: 6, token: null });
@@ -31,7 +31,7 @@ test('the website shows the appearance choice and no notification setting', () =
   const overview = nodes(renderSettings({ platform: 'web' }).tree);
   assert.ok(overview.some(n => n.type === 'Head'), 'the page has its own title');
   assert.ok(!overview.some(n => n.props?.testID === 'notifications-link'), 'push notifications are a native feature');
-  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'About', 'Privacy', 'Support']);
+  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support']);
   const all = nodes(renderSettings({ platform: 'web', screen: 'appearance' }).tree);
   assert.ok(all.some(n => n.type === 'Head'), 'the page has its own title');
   const radios = all.filter(n => n.props?.accessibilityRole === 'radio');
@@ -338,4 +338,25 @@ test('a rejected notification operation releases progress and the queue', async 
   assert.deepEqual(pending, [true, false]);
   await instance.controller.choose(7);
   assert.deepEqual(pending, [true, false, true, false]);
+});
+
+test('the story timeline is a switch on the overview, off by default, on every platform', () => {
+  for (const platform of ['web', 'ios', 'android']) for (const on of [false, true]) {
+    const { tree, calls } = renderSettings({ platform, stored: on ? { timeline: true } : {} });
+    const all = nodes(tree);
+    const row = all.find(n => n.props?.testID === 'timeline-row');
+    assert.ok(row, `${platform}: the row is there`);
+    assert.equal(row.props.accessibilityRole, 'switch');
+    assert.equal(row.props.accessibilityState.checked, on);
+    const toggle = all.find(n => n.props?.testID === 'timeline-switch');
+    assert.equal(toggle.type, 'Toggle');
+    assert.equal(toggle.props.value, on);
+    assert.ok(row.props.style.minHeight >= 48, 'the whole row is the touch target');
+    assert.deepEqual(nodes(row).filter(n => n.type === 'Glyph').map(n => n.props.name), ['timeline']);
+    // Pressing the row or the switch flips it; nothing else is written.
+    row.props.onPress();
+    toggle.props.onValueChange(!on);
+    assert.deepEqual(calls.setTimeline, [!on, !on]);
+    assert.deepEqual(calls.setTheme, []);
+  }
 });

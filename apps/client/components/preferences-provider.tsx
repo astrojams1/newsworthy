@@ -13,6 +13,7 @@ type PreferencesValue = {
   savingNotifications: boolean;
   setTheme(theme: ThemePreference): void;
   setNotifications(update: Partial<Notifications>): void;
+  setTimeline(on: boolean): void;
   // The device's registration, serialised here rather than on the settings
   // screen: a screen can be closed with a request in flight and reopened with
   // a fresh queue, and the provider is the thing that lives as long as the app.
@@ -46,13 +47,14 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
   const setTheme = useCallback((theme: ThemePreference) => save({ ...current.current, theme }), [save]);
   const setNotifications = useCallback((update: Partial<Notifications>) =>
     save({ ...current.current, notifications: { ...current.current.notifications, ...update } }), [save]);
+  const setTimeline = useCallback((timeline: boolean) => save({ ...current.current, timeline }), [save]);
   const subscription = useMemo(() => createSubscriptionController({
     read: () => current.current.notifications,
     write: setNotifications,
     onPendingChange: setSavingNotifications,
     api: { enablePush, disablePush, updatePushThreshold },
   }), [setNotifications]);
-  return <PreferencesContext value={{ preferences, loaded, savingNotifications, setTheme, setNotifications, subscription }}>{children}</PreferencesContext>;
+  return <PreferencesContext value={{ preferences, loaded, savingNotifications, setTheme, setNotifications, setTimeline, subscription }}>{children}</PreferencesContext>;
 }
 
 export function usePreferences() {
