@@ -1,0 +1,54 @@
+{
+  "observedDate": "2026-09-24",
+  "version": "1.0.0",
+  "versionCode": 12,
+  "sourceCommit": "6c19cb9375dda70a7a79880b852957d77a8d4704",
+  "sourceDirty": false,
+  "production": {
+    "id": "3048aa1e-7330-42a1-bbdd-8fcc32448f3f",
+    "state": "FINISHED",
+    "profile": "production",
+    "format": "AAB",
+    "createdAt": "2026-09-24T00:28:30.796Z",
+    "completedAt": "2026-09-24T00:48:19.849Z",
+    "bytes": 73661804,
+    "sha256": "c98029001bce1ce4dd360a16bf8ff1e68081b52e9e656d64f3b1500251725cf0",
+    "archiveValidation": "ZIP_CRC_VALID"
+  },
+  "preview": {
+    "id": "40920bd4-d852-47a1-9dc4-4d98fcf74871",
+    "state": "FINISHED",
+    "profile": "preview",
+    "format": "APK",
+    "createdAt": "2026-09-24T00:29:41.462Z",
+    "completedAt": "2026-09-24T00:48:56.584Z",
+    "bytes": 105836275,
+    "sha256": "24481998301cb8075a3e8da51486387b077f7bc684f2827c528bec11bb3da67c",
+    "archiveValidation": "ZIP_CRC_VALID"
+  },
+  "firebase": {
+    "projectId": "newsworthy-cad27",
+    "appId": "1:1074464356481:android:84a2aec8d362d8a5e5b580",
+    "fcmV1": "ENABLED",
+    "credentialAssignment": "VERIFIED_IN_EAS",
+    "role": "Firebase Cloud Messaging API Admin",
+    "configuration": "EAS GOOGLE_SERVICES_JSON secret file for production and preview"
+  },
+  "verification": {
+    "automated": "292 application tests and 70 design checks passed; TypeScript passed",
+    "prebuild": "Correct project/package configuration copied to Android app; Google services Gradle plugin enabled",
+    "nativeRuntime": "API35 Google APIs ARM64 emulator: installed versionCode12, launch, live reading and Settings verified",
+    "delivery": "Expo ticket OK and FCM receipt OK; native NotificationRecord verified for readings channel; second test visually observed in notification shade",
+    "physicalDevice": "NOT_TESTED; no owner Android phone available; Google owner verification remains separate",
+    "fcmCredential": "Google OAuth and FCM validate_only both HTTP 200; no message delivered by this check",
+    "registration": "Permission prompt accepted; default threshold8, disabled initially; server Android rows 0\u21921 enabling, 1\u21920 disabling after QA",
+    "notificationOpen": "Cold-start tap from notification shade opened current reading after emulator restart",
+    "cleanup": "Notifications off at threshold8, Android server registration removed and private temporary token file deleted",
+    "limits": "Android System UI stopped responding during first gesture; guest reboot did not restore display, emulator process restart and closing unresponsive System UI recovered. No Newsworthy crash observed. Expanded widget/theme/large-text/full parity suite not repeated on build12.",
+    "testTickets": [
+      "01a0d1da-8486-72a8-ae83-3a9d7aadadc5",
+      "01a0d1e0-2590-77d4-9d04-e64a72f35eaf"
+    ]
+  },
+  "playSubmission": "NOT_SUBMITTED; app creation remains disabled pending owner verification"
+}

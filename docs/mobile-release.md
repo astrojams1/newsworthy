@@ -150,7 +150,9 @@ access. Internal testing alone does not meet this requirement. See
   App Store Connect recognizes the active membership after refreshing.
   Both `com.astrojams.newsworthy` and its `.widget` identifier are registered.
   [Newsworthy: Calm News](https://appstoreconnect.apple.com/apps/6812519450/distribution)
-  is now Waiting for Review. The shorter name was already taken.
+  has build 21 awaiting a new physical demonstration after a September 24
+  Guideline 2.1 request. See `store/apple-review-build21-followup.md`.
+  The shorter name was already taken.
   Listing copy, subtitle, privacy-policy URL, News category, review contact
   (including phone), and review notes are saved.
   The saved Apple Current Price table confirms a US$1.00 base price and local
@@ -171,7 +173,8 @@ access. Internal testing alone does not meet this requirement. See
   Apple build `805f70f3-09a4-4111-afd2-bf04bb99e30d` is `VALID` and selected for
   version 1.0.0. Three iPhone and two iPad listing screenshots are `COMPLETE`.
   Version 1.0.0 build 5 was submitted at 2026-09-16 04:53 UTC. Both the version
-  and review submission report WAITING_FOR_REVIEW. All 175 territories are
+  and review submission then reported WAITING_FOR_REVIEW (historical; see the
+  current build 21 follow-up above). All 175 territories are
   enabled, with automatic release after approval. It is not publicly released;
   commercial-account and final device checks remain separate.
 - Google Play developer registration and its fee are complete. Play Console
@@ -211,8 +214,10 @@ access. Internal testing alone does not meet this requirement. See
   secured configuration file. Do not copy the service-account private key into
   this file or repository: it is a separate FCM V1 credential stored in EAS.
   The dedicated sender has the Firebase Cloud Messaging API Admin role in this
-  project. The older AAB11 predates notifications and must be replaced. Credential
-  assignment/prebuild verification alone does not prove delivery on a device.
+  project. AAB12 replaces historical AAB11; its matching preview APK12 is built
+  from the same clean source. See `store/android-notifications-12.json` for the
+  current verification scope. Credential assignment and prebuild verification
+  alone do not prove delivery on a device.
 - iOS build 21 adds notification-tap routing and a corrected privacy manifest
   to the Settings fixes in build 19. Its signed app and provisioning profile
   include production push and the widget App Group. The production-only,

@@ -6,10 +6,29 @@ separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current iOS resubmission: submitted
+## Current iOS resubmission: updated demonstration required
 
-**Build 21 is Waiting for Review**, verified independently on the Apple version
-and submission. The production Newsworthy-specific push key was created with
+**Build 21 was resubmitted, then rejected under Guideline 2.1 on September 24.**
+Apple requests a physical-device recording on the latest OS. The previous build 7
+video does not demonstrate current Settings/notifications. The known iPhone's
+last reported OS is 26.6.2; Apple's current latest release is iOS 27. Mirroring
+reports the phone is in use, so the agent cannot currently capture it.
+
+1. On the iPhone, open **Settings → General → Software Update** and update to
+   the latest public iOS offered for the device. Complete passcode/restart steps
+   on the phone. Recheck the latest version when recording.
+2. Install **Newsworthy 1.0.0 (21)** in TestFlight.
+3. Start iPhone screen recording on the Home Screen, launch Newsworthy, show the
+   reading, open Settings, enable notifications/change the minimum score, show
+   appearance options and sharing, then show both widget sizes.
+4. Stop recording and save the original to iCloud Drive on this Mac. The agent
+   can inspect it, prepare the review copy, send the six-part reply, update Notes
+   and resume review. Alternatively, lock the updated phone to make Mirroring
+   available so the agent can check the accessible capture options first.
+
+See [the new review request and evidence](apple-review-build21-followup.md).
+
+The production Newsworthy-specific push key was created with
 owner confirmation and assigned in Expo. No push-key approval or Mac-unlock
 handoff remains.
 
@@ -133,16 +152,16 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 **Apple rejected build 7 under Guideline 4.2 on September 21.** September 24
 browser readback confirms the owner-submitted
 [reconsideration reply](apple-4.2-reconsideration.md) and Apple's September 23
-response upholding the rejection. Do not duplicate that appeal. The current
-changed build 21 has now been submitted; Apple reports WAITING_FOR_REVIEW
-for both the version and submission.
+response upholding the rejection. Do not duplicate that appeal. Build21 was submitted successfully and subsequently rejected under Guideline 2.1
+for a current physical-device recording and review information.
 The earlier physical recording and Guideline 2.1 response remain historical
 evidence. Newer TestFlight builds do not establish a replacement App Review submission.
 
 Android corrective preview APK10 passed emulator checks for maximum-text widget
 labels and background appearance changes. Production **AAB11** is downloaded
 and verified as a historical artifact, but it predates Settings, notifications
-and subsequent native changes. It must be replaced before the planned release.
+and subsequent native changes. Completed **AAB12** now replaces it; the matching
+APK12 carries the same source and Firebase configuration for native testing.
 The owner-approved compact widget and neutral compact/expanded
 gallery are complete; no further resizing is needed. Physical Android testing
 and the remaining native score10 case are separate from emulator coverage.
@@ -152,9 +171,13 @@ The remaining technical release work is:
 - Android Firebase project/app registration and the scoped FCM credential are now
   configured. Expo readback confirms the approved sender is assigned; the Android
   build configuration file is stored as an EAS secret file for production/preview.
-  Build the current source and verify native behavior and real-device delivery.
+  Production AAB12 and matching preview APK12 are complete. APK12 passed emulator
+  launch, Settings, permission and default minimum 8, registration, Expo/FCM receipts, visible
+  notification and cold-start tap checks. Test notifications were disabled and the
+  registration removed afterward. Physical-device checks remain outstanding.
 
-- Await Apple review of build 21 and respond to any new request. Visual
+- Provide the new physical-device recording requested for build 21 and respond
+  with the six-part information before resuming review. Visual
   notification presentation/opening remains unobserved; provider acceptance
   and physical app/registration tests are recorded separately. Verify paid-sale
   readiness and public availability after approval.

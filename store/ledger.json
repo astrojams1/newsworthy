@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T00:26:07+00:00",
+  "updated_at": "2026-09-24T05:30:32+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -158,12 +158,13 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 21 passed Apple validation/upload and processed VALID. It is now selected in the resubmitted review; both version and submission are WAITING_FOR_REVIEW.",
+      "summary": "Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate.",
       "evidence": [
-        "store/testflight-21.json; store/apple-review-build21.json"
+        "store/apple-review-build21.json",
+        "store/apple-review-build21-followup.md"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T00:06:23+00:00"
+      "updated_at": "2026-09-24T05:30:32+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -177,15 +178,15 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Build21 resubmitted with updated listing and review notes addressing4.2. Existing rejected item resolved then existing submission submitted. Apple independently reports version and submission WAITING_FOR_REVIEW; selected build21 verified.",
+      "summary": "Build21 is REJECTED / UNRESOLVED_ISSUES. New September24 message requests Guideline2.1 physical-device demonstration on latest OS and six-part information. Existing video is build7; connected phone unavailable and last metadata is iOS26.6.2.",
       "evidence": [
-        "store/apple-review-build21.json"
+        "store/apple-review-build21-followup.md"
       ],
-      "next_action": "Await Apple review; preserve this submission. Verify paid-sale readiness/public availability separately after approval.",
-      "updated_at": "2026-09-24T00:02:17+00:00"
+      "next_action": "Make a current physical iPhone available on the latest OS and capture build21 launch, reading, Settings/notifications and widgets; agent can prepare reply/Notes and resume review afterward.",
+      "updated_at": "2026-09-24T05:15:02+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -243,15 +244,15 @@
       "updated_at": "2026-09-24T00:14:58+00:00"
     },
     "google.build": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Previously verified AAB11 is historical. Its source predates Settings, notifications and subsequent native changes; it is not the current release candidate.",
+      "summary": "Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope.",
       "evidence": [
-        "git diff 8055d614e53f0665c3919b40a23d9fbaedcee90a..f4cdb7364a7639b8ed973f63619841d135b78114 -- apps/client; store/release.json"
+        "store/android-notifications-12.json"
       ],
-      "next_action": "Configure Firebase/FCM, build current source, verify AAB and native behavior before upload.",
-      "updated_at": "2026-09-24T00:14:58+00:00"
+      "next_action": "Upload AAB12 when Google allows app creation; complete physical Android testing separately.",
+      "updated_at": "2026-09-24T05:28:12+00:00"
     },
     "google.native": {
       "state": "in_progress",
@@ -697,12 +698,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Independent Apple API readbacks confirm version and existing review submission WAITING_FOR_REVIEW, with build 21 selected. The earlier rejected/unresolved state is historical.",
+      "summary": "Latest Apple API and browser readbacks confirm build21 selected, version REJECTED and submission UNRESOLVED_ISSUES. September24 message requests Guideline2.1 current physical-device video and six-part information. Earlier Waiting for Review receipt is historical.",
       "evidence": [
-        "store/apple-review-build21.json"
+        "store/apple-review-build21-followup.md"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T00:06:23+00:00"
+      "updated_at": "2026-09-24T05:30:32+00:00"
     },
     "story-age.native": {
       "state": "todo",
@@ -859,15 +860,15 @@
       "updated_at": "2026-09-24T00:02:17+00:00"
     },
     "google.notifications": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner approved Firebase terms and scoped Android push access. Newsworthy Firebase project/app created on Spark with optional Analytics/Gemini disabled during setup. Dedicated FCM sender assigned in EAS; production/preview secret configuration file verified. Expo prebuild copies the correct Firebase package/project and enables the Google services Gradle plugin. No device delivery verified yet.",
+      "summary": "Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate.",
       "evidence": [
-        "Firebase Console project newsworthy-cad27; EAS credentials and environment readbacks; actual generated Android prebuild"
+        "store/android-notifications-12.json"
       ],
-      "next_action": "Build the current source, verify the Android app and notification registration/delivery on an available supported device.",
-      "updated_at": "2026-09-24T00:26:07+00:00"
+      "next_action": "Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner.",
+      "updated_at": "2026-09-24T05:27:50+00:00"
     }
   },
   "events": [
@@ -5282,6 +5283,119 @@
         ],
         "next_action": "Build the current source, verify the Android app and notification registration/delivery on an available supported device.",
         "updated_at": "2026-09-24T00:26:07+00:00"
+      }
+    },
+    {
+      "sequence": 276,
+      "at": "2026-09-24T00:32:09+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "in_progress",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Current Android12 production AAB and matching preview APK are IN_PROGRESS in EAS from clean6c19cb9. Firebase config is supplied through EAS secret file; scoped FCM V1 credential assignment and enabled API were verified. AAB11 is historical.",
+        "evidence": [
+          "store/android-notifications-12.json; EAS3048aa1e-7330-42a1-bbdd-8fcc32448f3f and40920bd4-d852-47a1-9dc4-4d98fcf74871"
+        ],
+        "next_action": "Wait on these build IDs, verify downloaded AAB/APK, then install/test the preview.",
+        "updated_at": "2026-09-24T00:32:09+00:00"
+      }
+    },
+    {
+      "sequence": 277,
+      "at": "2026-09-24T05:05:44+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Production artifact downloaded and SHA-256/ZIP integrity verified; matching APK installation and delivery QA continue separately.",
+        "evidence": [
+          "store/android-notifications-12.json"
+        ],
+        "next_action": "Complete Android native notification verification, then upload AAB12 when Google allows app creation.",
+        "updated_at": "2026-09-24T05:05:44+00:00"
+      }
+    },
+    {
+      "sequence": 278,
+      "at": "2026-09-24T05:15:02+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Build21 is REJECTED / UNRESOLVED_ISSUES. New September24 message requests Guideline2.1 physical-device demonstration on latest OS and six-part information. Existing video is build7; connected phone unavailable and last metadata is iOS26.6.2.",
+        "evidence": [
+          "store/apple-review-build21-followup.md"
+        ],
+        "next_action": "Make a current physical iPhone available on the latest OS and capture build21 launch, reading, Settings/notifications and widgets; agent can prepare reply/Notes and resume review afterward.",
+        "updated_at": "2026-09-24T05:15:02+00:00"
+      }
+    },
+    {
+      "sequence": 279,
+      "at": "2026-09-24T05:27:50+00:00",
+      "gate": "google.notifications",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate.",
+        "evidence": [
+          "store/android-notifications-12.json"
+        ],
+        "next_action": "Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner.",
+        "updated_at": "2026-09-24T05:27:50+00:00"
+      }
+    },
+    {
+      "sequence": 280,
+      "at": "2026-09-24T05:28:12+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope.",
+        "evidence": [
+          "store/android-notifications-12.json"
+        ],
+        "next_action": "Upload AAB12 when Google allows app creation; complete physical Android testing separately.",
+        "updated_at": "2026-09-24T05:28:12+00:00"
+      }
+    },
+    {
+      "sequence": 281,
+      "at": "2026-09-24T05:30:32+00:00",
+      "gate": "apple.review-state",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Latest Apple API and browser readbacks confirm build21 selected, version REJECTED and submission UNRESOLVED_ISSUES. September24 message requests Guideline2.1 current physical-device video and six-part information. Earlier Waiting for Review receipt is historical.",
+        "evidence": [
+          "store/apple-review-build21-followup.md"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T05:30:32+00:00"
+      }
+    },
+    {
+      "sequence": 282,
+      "at": "2026-09-24T05:30:32+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate.",
+        "evidence": [
+          "store/apple-review-build21.json",
+          "store/apple-review-build21-followup.md"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T05:30:32+00:00"
       }
     }
   ],

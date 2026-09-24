@@ -20,13 +20,13 @@
     "dsaCompliance": "ACTIVE",
     "w9Status": "ACTIVE",
     "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
-    "reviewState": "WAITING_FOR_REVIEW",
+    "reviewState": "REJECTED",
     "reviewSubmittedDate": "2026-09-17T04:33:40.475Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,
     "availableInNewTerritories": true,
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
-    "reviewSubmissionState": "WAITING_FOR_REVIEW",
+    "reviewSubmissionState": "UNRESOLVED_ISSUES",
     "replacementBuildRequired": false,
     "replacementBuilds": [
       {
@@ -64,7 +64,7 @@
       "state": "COMPLETE",
       "reason": "Developer withdrew build 5 to replace About with the approved reading-screen design and refresh widget-focused listing assets."
     },
-    "rejectionDetails": "GUIDELINE_4_2_MINIMUM_FUNCTIONALITY",
+    "rejectionDetails": "GUIDELINE_2_1_INFORMATION_NEEDED",
     "rejectionEvidenceBasis": "APP_STORE_CONNECT_CORRESPONDENCE_READBACK",
     "reviewResponse": "SIX_PART_REPLY_AND_VIDEO_SENT_NOTES_VERIFIED",
     "testFlightQA": {
@@ -143,18 +143,16 @@
     "reviewResubmittedAt": "2026-09-23T23:59:45.868Z",
     "reviewResubmissionEvidence": "store/apple-review-build21.json",
     "firstReviewSubmittedDate": "2026-09-16T07:50:46.874Z",
-    "reviewStatusObservedAt": "2026-09-24T00:11:40.266Z",
+    "reviewStatusObservedAt": "2026-09-24T05:12:31.742Z",
     "latestReviewReport": {
-      "date": "2026-09-21",
+      "date": "2026-09-24",
       "basis": "observed",
-      "reviewedBuild": "7",
+      "reviewedBuild": "21",
       "outcome": "REJECTED",
-      "guideline": "4.2 Minimum Functionality",
-      "replyStatus": "VERIFIED_IN_APP_STORE_CONNECT",
-      "evidence": "store/apple-4.2-reconsideration.md",
-      "note": "September24 browser readback confirms owner reply and Apple response. Finish notification delivery and resubmit changed build; do not repeat appeal.",
-      "responseDate": "2026-09-23",
-      "responseOutcome": "GUIDELINE_4_2_UPHELD"
+      "guideline": "2.1 Information Needed",
+      "evidence": "store/apple-review-build21-followup.md",
+      "replyStatus": "NOT_SENT",
+      "recordingStatus": "CURRENT_PHYSICAL_DEVICE_RECORDING_REQUIRED"
     },
     "previousReviewStatusObservedAt": "2026-09-17T04:33:43.363Z",
     "latestTestFlight": {
@@ -201,6 +199,18 @@
       "observedDate": "2026-09-24",
       "status": "RECEIVED_AWAITING_REVIEW",
       "scope": "Generic acknowledgment does not name a specific case or document."
+    },
+    "previousReviewReport": {
+      "date": "2026-09-21",
+      "basis": "observed",
+      "reviewedBuild": "7",
+      "outcome": "REJECTED",
+      "guideline": "4.2 Minimum Functionality",
+      "replyStatus": "VERIFIED_IN_APP_STORE_CONNECT",
+      "evidence": "store/apple-4.2-reconsideration.md",
+      "note": "September24 browser readback confirms owner reply and Apple response. Finish notification delivery and resubmit changed build; do not repeat appeal.",
+      "responseDate": "2026-09-23",
+      "responseOutcome": "GUIDELINE_4_2_UPHELD"
     }
   },
   "google": {
@@ -275,40 +285,38 @@
       "bytes": 104437651,
       "installedVersionCode": 9
     },
-    "productionBuildRequiresReplacement": true,
-    "productionReplacementReason": "AAB11 predates Settings, notifications and later shared/native changes. Firebase/FCM credentials and configuration are now prepared; a current signed Android build and verification remain required.",
+    "productionBuildRequiresReplacement": false,
+    "productionReplacementReason": "AAB12 replaces historical AAB11 with current Settings, notifications, native fixes and Firebase configuration. Matching APK12 native delivery verification is recorded separately.",
     "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED",
     "finalProductionBuild": {
-      "id": "4dc57992-b1e5-4517-8197-215b66789963",
+      "id": "3048aa1e-7330-42a1-bbdd-8fcc32448f3f",
       "profile": "production",
       "version": "1.0.0",
-      "build": "11",
-      "sourceCommit": "8055d614e53f0665c3919b40a23d9fbaedcee90a",
+      "build": "12",
+      "sourceCommit": "6c19cb9375dda70a7a79880b852957d77a8d4704",
       "sourceDirty": false,
-      "mergedCommit": "bbdfd257cb874cead165bc62baf9a283cc7d8af0",
-      "appSourceMatchesMergedCommit": true,
       "status": "FINISHED",
-      "createdAt": "2026-09-17T03:27:58.281Z",
-      "completedAt": "2026-09-17T03:42:39.324Z",
-      "bytes": 72475175,
-      "sha256": "b19aa46afcf95e954586f8db1397a0b88113ed3b5460824a52a94f6ad0476bab",
-      "archiveValidation": "ZIP_CRC_VALID"
+      "createdAt": "2026-09-24T00:28:30.796Z",
+      "completedAt": "2026-09-24T00:48:19.849Z",
+      "bytes": 73661804,
+      "sha256": "c98029001bce1ce4dd360a16bf8ff1e68081b52e9e656d64f3b1500251725cf0",
+      "archiveValidation": "ZIP_CRC_VALID",
+      "localArtifact": "artifacts/store-submission/newsworthy-android-production-v12.aab"
     },
     "nativeReplacementBuild": {
-      "id": "4dc57992-b1e5-4517-8197-215b66789963",
+      "id": "3048aa1e-7330-42a1-bbdd-8fcc32448f3f",
       "profile": "production",
       "version": "1.0.0",
-      "build": "11",
-      "sourceCommit": "8055d614e53f0665c3919b40a23d9fbaedcee90a",
+      "build": "12",
+      "sourceCommit": "6c19cb9375dda70a7a79880b852957d77a8d4704",
       "sourceDirty": false,
-      "mergedCommit": "bbdfd257cb874cead165bc62baf9a283cc7d8af0",
-      "appSourceMatchesMergedCommit": true,
       "status": "FINISHED",
-      "createdAt": "2026-09-17T03:27:58.281Z",
-      "completedAt": "2026-09-17T03:42:39.324Z",
-      "bytes": 72475175,
-      "sha256": "b19aa46afcf95e954586f8db1397a0b88113ed3b5460824a52a94f6ad0476bab",
-      "archiveValidation": "ZIP_CRC_VALID"
+      "createdAt": "2026-09-24T00:28:30.796Z",
+      "completedAt": "2026-09-24T00:48:19.849Z",
+      "bytes": 73661804,
+      "sha256": "c98029001bce1ce4dd360a16bf8ff1e68081b52e9e656d64f3b1500251725cf0",
+      "archiveValidation": "ZIP_CRC_VALID",
+      "localArtifact": "artifacts/store-submission/newsworthy-android-production-v12.aab"
     },
     "previousProductionBuild": {
       "id": "8162d6a2-7980-4f48-9153-d325ffd55e68",
@@ -338,8 +346,26 @@
         "production",
         "preview"
       ],
-      "deliveryVerification": "PENDING_NATIVE_DEVICE"
-    }
+      "deliveryVerification": "EXPO_FCM_RECEIPT_OK_AND_EMULATOR_VISIBLE_NOTIFICATION_COLD_TAP_VERIFIED",
+      "credentialValidation": "OAUTH_AND_FCM_VALIDATE_ONLY_HTTP_200"
+    },
+    "previousFinalProductionBuild": {
+      "id": "4dc57992-b1e5-4517-8197-215b66789963",
+      "profile": "production",
+      "version": "1.0.0",
+      "build": "11",
+      "sourceCommit": "8055d614e53f0665c3919b40a23d9fbaedcee90a",
+      "sourceDirty": false,
+      "mergedCommit": "bbdfd257cb874cead165bc62baf9a283cc7d8af0",
+      "appSourceMatchesMergedCommit": true,
+      "status": "FINISHED",
+      "createdAt": "2026-09-17T03:27:58.281Z",
+      "completedAt": "2026-09-17T03:42:39.324Z",
+      "bytes": 72475175,
+      "sha256": "b19aa46afcf95e954586f8db1397a0b88113ed3b5460824a52a94f6ad0476bab",
+      "archiveValidation": "ZIP_CRC_VALID"
+    },
+    "notificationBuildEvidence": "store/android-notifications-12.json"
   },
   "headerOpticalAlignment": {
     "date": "2026-09-17",
