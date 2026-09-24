@@ -3,15 +3,16 @@
 One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
-**September 24, 2026 update:** iOS **1.0.0 (21)** was resubmitted after the
-notification changes. The initial Waiting for Review state was superseded by
-**REJECTED / UNRESOLVED_ISSUES** at 05:12 UTC. Apple repeats its request for a
-physical-device demonstration on the latest OS and the six-part review details
-under Guideline 2.1. The old build 7 video remains attached and downloads successfully. The owner
-has supplied a new recording in iCloud Drive; inspection is underway. See the
-[current follow-up](apple-review-build21-followup.md) and historical
-[submission receipt](apple-review-build21.json). The new message does not repeat
-Guideline 4.2; this does not establish approval of every other guideline.
+**September 24, 2026 update:** iOS **1.0.0 (21)** is **Waiting for Review**,
+confirmed at06:19UTC after the updated physical-device video and six-part reply
+were posted and matching Review Notes saved. This supersedes the05:12UTC
+Guideline2.1 rejection. The original build7 attachment was still available; the
+new recording demonstrates Settings, notification threshold changes and dark
+appearance as well as launch/reading/widgets. See the
+[current follow-up](apple-review-build21-followup.md) and
+[latest submission receipt](apple-review-resubmission-2026-09-24-video.json).
+Approval and public release remain separate; the latest rejection's omission of
+Guideline4.2 did not establish that concern had been approved.
 
 Build 21 is VALID and IN_BETA_TESTING in Release QA. Its notification-tap routing,
 privacy manifest and the server's receipt/retry fixes are merged and deployed.
@@ -115,8 +116,8 @@ still blocks app creation. See the ledger for current gates and exact next actio
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** build 21 was resubmitted September 24, then rejected under
-  Guideline 2.1 for a current physical-device recording and review information.
+- **Apple review:** build21 returned to Waiting for Review at06:19UTC on September24
+  after the updated recording, six-part reply and matching Notes.
   See the [new request](apple-review-build21-followup.md). The earlier
   [submission receipt](apple-review-build21.json) and build 7 appeal are historical.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T06:06:24+00:00
+Updated: 2026-09-24T06:20:53+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,7 +25,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | in_progress | agent | user_reported | Owner reports an updated physical-device recording in iCloud Drive. The September17 build7 video remains attached in the current review thread; the generic September24 rejection does not explain whether it was overlooked or insufficient. | Locate and inspect updated recording, verify its demonstrated build and flows, prepare matching reply and Notes, then resubmit and verify state. |
+| apple.review | waiting_provider | provider | observed | Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC. | Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate. |
 | apple.release | waiting_provider | provider | observed | Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, verify paid-sale account readiness, and verify public paid availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
@@ -72,7 +72,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.quiet-reading-build | done | agent | observed | iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy. | — |
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
-| apple.review-state | done | agent | observed | Latest Apple API and browser readbacks confirm build21 selected, version REJECTED and submission UNRESOLVED_ISSUES. September24 message requests Guideline2.1 current physical-device video and six-part information. Earlier Waiting for Review receipt is historical. | — |
+| apple.review-state | done | agent | observed | Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical. | — |
 | story-age.native | todo | agent | observed | Story-age source adds local age formatting to Expo and both widgets; replacement native package and visual parity remain unverified. | Build replacement native packages and verify both widget sizes, themes, score 10, enlarged text, resizing and offline age transitions. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
@@ -89,7 +89,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
 | apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
-| apple.physical-recording-current | waiting_provider | provider | observed | Updated September24 recording located in iCloud Drive, 38951259 bytes advertised. Finder download and local copy remain at zero transferred bytes. Alternate iCloud web sign-in with the existing vault credential reports the Apple Account locked for security reasons; no recovery or credential change attempted. | Allow iCloud transfer to complete or use an owner-provided local copy; inspect actual footage before upload. Pending owner question asks whether phone upload is complete. Account recovery, if needed, remains owner-only. |
+| apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
 
 ## Evidence and history
 
@@ -2793,3 +2793,29 @@ Updated September24 recording located in iCloud Drive, 38951259 bytes advertised
 - Finder Download Now status Zero KB of39.0MB; source remains dataless; iCloud web locked-account notice. Original September17 Apple attachment downloaded and SHA256 matches its posted manifest.
 
 Next: Allow iCloud transfer to complete or use an owner-provided local copy; inspect actual footage before upload. Pending owner question asks whether phone upload is complete. Account recovery, if needed, remains owner-only.
+
+### 286. apple.physical-recording-current — done
+
+2026-09-24T06:20:53+00:00 · observed · agent
+
+Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed.
+
+- store/apple-physical-review-video-2026-09-24.json; App Review message7, September24 2:17PM, one video attachment and Download control.
+
+### 287. apple.review — waiting_provider
+
+2026-09-24T06:20:53+00:00 · observed · provider
+
+Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC.
+
+- store/apple-review-resubmission-2026-09-24-video.json; store/apple-review-response-2026-09-24.md
+
+Next: Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate.
+
+### 288. apple.review-state — done
+
+2026-09-24T06:20:53+00:00 · observed · agent
+
+Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.
+
+- store/apple-review-resubmission-2026-09-24-video.json

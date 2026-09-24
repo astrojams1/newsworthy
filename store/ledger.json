@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T06:06:24+00:00",
+  "updated_at": "2026-09-24T06:20:53+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -178,15 +178,15 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "in_progress",
-      "owner": "agent",
-      "basis": "user_reported",
-      "summary": "Owner reports an updated physical-device recording in iCloud Drive. The September17 build7 video remains attached in the current review thread; the generic September24 rejection does not explain whether it was overlooked or insufficient.",
+      "state": "waiting_provider",
+      "owner": "provider",
+      "basis": "observed",
+      "summary": "Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC.",
       "evidence": [
-        "Owner message September24; App Review September17 message attachment Download control verified; fresh API readback confirms six-part Notes."
+        "store/apple-review-resubmission-2026-09-24-video.json; store/apple-review-response-2026-09-24.md"
       ],
-      "next_action": "Locate and inspect updated recording, verify its demonstrated build and flows, prepare matching reply and Notes, then resubmit and verify state.",
-      "updated_at": "2026-09-24T05:55:10+00:00"
+      "next_action": "Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate.",
+      "updated_at": "2026-09-24T06:20:53+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -698,12 +698,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Latest Apple API and browser readbacks confirm build21 selected, version REJECTED and submission UNRESOLVED_ISSUES. September24 message requests Guideline2.1 current physical-device video and six-part information. Earlier Waiting for Review receipt is historical.",
+      "summary": "Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.",
       "evidence": [
-        "store/apple-review-build21-followup.md"
+        "store/apple-review-resubmission-2026-09-24-video.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T05:30:32+00:00"
+      "updated_at": "2026-09-24T06:20:53+00:00"
     },
     "story-age.native": {
       "state": "todo",
@@ -882,15 +882,15 @@
       "updated_at": "2026-09-24T05:41:58+00:00"
     },
     "apple.physical-recording-current": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Updated September24 recording located in iCloud Drive, 38951259 bytes advertised. Finder download and local copy remain at zero transferred bytes. Alternate iCloud web sign-in with the existing vault credential reports the Apple Account locked for security reasons; no recovery or credential change attempted.",
+      "summary": "Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed.",
       "evidence": [
-        "Finder Download Now status Zero KB of39.0MB; source remains dataless; iCloud web locked-account notice. Original September17 Apple attachment downloaded and SHA256 matches its posted manifest."
+        "store/apple-physical-review-video-2026-09-24.json; App Review message7, September24 2:17PM, one video attachment and Download control."
       ],
-      "next_action": "Allow iCloud transfer to complete or use an owner-provided local copy; inspect actual footage before upload. Pending owner question asks whether phone upload is complete. Account recovery, if needed, remains owner-only.",
-      "updated_at": "2026-09-24T06:06:24+00:00"
+      "next_action": "",
+      "updated_at": "2026-09-24T06:20:53+00:00"
     }
   },
   "events": [
@@ -5466,6 +5466,54 @@
         ],
         "next_action": "Allow iCloud transfer to complete or use an owner-provided local copy; inspect actual footage before upload. Pending owner question asks whether phone upload is complete. Account recovery, if needed, remains owner-only.",
         "updated_at": "2026-09-24T06:06:24+00:00"
+      }
+    },
+    {
+      "sequence": 286,
+      "at": "2026-09-24T06:20:53+00:00",
+      "gate": "apple.physical-recording-current",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed.",
+        "evidence": [
+          "store/apple-physical-review-video-2026-09-24.json; App Review message7, September24 2:17PM, one video attachment and Download control."
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T06:20:53+00:00"
+      }
+    },
+    {
+      "sequence": 287,
+      "at": "2026-09-24T06:20:53+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-09-24-video.json; store/apple-review-response-2026-09-24.md"
+        ],
+        "next_action": "Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate.",
+        "updated_at": "2026-09-24T06:20:53+00:00"
+      }
+    },
+    {
+      "sequence": 288,
+      "at": "2026-09-24T06:20:53+00:00",
+      "gate": "apple.review-state",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-09-24-video.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-09-24T06:20:53+00:00"
       }
     }
   ],
