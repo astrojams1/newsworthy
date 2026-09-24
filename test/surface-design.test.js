@@ -302,16 +302,10 @@ function inspectLayout({ platform, dark, score, iosVersion, sourceOverride }) {
   const all = nodes(tree);
   const stack = all.find(n => n.props.screenOptions);
   assert.equal(stack.props.screenOptions.contentStyle.backgroundColor, palette.tinted, 'a screen never flashes a default background');
-  // Reported 2026-09-24: iOS 26 rounds a moving screen's corners, and the flat
-  // canvas showed as dark wedges around the reading screen during a pop. The
-  // canvas is the reading gradient itself, with no default colour to flash.
-  assert.equal(navigation.colors.background, 'transparent', 'transition canvas is the reading gradient');
-  const canvas = all.find(n => n.props.testID === 'transition-canvas');
-  assert.equal(stack.parent.props.testID, 'transition-canvas', 'transition canvas is the reading gradient');
-  assert.equal(canvas.props.style.backgroundColor, palette.surface, 'transition canvas is the reading gradient');
-  const gradient = nodes(canvas.props.children, canvas).find(n => n.type === 'ReadingGradient');
-  assert.equal(gradient?.props.score, score ?? undefined, 'transition canvas is the reading gradient');
-  assert.equal(gradient.props.dark, dark);
+  // Reported 2026-09-24: a transparent canvas, tried so a gradient beneath the
+  // navigator could fill iOS 26's rounded transition corners, coincided with
+  // no glass on any bar item or the back button in the simulator.
+  assert.equal(navigation.colors.background, palette.tinted, 'the transition canvas stays opaque');
   assert.equal(all.find(n => n.type === 'StatusBar').props.style, dark ? 'light' : 'dark');
   // Reported 2026-09-24: an opaque Settings bar is drawn by the navigation bar,
   // which does not slide, and snapped a flat band over the gradient on push.
@@ -333,11 +327,10 @@ test('navigation materials and transition canvas match the resolved app appearan
   }
 });
 
-test('layout gate rejects a flat transition canvas or an opaque Settings bar', () => {
+test('layout gate rejects a transparent transition canvas or an opaque Settings bar', () => {
   const source = readFileSync(new URL('../apps/client/app/_layout.tsx', import.meta.url), 'utf8');
   const cases = [
-    [source.replace("background: 'transparent', card:", 'background: theme.tinted, card:'), /transition canvas is the reading gradient/],
-    [source.replace('<ReadingGradient score={reading?.score} dark={theme.dark} />', ''), /transition canvas is the reading gradient/],
+    [source.replace('background: theme.tinted, card:', "background: 'transparent', card:"), /transition canvas stays opaque/],
     [source.replace('headerTransparent: true, headerStyle: { backgroundColor: \'transparent\' },\n        headerBackground', 'headerBackground'), /Settings bar slides with its page/],
     [source.replace('headerBackground: liquidGlass ? undefined :', 'headerBackground:'), /iOS 26 blurs/],
   ];

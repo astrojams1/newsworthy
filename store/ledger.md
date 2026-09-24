@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T08:46:29+00:00
+Updated: 2026-09-24T08:54:02+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -90,7 +90,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
 | apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
-| apple.settings-transition | in_progress | agent | observed | Owner iPhone recording of Settings push/pop shows four defects: flat header band snapping on push, square plate around the wordmark morphing into Back, wordmark enlarging then snapping after pop, and dark canvas wedges at iOS 26 rounded screen corners. Source fix: neutral Settings page under a transparent bar (owner removed the Settings gradient), gradient transition canvas, iOS wordmark drawn by the page. | Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed. |
+| apple.settings-transition | in_progress | agent | observed | Owner simulator test of PR134 showed no glass on the share/settings capsule or the back button. The transparent navigator canvas (corner-wedge fix) was the only change reaching both bars and is reverted; corner wedges are open again. Remaining fixes: transparent Settings bar over a neutral page, iOS wordmark drawn by the page. | Owner re-tests the reverted build in the simulator for glass, then push/pop and back-swipe on iOS 26; choose another approach for the corner wedges. |
 
 ## Evidence and history
 
@@ -2840,3 +2840,13 @@ Owner iPhone recording of Settings push/pop shows four defects: flat header band
 - PR134. Owner screen recording September24 (frames 13, 112, 129 matched to owner screenshots). design72 checks passed; web export Settings checked in Chromium on the earlier gradient revision. Not verified on a native build: iOS 26 and earlier-iOS transitions, scroll-edge blur under the Settings bar, wordmark alignment, Android.
 
 Next: Verify push, pop and interactive back-swipe on a physical iOS 26 build (and earlier iOS if available) plus Android before claiming the transition fixed.
+
+### 291. apple.settings-transition — in_progress
+
+2026-09-24T08:54:02+00:00 · observed · agent
+
+Owner simulator test of PR134 showed no glass on the share/settings capsule or the back button. The transparent navigator canvas (corner-wedge fix) was the only change reaching both bars and is reverted; corner wedges are open again. Remaining fixes: transparent Settings bar over a neutral page, iOS wordmark drawn by the page.
+
+- PR134; owner simulator report September24. design72 checks passed after revert. Glass restoration after the revert is not yet observed.
+
+Next: Owner re-tests the reverted build in the simulator for glass, then push/pop and back-swipe on iOS 26; choose another approach for the corner wedges.

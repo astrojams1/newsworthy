@@ -7,7 +7,6 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter } from 'expo-r
 import { onNotificationOpen } from '@/lib/push';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
-import { ReadingGradient } from '@/components/reading-gradient';
 // A deep link or a cold start on /settings still gets the reading screen
 // underneath it, so the native back button exists rather than depending on
 // how the screen was reached.
@@ -19,12 +18,12 @@ function ThemedLayout() {
   const theme = useTheme();
   const baseNavigationTheme = theme.dark ? DarkTheme : DefaultTheme;
   // Native header materials and the canvas behind a screen transition read
-  // the navigator's theme, independently of headerStyle/contentStyle. The
-  // canvas is transparent over the reading gradient drawn below the navigator:
-  // iOS 26 rounds a moving screen's corners, and a flat canvas showed there as
-  // dark wedges around the reading screen while Settings was popped.
+  // the navigator's theme, independently of headerStyle/contentStyle. Keep the
+  // canvas opaque: a transparent one, tried so the reading gradient beneath
+  // could fill iOS 26's rounded corners mid-transition, coincided with no
+  // glass on any bar item or the back button in the simulator.
   const navigationTheme = { ...baseNavigationTheme, colors: { ...baseNavigationTheme.colors,
-    primary: theme.accent, background: 'transparent', card: theme.tinted,
+    primary: theme.accent, background: theme.tinted, card: theme.tinted,
     text: theme.ink, border: theme.rule, notification: theme.accent,
   } };
   const { reading, refresh } = useCurrentReading();
@@ -61,8 +60,6 @@ function ThemedLayout() {
   }, [reading?.score, theme.dark, theme.center]);
   return <ThemeProvider value={navigationTheme}>
     <StatusBar style={theme.dark ? 'light' : 'dark'} />
-    <View testID="transition-canvas" style={{ flex: 1, backgroundColor: theme.surface }}>
-    <ReadingGradient score={reading?.score} dark={theme.dark} />
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
       <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
@@ -74,6 +71,5 @@ function ThemedLayout() {
         headerTransparent: true, headerStyle: { backgroundColor: 'transparent' },
         headerBackground: liquidGlass ? undefined : () => <View testID="settings-bar" style={{ position: 'absolute', inset: 0, backgroundColor: theme.tinted }} /> }} />
     </Stack>
-    </View>
   </ThemeProvider>;
 }
