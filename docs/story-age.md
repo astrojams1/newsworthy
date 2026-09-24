@@ -31,7 +31,7 @@ sentences are not rewritten.
    or unjudged), the sample `prefix` (`New: ` or empty), the character budget and
    an opaque preparation reference.
 4. Finalize the same development’s sentence without changing its facts or score.
-   Prompts v16 and later allow 135 characters for the body and reserves 5 for the label.
+   Prompts v16 and later allow 135 characters for the body and reserve 5 for the label.
    The complete displayed sentence remains within 140 characters, including
    spaces and punctuation. No label is submitted as prose.
 5. Submit score, final sentence, preparation reference and computed prompt digest.
@@ -49,7 +49,7 @@ for audit. A caller changing the event must prepare again. Unsubmitted drafts ar
 removed after a day on subsequent preparations. Their judge calls can incur cost
 but are not included in saved-reading spend totals.
 
-App-made ratings use the same body budget as v16 and later and the existing generation-then-
+App-made ratings use the v16 body budget, unchanged since, and the existing generation-then-
 judge path. An intentional `NEWSWORTHY_PROMPT_VERSION` pin remains respected.
 
 ## Display and compatibility
