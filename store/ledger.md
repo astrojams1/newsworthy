@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T06:20:53+00:00
+Updated: 2026-09-24T06:45:56+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -88,7 +88,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
 | apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
-| apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
+| apple.gallery-current | waiting_user | user | observed | Four current native captures saved with provenance. iPhone and Android notification drafts rendered and visually inspected, excluding About while preserving actual control states. The full renderer refuses incomplete captures before replacing upload assets. Mac remains locked. | Unlock Mac, complete remaining native captures, integrate notifications into the full gallery and measure current widget viewports; then verify and upload if Apple permits edits without withdrawing review. |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
 
 ## Evidence and history
@@ -2819,3 +2819,23 @@ Next: Await Apple review outcome; inspect its actual next message before assigni
 Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.
 
 - store/apple-review-resubmission-2026-09-24-video.json
+
+### 289. apple.gallery-current — waiting_user
+
+2026-09-24T06:41:30+00:00 · observed · user
+
+Current iOS simulator package installed and inspected; current iPhone light reading and Settings captures saved, alongside Android12 dark reading and notification controls. Native capture is interrupted because the Mac is locked.
+
+- store/design/current-gallery-captures.json
+
+Next: Owner unlocks Mac; finish iPhone widgets/dark, iPad and Android captures, complete and verify artwork. Keep queued Apple review intact if gallery editing is locked.
+
+### 290. apple.gallery-current — waiting_user
+
+2026-09-24T06:45:56+00:00 · observed · user
+
+Four current native captures saved with provenance. iPhone and Android notification drafts rendered and visually inspected, excluding About while preserving actual control states. The full renderer refuses incomplete captures before replacing upload assets. Mac remains locked.
+
+- store/design/current-gallery-captures.json; store/design/drafts/notification-drafts.json; store/design/current-gallery-brief.md
+
+Next: Unlock Mac, complete remaining native captures, integrate notifications into the full gallery and measure current widget viewports; then verify and upload if Apple permits edits without withdrawing review.

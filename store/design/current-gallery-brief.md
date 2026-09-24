@@ -34,3 +34,19 @@ RGB PNG format; upload replacements and verify COMPLETE/checksum/order before
 removing superseded screenshots. Preserve source/build/capture provenance and
 historical files. Current Android gallery needs an equivalent separate refresh
 from APK12; do not relabel old Android screenshots as current.
+
+## September 24 capture checkpoint
+
+Current iPhone light reading and Settings captures, Android dark reading and
+Settings captures are saved with SHA-256 hashes and build/runtime distinctions
+in `current-gallery-captures.json`. The Mac locked before the remaining native
+captures could be finished.
+
+`scripts/render-notification-drafts.mjs` renders actual notification-control
+viewports into `design/drafts/`, with editable SVGs and a separate draft manifest.
+Both drafts were visually inspected: controls and captions fit, About is absent,
+and the iPhone/Android enabled states are preserved. Their outputs meet the
+1320×2868 and 1080×1920 RGB PNG dimensions. The existing upload manifest is
+unchanged. The full renderer now refuses incomplete capture sets before writing
+assets; it must also retain a non-ready evidence status until final notification
+integration and current widget viewport measurement are complete.

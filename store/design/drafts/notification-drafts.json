@@ -1,0 +1,38 @@
+[
+  {
+    "platform": "ios",
+    "source": "source/iphone-6.9/07-notifications-v21.png",
+    "name": "iphone-notifications-v21",
+    "width": 1320,
+    "height": 2868,
+    "nativeWidth": 1320,
+    "nativeHeight": 2868,
+    "crop": {
+      "x": 48,
+      "y": 1028,
+      "width": 1224,
+      "height": 556
+    },
+    "file": "design/drafts/iphone-notifications-v21.png",
+    "status": "draft",
+    "composition": "Unchanged native notification controls shown through a viewport; About is outside the viewport. Original full capture is preserved."
+  },
+  {
+    "platform": "android",
+    "source": "source/android-phone/17-notifications-v12.png",
+    "name": "android-notifications-v12",
+    "width": 1080,
+    "height": 1920,
+    "nativeWidth": 1080,
+    "nativeHeight": 2400,
+    "crop": {
+      "x": 40,
+      "y": 846,
+      "width": 1000,
+      "height": 502
+    },
+    "file": "design/drafts/android-notifications-v12.png",
+    "status": "draft",
+    "composition": "Unchanged native notification controls shown through a viewport; About is outside the viewport. Original full capture is preserved."
+  }
+]

@@ -1,0 +1,69 @@
+{
+  "status": "in_progress",
+  "captured_on": "2026-09-24",
+  "ios": {
+    "eas_build_id": "d182c9bd-fea2-4908-bf73-33d9eac5c1f1",
+    "profile": "simulator-release",
+    "source_commit": "4f519f0e952cc5285e31a94eda19ad13e354dd53",
+    "runtime": "iOS 18.3",
+    "device": "iPhone 16 Pro Max simulator",
+    "bundle_version": "1.0.0 (1)",
+    "eas_remote_build_version": "21",
+    "limitation": "Simulator artifact from source matching production build21; not the production binary or physical-device review evidence. Filename v21 identifies the gallery release target.",
+    "capture_method": "Simulator Save Screen through native UI",
+    "settings": "Follow device selected, notifications off, threshold8 selected."
+  },
+  "android": {
+    "eas_build_id": "40920bd4-d852-47a1-9dc4-4d98fcf74871",
+    "source_commit": "6c19cb9375dda70a7a79880b852957d77a8d4704",
+    "version": "1.0.0 (12)",
+    "runtime": "Android API35 ARM64 emulator",
+    "capture_method": "Android Emulator native screenshot shortcut",
+    "settings_capture": "Light appearance, notifications enabled, threshold8. Notifications disabled and Follow device restored after capture."
+  },
+  "captures": [
+    {
+      "file": "source/iphone-6.9/05-reading-light-v21.png",
+      "bytes": 4203971,
+      "sha256": "9bfe624b6bb06f312770837684cfe66740439a2e38e9290b28c60c04454e4445",
+      "width": 1320,
+      "height": 2868
+    },
+    {
+      "file": "source/iphone-6.9/07-notifications-v21.png",
+      "bytes": 191425,
+      "sha256": "eb78016bb3de07894afd799096fff39cb73a8d2120fd4887038111d92b6b5b75",
+      "width": 1320,
+      "height": 2868
+    },
+    {
+      "file": "source/android-phone/16-reading-dark-v12.png",
+      "bytes": 537946,
+      "sha256": "371057c29e3edbee954a4990168e04ddd5f4dfbb958df1055497c1a62b092c0b",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "source/android-phone/17-notifications-v12.png",
+      "bytes": 154111,
+      "sha256": "bf3772a9da4110fff0801b0bf4cc83cc832173247773dbd2b95f3a375abc6e84",
+      "width": 1080,
+      "height": 2400
+    }
+  ],
+  "outstanding": [
+    "iPhone dark reading and current small/medium widget captures",
+    "iPad light/dark reading and Settings captures",
+    "Android light reading and current compact/expanded widget captures",
+    "Finish artwork renderer, visually inspect complete gallery, validate dimensions",
+    "Check whether Apple permits screenshot updates while review is pending; preserve queued review if editing is locked"
+  ],
+  "blocker": "Mac locked; native screenshots cannot continue until owner unlocks it.",
+  "uploaded": false,
+  "draft_artwork": {
+    "manifest": "design/drafts/notification-drafts.json",
+    "visually_inspected": true,
+    "scope": "iPhone and Android notification-control viewports only; complete gallery remains unfinished.",
+    "validation": "RGB PNG 1320x2868 and 1080x1920; original controls preserved; no About content."
+  }
+}

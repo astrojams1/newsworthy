@@ -4,6 +4,35 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+// Refuse a partial refresh before touching the last upload-ready gallery.
+// Native capture can span sessions; missing current sources must not silently
+// produce a manifest mixing historical Android screens with new Apple screens.
+const requiredCaptures = [
+  'iphone-6.9/05-reading-light-v21.png',
+  'iphone-6.9/06-reading-dark-v21.png',
+  'iphone-6.9/07-notifications-v21.png',
+  'iphone-6.9/08-widget-sizes-native-v21.png',
+  'ipad-13/05-reading-light-v21.png',
+  'ipad-13/06-reading-dark-v21.png',
+  'ipad-13/07-notifications-v21.png',
+  'android-phone/15-reading-light-v12.png',
+  'android-phone/16-reading-dark-v12.png',
+  'android-phone/17-notifications-v12.png',
+];
+const missing = [];
+for (const path of requiredCaptures) {
+  try { await access(resolve(root, 'source', path)); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; missing.push(path); }
+}
+const galleryEvidence = JSON.parse(await readFile(resolve(root, 'design/current-gallery-captures.json'), 'utf8'));
+const widgetEvidence = JSON.parse(await readFile(resolve(root, 'source/android-phone/widget-frames.json'), 'utf8'));
+for (const frame of widgetEvidence.frames) {
+  try { await access(resolve(root, frame.file)); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; missing.push(frame.file); }
+}
+if (missing.length || galleryEvidence.status !== 'ready' || widgetEvidence.versionCode !== 12) {
+  throw new Error(`Current gallery is not ready; existing assets are unchanged. Finish native capture, measured widget viewports and notification layouts, then mark the gallery evidence ready. Missing captures: ${missing.join(', ') || 'none'}.`);
+}
 const out = async (path, data) => {
   await mkdir(dirname(resolve(root, path)), { recursive: true });
   await writeFile(resolve(root, path), data);
@@ -15,15 +44,15 @@ const text = (x, y, size, value, fill = '#142C28', extra = '') =>
 // Artboards are editable SVG; native captures are embedded without changing
 // their content. No synthetic UI, sample score, or invented news is rendered.
 const layouts = [
-  ['iphone-6.9', '01-reading-light.png', '01-at-a-glance-v6.png', ['The world,', 'at a glance.'], 'A number out of 10. One sentence explaining why.', false],
-  ['iphone-6.9', '02-reading-dark.png', '03-dark-mode-v6.png', ['A quieter way', 'to stay informed.'], 'Light and dark. The same calm perspective.', true],
-  ['ipad-13', '01-reading-light.png', '01-at-a-glance-v6.png', ['The world, at a glance.'], 'A number out of 10. One sentence explaining why.', false],
-  ['ipad-13', '02-reading-dark.png', '02-dark-mode-v6.png', ['A quieter way to stay informed.'], 'Light and dark. The same calm perspective.', true],
+  ['iphone-6.9', '05-reading-light-v21.png', '01-at-a-glance-v21.png', ['World news.', 'One reading.'], 'An AI score, a brief explanation, and an update time.', false],
+  ['iphone-6.9', '06-reading-dark-v21.png', '04-dark-mode-v21.png', ['Your reading.', 'Your appearance.'], 'Follow your device, or choose light or dark.', true],
+  ['ipad-13', '05-reading-light-v21.png', '01-at-a-glance-v21.png', ['World news. One reading.'], 'An AI score, a brief explanation, and an update time.', false],
+  ['ipad-13', '06-reading-dark-v21.png', '03-dark-mode-v21.png', ['Your reading. Your appearance.'], 'Follow your device, or choose light or dark.', true],
 ];
 const manifest = [];
 // Frame two observed native widgets in a neutral vector artboard. The original
 // Home Screen remains intact on disk; viewports show only the widget surfaces.
-const widgetSource = 'source/iphone-6.9/04-widget-sizes-native.png';
+const widgetSource = 'source/iphone-6.9/08-widget-sizes-native-v21.png';
 try {
   const png = (await readFile(resolve(root, widgetSource))).toString('base64');
   const href = `data:image/png;base64,${png}`;
@@ -36,9 +65,9 @@ try {
     <rect width="1320" height="2868" fill="#F4F3EF"/>
     <rect x="104" y="120" width="42" height="5" rx="2.5" fill="#59685F"/>
     ${text(166, 134, 29, 'NEWSWORTHY', '#59685F', 'letter-spacing="6"')}
-    ${text(104, 327, 106, 'A little space.', '#172C25', 'font-weight="500" letter-spacing="-4"')}
-    ${text(104, 451, 106, 'A clearer picture.', '#172C25', 'font-weight="500" letter-spacing="-4"')}
-    ${text(108, 557, 36, 'Two sizes. One calm perspective.', '#59685F')}
+    ${text(104, 327, 106, 'Small or medium.', '#172C25', 'font-weight="500" letter-spacing="-4"')}
+    ${text(104, 451, 106, 'Your latest reading.', '#172C25', 'font-weight="500" letter-spacing="-4"')}
+    ${text(108, 557, 36, 'Two sizes for your Home Screen.', '#59685F')}
     ${text(108, 748, 27, 'SMALL', '#59685F', 'letter-spacing="5"')}
     ${widget('small',108,803,510,510,114,918,510,510)}
     ${text(108, 1396, 37, 'The score, at a glance.', '#172C25')}
@@ -46,11 +75,11 @@ try {
     ${text(108, 1658, 27, 'MEDIUM', '#59685F', 'letter-spacing="5"')}
     ${widget('medium',108,1713,1092,510,114,282,1092,510)}
     ${text(108, 2308, 37, 'More room for context.', '#172C25')}
-    ${text(108, 2532, 31, 'A quiet check-in, right on your Home Screen.', '#59685F')}
-    ${text(108, 2758, 27, 'No feed. No ads. No subscription.', '#59685F')}
+    ${text(108, 2532, 31, 'Tap a widget to open the current reading.', '#59685F')}
+    ${text(108, 2758, 27, 'World news, rated by significance.', '#59685F')}
   </svg>`;
-  const target = 'assets/apple/iphone-6.9/02-widget-sizes-v2.png';
-  await out('source/layouts/iphone-6.9-02-widget-sizes-v2.svg', svg.replaceAll(href, '../iphone-6.9/04-widget-sizes-native.png'));
+  const target = 'assets/apple/iphone-6.9/02-widget-sizes-v21.png';
+  await out('source/layouts/iphone-6.9-02-widget-sizes-v21.svg', svg.replaceAll(href, '../iphone-6.9/08-widget-sizes-native-v21.png'));
   await out(target, await sharp(Buffer.from(svg)).removeAlpha().png({compressionLevel:9}).toBuffer());
   manifest.push({file:target,source:widgetSource,width:1320,height:2868,platform:'ios',displayType:'APP_IPHONE_67',composition:'Unchanged native widget viewports on a neutral vector canvas; not a full Home Screen screenshot.'});
 } catch (error) {
@@ -90,7 +119,7 @@ for (const [family, source, name, headline, caption, dark] of layouts) {
   ${text(tablet ? 120 : 98, tablet ? 353 : 505, tablet ? 42 : 36, caption, muted)}
   <rect x="${sx - 22}" y="${sy - 22}" width="${sw + 44}" height="${sh + 44}" rx="${tablet ? 56 : 98}" fill="#101514"/>
   <image x="${sx}" y="${sy}" width="${sw}" height="${sh}" clip-path="url(#screen)" xlink:href="data:image/png;base64,${screen}"/>
-  ${text(width / 2, height - 70, tablet ? 32 : 29, 'No feed. No ads. No subscription.', muted, 'text-anchor="middle"')}
+  ${text(width / 2, height - 70, tablet ? 32 : 29, 'World news, rated by significance.', muted, 'text-anchor="middle"')}
   </svg>`;
   const target = `assets/apple/${family}/${name}`;
   await out(`source/layouts/${family}-${name.replace('.png', '.svg')}`, svg.replace(`data:image/png;base64,${screen}`, `../${family}/${source}`));
@@ -122,8 +151,8 @@ try {
     <path d="M72 987 H1008" stroke="#D5D9D0" stroke-width="2"/>
     ${text(72,1045,24,'EXPANDED','#59685F','letter-spacing="4"')}
     ${text(72,1582,29,'More room for context.','#172C25')}
-    ${text(72,1725,27,'A quiet check-in, right on your Home Screen.','#59685F')}
-    ${text(72,1850,24,'No feed. No ads. No subscription.','#59685F')}
+    ${text(72,1725,27,'Tap a widget to open the current reading.','#59685F')}
+    ${text(72,1850,24,'World news, rated by significance.','#59685F')}
   </svg>`;
   if (!Number.isInteger(config.versionCode) || config.versionCode < 1) throw new Error('Widget frames require the verified Android versionCode');
   const target=`assets/google-play/phone/03-widget-sizes-v${config.versionCode}.png`;
@@ -138,8 +167,8 @@ try {
 }
 
 const androidLayouts = [
-  ['12-reading-light-v9.png', '01-at-a-glance-v9.png', ['The world,', 'at a glance.'], 'A number out of 10. One sentence explaining why.', false],
-  ['13-reading-dark-v9.png', '02-dark-mode-v9.png', ['A quieter way', 'to stay informed.'], 'Light and dark. The same calm perspective.', true],
+  ['15-reading-light-v12.png', '01-at-a-glance-v12.png', ['World news.', 'One reading.'], 'An AI score, a brief explanation, and an update time.', false],
+  ['16-reading-dark-v12.png', '04-dark-mode-v12.png', ['Your reading.', 'Your appearance.'], 'Follow your device, or choose light or dark.', true],
 ];
 // Retire superseded Android art even when rendering over an existing checkout.
 for (const name of ['01-at-a-glance', '02-dark-mode']) {
@@ -168,7 +197,7 @@ for (const [source, name, headline, caption, dark] of androidLayouts) {
   ${text(75, 292, 28, caption, muted)}
   <rect x="${sx-12}" y="${sy-12}" width="${sw+24}" height="${sh+24}" rx="40" fill="#101514"/>
   <image x="${sx}" y="${sy}" width="${sw}" height="${sh}" clip-path="url(#screen)" xlink:href="data:image/png;base64,${screen}"/>
-  ${text(540, 1860, 25, 'No feed. No ads. No subscription.', muted, 'text-anchor="middle"')}
+  ${text(540, 1860, 25, 'World news, rated by significance.', muted, 'text-anchor="middle"')}
   </svg>`;
   const target = `assets/google-play/phone/${name}`;
   await out(`source/layouts/android-${name.replace('.png','.svg')}`, svg.replace(`data:image/png;base64,${screen}`, `../android-phone/${source}`));
@@ -178,7 +207,7 @@ for (const [source, name, headline, caption, dark] of androidLayouts) {
 
 // Google artwork extends the existing vector brand. It makes no claim to show
 // an Android device; Android screenshots are captured and tracked separately.
-const feature = `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500"><defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#EFF8F2"/><stop offset="1" stop-color="#B6DCCA"/></linearGradient></defs><rect width="1024" height="500" fill="url(#bg)"/><rect x="76" y="72" width="34" height="5" fill="#3F685E"/>${text(132, 84, 22, 'NEWSWORTHY', '#3F685E', 'letter-spacing="4"')}${text(76, 222, 58, 'The world, at a glance.', '#142C28', 'font-weight="500" letter-spacing="-2"')}${text(78, 298, 27, 'A number out of 10. One sentence explaining why.', '#3F685E')}${text(78, 416, 23, 'Check in, then get on with your day.', '#3F685E')}</svg>`;
+const feature = `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500"><defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#EFF8F2"/><stop offset="1" stop-color="#B6DCCA"/></linearGradient></defs><rect width="1024" height="500" fill="url(#bg)"/><rect x="76" y="72" width="34" height="5" fill="#3F685E"/>${text(132, 84, 22, 'NEWSWORTHY', '#3F685E', 'letter-spacing="4"')}${text(76, 222, 58, 'The world, at a glance.', '#142C28', 'font-weight="500" letter-spacing="-2"')}${text(78, 298, 27, 'An AI score, a brief explanation, and an update time.', '#3F685E')}${text(78, 416, 23, 'An AI assessment. Updated periodically.', '#3F685E')}</svg>`;
 await out('source/feature-graphic.svg', feature);
 await out('assets/google-play/feature-graphic.png', await sharp(Buffer.from(feature)).removeAlpha().png().toBuffer());
 await out('assets/google-play/icon.png', await sharp(resolve(root, '../apps/client/assets/icon.png')).resize(512).removeAlpha().png().toBuffer());
