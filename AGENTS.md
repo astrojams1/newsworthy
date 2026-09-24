@@ -69,6 +69,12 @@ release status. Calm presentation must not change the rating calibration.
   settling for the repository's fixtures. Pass it in the `x-admin-token` header,
   never in a file, commit, log or PR.
 
+- This file is capped at 58,500 characters, enforced by
+  `test/agents-md.test.js`. An addition that does not fit is written tersely
+  and makes room by tightening or removing stale text here. Propose a raise to
+  the owner only when that cannot make room, stating what the addition says and
+  the new length and limit, and change this number only after approval.
+
 ## Layout
 
 | Path | |
