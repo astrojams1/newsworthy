@@ -25,7 +25,7 @@ Provider acceptance is not a visual-delivery claim. See [build evidence](testfli
 
 **Android release update:** AAB11 is historical and must be replaced: it predates
 Settings, notifications and subsequent native changes. Firebase/FCM configuration
-and a current native build are pending. Google still disables app creation until
+is complete; a current native build and device verification are pending. Google still disables app creation until
 physical-device and phone verification are complete (September 24 readback).
 
 Neither app is publicly released. Earlier submission/video evidence remains

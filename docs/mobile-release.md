@@ -204,6 +204,15 @@ access. Internal testing alone does not meet this requirement. See
   registered device receives anything. Configure these through an authorized account session; neither key
   belongs in this repository. `EXPO_ACCESS_TOKEN` on Vercel is optional and
   only lets Expo enforce that this server is the one sending.
+- Android uses Firebase project `newsworthy-cad27`, registered for the existing
+  package `com.astrojams.newsworthy`. EAS production and preview environments supply
+  the secret file variable `GOOGLE_SERVICES_JSON`; Expo's `android.googleServicesFile`
+  consumes that path. For local Android prebuilds, set the same variable to your
+  secured configuration file. Do not copy the service-account private key into
+  this file or repository: it is a separate FCM V1 credential stored in EAS.
+  The dedicated sender has the Firebase Cloud Messaging API Admin role in this
+  project. The older AAB11 predates notifications and must be replaced. Credential
+  assignment/prebuild verification alone does not prove delivery on a device.
 - iOS build 21 adds notification-tap routing and a corrected privacy manifest
   to the Settings fixes in build 19. Its signed app and provisioning profile
   include production push and the widget App Group. The production-only,

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T00:14:58+00:00
+Updated: 2026-09-24T00:26:07+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -87,7 +87,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
 | apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
-| google.notifications | waiting_user | user | observed | Firebase account inventory has no Newsworthy project. Current app config has no googleServicesFile. Project creation is prepared at the Firebase terms checkbox, awaiting required legal-agreement confirmation; no project or credential was created. | Confirm Firebase terms; agent completes project and Android registration, securely configures FCM delivery, then verifies the replacement app. |
+| google.notifications | in_progress | agent | observed | Owner approved Firebase terms and scoped Android push access. Newsworthy Firebase project/app created on Spark with optional Analytics/Gemini disabled during setup. Dedicated FCM sender assigned in EAS; production/preview secret configuration file verified. Expo prebuild copies the correct Firebase package/project and enables the Google services Gradle plugin. No device delivery verified yet. | Build the current source, verify the Android app and notification registration/delivery on an available supported device. |
 
 ## Evidence and history
 
@@ -2684,3 +2684,13 @@ Firebase account inventory has no Newsworthy project. Current app config has no 
 - Signed-in Firebase inventory/create-project form; apps/client/app.config.js; https://docs.expo.dev/push-notifications/fcm-credentials/
 
 Next: Confirm Firebase terms; agent completes project and Android registration, securely configures FCM delivery, then verifies the replacement app.
+
+### 275. google.notifications — in_progress
+
+2026-09-24T00:26:07+00:00 · observed · agent
+
+Owner approved Firebase terms and scoped Android push access. Newsworthy Firebase project/app created on Spark with optional Analytics/Gemini disabled during setup. Dedicated FCM sender assigned in EAS; production/preview secret configuration file verified. Expo prebuild copies the correct Firebase package/project and enables the Google services Gradle plugin. No device delivery verified yet.
+
+- Firebase Console project newsworthy-cad27; EAS credentials and environment readbacks; actual generated Android prebuild
+
+Next: Build the current source, verify the Android app and notification registration/delivery on an available supported device.

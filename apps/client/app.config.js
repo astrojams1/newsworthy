@@ -17,7 +17,10 @@ module.exports = {
         NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
       })),
       NSPrivacyAccessedAPITypes: [{ NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults', NSPrivacyAccessedAPITypeReasons: ['CA92.1', '1C8F.1'] }] } },
-  android: { package: release.appId, adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: design.identity.light.surface } },
+  android: { package: release.appId,
+    // EAS supplies this file for preview/production; keep credentials out of Git.
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+    adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: design.identity.light.surface } },
   web: { output: 'static', favicon: './assets/favicon.png' },
   plugins: ['expo-router', 'expo-status-bar', 'expo-image', 'expo-system-ui', '@bacons/apple-targets', './plugins/with-rating-widget', './plugins/with-system-appearance',
     ['expo-notifications', { icon: './assets/notification-icon.png', color: design.brand.primary, defaultChannel: 'readings' }],

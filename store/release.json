@@ -276,7 +276,7 @@
       "installedVersionCode": 9
     },
     "productionBuildRequiresReplacement": true,
-    "productionReplacementReason": "AAB11 predates Settings, notifications and later shared/native changes. Current app config lacks googleServicesFile, and no Newsworthy Firebase project exists in the signed-in account. Complete Firebase/FCM setup before the replacement build.",
+    "productionReplacementReason": "AAB11 predates Settings, notifications and later shared/native changes. Firebase/FCM credentials and configuration are now prepared; a current signed Android build and verification remain required.",
     "themeFixNativeVerification": "EXPANDED_LIGHT_DARK_LIGHT_THEME_TRANSITIONS_VERIFIED",
     "finalProductionBuild": {
       "id": "4dc57992-b1e5-4517-8197-215b66789963",
@@ -324,7 +324,22 @@
       "sha256": "1e9ba320efb466011f12b19311ce5608281d3218e0a65aaceee9cc847fb27202",
       "localArtifact": "artifacts/store-submission/newsworthy-android-production-v10.aab"
     },
-    "accountStatusObservedDate": "2026-09-24"
+    "accountStatusObservedDate": "2026-09-24",
+    "firebase": {
+      "projectId": "newsworthy-cad27",
+      "androidAppId": "1:1074464356481:android:84a2aec8d362d8a5e5b580",
+      "package": "com.astrojams.newsworthy",
+      "plan": "SPARK",
+      "fcmCredentialAssignment": "VERIFIED_IN_EAS",
+      "role": "Firebase Cloud Messaging API Admin",
+      "configVariable": "GOOGLE_SERVICES_JSON",
+      "configVisibility": "SECRET_FILE",
+      "environments": [
+        "production",
+        "preview"
+      ],
+      "deliveryVerification": "PENDING_NATIVE_DEVICE"
+    }
   },
   "headerOpticalAlignment": {
     "date": "2026-09-17",

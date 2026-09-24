@@ -149,11 +149,10 @@ and the remaining native score10 case are separate from emulator coverage.
 
 The remaining technical release work is:
 
-- Configure Android Firebase/FCM, build the current source, and verify the native
-  app and notification behavior. The signed-in Firebase account has no Newsworthy
-  project. Its project-creation form is prepared at the Firebase terms checkbox;
-  the computer-control tool requires confirmation before accepting that agreement.
-  No new project, key or access grant has been created.
+- Android Firebase project/app registration and the scoped FCM credential are now
+  configured. Expo readback confirms the approved sender is assigned; the Android
+  build configuration file is stored as an EAS secret file for production/preview.
+  Build the current source and verify native behavior and real-device delivery.
 
 - Await Apple review of build 21 and respond to any new request. Visual
   notification presentation/opening remains unobserved; provider acceptance

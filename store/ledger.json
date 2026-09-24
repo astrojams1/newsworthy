@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T00:14:58+00:00",
+  "updated_at": "2026-09-24T00:26:07+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -859,15 +859,15 @@
       "updated_at": "2026-09-24T00:02:17+00:00"
     },
     "google.notifications": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "in_progress",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Firebase account inventory has no Newsworthy project. Current app config has no googleServicesFile. Project creation is prepared at the Firebase terms checkbox, awaiting required legal-agreement confirmation; no project or credential was created.",
+      "summary": "Owner approved Firebase terms and scoped Android push access. Newsworthy Firebase project/app created on Spark with optional Analytics/Gemini disabled during setup. Dedicated FCM sender assigned in EAS; production/preview secret configuration file verified. Expo prebuild copies the correct Firebase package/project and enables the Google services Gradle plugin. No device delivery verified yet.",
       "evidence": [
-        "Signed-in Firebase inventory/create-project form; apps/client/app.config.js; https://docs.expo.dev/push-notifications/fcm-credentials/"
+        "Firebase Console project newsworthy-cad27; EAS credentials and environment readbacks; actual generated Android prebuild"
       ],
-      "next_action": "Confirm Firebase terms; agent completes project and Android registration, securely configures FCM delivery, then verifies the replacement app.",
-      "updated_at": "2026-09-24T00:14:58+00:00"
+      "next_action": "Build the current source, verify the Android app and notification registration/delivery on an available supported device.",
+      "updated_at": "2026-09-24T00:26:07+00:00"
     }
   },
   "events": [
@@ -5266,6 +5266,22 @@
         ],
         "next_action": "Confirm Firebase terms; agent completes project and Android registration, securely configures FCM delivery, then verifies the replacement app.",
         "updated_at": "2026-09-24T00:14:58+00:00"
+      }
+    },
+    {
+      "sequence": 275,
+      "at": "2026-09-24T00:26:07+00:00",
+      "gate": "google.notifications",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner approved Firebase terms and scoped Android push access. Newsworthy Firebase project/app created on Spark with optional Analytics/Gemini disabled during setup. Dedicated FCM sender assigned in EAS; production/preview secret configuration file verified. Expo prebuild copies the correct Firebase package/project and enables the Google services Gradle plugin. No device delivery verified yet.",
+        "evidence": [
+          "Firebase Console project newsworthy-cad27; EAS credentials and environment readbacks; actual generated Android prebuild"
+        ],
+        "next_action": "Build the current source, verify the Android app and notification registration/delivery on an available supported device.",
+        "updated_at": "2026-09-24T00:26:07+00:00"
       }
     }
   ],
