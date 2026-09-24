@@ -124,6 +124,26 @@ still blocks app creation. See the ledger for current gates and exact next actio
 
 ## Reproduce the artwork
 
+The current gallery refresh is **unfinished**. The saved Apple gallery remains
+historical, and the upload manifest still points to it. The refreshed renderer
+refuses to overwrite it while required current native captures or final layout
+verification are missing. Resume using [the gallery brief](design/current-gallery-brief.md)
+and [capture evidence](design/current-gallery-captures.json).
+
+Two notification drafts can already be reproduced from the saved actual native
+captures, without changing the upload manifest:
+
+```sh
+node store/scripts/render-notification-drafts.mjs
+```
+
+They are saved in `store/design/drafts/`. Each shows an unchanged viewport of
+the notification controls; About and unrelated screen content are outside the
+viewport. The iPhone capture shows the default disabled state; Android shows
+the enabled state at score 8. These drafts are not uploaded store screenshots.
+
+After finishing the remaining captures and layouts, visually verify the whole
+gallery and mark its capture evidence ready before running the full renderer.
 From the repository root after `npm ci`:
 
 ```sh

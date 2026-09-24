@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T06:20:53+00:00",
+  "updated_at": "2026-09-24T06:45:56+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -871,15 +871,15 @@
       "updated_at": "2026-09-24T05:27:50+00:00"
     },
     "apple.gallery-current": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures.",
+      "summary": "Four current native captures saved with provenance. iPhone and Android notification drafts rendered and visually inspected, excluding About while preserving actual control states. The full renderer refuses incomplete captures before replacing upload assets. Mac remains locked.",
       "evidence": [
-        "store/design/current-gallery-brief.md"
+        "store/design/current-gallery-captures.json; store/design/drafts/notification-drafts.json; store/design/current-gallery-brief.md"
       ],
-      "next_action": "Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets.",
-      "updated_at": "2026-09-24T05:41:58+00:00"
+      "next_action": "Unlock Mac, complete remaining native captures, integrate notifications into the full gallery and measure current widget viewports; then verify and upload if Apple permits edits without withdrawing review.",
+      "updated_at": "2026-09-24T06:45:56+00:00"
     },
     "apple.physical-recording-current": {
       "state": "done",
@@ -5514,6 +5514,38 @@
         ],
         "next_action": "",
         "updated_at": "2026-09-24T06:20:53+00:00"
+      }
+    },
+    {
+      "sequence": 289,
+      "at": "2026-09-24T06:41:30+00:00",
+      "gate": "apple.gallery-current",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Current iOS simulator package installed and inspected; current iPhone light reading and Settings captures saved, alongside Android12 dark reading and notification controls. Native capture is interrupted because the Mac is locked.",
+        "evidence": [
+          "store/design/current-gallery-captures.json"
+        ],
+        "next_action": "Owner unlocks Mac; finish iPhone widgets/dark, iPad and Android captures, complete and verify artwork. Keep queued Apple review intact if gallery editing is locked.",
+        "updated_at": "2026-09-24T06:41:30+00:00"
+      }
+    },
+    {
+      "sequence": 290,
+      "at": "2026-09-24T06:45:56+00:00",
+      "gate": "apple.gallery-current",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Four current native captures saved with provenance. iPhone and Android notification drafts rendered and visually inspected, excluding About while preserving actual control states. The full renderer refuses incomplete captures before replacing upload assets. Mac remains locked.",
+        "evidence": [
+          "store/design/current-gallery-captures.json; store/design/drafts/notification-drafts.json; store/design/current-gallery-brief.md"
+        ],
+        "next_action": "Unlock Mac, complete remaining native captures, integrate notifications into the full gallery and measure current widget viewports; then verify and upload if Apple permits edits without withdrawing review.",
+        "updated_at": "2026-09-24T06:45:56+00:00"
       }
     }
   ],
