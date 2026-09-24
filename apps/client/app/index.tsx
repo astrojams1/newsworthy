@@ -66,32 +66,12 @@ export default function Home() {
   const readingFade = scrollY.interpolate({ inputRange: [0, readingGone], outputRange: [1, 0], extrapolate: 'clamp' });
   const timelineFade = scrollY.interpolate({ inputRange: [readingGone * 0.5, span * 0.6], outputRange: [0, 1], extrapolate: 'clamp' });
   const cueFade = scrollY.interpolate({ inputRange: [0, 48], outputRange: [1, 0], extrapolate: 'clamp' });
-  // Web has no snap offsets on a free-scrolling container: settle after the
-  // wheel or touch goes quiet, in the direction the reader was moving.
-  const settled = useRef(0);
-  const idle = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // A scroll the app started itself (the cue, the header) runs to its target
-  // untouched; settling mid-way would turn it round.
-  const heading = useRef<number | null>(null);
-  const scrollTo = (y: number) => {
-    heading.current = y; settled.current = y;
-    scroller.current?.scrollTo({ y, animated: true });
-  };
-  const settle = (y: number) => {
-    if (process.env.EXPO_OS !== 'web' || !snap) return;
-    if (idle.current) clearTimeout(idle.current);
-    if (heading.current !== null) {
-      if (Math.abs(y - heading.current) < 1) heading.current = null;
-      return;
-    }
-    idle.current = setTimeout(() => {
-      if (y > 0 && y < snap) {
-        const target = y < settled.current ? 0 : snap;
-        scroller.current?.scrollTo({ y: target, animated: true });
-        settled.current = target;
-      } else settled.current = y;
-    }, 90);
-  };
+  // Native snaps with snapToOffsets. The web uses the browser's own CSS scroll
+  // snap: a script that waited for the scroll to go quiet and then scrolled
+  // itself fought iOS momentum, drifting and then jumping. The timeline is one
+  // snap area taller than the screen, so inside it the page scrolls freely.
+  const webSnap = process.env.EXPO_OS === 'web' && snap > 0;
+  const scrollTo = (y: number) => scroller.current?.scrollTo({ y, animated: true });
   const showTimeline = () => scrollTo(snap);
   const shareReading = async () => {
     if (!reading) return;
@@ -149,16 +129,15 @@ export default function Home() {
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
     <ReadingGradient score={reading?.score} dark={theme.dark} />
     <Animated.ScrollView ref={scroller} key={fontScale} contentInsetAdjustmentBehavior="never"
-      onLayout={(event) => setViewport(event.nativeEvent.layout.height)} style={{ flex: 1, backgroundColor: 'transparent' }}
+      onLayout={(event) => setViewport(event.nativeEvent.layout.height)} style={{ flex: 1, backgroundColor: 'transparent', ...(webSnap ? { scrollSnapType: 'y mandatory' } as object : null) }}
       scrollEventThrottle={16} snapToOffsets={snap ? [0, snap] : undefined} snapToEnd={false} decelerationRate={snap ? 'fast' : 'normal'}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
         useNativeDriver: process.env.EXPO_OS !== 'web',
-        listener: (event: { nativeEvent: { contentOffset: { y: number } } }) => settle(event.nativeEvent.contentOffset.y),
       })}
-      contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: insets.bottom + (hasTimeline ? 48 : landscape ? 16 : 32) }}>
+      contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: hasTimeline ? 0 : insets.bottom + (landscape ? 16 : 32) }}>
       {/* With a timeline the reading keeps exactly the first screen; without one it
           fills the scroll view and nothing scrolls, as before the timeline. */}
-      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: landscape ? 16 : 56 }}>
+      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: landscape ? 16 : 56 }}>
         <View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
           style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
           <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"
@@ -182,7 +161,10 @@ export default function Home() {
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
       {reading && <View onLayout={(event) => setTimelineTop(event.nativeEvent.layout.y)}
-        style={{ maxWidth: landscape ? 600 : 320 * fontScale, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0 }}>
+        style={{ maxWidth: landscape ? 600 : 320 * fontScale, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
+          // Its bottom padding is inside it, so the snap area runs to the end of the scroll.
+          paddingBottom: hasTimeline ? insets.bottom + 48 : 0,
+          ...(webSnap ? { scrollSnapAlign: 'start', scrollMarginTop: headerHeight + 32 } as object : null) }}>
         <Timeline developments={developments} opacity={timelineFade} theme={theme} now={now} scrollY={scrollY} offset={timelineTop} fadeAt={headerHeight} />
       </View>}
     </Animated.ScrollView>

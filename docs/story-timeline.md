@@ -39,8 +39,12 @@ sentence fades out on its own as it nears the header — from 28pt below its low
 edge to 16pt above it — rather than running under a bar. A solid bar with a 1pt
 rule was the first cut; on iOS it read as a hard edge cutting the text off. A
 gradient mask would be smoother but needs a native module, and a painted
-gradient would not match the reading gradient behind it. Web has no snap offsets on a
-free-scrolling container and settles in the direction of travel instead.
+gradient would not match the reading gradient behind it. On the web the browser snaps
+with CSS (`scroll-snap-type: y mandatory`): the reading and the timeline are the
+two snap areas, and the timeline, taller than the screen, scrolls freely inside
+itself. A script that waited for the scroll to go quiet and then scrolled to the
+nearer position was the first cut; on iOS it fought momentum scrolling, drifting
+and then jumping.
 Tapping the header returns to the reading from anywhere in the timeline. The
 wordmark's button stretches across the bar up to Share and Settings, because an
 overlay cannot work: on iOS the native bar takes touches in its own area rather
