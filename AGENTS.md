@@ -571,8 +571,8 @@ the header, beside share) rises over the reading as a sheet in the apps and is a
 page on the web; it closes with an X and has its own stack, so
 `/settings/appearance` chooses the appearance —
 Follow device, Light or Dark, following the device by default — and, in the
-native apps only, `/settings/notifications` turns on a push notification for
-high readings. The routes are exported as `settings/index.html` and
+native apps only, `/settings/notifications` turns on high-score alerts, with
+`/settings/threshold` choosing the score they wait for. The routes are exported as `settings/index.html` and
 `settings/<page>.html`, which is why `serveStatic` also tries a directory's
 `index.html`. `apps/client/lib/preferences.js` owns
 the shape and the defaults, `components/preferences-provider.tsx` persists it

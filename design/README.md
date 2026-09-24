@@ -256,9 +256,14 @@ leading icon (an SF Symbol on iOS, a stroked SVG elsewhere, from
 chevron, and Privacy and Support, which leave the app, end in a link arrow.
 Separators start at the label so the icons read as one column.
 
-Notification saves use the existing text below the controls: `Saving…`, then
-`Alerts at 8 or higher are on.` or `Alerts at 8 or higher are off.`
-with the selected threshold substituted. No spinner enters the switch row.
+The Notifications page is one group: the "High-score alerts" switch, then a
+Threshold row showing the chosen score ("8 or higher") that opens its own page
+of choices, 5 to 10. Below the group one line says what the switch does: "Get an
+alert when the displayed score reaches your threshold, once per development."
+No line restates the switch's state; it was removed as noise.
+
+Notification saves show `Saving…` below the controls on either page, and
+nothing once saved. No spinner enters the switch row.
 Both notification controls are disabled until all queued changes finish, and
 pending state belongs to the provider so reopening Settings preserves feedback.
 Failures retain the previous subscription state and show the existing error.

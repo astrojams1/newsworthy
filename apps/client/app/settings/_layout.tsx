@@ -16,5 +16,6 @@ export default function SettingsLayout() {
     <Stack.Screen name="index" options={{ title: 'Settings', headerTitle: '', headerBackVisible: false, headerLeft: () => null }} />
     <Stack.Screen name="appearance" options={{ title: 'Appearance' }} />
     <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
+    <Stack.Screen name="threshold" options={{ title: 'Threshold' }} />
   </Stack>;
 }

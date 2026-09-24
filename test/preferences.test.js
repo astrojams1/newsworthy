@@ -38,9 +38,11 @@ test('the website shows the appearance choice and no notification setting', () =
   assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
     [['Follow device', true], ['Light', false], ['Dark', false]]);
   assert.deepEqual(text(all), ['Follow device', 'Light', 'Dark']);
-  const alerts = renderSettings({ platform: 'web', screen: 'notifications' }).tree;
-  assert.equal(alerts.type, 'Redirect', 'a link to the alerts page lands on the overview');
-  assert.equal(alerts.props.href, '/settings');
+  for (const screen of ['notifications', 'threshold']) {
+    const alerts = renderSettings({ platform: 'web', screen }).tree;
+    assert.equal(alerts.type, 'Redirect', 'a link to an alerts page lands on the overview');
+    assert.equal(alerts.props.href, '/settings');
+  }
   // Vertical: each option is its own full-width row, the checked one marked.
   assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
   assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');
@@ -69,44 +71,46 @@ test('the overview is a list of pages, each with an icon, its current value and 
 });
 
 for (const platform of ['ios', 'android']) {
-  test(`${platform}: notifications are off by default at a minimum score of 8, shown before opting in`, () => {
+  test(`${platform}: alerts are off by default at a threshold of 8, shown before opting in`, () => {
     const { tree, calls } = renderSettings({ platform, screen: 'notifications' });
     const all = nodes(tree);
     const toggle = all.find(n => n.type === 'Toggle');
     assert.equal(toggle.props.value, false);
     assert.equal(toggle.props.accessibilityLabel, 'High-score alerts');
+    // One group: the switch, then the threshold, which opens its own page.
+    const group = all.find(n => n.props?.testID === 'alert-options');
+    const rowControl = nodes(group).find(n => n.props?.testID === 'notifications-row');
+    assert.equal(rowControl.props.accessibilityRole, 'switch');
+    assert.equal(typeof rowControl.props.onPress, 'function', 'the whole row toggles, not only the switch');
+    const thresholdLink = nodes(group).find(n => n.type === 'Link');
+    assert.equal(thresholdLink.props.href, '/settings/threshold');
+    const thresholdRow = nodes(thresholdLink).find(n => n.props?.testID === 'threshold-row');
+    assert.equal(thresholdRow.props.accessibilityLabel, 'Threshold, 8 or higher');
+    assert.equal(nodes(thresholdRow).filter(n => n.type === 'Glyph').at(-1).props.name, 'chevron');
+    assert.deepEqual(all.filter(n => n.type === 'Text' && n.props.accessibilityRole === 'header'), [], 'no section titles on this page');
+    assert.deepEqual(text(all), ['High-score alerts', 'Threshold', '8 or higher',
+      'Get an alert when the displayed score reaches your threshold, once per development.', ''], 'no line restating the switch');
+    // The threshold page: every choice a full-width row, the chosen one checked.
+    const picker = renderSettings({ platform, screen: 'threshold' });
+    const scores = nodes(picker.tree).filter(n => /^threshold-\d+$/.test(n.props?.testID ?? ''));
+    assert.deepEqual(scores.map(n => [Number(n.props.testID.slice(10)), n.props.accessibilityState.checked]),
+      THRESHOLD_CHOICES.map(v => [v, v === 8]));
+    assert.deepEqual(THRESHOLD_CHOICES, [5, 6, 7, 8, 9, 10]);
+    assert.deepEqual(scores.map(n => nodes(n).some(c => c.type === 'CheckIcon')), THRESHOLD_CHOICES.map(v => v === 8));
+    for (const score of scores) {
+      assert.equal(score.props.accessibilityRole, 'radio');
+      assert.match(score.props.accessibilityLabel, /^Alert at \d+ or higher$/);
+    }
     const appearance = renderSettings({ platform, screen: 'appearance' });
     const radios = nodes(appearance.tree).filter(n => n.props?.accessibilityRole === 'radio' && /^theme-/.test(n.props.testID));
     assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
       [['Follow device', true], ['Light', false], ['Dark', false]]);
-    // Vertical: each option is its own full-width row, the checked one marked.
     assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
     assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');
-    // The score is shown while off, so turning on means something definite.
-    const scores = all.filter(n => /^threshold-\d+$/.test(n.props?.testID ?? ''));
-    assert.deepEqual(scores.map(n => [Number(n.props.testID.slice(10)), n.props.accessibilityState.checked]),
-      THRESHOLD_CHOICES.map(v => [v, v === 8]));
-    assert.deepEqual(THRESHOLD_CHOICES, [5, 6, 7, 8, 9, 10]);
-    for (const score of scores) {
-      assert.equal(score.props.accessibilityRole, 'radio');
-      assert.match(score.props.accessibilityLabel, /^Alert at \d+ or higher$/);
-      assert.ok(score.props.style.minHeight >= 48, 'a score is a full touch target');
-    }
-    assert.ok(text(all).includes('Alerts at 8 or higher are off.'), 'the chosen score and saved state are explained');
-    // The switch and the threshold are separate sections; the threshold has its own header.
-    const headers = all.filter(n => n.type === 'Text' && n.props.accessibilityRole === 'header').map(n => n.props.children);
-    assert.deepEqual(headers, ['Threshold']);
-    assert.equal(all.find(n => n.props?.testID === 'threshold-row').parent.props.style.borderRadius, 16, 'the picker is its own card');
-    assert.ok(!text(all).some(t => /Notify me/.test(t)), 'the switch is named for alerts');
-    // The whole notification row toggles, not only the switch.
-    const rowControl = all.find(n => n.props?.testID === 'notifications-row');
-    assert.equal(rowControl.props.accessibilityRole, 'switch');
-    assert.equal(typeof rowControl.props.onPress, 'function');
     // Every setting is one row with the same minimum, growing with large text.
-    const rows = [...radios, rowControl, all.find(n => n.props?.testID === 'threshold-row')];
-    assert.equal(rows.length, 5);
-    assert.deepEqual(rows.map(n => n.props.style.minHeight), Array(5).fill(56));
-    assert.deepEqual(rows.map(n => n.props.style.height), Array(5).fill(undefined), 'a minimum, not a fixed height that clips enlarged text');
+    const rows = [...radios, rowControl, thresholdRow, ...scores];
+    assert.deepEqual(rows.map(n => n.props.style.minHeight), Array(rows.length).fill(56));
+    assert.deepEqual(rows.map(n => n.props.style.height), Array(rows.length).fill(undefined), 'a minimum, not a fixed height that clips enlarged text');
     assert.equal(all.find(n => n.type === 'ActivityIndicator'), undefined);
     // Choosing Dark records the choice; nothing else is touched.
     nodes(appearance.tree).find(n => n.props?.testID === 'theme-dark').props.onPress();
@@ -138,15 +142,23 @@ test('while saving, progress appears below the controls and both controls are he
   assert.equal(all.find(n => n.props?.testID === 'notifications-status').props.children, 'Saving…');
   assert.equal(all.find(n => n.type === 'Toggle').props.disabled, true);
   assert.equal(all.find(n => n.props?.testID === 'notifications-row').props.disabled, true);
-  assert.ok(all.filter(n => /^threshold-\d+$/.test(n.props?.testID ?? '')).every(n => n.props.disabled));
+  const picker = nodes(renderSettings({ platform: 'ios', screen: 'threshold', busy: true }).tree);
+  assert.equal(picker.find(n => n.props?.testID === 'notifications-status').props.children, 'Saving…');
+  assert.ok(picker.filter(n => /^threshold-\d+$/.test(n.props?.testID ?? '')).every(n => n.props.disabled));
+  // Idle, nothing restates the controls' state.
+  const idle = nodes(renderSettings({ platform: 'ios', screen: 'notifications' }).tree);
+  assert.equal(idle.find(n => n.props?.testID === 'notifications-status').props.children, '');
 });
 
 test('the screen hands every registration change to the provider and shows what came back', async () => {
   const token = 'ExponentPushToken[on-on-on-on]';
   const on = renderSettings({ platform: 'android', screen: 'notifications', stored: { notifications: { enabled: true, threshold: 8, token } } });
   assert.equal(nodes(on.tree).find(n => n.type === 'Toggle').props.value, true);
-  await nodes(on.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
-  assert.deepEqual(on.calls.choose, [9]);
+  const onPicker = renderSettings({ platform: 'android', screen: 'threshold', stored: { notifications: { enabled: true, threshold: 8, token } } });
+  await nodes(onPicker.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
+  assert.deepEqual(onPicker.calls.choose, [9]);
+  await nodes(onPicker.tree).find(n => n.props?.testID === 'threshold-8').props.onPress();
+  assert.deepEqual(onPicker.calls.choose, [9], 'the threshold already chosen changes nothing');
   await nodes(on.tree).find(n => n.type === 'Toggle').props.onValueChange(false);
   assert.deepEqual([on.calls.enable, on.calls.disable], [0, 1]);
   assert.deepEqual(on.calls.notices.filter(Boolean), []);
@@ -155,11 +167,13 @@ test('the screen hands every registration change to the provider and shows what 
   await nodes(off.tree).find(n => n.type === 'Toggle').props.onValueChange(true);
   assert.deepEqual([off.calls.enable, off.calls.disable], [1, 0]);
 
-  const stuck = renderSettings({ platform: 'android', screen: 'notifications', push: { disable: { ok: false, reason: 'offline' }, choose: { ok: false, reason: 'offline' } },
-    stored: { notifications: { enabled: true, threshold: 8, token } } });
+  const failing = { disable: { ok: false, reason: 'offline' }, choose: { ok: false, reason: 'offline' } };
+  const stored = { notifications: { enabled: true, threshold: 8, token } };
+  const stuck = renderSettings({ platform: 'android', screen: 'notifications', push: failing, stored });
   await nodes(stuck.tree).find(n => n.type === 'Toggle').props.onValueChange(false);
-  await nodes(stuck.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
-  assert.deepEqual(stuck.calls.notices.filter(Boolean), ['offline', 'offline'], 'a failure is said, not hidden');
+  const stuckPicker = renderSettings({ platform: 'android', screen: 'threshold', push: failing, stored });
+  await nodes(stuckPicker.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
+  assert.deepEqual([...stuck.calls.notices, ...stuckPicker.calls.notices].filter(Boolean), ['offline', 'offline'], 'a failure is said, not hidden');
   assert.deepEqual([clampThreshold(0), clampThreshold(8.6), clampThreshold(11)], [1, 9, 10]);
 });
 

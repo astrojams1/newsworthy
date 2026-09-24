@@ -12,7 +12,7 @@ import { themeForLevel } from '../../apps/client/lib/palette.js';
 const require = createRequire(import.meta.url);
 const react = require('react');
 const read = path => readFileSync(new URL(`../../apps/client/${path}`, import.meta.url), 'utf8');
-export const SETTINGS_SCREENS = { index: 'app/settings/index.tsx', appearance: 'app/settings/appearance.tsx', notifications: 'app/settings/notifications.tsx' };
+export const SETTINGS_SCREENS = { index: 'app/settings/index.tsx', appearance: 'app/settings/appearance.tsx', notifications: 'app/settings/notifications.tsx', threshold: 'app/settings/threshold.tsx' };
 const compile = text => ts.transpileModule(text, { compilerOptions: {
   jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
 } }).outputText;
@@ -76,6 +76,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
     '@/lib/config': { privacyUrl: '/privacy', supportUrl: '/support' },
   };
   mocks['@/components/settings-list'] = load(listOverride ?? read('components/settings-list.tsx'), mocks, platform);
+  mocks['@/components/alert-feedback'] = load(read('components/alert-feedback.tsx'), mocks, platform);
   const exports = load(sourceOverride ?? read(SETTINGS_SCREENS[screen]), mocks, platform);
   return { tree: expand(exports.default()), calls, theme };
 }

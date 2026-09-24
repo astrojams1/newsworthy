@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T10:32:49+00:00",
+  "updated_at": "2026-09-24T10:39:58+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -896,12 +896,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "PR134 Notifications page reworked at owner request: the switch is \"High-score alerts\" in its own section with an explanatory line, and the score picker is a separate \"Threshold\" section with the saved state beneath it. On the web the page redirects to the Settings overview.",
+      "summary": "PR134 Notifications page revised at owner request: one group with the High-score alerts switch and a Threshold row that opens its own page of choices (5 to 10); the explanatory line stays below; the idle on/off status line is removed, leaving only Saving… while a change is in flight.",
       "evidence": [
-        "PR134. design70 checks and npm test passed. Not verified on a native build."
+        "PR134. design70 checks and preferences tests passed. Not verified on a native build."
       ],
       "next_action": "Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' \"Notify me about high readings\" wording for the next submission.",
-      "updated_at": "2026-09-24T10:32:49+00:00"
+      "updated_at": "2026-09-24T10:39:58+00:00"
     }
   },
   "events": [
@@ -5621,6 +5621,22 @@
         ],
         "next_action": "Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' \"Notify me about high readings\" wording for the next submission.",
         "updated_at": "2026-09-24T10:32:49+00:00"
+      }
+    },
+    {
+      "sequence": 295,
+      "at": "2026-09-24T10:39:58+00:00",
+      "gate": "apple.settings-transition",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR134 Notifications page revised at owner request: one group with the High-score alerts switch and a Threshold row that opens its own page of choices (5 to 10); the explanatory line stays below; the idle on/off status line is removed, leaving only Saving… while a change is in flight.",
+        "evidence": [
+          "PR134. design70 checks and preferences tests passed. Not verified on a native build."
+        ],
+        "next_action": "Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' \"Notify me about high readings\" wording for the next submission.",
+        "updated_at": "2026-09-24T10:39:58+00:00"
       }
     }
   ],
