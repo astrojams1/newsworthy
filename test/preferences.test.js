@@ -28,27 +28,52 @@ test('the chosen appearance wins and System follows the device', () => {
 const text = tree => tree.filter(n => n.type === 'Text').map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
 
 test('the website shows the appearance choice and no notification setting', () => {
-  const { tree } = renderSettings({ platform: 'web' });
-  const all = nodes(tree);
+  const overview = nodes(renderSettings({ platform: 'web' }).tree);
+  assert.ok(overview.some(n => n.type === 'Head'), 'the page has its own title');
+  assert.ok(!overview.some(n => n.props?.testID === 'notifications-link'), 'push notifications are a native feature');
+  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'About', 'Privacy', 'Support']);
+  const all = nodes(renderSettings({ platform: 'web', screen: 'appearance' }).tree);
   assert.ok(all.some(n => n.type === 'Head'), 'the page has its own title');
   const radios = all.filter(n => n.props?.accessibilityRole === 'radio');
   assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
     [['Follow device', true], ['Light', false], ['Dark', false]]);
-  assert.ok(!all.some(n => n.type === 'Toggle'), 'push notifications are a native feature');
-  assert.deepEqual(text(all), ['Appearance', 'Follow device', 'Light', 'Dark', 'About', 'Privacy', 'Support']);
+  assert.deepEqual(text(all), ['Follow device', 'Light', 'Dark']);
   // Vertical: each option is its own full-width row, the checked one marked.
   assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
   assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');
 });
 
+test('the overview is a list of pages, each with an icon, its current value and a chevron', () => {
+  for (const platform of ['web', 'ios', 'android']) for (const [stored, value] of [[{}, 'Off'], [{ theme: 'dark', notifications: { enabled: true, threshold: 9, token: 'ExponentPushToken[x]' } }, '9 or higher']]) {
+    const all = nodes(renderSettings({ platform, stored }).tree);
+    const links = all.filter(n => n.type === 'Link' && n.props.href.startsWith('/settings/'));
+    const expected = platform === 'web' ? ['/settings/appearance'] : ['/settings/appearance', '/settings/notifications'];
+    assert.deepEqual(links.map(n => n.props.href), expected);
+    const rows = links.map(n => nodes(n).find(c => c.type === 'Pressable'));
+    const theme = stored.theme === 'dark' ? 'Dark' : 'Follow device';
+    assert.deepEqual(rows.map(n => n.props.accessibilityLabel), [`Appearance, ${theme}`, `Notifications, ${value}`].slice(0, expected.length));
+    for (const row of rows) {
+      const glyphs = nodes(row).filter(n => n.type === 'Glyph').map(n => n.props.name);
+      assert.equal(glyphs.at(-1), 'chevron', 'a row that opens a page ends in a chevron');
+      assert.ok(['appearance', 'notifications'].includes(glyphs[0]), 'every row has a leading icon');
+      assert.equal(row.props.style.minHeight, 56);
+    }
+    // Sentence-case section titles, not the old tracked capitals.
+    const headers = all.filter(n => n.type === 'Text' && n.props.accessibilityRole === 'header');
+    assert.deepEqual(headers.map(n => n.props.children), ['Preferences', 'About']);
+    assert.ok(headers.every(n => n.props.style.textTransform === undefined && n.props.style.letterSpacing === undefined));
+  }
+});
+
 for (const platform of ['ios', 'android']) {
   test(`${platform}: notifications are off by default at a minimum score of 8, shown before opting in`, () => {
-    const { tree, calls } = renderSettings({ platform });
+    const { tree, calls } = renderSettings({ platform, screen: 'notifications' });
     const all = nodes(tree);
     const toggle = all.find(n => n.type === 'Toggle');
     assert.equal(toggle.props.value, false);
     assert.equal(toggle.props.accessibilityLabel, 'Notify me about high readings');
-    const radios = all.filter(n => n.props?.accessibilityRole === 'radio' && /^theme-/.test(n.props.testID));
+    const appearance = renderSettings({ platform, screen: 'appearance' });
+    const radios = nodes(appearance.tree).filter(n => n.props?.accessibilityRole === 'radio' && /^theme-/.test(n.props.testID));
     assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
       [['Follow device', true], ['Light', false], ['Dark', false]]);
     // Vertical: each option is its own full-width row, the checked one marked.
@@ -76,28 +101,31 @@ for (const platform of ['ios', 'android']) {
     assert.deepEqual(rows.map(n => n.props.style.height), Array(5).fill(undefined), 'a minimum, not a fixed height that clips enlarged text');
     assert.equal(all.find(n => n.type === 'ActivityIndicator'), undefined);
     // Choosing Dark records the choice; nothing else is touched.
-    all.find(n => n.props?.testID === 'theme-dark').props.onPress();
-    assert.deepEqual(calls.setTheme, ['dark']);
-    assert.deepEqual([calls.enable, calls.disable, calls.choose], [0, 0, []]);
+    nodes(appearance.tree).find(n => n.props?.testID === 'theme-dark').props.onPress();
+    assert.deepEqual(appearance.calls.setTheme, ['dark']);
+    assert.deepEqual([calls.enable, calls.disable, calls.choose, appearance.calls.enable], [0, 0, [], 0]);
   });
 }
 
 test('Privacy and Support are rows in Settings on every platform, opening the policy pages', () => {
   for (const platform of ['web', 'ios', 'android']) {
     const all = nodes(renderSettings({ platform }).tree);
-    const links = all.filter(n => n.type === 'Link');
+    const links = all.filter(n => n.type === 'Link' && !n.props.href.startsWith('/settings/'));
     assert.deepEqual(links.map(n => n.props.href), ['/privacy', '/support'], platform);
     const rows = links.map(n => nodes(n).find(c => c.props?.accessibilityRole === 'link'));
     assert.deepEqual(rows.map(n => n.props.accessibilityLabel), ['Privacy', 'Support']);
+    // They leave the app: a leading icon, and a link arrow where a page row has its chevron.
+    assert.deepEqual(rows.map(n => nodes(n).filter(c => c.type === 'Glyph').map(c => c.props.name)), [['privacy', 'external'], ['support', 'external']]);
+    assert.deepEqual(rows.map(n => n.props.accessibilityHint), ['Opens in your browser', 'Opens in your browser']);
     // The same row as every other setting: one minimum, growing with large text.
     assert.deepEqual(rows.map(n => n.props.style.minHeight), [56, 56]);
     assert.deepEqual(rows.map(n => n.props.style.height), [undefined, undefined]);
-    assert.ok(text(all).indexOf('About') > text(all).indexOf('Dark'), 'the links come after the settings themselves');
+    assert.ok(text(all).indexOf('About') > text(all).indexOf('Appearance'), 'the links come after the settings themselves');
   }
 });
 
 test('while saving, progress appears below the controls and both controls are held', () => {
-  const all = nodes(renderSettings({ platform: 'ios', busy: true }).tree);
+  const all = nodes(renderSettings({ platform: 'ios', screen: 'notifications', busy: true }).tree);
   assert.ok(!all.some(n => n.type === 'ActivityIndicator'));
   assert.equal(all.find(n => n.props?.testID === 'notifications-status').props.children, 'Saving…');
   assert.equal(all.find(n => n.type === 'Toggle').props.disabled, true);
@@ -107,7 +135,7 @@ test('while saving, progress appears below the controls and both controls are he
 
 test('the screen hands every registration change to the provider and shows what came back', async () => {
   const token = 'ExponentPushToken[on-on-on-on]';
-  const on = renderSettings({ platform: 'android', stored: { notifications: { enabled: true, threshold: 8, token } } });
+  const on = renderSettings({ platform: 'android', screen: 'notifications', stored: { notifications: { enabled: true, threshold: 8, token } } });
   assert.equal(nodes(on.tree).find(n => n.type === 'Toggle').props.value, true);
   await nodes(on.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
   assert.deepEqual(on.calls.choose, [9]);
@@ -115,11 +143,11 @@ test('the screen hands every registration change to the provider and shows what 
   assert.deepEqual([on.calls.enable, on.calls.disable], [0, 1]);
   assert.deepEqual(on.calls.notices.filter(Boolean), []);
 
-  const off = renderSettings({ platform: 'ios' });
+  const off = renderSettings({ platform: 'ios', screen: 'notifications' });
   await nodes(off.tree).find(n => n.type === 'Toggle').props.onValueChange(true);
   assert.deepEqual([off.calls.enable, off.calls.disable], [1, 0]);
 
-  const stuck = renderSettings({ platform: 'android', push: { disable: { ok: false, reason: 'offline' }, choose: { ok: false, reason: 'offline' } },
+  const stuck = renderSettings({ platform: 'android', screen: 'notifications', push: { disable: { ok: false, reason: 'offline' }, choose: { ok: false, reason: 'offline' } },
     stored: { notifications: { enabled: true, threshold: 8, token } } });
   await nodes(stuck.tree).find(n => n.type === 'Toggle').props.onValueChange(false);
   await nodes(stuck.tree).find(n => n.props?.testID === 'threshold-9').props.onPress();
@@ -233,24 +261,29 @@ test('the notification switch is an iOS-style toggle in the accent colour on eve
   }
 });
 
-test('a settings screen with nothing behind it still offers a way back', () => {
+test('Settings closes with an X and no title, back to the reading from wherever it was opened', () => {
   for (const platform of ['web', 'ios', 'android']) {
-    const stranded = renderSettings({ platform, canGoBack: false });
-    const screen = nodes(stranded.tree).find(n => n.type === 'Screen');
-    const back = screen.props.options.headerLeft();
-    assert.equal(back.props.accessibilityRole, 'button');
-    assert.equal(back.props.accessibilityLabel, 'Back');
-    assert.ok(back.props.style.minWidth >= 48 && back.props.style.minHeight >= 48);
-    assert.ok(nodes(back).some(n => n.type === 'BackIcon'));
-    back.props.onPress();
-    assert.deepEqual(stranded.calls.replace, ['/'], 'it goes home rather than popping a stack that has nothing to pop');
-    // Reached from the reading screen, the navigator's own back button serves.
-    const pushed = renderSettings({ platform, canGoBack: true });
-    assert.equal(nodes(pushed.tree).find(n => n.type === 'Screen').props.options.headerLeft, undefined,
-      'clear any earlier fallback rather than retaining its stale theme callback');
+    for (const canGoBack of [true, false]) {
+      const opened = renderSettings({ platform, canGoBack });
+      const options = nodes(opened.tree).find(n => n.type === 'Screen').props.options;
+      const close = options.headerRight();
+      assert.equal(close.props.accessibilityRole, 'button');
+      assert.equal(close.props.accessibilityLabel, 'Close settings');
+      assert.ok(close.props.style.minWidth >= 48 && close.props.style.minHeight >= 48);
+      assert.deepEqual(nodes(close).filter(n => n.type === 'Glyph').map(n => n.props.name), ['close']);
+      assert.equal(options.headerLeft, undefined, 'the sheet has no back button of its own');
+      close.props.onPress();
+      // Opened from the reading, closing dismisses the sheet; reached with
+      // nothing behind it, it goes home rather than popping an empty stack.
+      assert.deepEqual([opened.calls.back, opened.calls.replace], canGoBack ? [1, []] : [0, ['/']]);
+      if (platform === 'ios') {
+        const items = options.unstable_headerRightItems();
+        assert.equal(items.length, 1);
+        assert.equal(items[0].hidesSharedBackground, false, 'the close button sits in iOS glass');
+      } else assert.equal(options.unstable_headerRightItems, undefined);
+    }
   }
 });
-
 
 test('save feedback spans queued work, navigation, failure and retry', async () => {
   const pending = [];

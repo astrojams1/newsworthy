@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { checkWidgetDesign, widgetSources, contract } from './helpers/widget-contract.js';
 import { renderReading, renderShareIcon, nodes } from './helpers/render-reading.js';
 import { renderSettings } from './helpers/render-settings.js';
-import { renderLayout } from './helpers/render-layout.js';
+import { renderLayout, renderSettingsLayout } from './helpers/render-layout.js';
 import { themeForLevel } from '../apps/client/lib/palette.js';
 
 test('reading refreshes never add loading, saved or retry text to an existing message', () => {
@@ -167,35 +167,23 @@ test('rendered-prop test catches a platform-specific denominator regression', ()
 });
 
 function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
-  const insets = { top: 59, bottom: 34, left: 0, right: 0 };
-  const tree = nodes(renderReading({ platform, score, width: 390, height: 844, sourceOverride, insets, headerHeight: 113 }));
+  const tree = nodes(renderReading({ platform, score, width: 390, height: 844, sourceOverride }));
   const options = tree.find(n => n.type === 'Screen').props.options;
   assert.equal(options.headerTransparent, true);
-  const brandRow = tree.find(n => n.props.testID === 'brand-row');
-  if (platform === 'ios') {
-    // A bar item, glass or not, is morphed into the next screen's back button
-    // and re-animated on return; the page draws the wordmark instead.
-    assert.equal(options.headerLeft, undefined, 'iOS wordmark is drawn by the page, not the bar');
-    assert.equal(options.unstable_headerLeftItems, undefined, 'iOS wordmark is drawn by the page, not the bar');
-    assert.ok(brandRow, 'iOS wordmark is drawn by the page, not the bar');
-    assert.equal(nodes(brandRow.props.children).filter(n => n.type === 'BrandMark').length, 1);
-    // The row spans what the bar occupies below the status bar.
-    assert.deepEqual({ ...brandRow.props.style }, { position: 'absolute', top: insets.top, height: 113 - insets.top, left: 20, justifyContent: 'center' });
-    const screen = tree.find(n => n.type === 'View' && n.props.style?.flex === 1);
-    const order = nodes(screen.props.children, screen).filter(n => n.parent === screen).map(n => n.props.testID ?? n.type);
-    assert.ok(order.indexOf('brand-row') < order.indexOf('ScrollView'), 'wordmark is read before the reading');
-  } else {
-    assert.equal(brandRow, undefined);
-    assert.equal(options.headerLeft().type, 'BrandMark');
-  }
+  const left = options.headerLeft();
   const rightGroup = options.headerRight();
+  assert.equal(left.type, 'BrandMark');
   // The right side is share (when there is a reading) then settings, always.
   assert.equal(rightGroup.props.style.flexDirection, 'row');
   const [share, settings] = rightGroup.props.children;
   assert.equal(settings.props.accessibilityLabel, 'Settings');
   assert.equal(nodes(settings).some(n => n.type === 'SettingsIcon'), true);
   if (platform === 'ios') {
+    const leftItems = options.unstable_headerLeftItems();
     const rightItems = options.unstable_headerRightItems();
+    assert.equal(leftItems.length, 1);
+    assert.equal(leftItems[0].hidesSharedBackground, true, 'brand must not acquire iOS glass');
+    assert.equal(leftItems[0].element, left);
     assert.equal(rightItems.length, score == null ? 1 : 2);
     for (const item of rightItems) assert.equal(item.hidesSharedBackground, false, 'share and settings sit in the iOS glass capsule');
     assert.equal(rightItems.at(-1).element, settings);
@@ -246,17 +234,11 @@ test('header gate rejects missing optical correction on iOS and a lift on the ba
   }
 });
 
-test('header gate rejects the iOS wordmark returning to the bar, or glass moving off the controls', () => {
+test('header gate rejects iOS glass moving: onto the wordmark, or off the controls', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  // Reported 2026-09-24: as a bar item without glass, the wordmark still grew a
-  // square-cornered plate that morphed into Settings' back button, and was
-  // redrawn enlarged before snapping to size after the pop.
-  const barItem = source.replace("headerLeft: process.env.EXPO_OS === 'ios' ? undefined : () => brand", 'headerLeft: () => brand');
-  const glassless = source.replace('unstable_headerRightItems:', "unstable_headerLeftItems: process.env.EXPO_OS === 'ios' ? () => [{ type: 'custom', element: brand, hidesSharedBackground: true }] : undefined,\n      unstable_headerRightItems:");
-  for (const sourceOverride of [barItem, glassless]) {
-    assert.notEqual(sourceOverride, source);
-    assert.throws(() => inspectHeader({ sourceOverride }), /drawn by the page, not the bar/);
-  }
+  const brandGlass = source.replace('element: brand, hidesSharedBackground: true', 'element: brand, hidesSharedBackground: false');
+  assert.notEqual(brandGlass, source);
+  assert.throws(() => inspectHeader({ sourceOverride: brandGlass }), /must not acquire iOS glass/);
   for (const element of ['shareButton', 'settingsButton']) {
     const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: false`,
       `element: ${element}, hidesSharedBackground: true`);
@@ -312,7 +294,7 @@ test('notification saving never adds a control or changes the row geometry', () 
   for (const platform of ['ios', 'android']) for (const dark of [false, true]) for (const width of [320, 390, 440]) {
     for (const enabled of [false, true]) for (const threshold of [5, 8, 10]) {
       const stored = { notifications: { enabled, threshold, token: enabled ? 'ExponentPushToken[test]' : null } };
-      const render = busy => nodes(renderSettings({ platform, width, dark, stored, busy }).tree);
+      const render = busy => nodes(renderSettings({ platform, screen: 'notifications', width, dark, stored, busy }).tree);
       const idle = render(false), saving = render(true);
       const byId = (all, id) => all.find(n => n.props.testID === id);
       for (const id of ['notifications-row', 'threshold-row']) {
@@ -331,12 +313,22 @@ test('notification saving never adds a control or changes the row geometry', () 
   }
 });
 
-test('deep-link back control follows appearance and clears when the native back stack arrives', () => {
-  for (const platform of ['web', 'ios', 'android']) for (const dark of [false, true]) {
-    const screen = canGoBack => nodes(renderSettings({ platform, dark, canGoBack }).tree).find(n => n.type === 'Screen');
-    const fallback = screen(false).props.options.headerLeft();
-    assert.equal(nodes(fallback).find(n => n.type === 'BackIcon').props.color, themeForLevel(3, dark).accent);
-    assert.ok(Object.hasOwn(screen(true).props.options, 'headerLeft'));
-    assert.equal(screen(true).props.options.headerLeft, undefined, 'reset persisted navigation options');
+test('Settings rises as a sheet on the phone and stays a page on the web', () => {
+  for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) {
+    const all = nodes(renderLayout({ platform, dark }));
+    const settings = all.find(n => n.type === 'Screen' && n.props.name === 'settings').props.options;
+    assert.equal(settings.presentation, platform === 'web' ? 'card' : 'modal');
+    assert.equal(settings.headerShown, false, 'the sheet draws its own stack header');
+    const stack = renderSettingsLayout({ platform, dark });
+    const screens = Object.fromEntries(nodes(stack).filter(n => n.type === 'Screen').map(n => [n.props.name, n.props.options]));
+    assert.deepEqual(Object.keys(screens), ['index', 'appearance', 'notifications']);
+    assert.equal(screens.index.headerTitle, '', 'the overview shows no title');
+    assert.equal(screens.index.headerBackVisible, false, 'the overview closes with its X, not a back arrow');
+    assert.equal(screens.index.headerLeft(), null, 'the web header draws no back arrow either');
+    assert.equal(screens.index.title, 'Settings', 'but is still named for assistive technology');
+    assert.deepEqual([screens.appearance.title, screens.notifications.title], ['Appearance', 'Notifications']);
+    const options = nodes(stack).find(n => n.props.screenOptions).props.screenOptions;
+    assert.equal(options.headerBackButtonDisplayMode, 'minimal');
+    assert.equal(options.contentStyle.backgroundColor, themeForLevel(3, dark).tinted);
   }
 });

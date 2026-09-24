@@ -244,11 +244,17 @@ as the screens. Its ThemeProvider supplies native header material appearance and
 the transition canvas; headerStyle/contentStyle alone do not set those. The
 reading header stays transparent over its gradient.
 
-On iOS the wordmark is drawn by the reading screen, centred in the bar's row
-with a 20-point leading margin, rather than as a bar item. As a custom item
-without glass it still grew a square-cornered plate during a push that morphed
-into the back button, and was redrawn enlarged before snapping to size after a
-pop. Android and web keep it as the header's left element.
+Settings rises over the reading as a sheet on iOS and Android (`presentation:
+'modal'`) and is an ordinary page on the web. It has its own stack: an overview
+with no visible title and a single close control (an X, in glass on iOS 26), and
+Appearance and Notifications as pages inside the sheet. Opening Settings no
+longer pushes a screen beside the reading, so nothing in the reading's header
+morphs into a back button. The overview groups rows under sentence-case section
+titles in the muted ink, level with the row icons. Every overview row has a
+leading icon (an SF Symbol on iOS, a stroked SVG elsewhere, from
+`components/glyph.tsx`); a row that opens a page shows its current value and a
+chevron, and Privacy and Support, which leave the app, end in a link arrow.
+Separators start at the label so the icons read as one column.
 
 Notification saves use the existing text below the controls: `Saving…`, then
 `Notify on readings 8 or higher enabled.` or `Notify on readings 8 or higher disabled.`
@@ -257,8 +263,8 @@ Both notification controls are disabled until all queued changes finish, and
 pending state belongs to the provider so reopening Settings preserves feedback.
 Failures retain the previous subscription state and show the existing error.
 
-`test/surface-design.test.js` checks navigation theme propagation, the iOS
-wordmark's placement, and unchanged row structure/styles during saving; `test/preferences.test.js` checks queued
+`test/surface-design.test.js` checks navigation theme propagation, the sheet
+presentation and its stack, and unchanged row structure/styles during saving; `test/preferences.test.js` checks queued
 requests, failure, rollback and retry. These are not native layout or iOS glass
 rendering tests. Verification limits are recorded in
 `store/settings-feedback-verification.json` and the release ledger.

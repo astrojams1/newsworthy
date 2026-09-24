@@ -25,7 +25,7 @@ export function renderShareIcon({ platform, color, sourceOverride }) {
   return exports.AppIcon({ color });
 }
 
-export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, failed = false, loading = false, sourceOverride, readingOverride, now = Date.now(), insets = { top: 0, bottom: 0, left: 0, right: 0 }, headerHeight = 44 }) {
+export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, failed = false, loading = false, sourceOverride, readingOverride, now = Date.now() }) {
   const reading = readingOverride ?? (score == null ? null : { score, explanation: 'A quiet day for the world.', created_at: '2026-09-16T09:00:00Z' });
   const mocks = {
     react: { ...react, useEffect() {}, useState: value => [value, () => {}] },
@@ -35,11 +35,11 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     '@/components/app-icon': { AppIcon: 'AppIcon' },
     '@/components/settings-icon': { SettingsIcon: 'SettingsIcon' },
     '@/components/brand-mark': { BrandMark: 'BrandMark' },
-    'react-native-safe-area-context': { useSafeAreaInsets: () => insets },
+    'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(score, dark) },
     '@/components/reading-provider': { useCurrentReading: () => ({ reading, saved, failed, loading }) },
     '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
-    'expo-router/react-navigation': { useHeaderHeight: () => headerHeight },
+    'expo-router/react-navigation': { useHeaderHeight: () => 44 },
     '@/lib/story-age': { displayExplanation },
     '@/lib/config': { website: 'https://example.test', privacyUrl: '/privacy', supportUrl: '/support' },
   };

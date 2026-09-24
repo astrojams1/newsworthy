@@ -57,7 +57,9 @@ function ThemedLayout() {
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
       headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
       <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
-      <Stack.Screen name="settings" options={{ title: 'Settings', headerBackTitle: 'Back', headerTitleStyle: { color: theme.ink } }} />
+      {/* Settings rises over the reading as a sheet on the phone, closed with its
+          own X; on the web it is a page. Its header is its own stack's. */}
+      <Stack.Screen name="settings" options={{ title: 'Settings', headerShown: false, presentation: process.env.EXPO_OS === 'web' ? 'card' : 'modal' }} />
     </Stack>
   </ThemeProvider>;
 }
