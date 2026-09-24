@@ -28,6 +28,10 @@ publication; an explicit request to merge already authorizes the merge.
   Check `prompt_verified`: a server-stamped version alone does not prove which
   prompt a caller received. Missing or false proof is not evidence that the
   published wording failed. Keep credentials out of files, logs and commits.
+- If the change needs more characters than rule 7 allows, do not compress
+  existing guidance to squeeze it in. Propose a raise to the owner as
+  `PROMPT-RULES.md` describes: what the additions say and the new length and
+  limit. Build past the limit only after approval.
 - Distinguish characters (including spaces and punctuation) from words. Use the
   user's intended unit and measure actual examples before choosing a limit.
 

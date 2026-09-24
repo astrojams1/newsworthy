@@ -61,6 +61,13 @@ release status. Calm presentation must not change the rating calibration.
   branch and Vercel's production branch. Preview builds are skipped by
   `vercel.json`’s `ignoreCommand`; verify production after merge.
 - `npm test` needs no cloud database — see Testing.
+- The production admin token (`ADMIN_TOKEN`) is kept in the owner's 1Password
+  vault. Stored readings, rejections and every prompt version sit behind it at
+  `/api/admin/history` and `/api/admin/prompts`. When a task needs production
+  history, such as measuring a prompt change, ask the owner for the token or
+  read it with the 1Password CLI (`op`) where that is signed in, rather than
+  settling for the repository's fixtures. Pass it in the `x-admin-token` header,
+  never in a file, commit, log or PR.
 
 ## Layout
 
@@ -839,6 +846,25 @@ bold "New:" on a new development, five characters, so the body budget rises from
 120 to 135 and the reserve falls from 20 to 5. Everything else, writing guidance
 included, is v15's. The [record](docs/prompt-evaluations/v16.md) compares v15 and
 v16 on the same eight cards: v16 spent the room keeping caveats v15 had cut.
+
+**v17 fixes house style so two readings of the same kind of news read alike.**
+Stored and evaluated sentences wrote the same thing several ways: "January 10"
+beside "Jan 10", "United States" beside "US" and "American", "100 percent"
+beside "100%", "the Federal Reserve" beside "the Fed", "Poland says" beside
+"Saudi Arabia said", NATO spelled out in some runs. Output now ends with one
+style line: dates as `Jan 10`, US/UK/EU/UN/NATO/the Fed, digits for figures,
+`said` for claims, US spelling and straight apostrophes. The one-number rule
+now exempts dates, years and ordinals. A draft under the flat rule cut "first
+increase since 2023" to "first time in years". The rest of Output is v16's
+verbatim, and everything before it is unchanged.
+
+That took the prompt to 2,292 characters, past rule 7's 2,000. The limit is no
+longer fixed: an agent proposes a raise to the owner with the additions quoted
+and the new length and limit, and builds past it only after approval.
+`PROMPT-RULES.md` holds the approved limit, now 2,300, and a table of raises,
+and the rule 7 test reads the limit from there. A style reference file served
+beside the prompt was tried and dropped because it would grow without that
+check. The [record](docs/prompt-evaluations/v17.md) holds the catalog.
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,

@@ -346,6 +346,19 @@ const V16_OUTPUT_CONTRACT = V15_OUTPUT_CONTRACT
   .replace('reserving 20 for an app-supplied age prefix. Submit no prefix.',
     'reserving 5 for the label "New: " that the app adds to a new development. Submit no label.');
 
+// v17 fixes house style so two readings of the same kind of news are written
+// the same way: dates, names, figures, attribution tense and spelling had all
+// varied across stored and evaluated sentences. It also exempts dates, years
+// and ordinals from the one-number rule. The rest of Output is v16's verbatim.
+// The owner approved raising rule 7's limit to 2,300 for these additions.
+// See docs/prompt-evaluations/v17.md.
+const V17_OUTPUT_CONTRACT = `${V16_OUTPUT_CONTRACT.replace(
+  'At most one number, in plain terms.',
+  'At most one figure, in plain terms. Dates, years and ordinals are not figures.',
+)}
+
+Same style every run: dates as Jan 10, no weekday, a year only if not this year. US, UK, EU, UN, NATO, the Fed, never United States or American. Digits for figures: 3, 5%, $2 billion, a quarter point. Said, not says, for claims. US spelling. Straight apostrophes.`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -458,6 +471,13 @@ const REGISTRY = {
     added: '2026-09-24',
     instructions: V11_INSTRUCTIONS,
     outputContract: V16_OUTPUT_CONTRACT,
+  },
+  17: {
+    version: 17,
+    label: 'house-style-v17',
+    added: '2026-09-24',
+    instructions: V11_INSTRUCTIONS,
+    outputContract: V17_OUTPUT_CONTRACT,
   },
 };
 
