@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { activeStories, agedScore, currentDisplay, currentReading, displayedSeries } from '../src/current.js';
+import { TIMELINE_HOURS, activeStories, agedScore, currentDisplay, currentReading, developmentTimeline, displayedSeries } from '../src/current.js';
+import { storyLabel, timelineAge, timelineLabels, validDevelopment } from '../apps/client/lib/timeline.js';
 import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
 
 // newest first, as recentRatings() returns them
@@ -647,4 +648,108 @@ test('history carries prompt_verified, so the chart cannot misread a missing key
   for (const text of ['verified row', 'unverified row', 'no digest row']) {
     assert.ok('prompt_verified' in find(text), `${text} is missing the key`);
   }
+});
+
+test('the timeline has one entry per development, never per reading, and leaves out the one on the page', () => {
+  // Story X breaks at hour 0 and holds the top slot, re-reported hourly, for
+  // eight hours. Y takes over at 8 and 9. X is top again at 10 and 11, as the
+  // same development. Z breaks at 12 and is what the page shows now.
+  const series = judged(
+    [7, 0], [7, 0], [6, 0], [6, 0], [6, 0], [5, 0], [5, 0], [5, 0],
+    [6, 8], [6, 8],
+    [5, 0], [5, 0],
+    [4, 12],
+  ).map((row, i) => ({ ...row, story: i >= 8 && i <= 9 ? 'y' : i === 12 ? 'z' : 'x', explanation: `sentence ${i}` }));
+  const timeline = developmentTimeline(activeStories(series, { now: 12 * HOUR }), { now: 12 * HOUR });
+  // Thirteen readings, three developments, and Z is already on the page.
+  assert.deepEqual(timeline.map((d) => [d.root, d.story]), [[8, 'y'], [0, 'x']]);
+  // X is listed where it first broke, with the sentence it broke with, even
+  // though it was on top again after Y.
+  assert.equal(timeline[1].explanation, 'sentence 0');
+  assert.equal(timeline[1].since, new Date(0).toISOString());
+  assert.ok(timeline.every(validDevelopment));
+
+  // Now X is re-reported at the top again: the page shows its newest wording,
+  // so X leaves the timeline by identity even though no sentence matches.
+  const again = [...series, { ...series[11], id: 13, t: 13 * HOUR, created_at: new Date(13 * HOUR).toISOString(), explanation: 'sentence 13' }];
+  assert.deepEqual(developmentTimeline(activeStories(again, { now: 13 * HOUR }), { now: 13 * HOUR }).map((d) => d.root), [12, 8]);
+  assert.equal(developmentTimeline(activeStories(series, { now: 12 * HOUR }), { now: 12 * HOUR, limit: 1 }).length, 1);
+  assert.equal(validDevelopment({ ...timeline[0], score: 11 }), false);
+});
+
+test('an escalated development keeps its first-coverage place and age in the timeline', () => {
+  // X is covered at hour 0 and Y at 1. X is re-reported, then escalates: the
+  // median confirms 7 against X's low of 4 at hour 8 and its decay anchor
+  // restarts. Z is what the page shows at 11.
+  const series = judged(
+    [4, 0], [4, 1], [4, 0], [4, 0], [4, 0], [4, 0],
+    [7, 0], [7, 0], [7, 0], [7, 0], [7, 0],
+    [4, 11],
+  ).map((row, i) => ({ ...row, story: i === 1 ? 'y' : i === 11 ? 'z' : 'x', explanation: `sentence ${i}` }));
+  const stories = activeStories(series, { now: 11 * HOUR });
+  const x = stories.flatMap((story) => story.developments).find((d) => d.root === 0);
+  assert.ok(x.since > 0, 'the decay anchor restarted on the escalation');
+  assert.equal(x.opened, 0, 'first coverage did not move');
+  const timeline = developmentTimeline(stories, { now: 11 * HOUR });
+  // Y broke after X, so it stays above it, and X is dated where it broke.
+  assert.deepEqual(timeline.map((d) => [d.root, d.since]), [[1, new Date(HOUR).toISOString()], [0, new Date(0).toISOString()]]);
+  assert.equal(timeline[1].explanation, 'sentence 0');
+});
+
+test('a re-report of a development older than the window drops nothing from the timeline', () => {
+  // X opens at hour 0, Y at hour 70, and the newest reading re-reports X at
+  // hour 74 without re-anchoring it. X is past the live window, so it is not
+  // in the timeline; Y is not on the page and must stay.
+  const at = (id, hour, score, root, story) => ({
+    id, t: hour * HOUR, score, story, explanation: `sentence ${id}`,
+    created_at: new Date(hour * HOUR).toISOString(), judge_version: 1, development_of: root === id ? null : root,
+  });
+  const series = [at(0, 0, 4, 0, 'x'), at(1, 70, 4, 1, 'y'), at(2, 74, 4, 0, 'x')];
+  const stories = activeStories(series, { now: 74 * HOUR });
+  assert.deepEqual(stories.flatMap((story) => story.developments).map((d) => [d.root, d.on_page]), [[1, false]]);
+  assert.deepEqual(developmentTimeline(stories, { now: 74 * HOUR }).map((d) => d.root), [1]);
+});
+
+test('the timeline reaches back one week by first coverage; the board keeps its three days', () => {
+  const at = (id, day, story) => ({
+    id, t: day * 24 * HOUR, score: 4, story, explanation: `sentence ${id}`,
+    created_at: new Date(day * 24 * HOUR).toISOString(), judge_version: 1, development_of: null,
+  });
+  // Developments first covered 8, 5 and 2 days before the newest reading.
+  const series = [at(0, 0, 'a'), at(1, 3, 'b'), at(2, 6, 'c'), at(3, 8, 'd')];
+  const now = 8 * 24 * HOUR;
+  assert.deepEqual(activeStories(series, { now }).flatMap((s) => s.developments).map((d) => d.root).sort(), [2, 3],
+    'the board is unchanged: three days');
+  const stories = activeStories(series, { now, liveHours: TIMELINE_HOURS });
+  // 8 days is past the window; 5 and 2 are inside it; 3 is on the page.
+  assert.deepEqual(developmentTimeline(stories, { now }).map((d) => d.root), [2, 1]);
+});
+
+test('tag lines say only what changed from the entry above', () => {
+  const now = Date.parse('2026-09-24T12:00:00Z');
+  const entry = (story, since) => ({ story, since });
+  assert.deepEqual(timelineLabels([
+    entry('fed-rates', '2026-09-24T07:00:00Z'),
+    entry('us-iran-war', '2026-09-24T01:00:00Z'),
+    entry('us-iran-war', '2026-09-23T10:00:00Z'),
+    entry('nepal-glacier-flood', '2026-09-23T06:00:00Z'),
+    entry('eu-ai-act', '2026-09-22T20:00:00Z'),
+  ], now), [
+    { story: 'Fed Rates', age: '5 hr ago' },
+    { story: 'US Iran War', age: '11 hr ago' },
+    { story: null, age: 'Yesterday' },
+    { story: 'Nepal Glacier Flood', age: null },
+    { story: 'EU AI Act', age: null },
+  ]);
+});
+
+test('story slugs read as tags, and timeline ages are coarse', () => {
+  assert.equal(storyLabel('us-iran-war'), 'US Iran War');
+  assert.equal(storyLabel('eu-ai-act'), 'EU AI Act');
+  assert.equal(storyLabel(null), null);
+  const now = Date.parse('2026-09-24T12:00:00Z');
+  assert.equal(timelineAge('2026-09-24T11:10:00Z', now), '50 min ago');
+  assert.equal(timelineAge('2026-09-24T07:00:00Z', now), '5 hr ago');
+  assert.equal(timelineAge('2026-09-23T06:00:00Z', now), 'Yesterday');
+  assert.equal(timelineAge('2026-09-21T12:00:00Z', now), '3 days ago');
 });

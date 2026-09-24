@@ -168,13 +168,23 @@ test('rendered-prop test catches a platform-specific denominator regression', ()
   assert.throws(() => inspectReading({ sourceOverride, platform: 'android', width: 390, height: 844, score: 3, dark: false }), /40 !== 20/);
 });
 
-function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
-  const tree = nodes(renderReading({ platform, score, width: 390, height: 844, sourceOverride }));
+function inspectHeader({ platform = 'ios', score = 3, sourceOverride, timeline = [] } = {}) {
+  const tree = nodes(renderReading({ platform, score, width: 390, height: 844, sourceOverride, timeline }));
   const options = tree.find(n => n.type === 'Screen').props.options;
   assert.equal(options.headerTransparent, true);
   const left = options.headerLeft();
   const rightGroup = options.headerRight();
-  assert.equal(left.type, 'BrandMark');
+  if (score != null && timeline.length) {
+    // With a timeline below, the wordmark is the way back to the reading.
+    assert.equal(left.type, 'Pressable');
+    assert.equal(left.props.accessibilityRole, 'button');
+    assert.equal(left.props.accessibilityLabel, 'Newsworthy, back to the reading');
+    assert.equal(typeof left.props.onPress, 'function');
+    assert.ok(left.props.style({ pressed: false }).minHeight >= contract.header.minimumTouchTarget);
+    // It reaches across the header to Share and Settings, not just the word.
+    assert.equal(left.props.style({ pressed: false }).width, 390 - 96 - (platform === 'web' ? 12 : 40));
+    assert.equal(left.props.children.type, 'BrandMark');
+  } else assert.equal(left.type, 'BrandMark', 'with nowhere to return from, the wordmark is not a button');
   // The right side is share (when there is a reading) then settings, always.
   assert.equal(rightGroup.props.style.flexDirection, 'row');
   const [share, settings] = rightGroup.props.children;
@@ -207,6 +217,7 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride } = {}) {
 test('native header keeps plain brand/share controls and accessible touch targets', () => {
   for (const platform of ['ios', 'android', 'web']) {
     for (const score of [null, 3]) inspectHeader({ platform, score });
+    inspectHeader({ platform, timeline: [{ root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' }] });
   }
 });
 
@@ -351,5 +362,50 @@ test('Settings rises as a sheet on the phone and stays a page on the web', () =>
     } else {
       assert.equal(options.headerLeft, undefined, 'the native header draws its own back arrow');
     }
+  }
+});
+
+test('story timeline prototype sits a full screen below the reading, in the sentence column, and snaps', () => {
+  const development = { root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' };
+  for (const platform of ['ios', 'android', 'web']) {
+    const without = nodes(renderReading({ platform, width: 402, height: 874 }));
+    const withTimeline = nodes(renderReading({ platform, width: 402, height: 874, timeline: [development] }));
+    const block = list => list.find(n => n.type === 'AnimatedView' && n.props?.style?.minHeight != null);
+    // Nothing of the timeline is clipped into the first screen: the reading keeps all of it.
+    assert.equal(block(without).props.style.minHeight, 874);
+    assert.equal(block(withTimeline).props.style.minHeight, 874);
+    assert.equal(block(withTimeline).props.style.alignItems, 'center');
+    // A quiet cue announces the timeline instead.
+    assert.ok(withTimeline.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
+    assert.ok(!without.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
+    // The timeline shares the sentence's column rather than keeping a margin of its own.
+    const sentence = withTimeline.find(n => n.props?.testID === 'rating-explanation');
+    const timeline = withTimeline.find(n => n.type === 'Timeline');
+    assert.equal(timeline.parent.props.style.maxWidth, sentence.props.style.maxWidth);
+    // However short, the timeline is a screen tall below the header, so its top can reach the snap offset.
+    assert.equal(timeline.parent.props.style.minHeight, 874 - 44 - 32);
+    assert.deepEqual(timeline.props.developments, [development]);
+    // Scrolled, entries fade as they near the header instead of running under a
+    // bar: nothing is drawn behind the header, least of all a hard rule.
+    assert.equal(timeline.props.fadeAt, 44);
+    assert.ok(timeline.props.scrollY, 'the timeline fades with the scroll position');
+    assert.ok(!withTimeline.some(n => n.props?.style?.position === 'absolute' && n.props.style.top === 0 && n.props.style.left === 0),
+      'no panel covers the header');
+    assert.ok(!withTimeline.some(n => n.props?.style?.borderBottomWidth && n.props.style.left === 0), 'no rule under the header');
+  }
+});
+
+test('story timeline is off by default: with the setting off the screen is the reading alone', () => {
+  const development = { root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' };
+  for (const platform of ['ios', 'android', 'web']) {
+    const off = nodes(renderReading({ platform, width: 402, height: 874, timeline: [development], timelineOn: false }));
+    // Developments exist on the server, but none are asked for or shown.
+    assert.equal(off.find(n => n.type === 'Timeline').props.developments.length, 0);
+    assert.ok(!off.some(n => n.props?.accessibilityLabel === 'Earlier developments'), 'no cue');
+    const screen = off.find(n => n.type === 'Screen').props.options;
+    assert.equal(screen.headerLeft().type, 'BrandMark', 'the wordmark is not a button');
+    const block = off.find(n => n.type === 'AnimatedView' && n.props?.style?.minHeight != null);
+    assert.equal(block.props.style.minHeight, 874);
+    assert.equal(block.props.style.opacity, 1, 'the reading never fades');
   }
 });

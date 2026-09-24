@@ -8,13 +8,14 @@ import { pushSupported } from '@/lib/push';
 import { privacyUrl, supportUrl } from '@/lib/config';
 import { Glyph, type GlyphName } from '@/components/glyph';
 import { RowContent, Section, SettingsPage, Trailing, rowStyle } from '@/components/settings-list';
+import { Toggle } from '@/components/toggle';
 
 const ABOUT_LINKS = [['Privacy', privacyUrl, 'privacy'], ['Support', supportUrl, 'support']] as const;
 
 export default function Settings() {
   const theme = useTheme();
   const router = useRouter();
-  const { preferences } = usePreferences();
+  const { preferences, setTimeline } = usePreferences();
   const { enabled, threshold } = preferences.notifications;
   const appearance = THEME_CHOICES.find(choice => choice.value === preferences.theme)?.label ?? 'Follow device';
   const notifications = enabled ? `${threshold} or higher` : 'Off';
@@ -43,6 +44,12 @@ export default function Settings() {
             <RowContent index={index} icon={icon} label={label} trailing={<Trailing value={value} to="page" />} />
           </Pressable>
         </Link>)}
+        {/* Off by default: the reading alone is the product; the timeline is an addition. */}
+        <Pressable testID="timeline-row" accessibilityRole="switch" accessibilityLabel="Show timeline"
+          accessibilityState={{ checked: preferences.timeline }} onPress={() => setTimeline(!preferences.timeline)} style={rowStyle()}>
+          <RowContent index={pages.length} icon="timeline" label="Show timeline"
+            trailing={<Toggle testID="timeline-switch" accessibilityLabel="Show timeline" value={preferences.timeline} onValueChange={setTimeline} />} />
+        </Pressable>
       </Section>
       <Section title="About" testID="about-links">
         {ABOUT_LINKS.map(([name, url, icon], index) => <Link key={name} href={url} asChild>
