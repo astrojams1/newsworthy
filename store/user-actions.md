@@ -1,15 +1,34 @@
 # Account-owner actions
 
 Apple review, notification setup and privacy were checked on **September 24,
-2026**. Google account and Apple Business rows were last verified September 17. The list below
+2026**. Google account and Apple Business were also rechecked September 24. The list below
 separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current iOS resubmission: submitted
+## Current iOS resubmission: updated demonstration required
 
-**Build 21 is Waiting for Review**, verified independently on the Apple version
-and submission. The production Newsworthy-specific push key was created with
+**Build 21 was resubmitted, then rejected under Guideline 2.1 on September 24.**
+Apple requests a physical-device recording on the latest OS. The previous build 7
+video does not demonstrate current Settings/notifications. The known iPhone's
+last reported OS is 26.6.2; Apple's current latest release is iOS 27. Mirroring
+reports the phone is in use, so the agent cannot currently capture it.
+
+1. On the iPhone, open **Settings → General → Software Update** and update to
+   the latest public iOS offered for the device. Complete passcode/restart steps
+   on the phone. Recheck the latest version when recording.
+2. Install **Newsworthy 1.0.0 (21)** in TestFlight.
+3. Start iPhone screen recording on the Home Screen, launch Newsworthy, show the
+   reading, open Settings, enable notifications/change the minimum score, show
+   appearance options and sharing, then show both widget sizes.
+4. Stop recording and save the original to iCloud Drive on this Mac. The agent
+   can inspect it, prepare the review copy, send the six-part reply, update Notes
+   and resume review. Alternatively, lock the updated phone to make Mirroring
+   available so the agent can check the accessible capture options first.
+
+See [the new review request and evidence](apple-review-build21-followup.md).
+
+The production Newsworthy-specific push key was created with
 owner confirmation and assigned in Expo. No push-key approval or Mac-unlock
 handoff remains.
 
@@ -58,8 +77,10 @@ the owner's phone call/SMS through the currently connected tools.
 Apple's confirmation page says it received the request and will review it and
 respond. The request asks Apple to update both the individual developer
 membership and App Store Connect legal entity to the current address supplied
-privately by the owner. Apple subsequently emailed a case number; keep that
-reference in the private support email.
+privately by the owner. Apple requested proof of the new address on September 18 and acknowledged
+receipt of requested documents on September 20. This confirms receipt, not
+approval or linkage of the generic receipt to a specific document. Keep the
+case reference and private documents in the support email/provider portal.
 
 The Business page still shows the obsolete address; submission is not approval
 or evidence that the record has changed. Await Apple's response and provide any
@@ -131,26 +152,37 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 **Apple rejected build 7 under Guideline 4.2 on September 21.** September 24
 browser readback confirms the owner-submitted
 [reconsideration reply](apple-4.2-reconsideration.md) and Apple's September 23
-response upholding the rejection. Do not duplicate that appeal. The current
-changed build 21 has now been submitted; Apple reports WAITING_FOR_REVIEW
-for both the version and submission.
+response upholding the rejection. Do not duplicate that appeal. Build21 was submitted successfully and subsequently rejected under Guideline 2.1
+for a current physical-device recording and review information.
 The earlier physical recording and Guideline 2.1 response remain historical
 evidence. Newer TestFlight builds do not establish a replacement App Review submission.
 
 Android corrective preview APK10 passed emulator checks for maximum-text widget
 labels and background appearance changes. Production **AAB11** is downloaded
-and verified. The owner-approved compact widget and neutral compact/expanded
+and verified as a historical artifact, but it predates Settings, notifications
+and subsequent native changes. Completed **AAB12** now replaces it; the matching
+APK12 carries the same source and Firebase configuration for native testing.
+The owner-approved compact widget and neutral compact/expanded
 gallery are complete; no further resizing is needed. Physical Android testing
 and the remaining native score10 case are separate from emulator coverage.
 
 The remaining technical release work is:
 
-- Await Apple review of build 21 and respond to any new request. Visual
+- Android Firebase project/app registration and the scoped FCM credential are now
+  configured. Expo readback confirms the approved sender is assigned; the Android
+  build configuration file is stored as an EAS secret file for production/preview.
+  Production AAB12 and matching preview APK12 are complete. APK12 passed emulator
+  launch, Settings, permission and default minimum 8, registration, Expo/FCM receipts, visible
+  notification and cold-start tap checks. Test notifications were disabled and the
+  registration removed afterward. Physical-device checks remain outstanding.
+
+- Provide the new physical-device recording requested for build 21 and respond
+  with the six-part information before resuming review. Visual
   notification presentation/opening remains unobserved; provider acceptance
   and physical app/registration tests are recorded separately. Verify paid-sale
   readiness and public availability after approval.
 - When Google enables **Create app**, create Newsworthy as **paid**, configure
-  US$1.00 pricing, upload AAB11 and the prepared listing/artwork, complete privacy
+  US$1.00 pricing, upload a current verified AAB and refreshed listing/artwork, complete privacy
   and content-rating forms, and prepare the real closed test.
 - Collect genuine tester feedback and verify physical-device behavior. Apply for
   Google production access only after the required testing gate is satisfied.

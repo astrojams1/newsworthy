@@ -4,11 +4,13 @@ One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
 **September 24, 2026 update:** iOS **1.0.0 (21)** was resubmitted after the
-notification changes. Apple reports both the version and submission
-**WAITING_FOR_REVIEW**, with build 21 selected. See the
-[submission receipt](apple-review-build21.json). Apple's September 23 decision
-upholding Guideline 4.2 for build 7 and the owner's earlier appeal are historical;
-do not send that appeal again.
+notification changes. The initial Waiting for Review state was superseded by
+**REJECTED / UNRESOLVED_ISSUES** at 05:12 UTC. Apple now requests a new
+physical-device demonstration on the latest OS and the six-part review details
+under Guideline 2.1. The old video shows build 7. See the
+[current follow-up](apple-review-build21-followup.md) and historical
+[submission receipt](apple-review-build21.json). The new message does not repeat
+Guideline 4.2; this does not establish approval of every other guideline.
 
 Build 21 is VALID and IN_BETA_TESTING in Release QA. Its notification-tap routing,
 privacy manifest and the server's receipt/retry fixes are merged and deployed.
@@ -22,6 +24,14 @@ and restoration when switched off/on. The app is restored to enabled at score 5.
 The Mac has iPhone notification mirroring disabled, so visual presentation and
 notification tapping were not observed; automated cold/live tap handling passed.
 Provider acceptance is not a visual-delivery claim. See [build evidence](testflight-21.json).
+
+**Android release update:** Production AAB12 and matching preview APK12 are complete
+from clean source `6c19cb9`. AAB12 is downloaded and SHA-256/ZIP verified; it replaces
+historical AAB11 with Settings, notifications, subsequent native fixes and Firebase
+configuration. APK12 passed emulator registration, visible notification and
+cold-start tap tests, with Expo/FCM receipts OK. Physical Android testing remains
+separate. See [Android build evidence](android-notifications-12.json). Google still disables app creation until
+physical-device and phone verification are complete (September 24 readback).
 
 Neither app is publicly released. Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.
@@ -92,8 +102,9 @@ still blocks app creation. See the ledger for current gates and exact next actio
   **identity verified successfully**. Real Android device verification remains;
   phone verification is disabled until that prerequisite is complete. **Create
   app is disabled**, so no Google app, price, listing, or release has been saved.
-- **Android binary:** production AAB11 downloaded and SHA-256/ZIP-validated
-  from clean PR94 source `8055d61`; it supersedes AAB10. Preview APK8 verified the
+- **Android binary (historical):** production AAB11 downloaded and SHA-256/ZIP-validated
+  from clean PR94 source `8055d61`; it supersedes AAB10 but now requires replacement
+  for Settings, notifications and later native changes. Preview APK8 verified the
   refresh-loop fix: zero widget recreations in 65 seconds versus 30 in 34 seconds
   before the fix. Installed APK9 additionally passed theme transitions and
   compact 2×2 rendering; its compact/expanded gallery is complete. Native APK
@@ -103,9 +114,10 @@ still blocks app creation. See the ledger for current gates and exact next actio
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** build 21 was resubmitted September 24. The version and
-  submission both report **WAITING_FOR_REVIEW**; see the
-  [receipt](apple-review-build21.json). Build 7 rejection/appeal evidence is historical.
+- **Apple review:** build 21 was resubmitted September 24, then rejected under
+  Guideline 2.1 for a current physical-device recording and review information.
+  See the [new request](apple-review-build21-followup.md). The earlier
+  [submission receipt](apple-review-build21.json) and build 7 appeal are historical.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.
 
 ## Reproduce the artwork
