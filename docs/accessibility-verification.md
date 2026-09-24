@@ -11,8 +11,9 @@ an ADA compliance certification or a complete WCAG audit.
 - All app text colors have at least 4.5:1 contrast against their light/dark
   backgrounds. `test/accessibility.test.js` checks these palettes.
 - App controls have minimum 48-point/dp targets and accessible names.
-- Text follows the system text size. At accessibility sizes the wordmark becomes
-  an About icon so it cannot collide with sharing. Explanations can wrap and
+- Text follows the system text size. The wordmark grows to at most 1.5× so it
+  stays clear of Share and Settings; on iOS the reading screen draws it in the
+  navigation bar's row rather than as a bar item. Explanations can wrap and
   scroll; the score fits on one line. Content stays clear of navigation controls.
 - The score is announced as “3 out of 10,” rather than separate digits and a
   slash. Routine timestamp changes are not live announcements.
