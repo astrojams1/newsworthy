@@ -615,7 +615,7 @@ test('a break opens a development and is shown whole, at once', async () => {
     assert.equal(body.basis, 'new');
     assert.equal(body.score, 9);
     assert.equal(body.explanation_text, 'volcano erupts overnight.');
-    assert.equal(body.explanation, 'volcano erupts overnight.', 'a new development carries no age prefix');
+    assert.equal(body.explanation, 'New: volcano erupts overnight.', 'a new summary says so where an age would go');
     assert.equal(body.explanation_since, null, 'its first coverage is the reading itself, already dated by created_at');
     assert.equal(body.explanation_new, true, 'and it is marked new, which the app shows');
     await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=9&explanation=volcano+erupts+overnight+ash+spreads`);

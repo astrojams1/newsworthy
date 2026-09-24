@@ -613,8 +613,8 @@ showing. A new 8 while a 10 is still the loudest changes nothing on the page
 and announces nothing, because the tap would have opened on the 10.
 
 It is announced **only when the summary is new**. A summary that repeats an
-earlier one carries the age prefix; one that does not is new, and the app marks
-it "New" (`explanation_new` on `/api/current` is `explanation_since == null`).
+earlier one carries the age prefix; one that does not is new, and carries
+"New:" instead (`explanation_new` on `/api/current` is `explanation_since == null`).
 `notifyReading` applies the same test to the newest reading, and also requires
 the page's number to be about that reading's own development. A repeat
 announces nothing, whatever the score.

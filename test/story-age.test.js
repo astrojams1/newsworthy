@@ -92,7 +92,7 @@ test('a sentence stored before the punctuation rule is served finished, on every
   await withServer({ port:PORTS.sentencePunctuation, env:{ NEWSWORTHY_NO_SCHEDULER:'1', NEWSWORTHY_PGLITE_DIR:dir } }, async base=>{
     const current=await (await fetch(base+'/api/current')).json();
     assert.equal(current.explanation_text,'Legacy row without an end.');
-    assert.equal(current.explanation,'Legacy row without an end.');
+    assert.equal(current.explanation,'New: Legacy row without an end.','the only reading repeats nothing');
   });
 });
 
