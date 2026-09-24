@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-09-24T06:19:05.646Z",
+  "submissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
+  "submissionState": "WAITING_FOR_REVIEW",
+  "submittedDate": "2026-09-24T06:19:01.5Z",
+  "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
+  "versionState": "WAITING_FOR_REVIEW",
+  "buildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+  "version": "1.0.0",
+  "build": "21",
+  "replyAttachment": "newsworthy-review-2026-09-24-demo.mp4"
+}

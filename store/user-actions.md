@@ -6,27 +6,19 @@ separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current iOS resubmission: updated demonstration required
+## Current iOS resubmission: Waiting for Review
 
-**Build 21 was resubmitted, then rejected under Guideline 2.1 on September 24.**
-Apple requests a physical-device recording on the latest OS. The previous build 7
-video does not demonstrate current Settings/notifications. The known iPhone's
-last reported OS is 26.6.2; Apple's current latest release is iOS 27. Mirroring
-reports the phone is in use, so the agent cannot currently capture it.
+**Build21 is Waiting for Review, confirmed September24 at06:19UTC.** The updated
+recording was inspected, attached to a posted six-part response, and referenced
+in matching Review Notes. No additional recording or upload is requested now.
 
-1. On the iPhone, open **Settings → General → Software Update** and update to
-   the latest public iOS offered for the device. Complete passcode/restart steps
-   on the phone. Recheck the latest version when recording.
-2. Install **Newsworthy 1.0.0 (21)** in TestFlight.
-3. Start iPhone screen recording on the Home Screen, launch Newsworthy, show the
-   reading, open Settings, enable notifications/change the minimum score, show
-   appearance options and sharing, then show both widget sizes.
-4. Stop recording and save the original to iCloud Drive on this Mac. The agent
-   can inspect it, prepare the review copy, send the six-part reply, update Notes
-   and resume review. Alternatively, lock the updated phone to make Mirroring
-   available so the agent can check the accessible capture options first.
+The recording shows launch, both widget sizes, reading, notification threshold
+changes and dark appearance. It does not independently verify OS or build
+number; those limits are saved in the recording evidence. Await Apple's actual
+next response before assigning further owner work.
 
-See [the new review request and evidence](apple-review-build21-followup.md).
+See [the current follow-up](apple-review-build21-followup.md) and
+[submission receipt](apple-review-resubmission-2026-09-24-video.json).
 
 The production Newsworthy-specific push key was created with
 owner confirmation and assigned in Expo. No push-key approval or Mac-unlock
@@ -153,7 +145,8 @@ Reference: [Google testing requirements](https://support.google.com/googleplay/a
 browser readback confirms the owner-submitted
 [reconsideration reply](apple-4.2-reconsideration.md) and Apple's September 23
 response upholding the rejection. Do not duplicate that appeal. Build21 was submitted successfully and subsequently rejected under Guideline 2.1
-for a current physical-device recording and review information.
+for a physical-device recording and review information. The updated recording
+and reply were posted; build21 returned to Waiting for Review at06:19UTC.
 The earlier physical recording and Guideline 2.1 response remain historical
 evidence. Newer TestFlight builds do not establish a replacement App Review submission.
 
@@ -176,8 +169,7 @@ The remaining technical release work is:
   notification and cold-start tap checks. Test notifications were disabled and the
   registration removed afterward. Physical-device checks remain outstanding.
 
-- Provide the new physical-device recording requested for build 21 and respond
-  with the six-part information before resuming review. Visual
+- Await Apple review after the updated recording and six-part response. Visual
   notification presentation/opening remains unobserved; provider acceptance
   and physical app/registration tests are recorded separately. Verify paid-sale
   readiness and public availability after approval.

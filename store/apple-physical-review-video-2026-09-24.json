@@ -1,0 +1,43 @@
+{
+  "observedAt": "2026-09-24T06:16:41.557421+00:00",
+  "submissionBuild": "1.0.0 (21)",
+  "recordedBuild": "Not shown in footage; appearance matches currently submitted Settings release.",
+  "operatingSystem": "Not displayed or freshly verified; no latest-OS claim is made.",
+  "source": {
+    "file": "artifacts/store-submission/newsworthy-review-2026-09-24-local.mp4",
+    "bytes": 38951259,
+    "durationSeconds": 39.27,
+    "sha256": "872e8e96bb7d4b6b418fe91b458fc487d751c2291903bb2b4e39357c8e63e656"
+  },
+  "reviewCopy": {
+    "file": "artifacts/store-submission/newsworthy-review-2026-09-24-demo.mp4",
+    "bytes": 2543042,
+    "durationSeconds": 33.27,
+    "sha256": "892971ec58c862151e73ca7c3b43b297bfcd76a908ac20684f4f9c619c4ad5c4",
+    "preparation": "Removed first6seconds of idle Home Screen, preserving continuous launch and remaining flows. Encoded H264 video-only for compatibility; no app UI compositing."
+  },
+  "observed": [
+    "Physical iPhone Home Screen with small and medium Newsworthy widgets",
+    "Launch from Home Screen",
+    "Reading with score, explanation and update time",
+    "Settings and enabled notification threshold",
+    "Minimum score changes 5 to6 and back",
+    "Light-to-dark appearance change and return to reading"
+  ],
+  "notDemonstrated": [
+    "Notification permission prompt",
+    "Delivered push banner or tapping it",
+    "Share sheet or Privacy/Support link navigation",
+    "Offline recovery",
+    "Physical iPad",
+    "OS or TestFlight build number"
+  ],
+  "verification": "Original sampled at1frame/second across complete39second recording. Review copy fully decoded without errors.",
+  "attachmentStatus": "POSTED_IN_APP_REVIEW_MESSAGE",
+  "reply": {
+    "uiTimestamp": "September24 2:17PM",
+    "messageCount": 7,
+    "attachmentFilename": "newsworthy-review-2026-09-24-demo.mp4",
+    "verified": "Posted six-part response and one attachment with Download control verified."
+  }
+}

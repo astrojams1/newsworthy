@@ -150,8 +150,9 @@ access. Internal testing alone does not meet this requirement. See
   App Store Connect recognizes the active membership after refreshing.
   Both `com.astrojams.newsworthy` and its `.widget` identifier are registered.
   [Newsworthy: Calm News](https://appstoreconnect.apple.com/apps/6812519450/distribution)
-  has build 21 awaiting a new physical demonstration after a September 24
-  Guideline 2.1 request. See `store/apple-review-build21-followup.md`.
+  has build21 Waiting for Review after the updated physical demonstration,
+  six-part response and matching Notes were submitted September24 at06:19UTC.
+  See `store/apple-review-build21-followup.md`.
   The shorter name was already taken.
   Listing copy, subtitle, privacy-policy URL, News category, review contact
   (including phone), and review notes are saved.
