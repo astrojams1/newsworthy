@@ -44,20 +44,21 @@ submission. Success means the API confirms that the reading was stored.
    scale. No successful search means no submission.
 3. Draft the sentence and send score/explanation to `/api/readings/prepare`,
    authenticated with the caller token. Newsworthy checks history and returns
-   the first-coverage time and a short-lived preparation reference. This is not
+   whether the development is new and a short-lived preparation reference. This is not
    a stored reading and does not finish the task.
 4. Finalize the same development's sentence within the returned character budget.
-   The total is 140 characters INCLUDING the age prefix, colon and space; reserve
-   20 for that prefix, leaving 120 for the explanation. Count with a code tool.
-   Do not add a timestamp to the submitted explanation, change the score because
-   the story is old, or infer an event date from its first-coverage time.
+   The total is 140 characters INCLUDING the app's "New: " label; reserve 5 for
+   it, leaving 135 for the explanation. Count with a code tool. Do not add a
+   label or timestamp to the submitted explanation, or change the score because
+   the story is new or old.
 5. Submit score, explanation, prompt_sha256 and the preparation reference to
    `/api/readings`. Confirm the API stored it. If the development changes during
    editing, prepare it again. Follow the live instructions for expiry/fallbacks.
 
 The service performs the history lookup; the caller does not need admin
-credentials or the full archive. The app calculates the prefix from the stored
-time so a saved sentence keeps aging. Missing age evidence produces no prefix.
+credentials or the full archive. The app labels a sentence that opened a new
+development "New:" for two hours after it is stored; any other sentence, and one
+the service could not match, has no label.
 
 ## Why this exists
 

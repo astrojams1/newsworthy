@@ -29,14 +29,14 @@ engagement, addiction or growth-hacking tactics.
   measurement of personal safety, a complete briefing or an emergency alert.
 - Ratings update periodically and can be wrong. Higher means more consequential;
   the displayed score fades as developments age.
-- A sentence’s age prefix means time since Newsworthy first covered that
-  development, not a verified event date or the age of the broader story. A
-  sentence that is itself the first coverage of a new development has no prefix;
-  its update time dates it. Unknown ages have no prefix. The existing
-  140-character display budget includes the prefix.
-- A saved reading keeps its original update timestamp. Updated clients recompute
-  the sentence age from the saved first-coverage timestamp. Widgets can refresh later than
-  the app, depending on the operating system. Do not promise real-time updates.
+- A bold “New:” before a sentence means that reading is Newsworthy’s first
+  coverage of the development, for two hours after it was saved. It is not a
+  verified event date or a claim that the broader story is new. Other sentences,
+  including ones Newsworthy could not match to earlier coverage, have no label.
+  The 140-character display budget includes the label.
+- A saved reading keeps its original update timestamp. Widgets can drop the
+  label later than the app, depending on the operating system. Do not promise
+  real-time updates.
 - The launcher icon is a white dash on near-black. The web favicon can show the
   score; planned home-screen widgets carry a rating and update time.
 - The planned iOS and Android release is a one-time US$1 download to help offset

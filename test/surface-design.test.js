@@ -50,7 +50,8 @@ test('widgets keep cached timestamps and empty states free of status copy', () =
   assert.match(java, /setTextViewText\(R.id.widget_updated, "Updated " \+ date\)/);
   assert.match(swift, /Text\("\\\(date.formatted/);
   assert.match(swift, /accessibilityLabel\("Updated /);
-  assert.match(swift, /Text\(entry.reading\?\.displayedExplanation\(at: entry.date\) \?\? ""\)/);
+  assert.match(swift, /explanationText\(entry.reading, at: entry.date\)/);
+  assert.match(swift, /Text\(verbatim: parts.label\).bold\(\) \+ Text\(verbatim: " " \+ parts.body\)/, 'the iOS label is bold and nothing else');
   for (const source of [swift, java, compact, expanded, light]) {
     assert.doesNotMatch(source, /"[^"\n]*(?:Saved ·|Saved reading|Saving reading|Waiting for a reading|Checking|Loading|latest rating will appear)[^"\n]*"/i);
     assert.doesNotMatch(source, /@string\/widget_waiting/);
@@ -95,6 +96,7 @@ const regressions = [
   ['different compact score', s => { s.compact = s.compact.replace('69sp', '40sp'); }, /compact score size/],
   ['different iOS score', s => { s.swift = s.swift.replace('static let scoreSize: CGFloat = 69', 'static let scoreSize: CGFloat = 40'); }, /Expected values to be strictly deep-equal/],
   ['theme color baked into RemoteViews', s => { s.java += '\nnew ForegroundColorSpan(resolvedColor);'; }, /XML theme\/size bindings/],
+  ['Android New label styled beyond bold', s => { s.java = s.java.replace('new StyleSpan(Typeface.BOLD)', 'new StyleSpan(Typeface.BOLD_ITALIC)'); }, /XML theme\/size bindings/],
   ['denominator bound to fixed color', s => { s.compact = s.compact.replaceAll('@color/widget_muted', '#eeeeee'); }, /compact denominator theme binding/],
   ['wrong dark text role', s => { s.dark = s.dark.replace('@color/nw_gradient_muted', '@color/nw_surface'); }, /dark widget_muted uses adaptive palette/],
   ['minimum too large to reach 2x2', s => { s.provider = s.provider.replace('android:minResizeWidth="120dp"', 'android:minResizeWidth="180dp"'); }, /launcher minResizeWidth/],

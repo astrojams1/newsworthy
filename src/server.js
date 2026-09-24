@@ -16,8 +16,7 @@ import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyH
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
-import { prepareReading, firstCoverage } from './preparation.js';
-import { displayExplanation } from '../apps/client/lib/story-age.js';
+import { prepareReading, opensDevelopment } from './preparation.js';
 import { PushError, notifyReading, subscribe as subscribePush, unsubscribe as unsubscribePush } from './push.js';
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -266,15 +265,16 @@ const server = createServer(async (req, res) => {
       // right now — so a story still on top this evening is still named this
       // evening, with a smaller number beside it.
       const newest = current.newest;
-      const explanationSince = await firstCoverage(newest);
       // Rows are stored with an end already; rows from before that rule get
       // one here, so every client, native widgets included, receives a
-      // finished sentence without a rebuild.
-      const explanationFields = { explanation_text: completeSentence(newest.explanation), explanation_since: explanationSince };
+      // finished sentence without a rebuild. `explanation_new` marks a sentence
+      // that opened its own development; clients show a bold "New:" before it
+      // for two hours from `created_at`. `explanation` stays unlabelled so an
+      // installed build that shows it as-is never keeps a stale "New:".
+      const explanationFields = { explanation_text: completeSentence(newest.explanation), explanation_new: opensDevelopment(newest) };
       return json(res, 200, {
         score: current.score,
-        // Existing apps/widgets receive a complete sentence; newer ones re-age locally.
-        explanation: displayExplanation(explanationFields),
+        explanation: explanationFields.explanation_text,
         ...explanationFields,
         created_at: newest.created_at,
         source: newest.source ?? 'cron',

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
-import { displayExplanation } from '../../apps/client/lib/story-age.js';
+import { displayExplanation, explanationParts } from '../../apps/client/lib/story-age.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
 
 const require = createRequire(import.meta.url);
@@ -40,7 +40,7 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     '@/components/reading-provider': { useCurrentReading: () => ({ reading, saved, failed, loading }) },
     '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
     'expo-router/react-navigation': { useHeaderHeight: () => 44 },
-    '@/lib/story-age': { displayExplanation },
+    '@/lib/story-age': { displayExplanation, explanationParts },
     '@/lib/config': { website: 'https://example.test', privacyUrl: '/privacy', supportUrl: '/support' },
   };
   const exports = {};

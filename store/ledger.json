@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T11:00:54+00:00",
+  "updated_at": "2026-09-24T12:12:26+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -709,12 +709,12 @@
       "state": "todo",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Story-age source adds local age formatting to Expo and both widgets; replacement native package and visual parity remain unverified.",
+      "summary": "PR137 replaces the story-age prefix with a bold \"New:\" on a sentence that opened its own development, for two hours after its reading was saved, in the app, the iOS widget (bold Text, timeline entry at expiry) and the Android widget (bold StyleSpan, 30-minute redraw). Prompt v16 raises the body budget to 135. Web export verified in Chromium; the Swift and Android widget sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown the label.",
       "evidence": [
-        "docs/story-age.md; store/story-age-verification.json"
+        "PR137; store/story-age-verification.json; store/source/story-age/web-new-label.png; npm test 297 passed (Swift native test skipped without xcrun), design 71 passed."
       ],
-      "next_action": "Build replacement native packages and verify both widget sizes, themes, score 10, enlarged text, resizing and offline age transitions.",
-      "updated_at": "2026-09-22T11:24:28+00:00"
+      "next_action": "Build replacement native packages and verify on both widget sizes, light and dark, score 10 and enlarged text: bold \"New:\" on a new development, none on a re-report, and the label dropping at two hours (up to 30 minutes later on Android). Compile the Swift native test with xcrun.",
+      "updated_at": "2026-09-24T12:12:26+00:00"
     },
     "apple.testflight-15": {
       "state": "done",
@@ -5653,6 +5653,22 @@
         ],
         "next_action": "Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' \"Notify me about high readings\" wording for the next submission.",
         "updated_at": "2026-09-24T11:00:54+00:00"
+      }
+    },
+    {
+      "sequence": 297,
+      "at": "2026-09-24T12:12:26+00:00",
+      "gate": "story-age.native",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR137 replaces the story-age prefix with a bold \"New:\" on a sentence that opened its own development, for two hours after its reading was saved, in the app, the iOS widget (bold Text, timeline entry at expiry) and the Android widget (bold StyleSpan, 30-minute redraw). Prompt v16 raises the body budget to 135. Web export verified in Chromium; the Swift and Android widget sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown the label.",
+        "evidence": [
+          "PR137; store/story-age-verification.json; store/source/story-age/web-new-label.png; npm test 297 passed (Swift native test skipped without xcrun), design 71 passed."
+        ],
+        "next_action": "Build replacement native packages and verify on both widget sizes, light and dark, score 10 and enlarged text: bold \"New:\" on a new development, none on a re-report, and the label dropping at two hours (up to 30 minutes later on Android). Compile the Swift native test with xcrun.",
+        "updated_at": "2026-09-24T12:12:26+00:00"
       }
     }
   ],

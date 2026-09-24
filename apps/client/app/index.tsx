@@ -10,7 +10,7 @@ import { useTheme } from '@/lib/theme';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { displayExplanation } from '@/lib/story-age';
+import { displayExplanation, explanationParts } from '@/lib/story-age';
 import { website, privacyUrl, supportUrl } from '@/lib/config';
 
 export default function Home() {
@@ -34,7 +34,9 @@ export default function Home() {
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
   const minutes = reading ? Math.max(0, Math.floor((now - Date.parse(reading.created_at)) / 60000)) : 0;
   const relative = minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
-  const explanation = reading ? displayExplanation(reading, now) : null;
+  // A new development's sentence leads with a bold "New:" for two hours; nothing else is styled.
+  const parts = reading ? explanationParts(reading, now) : null;
+  const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</> : parts.body) : null;
   const shareReading = async () => {
     if (!reading) return;
     const message = `${reading.score}/10 · ${displayExplanation(reading)}\nUpdated ${new Date(reading.created_at).toLocaleString()}\n${website}`;

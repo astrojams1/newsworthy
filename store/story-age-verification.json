@@ -1,16 +1,16 @@
 {
-  "date": "2026-09-22",
+  "date": "2026-09-24",
   "source": "apps/client/targets/widget/NewsworthyWidget.swift",
-  "sourceSha256": "a2bc49b377687635e4bd4f9c6d45ea359fc6ed36634eb034e35b28a6cb411693",
+  "sourceSha256": "3619b685c9d3ad05735d87d7e055c24707ec10b29f36329f4610acd12796cd89",
   "capturedSourceSha256": "24ce7aca6bf962cec0993a457a8a58ad6596baf3ba0f7144836fdb685d06d753",
   "geometrySha256": "f6f50dea4514065b1201ffde70655fa25165081752cdfd2397929a856b904227",
-  "scope": "Previous pixel captures validate their captured sentences and unchanged layout/font geometry. This review permits only the age formatter text binding and timeline change; it does not verify new text wrapping or new screenshots.",
-  "nativeVisualParity": "not_verified_for_story_age",
-  "swiftStoreAndFormatter": "Compiled and executed production Swift store with age rollover, Unicode budget, metadata round trip and legacy decode cases.",
-  "android": "Not compiled or visually verified; Java source and shared design contract reviewed.",
+  "scope": "Previous pixel captures validate their captured sentences and unchanged layout/font geometry. The 2026-09-24 review permits replacing the age formatter binding with explanationText(), a bold \"New:\" label for two hours on a new development, and a timeline with an entry at the label expiry; the geometry hash is unchanged. It does not verify the bold label, new text wrapping or new screenshots.",
+  "nativeVisualParity": "not_verified_for_new_label",
+  "swiftStoreAndFormatter": "Earlier age formatter was compiled and executed. The New-label formatter and its cases in test/native/widget-reading-store.swift were not compiled in this change: the environment has no Swift toolchain, and test/widget-store-native.test.js skips without xcrun.",
+  "android": "Not compiled or visually verified. The New label is a StyleSpan(BOLD) in RemoteViews text; the periodic worker redraws every 30 minutes, so the label can outlast two hours by up to that interval.",
   "replacementNativeBuild": "iOS1.0.0(15) finished, uploaded and IN_BETA_TESTING in Release QA; installed native visual verification remains pending. See store/testflight-15.json. Android replacement remains pending.",
-  "web": "Production web export rendered in Chromium at 390x844 and 1280x900. Fixed fixture advanced from 31 to 32 hours while created_at and raw sentence stayed constant; no browser errors. Initial dependency symlinks resolved the route from another checkout; discarded that build and verified a fresh npm ci export.",
-  "writingEvaluation": "docs/prompt-evaluations/v14.md",
-  "webCapture": "store/source/story-age/web-31-hours.png",
-  "iosTypecheck": "Complete production widget sources typechecked for arm64 iOS 16.4 simulator with Xcode 16.2 / iPhoneSimulator 18.2 SDK. This is not a native visual test or installed release build."
+  "web": "Production web export rendered in Chromium at 390x760 with mocked /api/current readings: bold New: on a new development, no prefix on a re-report, light and dark themes, a 135-character body. The earlier 31-to-32-hour age check is superseded.",
+  "writingEvaluation": "docs/prompt-evaluations/v16.md",
+  "webCapture": "store/source/story-age/web-new-label.png",
+  "iosTypecheck": "Earlier: complete production widget sources typechecked for arm64 iOS 16.4 simulator with Xcode 16.2. Not repeated for the New label; Text + Text concatenation is available from iOS 13 (deprecated in the iOS 26 SDK, a warning only)."
 }
