@@ -338,5 +338,18 @@ test('Settings rises as a sheet on the phone and stays a page on the web', () =>
     const options = nodes(stack).find(n => n.props.screenOptions).props.screenOptions;
     assert.equal(options.headerBackButtonDisplayMode, 'minimal');
     assert.equal(options.contentStyle.backgroundColor, themeForLevel(3, dark).tinted);
+    // Reported 2026-09-24: on the web the navigator's arrow kept its first
+    // colour when Appearance changed the theme. The web draws the app's own
+    // arrow in the current accent; native headers keep their own.
+    if (platform === 'web') {
+      const button = options.headerLeft({ canGoBack: true, tintColor: '#000' });
+      assert.equal(button.type, 'HeaderBackButton');
+      const arrow = button.props.backImage({ tintColor: '#000' });
+      assert.equal(arrow.type, 'BackIcon');
+      assert.equal(arrow.props.color, themeForLevel(3, dark).accent, 'the arrow is drawn in this theme\'s accent');
+      assert.equal(options.headerLeft({ canGoBack: false }), null, 'nothing to go back to draws no arrow');
+    } else {
+      assert.equal(options.headerLeft, undefined, 'the native header draws its own back arrow');
+    }
   }
 });

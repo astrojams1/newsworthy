@@ -62,3 +62,47 @@ test('Close leaves Settings in one step, however Settings was reached on the web
     }
   });
 });
+
+// Reported 2026-09-24: choosing a theme on Appearance recoloured the page and
+// its check mark but not the back arrow. The navigator tints its arrow with an
+// SVG filter under one fixed id, and a browser may keep painting the old
+// colour, which a screenshot here cannot see because it repaints. So the check
+// is structural: the arrow carries the theme's colour in its own image, under
+// no filter a new theme leaves in place.
+test('the Settings back arrow follows the theme chosen on Appearance on the web', { timeout: 120_000 }, async (t) => {
+  if (!executablePath) {
+    assert.ok(!process.env.CI, `no Chrome or Chromium found; set CHROME_PATH (looked in ${BROWSERS.join(', ')})`);
+    t.skip('no Chrome or Chromium on this machine; set CHROME_PATH to run it');
+    return;
+  }
+  await withServer({ port: PORTS.webSettingsTheme, env: { NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
+    const browser = await chromium.launch({ executablePath });
+    try {
+      const page = await browser.newPage({ colorScheme: 'light' });
+      await page.goto(`${base}/`);
+      await page.getByLabel('Settings', { exact: true }).first().click();
+      await page.getByLabel(/^Appearance,/).click();
+      await page.waitForURL(url => url.pathname === '/settings/appearance', { timeout: 10_000 });
+      const back = page.getByLabel('Go back').filter({ visible: true }).first();
+      const arrow = () => back.evaluate(element => {
+        const image = element.querySelector('img');
+        const stroke = decodeURIComponent(image?.getAttribute('src') ?? '').match(/stroke="([^"]+)"/)?.[1];
+        const filters = [...element.querySelectorAll('[style*="filter"]')].map(node => node.style.filter);
+        return { stroke, filters };
+      });
+      const seen = [];
+      for (const choice of ['dark', 'light', 'dark']) {
+        await page.getByTestId(`theme-${choice}`).click();
+        await page.waitForFunction(value => document.documentElement.dataset.appearance === value, choice);
+        const { stroke, filters } = await arrow();
+        assert.ok(stroke, `the ${choice} back arrow draws its own stroke`);
+        assert.ok(!filters.some(filter => /#tint-\d/.test(filter)), `no fixed-id tint filter on the ${choice} back arrow: ${filters}`);
+        seen.push(stroke);
+      }
+      assert.notEqual(seen[0], seen[1], 'Dark and Light draw the arrow in different colours');
+      assert.equal(seen[0], seen[2], 'returning to Dark returns the arrow to its dark colour');
+    } finally {
+      await browser.close();
+    }
+  });
+});

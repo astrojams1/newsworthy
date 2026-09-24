@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T12:12:26+00:00",
+  "updated_at": "2026-09-24T15:26:01+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -902,6 +902,17 @@
       ],
       "next_action": "Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' \"Notify me about high readings\" wording for the next submission.",
       "updated_at": "2026-09-24T11:00:54+00:00"
+    },
+    "web.settings-back-arrow": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged.",
+      "evidence": [
+        "test/web-settings.test.js drives /settings/appearance in Chromium through Dark, Light, Dark and asserts the arrow's own stroke follows the theme with no fixed-id tint filter; it fails on the old header. test/surface-design.test.js pins the web headerLeft. Headless Chromium repainted the old arrow correctly in screenshots, so the stale paint itself was not reproduced here."
+      ],
+      "next_action": "Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows.",
+      "updated_at": "2026-09-24T15:26:01+00:00"
     }
   },
   "events": [
@@ -5669,6 +5680,22 @@
         ],
         "next_action": "Build replacement native packages and verify on both widget sizes, light and dark, score 10 and enlarged text: bold \"New:\" on a new development, none on a re-report, and the label dropping at two hours (up to 30 minutes later on Android). Compile the Swift native test with xcrun.",
         "updated_at": "2026-09-24T12:12:26+00:00"
+      }
+    },
+    {
+      "sequence": 298,
+      "at": "2026-09-24T15:26:01+00:00",
+      "gate": "web.settings-back-arrow",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged.",
+        "evidence": [
+          "test/web-settings.test.js drives /settings/appearance in Chromium through Dark, Light, Dark and asserts the arrow's own stroke follows the theme with no fixed-id tint filter; it fails on the old header. test/surface-design.test.js pins the web headerLeft. Headless Chromium repainted the old arrow correctly in screenshots, so the stale paint itself was not reproduced here."
+        ],
+        "next_action": "Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows.",
+        "updated_at": "2026-09-24T15:26:01+00:00"
       }
     }
   ],
