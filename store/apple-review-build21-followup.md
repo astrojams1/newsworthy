@@ -25,7 +25,26 @@ A replacement demonstration should show build 21, launch, reading, Settings,
 notification choice and threshold, appearance, sharing and both widget sizes.
 No accounts, user-generated content or additional paid features exist.
 
-## Physical recording gate
+## Attachment verification and updated recording
+
+On September 24 the September 17 message still showed the original attachment.
+It downloaded successfully with SHA-256
+`1bd143661f82fca77767726179d0ee9b61abe4e352bfe083a0bbf93121550068`,
+matching the previously posted review copy. A fresh API readback confirmed the
+six-part Notes remain saved. Apple did not specify whether the attachment was
+overlooked, inaccessible to the reviewer, or insufficient; an updated
+demonstration is a response to the new request and changed features, not a
+confirmed explanation of the rejection.
+
+The owner now reports an updated recording in iCloud Drive. Finder shows
+`ScreenRecording_09-24-2026 13-51-38_1.MP4` (39 MB); Finder download and a local copy are stalled at zero transferred bytes. The
+source is still a dataless iCloud placeholder. An alternate iCloud web sign-in
+with the existing vault credential reports that the Apple Account is locked
+for security reasons. No recovery or credential change was attempted. The owner
+was asked whether the upload on the phone has finished. A local copy would also
+unblock inspection; no repeat recording is requested.
+
+## Earlier physical-access observation
 
 The known iPhone's last available developer-device metadata reports iOS 26.6.2
 and no connected developer tunnel. iPhone Mirroring reports the iPhone is in use

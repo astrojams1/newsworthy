@@ -5,9 +5,10 @@ Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
 **September 24, 2026 update:** iOS **1.0.0 (21)** was resubmitted after the
 notification changes. The initial Waiting for Review state was superseded by
-**REJECTED / UNRESOLVED_ISSUES** at 05:12 UTC. Apple now requests a new
+**REJECTED / UNRESOLVED_ISSUES** at 05:12 UTC. Apple repeats its request for a
 physical-device demonstration on the latest OS and the six-part review details
-under Guideline 2.1. The old video shows build 7. See the
+under Guideline 2.1. The old build 7 video remains attached and downloads successfully. The owner
+has supplied a new recording in iCloud Drive; inspection is underway. See the
 [current follow-up](apple-review-build21-followup.md) and historical
 [submission receipt](apple-review-build21.json). The new message does not repeat
 Guideline 4.2; this does not establish approval of every other guideline.

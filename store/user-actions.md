@@ -6,27 +6,21 @@ separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current iOS resubmission: updated demonstration required
+## Current iOS resubmission: updated recording supplied
 
-**Build 21 was resubmitted, then rejected under Guideline 2.1 on September 24.**
-Apple requests a physical-device recording on the latest OS. The previous build 7
-video does not demonstrate current Settings/notifications. The known iPhone's
-last reported OS is 26.6.2; Apple's current latest release is iOS 27. Mirroring
-reports the phone is in use, so the agent cannot currently capture it.
+**Build 21 remains rejected under Guideline 2.1 as of September 24.** The owner
+has saved an updated recording to iCloud Drive. The agent located today's 39 MB
+recording, but iCloud transfer remains at zero bytes. The alternate web sign-in
+reports the Apple Account locked for security reasons. No account recovery was
+attempted. The agent can inspect and submit as soon as the file downloads or a
+local copy is supplied; no repeat recording is requested.
 
-1. On the iPhone, open **Settings → General → Software Update** and update to
-   the latest public iOS offered for the device. Complete passcode/restart steps
-   on the phone. Recheck the latest version when recording.
-2. Install **Newsworthy 1.0.0 (21)** in TestFlight.
-3. Start iPhone screen recording on the Home Screen, launch Newsworthy, show the
-   reading, open Settings, enable notifications/change the minimum score, show
-   appearance options and sharing, then show both widget sizes.
-4. Stop recording and save the original to iCloud Drive on this Mac. The agent
-   can inspect it, prepare the review copy, send the six-part reply, update Notes
-   and resume review. Alternatively, lock the updated phone to make Mirroring
-   available so the agent can check the accessible capture options first.
+The original September 17 build 7 attachment is still present and downloads
+successfully. Apple did not explain whether it was overlooked or insufficient.
+The six-part review Notes are also still saved. The updated video must be
+inspected before claiming which build, flows or OS it demonstrates.
 
-See [the new review request and evidence](apple-review-build21-followup.md).
+See [the review request and evidence](apple-review-build21-followup.md).
 
 The production Newsworthy-specific push key was created with
 owner confirmation and assigned in Expo. No push-key approval or Mac-unlock

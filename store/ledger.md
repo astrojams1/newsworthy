@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T05:30:32+00:00
+Updated: 2026-09-24T06:06:24+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,7 +25,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_user | user | observed | Build21 is REJECTED / UNRESOLVED_ISSUES. New September24 message requests Guideline2.1 physical-device demonstration on latest OS and six-part information. Existing video is build7; connected phone unavailable and last metadata is iOS26.6.2. | Make a current physical iPhone available on the latest OS and capture build21 launch, reading, Settings/notifications and widgets; agent can prepare reply/Notes and resume review afterward. |
+| apple.review | in_progress | agent | user_reported | Owner reports an updated physical-device recording in iCloud Drive. The September17 build7 video remains attached in the current review thread; the generic September24 rejection does not explain whether it was overlooked or insufficient. | Locate and inspect updated recording, verify its demonstrated build and flows, prepare matching reply and Notes, then resubmit and verify state. |
 | apple.release | waiting_provider | provider | observed | Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, verify paid-sale account readiness, and verify public paid availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
@@ -88,6 +88,8 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
 | apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
+| apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
+| apple.physical-recording-current | waiting_provider | provider | observed | Updated September24 recording located in iCloud Drive, 38951259 bytes advertised. Finder download and local copy remain at zero transferred bytes. Alternate iCloud web sign-in with the existing vault credential reports the Apple Account locked for security reasons; no recovery or credential change attempted. | Allow iCloud transfer to complete or use an owner-provided local copy; inspect actual footage before upload. Pending owner question asks whether phone upload is complete. Account recovery, if needed, remains owner-only. |
 
 ## Evidence and history
 
@@ -2761,3 +2763,33 @@ Build21 passed Apple validation/upload and processed VALID; it remains selected.
 
 - store/apple-review-build21.json
 - store/apple-review-build21-followup.md
+
+### 283. apple.gallery-current — in_progress
+
+2026-09-24T05:41:58+00:00 · observed · agent
+
+Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures.
+
+- store/design/current-gallery-brief.md
+
+Next: Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets.
+
+### 284. apple.review — in_progress
+
+2026-09-24T05:55:10+00:00 · user_reported · agent
+
+Owner reports an updated physical-device recording in iCloud Drive. The September17 build7 video remains attached in the current review thread; the generic September24 rejection does not explain whether it was overlooked or insufficient.
+
+- Owner message September24; App Review September17 message attachment Download control verified; fresh API readback confirms six-part Notes.
+
+Next: Locate and inspect updated recording, verify its demonstrated build and flows, prepare matching reply and Notes, then resubmit and verify state.
+
+### 285. apple.physical-recording-current — waiting_provider
+
+2026-09-24T06:06:24+00:00 · observed · provider
+
+Updated September24 recording located in iCloud Drive, 38951259 bytes advertised. Finder download and local copy remain at zero transferred bytes. Alternate iCloud web sign-in with the existing vault credential reports the Apple Account locked for security reasons; no recovery or credential change attempted.
+
+- Finder Download Now status Zero KB of39.0MB; source remains dataless; iCloud web locked-account notice. Original September17 Apple attachment downloaded and SHA256 matches its posted manifest.
+
+Next: Allow iCloud transfer to complete or use an owner-provided local copy; inspect actual footage before upload. Pending owner question asks whether phone upload is complete. Account recovery, if needed, remains owner-only.
