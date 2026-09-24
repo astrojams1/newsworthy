@@ -6,6 +6,7 @@ struct Reading: Codable, Equatable, Sendable {
     let created_at: String
     var explanation_text: String? = nil
     var explanation_since: String? = nil
+    var explanation_new: Bool? = nil
 
     var updatedAt: Date? {
         let formatter = ISO8601DateFormatter()
@@ -17,7 +18,9 @@ struct Reading: Codable, Equatable, Sendable {
 
     func displayedExplanation(at now: Date) -> String {
         var prefix = ""
-        if explanation_text != nil, let raw = explanation_since {
+        if explanation_text != nil, explanation_new == true {
+            prefix = "New: "
+        } else if explanation_text != nil, let raw = explanation_since {
             let formatter = ISO8601DateFormatter()
             formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
             var start = formatter.date(from: raw)

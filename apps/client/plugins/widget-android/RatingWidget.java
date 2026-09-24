@@ -125,7 +125,8 @@ public class RatingWidget extends AppWidgetProvider {
         String prefix = "";
         boolean hasBody = reading.opt("explanation_text") instanceof String;
         Date start = parseDate(reading.optString("explanation_since", ""));
-        if (hasBody && start != null && start.getTime() <= now) {
+        if (hasBody && reading.optBoolean("explanation_new", false)) prefix = "New: ";
+        else if (hasBody && start != null && start.getTime() <= now) {
             long minutes = (now - start.getTime()) / 60_000;
             if (minutes < 1) prefix = "Just now: ";
             else {
