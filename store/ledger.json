@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T10:22:56+00:00",
+  "updated_at": "2026-09-24T10:32:49+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -896,12 +896,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "PR134 now redesigns Settings at owner request, after a ChatGPT-style reference: a sheet on iOS/Android closed by an X with no title, sentence-case section titles, a leading icon on every row, Appearance and Notifications as pages inside the sheet, and link arrows on Privacy and Support. Opening Settings no longer pushes beside the reading, so the wordmark cannot morph into a back button; the page-drawn wordmark change is withdrawn. Missing glass in the owner's simulator is attributed by the owner to an older simulator without glass.",
+      "summary": "PR134 Notifications page reworked at owner request: the switch is \"High-score alerts\" in its own section with an explanatory line, and the score picker is a separate \"Threshold\" section with the saved state beneath it. On the web the page redirects to the Settings overview.",
       "evidence": [
-        "PR134. design70 checks and npm test293 passed (one existing skip); web export overview, Appearance page, close, reload and deep link checked in Chromium in light and dark. Not verified on a native build: sheet presentation, glass close button, subpage navigation, icons, Android."
+        "PR134. design70 checks and npm test passed. Not verified on a native build."
       ],
-      "next_action": "Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, notification save) and on Android before release.",
-      "updated_at": "2026-09-24T10:22:56+00:00"
+      "next_action": "Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' \"Notify me about high readings\" wording for the next submission.",
+      "updated_at": "2026-09-24T10:32:49+00:00"
     }
   },
   "events": [
@@ -5605,6 +5605,22 @@
         ],
         "next_action": "Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, notification save) and on Android before release.",
         "updated_at": "2026-09-24T10:22:56+00:00"
+      }
+    },
+    {
+      "sequence": 294,
+      "at": "2026-09-24T10:32:49+00:00",
+      "gate": "apple.settings-transition",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR134 Notifications page reworked at owner request: the switch is \"High-score alerts\" in its own section with an explanatory line, and the score picker is a separate \"Threshold\" section with the saved state beneath it. On the web the page redirects to the Settings overview.",
+        "evidence": [
+          "PR134. design70 checks and npm test passed. Not verified on a native build."
+        ],
+        "next_action": "Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' \"Notify me about high readings\" wording for the next submission.",
+        "updated_at": "2026-09-24T10:32:49+00:00"
       }
     }
   ],

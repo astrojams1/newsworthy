@@ -257,7 +257,7 @@ chevron, and Privacy and Support, which leave the app, end in a link arrow.
 Separators start at the label so the icons read as one column.
 
 Notification saves use the existing text below the controls: `Saving…`, then
-`Notify on readings 8 or higher enabled.` or `Notify on readings 8 or higher disabled.`
+`Alerts at 8 or higher are on.` or `Alerts at 8 or higher are off.`
 with the selected threshold substituted. No spinner enters the switch row.
 Both notification controls are disabled until all queued changes finish, and
 pending state belongs to the provider so reopening Settings preserves feedback.

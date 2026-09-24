@@ -38,6 +38,9 @@ test('the website shows the appearance choice and no notification setting', () =
   assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
     [['Follow device', true], ['Light', false], ['Dark', false]]);
   assert.deepEqual(text(all), ['Follow device', 'Light', 'Dark']);
+  const alerts = renderSettings({ platform: 'web', screen: 'notifications' }).tree;
+  assert.equal(alerts.type, 'Redirect', 'a link to the alerts page lands on the overview');
+  assert.equal(alerts.props.href, '/settings');
   // Vertical: each option is its own full-width row, the checked one marked.
   assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
   assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');
@@ -71,7 +74,7 @@ for (const platform of ['ios', 'android']) {
     const all = nodes(tree);
     const toggle = all.find(n => n.type === 'Toggle');
     assert.equal(toggle.props.value, false);
-    assert.equal(toggle.props.accessibilityLabel, 'Notify me about high readings');
+    assert.equal(toggle.props.accessibilityLabel, 'High-score alerts');
     const appearance = renderSettings({ platform, screen: 'appearance' });
     const radios = nodes(appearance.tree).filter(n => n.props?.accessibilityRole === 'radio' && /^theme-/.test(n.props.testID));
     assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
@@ -86,10 +89,15 @@ for (const platform of ['ios', 'android']) {
     assert.deepEqual(THRESHOLD_CHOICES, [5, 6, 7, 8, 9, 10]);
     for (const score of scores) {
       assert.equal(score.props.accessibilityRole, 'radio');
-      assert.match(score.props.accessibilityLabel, /^Minimum score \d+ out of 10$/);
+      assert.match(score.props.accessibilityLabel, /^Alert at \d+ or higher$/);
       assert.ok(score.props.style.minHeight >= 48, 'a score is a full touch target');
     }
-    assert.ok(text(all).includes('Notify on readings 8 or higher disabled.'), 'the chosen score and saved state are explained');
+    assert.ok(text(all).includes('Alerts at 8 or higher are off.'), 'the chosen score and saved state are explained');
+    // The switch and the threshold are separate sections; the threshold has its own header.
+    const headers = all.filter(n => n.type === 'Text' && n.props.accessibilityRole === 'header').map(n => n.props.children);
+    assert.deepEqual(headers, ['Threshold']);
+    assert.equal(all.find(n => n.props?.testID === 'threshold-row').parent.props.style.borderRadius, 16, 'the picker is its own card');
+    assert.ok(!text(all).some(t => /Notify me/.test(t)), 'the switch is named for alerts');
     // The whole notification row toggles, not only the switch.
     const rowControl = all.find(n => n.props?.testID === 'notifications-row');
     assert.equal(rowControl.props.accessibilityRole, 'switch');
@@ -249,7 +257,7 @@ test('the notification switch is an iOS-style toggle in the accent colour on eve
     const { tree, accent } = renderToggle({ platform, value, dark });
     assert.equal(tree.props.accessibilityRole, 'switch');
     assert.deepEqual(JSON.parse(JSON.stringify(tree.props.accessibilityState)), { checked: value, disabled: false });
-    assert.equal(tree.props.accessibilityLabel, 'Notify me about high readings');
+    assert.equal(tree.props.accessibilityLabel, 'High-score alerts');
     const [track, thumb] = nodes(tree).filter(n => n.type === 'Animated.View');
     assert.deepEqual([track.props.style.width, track.props.style.height, track.props.style.borderRadius], [51, 31, 15.5]);
     assert.equal(track.props.style.backgroundColor === accent, value, 'the accent only when on — the colour of the chosen rows beside it');

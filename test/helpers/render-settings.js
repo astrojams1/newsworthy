@@ -56,7 +56,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
     '@/components/check-icon': { CheckIcon: 'CheckIcon' },
     '@/components/glyph': { Glyph: 'Glyph' },
     'expo-router/head': { __esModule: true, default: 'Head' },
-    'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', useRouter: () => ({ canGoBack: () => canGoBack, back: () => { calls.back += 1; }, replace: href => calls.replace.push(href) }) },
+    'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', Redirect: 'Redirect', useRouter: () => ({ canGoBack: () => canGoBack, back: () => { calls.back += 1; }, replace: href => calls.replace.push(href) }) },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => theme },
     '@/lib/preferences': preferences,
@@ -92,5 +92,5 @@ export function renderToggle({ platform = 'web', value = false, disabled = false
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },
   };
   const exports = load(toggleSource, mocks, platform);
-  return { tree: exports.Toggle({ value, disabled, accessibilityLabel: 'Notify me about high readings', onValueChange() {} }), accent: themeForLevel(3, dark).accent };
+  return { tree: exports.Toggle({ value, disabled, accessibilityLabel: 'High-score alerts', onValueChange() {} }), accent: themeForLevel(3, dark).accent };
 }

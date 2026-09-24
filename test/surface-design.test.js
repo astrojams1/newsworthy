@@ -306,7 +306,7 @@ test('notification saving never adds a control or changes the row geometry', () 
       assert.equal(saving.some(n => n.type === 'ActivityIndicator'), false);
       assert.equal(byId(saving, 'notifications-status').props.children, 'Saving…');
       assert.equal(byId(saving, 'notifications-status').props.accessibilityLiveRegion, 'polite');
-      assert.equal(byId(idle, 'notifications-status').props.children, `Notify on readings ${threshold} or higher ${enabled ? 'enabled' : 'disabled'}.`);
+      assert.equal(byId(idle, 'notifications-status').props.children, `Alerts at ${threshold} or higher are ${enabled ? 'on' : 'off'}.`);
       assert.equal(byId(saving, 'notifications-row').props.disabled, true);
       assert.ok(saving.filter(n => /^threshold-\d+$/.test(n.props.testID ?? '')).every(n => n.props.disabled));
     }

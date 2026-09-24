@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Linking, Pressable, Text, View } from 'react-native';
 import Head from 'expo-router/head';
+import { Redirect } from 'expo-router';
+import { pushSupported } from '@/lib/push';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
 import { Toggle } from '@/components/toggle';
@@ -32,22 +34,31 @@ export default function NotificationSettings() {
     const result = await subscription.choose(next);
     if (!result.ok) setNotice(result.reason);
   };
+  // Alerts are a native feature; a shared or typed link on the web lands on
+  // the overview rather than on controls that cannot register anything.
+  if (!pushSupported) return <Redirect href="/settings" />;
   const note = { color: theme.muted, fontSize: 14, lineHeight: 20, marginTop: 12, marginHorizontal: 16 } as const;
   return <>
     {process.env.EXPO_OS === 'web' && <Head><title>Notifications · Newsworthy</title></Head>}
     <SettingsPage>
       <View>
         <Section>
-          <Pressable testID="notifications-row" accessibilityRole="switch" accessibilityLabel="Notify me about high readings"
+          <Pressable testID="notifications-row" accessibilityRole="switch" accessibilityLabel="High-score alerts"
             accessibilityState={{ checked: enabled, disabled: busy }} disabled={busy} onPress={() => toggle(!enabled)} style={rowStyle()}>
-            <RowContent index={0} label="Notify me about high readings"
-              trailing={<Toggle testID="notifications-switch" accessibilityLabel="Notify me about high readings" value={enabled} disabled={busy} onValueChange={toggle} />} />
+            <RowContent index={0} label="High-score alerts"
+              trailing={<Toggle testID="notifications-switch" accessibilityLabel="High-score alerts" value={enabled} disabled={busy} onValueChange={toggle} />} />
           </Pressable>
-          <View testID="threshold-row" accessibilityRole="radiogroup" accessibilityLabel="Minimum score"
-            style={{ ...rowStyle(), paddingLeft: 8, paddingRight: 8, gap: 4, borderTopWidth: 1, borderTopColor: theme.rule }}>
+        </Section>
+        <Text style={note}>Get an alert when the displayed score reaches your threshold, once per development.</Text>
+      </View>
+      {/* The score can be chosen while alerts are off, so turning them on means something definite. */}
+      <View>
+        <Section title="Threshold">
+          <View testID="threshold-row" accessibilityRole="radiogroup" accessibilityLabel="Alert threshold"
+            style={{ ...rowStyle(), paddingLeft: 8, paddingRight: 8, gap: 4 }}>
             {THRESHOLD_CHOICES.map(value => {
               const checked = value === threshold;
-              return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={`Minimum score ${value} out of 10`} accessibilityState={{ checked, selected: checked, disabled: busy }}
+              return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={`Alert at ${value} or higher`} accessibilityState={{ checked, selected: checked, disabled: busy }}
                 testID={`threshold-${value}`} disabled={busy} onPress={() => choose(value)}
                 style={{ flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: checked ? theme.accent : 'transparent' }}>
                 <Text style={{ color: checked ? theme.tinted : theme.ink, fontSize: 17, fontWeight: checked ? '600' : '400',
@@ -57,7 +68,7 @@ export default function NotificationSettings() {
           </View>
         </Section>
         <Text testID="notifications-status" accessibilityLiveRegion="polite" style={note}>
-          {busy ? 'Saving…' : `Notify on readings ${threshold} or higher ${enabled ? 'enabled' : 'disabled'}.`}
+          {busy ? 'Saving…' : `Alerts at ${threshold} or higher are ${enabled ? 'on' : 'off'}.`}
         </Text>
         {notice !== '' && <View accessibilityLiveRegion="polite" style={{ marginTop: 4 }}>
           <Text style={{ ...note, color: theme.danger }}>{NOTICES[notice]}</Text>

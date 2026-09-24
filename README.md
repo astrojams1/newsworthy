@@ -98,7 +98,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/` | The rating, explanation and update time, and Share and Settings controls in the header. The number is the loudest development still live — each carries its own level, aged from when it was first reported |
 | `/settings` | Settings overview: Appearance, on native Notifications, and the Privacy and Support links. A sheet in the apps, a page on the web |
 | `/settings/appearance` | Follow device, Light or Dark |
-| `/settings/notifications` | Native only in the apps: optional notification for high readings, with save feedback |
+| `/settings/notifications` | Native only in the apps: optional high-score alerts, with the threshold in its own section and save feedback |
 | `/privacy` | Privacy policy covering the website, apps and widgets |
 | `/support` | Help and contact: astrojams1@gmail.com |
 | `/llms.txt` | Public product facts and links for AI readers; rating instructions remain at `/api/instructions` |

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T10:22:56+00:00
+Updated: 2026-09-24T10:32:49+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -90,7 +90,7 @@ Generated from the adjacent JSON ledger. Update through ledger.py, not this view
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
 | apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
-| apple.settings-transition | in_progress | agent | observed | PR134 now redesigns Settings at owner request, after a ChatGPT-style reference: a sheet on iOS/Android closed by an X with no title, sentence-case section titles, a leading icon on every row, Appearance and Notifications as pages inside the sheet, and link arrows on Privacy and Support. Opening Settings no longer pushes beside the reading, so the wordmark cannot morph into a back button; the page-drawn wordmark change is withdrawn. Missing glass in the owner's simulator is attributed by the owner to an older simulator without glass. | Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, notification save) and on Android before release. |
+| apple.settings-transition | in_progress | agent | observed | PR134 Notifications page reworked at owner request: the switch is "High-score alerts" in its own section with an explanatory line, and the score picker is a separate "Threshold" section with the saved state beneath it. On the web the page redirects to the Settings overview. | Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' "Notify me about high readings" wording for the next submission. |
 
 ## Evidence and history
 
@@ -2870,3 +2870,13 @@ PR134 now redesigns Settings at owner request, after a ChatGPT-style reference: 
 - PR134. design70 checks and npm test293 passed (one existing skip); web export overview, Appearance page, close, reload and deep link checked in Chromium in light and dark. Not verified on a native build: sheet presentation, glass close button, subpage navigation, icons, Android.
 
 Next: Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, notification save) and on Android before release.
+
+### 294. apple.settings-transition — in_progress
+
+2026-09-24T10:32:49+00:00 · observed · agent
+
+PR134 Notifications page reworked at owner request: the switch is "High-score alerts" in its own section with an explanatory line, and the score picker is a separate "Threshold" section with the saved state beneath it. On the web the page redirects to the Settings overview.
+
+- PR134. design70 checks and npm test passed. Not verified on a native build.
+
+Next: Verify the Settings sheet on an iOS 26 build (glass X, swipe-down dismiss, Appearance and Notifications pages, alert switch and threshold saving) and on Android before release. Update App Review notes' "Notify me about high readings" wording for the next submission.
