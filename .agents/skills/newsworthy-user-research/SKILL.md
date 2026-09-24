@@ -9,8 +9,8 @@ Find the problem behind a complaint, what people do about it, and whether
 Newsworthy can help. A useful run can recommend preserving or simplifying the
 app, conclude that a need is outside its purpose, or weaken an earlier idea.
 
-Work from the repository root. Read [AGENTS.md](../../../AGENTS.md),
-[CLAUDE.md](../../../CLAUDE.md), [product messaging](../../../docs/product-messaging.md),
+Work from the repository root. Read
+[AGENTS.md](../../../AGENTS.md), [product messaging](../../../docs/product-messaging.md),
 and [README.md](../../../README.md). Inspect relevant implementation and release
 evidence before saying a feature exists, is absent, or is available to users.
 Preserve the number out of 10 and one sentence explaining why, alongside the

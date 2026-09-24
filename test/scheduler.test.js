@@ -87,7 +87,7 @@ test('a manual run is stored as manual, not cron', async () => {
 
 test('an unrecognised reason is stored as manual, not silently as cron', async () => {
   // Which way this fails is the point. Mapping everything-but-'manual' to 'cron'
-  // is the silent default CLAUDE.md records as the original bug: a new trigger,
+  // is the silent default AGENTS.md records as the original bug: a new trigger,
   // or a typo, becomes the schedule without a word. An unknown reason should
   // land on the merely-imprecise label, not invent a run nobody scheduled.
   const { tick } = await import('../src/scheduler.js');
