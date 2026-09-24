@@ -821,6 +821,14 @@ The [record](docs/prompt-evaluations/v13.md) separates the initial 100-character
 writing experiment from the selected 140-character limit. Neither a measured
 95% fit rate nor native widget verification is claimed.
 
+**v15 makes the sentence calm and plain for a non-expert.** Live readings read
+as dense and expert-facing: three figures and two terms of art in one sentence.
+Only Output's writing guidance changes: a reader with no background, what the
+development means for daily life, at most one number, jargon explained or
+dropped. The 120/140-character budget and everything before Output are v14's.
+The [record](docs/prompt-evaluations/v15.md) compares v14 and v15 on eight cards
+with fresh Claude generations, not the production research workflow.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.

@@ -327,6 +327,16 @@ Reply with a single JSON object and nothing else — no prose, no markdown fence
 
 Full display: at most 140 characters including spaces and punctuation, reserving 20 for an app-supplied age prefix. Submit no prefix. Report one development independently of its score: who did what, with its clearest established effect or essential detail. Use everyday words and familiar abbreviations. Keep useful specifics. Cut secondary details, not grammar. No em dashes, semicolons, side stories, jargon, padding, rating justification or advice. Preserve facts, attribution and uncertainty when revising after the history match.`;
 
+// v15 changes sentence tone only: calm, plain wording for a reader with no
+// background. Budget and everything before Output are unchanged from v14.
+// See docs/prompt-evaluations/v15.md.
+const V15_OUTPUT_CONTRACT = `Output
+
+Reply with a single JSON object and nothing else — no prose, no markdown fences:
+{"score": <integer 1-10>, "explanation": "<one sentence, at most 120 characters including spaces and punctuation>"}
+
+Full display: at most 140 characters including spaces and punctuation, reserving 20 for an app-supplied age prefix. Submit no prefix. Write calmly for a reader with no background: one development, who did what and what it means for daily life. At most one number, in plain terms. Explain or drop jargon, market figures and uncommon acronyms. No em dashes, semicolons, dramatic verbs, side stories, rating justification or advice. Preserve facts, attribution and uncertainty when revising after the history match.`;
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -425,6 +435,13 @@ const REGISTRY = {
     added: '2026-09-22',
     instructions: V11_INSTRUCTIONS,
     outputContract: V14_OUTPUT_CONTRACT,
+  },
+  15: {
+    version: 15,
+    label: 'calm-plain-sentence-v15',
+    added: '2026-09-24',
+    instructions: V11_INSTRUCTIONS,
+    outputContract: V15_OUTPUT_CONTRACT,
   },
 };
 
