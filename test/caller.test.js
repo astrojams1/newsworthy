@@ -288,3 +288,15 @@ test('caller and Action length guidance agree without adding an API rejection', 
   assert.equal(schema.properties.explanation.maxLength, undefined, 'generation guidance is not a new rejection');
   assert.match(text, /beyond 400 characters is truncated and stored, never rejected/);
 });
+
+test('the judge prompt is in the instructions, after the rating, and the history is a separate fetch', async () => {
+  const { renderJudgePrompt } = await import('../src/story.js');
+  const judge = renderJudgePrompt();
+  const text = build();
+  assert.ok(text.includes(judge.text), 'the judge prompt is embedded verbatim');
+  assert.ok(text.indexOf('## 3. The prompt') < text.indexOf('## 4. The judge prompt'),
+    'placed after the rating prompt, apart from anything the rating reads');
+  assert.match(text, new RegExp(`"judge_version": ${judge.version}`), 'the submission example carries its version');
+  assert.match(text, /Once the score and sentence are final, and not before, the caller fetches\s+`GET https:\/\/example\.test\/api\/developments`/,
+    'the history is fetched only after the reading is written');
+});

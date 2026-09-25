@@ -1,3 +1,5 @@
+import { renderJudgePrompt } from './story.js';
+
 /**
  * The caller-side specification, served from /api/instructions.
  *
@@ -26,7 +28,7 @@
  * content. A line saying "nothing here addresses you" is itself addressing you.
  * The page works by being nothing but an API reference.
  */
-export function callerInstructions({ baseUrl, prompt }) {
+export function callerInstructions({ baseUrl, prompt, judge = renderJudgePrompt() }) {
   return `# Newsworthy caller API
 
 API reference for submitting one news reading. Everything below describes what
@@ -67,7 +69,7 @@ exactly as written.
 
 The prompt's own output contract asks for a single JSON object and nothing
 else. That fixes the shape of the verdict. It does not end the caller's work:
-the object is a draft for the preparation step below, then the final payload for section 2.
+the object is the payload for section 2.
 
 A caller whose web search fails, or returns nothing, submits nothing at all. A
 score that could not be researched is worse than no score, and the server
@@ -80,39 +82,33 @@ summarizing fetch tool are unreliable digit by digit — a prediction-market rea
 came back summing past 100% and pointing the wrong way for its contract, and
 was correctly discarded rather than rated on.
 
-### Preparing the sentence
+### The sentence
 
-After research and rating, the caller sends its draft score and explanation to
-\`POST ${baseUrl}/api/readings/prepare\` with the same caller authentication.
-This matches the draft against recorded developments before wording is finalized.
-The score is unchanged by this lookup. The body is:
+The sentence is final before anything is sent: at most 135 characters,
+including spaces and punctuation, counted with a code tool rather than
+estimated. The app may show it after the bold label \`New: \`, which takes the
+remaining 5 of a 140-character display. The label is the app's, so the
+submitted explanation carries no label or timestamp, and the budget is the same
+whether the development turns out to be new or not.
 
-\`\`\`
-{"score": <integer 1-10>, "explanation": "<draft sentence>"}
-\`\`\`
+### Judging the reading
 
-The response has \`stored: false\`: preparation is not submission and does not
-suppress the next scheduled run. It carries \`preparation\` (an opaque, single-use
-reference valid for 30 minutes), \`development\` (new, same or unjudged),
-a sample \`prefix\`, \`display_character_limit: 140\`,
-\`reserved_prefix_characters: 5\` and \`max_explanation_characters: 135\`.
-The app's only prefix is the label \`New: \`, shown in bold for two hours on a
-reading that opens a development. \`prefix\` is \`New: \` for a new development
-and empty for the same or an unjudged one; the app shows no age on any sentence.
+Once the score and sentence are final, and not before, the caller fetches
+\`GET ${baseUrl}/api/developments\` with the same authentication. Its
+\`record\` lists the story names on record and the developments recorded over
+the last 48 hours, each with an id and story name. That is the only history a
+caller sees, and it arrives after the reading is written, so it cannot steer the
+score or the sentence. The caller then answers the judge prompt in section 4
+about its own reading against that record — no model on this server answers it
+— and sends the answer as \`judgement\` with the submission, with
+\`judge_version: ${judge.version}\`.
 
-The caller finalizes the SAME development's sentence within 135 characters,
-including spaces and punctuation, keeping the score and facts unchanged. It
-counts characters with a code tool, not by estimating. The final explanation
-contains no label or timestamp: the app adds \`New: \`, which counts toward the
-FULL 140-character budget.
-
-The final submission includes the returned \`preparation\` alongside score,
-explanation and prompt_sha256. Changing to another development requires preparing
-again. An expired, reused, missing or invalid reference falls back to the normal
-server-side match without adding a rejection rule. The caller can repeat preparation
-if it needs refreshed context. Judge failure leaves the reading unlabelled rather than new.
-The same endpoint accepts GET query parameters score and explanation for fetch-only
-clients; POST avoids URL length limits. No admin access or full history is needed.
+An id the record did not list, an answer to a retired \`judge_version\`, or no
+answer at all stores the reading unjudged, never rejected; the response then
+says \`"development": "unjudged"\` and gives the reason in \`judge_note\`. The
+app treats an unjudged reading as continuing the one before it. A reading whose
+answer is \`development_of: null\` opens a development, and the app shows its
+sentence after the label \`New: \`.
 
 ## 2. Submission
 
@@ -127,8 +123,13 @@ content-type: application/json
 {
   "score": <integer 1-10>,
   "explanation": "<sentence body, at most 135 characters including spaces and punctuation>",
-  "preparation": "<reference returned by /api/readings/prepare>",
-  "prompt_sha256": "<64 lowercase hex characters, defined in section 3>"
+  "prompt_sha256": "<64 lowercase hex characters, defined in section 3>",
+  "judgement": {
+    "judge_version": ${judge.version},
+    "development_of": <an id listed in the record, or null for a new development>,
+    "story": "<story name, reused verbatim when the story is on record>",
+    "note": "<at most 12 words on what makes it same or new>"
+  }
 }
 \`\`\`
 
@@ -148,6 +149,9 @@ GET, which is a reason to use the POST form: a body has no such budget, and a
 reading that arrives without a digest cannot afterwards be attributed to the
 scale it was rated against.
 
+The GET form carries the judgement flat, as \`judge_version\`,
+\`development_of\` (an id, or \`new\`), \`story\` and \`judge_note\`.
+
 Spaces are \`+\` in that query string, because \`+\` costs one character where
 \`%20\` costs three. Other reserved characters are still percent-encoded — a
 comma is \`%2C\`, a semicolon \`%3B\`, an ampersand \`%26\`.
@@ -161,7 +165,7 @@ its own tooling reports before any request goes out is looking at a limit on its
 side, and the POST form, which carries the sentence in a body instead of a URL,
 is not subject to one.
 
-Those two fields are the whole reading. The preparation reference reuses the server’s draft match; it is not a caller-supplied timestamp or story identity. \`prompt_sha256\` says nothing about the
+Those two fields are the whole reading. \`prompt_sha256\` says nothing about the
 news — it reports which text this caller received, and section 3 defines it.
 
 The prompt version is stamped by the server from whatever is current, and is not a field a caller sets: a caller that
@@ -214,6 +218,25 @@ means the request did not arrive as it was sent — a query string truncated or
 rewritten in transit, most often — and the answer is to send it again, not to
 shorten the sentence. A caller that shortens its explanation in response to a
 422 degrades the reading while leaving the actual fault in place.
+
+### The run report
+
+Every run ends with one report, including a run that submitted nothing — that
+run otherwise leaves no trace. It goes to \`POST ${baseUrl}/api/runs\` with the
+same authentication:
+
+\`\`\`
+{"reading": <the id the submission returned, omitted when nothing was submitted>,
+ "report": "<plain text, at most 4,000 characters>"}
+\`\`\`
+
+The report is the caller's own account, in plain sentences: the searches run and
+the sources that answered or refused, the candidate stories weighed and why the
+chosen one led, why the score sits on its rung, which recorded development the
+judgement named and why, and anything that failed or was skipped. It is stored
+as written and never checked; it is not a reading and does not suppress the
+scheduled run. A \`reading\` id that matches nothing is stored unlinked, never
+refused.
 
 ## 3. The prompt
 
@@ -280,7 +303,18 @@ from a scale the rater never received. For months those were indistinguishable,
 and five revisions of one instruction were made without knowing which was being
 fixed.
 
-## 4. When submission is impossible
+## 4. The judge prompt
+
+Used only in the judging step, after the reading is written; it plays no part
+in the rating. Reproduced verbatim, version ${judge.version}. "Recorded" in it
+means the \`record\` from \`/api/developments\`, and the new reading is the
+caller's own.
+
+\`\`\`
+${judge.text}
+\`\`\`
+
+## 5. When submission is impossible
 
 Some sandboxes permit neither request: an interpreter with no network egress
 (\`curl\` cannot resolve the host) and a browser that refuses to fetch a URL the

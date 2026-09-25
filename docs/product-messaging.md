@@ -78,9 +78,10 @@ widgets and the complete app package without updating local Xcode.
   guaranteed discovery or ranking mechanism.
 - `src/caller.js`, `src/openapi.js`, `skills/newsworthy-rating/SKILL.md`: authorized
   rating-agent contract. A reading is score/explanation; a complete submission
-  also carries the computed `prompt_sha256` provenance proof. Callers prepare
-  the draft to obtain a history match before finalizing its sentence, then submit
-  that preparation reference; preparation alone never stores a reading.
+  also carries the computed `prompt_sha256` provenance proof. After scoring and
+  writing, the caller fetches the recorded developments, answers the judge
+  prompt from its instructions and submits that answer with the reading. Each
+  run ends with a report of its own at `/api/runs`, which is never checked.
 - `README.md`, `AGENTS.md`: developer and coding-agent guidance.
 - `store/`: canonical mobile listing copy, native captures, artwork, upload scripts,
   release evidence and account-owner steps; `docs/store-listing.md` points there.

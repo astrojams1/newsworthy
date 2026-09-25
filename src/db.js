@@ -77,11 +77,17 @@ export function ensureSchema() {
         method      TEXT,                  -- 'GET' or 'POST'
         soft_errors BOOLEAN     NOT NULL DEFAULT false -- was the 200-shaped form on
       )`;
+    // The caller's own account of each run, one row per run, whether or not it
+    // submitted a reading. A report is not a reading and is not checked: it is
+    // what the caller says it searched, weighed and decided, kept so a run can
+    // be read afterwards — the Routine's own transcript is not reachable from
+    // here, and a run that submitted nothing otherwise leaves no trace at all.
     await sql`
-      CREATE TABLE IF NOT EXISTS reading_preparations (
-        id UUID PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL,
-        score SMALLINT NOT NULL, prompt_version INTEGER NOT NULL,
-        draft TEXT NOT NULL, judgement JSONB NOT NULL
+      CREATE TABLE IF NOT EXISTS caller_runs (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reading_id  BIGINT,               -- the reading it submitted, if any
+        report      TEXT        NOT NULL
       )`;
     // Devices that asked to be told about a high reading, and the readings they
     // were told about. One row per Expo push token — the token is the whole
@@ -152,7 +158,7 @@ const num = (value) => (value === null || value === undefined ? null : Number(va
 const NUMERIC = [
   'id', 'score', 'prompt_version', 'latency_ms', 'input_tokens', 'output_tokens',
   'cache_read_tokens', 'cache_write_tokens', 'web_search_requests', 'cost_usd',
-  'development_of', 'judge_version', 'judge_cost_usd',
+  'development_of', 'judge_version', 'judge_cost_usd', 'reading_id',
 ];
 
 /**
@@ -338,6 +344,8 @@ export async function unjudgedRatings({ limit = 20 } = {}) {
 /** Attach a judgement to a reading already stored. */
 export async function setJudgement(id, fields = {}) {
   await ensureSchema();
+  // Only ever onto a reading nothing has judged: a stored judgement is never
+  // recomputed.
   const rows = await sql`
     UPDATE ratings
        SET story = ${fields.story ?? null},
@@ -346,7 +354,7 @@ export async function setJudgement(id, fields = {}) {
            judge_model = ${fields.judge_model ?? null},
            judge_note = ${fields.judge_note ?? null},
            judge_cost_usd = ${fields.judge_cost_usd ?? null}
-     WHERE id = ${id}
+     WHERE id = ${id} AND judge_version IS NULL
      RETURNING *`;
   return shape(rows[0]);
 }
@@ -542,6 +550,32 @@ export async function recentRejections({ hours = 24 * 7, limit = 100 } = {}) {
   return rows.map(shape);
 }
 
+/** Store one caller run report. */
+export async function logCallerRun({ reading_id = null, report }) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO caller_runs (reading_id, report) VALUES (${reading_id}, ${report})
+    RETURNING id, created_at, reading_id`;
+  return shape(rows[0]);
+}
+
+/**
+ * Run reports within the window the admin page asked for, newest first, each
+ * with the score and sentence of the reading it submitted, if any.
+ */
+export async function recentCallerRuns({ hours = 24 * 7, limit = 200 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT c.id, c.created_at, c.reading_id, c.report, r.score, r.explanation
+      FROM caller_runs c
+      LEFT JOIN ratings r ON r.id = c.reading_id
+     WHERE c.created_at >= ${since}
+     ORDER BY c.created_at DESC, c.id DESC
+     LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
 // ---- settings -------------------------------------------------------------
 // Runtime configuration the admin page can change without a redeploy.
 
@@ -556,27 +590,6 @@ export async function setSetting(key, value) {
   await sql`
     INSERT INTO settings (key, value, updated_at) VALUES (${key}, ${String(value)}, now())
     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
-}
-
-/** Short-lived drafts are not readings and do not suppress scheduled runs. */
-export async function savePreparation({ id, score, draft, promptVersion, judgement, createdAt }) {
-  await ensureSchema();
-  await sql`DELETE FROM reading_preparations WHERE created_at < now() - interval '1 day'`;
-  await sql`INSERT INTO reading_preparations (id, created_at, score, prompt_version, draft, judgement)
-    VALUES (${id}::uuid, ${createdAt}, ${score}, ${promptVersion}, ${draft}, ${JSON.stringify(judgement)}::jsonb)`;
-}
-
-/** Atomic, single-use. Invalid/expired receipts fall back to ordinary judging. */
-export async function takePreparation(id, score, promptVersion) {
-  if (typeof id !== 'string' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id)) return null;
-  await ensureSchema();
-  const rows = await sql`DELETE FROM reading_preparations
-    WHERE id = ${id}::uuid AND score = ${score} AND prompt_version = ${promptVersion}
-      AND created_at > now() - interval '30 minutes'
-    RETURNING judgement, draft`;
-  if (!rows[0]) return null;
-  const judgement = typeof rows[0].judgement === 'string' ? JSON.parse(rows[0].judgement) : rows[0].judgement;
-  return { judgement, draft: rows[0].draft };
 }
 
 // ---- push subscriptions ---------------------------------------------------

@@ -247,6 +247,10 @@
     <tbody></tbody>
   </table></div>
 
+  <h2>Caller reports</h2>
+  <p class="note">Each run's own account of what it searched, weighed and decided, as the caller wrote it. Not checked.</p>
+  <div id="caller-runs"></div>
+
   <h2>Prompt versions</h2>
   <div id="prompts"></div>
 
@@ -630,6 +634,21 @@
     }).join('') || '<tr><td colspan="11" class="empty">Nothing logged yet.</td></tr>';
   }
 
+  /** One collapsed entry per caller run, newest first, titled by the reading it
+   *  submitted — or by its absence, which is the run a report exists for. */
+  function renderCallerRuns(runs = []) {
+    $('caller-runs').innerHTML = runs.map((r) => {
+      const reading = r.reading_id == null
+        ? 'no reading submitted'
+        : `reading ${r.reading_id}${r.score != null ? ` · ${r.score}/10` : ''}`;
+      return `
+      <details>
+        <summary>${escapeHtml(fmtTime.format(new Date(r.created_at)))} · ${escapeHtml(reading)}</summary>
+        <pre>${escapeHtml(r.report)}</pre>
+      </details>`;
+    }).join('') || '<p class="empty">No reports in this range.</p>';
+  }
+
   async function renderPrompts() {
     const res = await api('/api/admin/prompts');
     if (!res.ok) return;
@@ -725,6 +744,7 @@
     renderStories(data.stories);
     renderChart();
     renderRuns(data.attempts);
+    renderCallerRuns(data.caller_runs);
     // Same badge as the front page, which means the displayed value rather
     // than the newest reading — those differ on about 60% of hours.
     applyLevel(points.length ? points.at(-1).displayed ?? points.at(-1).score : null);

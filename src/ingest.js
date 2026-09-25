@@ -92,9 +92,19 @@ function cleanString(value, { field, max, required = false }) {
  */
 export function submissionFromQuery(params) {
   const body = {};
-  for (const field of ['score', 'explanation', 'prompt_sha256', 'preparation']) {
+  for (const field of ['score', 'explanation', 'prompt_sha256']) {
     const value = params.get(field);
     if (value !== null) body[field] = value;
+  }
+  // The judgement, flat: a query string has no nesting and no null, so a new
+  // development is `development_of=new`. Absent, the reading stores unjudged.
+  if (params.get('development_of') !== null) {
+    body.judgement = {};
+    for (const [field, key] of [['development_of', 'development_of'], ['story', 'story'],
+      ['judge_note', 'note'], ['judge_version', 'judge_version']]) {
+      const value = params.get(field);
+      if (value !== null) body.judgement[key] = value;
+    }
   }
   return body;
 }

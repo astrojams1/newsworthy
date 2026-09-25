@@ -210,17 +210,18 @@ function renderStories(stories = []) {
 
 /** The message the judge is sent, kept out of the call so a test can read it. */
 export function judgeMessage({ score, explanation, created_at, priors = [], stories = [] }) {
-  const groups = groupDevelopments(priors).slice(-MAX_PRIORS);
   return [
-    renderJudgePrompt().text,
-    '',
-    renderStories(stories),
-    '',
-    renderPriors(groups),
+    judgeContext({ priors, stories }),
     '',
     `New reading (${iso(created_at) ?? 'now'}), scored ${score}:`,
     explanation,
   ].join('\n');
+}
+
+/** Everything in the judge message but the new reading: the prompt, then the
+ *  record — the story names and the recorded developments. */
+function judgeContext({ priors = [], stories = [] }) {
+  return [renderJudgePrompt().text, '', judgeRecord({ priors, stories }).text].join('\n');
 }
 
 /** The ids the answer is allowed to name. */
@@ -228,12 +229,96 @@ function knownRoots(priors) {
   return new Set(groupDevelopments(priors).map((g) => g.id));
 }
 
+/**
+ * What the judge compares a reading against: the story names on record and
+ * the developments recorded over `PRIOR_HOURS`. Data only — the judge prompt
+ * itself is part of the caller instructions, like the rating prompt — so a
+ * caller fetches this after it has scored and written, and the history cannot
+ * steer either. `roots` are the ids the text lists, the only ids an answer may
+ * name.
+ */
+export function judgeRecord({ priors = [], stories = [] } = {}) {
+  const groups = groupDevelopments(priors).slice(-MAX_PRIORS);
+  return {
+    text: [renderStories(stories), '', renderPriors(groups)].join('\n'),
+    roots: groups.map((g) => g.id),
+  };
+}
+
+/** The columns stored when no judgement was made, and why. */
+function unjudged(note) {
+  return {
+    story: null,
+    development_of: null,
+    judge_version: null,
+    judge_model: null,
+    judge_note: String(note).slice(0, 120),
+    judge_cost_usd: null,
+  };
+}
+
+/**
+ * A caller's answer about its own reading, as the columns to store. Never
+ * throws.
+ *
+ * The version stamped is the server's own. The caller echoes the judge prompt
+ * version it read only so that an answer to a retired version is refused: its
+ * claim can stop a judgement being stored, never decide what is stored. An id
+ * the record did not list is a miss, not a finding, exactly as it is for the
+ * server-side judge. `judge_model` says `caller`, because which model answered
+ * is the caller's claim and is not recorded.
+ */
+export function callerJudgement(answer, { version = judgeVersion(), roots = [] } = {}) {
+  const task = { version, roots };
+  if (answer === undefined || answer === null) return unjudged('no judgement sent');
+  let parsed;
+  try {
+    const object = typeof answer === 'string' ? JSON.parse(answer) : answer;
+    if (Number(object?.judge_version) !== task.version) {
+      return unjudged(`judge prompt version ${object?.judge_version ?? 'missing'}, current is ${task.version}`);
+    }
+    // Required rather than defaulted: a missing id must not read as "new".
+    if (!('development_of' in object)) return unjudged('development_of is required: an id, or null for new');
+    parsed = normalizeJudgement(object);
+  } catch (err) {
+    return unjudged(`caller judgement unusable: ${String(err?.message ?? err)}`);
+  }
+  if (parsed.development_of !== null && !task.roots.includes(parsed.development_of)) {
+    return unjudged(`caller named an unknown development ${parsed.development_of}`);
+  }
+  return {
+    story: parsed.story,
+    development_of: parsed.development_of,
+    judge_version: task.version,
+    judge_model: 'caller',
+    judge_note: parsed.note,
+    judge_cost_usd: null,
+  };
+}
+
+/**
+ * The sentence is labelled new when a judgement placed the reading and it
+ * opened a development of its own. An unjudged reading is not new: an outage
+ * must not masquerade as a fresh story.
+ */
+export function opensDevelopment(reading) {
+  return reading.judge_version != null && reading.development_of == null;
+}
+
 function parseJudgement(text) {
   const match = String(text ?? '').match(/\{[\s\S]*\}/);
   if (!match) throw new Error(`no JSON object in judge reply: ${String(text ?? '').slice(0, 200)}`);
-  const parsed = JSON.parse(match[0]);
+  return normalizeJudgement(JSON.parse(match[0]));
+}
+
+function normalizeJudgement(parsed) {
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('judgement must be an object');
+  }
   const raw = parsed.development_of;
-  const development_of = raw === null || raw === undefined || raw === '' ? null : Number(raw);
+  // "new" is accepted beside null because a query string cannot carry a null.
+  const development_of = raw === null || raw === undefined || raw === '' || raw === 'new' || raw === 'null'
+    ? null : Number(raw);
   if (development_of !== null && !Number.isInteger(development_of)) {
     throw new Error(`development_of must be an integer id or null, got ${JSON.stringify(raw)}`);
   }
@@ -344,15 +429,6 @@ export async function judgeReading({
   model,
   mock = process.env.NEWSWORTHY_MOCK === '1',
 } = {}) {
-  const unjudged = (note) => ({
-    story: null,
-    development_of: null,
-    judge_version: null,
-    judge_model: null,
-    judge_note: note.slice(0, 120),
-    judge_cost_usd: null,
-  });
-
   if (mock) {
     const answer = mockJudgement({ explanation, priors, stories });
     return {

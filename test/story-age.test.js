@@ -1,11 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
 import { displayExplanation, explanationParts, isNew, EXPLANATION_CHARACTER_LIMIT } from '../apps/client/lib/story-age.js';
-import { opensDevelopment } from '../src/preparation.js';
-import { savePreparation, takePreparation } from '../src/db.js';
-import { renderPrompt, latestVersion } from '../src/prompts.js';
-import { withServer, PORTS, CALLER_TOKEN } from './with-server.js';
+import { opensDevelopment } from '../src/story.js';
+import { withServer, PORTS, CALLER_TOKEN, caller } from './with-server.js';
 import { renderReading, nodes } from './helpers/render-reading.js';
 
 const start = '2026-09-16T18:05:00.000Z';
@@ -70,20 +67,6 @@ test('only a judged reading that opened its own development is new', () => {
   assert.equal(opensDevelopment({ judge_version:null, development_of:null }), false, 'a judge outage is not a new story');
 });
 
-test('preparation receipts bind score and prompt, expire, and can be consumed only once', async () => {
-  const id=randomUUID();
-  const saved={ id, score:5, promptVersion:latestVersion(), draft:'A draft.', judgement:{ story:'fixture', development_of:null, judge_version:2 }, createdAt:new Date().toISOString() };
-  await savePreparation(saved);
-  assert.equal(await takePreparation(id,6,saved.promptVersion),null);
-  assert.equal(await takePreparation(id,5,saved.promptVersion-1),null);
-  assert.deepEqual(await takePreparation(id,5,saved.promptVersion), {draft:saved.draft,judgement:saved.judgement});
-  assert.equal(await takePreparation(id,5,saved.promptVersion),null);
-  assert.equal(await takePreparation('forged',5,saved.promptVersion),null);
-  const expired={...saved,id:randomUUID(),createdAt:new Date(Date.now()-31*60000).toISOString()};
-  await savePreparation(expired);
-  assert.equal(await takePreparation(expired.id,5,saved.promptVersion),null);
-});
-
 test('a sentence stored before the punctuation rule is served finished, on every field', async () => {
   // The server runs in its own process with its own PGlite, so the legacy row
   // is seeded into a file-backed database by a child that exits first; a row
@@ -108,37 +91,19 @@ test('a sentence stored before the punctuation rule is served finished, on every
   });
 });
 
-test('prepare then submit preserves the match without publishing the draft', async () => {
-  await withServer({ port:PORTS.preparation,env:{NEWSWORTHY_NO_SCHEDULER:'1'} },async base=>{
-    const post=async (path,body,token=CALLER_TOKEN)=>{
-      const res=await fetch(base+path,{method:'POST',headers:{'content-type':'application/json','x-newsworthy-token':token},body:JSON.stringify(body)});
-      return {status:res.status,body:await res.json()};
-    };
-    assert.equal((await post('/api/readings/prepare',{score:5,explanation:'hormuz tanker strike alpha'},'wrong')).status,401);
-    const first=await post('/api/readings',{score:9,explanation:'volcano eruption ash emergency'});
-    const second=await post('/api/readings',{score:2,explanation:'hormuz tanker strike alpha'});
-    const prepared=await post('/api/readings/prepare',{score:2,explanation:'hormuz tanker strike bravo'});
-    assert.equal(prepared.status,200);
-    assert.equal(prepared.body.stored,false);
-    assert.equal(prepared.body.development,'same');
-    assert.equal(prepared.body.prefix,'','a re-report gets no label');
-    assert.equal(prepared.body.first_covered_at,undefined,'no age is shown, so none is returned');
-    assert.equal(prepared.body.max_explanation_characters,135);
-    assert.equal(prepared.body.reserved_prefix_characters,5);
-    const before=await (await fetch(base+'/api/current')).json();
-    assert.equal(before.explanation_text,'hormuz tanker strike alpha.','stored with its end');
-    const final=await post('/api/readings',{score:2,explanation:'A tanker was hit at Hormuz.',preparation:prepared.body.preparation});
-    assert.equal(final.status,201);
-    const current=await (await fetch(base+'/api/current')).json();
-    assert.equal(current.score,9,'the louder volcano still supplies the score');
-    assert.equal(current.since,first.body.created_at);
-    assert.equal(current.explanation_new,false,'the sentence re-reports its own development');
-    assert.equal(current.explanation_since,undefined);
-    assert.equal(current.explanation,'A tanker was hit at Hormuz.');
-    const opened=await post('/api/readings/prepare',{score:4,explanation:'glacier collapse floods valley'});
-    assert.equal(opened.body.development,'new');
-    assert.equal(opened.body.prefix,'New: ');
-    const fallback=await post('/api/readings',{score:3,explanation:'Currency markets reopen.',preparation:'invalid'});
-    assert.equal(fallback.status,201,'no new ingestion rejection');
+test('the label follows the judgement the reading arrived with', async () => {
+  await withServer({ port:PORTS.newLabel,env:{NEWSWORTHY_NO_SCHEDULER:'1'} },async base=>{
+    const current=async ()=>(await fetch(base+'/api/current')).json();
+    const submit=caller(base);
+    const first=await submit(9,'volcano eruption ash emergency',{story:'volcano'});
+    await submit(2,'hormuz tanker strike alpha',{story:'hormuz'});
+    assert.equal((await current()).explanation_new,true,'a new development is labelled at once');
+    const again=await submit(2,'A tanker was hit at Hormuz',{answer:'same',story:'hormuz'});
+    assert.equal(again.body.development,'same');
+    const after=await current();
+    assert.equal(after.score,9,'the louder volcano still supplies the score');
+    assert.equal(after.since,first.body.created_at);
+    assert.equal(after.explanation_new,false,'the sentence re-reports its own development');
+    assert.equal(after.explanation,'A tanker was hit at Hormuz.','stored with its end');
   });
 });

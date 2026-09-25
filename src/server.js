@@ -5,9 +5,9 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { takePreparation, correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { correctUsage, failures, logCallerRun, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries } from './current.js';
-import { PRIOR_HOURS, judgeReading } from './story.js';
+import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, opensDevelopment, renderJudgePrompt } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
@@ -16,10 +16,11 @@ import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyH
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
-import { prepareReading, opensDevelopment } from './preparation.js';
 import { PushError, notifyReading, subscribe as subscribePush, unsubscribe as unsubscribePush } from './push.js';
 
 const PORT = Number(process.env.PORT) || 3000;
+/** A run report is a few paragraphs; past this it is cut, never refused. */
+const MAX_RUN_REPORT = 4000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const CALLER_TOKEN = process.env.CALLER_TOKEN || '';
@@ -385,14 +386,15 @@ const server = createServer(async (req, res) => {
       const prompt = renderPrompt(latestVersion());
       const proto = req.headers['x-forwarded-proto'] ?? (ON_VERCEL ? 'https' : 'http');
       const baseUrl = `${proto}://${req.headers.host ?? 'localhost'}`;
-      const text = callerInstructions({ baseUrl, prompt });
+      const judge = renderJudgePrompt();
+      const text = callerInstructions({ baseUrl, prompt, judge });
 
       // JSON on request, for a client that only accepts JSON.
       const wantsJson =
         url.searchParams.get('format') === 'json' ||
         (req.headers.accept ?? '').includes('application/json');
       if (wantsJson) {
-        return json(res, 200, { version: prompt.version, hash: prompt.hash, instructions: text });
+        return json(res, 200, { version: prompt.version, hash: prompt.hash, judge_version: judge.version, instructions: text });
       }
 
       // text/plain, not text/markdown: agent fetch tools reject unfamiliar MIME
@@ -436,7 +438,7 @@ const server = createServer(async (req, res) => {
     // GET is accepted alongside POST because some agents can only issue a
     // plain fetch: no custom headers, no request body. Those carry the token
     // and the reading in the query string instead.
-    if ((path === '/api/readings' || path === '/api/readings/prepare') && (req.method === 'POST' || req.method === 'GET')) {
+    if (path === '/api/readings' && (req.method === 'POST' || req.method === 'GET')) {
       // Auth is softened too. A caller that cannot read a 401 is stuck
       // permanently and silently, which is the worst of the failures here, and
       // nothing is disclosed: this route and its token requirement are
@@ -458,27 +460,18 @@ const server = createServer(async (req, res) => {
       }
       try {
         const submission = validateSubmission(body);
-        if (path === '/api/readings/prepare') {
-          return json(res, 200, await prepareReading(submission));
-        }
-        const prepared = await takePreparation(body.preparation, submission.score, submission.prompt_version);
-        // Reuse the prepared match, or decide it here for compatible callers.
-        // It cannot change the score or reject the reading — a judge failure
-        // stores the reading unjudged, carrying the reason — so the four
-        // rejection rules stay four.
-        const judgement = prepared?.judgement ?? await judgeReading({
-          score: submission.score,
-          explanation: submission.explanation,
-          created_at: new Date().toISOString(),
-          priors: await history({ hours: PRIOR_HOURS }),
-          // The names already in use, so one story keeps one name. Without it
-          // the judge coined four for the US-Iran war across 231 readings.
-          stories: await recentStories(),
-        });
+        // Which development this reports is the caller's own answer, made with
+        // the judge prompt in its instructions against the record it fetched
+        // from /api/developments after scoring and writing; this app calls no
+        // model for it. The id is checked against the developments on record
+        // now, which are the ones that record listed. It
+        // cannot change the score or reject the reading — a missing or unusable
+        // answer stores the reading unjudged, carrying the reason — so the
+        // four rejection rules stay four.
+        const judgement = callerJudgement(body.judgement, judgeRecord({ priors: await history({ hours: PRIOR_HOURS }) }));
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
-        const saved = await insertRating({ ...submission, ...judgement, slot: null,
-          raw_output: prepared ? JSON.stringify({ draft: prepared.draft, explanation: submission.explanation }) : null });
+        const saved = await insertRating({ ...submission, ...judgement, slot: null });
         // Awaited, like the rejection log: a serverless function may be frozen
         // the moment the response ends, and a push left in flight goes nowhere.
         await notifyReading(saved);
@@ -502,11 +495,12 @@ const server = createServer(async (req, res) => {
           prompt_verified: saved.prompt_verified ?? null,
           // What the reading was taken to report. 'unjudged' is its own answer:
           // the reading is stored and displayed, the clock simply carries on
-          // from the reading before it.
+          // from the reading before it; `judge_note` says why.
           story: saved.story ?? null,
           development: saved.judge_version == null
             ? 'unjudged'
             : (saved.development_of == null ? 'new' : 'same'),
+          ...(saved.judge_version == null ? { judge_note: saved.judge_note } : {}),
           // Name anything the caller sent that was not stored, so a caller
           // working from an older spec learns its model and token counts went
           // nowhere rather than assuming they landed.
@@ -522,6 +516,56 @@ const server = createServer(async (req, res) => {
         }
         throw err;
       }
+    }
+
+    // The record the judge compares against: story names and the developments
+    // recorded over 48 hours. Data only — the judge prompt is in the caller
+    // instructions — fetched after the caller has scored and written, and
+    // answered in its submission. Read-only, and gated like the rest of the
+    // caller API.
+    if (path === '/api/developments' && req.method === 'GET') {
+      if (!callerAuthorized(url, req)) {
+        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+      }
+      const record = judgeRecord({ priors: await history({ hours: PRIOR_HOURS }), stories: await recentStories() });
+      return json(res, 200, { record: record.text });
+    }
+
+    // The caller's report on its run: what it searched, weighed and decided, and
+    // what went wrong. One per run, including a run that submitted nothing,
+    // which otherwise leaves no trace. Stored as the caller's own account and
+    // never checked; it is not a reading and does not suppress the cron. POST
+    // only, because a report does not fit a URL.
+    if (path === '/api/runs' && req.method === 'POST') {
+      if (!callerAuthorized(url, req)) {
+        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+      }
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (err) {
+        return rejection(res, url, 400, String(err?.message ?? err), { method: req.method });
+      }
+      const report = typeof body?.report === 'string' ? body.report.trim() : '';
+      if (!report) return rejection(res, url, 422, 'run report: report is required', { method: req.method });
+      // Linked only to a reading that exists; a wrong id never costs the report.
+      const id = body.reading == null ? null : Number(body.reading);
+      const [reading] = Number.isInteger(id) ? await ratingsByIds([id]) : [];
+      const saved = await logCallerRun({
+        reading_id: reading ? id : null,
+        report: report.slice(0, MAX_RUN_REPORT),
+      });
+      const notes = [
+        body.reading != null && !reading ? `no reading ${body.reading}; stored unlinked` : null,
+        report.length > MAX_RUN_REPORT ? `report truncated to ${MAX_RUN_REPORT} characters` : null,
+      ].filter(Boolean);
+      return json(res, 201, {
+        ok: true,
+        stored: true,
+        id: saved.id,
+        reading: saved.reading_id,
+        ...(notes.length ? { note: notes.join('; ') } : {}),
+      });
     }
 
     // ---- push notifications --------------------------------------------
@@ -558,12 +602,13 @@ const server = createServer(async (req, res) => {
       // Padded by the story memory and trimmed back below: a point at the left
       // edge of the range must be weighed against the same story history the
       // front page used at that moment, not against an edge.
-      const [statsRow, points, failedRuns, attempts, refused, config] = await Promise.all([
+      const [statsRow, points, failedRuns, attempts, refused, runs, config] = await Promise.all([
         stats({ hours }),
         history({ hours: hours + STORY_MEMORY_HOURS }),
         failures({ hours }),
         recentAttempts(25),
         recentRejections({ hours }),
+        recentCallerRuns({ hours }),
         effectiveConfig(),
       ]);
       const ascending = points.map((p) => ({ ...p, t: Date.parse(p.created_at) }));
@@ -611,6 +656,8 @@ const server = createServer(async (req, res) => {
         // Refused submissions. A rejection is not a reading and lives in its
         // own table, so nothing here can enter the series.
         rejections: refused,
+        // The caller's own account of each run, over the same range.
+        caller_runs: runs,
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });
     }

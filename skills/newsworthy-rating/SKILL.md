@@ -42,21 +42,24 @@ submission. Success means the API confirms that the reading was stored.
    calculate its SHA-256 with a code tool as specified there.
 2. Research current news, choose the development and score it using the published
    scale. No successful search means no submission.
-3. Draft the sentence and send score/explanation to `/api/readings/prepare`,
-   authenticated with the caller token. Newsworthy checks history and returns
-   whether the development is new and a short-lived preparation reference. This is not
-   a stored reading and does not finish the task.
-4. Finalize the same development's sentence within the returned character budget.
-   The total is 140 characters INCLUDING the app's "New: " label; reserve 5 for
-   it, leaving 135 for the explanation. Count with a code tool. Do not add a
-   label or timestamp to the submitted explanation, or change the score because
-   the story is new or old.
-5. Submit score, explanation, prompt_sha256 and the preparation reference to
-   `/api/readings`. Confirm the API stored it. If the development changes during
-   editing, prepare it again. Follow the live instructions for expiry/fallbacks.
+3. Write the final sentence before sending anything. The total is 140 characters
+   INCLUDING the app's "New: " label; reserve 5 for it, leaving 135 for the
+   explanation whether or not the development turns out to be new. Count with a
+   code tool. Do not add a label or timestamp to the submitted explanation.
+4. Only then fetch `/api/developments` and answer the judge prompt from the
+   instructions about your reading against that record: `development_of` (an id
+   the record lists, or null for a new development), `story` (reuse a listed
+   name verbatim when the story is on record), `note`, and the judge prompt's
+   `judge_version`. Newsworthy calls no model for this.
+5. Submit score, explanation, prompt_sha256 and that `judgement` to
+   `/api/readings`. Confirm the API stored it. If it says `"development":
+   "unjudged"`, `judge_note` says why; the reading is still stored.
+6. End every run with one report to `/api/runs`, including a run that submitted
+   nothing: the searches and sources, the stories weighed, why the score and
+   the judgement, and anything that failed.
 
-The service performs the history lookup; the caller does not need admin
-credentials or the full archive. The app labels a sentence that opened a new
+The service supplies the recent history at `/api/developments`; the caller does not need
+admin credentials or the full archive. The app labels a sentence that opened a new
 development "New:" for two hours after it is stored; any other sentence, and one
 the service could not match, has no label.
 

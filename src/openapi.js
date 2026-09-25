@@ -10,7 +10,7 @@
  *
  * The supported path there is a Custom GPT Action, which takes a schema like
  * this one plus an API key, and issues real POSTs with a real header. So the
- * same two calls a Claude-side caller makes with curl are described here for an
+ * same calls a Claude-side caller makes with curl are described here for an
  * agent that can only reach the network through a declared tool.
  *
  * Served unauthenticated on purpose: it describes a token-gated API without
@@ -66,7 +66,8 @@ export function openapiDocument({ baseUrl }) {
                           'The first 16 characters of the prompt’s SHA-256. An identifier for ' +
                           'this text, not the digest a submission carries.',
                       },
-                      instructions: { type: 'string', description: 'The workflow, prompt included.' },
+                      judge_version: { type: 'integer', description: 'The judge prompt version, sent back in judgement.' },
+                      instructions: { type: 'string', description: 'The workflow, rating and judge prompts included.' },
                     },
                   },
                 },
@@ -76,30 +77,22 @@ export function openapiDocument({ baseUrl }) {
           },
         },
       },
-      '/api/readings/prepare': {
-        post: {
-          operationId: 'prepareReading',
-          summary: 'Match a draft before finalizing the sentence',
-          description: 'After research and rating, match the draft against stored developments. This is not a submission. Keep the same event and score when shortening the final sentence. The app adds the label "New: " to a new development; 140 characters includes that label, with 135 available for the body.',
-          requestBody: { required: true, content: { 'application/json': { schema: {
-            type: 'object', required: ['score', 'explanation'], properties: {
-              score: { type: 'integer', minimum: 1, maximum: 10 },
-              explanation: { type: 'string', description: 'Draft describing the selected development.' },
-            },
-          } } } },
+      '/api/developments': {
+        get: {
+          operationId: 'getDevelopments',
+          summary: 'Get the record to judge against, after scoring and writing',
+          description:
+            'Call this once the score and the final sentence are chosen, never before: the history it carries ' +
+            'must not steer either. Returns the story names on record and the developments recorded over 48 hours, ' +
+            'each with an id. The caller answers the judge prompt in the instructions against it and sends the answer ' +
+            'as judgement in submitReading. Read-only; nothing is stored.',
           responses: {
-            200: { description: 'Draft matched; stored is false. Final submission is still required.', content: { 'application/json': { schema: {
+            200: { description: 'The record.', content: { 'application/json': { schema: {
               type: 'object', properties: {
-                stored: { type: 'boolean', const: false }, preparation: { type: 'string' },
-                development: { type: 'string', enum: ['new', 'same', 'unjudged'] },
-                prefix: { type: 'string' },
-                max_explanation_characters: { type: 'integer', const: 135 },
-                reserved_prefix_characters: { type: 'integer', const: 5 },
-                display_character_limit: { type: 'integer', const: 140 }, expires_at: { type: 'string' },
+                record: { type: 'string', description: 'Story names on record, then recorded developments as [id] story, first seen, readings, sentences.' },
               },
             } } } },
-            401: { description: 'Missing or wrong caller token.' },
-            422: { description: 'Malformed draft; no reading stored.' },
+            401: { description: 'Missing or wrong token.' },
           },
         },
       },
@@ -108,7 +101,7 @@ export function openapiDocument({ baseUrl }) {
           operationId: 'submitReading',
           summary: 'Submit a reading',
           description:
-            'Call this after preparing and finalizing the sentence. The job is not finished until this returns 201 — ' +
+            'Call this with the score, the final sentence and the judgement made against getDevelopments. The job is not finished until this returns 201 — ' +
             'producing a score without submitting it accomplishes nothing. ' +
             'If web search failed or returned nothing, submit nothing at all. ' +
             'The score and the sentence are the reading; prompt_sha256 reports which ' +
@@ -134,7 +127,16 @@ export function openapiDocument({ baseUrl }) {
                       type: 'string',
                       description: 'Full display: at most 140 characters including spaces and punctuation AND the "New: " label. Submit only the sentence body, at most 135 characters; the app supplies the label.',
                     },
-                    preparation: { type: 'string', description: 'Single-use reference from prepareReading, valid 30 minutes; missing/invalid/expired references fall back to normal matching.' },
+                    judgement: {
+                      type: 'object',
+                      description: 'The answer to the judge prompt in the instructions, made against getDevelopments. Optional: without one, or with an id the record did not list, or a retired judge_version, the reading stores unjudged — never a rejection.',
+                      properties: {
+                        judge_version: { type: 'integer', description: 'The judge prompt version printed in the instructions.' },
+                        development_of: { type: ['integer', 'null'], description: 'Id of the recorded development this reports, or null for a new one.' },
+                        story: { type: 'string', description: 'Story slug, reused verbatim when on record.' },
+                        note: { type: 'string', description: 'At most 12 words on what makes it same or new.' },
+                      },
+                    },
                     // Optional, and never a rejection: a mismatch stores a
                     // reading flagged unverified rather than refusing one.
                     // This is the one caller-supplied field the server checks
@@ -179,6 +181,8 @@ export function openapiDocument({ baseUrl }) {
                           'served; false, it did not; null, no digest was sent. Without this a ' +
                           'caller never learns whether it verified.',
                       },
+                      development: { type: 'string', enum: ['new', 'same', 'unjudged'], description: 'What the judgement placed it as; unjudged carries judge_note saying why.' },
+                      story: { type: ['string', 'null'] },
                     },
                   },
                 },
@@ -186,6 +190,27 @@ export function openapiDocument({ baseUrl }) {
             },
             401: { description: 'Missing or wrong token.' },
             422: { description: 'Rejected. The message says which field is wrong; fix it rather than retrying unchanged.' },
+          },
+        },
+      },
+      '/api/runs': {
+        post: {
+          operationId: 'postRunReport',
+          summary: 'Report on the run, once per run',
+          description:
+            'The last call of every run, including a run that submitted nothing. The report is the caller\u2019s own ' +
+            'account: searches and sources, the stories weighed, why the score and the judgement, and anything that ' +
+            'failed. Stored as written, never checked; not a reading.',
+          requestBody: { required: true, content: { 'application/json': { schema: {
+            type: 'object', required: ['report'], properties: {
+              reading: { type: 'integer', description: 'The id submitReading returned; omitted when nothing was submitted.' },
+              report: { type: 'string', description: 'Plain text, at most 4,000 characters; longer is cut, never refused.' },
+            },
+          } } } },
+          responses: {
+            201: { description: 'Stored.' },
+            401: { description: 'Missing or wrong token.' },
+            422: { description: 'No report text.' },
           },
         },
       },

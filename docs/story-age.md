@@ -25,29 +25,28 @@ sentences are not rewritten.
 
 1. Fetch current instructions and compute their prompt digest.
 2. Research current reporting, choose the score using the unchanged scale and
-   draft the sentence independently of historical readings.
-3. Send the draft and score to authenticated `/api/readings/prepare`. Newsworthy
-   performs the existing development match and returns `development` (new, same
-   or unjudged), the sample `prefix` (`New: ` or empty), the character budget and
-   an opaque preparation reference.
-4. Finalize the same development’s sentence without changing its facts or score.
-   Prompts v16 and later allow 135 characters for the body and reserve 5 for the label.
-   The complete displayed sentence remains within 140 characters, including
-   spaces and punctuation. No label is submitted as prose.
-5. Submit score, final sentence, preparation reference and computed prompt digest.
-   Confirm the 201/stored response. Preparation alone never saves a reading or
-   suppresses a scheduled run.
+   write the final sentence, all without any stored history. Prompts v16 and
+   later allow 135 characters for the body and reserve 5 for the label, so the
+   budget does not depend on whether the development turns out to be new.
+3. Fetch `/api/developments`: the story names on record and the developments
+   recorded over 48 hours. It is read-only, and it is the only history the
+   caller sees.
+4. Answer the judge prompt, printed in the instructions after the rating prompt,
+   about the reading against that record: `development_of` (a listed id, or null for a new
+   development), `story`, `note`, and the judge prompt's `judge_version`.
+5. Submit score, sentence, prompt digest and that `judgement` together to
+   `/api/readings`. The reading is stored already judged; a null answer shows
+   its sentence with `New: ` at once. Newsworthy calls no model.
+6. Post a run report to `/api/runs`, as every run does, submitted or not.
 
-The match is saved once and reused, so shortening cannot accidentally change
-whether the sentence is new. References are server-backed, score/version-bound,
-single use and expire in 30 minutes. A missing, invalid or expired reference falls
-back to ordinary judging; the existing four rejection rules and 400-character
-ingestion handling are unchanged. A stored sentence always ends in punctuation:
-one arriving without an end is finished with a full stop, which can take a
-135-character body to 136. The original draft is retained alongside the final text
-for audit. A caller changing the event must prepare again. Unsubmitted drafts are
-removed after a day on subsequent preparations. Their judge calls can incur cost
-but are not included in saved-reading spend totals.
+The id is checked against the developments on record when the reading arrives,
+and the version stamped is the server's own; an answer to a retired version is
+refused. A refused or missing answer stores the reading unjudged, with the
+reason in `judge_note`, which the page reads as continuing the reading before it
+— never as new. The four rejection rules and 400-character ingestion handling
+are unchanged. A stored sentence always ends in punctuation: one arriving
+without an end is finished with a full stop, which can take a 135-character body
+to 136.
 
 App-made ratings use the v16 body budget, unchanged since, and the existing generation-then-
 judge path. An intentional `NEWSWORTHY_PROMPT_VERSION` pin remains respected.
@@ -77,7 +76,7 @@ widget timing remains subject to the operating system.
 
 The writing comparison and its limitations are in
 [prompt evaluation v16](prompt-evaluations/v16.md). Tests cover the two-hour
-boundary, Unicode budgets, the judged/new rule, preparation, API fields and
+boundary, Unicode budgets, the judged/new rule, the caller's judgement, API fields and
 rendered app props (a bold label nested in the sentence) on all three platforms.
 The Swift formatter cases were updated but not compiled here, and the Android
 source was not compiled. Native visual parity and a replacement mobile release are

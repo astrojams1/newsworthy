@@ -246,9 +246,8 @@ let that drift: across 231 readings it coined four names for the US-Iran war —
 developments in front of it at the time, so a name seen in passing beside a
 development is demonstrably not enough to get it reused.
 
-The blast radius was narrower than it looked: the number groups developments by
-**id**, never by name, so the front page was right throughout. Only the admin
-board grouped by name, and it showed one story as two.
+The number groups developments by **id**, but story fatigue and the admin board
+group by name, so a split name splits a story's age and routine level.
 
 v2 lifts the names out into a "Stories on record" list of their own, drawn from
 fourteen days rather than the developments' 48 hours — a story quiet for two
@@ -257,18 +256,22 @@ in — and states the reuse rule where the list is. Everything above that in the
 prompt is byte-identical to v1, so which development a reading reports is judged
 by the same text and the two versions stay comparable; a test pins that.
 
-History was not re-judged. A stored judgement is never recomputed, and the board
-only shows developments from the last 72 hours, so the split names age off it
-within three days on their own.
+History was not re-judged: a stored judgement is never recomputed.
 
-Research and score selection remain independent of history. The caller now
-prepares its drafted sentence through `/api/readings/prepare` before finalizing
-it. The judge sees the draft and stored sentences; it cannot alter a score or reject a
+**The caller is the judge for its own readings.** The judge prompt sits in the
+caller instructions after the rating prompt. After scoring and writing, the
+caller fetches `/api/developments` — story names and developments, data only —
+and submits its answer as `judgement` with the reading, so a reading lands
+judged. The server calls no model, checks the id against the developments on
+record, and stamps its own version (an answer to a retired one is refused) and
+`judge_model = 'caller'`; without a usable answer the reading stores unjudged.
+Storing first and judging after was dropped: it showed readings unjudged. This
+moved off the app's API account when credits ran out on 2026-09-24; the cron
+and `/api/admin/judge` still spend `judge_spend_usd`. Each run ends with an
+unchecked report to `/api/runs`, shown at `/admin`: Routine transcripts are
+not reachable from a session. The judge cannot alter a score or reject a
 submission — the four rejection rules stay four. Its prompts are append-only and
-pinned by hash for the same reason the rating prompts are: a stored judgement
-names the version that made it. Its spend is `judge_spend_usd`, counted apart
-from rating spend, because it makes no reading and does no search. Roughly $11 a
-month on Opus 5 at hourly cadence.
+pinned by hash: a stored judgement names the version that made it.
 
 **The case that shaped it: X, then Y, then X again.** X breaks at 08:00 scoring
 7 and shows 7. Y takes the top slot at midday and shows its own score. X is top
@@ -355,7 +358,7 @@ development of its own, the sentence leads with a bold **New:** for two hours
 after it was saved, independently of the score’s decay; any other sentence has
 no prefix. That replaced an age prefix ("31 hours ago:") on re-reports, which
 counted how old the rest was where the reader wanted to see what was new.
-`opensDevelopment()` in `src/preparation.js` decides it from the stored
+`opensDevelopment()` in `src/story.js` decides it from the stored
 judgement — judged, and `development_of` null — so a judge outage is never
 "new". Its wording comes from the
 newest reading, and the two answer different questions: the number is a level,
@@ -897,18 +900,14 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ## Testing
 
 ```bash
-npm test        # fourteen files under test/; database tests run against PGlite,
+npm test        # every test/*.test.js; database tests run against PGlite,
                 # real Postgres in-process, so the SQL is exercised not mocked
                 # test/with-server.js is the shared harness, not a suite
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
 
-The fourteen are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
-`parse`, `preferences`, `pricing`, `prompt-rules`, `push`, `rejections`, `scheduler`
-and `story`. A count of
-individual tests
-is not kept here: it is wrong again after the next PR, and a stale number in a
-document read as authoritative is worse than no number.
+No count of files or tests is kept here: it is wrong again after the next PR,
+and a stale number read as authoritative is worse than none.
 
 **The story timeline** is off by default (`timeline` in `preferences.js`), one
 entry per development ordered by `opened`, one week long. See
@@ -919,4 +918,4 @@ for two hours from the reading’s `created_at`, not the score’s decay anchor 
 verified event date. It is bold and otherwise styled as the sentence, on the web,
 in the apps and in both widgets. The 140-character display budget includes it;
 prompts v16 and later reserve 5 characters for "New: " and ask for a body of at most 135.
-See `docs/story-age.md` for preparation, compatibility and verification limits.
+See `docs/story-age.md` for the caller sequence, compatibility and verification limits.

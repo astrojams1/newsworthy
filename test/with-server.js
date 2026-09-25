@@ -15,7 +15,8 @@ export const ADMIN_TOKEN = 'test-admin-token';
 /** One port per spawn site: `node --test` runs files concurrently, and
  *  child.kill() is an async SIGTERM, so a reused port can still be held. */
 export const PORTS = {
-  preparation: 8835,
+  newLabel: 8835,
+  callerRuns: 8853,
   ingestSoftErrors: 8811,
   currentSmoothing: 8817,
   currentScoreFrom: 8819,
@@ -79,4 +80,27 @@ export async function withServer({ port, env = {} }, run) {
 export const readings = (base) => async (qs) => {
   const res = await fetch(`${base}/api/readings?${qs}`);
   return { status: res.status, body: await res.json() };
+};
+
+/**
+ * The caller's sequence once it has scored and written: fetch the record,
+ * answer the judge prompt against it, and submit the reading with the answer.
+ * `same` answers with the newest development the record lists, read from its
+ * text the way a caller reads it; `new` answers null; a number names that
+ * development. The judge version is the one the instructions print.
+ */
+export const caller = (base) => async (score, explanation, { answer = 'new', story = 'fixture' } = {}) => {
+  const { judgeVersion } = await import('../src/story.js');
+  const { record } = await (await fetch(`${base}/api/developments`, { headers: { 'x-newsworthy-token': CALLER_TOKEN } })).json();
+  const offered = [...record.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
+  const development_of = answer === 'new' ? null : answer === 'same' ? offered.at(-1) : answer;
+  const res = await fetch(`${base}/api/readings`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
+    body: JSON.stringify({
+      score, explanation,
+      judgement: { judge_version: judgeVersion(), development_of, story, note: `test: ${answer}` },
+    }),
+  });
+  return { status: res.status, body: await res.json(), record };
 };
