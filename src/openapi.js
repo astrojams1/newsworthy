@@ -79,8 +79,8 @@ export function openapiDocument({ baseUrl }) {
       '/api/readings/prepare': {
         post: {
           operationId: 'prepareReading',
-          summary: 'Match a draft before finalizing the sentence',
-          description: 'After research and rating, match the draft against stored developments. This is not a submission. Keep the same event and score when shortening the final sentence. The app adds the label "New: " to a new development; 140 characters includes that label, with 135 available for the body.',
+          summary: 'Get the judge task for a draft before finalizing the sentence',
+          description: 'After research and rating, send the draft. The response carries judge_task: the developments recorded over 48 hours, the story names on record and the draft, as one question. The caller answers it itself as JSON ({"development_of": <offered id or null>, "story": "<slug>", "note": "<reason>"}) and sends that answer as judgement with the submission. This is not a submission. Keep the same event and score when shortening the final sentence. The app adds the label "New: " to a new development; 140 characters includes that label, with 135 available for the body.',
           requestBody: { required: true, content: { 'application/json': { schema: {
             type: 'object', required: ['score', 'explanation'], properties: {
               score: { type: 'integer', minimum: 1, maximum: 10 },
@@ -88,11 +88,11 @@ export function openapiDocument({ baseUrl }) {
             },
           } } } },
           responses: {
-            200: { description: 'Draft matched; stored is false. Final submission is still required.', content: { 'application/json': { schema: {
+            200: { description: 'Judge task returned; stored is false. Final submission is still required.', content: { 'application/json': { schema: {
               type: 'object', properties: {
                 stored: { type: 'boolean', const: false }, preparation: { type: 'string' },
-                development: { type: 'string', enum: ['new', 'same', 'unjudged'] },
-                prefix: { type: 'string' },
+                judge_task: { type: 'string', description: 'The question to answer: which recorded development the draft reports, or none.' },
+                judge_version: { type: 'integer' },
                 max_explanation_characters: { type: 'integer', const: 135 },
                 reserved_prefix_characters: { type: 'integer', const: 5 },
                 display_character_limit: { type: 'integer', const: 140 }, expires_at: { type: 'string' },
@@ -134,7 +134,16 @@ export function openapiDocument({ baseUrl }) {
                       type: 'string',
                       description: 'Full display: at most 140 characters including spaces and punctuation AND the "New: " label. Submit only the sentence body, at most 135 characters; the app supplies the label.',
                     },
-                    preparation: { type: 'string', description: 'Single-use reference from prepareReading, valid 30 minutes; missing/invalid/expired references fall back to normal matching.' },
+                    preparation: { type: 'string', description: 'Single-use reference from prepareReading, valid 30 minutes; a missing/invalid/expired reference stores the reading unjudged.' },
+                    judgement: {
+                      type: 'object',
+                      description: 'The caller\u2019s answer to judge_task. Checked against the ids that task offered; an unknown id or no answer stores the reading unjudged, never a rejection.',
+                      properties: {
+                        development_of: { type: ['integer', 'null'], description: 'Id of the recorded development this reports, or null for a new one.' },
+                        story: { type: 'string', description: 'Story slug, reused verbatim when on record.' },
+                        note: { type: 'string', description: 'At most 12 words on what makes it same or new.' },
+                      },
+                    },
                     // Optional, and never a rejection: a mismatch stores a
                     // reading flagged unverified rather than refusing one.
                     // This is the one caller-supplied field the server checks

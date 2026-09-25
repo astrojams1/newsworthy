@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { CALLER_TOKEN as CALLER, PORTS, readings, withServer } from './with-server.js';
+import { PORTS, caller, withServer } from './with-server.js';
 import { DEFAULT_THRESHOLD, MAX_SUBSCRIPTIONS, checkPushReceipts, messageFor, notifyReading, validateSubscription } from '../src/push.js';
 import { PUSH_CLAIM_STALE_MINUTES, claimPushDelivery, completePushDelivery, ensureSchema, insertRating, releasePushDeliveries, upsertPushSubscription } from '../src/db.js';
 import { sql } from '../src/sql.js';
@@ -89,7 +89,7 @@ test('devices hear the number the page shows, once per development and threshold
   await withRelay(async (received, url) => {
     await withServer({ port: PORTS.pushDeliveries, env: { NEWSWORTHY_NO_SCHEDULER: '1', NEWSWORTHY_PUSH_URL: url } }, async (base) => {
       const push = call(base);
-      const submit = readings(base);
+      const submit = caller(base);
       for (const [token, threshold] of [[TOKENS.a, 8], [TOKENS.b, 9], [TOKENS.gone, 8]]) {
         assert.equal((await push('PUT', { token, threshold, platform: 'android' })).status, 200);
       }
@@ -97,12 +97,12 @@ test('devices hear the number the page shows, once per development and threshold
       const shown = async () => (await (await fetch(`${base}/api/current`)).json()).score;
 
       // Below every threshold: nothing.
-      assert.equal((await submit(`token=${CALLER}&score=7&explanation=Talks+continue+over+the+border+dispute`)).status, 201);
+      assert.equal((await submit(7, 'Talks continue over the border dispute', { story: 'border' })).status, 201);
       assert.deepEqual(sent(), []);
 
       // An 8 opens a development and the page shows 8: the 8s hear, the 9 does
       // not. The unregistered device is dropped.
-      const first = await submit(`token=${CALLER}&score=8&explanation=Earthquake+levels+towns+across+the+northern+valley`);
+      const first = await submit(8, 'Earthquake levels towns across the northern valley', { story: 'quake' });
       assert.equal(first.status, 201);
       assert.equal(first.body.development, 'new');
       assert.equal(await shown(), 8);
@@ -111,13 +111,13 @@ test('devices hear the number the page shows, once per development and threshold
         'Expo said the device is gone, so its row went with it');
 
       // The same development an hour later, still an 8: already announced.
-      const again = await submit(`token=${CALLER}&score=8&explanation=Earthquake+levels+towns+across+the+northern+valley+as+rescue+continues`);
+      const again = await submit(8, 'Earthquake levels towns across the northern valley as rescue continues', { answer: 'same', story: 'quake' });
       assert.equal(again.body.development, 'same');
       assert.deepEqual(sent(), []);
 
       // A 9 on the same development is inside the page's noise margin: the
       // page still shows 8, so the device waiting for a 9 is not told a 9.
-      const nudge = await submit(`token=${CALLER}&score=9&explanation=Earthquake+death+toll+across+the+northern+valley+passes+a+thousand`);
+      const nudge = await submit(9, 'Earthquake death toll across the northern valley passes a thousand', { answer: 'same', story: 'quake' });
       assert.equal(nudge.body.development, 'same');
       assert.equal(await shown(), 8);
       assert.deepEqual(sent(), []);
@@ -131,7 +131,7 @@ test('devices hear the number the page shows, once per development and threshold
         ['Earthquake across the northern valley: toll passes ten thousand as aid stalls', 8, []],
         ['Earthquake toll across the northern valley nears fifteen thousand', 10, [[TOKENS.b, 'Newsworthy · 10/10']]],
       ]) {
-        const worse = await submit(`token=${CALLER}&score=10&explanation=${text.replaceAll(' ', '+')}`);
+        const worse = await submit(10, text, { answer: 'same', story: 'quake' });
         assert.equal(worse.body.development, 'same', text);
         assert.equal(await shown(), expected, text);
         assert.deepEqual(sent(), announced, text);
@@ -140,7 +140,7 @@ test('devices hear the number the page shows, once per development and threshold
       // A different development at 8 while the 10 is still the loudest: the
       // page does not change, so nothing is announced — a notification would
       // have opened on a 10 about something else.
-      const other = await submit(`token=${CALLER}&score=8&explanation=Central+bank+halts+currency+trading+after+overnight+collapse`);
+      const other = await submit(8, 'Central bank halts currency trading after overnight collapse', { story: 'currency' });
       assert.equal(other.body.development, 'new');
       assert.equal(await shown(), 10);
       assert.deepEqual(sent(), []);

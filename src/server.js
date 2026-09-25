@@ -16,7 +16,7 @@ import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyH
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
-import { prepareReading, opensDevelopment } from './preparation.js';
+import { prepareReading, opensDevelopment, submittedJudgement } from './preparation.js';
 import { PushError, notifyReading, subscribe as subscribePush, unsubscribe as unsubscribePush } from './push.js';
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -462,19 +462,12 @@ const server = createServer(async (req, res) => {
           return json(res, 200, await prepareReading(submission));
         }
         const prepared = await takePreparation(body.preparation, submission.score, submission.prompt_version);
-        // Reuse the prepared match, or decide it here for compatible callers.
-        // It cannot change the score or reject the reading — a judge failure
-        // stores the reading unjudged, carrying the reason — so the four
-        // rejection rules stay four.
-        const judgement = prepared?.judgement ?? await judgeReading({
-          score: submission.score,
-          explanation: submission.explanation,
-          created_at: new Date().toISOString(),
-          priors: await history({ hours: PRIOR_HOURS }),
-          // The names already in use, so one story keeps one name. Without it
-          // the judge coined four for the US-Iran war across 231 readings.
-          stories: await recentStories(),
-        });
+        // Which development this reports is the caller's own answer to the
+        // judge task its preparation carried; this app calls no model for it.
+        // It cannot change the score or reject the reading — a missing or
+        // unusable answer stores the reading unjudged, carrying the reason — so
+        // the four rejection rules stay four.
+        const judgement = submittedJudgement(body, prepared);
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
         const saved = await insertRating({ ...submission, ...judgement, slot: null,

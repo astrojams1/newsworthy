@@ -96,6 +96,15 @@ export function submissionFromQuery(params) {
     const value = params.get(field);
     if (value !== null) body[field] = value;
   }
+  // The caller's answer to the judge task, flat because a query string has no
+  // nesting. Only `development_of` makes an answer; the rest ride along.
+  if (params.get('development_of') !== null) {
+    body.judgement = {
+      development_of: params.get('development_of'),
+      story: params.get('story') ?? undefined,
+      note: params.get('judge_note') ?? undefined,
+    };
+  }
   return body;
 }
 

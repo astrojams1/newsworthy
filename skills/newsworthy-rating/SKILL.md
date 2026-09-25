@@ -43,20 +43,25 @@ submission. Success means the API confirms that the reading was stored.
 2. Research current news, choose the development and score it using the published
    scale. No successful search means no submission.
 3. Draft the sentence and send score/explanation to `/api/readings/prepare`,
-   authenticated with the caller token. Newsworthy checks history and returns
-   whether the development is new and a short-lived preparation reference. This is not
-   a stored reading and does not finish the task.
-4. Finalize the same development's sentence within the returned character budget.
+   authenticated with the caller token. Newsworthy returns `judge_task` and a
+   short-lived preparation reference. This is not a stored reading and does not
+   finish the task.
+4. Answer `judge_task` yourself as one JSON object: `development_of` (an id the
+   task lists, or null for a new development), `story` (reuse a listed name
+   verbatim when the story is on record) and `note`. Newsworthy calls no model
+   for this.
+5. Finalize the same development's sentence within the returned character budget.
    The total is 140 characters INCLUDING the app's "New: " label; reserve 5 for
    it, leaving 135 for the explanation. Count with a code tool. Do not add a
    label or timestamp to the submitted explanation, or change the score because
    the story is new or old.
-5. Submit score, explanation, prompt_sha256 and the preparation reference to
-   `/api/readings`. Confirm the API stored it. If the development changes during
-   editing, prepare it again. Follow the live instructions for expiry/fallbacks.
+6. Submit score, explanation, prompt_sha256, the preparation reference and the
+   `judgement` object to `/api/readings`. Confirm the API stored it. If the
+   development changes during editing, prepare it again. Follow the live
+   instructions for expiry/fallbacks.
 
-The service performs the history lookup; the caller does not need admin
-credentials or the full archive. The app labels a sentence that opened a new
+The service supplies the recent history inside the task; the caller does not need
+admin credentials or the full archive. The app labels a sentence that opened a new
 development "New:" for two hours after it is stored; any other sentence, and one
 the service could not match, has no label.
 

@@ -27,27 +27,32 @@ sentences are not rewritten.
 2. Research current reporting, choose the score using the unchanged scale and
    draft the sentence independently of historical readings.
 3. Send the draft and score to authenticated `/api/readings/prepare`. Newsworthy
-   performs the existing development match and returns `development` (new, same
-   or unjudged), the sample `prefix` (`New: ` or empty), the character budget and
-   an opaque preparation reference.
-4. Finalize the same development’s sentence without changing its facts or score.
+   calls no model: it returns `judge_task` (the judge prompt with the recorded
+   developments, story names and the draft), `judge_version`, the character
+   budget and an opaque preparation reference.
+4. Answer `judge_task` as the judge would: `development_of` (an offered id, or
+   null for a new development), `story` and `note`. A null answer means the
+   sentence is shown with `New: `.
+5. Finalize the same development’s sentence without changing its facts or score.
    Prompts v16 and later allow 135 characters for the body and reserve 5 for the label.
    The complete displayed sentence remains within 140 characters, including
    spaces and punctuation. No label is submitted as prose.
-5. Submit score, final sentence, preparation reference and computed prompt digest.
+6. Submit score, final sentence, preparation reference, judgement and computed
+   prompt digest.
    Confirm the 201/stored response. Preparation alone never saves a reading or
    suppresses a scheduled run.
 
-The match is saved once and reused, so shortening cannot accidentally change
-whether the sentence is new. References are server-backed, score/version-bound,
-single use and expire in 30 minutes. A missing, invalid or expired reference falls
-back to ordinary judging; the existing four rejection rules and 400-character
+The task's version and offered ids are saved with the reference, so the
+answer is checked against what the caller was shown and the version is stamped
+server-side. References are server-backed, score/version-bound, single use and
+expire in 30 minutes. A missing, invalid or expired reference, no answer, or an
+id the task did not offer stores the reading unjudged; the existing four rejection rules and 400-character
 ingestion handling are unchanged. A stored sentence always ends in punctuation:
 one arriving without an end is finished with a full stop, which can take a
 135-character body to 136. The original draft is retained alongside the final text
 for audit. A caller changing the event must prepare again. Unsubmitted drafts are
-removed after a day on subsequent preparations. Their judge calls can incur cost
-but are not included in saved-reading spend totals.
+removed after a day on subsequent preparations. Preparation costs this app
+nothing: the caller's own run answers the judge task.
 
 App-made ratings use the v16 body budget, unchanged since, and the existing generation-then-
 judge path. An intentional `NEWSWORTHY_PROMPT_VERSION` pin remains respected.

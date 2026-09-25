@@ -80,3 +80,28 @@ export const readings = (base) => async (qs) => {
   const res = await fetch(`${base}/api/readings?${qs}`);
   return { status: res.status, body: await res.json() };
 };
+
+/**
+ * The caller's whole sequence: prepare the draft, answer the judge task it
+ * returns, then submit with that answer. `same` answers with the newest
+ * development the task lists, read from its text the way a caller reads it;
+ * `new` answers null; a number names that development.
+ */
+export const caller = (base) => async (score, explanation, { answer = 'new', story = 'fixture', ...extra } = {}) => {
+  const post = async (path, body) => {
+    const res = await fetch(`${base}${path}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
+      body: JSON.stringify(body),
+    });
+    return { status: res.status, body: await res.json() };
+  };
+  const prepared = await post('/api/readings/prepare', { score, explanation });
+  const offered = [...prepared.body.judge_task.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
+  const development_of = answer === 'new' ? null : answer === 'same' ? offered.at(-1) : answer;
+  const submitted = await post('/api/readings', {
+    score, explanation, preparation: prepared.body.preparation,
+    judgement: { development_of, story, note: `test: ${answer}` }, ...extra,
+  });
+  return { ...submitted, prepared: prepared.body };
+};

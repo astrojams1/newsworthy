@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { TIMELINE_HOURS, activeStories, agedScore, currentDisplay, currentReading, developmentTimeline, displayedSeries } from '../src/current.js';
 import { storyLabel, timelineAge, timelineLabels, validDevelopment } from '../apps/client/lib/timeline.js';
-import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
+import { CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
 
 // newest first, as recentRatings() returns them
 const readings = (...scores) =>
@@ -603,15 +603,14 @@ test('a break opens a development and is shown whole, at once', async () => {
   // development is reported the moment it lands rather than smoothed into the
   // level around it.
   await withServer({ port: PORTS.currentScoreFrom, env: { NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
-    // The last reading shares no words with the rest, so the mock judge opens a
-    // development for it — and a development an hour old cannot outshout one a
-    // second old at the same score.
-    for (const [s, t] of [
-      [4, 'tariff+round+alpha'], [4, 'tariff+round+bravo'], [4, 'tariff+round+charlie'],
-      [4, 'tariff+round+delta'], [9, 'volcano+erupts+overnight'],
-    ]) {
-      await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=${s}&explanation=${t}`);
+    // The caller judges the last reading a development of its own — and a
+    // development an hour old cannot outshout one a second old at the same score.
+    const submit = caller(base);
+    await submit(4, 'tariff round alpha', { story: 'tariff' });
+    for (const text of ['tariff round bravo', 'tariff round charlie', 'tariff round delta']) {
+      await submit(4, text, { answer: 'same', story: 'tariff' });
     }
+    await submit(9, 'volcano erupts overnight', { story: 'volcano' });
     const body = await (await fetch(`${base}/api/current`)).json();
     assert.equal(body.basis, 'new');
     assert.equal(body.score, 9);

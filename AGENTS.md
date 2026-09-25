@@ -257,18 +257,19 @@ in — and states the reuse rule where the list is. Everything above that in the
 prompt is byte-identical to v1, so which development a reading reports is judged
 by the same text and the two versions stay comparable; a test pins that.
 
-History was not re-judged. A stored judgement is never recomputed, and the board
-only shows developments from the last 72 hours, so the split names age off it
-within three days on their own.
+History was not re-judged: a stored judgement is never recomputed.
 
-Research and score selection remain independent of history. The caller now
-prepares its drafted sentence through `/api/readings/prepare` before finalizing
-it. The judge sees the draft and stored sentences; it cannot alter a score or reject a
+**The caller is the judge for its own readings.** Research and score stay
+independent of history: only after scoring does `/api/readings/prepare` return
+`judge_task`, the judge prompt with the recorded developments and the draft. The
+caller answers it and submits the answer as `judgement`; the server calls no
+model, checks the id against those the task offered, and stamps the task's
+version and `judge_model = 'caller'`. No answer or no preparation stores the
+reading unjudged. It moved here when the app's API credits ran out on
+2026-09-24. The cron and `/api/admin/judge`
+still call the model and spend `judge_spend_usd`. The judge cannot alter a score or reject a
 submission — the four rejection rules stay four. Its prompts are append-only and
-pinned by hash for the same reason the rating prompts are: a stored judgement
-names the version that made it. Its spend is `judge_spend_usd`, counted apart
-from rating spend, because it makes no reading and does no search. Roughly $11 a
-month on Opus 5 at hourly cadence.
+pinned by hash: a stored judgement names the version that made it.
 
 **The case that shaped it: X, then Y, then X again.** X breaks at 08:00 scoring
 7 and shows 7. Y takes the top slot at midday and shows its own score. X is top

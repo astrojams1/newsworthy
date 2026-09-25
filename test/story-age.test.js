@@ -5,7 +5,7 @@ import { displayExplanation, explanationParts, isNew, EXPLANATION_CHARACTER_LIMI
 import { opensDevelopment } from '../src/preparation.js';
 import { savePreparation, takePreparation } from '../src/db.js';
 import { renderPrompt, latestVersion } from '../src/prompts.js';
-import { withServer, PORTS, CALLER_TOKEN } from './with-server.js';
+import { withServer, PORTS, CALLER_TOKEN, caller } from './with-server.js';
 import { renderReading, nodes } from './helpers/render-reading.js';
 
 const start = '2026-09-16T18:05:00.000Z';
@@ -108,37 +108,42 @@ test('a sentence stored before the punctuation rule is served finished, on every
   });
 });
 
-test('prepare then submit preserves the match without publishing the draft', async () => {
+test('prepare hands the caller the judge task, and the answer decides the label', async () => {
   await withServer({ port:PORTS.preparation,env:{NEWSWORTHY_NO_SCHEDULER:'1'} },async base=>{
     const post=async (path,body,token=CALLER_TOKEN)=>{
       const res=await fetch(base+path,{method:'POST',headers:{'content-type':'application/json','x-newsworthy-token':token},body:JSON.stringify(body)});
       return {status:res.status,body:await res.json()};
     };
+    const submit=caller(base);
     assert.equal((await post('/api/readings/prepare',{score:5,explanation:'hormuz tanker strike alpha'},'wrong')).status,401);
-    const first=await post('/api/readings',{score:9,explanation:'volcano eruption ash emergency'});
-    const second=await post('/api/readings',{score:2,explanation:'hormuz tanker strike alpha'});
+    const first=await submit(9,'volcano eruption ash emergency',{story:'volcano'});
+    await submit(2,'hormuz tanker strike alpha',{story:'hormuz'});
     const prepared=await post('/api/readings/prepare',{score:2,explanation:'hormuz tanker strike bravo'});
     assert.equal(prepared.status,200);
     assert.equal(prepared.body.stored,false);
-    assert.equal(prepared.body.development,'same');
-    assert.equal(prepared.body.prefix,'','a re-report gets no label');
-    assert.equal(prepared.body.first_covered_at,undefined,'no age is shown, so none is returned');
+    assert.equal(prepared.body.development,undefined,'the server no longer decides; the caller does');
+    assert.equal(prepared.body.prefix,undefined);
+    assert.match(prepared.body.judge_task,/hormuz tanker strike bravo\.$/,'the task carries the draft');
+    assert.equal(typeof prepared.body.judge_version,'number');
     assert.equal(prepared.body.max_explanation_characters,135);
     assert.equal(prepared.body.reserved_prefix_characters,5);
     const before=await (await fetch(base+'/api/current')).json();
     assert.equal(before.explanation_text,'hormuz tanker strike alpha.','stored with its end');
-    const final=await post('/api/readings',{score:2,explanation:'A tanker was hit at Hormuz.',preparation:prepared.body.preparation});
+    const hormuz=Number(prepared.body.judge_task.match(/^\[(\d+)\] hormuz/m)[1]);
+    const final=await post('/api/readings',{score:2,explanation:'A tanker was hit at Hormuz.',preparation:prepared.body.preparation,
+      judgement:{development_of:hormuz,story:'hormuz',note:'same strike'}});
     assert.equal(final.status,201);
+    assert.equal(final.body.development,'same');
     const current=await (await fetch(base+'/api/current')).json();
     assert.equal(current.score,9,'the louder volcano still supplies the score');
     assert.equal(current.since,first.body.created_at);
     assert.equal(current.explanation_new,false,'the sentence re-reports its own development');
-    assert.equal(current.explanation_since,undefined);
     assert.equal(current.explanation,'A tanker was hit at Hormuz.');
-    const opened=await post('/api/readings/prepare',{score:4,explanation:'glacier collapse floods valley'});
+    const opened=await submit(4,'glacier collapse floods valley',{story:'glacier'});
     assert.equal(opened.body.development,'new');
-    assert.equal(opened.body.prefix,'New: ');
+    assert.equal((await (await fetch(base+'/api/current')).json()).explanation_new,true,'a new development is labelled');
     const fallback=await post('/api/readings',{score:3,explanation:'Currency markets reopen.',preparation:'invalid'});
     assert.equal(fallback.status,201,'no new ingestion rejection');
+    assert.equal(fallback.body.development,'unjudged');
   });
 });

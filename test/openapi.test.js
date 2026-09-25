@@ -56,9 +56,12 @@ test('the schema asks for nothing the app cannot verify', () => {
   // prompt_sha256 is checked against the bytes this server sent — a proof, and
   // the only evidence there is that a prompt edit ever reached the rater. It
   // stays optional, because a missing or mismatched digest is never a
-  // rejection.
+  // rejection. `judgement` is an answer, like the score, not a claim about the
+  // caller: it names a development the preparation's task offered, and an id
+  // outside that set stores the reading unjudged.
   const body = doc().paths['/api/readings'].post.requestBody.content['application/json'].schema;
-  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'preparation', 'prompt_sha256', 'score']);
+  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'judgement', 'preparation', 'prompt_sha256', 'score']);
+  assert.deepEqual(Object.keys(body.properties.judgement.properties).sort(), ['development_of', 'note', 'story']);
   assert.deepEqual(body.required, ['score', 'explanation']);
   assert.equal(body.properties.prompt_sha256.type, 'string');
   assert.equal(body.properties.prompt_sha256.pattern, '^[0-9a-f]{64}$');

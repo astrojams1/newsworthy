@@ -228,12 +228,85 @@ function knownRoots(priors) {
   return new Set(groupDevelopments(priors).map((g) => g.id));
 }
 
+/**
+ * The judge's question, for the caller to answer itself.
+ *
+ * The hourly caller is already a capable model paying for its own run, so the
+ * comparison is asked of it rather than of a model this app pays for. It gets
+ * exactly the message the server-side judge would, and answers in the same
+ * format. `roots` are the ids the text offers, kept with the preparation so an
+ * answer can only name a development the caller was actually shown.
+ *
+ * Asked after the score is fixed, never before research: the rater's
+ * independence from its own history is what the level rule's median rests on.
+ */
+export function judgeTask({ score, explanation, created_at, priors = [], stories = [] }) {
+  return {
+    version: judgeVersion(),
+    text: judgeMessage({ score, explanation, created_at, priors, stories }),
+    roots: groupDevelopments(priors).slice(-MAX_PRIORS).map((g) => g.id),
+  };
+}
+
+/** The columns stored when no judgement was made, and why. */
+function unjudged(note) {
+  return {
+    story: null,
+    development_of: null,
+    judge_version: null,
+    judge_model: null,
+    judge_note: String(note).slice(0, 120),
+    judge_cost_usd: null,
+  };
+}
+
+/**
+ * A caller's answer to `judgeTask()`, as the columns to store. Never throws.
+ *
+ * The version is the one whose text the task carried, taken from the stored
+ * preparation rather than from the caller — the same reason the rating prompt
+ * version is stamped server-side. An id the task did not offer is a miss, not
+ * a finding, exactly as it is for the server-side judge. `judge_model` says
+ * `caller`: which model answered is the caller's claim and is not recorded.
+ */
+export function callerJudgement(answer, task) {
+  if (!task || !Array.isArray(task.roots) || !Number.isInteger(task.version)) {
+    return unjudged(answer ? 'judgement without a valid preparation' : 'no preparation');
+  }
+  if (answer === undefined || answer === null) return unjudged('no judgement from caller');
+  let parsed;
+  try {
+    parsed = normalizeJudgement(typeof answer === 'string' ? JSON.parse(answer) : answer);
+  } catch (err) {
+    return unjudged(`caller judgement unusable: ${String(err?.message ?? err)}`);
+  }
+  if (parsed.development_of !== null && !task.roots.includes(parsed.development_of)) {
+    return unjudged(`caller named an unknown development ${parsed.development_of}`);
+  }
+  return {
+    story: parsed.story,
+    development_of: parsed.development_of,
+    judge_version: task.version,
+    judge_model: 'caller',
+    judge_note: parsed.note,
+    judge_cost_usd: null,
+  };
+}
+
 function parseJudgement(text) {
   const match = String(text ?? '').match(/\{[\s\S]*\}/);
   if (!match) throw new Error(`no JSON object in judge reply: ${String(text ?? '').slice(0, 200)}`);
-  const parsed = JSON.parse(match[0]);
+  return normalizeJudgement(JSON.parse(match[0]));
+}
+
+function normalizeJudgement(parsed) {
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('judgement must be an object');
+  }
   const raw = parsed.development_of;
-  const development_of = raw === null || raw === undefined || raw === '' ? null : Number(raw);
+  // "new" is accepted beside null because a query string cannot carry a null.
+  const development_of = raw === null || raw === undefined || raw === '' || raw === 'new' || raw === 'null'
+    ? null : Number(raw);
   if (development_of !== null && !Number.isInteger(development_of)) {
     throw new Error(`development_of must be an integer id or null, got ${JSON.stringify(raw)}`);
   }
@@ -344,15 +417,6 @@ export async function judgeReading({
   model,
   mock = process.env.NEWSWORTHY_MOCK === '1',
 } = {}) {
-  const unjudged = (note) => ({
-    story: null,
-    development_of: null,
-    judge_version: null,
-    judge_model: null,
-    judge_note: note.slice(0, 120),
-    judge_cost_usd: null,
-  });
-
   if (mock) {
     const answer = mockJudgement({ explanation, priors, stories });
     return {
