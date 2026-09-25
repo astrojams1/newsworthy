@@ -218,16 +218,10 @@ export function judgeMessage({ score, explanation, created_at, priors = [], stor
   ].join('\n');
 }
 
-/** Everything in the judge message but the new reading: the prompt, the story
- *  names and the recorded developments. */
+/** Everything in the judge message but the new reading: the prompt, then the
+ *  record — the story names and the recorded developments. */
 function judgeContext({ priors = [], stories = [] }) {
-  return [
-    renderJudgePrompt().text,
-    '',
-    renderStories(stories),
-    '',
-    renderPriors(groupDevelopments(priors).slice(-MAX_PRIORS)),
-  ].join('\n');
+  return [renderJudgePrompt().text, '', judgeRecord({ priors, stories }).text].join('\n');
 }
 
 /** The ids the answer is allowed to name. */
@@ -236,20 +230,18 @@ function knownRoots(priors) {
 }
 
 /**
- * The judge's question, for the caller to answer about its own reading.
- *
- * The hourly caller is already a capable model paying for its own run, so the
- * comparison is asked of it rather than of a model this app pays for. It is the
- * message the server-side judge is sent, less the new reading, which is the
- * caller's own: fetched after the caller has scored and written, it is read
- * only, and the answer travels with the submission. `roots` are the ids the
- * text offers — the only ids an answer may name.
+ * What the judge compares a reading against: the story names on record and
+ * the developments recorded over `PRIOR_HOURS`. Data only — the judge prompt
+ * itself is part of the caller instructions, like the rating prompt — so a
+ * caller fetches this after it has scored and written, and the history cannot
+ * steer either. `roots` are the ids the text lists, the only ids an answer may
+ * name.
  */
-export function judgeTask({ priors = [], stories = [] } = {}) {
+export function judgeRecord({ priors = [], stories = [] } = {}) {
+  const groups = groupDevelopments(priors).slice(-MAX_PRIORS);
   return {
-    version: judgeVersion(),
-    text: judgeContext({ priors, stories }),
-    roots: groupDevelopments(priors).slice(-MAX_PRIORS).map((g) => g.id),
+    text: [renderStories(stories), '', renderPriors(groups)].join('\n'),
+    roots: groups.map((g) => g.id),
   };
 }
 
@@ -266,22 +258,24 @@ function unjudged(note) {
 }
 
 /**
- * A caller's answer to `judgeTask()`, as the columns to store. Never throws.
+ * A caller's answer about its own reading, as the columns to store. Never
+ * throws.
  *
- * The version stamped is the server's own. The caller echoes the version its
- * task carried only so that an answer to a retired version is refused: its
+ * The version stamped is the server's own. The caller echoes the judge prompt
+ * version it read only so that an answer to a retired version is refused: its
  * claim can stop a judgement being stored, never decide what is stored. An id
- * the task did not offer is a miss, not a finding, exactly as it is for the
+ * the record did not list is a miss, not a finding, exactly as it is for the
  * server-side judge. `judge_model` says `caller`, because which model answered
  * is the caller's claim and is not recorded.
  */
-export function callerJudgement(answer, task) {
+export function callerJudgement(answer, { version = judgeVersion(), roots = [] } = {}) {
+  const task = { version, roots };
   if (answer === undefined || answer === null) return unjudged('no judgement sent');
   let parsed;
   try {
     const object = typeof answer === 'string' ? JSON.parse(answer) : answer;
     if (Number(object?.judge_version) !== task.version) {
-      return unjudged(`task version ${object?.judge_version ?? 'missing'}, current is ${task.version}`);
+      return unjudged(`judge prompt version ${object?.judge_version ?? 'missing'}, current is ${task.version}`);
     }
     // Required rather than defaulted: a missing id must not read as "new".
     if (!('development_of' in object)) return unjudged('development_of is required: an id, or null for new');

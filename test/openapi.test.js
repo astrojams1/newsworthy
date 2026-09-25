@@ -9,7 +9,7 @@ test('describes the three calls a caller has to make, and nothing else', () => {
   // its browser refuses a model-assembled URL. A Custom GPT Action is the
   // supported route, and an Action is exactly this schema plus a key.
   const ops = Object.values(doc().paths).flatMap((p) => Object.values(p).map((o) => o.operationId));
-  assert.deepEqual(ops.sort(), ['getInstructions', 'getJudgeTask', 'submitReading']);
+  assert.deepEqual(ops.sort(), ['getDevelopments', 'getInstructions', 'submitReading']);
 });
 
 test('auth is a header, which is the whole point of going through an Action', () => {

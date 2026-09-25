@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  allJudgePrompts, callerJudgement, groupDevelopments, judgeMessage, judgeReading, judgeTask, judgeVersion,
+  allJudgePrompts, callerJudgement, groupDevelopments, judgeMessage, judgeReading, judgeRecord, judgeVersion,
   mockJudgement, renderJudgePrompt, similarity,
 } from '../src/story.js';
 import { ADMIN_TOKEN, CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
@@ -164,23 +164,23 @@ test('similarity is symmetric and bounded', () => {
     similarity('nepal flood toll rises', 'flood in nepal'));
 });
 
-test('the caller fetches the judge task, and its answer travels with the reading', async () => {
+test('the caller fetches the record, and its answer travels with the reading', async () => {
   await withServer({ port: PORTS.storyIngest }, async (base) => {
     const submit = caller(base);
     const first = await submit(5, 'Tariff round opens on steel imports', { story: 'tariff-round' });
     assert.equal(first.status, 201);
     assert.equal(first.body.development, 'new', 'stored already judged');
     assert.equal(first.body.story, 'tariff-round');
-    assert.match(first.task.judge_task, /^Stories on record:/m, 'the task is the judge prompt itself');
-    assert.doesNotMatch(first.task.judge_task, /New reading/, 'the reading is the caller\'s own, not in the task');
+    assert.match(first.record, /^Stories on record:/m);
+    assert.doesNotMatch(first.record, /A news rating service/, 'data only: the judge prompt is in the instructions');
 
     const same = await submit(5, 'Tariff round on steel imports widens', { answer: 'same', story: 'tariff-round' });
     assert.equal(same.body.development, 'same');
-    assert.match(same.task.judge_task, new RegExp(`^\\[${first.body.id}\\] tariff-round`, 'm'),
-      'the recorded development is offered by id, with its story');
+    assert.match(same.record, new RegExp(`^\\[${first.body.id}\\] tariff-round`, 'm'),
+      'the recorded development is listed by id, with its story');
 
-    // The task is read-only and gated like the rest of the caller API.
-    assert.equal((await fetch(`${base}/api/judge-task`)).status, 401);
+    // The record is read-only and gated like the rest of the caller API.
+    assert.equal((await fetch(`${base}/api/developments`)).status, 401);
 
     // Every refusal stores the reading unjudged and says why; none is a rejection.
     const post = (body) => fetch(`${base}/api/readings`, {
@@ -188,7 +188,7 @@ test('the caller fetches the judge task, and its answer travels with the reading
       headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
       body: JSON.stringify(body),
     }).then(async (r) => ({ status: r.status, body: await r.json() }));
-    const version = same.task.judge_version;
+    const version = judgeVersion();
     for (const [judgement, why] of [
       [{ judge_version: version, development_of: 99999 }, 'an id the task did not list'],
       [{ judge_version: version - 1, development_of: null }, 'an answer to a retired version'],
@@ -301,20 +301,19 @@ test('the half-life is a setting, and the chart replays whichever is set', async
   });
 });
 
-test('the judge task is the judge message without the new reading', () => {
+test('the judge message is the judge prompt, then the record the caller fetches, then the reading', () => {
   const priors = [
     row(1, 'Strikes hit Larak Island', { story: 'iran-war' }),
     row(2, 'Strikes on Larak continue', { development_of: 1, story: 'iran-war' }),
   ];
-  const task = judgeTask({ priors, stories: [] });
+  const record = judgeRecord({ priors, stories: [] });
   const full = judgeMessage({ score: 5, explanation: 'Larak strikes resume.', created_at: at(0), priors, stories: [] });
-  const context = full.slice(0, full.lastIndexOf('\n\nNew reading ('));
-  assert.equal(task.text, context, 'the server-side judge\'s message, less the reading the caller already has');
-  assert.equal(task.version, judgeVersion());
-  assert.deepEqual(task.roots, [1]);
+  assert.equal(full.slice(0, full.lastIndexOf('\n\nNew reading (')), `${renderJudgePrompt().text}\n\n${record.text}`,
+    'the caller answers with what the server-side judge would see');
+  assert.deepEqual(record.roots, [1]);
 });
 
-test("a caller's answer is checked against its task, and the version stamped is the server's", () => {
+test("a caller's answer is checked against the record, and the version stamped is the server's", () => {
   const task = { version: 2, roots: [1, 7] };
   const same = callerJudgement({ judge_version: 2, development_of: '7', story: 'Iran War', note: 'same strikes' }, task);
   assert.deepEqual(same, {

@@ -7,7 +7,7 @@ import { timingSafeEqual } from 'node:crypto';
 
 import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries } from './current.js';
-import { PRIOR_HOURS, callerJudgement, judgeReading, judgeTask, opensDevelopment } from './story.js';
+import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, opensDevelopment, renderJudgePrompt } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
@@ -384,14 +384,15 @@ const server = createServer(async (req, res) => {
       const prompt = renderPrompt(latestVersion());
       const proto = req.headers['x-forwarded-proto'] ?? (ON_VERCEL ? 'https' : 'http');
       const baseUrl = `${proto}://${req.headers.host ?? 'localhost'}`;
-      const text = callerInstructions({ baseUrl, prompt });
+      const judge = renderJudgePrompt();
+      const text = callerInstructions({ baseUrl, prompt, judge });
 
       // JSON on request, for a client that only accepts JSON.
       const wantsJson =
         url.searchParams.get('format') === 'json' ||
         (req.headers.accept ?? '').includes('application/json');
       if (wantsJson) {
-        return json(res, 200, { version: prompt.version, hash: prompt.hash, instructions: text });
+        return json(res, 200, { version: prompt.version, hash: prompt.hash, judge_version: judge.version, instructions: text });
       }
 
       // text/plain, not text/markdown: agent fetch tools reject unfamiliar MIME
@@ -457,14 +458,15 @@ const server = createServer(async (req, res) => {
       }
       try {
         const submission = validateSubmission(body);
-        // Which development this reports is the caller's own answer to the
-        // judge task it fetched from /api/judge-task after scoring and writing;
-        // this app calls no model for it. The id is checked against the
-        // developments on record now, which are the ones that task listed. It
+        // Which development this reports is the caller's own answer, made with
+        // the judge prompt in its instructions against the record it fetched
+        // from /api/developments after scoring and writing; this app calls no
+        // model for it. The id is checked against the developments on record
+        // now, which are the ones that record listed. It
         // cannot change the score or reject the reading — a missing or unusable
         // answer stores the reading unjudged, carrying the reason — so the
         // four rejection rules stay four.
-        const judgement = callerJudgement(body.judgement, judgeTask({ priors: await history({ hours: PRIOR_HOURS }) }));
+        const judgement = callerJudgement(body.judgement, judgeRecord({ priors: await history({ hours: PRIOR_HOURS }) }));
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
         const saved = await insertRating({ ...submission, ...judgement, slot: null });
@@ -514,16 +516,17 @@ const server = createServer(async (req, res) => {
       }
     }
 
-    // The judge task: the developments on record and the story names, with
-    // the judge prompt that asks which one a new reading reports. Fetched by
-    // the caller after it has scored and written, and answered in its
-    // submission. Read-only, and gated like the rest of the caller API.
-    if (path === '/api/judge-task' && req.method === 'GET') {
+    // The record the judge compares against: story names and the developments
+    // recorded over 48 hours. Data only — the judge prompt is in the caller
+    // instructions — fetched after the caller has scored and written, and
+    // answered in its submission. Read-only, and gated like the rest of the
+    // caller API.
+    if (path === '/api/developments' && req.method === 'GET') {
       if (!callerAuthorized(url, req)) {
         return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
       }
-      const task = judgeTask({ priors: await history({ hours: PRIOR_HOURS }), stories: await recentStories() });
-      return json(res, 200, { judge_version: task.version, judge_task: task.text });
+      const record = judgeRecord({ priors: await history({ hours: PRIOR_HOURS }), stories: await recentStories() });
+      return json(res, 200, { record: record.text });
     }
 
     // ---- push notifications --------------------------------------------

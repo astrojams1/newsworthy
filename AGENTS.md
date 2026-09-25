@@ -259,15 +259,15 @@ by the same text and the two versions stay comparable; a test pins that.
 
 History was not re-judged: a stored judgement is never recomputed.
 
-**The caller is the judge for its own readings.** After scoring and writing it
-fetches `/api/judge-task` — the judge prompt with the developments on record —
+**The caller is the judge for its own readings.** The judge prompt sits in the
+caller instructions after the rating prompt. After scoring and writing, the
+caller fetches `/api/developments` — story names and developments, data only —
 and submits its answer as `judgement` with the reading, so a reading lands
 judged. The server calls no model, checks the id against the developments on
 record, and stamps its own version (an answer to a retired one is refused) and
 `judge_model = 'caller'`; without a usable answer the reading stores unjudged.
-Storing first and judging after was built and dropped: it put an unjudged
-reading on the page and needed a window to guard what the caller can only be
-told to do anyway — fetch history after writing. This moved off the app's API
+Storing first and judging after was built and dropped: it showed readings
+unjudged and needed a window to guard an order only the caller can keep. This moved off the app's API
 account when credits ran out on 2026-09-24; the cron and `/api/admin/judge`
 still spend `judge_spend_usd`. The judge cannot alter a score or reject a
 submission — the four rejection rules stay four. Its prompts are append-only and

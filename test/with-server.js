@@ -82,22 +82,24 @@ export const readings = (base) => async (qs) => {
 };
 
 /**
- * The caller's sequence once it has scored and written: fetch the judge task,
- * answer it, and submit the reading with the answer. `same` answers with the
- * newest development the task lists, read from its text the way a caller
- * reads it; `new` answers null; a number names that development.
+ * The caller's sequence once it has scored and written: fetch the record,
+ * answer the judge prompt against it, and submit the reading with the answer.
+ * `same` answers with the newest development the record lists, read from its
+ * text the way a caller reads it; `new` answers null; a number names that
+ * development. The judge version is the one the instructions print.
  */
 export const caller = (base) => async (score, explanation, { answer = 'new', story = 'fixture' } = {}) => {
-  const task = await (await fetch(`${base}/api/judge-task`, { headers: { 'x-newsworthy-token': CALLER_TOKEN } })).json();
-  const offered = [...task.judge_task.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
+  const { judgeVersion } = await import('../src/story.js');
+  const { record } = await (await fetch(`${base}/api/developments`, { headers: { 'x-newsworthy-token': CALLER_TOKEN } })).json();
+  const offered = [...record.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
   const development_of = answer === 'new' ? null : answer === 'same' ? offered.at(-1) : answer;
   const res = await fetch(`${base}/api/readings`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
     body: JSON.stringify({
       score, explanation,
-      judgement: { judge_version: task.judge_version, development_of, story, note: `test: ${answer}` },
+      judgement: { judge_version: judgeVersion(), development_of, story, note: `test: ${answer}` },
     }),
   });
-  return { status: res.status, body: await res.json(), task };
+  return { status: res.status, body: await res.json(), record };
 };

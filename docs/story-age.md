@@ -28,10 +28,12 @@ sentences are not rewritten.
    write the final sentence, all without any stored history. Prompts v16 and
    later allow 135 characters for the body and reserve 5 for the label, so the
    budget does not depend on whether the development turns out to be new.
-3. Fetch `/api/judge-task`: the judge prompt with the developments recorded over
-   48 hours and the story names on record. It is read-only.
-4. Answer it about the reading: `development_of` (a listed id, or null for a new
-   development), `story`, `note`, and the task's `judge_version`.
+3. Fetch `/api/developments`: the story names on record and the developments
+   recorded over 48 hours. It is read-only, and it is the only history the
+   caller sees.
+4. Answer the judge prompt, printed in the instructions after the rating prompt,
+   about the reading against that record: `development_of` (a listed id, or null for a new
+   development), `story`, `note`, and the judge prompt's `judge_version`.
 5. Submit score, sentence, prompt digest and that `judgement` together to
    `/api/readings`. The reading is stored already judged; a null answer shows
    its sentence with `New: ` at once. Newsworthy calls no model.

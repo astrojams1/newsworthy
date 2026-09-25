@@ -79,8 +79,8 @@ widgets and the complete app package without updating local Xcode.
 - `src/caller.js`, `src/openapi.js`, `skills/newsworthy-rating/SKILL.md`: authorized
   rating-agent contract. A reading is score/explanation; a complete submission
   also carries the computed `prompt_sha256` provenance proof. After scoring and
-  writing, the caller fetches the judge task and submits its answer with the
-  reading.
+  writing, the caller fetches the recorded developments, answers the judge
+  prompt from its instructions and submits that answer with the reading.
 - `README.md`, `AGENTS.md`: developer and coding-agent guidance.
 - `store/`: canonical mobile listing copy, native captures, artwork, upload scripts,
   release evidence and account-owner steps; `docs/store-listing.md` points there.

@@ -66,7 +66,8 @@ export function openapiDocument({ baseUrl }) {
                           'The first 16 characters of the prompt’s SHA-256. An identifier for ' +
                           'this text, not the digest a submission carries.',
                       },
-                      instructions: { type: 'string', description: 'The workflow, prompt included.' },
+                      judge_version: { type: 'integer', description: 'The judge prompt version, sent back in judgement.' },
+                      instructions: { type: 'string', description: 'The workflow, rating and judge prompts included.' },
                     },
                   },
                 },
@@ -76,20 +77,19 @@ export function openapiDocument({ baseUrl }) {
           },
         },
       },
-      '/api/judge-task': {
+      '/api/developments': {
         get: {
-          operationId: 'getJudgeTask',
-          summary: 'Get the judge task, after scoring and writing',
+          operationId: 'getDevelopments',
+          summary: 'Get the record to judge against, after scoring and writing',
           description:
             'Call this once the score and the final sentence are chosen, never before: the history it carries ' +
-            'must not steer either. Returns the judge prompt with the developments recorded over 48 hours and the ' +
-            'story names on record. The caller answers it about its own reading and sends the answer as judgement ' +
-            'in submitReading. Read-only; nothing is stored.',
+            'must not steer either. Returns the story names on record and the developments recorded over 48 hours, ' +
+            'each with an id. The caller answers the judge prompt in the instructions against it and sends the answer ' +
+            'as judgement in submitReading. Read-only; nothing is stored.',
           responses: {
-            200: { description: 'The judge task.', content: { 'application/json': { schema: {
+            200: { description: 'The record.', content: { 'application/json': { schema: {
               type: 'object', properties: {
-                judge_version: { type: 'integer', description: 'Echoed in the judgement, so an answer to a retired task is refused.' },
-                judge_task: { type: 'string', description: 'Which recorded development the caller\u2019s reading reports, or none.' },
+                record: { type: 'string', description: 'Story names on record, then recorded developments as [id] story, first seen, readings, sentences.' },
               },
             } } } },
             401: { description: 'Missing or wrong token.' },
@@ -101,7 +101,7 @@ export function openapiDocument({ baseUrl }) {
           operationId: 'submitReading',
           summary: 'Submit a reading',
           description:
-            'Call this with the score, the final sentence and the answer to getJudgeTask. The job is not finished until this returns 201 — ' +
+            'Call this with the score, the final sentence and the judgement made against getDevelopments. The job is not finished until this returns 201 — ' +
             'producing a score without submitting it accomplishes nothing. ' +
             'If web search failed or returned nothing, submit nothing at all. ' +
             'The score and the sentence are the reading; prompt_sha256 reports which ' +
@@ -129,9 +129,9 @@ export function openapiDocument({ baseUrl }) {
                     },
                     judgement: {
                       type: 'object',
-                      description: 'The answer to getJudgeTask about this reading. Optional: without one, or with an id the task did not list, or a retired judge_version, the reading stores unjudged — never a rejection.',
+                      description: 'The answer to the judge prompt in the instructions, made against getDevelopments. Optional: without one, or with an id the record did not list, or a retired judge_version, the reading stores unjudged — never a rejection.',
                       properties: {
-                        judge_version: { type: 'integer', description: 'The judge_version getJudgeTask returned.' },
+                        judge_version: { type: 'integer', description: 'The judge prompt version printed in the instructions.' },
                         development_of: { type: ['integer', 'null'], description: 'Id of the recorded development this reports, or null for a new one.' },
                         story: { type: 'string', description: 'Story slug, reused verbatim when on record.' },
                         note: { type: 'string', description: 'At most 12 words on what makes it same or new.' },
