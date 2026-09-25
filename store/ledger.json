@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-24T15:26:01+00:00",
+  "updated_at": "2026-09-25T08:25:21+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -913,6 +913,18 @@
       ],
       "next_action": "Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows.",
       "updated_at": "2026-09-24T15:26:01+00:00"
+    },
+    "web.settings-trailing-marks": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device.",
+      "evidence": [
+        "test/web-settings.test.js measures rendered ink against the label's first capital and fails at the old 16/18 sizes",
+        "test/surface-design.test.js checks recorded sizes and the shared slot on web, iOS and Android props"
+      ],
+      "next_action": "Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build.",
+      "updated_at": "2026-09-25T08:25:21+00:00"
     }
   },
   "events": [
@@ -5696,6 +5708,23 @@
         ],
         "next_action": "Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows.",
         "updated_at": "2026-09-24T15:26:01+00:00"
+      }
+    },
+    {
+      "sequence": 299,
+      "at": "2026-09-25T08:25:21+00:00",
+      "gate": "web.settings-trailing-marks",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device.",
+        "evidence": [
+          "test/web-settings.test.js measures rendered ink against the label's first capital and fails at the old 16/18 sizes",
+          "test/surface-design.test.js checks recorded sizes and the shared slot on web, iOS and Android props"
+        ],
+        "next_action": "Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build.",
+        "updated_at": "2026-09-25T08:25:21+00:00"
       }
     }
   ],

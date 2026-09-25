@@ -45,7 +45,7 @@ test('the website shows the appearance choice and no notification setting', () =
   }
   // Vertical: each option is its own full-width row, the checked one marked.
   assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
-  assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');
+  assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'Glyph' && c.props.name === 'check')), [true, false, false], 'a drawn check marks the chosen row');
 });
 
 test('the overview is a list of pages, each with an icon, its current value and a chevron', () => {
@@ -96,7 +96,7 @@ for (const platform of ['ios', 'android']) {
     assert.deepEqual(scores.map(n => [Number(n.props.testID.slice(10)), n.props.accessibilityState.checked]),
       THRESHOLD_CHOICES.map(v => [v, v === 8]));
     assert.deepEqual(THRESHOLD_CHOICES, [5, 6, 7, 8, 9, 10]);
-    assert.deepEqual(scores.map(n => nodes(n).some(c => c.type === 'CheckIcon')), THRESHOLD_CHOICES.map(v => v === 8));
+    assert.deepEqual(scores.map(n => nodes(n).some(c => c.type === 'Glyph' && c.props.name === 'check')), THRESHOLD_CHOICES.map(v => v === 8));
     for (const score of scores) {
       assert.equal(score.props.accessibilityRole, 'radio');
       assert.match(score.props.accessibilityLabel, /^Alert at \d+ or higher$/);
@@ -106,7 +106,7 @@ for (const platform of ['ios', 'android']) {
     assert.deepEqual(radios.map(n => [n.props.accessibilityLabel, n.props.accessibilityState.checked]),
       [['Follow device', true], ['Light', false], ['Dark', false]]);
     assert.deepEqual(radios.map(n => n.props.style.flexDirection), ['row', 'row', 'row']);
-    assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'CheckIcon')), [true, false, false], 'a drawn check marks the chosen row');
+    assert.deepEqual(radios.map(n => nodes(n).some(c => c.type === 'Glyph' && c.props.name === 'check')), [true, false, false], 'a drawn check marks the chosen row');
     // Every setting is one row with the same minimum, growing with large text.
     const rows = [...radios, rowControl, thresholdRow, ...scores];
     assert.deepEqual(rows.map(n => n.props.style.minHeight), Array(rows.length).fill(56));

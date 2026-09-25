@@ -189,7 +189,9 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride, timeline =
   assert.equal(rightGroup.props.style.flexDirection, 'row');
   const [share, settings] = rightGroup.props.children;
   assert.equal(settings.props.accessibilityLabel, 'Settings');
-  assert.equal(nodes(settings).some(n => n.type === 'SettingsIcon'), true);
+  const gear = nodes(settings).find(n => n.type === 'Glyph');
+  assert.equal(gear?.props.name, 'settings');
+  assert.equal(gear.props.size, contract.header.settingsIconSize);
   if (platform === 'ios') {
     const leftItems = options.unstable_headerLeftItems();
     const rightItems = options.unstable_headerRightItems();
@@ -356,7 +358,8 @@ test('Settings rises as a sheet on the phone and stays a page on the web', () =>
       const button = options.headerLeft({ canGoBack: true, tintColor: '#000' });
       assert.equal(button.type, 'HeaderBackButton');
       const arrow = button.props.backImage({ tintColor: '#000' });
-      assert.equal(arrow.type, 'BackIcon');
+      assert.equal(arrow.type, 'Glyph');
+      assert.equal(arrow.props.name, 'back');
       assert.equal(arrow.props.color, themeForLevel(3, dark).accent, 'the arrow is drawn in this theme\'s accent');
       assert.equal(options.headerLeft({ canGoBack: false }), null, 'nothing to go back to draws no arrow');
     } else {
@@ -429,4 +432,46 @@ test('story timeline snaps on the web with CSS scroll snap, not a script that sc
   assert.equal(source.match(/scrollSnapAlign: 'start'/g)?.length, 2);
   assert.match(source, /scrollMarginTop: headerHeight \+ 32/);
   assert.match(source, /snap = hasTimeline && timelineTop \? Math\.max\(1, timelineTop - headerHeight - 32\)/, 'the web snap point matches the native one');
+});
+
+// Reported 2026-09-25 on the web: the link arrow on Privacy and Support was
+// drawn at 18 points, 8.7 points of ink beside 11.7-point capitals, and read
+// as small and floating above the baseline. Every trailing mark now sits in
+// one slot at the size design/surfaces.json records; the ink itself is
+// measured in a browser by web-settings.test.js.
+function inspectSettingsRows(listOverride) {
+  const s = contract.settings;
+  const marks = [];
+  for (const platform of ['web', 'ios', 'android']) {
+    for (const screen of ['index', 'appearance', 'threshold', 'notifications']) {
+      const tree = nodes(renderSettings({ platform, screen, stored: { notifications: true }, listOverride }).tree);
+      for (const row of tree.filter(n => n.type === 'Pressable' && n.props.style?.minHeight)) {
+        assert.equal(row.props.style.minHeight, s.rowMinHeight);
+        const glyphs = nodes(row).filter(n => n.type === 'Glyph');
+        for (const glyph of glyphs) {
+          if (glyph.props.name in s.trailingSize) {
+            marks.push(glyph.props.name);
+            assert.equal(glyph.props.size, s.trailingSize[glyph.props.name], `${platform} ${screen} ${glyph.props.name} size`);
+            assert.equal(glyph.parent?.type, 'View', `${platform} ${screen} ${glyph.props.name} has a slot`);
+            assert.equal(glyph.parent.props.style?.width, s.trailingSlot, `${platform} ${screen} ${glyph.props.name} sits in the shared slot`);
+          } else assert.equal(glyph.props.size, s.leadingIconSize, `${platform} ${screen} leading ${glyph.props.name}`);
+        }
+        const label = nodes(row).find(n => n.type === 'Text');
+        assert.equal(label.props.style.fontSize, s.labelSize);
+      }
+    }
+  }
+  for (const name of Object.keys(s.trailingSize)) assert.ok(marks.includes(name), `${name} was rendered`);
+}
+
+test('settings rows use the recorded icon sizes and one trailing slot', () => inspectSettingsRows());
+
+test('settings gate rejects the undersized link arrow returning', () => {
+  const source = readFileSync(new URL('../apps/client/components/settings-list.tsx', import.meta.url), 'utf8');
+  const listOverride = source.replace('external: 22', 'external: 18');
+  assert.notEqual(listOverride, source);
+  assert.throws(() => inspectSettingsRows(listOverride), /external size/);
+  const unslotted = source.replace('width: TRAILING_SLOT, ', '');
+  assert.notEqual(unslotted, source);
+  assert.throws(() => inspectSettingsRows(unslotted), /shared slot/);
 });

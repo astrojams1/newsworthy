@@ -7,7 +7,14 @@ import { Glyph, type GlyphName } from '@/components/glyph';
 // One minimum for every row, whatever it carries: rows match at the default
 // text size and grow together when text is enlarged.
 export const ROW_MIN_HEIGHT = 56;
-const ICON_SIZE = 22;
+// Sizes recorded in design/surfaces.json (`settings`). Leading icons are 22
+// points. Every trailing mark (chevron, link arrow, check) sits in one 22-point
+// slot so they share a column, drawn at a size whose ink matches the label's
+// cap height: the link arrow at 18 drew 8.7 points of ink beside 11.7-point
+// capitals and read as small and floating above the baseline.
+export const ICON_SIZE = 22;
+export const TRAILING_SLOT = 22;
+export const TRAILING_SIZE = { chevron: 20, external: 22, check: 20 } as const;
 const ICON_GAP = 14;
 const INSET = 16;
 
@@ -56,11 +63,18 @@ export function rowStyle() {
   return { minHeight: ROW_MIN_HEIGHT, flexDirection: 'row', alignItems: 'center', paddingLeft: INSET } as const;
 }
 
+// A trailing mark in its shared slot.
+export function TrailingMark({ name, color }: { name: keyof typeof TRAILING_SIZE; color: string }) {
+  return <View style={{ width: TRAILING_SLOT, alignItems: 'center', justifyContent: 'center' }}>
+    <Glyph name={name} color={color} size={TRAILING_SIZE[name]} />
+  </View>;
+}
+
 // What sits at a row's end: the current value, and where the row goes.
 export function Trailing({ value, to }: { value?: string; to?: 'page' | 'external' }) {
   const theme = useTheme();
   return <>
     {value !== undefined && <Text numberOfLines={1} style={{ color: theme.muted, fontSize: 17, flexShrink: 1 }}>{value}</Text>}
-    {to && <Glyph name={to === 'page' ? 'chevron' : 'external'} color={theme.muted} size={to === 'page' ? 16 : 18} />}
+    {to && <TrailingMark name={to === 'page' ? 'chevron' : 'external'} color={theme.muted} />}
   </>;
 }

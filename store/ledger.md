@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-24T15:26:01+00:00
+Updated: 2026-09-25T08:25:21+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -92,6 +92,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
 | apple.settings-transition | in_progress | agent | observed | Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off. | Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission. |
 | web.settings-back-arrow | waiting_user | user | observed | Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged. | Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows. |
+| web.settings-trailing-marks | waiting_user | user | observed | Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device. | Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build. |
 
 ## Evidence and history
 
@@ -2921,3 +2922,14 @@ Owner report: on the web, choosing a theme on Settings > Appearance did not reco
 - test/web-settings.test.js drives /settings/appearance in Chromium through Dark, Light, Dark and asserts the arrow's own stroke follows the theme with no fixed-id tint filter; it fails on the old header. test/surface-design.test.js pins the web headerLeft. Headless Chromium repainted the old arrow correctly in screenshots, so the stale paint itself was not reproduced here.
 
 Next: Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows.
+
+### 299. web.settings-trailing-marks — waiting_user
+
+2026-09-25T08:25:21+00:00 · observed · user
+
+Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device.
+
+- test/web-settings.test.js measures rendered ink against the label's first capital and fails at the old 16/18 sizes
+- test/surface-design.test.js checks recorded sizes and the shared slot on web, iOS and Android props
+
+Next: Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build.

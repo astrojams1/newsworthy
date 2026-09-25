@@ -32,6 +32,7 @@ export const PORTS = {
   sentencePunctuation: 8845,
   webSettings: 8847,
   webSettingsTheme: 8849,
+  webSettingsGlyphs: 8851,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall
