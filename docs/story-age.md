@@ -18,8 +18,7 @@ development can differ from the newest sentence’s development, so the label
 follows the newest row’s own judgement, never the score’s `since` anchor. A
 reading is new when the judge placed it (`judge_version` set) and it opened a
 development (`development_of` null). An unjudged reading is never new: a judge
-outage, or a reading still awaiting its caller's answer, must not masquerade
-as a fresh story. Historical judgements and stored
+outage must not masquerade as a fresh story. Historical judgements and stored
 sentences are not rewritten.
 
 ## Caller sequence
@@ -29,26 +28,22 @@ sentences are not rewritten.
    write the final sentence, all without any stored history. Prompts v16 and
    later allow 135 characters for the body and reserve 5 for the label, so the
    budget does not depend on whether the development turns out to be new.
-3. Submit score, sentence and prompt digest to `/api/readings`. The reading is
-   stored at once, before any history is shown, so history cannot steer it. The
-   201 carries `development: "pending"`, `judge_task` (the judge prompt with the
-   developments recorded before this reading, the story names and the reading)
-   and `judge_version`.
-4. Answer `judge_task` at `/api/readings/judgement`: `reading`, `judge_version`,
-   `development_of` (a listed id, or null for a new development), `story` and
-   `note`. Newsworthy calls no model. A null answer shows the sentence with
-   `New: `.
+3. Fetch `/api/judge-task`: the judge prompt with the developments recorded over
+   48 hours and the story names on record. It is read-only.
+4. Answer it about the reading: `development_of` (a listed id, or null for a new
+   development), `story`, `note`, and the task's `judge_version`.
+5. Submit score, sentence, prompt digest and that `judgement` together to
+   `/api/readings`. The reading is stored already judged; a null answer shows
+   its sentence with `New: ` at once. Newsworthy calls no model.
 
-An answer is taken once, for the newest reading, within 30 minutes. It is checked
-against the ids the task listed, recomputed from the rows stored before the
-reading, and the version stamped is the server's own; an echoed retired version
-is refused. A refused answer stores nothing and can be corrected in the window.
-A reading never answered stays stored and unjudged, which the page reads as
-continuing the reading before it — never as new. It is announced to devices when
-its answer lands, or when a newer reading supersedes it. The four rejection rules
-and 400-character ingestion handling are unchanged. A stored sentence always ends
-in punctuation: one arriving without an end is finished with a full stop, which
-can take a 135-character body to 136.
+The id is checked against the developments on record when the reading arrives,
+and the version stamped is the server's own; an answer to a retired version is
+refused. A refused or missing answer stores the reading unjudged, with the
+reason in `judge_note`, which the page reads as continuing the reading before it
+— never as new. The four rejection rules and 400-character ingestion handling
+are unchanged. A stored sentence always ends in punctuation: one arriving
+without an end is finished with a full stop, which can take a 135-character body
+to 136.
 
 App-made ratings use the v16 body budget, unchanged since, and the existing generation-then-
 judge path. An intentional `NEWSWORTHY_PROMPT_VERSION` pin remains respected.
@@ -78,7 +73,7 @@ widget timing remains subject to the operating system.
 
 The writing comparison and its limitations are in
 [prompt evaluation v16](prompt-evaluations/v16.md). Tests cover the two-hour
-boundary, Unicode budgets, the judged/new rule, the judgement window, API fields and
+boundary, Unicode budgets, the judged/new rule, the caller's judgement, API fields and
 rendered app props (a bold label nested in the sentence) on all three platforms.
 The Swift formatter cases were updated but not compiled here, and the Android
 source was not compiled. Native visual parity and a replacement mobile release are

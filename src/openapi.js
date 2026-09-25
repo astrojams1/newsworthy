@@ -76,13 +76,32 @@ export function openapiDocument({ baseUrl }) {
           },
         },
       },
+      '/api/judge-task': {
+        get: {
+          operationId: 'getJudgeTask',
+          summary: 'Get the judge task, after scoring and writing',
+          description:
+            'Call this once the score and the final sentence are chosen, never before: the history it carries ' +
+            'must not steer either. Returns the judge prompt with the developments recorded over 48 hours and the ' +
+            'story names on record. The caller answers it about its own reading and sends the answer as judgement ' +
+            'in submitReading. Read-only; nothing is stored.',
+          responses: {
+            200: { description: 'The judge task.', content: { 'application/json': { schema: {
+              type: 'object', properties: {
+                judge_version: { type: 'integer', description: 'Echoed in the judgement, so an answer to a retired task is refused.' },
+                judge_task: { type: 'string', description: 'Which recorded development the caller\u2019s reading reports, or none.' },
+              },
+            } } } },
+            401: { description: 'Missing or wrong token.' },
+          },
+        },
+      },
       '/api/readings': {
         post: {
           operationId: 'submitReading',
           summary: 'Submit a reading',
           description:
-            'Call this once the score and the final sentence are chosen. The reading is stored before any history is ' +
-            'shown; the 201 then carries judge_task, answered with judgeReading. The job is not finished until this returns 201 — ' +
+            'Call this with the score, the final sentence and the answer to getJudgeTask. The job is not finished until this returns 201 — ' +
             'producing a score without submitting it accomplishes nothing. ' +
             'If web search failed or returned nothing, submit nothing at all. ' +
             'The score and the sentence are the reading; prompt_sha256 reports which ' +
@@ -108,6 +127,16 @@ export function openapiDocument({ baseUrl }) {
                       type: 'string',
                       description: 'Full display: at most 140 characters including spaces and punctuation AND the "New: " label. Submit only the sentence body, at most 135 characters; the app supplies the label.',
                     },
+                    judgement: {
+                      type: 'object',
+                      description: 'The answer to getJudgeTask about this reading. Optional: without one, or with an id the task did not list, or a retired judge_version, the reading stores unjudged — never a rejection.',
+                      properties: {
+                        judge_version: { type: 'integer', description: 'The judge_version getJudgeTask returned.' },
+                        development_of: { type: ['integer', 'null'], description: 'Id of the recorded development this reports, or null for a new one.' },
+                        story: { type: 'string', description: 'Story slug, reused verbatim when on record.' },
+                        note: { type: 'string', description: 'At most 12 words on what makes it same or new.' },
+                      },
+                    },
                     // Optional, and never a rejection: a mismatch stores a
                     // reading flagged unverified rather than refusing one.
                     // This is the one caller-supplied field the server checks
@@ -131,7 +160,7 @@ export function openapiDocument({ baseUrl }) {
           },
           responses: {
             201: {
-              description: 'Stored. One step remains: answer judge_task with judgeReading.',
+              description: 'Stored. The job is done.',
               content: {
                 'application/json': {
                   schema: {
@@ -152,10 +181,8 @@ export function openapiDocument({ baseUrl }) {
                           'served; false, it did not; null, no digest was sent. Without this a ' +
                           'caller never learns whether it verified.',
                       },
-                      development: { type: 'string', const: 'pending', description: 'Which development this reports is not known until judgeReading.' },
-                      judge_task: { type: 'string', description: 'The question to answer: the developments recorded before this reading, the story names on record and this reading. Answered with judgeReading.' },
-                      judge_version: { type: 'integer', description: 'Echoed in judgeReading, so an answer to a retired task is refused.' },
-                      judge_until: { type: 'string', description: 'When this reading closes to judgement.' },
+                      development: { type: 'string', enum: ['new', 'same', 'unjudged'], description: 'What the judgement placed it as; unjudged carries judge_note saying why.' },
+                      story: { type: ['string', 'null'] },
                     },
                   },
                 },
@@ -166,38 +193,7 @@ export function openapiDocument({ baseUrl }) {
           },
         },
       },
-      '/api/readings/judgement': {
-        post: {
-          operationId: 'judgeReading',
-          summary: 'Answer the judge task a stored reading was handed',
-          description:
-            'Which recorded development the reading reports, or none. Taken once, for the newest reading, ' +
-            'before judge_until. An answer naming an id the task did not list, or a retired judge_version, ' +
-            'stores nothing and says why in reason; correct it and send again. The reading itself is already ' +
-            'stored and is never at stake here.',
-          requestBody: { required: true, content: { 'application/json': { schema: {
-            type: 'object', required: ['reading', 'judge_version', 'development_of'], properties: {
-              reading: { type: 'integer', description: 'The id submitReading returned.' },
-              judge_version: { type: 'integer', description: 'The judge_version submitReading returned.' },
-              development_of: { type: ['integer', 'null'], description: 'Id of the recorded development this reports, or null for a new one.' },
-              story: { type: 'string', description: 'Story slug, reused verbatim when the story is on record.' },
-              note: { type: 'string', description: 'At most 12 words on what makes it same or new.' },
-            },
-          } } } },
-          responses: {
-            200: { description: 'Answer taken (judged true) or refused with a reason (judged false).', content: { 'application/json': { schema: {
-              type: 'object', properties: {
-                ok: { type: 'boolean' }, judged: { type: 'boolean' }, reading: { type: 'integer' },
-                development: { type: 'string', enum: ['new', 'same'] }, story: { type: 'string' },
-                reason: { type: 'string' },
-              },
-            } } } },
-            401: { description: 'Missing or wrong token.' },
-            422: { description: 'Not open to judgement: unknown, already judged, superseded or past judge_until.' },
-          },
-        },
-      },
-   },
+    },
     components: {
       securitySchemes: {
         callerToken: { type: 'apiKey', in: 'header', name: 'x-newsworthy-token' },

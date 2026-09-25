@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { CALLER_TOKEN as CALLER, PORTS, caller, withServer } from './with-server.js';
+import { PORTS, caller, withServer } from './with-server.js';
 import { DEFAULT_THRESHOLD, MAX_SUBSCRIPTIONS, checkPushReceipts, messageFor, notifyReading, validateSubscription } from '../src/push.js';
 import { PUSH_CLAIM_STALE_MINUTES, claimPushDelivery, completePushDelivery, ensureSchema, insertRating, releasePushDeliveries, upsertPushSubscription } from '../src/db.js';
 import { sql } from '../src/sql.js';
@@ -97,14 +97,14 @@ test('devices hear the number the page shows, once per development and threshold
       const shown = async () => (await (await fetch(`${base}/api/current`)).json()).score;
 
       // Below every threshold: nothing.
-      assert.equal((await submit(7, 'Talks continue over the border dispute', { story: 'border' })).submitted.status, 201);
+      assert.equal((await submit(7, 'Talks continue over the border dispute', { story: 'border' })).status, 201);
       assert.deepEqual(sent(), []);
 
       // An 8 opens a development and the page shows 8: the 8s hear, the 9 does
       // not. The unregistered device is dropped.
       const first = await submit(8, 'Earthquake levels towns across the northern valley', { story: 'quake' });
-      assert.equal(first.submitted.status, 201);
-      assert.equal(first.judged.body.development, 'new');
+      assert.equal(first.status, 201);
+      assert.equal(first.body.development, 'new');
       assert.equal(await shown(), 8);
       assert.deepEqual(sent(), [[TOKENS.a, 'Newsworthy · 8/10'], [TOKENS.gone, 'Newsworthy · 8/10']]);
       assert.deepEqual(await push('DELETE', { token: TOKENS.gone }), { status: 200, body: { ok: true, removed: 0 } },
@@ -112,13 +112,13 @@ test('devices hear the number the page shows, once per development and threshold
 
       // The same development an hour later, still an 8: already announced.
       const again = await submit(8, 'Earthquake levels towns across the northern valley as rescue continues', { answer: 'same', story: 'quake' });
-      assert.equal(again.judged.body.development, 'same');
+      assert.equal(again.body.development, 'same');
       assert.deepEqual(sent(), []);
 
       // A 9 on the same development is inside the page's noise margin: the
       // page still shows 8, so the device waiting for a 9 is not told a 9.
       const nudge = await submit(9, 'Earthquake death toll across the northern valley passes a thousand', { answer: 'same', story: 'quake' });
-      assert.equal(nudge.judged.body.development, 'same');
+      assert.equal(nudge.body.development, 'same');
       assert.equal(await shown(), 8);
       assert.deepEqual(sent(), []);
 
@@ -132,7 +132,7 @@ test('devices hear the number the page shows, once per development and threshold
         ['Earthquake toll across the northern valley nears fifteen thousand', 10, [[TOKENS.b, 'Newsworthy · 10/10']]],
       ]) {
         const worse = await submit(10, text, { answer: 'same', story: 'quake' });
-        assert.equal(worse.judged.body.development, 'same', text);
+        assert.equal(worse.body.development, 'same', text);
         assert.equal(await shown(), expected, text);
         assert.deepEqual(sent(), announced, text);
       }
@@ -141,32 +141,9 @@ test('devices hear the number the page shows, once per development and threshold
       // page does not change, so nothing is announced — a notification would
       // have opened on a 10 about something else.
       const other = await submit(8, 'Central bank halts currency trading after overnight collapse', { story: 'currency' });
-      assert.equal(other.judged.body.development, 'new');
+      assert.equal(other.body.development, 'new');
       assert.equal(await shown(), 10);
       assert.deepEqual(sent(), []);
-    });
-  });
-});
-
-test('a reading is announced once its caller answers, or once superseded if it never does', async () => {
-  // What the page shows depends on which development a reading reports, so a
-  // reading awaiting its caller's answer is not announced yet. One never
-  // answered must still be announced, and is, when the next reading arrives.
-  await withRelay(async (received, url) => {
-    await withServer({ port: PORTS.pushSettled, env: { NEWSWORTHY_NO_SCHEDULER: '1', NEWSWORTHY_PUSH_URL: url } }, async (base) => {
-      assert.equal((await call(base)('PUT', { token: TOKENS.a, threshold: 8, platform: 'ios' })).status, 200);
-      const sent = () => received.splice(0).map((m) => [m.to, m.title]);
-      const post = (body) => fetch(`${base}/api/readings`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER },
-        body: JSON.stringify(body),
-      }).then((r) => r.json());
-
-      const unanswered = await post({ score: 8, explanation: 'Dam fails upstream of the capital' });
-      assert.equal(unanswered.development, 'pending');
-      assert.deepEqual(sent(), [], 'not announced while it awaits its answer');
-      await post({ score: 3, explanation: 'Markets are calm' });
-      assert.deepEqual(sent(), [[TOKENS.a, 'Newsworthy · 8/10']], 'announced once superseded, as it stands');
     });
   });
 });

@@ -256,13 +256,6 @@ export async function latestRating() {
   return shape(rows[0]);
 }
 
-/** One reading, whole, or null. */
-export async function ratingById(id) {
-  await ensureSchema();
-  const rows = await sql`SELECT * FROM ratings WHERE id = ${id}`;
-  return rows[0] ? shape(rows[0]) : null;
-}
-
 /**
  * The newest readings, for the smoothed current score. Time-bounded as well as
  * counted: five readings is five hours while the hourly caller runs, but twenty
@@ -340,7 +333,7 @@ export async function unjudgedRatings({ limit = 20 } = {}) {
 export async function setJudgement(id, fields = {}) {
   await ensureSchema();
   // Only ever onto a reading nothing has judged: a stored judgement is never
-  // recomputed, and the guard makes that true of two answers racing as well.
+  // recomputed.
   const rows = await sql`
     UPDATE ratings
        SET story = ${fields.story ?? null},

@@ -9,7 +9,7 @@ test('describes the three calls a caller has to make, and nothing else', () => {
   // its browser refuses a model-assembled URL. A Custom GPT Action is the
   // supported route, and an Action is exactly this schema plus a key.
   const ops = Object.values(doc().paths).flatMap((p) => Object.values(p).map((o) => o.operationId));
-  assert.deepEqual(ops.sort(), ['getInstructions', 'judgeReading', 'submitReading']);
+  assert.deepEqual(ops.sort(), ['getInstructions', 'getJudgeTask', 'submitReading']);
 });
 
 test('auth is a header, which is the whole point of going through an Action', () => {
@@ -56,12 +56,12 @@ test('the schema asks for nothing the app cannot verify', () => {
   // prompt_sha256 is checked against the bytes this server sent — a proof, and
   // the only evidence there is that a prompt edit ever reached the rater. It
   // stays optional, because a missing or mismatched digest is never a
-  // rejection. The judgement is a separate call with its own schema: an answer,
-  // like the score, checked against the ids its task offered.
+  // rejection. `judgement` is an answer, like the score, not a claim about the
+  // caller: its id is checked against the developments on record, and an
+  // answer to a retired judge version is refused.
   const body = doc().paths['/api/readings'].post.requestBody.content['application/json'].schema;
-  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'prompt_sha256', 'score']);
-  const answer = doc().paths['/api/readings/judgement'].post.requestBody.content['application/json'].schema;
-  assert.deepEqual(Object.keys(answer.properties).sort(), ['development_of', 'judge_version', 'note', 'reading', 'story']);
+  assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'judgement', 'prompt_sha256', 'score']);
+  assert.deepEqual(Object.keys(body.properties.judgement.properties).sort(), ['development_of', 'judge_version', 'note', 'story']);
   assert.deepEqual(body.required, ['score', 'explanation']);
   assert.equal(body.properties.prompt_sha256.type, 'string');
   assert.equal(body.properties.prompt_sha256.pattern, '^[0-9a-f]{64}$');

@@ -46,15 +46,15 @@ submission. Success means the API confirms that the reading was stored.
    INCLUDING the app's "New: " label; reserve 5 for it, leaving 135 for the
    explanation whether or not the development turns out to be new. Count with a
    code tool. Do not add a label or timestamp to the submitted explanation.
-4. Submit score, explanation and prompt_sha256 to `/api/readings`. Confirm the API
-   stored it. The reading is committed before you see any history.
-5. Answer the `judge_task` in the 201 at `/api/readings/judgement`: `reading`,
-   `judge_version`, `development_of` (an id the task lists, or null for a new
-   development), `story` (reuse a listed name verbatim when the story is on
-   record) and `note`. Newsworthy calls no model for this. If the reply says
-   `"judged": false`, correct the answer per its `reason` and send it again.
+4. Only then fetch `/api/judge-task` and answer it about your reading:
+   `development_of` (an id the task lists, or null for a new development),
+   `story` (reuse a listed name verbatim when the story is on record), `note`,
+   and the task's `judge_version`. Newsworthy calls no model for this.
+5. Submit score, explanation, prompt_sha256 and that `judgement` to
+   `/api/readings`. Confirm the API stored it. If it says `"development":
+   "unjudged"`, `judge_note` says why; the reading is still stored.
 
-The service supplies the recent history inside the task, after the reading is stored; the caller does not need
+The service supplies the recent history inside the task; the caller does not need
 admin credentials or the full archive. The app labels a sentence that opened a new
 development "New:" for two hours after it is stored; any other sentence, and one
 the service could not match, has no label.

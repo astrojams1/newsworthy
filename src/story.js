@@ -32,15 +32,6 @@ import { effectiveConfig } from './config.js';
  * reason, and the display rule falls back to the score-only rule.
  */
 
-/** The note an external reading is stored with until its caller answers the
- *  judge task. Marks the reading as awaiting, so a judgement is only ever
- *  taken for a reading that was handed a task. */
-export const AWAITING_JUDGEMENT = 'awaiting the caller\'s judgement';
-
-/** How long a reading stays open to its caller's judgement. Well inside the
- *  hourly cadence, so a task is never answered against a newer reading. */
-export const JUDGEMENT_MINUTES = 30;
-
 /** How far back the judge is shown, and the rule looks for a root. */
 export const PRIOR_HOURS = 48;
 
@@ -219,16 +210,23 @@ function renderStories(stories = []) {
 
 /** The message the judge is sent, kept out of the call so a test can read it. */
 export function judgeMessage({ score, explanation, created_at, priors = [], stories = [] }) {
-  const groups = groupDevelopments(priors).slice(-MAX_PRIORS);
+  return [
+    judgeContext({ priors, stories }),
+    '',
+    `New reading (${iso(created_at) ?? 'now'}), scored ${score}:`,
+    explanation,
+  ].join('\n');
+}
+
+/** Everything in the judge message but the new reading: the prompt, the story
+ *  names and the recorded developments. */
+function judgeContext({ priors = [], stories = [] }) {
   return [
     renderJudgePrompt().text,
     '',
     renderStories(stories),
     '',
-    renderPriors(groups),
-    '',
-    `New reading (${iso(created_at) ?? 'now'}), scored ${score}:`,
-    explanation,
+    renderPriors(groupDevelopments(priors).slice(-MAX_PRIORS)),
   ].join('\n');
 }
 
@@ -238,36 +236,23 @@ function knownRoots(priors) {
 }
 
 /**
- * The readings a judgement of `reading` is made against: those stored before
- * it, over the `PRIOR_HOURS` before it. Computed from the reading's own time
- * rather than from now, so the question asked when it arrived and the check
- * made when the answer lands are the same question.
- *
- * @param {Array<object>} rows ascending, oldest first
- */
-export function priorsBefore(rows, reading) {
-  const at = Date.parse(iso(reading.created_at));
-  return rows.filter((row) => {
-    if (row.id === reading.id) return false;
-    const t = Date.parse(iso(row.created_at));
-    return (t < at || (t === at && row.id < reading.id)) && at - t <= PRIOR_HOURS * 3600_000;
-  });
-}
-
-/**
- * The judge's question about a stored reading, for the caller to answer.
+ * The judge's question, for the caller to answer about its own reading.
  *
  * The hourly caller is already a capable model paying for its own run, so the
- * comparison is asked of it rather than of a model this app pays for. It is
- * exactly the message the server-side judge is sent, and is asked only after
- * the reading is stored: the score and sentence are committed before any
- * history is shown, which is what the level rule's median rests on. `roots`
- * are the ids the text offers — the only ids an answer may name.
+ * comparison is asked of it rather than of a model this app pays for. It is the
+ * message the server-side judge is sent, with the new reading left for the
+ * caller to supply: fetched after the caller has scored and written, it is read
+ * only, and the answer travels with the submission. `roots` are the ids the
+ * text offers — the only ids an answer may name.
  */
-export function judgeTask({ reading, priors = [], stories = [] }) {
+export function judgeTask({ priors = [], stories = [] } = {}) {
   return {
     version: judgeVersion(),
-    text: judgeMessage({ score: reading.score, explanation: reading.explanation, created_at: reading.created_at, priors, stories }),
+    text: [
+      judgeContext({ priors, stories }),
+      '',
+      'New reading: the caller\'s own, scored and written before this was fetched.',
+    ].join('\n'),
     roots: groupDevelopments(priors).slice(-MAX_PRIORS).map((g) => g.id),
   };
 }
@@ -288,13 +273,14 @@ function unjudged(note) {
  * A caller's answer to `judgeTask()`, as the columns to store. Never throws.
  *
  * The version stamped is the server's own. The caller echoes the version its
- * task carried only so that a task from a retired version is refused: its
+ * task carried only so that an answer to a retired version is refused: its
  * claim can stop a judgement being stored, never decide what is stored. An id
  * the task did not offer is a miss, not a finding, exactly as it is for the
  * server-side judge. `judge_model` says `caller`, because which model answered
  * is the caller's claim and is not recorded.
  */
 export function callerJudgement(answer, task) {
+  if (answer === undefined || answer === null) return unjudged('no judgement sent');
   let parsed;
   try {
     const object = typeof answer === 'string' ? JSON.parse(answer) : answer;
@@ -322,8 +308,8 @@ export function callerJudgement(answer, task) {
 
 /**
  * The sentence is labelled new when a judgement placed the reading and it
- * opened a development of its own. An unjudged reading is not new: an outage,
- * or a caller that has not answered yet, must not masquerade as a fresh story.
+ * opened a development of its own. An unjudged reading is not new: an outage
+ * must not masquerade as a fresh story.
  */
 export function opensDevelopment(reading) {
   return reading.judge_version != null && reading.development_of == null;

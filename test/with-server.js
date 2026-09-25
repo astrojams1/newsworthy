@@ -15,7 +15,7 @@ export const ADMIN_TOKEN = 'test-admin-token';
 /** One port per spawn site: `node --test` runs files concurrently, and
  *  child.kill() is an async SIGTERM, so a reused port can still be held. */
 export const PORTS = {
-  preparation: 8835,
+  newLabel: 8835,
   ingestSoftErrors: 8811,
   currentSmoothing: 8817,
   currentScoreFrom: 8819,
@@ -33,7 +33,6 @@ export const PORTS = {
   webSettings: 8847,
   webSettingsTheme: 8849,
   webSettingsGlyphs: 8851,
-  pushSettled: 8853,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall
@@ -83,26 +82,22 @@ export const readings = (base) => async (qs) => {
 };
 
 /**
- * The caller's whole sequence: submit the reading, then answer the judge task
- * its 201 carries. `same` answers with the newest development the task lists,
- * read from its text the way a caller reads it; `new` answers null; a number
- * names that development. `submitted` is the 201, `judged` the answer's reply.
+ * The caller's sequence once it has scored and written: fetch the judge task,
+ * answer it, and submit the reading with the answer. `same` answers with the
+ * newest development the task lists, read from its text the way a caller
+ * reads it; `new` answers null; a number names that development.
  */
 export const caller = (base) => async (score, explanation, { answer = 'new', story = 'fixture' } = {}) => {
-  const post = async (path, body) => {
-    const res = await fetch(`${base}${path}`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
-      body: JSON.stringify(body),
-    });
-    return { status: res.status, body: await res.json() };
-  };
-  const submitted = await post('/api/readings', { score, explanation });
-  const offered = [...submitted.body.judge_task.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
+  const task = await (await fetch(`${base}/api/judge-task`, { headers: { 'x-newsworthy-token': CALLER_TOKEN } })).json();
+  const offered = [...task.judge_task.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
   const development_of = answer === 'new' ? null : answer === 'same' ? offered.at(-1) : answer;
-  const judged = await post('/api/readings/judgement', {
-    reading: submitted.body.id, judge_version: submitted.body.judge_version,
-    development_of, story, note: `test: ${answer}`,
+  const res = await fetch(`${base}/api/readings`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
+    body: JSON.stringify({
+      score, explanation,
+      judgement: { judge_version: task.judge_version, development_of, story, note: `test: ${answer}` },
+    }),
   });
-  return { submitted, judged };
+  return { status: res.status, body: await res.json(), task };
 };

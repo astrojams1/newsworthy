@@ -91,29 +91,19 @@ test('a sentence stored before the punctuation rule is served finished, on every
   });
 });
 
-test('the label waits for the caller\'s answer, and follows it', async () => {
-  await withServer({ port:PORTS.preparation,env:{NEWSWORTHY_NO_SCHEDULER:'1'} },async base=>{
+test('the label follows the judgement the reading arrived with', async () => {
+  await withServer({ port:PORTS.newLabel,env:{NEWSWORTHY_NO_SCHEDULER:'1'} },async base=>{
     const current=async ()=>(await fetch(base+'/api/current')).json();
-    const post=async (path,body,token=CALLER_TOKEN)=>{
-      const res=await fetch(base+path,{method:'POST',headers:{'content-type':'application/json','x-newsworthy-token':token},body:JSON.stringify(body)});
-      return {status:res.status,body:await res.json()};
-    };
     const submit=caller(base);
-    assert.equal((await post('/api/readings/judgement',{reading:1},'wrong')).status,401);
     const first=await submit(9,'volcano eruption ash emergency',{story:'volcano'});
     await submit(2,'hormuz tanker strike alpha',{story:'hormuz'});
-    const stored=await post('/api/readings',{score:2,explanation:'A tanker was hit at Hormuz'});
-    assert.equal(stored.status,201);
-    assert.equal((await current()).explanation_new,false,'awaiting its answer, a reading is not new');
-    const hormuz=Number(stored.body.judge_task.match(/^\[(\d+)\] hormuz/m)[1]);
-    const judged=await post('/api/readings/judgement',{reading:stored.body.id,judge_version:stored.body.judge_version,development_of:hormuz,story:'hormuz',note:'same strike'});
-    assert.equal(judged.body.development,'same');
+    assert.equal((await current()).explanation_new,true,'a new development is labelled at once');
+    const again=await submit(2,'A tanker was hit at Hormuz',{answer:'same',story:'hormuz'});
+    assert.equal(again.body.development,'same');
     const after=await current();
     assert.equal(after.score,9,'the louder volcano still supplies the score');
-    assert.equal(after.since,first.submitted.body.created_at);
+    assert.equal(after.since,first.body.created_at);
     assert.equal(after.explanation_new,false,'the sentence re-reports its own development');
     assert.equal(after.explanation,'A tanker was hit at Hormuz.','stored with its end');
-    await submit(4,'glacier collapse floods valley',{story:'glacier'});
-    assert.equal((await current()).explanation_new,true,'a new development is labelled');
   });
 });

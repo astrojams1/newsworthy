@@ -259,15 +259,16 @@ by the same text and the two versions stay comparable; a test pins that.
 
 History was not re-judged: a stored judgement is never recomputed.
 
-**The caller is the judge for its own readings.** A submission is stored at
-once, before any history is shown, so history cannot steer the score or the
-sentence; its 201 carries `judge_task`, the judge prompt about it. The caller
-answers at `/api/readings/judgement`, taken once, for the newest reading, within
-30 minutes. The server calls no model, checks the id against those the task
-listed, recomputed from the rows before the reading, and stamps its own version
-(an echoed retired one is refused) and `judge_model = 'caller'`. Unanswered, the
-reading stays unjudged and is announced when superseded. It moved off the app's
-API account when credits ran out on 2026-09-24; the cron and `/api/admin/judge`
+**The caller is the judge for its own readings.** After scoring and writing it
+fetches `/api/judge-task` — the judge prompt with the developments on record —
+and submits its answer as `judgement` with the reading, so a reading lands
+judged. The server calls no model, checks the id against the developments on
+record, and stamps its own version (an answer to a retired one is refused) and
+`judge_model = 'caller'`; without a usable answer the reading stores unjudged.
+Storing first and judging after was built and dropped: it put an unjudged
+reading on the page and needed a window to guard what the caller can only be
+told to do anyway — fetch history after writing. This moved off the app's API
+account when credits ran out on 2026-09-24; the cron and `/api/admin/judge`
 still spend `judge_spend_usd`. The judge cannot alter a score or reject a
 submission — the four rejection rules stay four. Its prompts are append-only and
 pinned by hash: a stored judgement names the version that made it.

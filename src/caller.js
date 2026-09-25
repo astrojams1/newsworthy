@@ -89,6 +89,25 @@ remaining 5 of a 140-character display. The label is the app's, so the
 submitted explanation carries no label or timestamp, and the budget is the same
 whether the development turns out to be new or not.
 
+### Judging the reading
+
+Once the score and sentence are final, and not before, the caller fetches
+\`GET ${baseUrl}/api/judge-task\` with the same authentication. Its
+\`judge_task\` asks which recorded development the reading reports: it lists
+the developments recorded over the last 48 hours, each with an id and story
+name, and the story names on record. The history arrives only after the reading
+is written, so it cannot steer the score or the sentence. No model on this
+server answers the question; the caller answers it about its own reading, in
+the format the task states, and sends the answer as \`judgement\` with the
+submission, carrying the \`judge_version\` the task returned.
+
+An id the task did not list, an answer to a retired \`judge_version\`, or no
+answer at all stores the reading unjudged, never rejected; the response then
+says \`"development": "unjudged"\` and gives the reason in \`judge_note\`. The
+app treats an unjudged reading as continuing the one before it. A reading whose
+answer is \`development_of: null\` opens a development, and the app shows its
+sentence after the label \`New: \`.
+
 ## 2. Submission
 
 Authentication is the header \`x-newsworthy-token\`, carrying the caller's token —
@@ -102,7 +121,13 @@ content-type: application/json
 {
   "score": <integer 1-10>,
   "explanation": "<sentence body, at most 135 characters including spaces and punctuation>",
-  "prompt_sha256": "<64 lowercase hex characters, defined in section 3>"
+  "prompt_sha256": "<64 lowercase hex characters, defined in section 3>",
+  "judgement": {
+    "judge_version": <from /api/judge-task>,
+    "development_of": <an id listed in the task, or null for a new development>,
+    "story": "<story name, reused verbatim when the story is on record>",
+    "note": "<at most 12 words on what makes it same or new>"
+  }
 }
 \`\`\`
 
@@ -121,6 +146,9 @@ limit therefore cannot carry both a full-length sentence and the digest in one
 GET, which is a reason to use the POST form: a body has no such budget, and a
 reading that arrives without a digest cannot afterwards be attributed to the
 scale it was rated against.
+
+The GET form carries the judgement flat, as \`judge_version\`,
+\`development_of\` (an id, or \`new\`), \`story\` and \`judge_note\`.
 
 Spaces are \`+\` in that query string, because \`+\` costs one character where
 \`%20\` costs three. Other reserved characters are still percent-encoded — a
@@ -188,40 +216,6 @@ means the request did not arrive as it was sent — a query string truncated or
 rewritten in transit, most often — and the answer is to send it again, not to
 shorten the sentence. A caller that shortens its explanation in response to a
 422 degrades the reading while leaving the actual fault in place.
-
-### Judging the reading
-
-A stored reading's response carries one remaining question. \`development\` is
-\`pending\`, and \`judge_task\` asks which recorded development the reading
-reports: it lists the developments recorded over the 48 hours before it, each
-with an id and story name, the story names on record, and the reading itself.
-The history arrives only here, after the score and sentence are stored, so it
-cannot steer either. No model on this server answers the question; the caller
-does, in the format the task states, and sends the answer to
-\`POST ${baseUrl}/api/readings/judgement\` with the same authentication:
-
-\`\`\`
-{
-  "reading": <the id returned>,
-  "judge_version": <the judge_version returned>,
-  "development_of": <an id listed in the task, or null for a new development>,
-  "story": "<story name, reused verbatim when the story is on record>",
-  "note": "<at most 12 words on what makes it same or new>"
-}
-\`\`\`
-
-The GET form carries the same fields as query parameters, with
-\`development_of=new\` for null.
-
-An answer is taken once, for the newest reading, until \`judge_until\` —
-thirty minutes after it was stored. A newer reading's task was built on this
-one as it stood, which is why the window closes when one arrives. The reply is
-\`{"ok": true, "judged": true, "development": "new" | "same", ...}\`. An answer
-naming an id the task did not list, or echoing a retired \`judge_version\`,
-stores nothing and replies \`"judged": false\` with a \`reason\`; a corrected
-answer can follow inside the window. A reading never answered stays stored,
-unjudged, and the app treats it as continuing the reading before it. The label
-\`New: \` appears on a reading whose answer opens a development.
 
 ## 3. The prompt
 
