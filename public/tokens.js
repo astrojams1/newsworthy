@@ -510,8 +510,7 @@ export default {
     }
   },
   "font": {
-    "sans": "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
-    "mono": "ui-monospace, monospace"
+    "sans": "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
   },
   "type": {
     "caption2": 11,
@@ -522,15 +521,12 @@ export default {
     "callout": 16,
     "body": 17,
     "headline": 18,
-    "title3": 20,
-    "title2": 24,
     "title1": 32,
     "display": 48
   },
   "weight": {
     "light": "300",
     "regular": "400",
-    "medium": "500",
     "semibold": "600",
     "bold": "700"
   },
@@ -544,11 +540,6 @@ export default {
   },
   "tracking": {
     "tight": -0.04,
-    "snug": -0.02,
-    "slight": -0.01,
-    "wide": 0.04,
-    "wider": 0.06,
-    "widest": 0.08,
     "wordmark": 0.12
   },
   "scaleCap": {
@@ -561,7 +552,6 @@ export default {
     "2": 8,
     "3": 12,
     "4": 16,
-    "5": 20,
     "6": 24,
     "7": 28,
     "8": 32,
@@ -577,7 +567,6 @@ export default {
     "4.5": 18
   },
   "radius": {
-    "control": 8,
     "card": 16,
     "widget": 20,
     "icon": 9
@@ -587,14 +576,7 @@ export default {
     "focus": 2,
     "icon": 1.6,
     "check": 2.2,
-    "cue": 1.25,
-    "chartLine": 2,
-    "chartDot": 1.25,
-    "chartMark": 1.75
-  },
-  "dash": {
-    "crosshair": "3 3",
-    "failure": "2 4"
+    "cue": 1.25
   },
   "size": {
     "headerIcon": 24,
@@ -662,12 +644,10 @@ export default {
   },
   "opacity": {
     "pressed": 0.6,
-    "disabled": 0.5,
-    "faint": 0.28
+    "disabled": 0.5
   },
   "motion": {
     "switch": 200,
-    "tooltip": 120,
     "gradient": 600,
     "scrollThrottle": 16
   },
@@ -677,30 +657,16 @@ export default {
       "radius": 4,
       "offsetY": 3,
       "elevation": 3
-    },
-    "popover": {
-      "opacity": 0.12,
-      "radius": 20,
-      "offsetY": 6
     }
   },
   "layer": {
-    "behind": -1,
-    "overlay": 2
+    "behind": -1
   },
   "measure": {
-    "page": 704,
-    "admin": 1040,
-    "prose": "70ch",
-    "tile": 130,
-    "field": 170,
-    "tooltip": 260,
-    "scoreColumn": 36
+    "page": 704
   },
   "breakpoint": {
-    "phone": 480,
-    "narrow": 560,
-    "compact": 720
+    "phone": 480
   },
   "surfaces": {
     "denominatorText": "∕10",

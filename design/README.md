@@ -1,6 +1,6 @@
 # Newsworthy design system
 
-Every style value on every surface comes from three source files. Nothing else
+Every style value on every surface comes from these source files. Nothing else
 states a colour, size, space, weight, duration or breakpoint.
 
 | Source | Holds |
@@ -8,6 +8,7 @@ states a colour, size, space, weight, duration or breakpoint.
 | `palette.json` | Colour: the ten levels, brand, light/dark appearance, fixed identity colours and control colours (the switch's off track, thumb and shadow). |
 | `tokens.json` | Everything else: font stacks, the type scale, weights, leading, tracking, the 4-point space scale, radii, strokes, dashes, component sizes, layout ratios, opacity, motion, shadows, layers, measures and breakpoints. |
 | `surfaces.json` | The cross-surface contract native widgets and tests are held to: score typography, widget geometry, header icon size and optical lift. |
+| `admin.json` | The admin page's own scale: its text sizes, spacing, strokes, chart dashes, measures and breakpoints. Admin is internal and web-only, so it is not held to the product's scale; it shares only colour, because its chart is drawn in the reading palette. |
 
 `npm run design:generate` merges them into the generated outputs, which are
 never edited by hand:
@@ -18,6 +19,8 @@ never edited by hand:
   `--<group>-<key>`, kebab-cased, with a half step's point as `_`
   (`--space-2_5`, `--type-footnote`, `--stroke-chart-line`). `design/names.js`
   defines the naming for the generator and the tests alike.
+- `public/admin-tokens.css`: `admin.json` as `--admin-<group>-<key>`, read only
+  by `public/admin.html`.
 - Android colour resources and drawables, and the iOS widget colour catalog.
 
 ```sh
@@ -50,6 +53,8 @@ pixels and must be one of `tokens.json`'s `breakpoint` values.
   duration, colour, weight, line height, opacity, stroke width or z-index, and
   no breakpoint outside the list. HTML carries no `style="…"` attribute; a
   page adds a class.
+- The admin page reads only `--admin-*` scale tokens and shared colours; product
+  pages never read `--admin-*`. Admin's breakpoints are its own list.
 - Every `var(--…)` a page reads is defined, the space scale is exact 4-point
   steps, and every token is used somewhere, so a dead token or a screen that
   quietly restated a value shows up.

@@ -1,0 +1,90 @@
+{
+  "font": {
+    "sans": "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+    "mono": "ui-monospace, monospace"
+  },
+  "text": {
+    "micro": 11,
+    "small": 12,
+    "table": 13,
+    "input": 14,
+    "body": 15,
+    "title": 17,
+    "statSmall": 20,
+    "stat": 24
+  },
+  "weight": {
+    "light": "300",
+    "regular": "400",
+    "medium": "500",
+    "semibold": "600"
+  },
+  "leading": {
+    "tight": 1.4,
+    "body": 1.5
+  },
+  "tracking": {
+    "title": -0.01,
+    "stat": -0.02,
+    "label": 0.04,
+    "caps": 0.06,
+    "heading": 0.08
+  },
+  "space": {
+    "2": 2,
+    "4": 4,
+    "6": 6,
+    "8": 8,
+    "10": 10,
+    "12": 12,
+    "14": 14,
+    "16": 16,
+    "20": 20,
+    "32": 32,
+    "40": 40,
+    "64": 64
+  },
+  "radius": {
+    "control": 8,
+    "card": 16
+  },
+  "stroke": {
+    "hairline": 1,
+    "line": 2,
+    "dot": 1.25,
+    "mark": 1.75
+  },
+  "dash": {
+    "crosshair": "3 3",
+    "failure": "2 4"
+  },
+  "opacity": {
+    "disabled": 0.5,
+    "faint": 0.28
+  },
+  "motion": {
+    "tooltip": 120
+  },
+  "shadow": {
+    "popover": {
+      "opacity": 0.12,
+      "radius": 20,
+      "offsetY": 6
+    }
+  },
+  "layer": {
+    "overlay": 2
+  },
+  "measure": {
+    "page": 1040,
+    "prose": "70ch",
+    "tile": 130,
+    "field": 170,
+    "tooltip": 260,
+    "scoreColumn": 36
+  },
+  "breakpoint": {
+    "cards": 720,
+    "narrow": 560
+  }
+}

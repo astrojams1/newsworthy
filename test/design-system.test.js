@@ -12,6 +12,8 @@ import { cssName } from '../design/names.js';
 const root = new URL('../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
 const tokens = JSON.parse(read('design/tokens.json'));
+// The admin page is internal and web-only, with a scale of its own.
+const adminTokens = JSON.parse(read('design/admin.json'));
 const list = dir => readdirSync(new URL(dir, root), { recursive: true }).map(String)
   .filter(file => /\.(tsx?|jsx?)$/.test(file)).map(file => `${dir}/${file}`);
 
@@ -20,6 +22,8 @@ const UI_FILES = [...list('apps/client/app'), ...list('apps/client/components'),
 // Hand-written web styles. tokens.css is generated from the tokens themselves.
 const CSS_FILES = ['public/info.css', 'public/levels.css'];
 const HTML_FILES = readdirSync(new URL('public', root)).filter(file => file.endsWith('.html')).map(file => `public/${file}`);
+const ADMIN_FILE = 'public/admin.html';
+const PRODUCT_WEB = [...CSS_FILES, ...HTML_FILES.filter(file => file !== ADMIN_FILE)];
 
 const COLOR = /#[0-9a-f]{3,8}\b|\brgba?\(\s*\d|\bhsla?\(/i;
 const NAMED_COLOR = /^(white|black|red|green|blue|gray|grey|silver|orange|yellow|purple|pink|brown|navy|teal)$/i;
@@ -56,14 +60,15 @@ export function uiViolations(file, text) {
 const LENGTH = /(?<![\w-])-?\d*\.?\d+(px|rem|em|pt|ch|ms|s)\b/;
 const UNITLESS_PROPS = new Set(['font-weight', 'line-height', 'opacity', 'z-index', 'stroke-width', 'letter-spacing']);
 const BREAKPOINTS = new Set(Object.values(tokens.breakpoint));
+const ADMIN_BREAKPOINTS = new Set(Object.values(adminTokens.breakpoint));
 
 /** Ad-hoc values in one stylesheet's text. */
-export function cssViolations(file, css) {
+export function cssViolations(file, css, breakpoints = BREAKPOINTS) {
   const found = [];
   const clean = css.replace(/\/\*[\s\S]*?\*\//g, '');
   for (const media of clean.matchAll(/@media([^{]*)\{/g)) {
     for (const [, width] of media[1].matchAll(/(?:max|min)-width:\s*(\d+)px/g)) {
-      if (!BREAKPOINTS.has(Number(width))) found.push(`${file}: breakpoint ${width}px is not in tokens.breakpoint`);
+      if (!breakpoints.has(Number(width))) found.push(`${file}: breakpoint ${width}px is not a listed breakpoint`);
     }
   }
   for (const [, prop, value] of clean.replace(/@media[^{]*\{/g, '{').matchAll(/([a-z-]+)\s*:\s*([^;{}]+)/g)) {
@@ -86,14 +91,36 @@ test('screens and components write no ad-hoc numbers, colours, weights or fonts'
 test('web stylesheets and pages write no ad-hoc lengths, colours or breakpoints', () => {
   const found = [
     ...CSS_FILES.flatMap(file => cssViolations(file, read(file))),
-    ...HTML_FILES.flatMap(file => cssViolations(file, styleBlocks(read(file)))),
+    ...HTML_FILES.flatMap(file => cssViolations(file, styleBlocks(read(file)), file === ADMIN_FILE ? ADMIN_BREAKPOINTS : BREAKPOINTS)),
     ...HTML_FILES.filter(file => /\sstyle="/.test(read(file))).map(file => `${file}: inline style attribute; use a class`),
   ];
   assert.deepEqual(found, []);
 });
 
+/** Scale tokens a page reads from the other system, as `file: name` strings. */
+export function crossSystemViolations(file, text, admin) {
+  const productGroups = [...Object.keys(tokens), 'shadow'];
+  const found = [];
+  for (const [, name] of text.matchAll(/var\(--([\w-]+)/g)) {
+    const productScale = productGroups.some(group => name.startsWith(`${cssName(group, '')}`));
+    if (admin && productScale) found.push(`${file}: --${name} is the product's scale; use --admin-*`);
+    if (!admin && name.startsWith('admin-')) found.push(`${file}: --${name} belongs to the admin page`);
+  }
+  return found;
+}
+
+test('the admin page and the product each use only their own scale, sharing colour', () => {
+  assert.deepEqual([
+    ...crossSystemViolations(ADMIN_FILE, read(ADMIN_FILE), true),
+    ...PRODUCT_WEB.flatMap(file => crossSystemViolations(file, read(file), false)),
+  ], []);
+  assert.notDeepEqual(crossSystemViolations('case.html', '.a { padding: var(--space-2); }', true), [], 'admin reading a product space');
+  assert.notDeepEqual(crossSystemViolations('case.css', '.a { padding: var(--admin-space-8); }', false), [], 'a product page reading an admin space');
+  assert.deepEqual(crossSystemViolations('case.html', '.a { color: var(--ink-muted); border-color: var(--rule); }', true), [], 'colour is shared');
+});
+
 test('every custom property a page reads is defined', () => {
-  const defined = new Set([...read('public/tokens.css').matchAll(/(--[\w-]+)\s*:/g)].map(match => match[1]));
+  const defined = new Set([...(read('public/tokens.css') + read('public/admin-tokens.css')).matchAll(/(--[\w-]+)\s*:/g)].map(match => match[1]));
   const missing = [];
   for (const file of [...CSS_FILES, ...HTML_FILES]) {
     const text = read(file);
@@ -104,7 +131,7 @@ test('every custom property a page reads is defined', () => {
 });
 
 /** Token paths nothing reads, given the web and code text that could. */
-export function unusedTokens(scale, web, code) {
+export function unusedTokens(scale, web, code, prefix = '') {
   const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const usedInCode = (group, key, sub) => {
     const direct = new RegExp(`\\b${escape(group)}(\\.${escape(key)}\\b|\\[${escape(key)}\\]|\\['${escape(key)}'\\])`);
@@ -116,7 +143,7 @@ export function unusedTokens(scale, web, code) {
   for (const [group, entries] of Object.entries(scale)) {
     for (const [key, value] of Object.entries(entries)) {
       if (group === 'breakpoint') { if (!new RegExp(`width:\\s*${value}px`).test(web)) unused.push(`${group}.${key}`); continue; }
-      const onWeb = web.includes(`var(--${cssName(group, key)})`);
+      const onWeb = web.includes(`var(--${cssName(prefix + group, key)})`);
       if (value && typeof value === 'object') {
         for (const sub of Object.keys(value)) if (!onWeb && !usedInCode(group, key, sub)) unused.push(`${group}.${key}.${sub}`);
       } else if (!onWeb && !usedInCode(group, key)) unused.push(`${group}.${key}`);
@@ -125,13 +152,14 @@ export function unusedTokens(scale, web, code) {
   return unused;
 }
 
-const webText = () => [...CSS_FILES, ...HTML_FILES].map(read).join('\n');
+const webText = () => PRODUCT_WEB.map(read).join('\n');
 // design.js only re-exports the groups, so it cannot count as a use.
 const codeText = () => [...UI_FILES.filter(file => !file.endsWith('lib/design.js')), 'scripts/generate-design.mjs', 'public/favicon.js'].map(read).join('\n');
 
 test('the space scale is 4-point steps, and every token is used', () => {
   for (const [step, value] of Object.entries(tokens.space)) assert.equal(value, Number(step) * 4, `space ${step}`);
   assert.deepEqual(unusedTokens(tokens, webText(), codeText()), [], 'a token nothing uses is either dead or a sign a screen restated its value');
+  assert.deepEqual(unusedTokens(adminTokens, read(ADMIN_FILE), '', 'admin-'), [], 'an admin token the admin page does not use');
 });
 
 test('the unused-token rule finds a token nothing reads, on the web or in code', () => {
@@ -168,5 +196,5 @@ test('the CSS rule rejects each kind of ad-hoc value', () => {
     'an unlisted breakpoint': `@media (max-width: 600px) { .a { display: none; } }`,
   };
   for (const [name, css] of Object.entries(cases)) assert.notDeepEqual(cssViolations('case.css', css), [], name);
-  assert.deepEqual(cssViolations('ok.css', `@media (max-width: 720px) { .a { padding: var(--space-2) 0; width: 100%; flex: 1; transform: rotate(45deg); } }`), []);
+  assert.deepEqual(cssViolations('ok.css', `@media (max-width: 480px) { .a { padding: var(--space-2) 0; width: 100%; flex: 1; transform: rotate(45deg); } }`), []);
 });

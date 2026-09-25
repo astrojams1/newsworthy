@@ -43,7 +43,8 @@ release status. Calm presentation must not change the rating calibration.
   preview. Do not claim native builds or widgets are verified until tested.
 - For UI changes, run `npm run test:design` and extend its regression cases for
   the reported defect. Style values are tokens (`design/tokens.json`,
-  `palette.json`); `test/design-system.test.js` rejects literals. Follow
+  `palette.json`; admin: `admin.json`); `test/design-system.test.js` rejects
+  literals. Follow
   `design/surfaces.json` and `design/README.md` across
   web, iOS, Android and both widgets. Passing builds, shared palette generation,
   or rendered-prop tests alone do not establish native visual parity; record
