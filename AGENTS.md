@@ -64,10 +64,13 @@ release status. Calm presentation must not change the rating calibration.
 - The production admin token (`ADMIN_TOKEN`) is kept in the owner's 1Password
   vault. Stored readings, rejections and every prompt version sit behind it at
   `/api/admin/history` and `/api/admin/prompts`. When a task needs production
-  history, such as measuring a prompt change, ask the owner for the token or
-  read it with the 1Password CLI (`op`) where that is signed in, rather than
-  settling for the repository's fixtures. Pass it in the `x-admin-token` header,
-  never in a file, commit, log or PR.
+  history, such as measuring a prompt change, read the token before starting
+  rather than settling for the repository's fixtures or public endpoints:
+  `op read "op://API Tokens/Newsworthy admin/password"`. Cloud sessions have no
+  `op`: download the Linux CLI from 1Password into the scratchpad and run it
+  with `OP_SERVICE_ACCOUNT_TOKEN="$OP_KEY"`; a service account must name the
+  vault, as above. Ask the owner only if that fails. Pass it in the
+  `x-admin-token` header, never in a file, commit, log or PR.
 
 - This file is capped at 58,500 characters, enforced by
   `test/agents-md.test.js`. An addition that does not fit is written tersely
