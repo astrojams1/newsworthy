@@ -50,7 +50,9 @@ submission. Success means the API confirms that the reading was stored.
    instructions about your reading against that record: `development_of` (an id
    the record lists, or null for a new development), `story` (reuse a listed
    name verbatim when the story is on record), `note`, and the judge prompt's
-   `judge_version`. Newsworthy calls no model for this.
+   `judge_version`. When two listed names are one story coined twice, add
+   `same_story` with both — never for merely related stories. Newsworthy calls
+   no model for this.
 5. Submit score, explanation, prompt_sha256 and that `judgement` to
    `/api/readings`. Confirm the API stored it. If it says `"development":
    "unjudged"`, `judge_note` says why; the reading is still stored.

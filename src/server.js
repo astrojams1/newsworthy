@@ -5,9 +5,10 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { correctUsage, failures, logCallerRun, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerRun, mergeById, storyNameStats, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries } from './current.js';
-import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, opensDevelopment, renderJudgePrompt } from './story.js';
+import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
+import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
@@ -115,6 +116,42 @@ async function rejection(res, url, status, message, { method, record = true } = 
     return json(res, 200, { ok: false, stored: false, status, error: message }, because(message));
   }
   return json(res, status, { error: message }, because(message));
+}
+
+/** Every merge and undo, newest first, each merge marked by whether it is in
+ *  force, for the admin page. */
+async function mergesForAdmin() {
+  const active = new Set((await activeMerges()).map((m) => m.id));
+  return (await allMerges()).map((m) => ({ ...m, active: m.undoes == null && active.has(m.id) }));
+}
+
+/**
+ * Record that two story names are one story, or say why not. The proposer
+ * names the pair; the server picks the name kept (src/merges.js survivor()),
+ * so a caller never chooses a label, only an identity.
+ *
+ * @param {'caller'|'admin'} source a caller may name only stories on record;
+ *   the admin, any stored name
+ */
+async function proposeMerge(pair, { source, reading_id = null, note = null }) {
+  const map = aliasMap(await activeMerges());
+  const names = await storyNameStats();
+  const stats = new Map();
+  for (const { story, readings, first } of names) {
+    const name = canonicalStory(map, story);
+    const held = stats.get(name) ?? { readings: 0, first };
+    stats.set(name, { readings: held.readings + readings, first: String(first) < String(held.first) ? first : held.first });
+  }
+  const known = source === 'caller'
+    ? new Set((await recentStories()).map((s) => s.story))
+    : new Set(stats.keys());
+  const problem = mergeProblem(pair, { map, known });
+  if (problem) return { refused: problem };
+  const [a, b] = pair.map((name) => canonicalStory(map, slug(name)));
+  const canonical = survivor(a, b, stats);
+  const merge = await addMerge({ alias: canonical === a ? b : a, canonical, source, reading_id, note });
+  console.log(`story merge by ${source}: ${merge.alias} -> ${merge.canonical}`);
+  return { merge };
 }
 
 function secretMatches(supplied, expected) {
@@ -471,7 +508,14 @@ const server = createServer(async (req, res) => {
         const judgement = callerJudgement(body.judgement, judgeRecord({ priors: await history({ hours: PRIOR_HOURS }) }));
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
-        const saved = await insertRating({ ...submission, ...judgement, slot: null });
+        const { same_story, ...columns } = judgement;
+        const saved = await insertRating({ ...submission, ...columns, slot: null });
+        // A merge rides only on an accepted judgement: an answer to another
+        // judge version may not have meant it. Made before the announcement,
+        // because a merge changes a story's age and so what the page shows.
+        const merged = same_story !== undefined && saved.judge_version != null
+          ? await proposeMerge(same_story, { source: 'caller', reading_id: saved.id, note: saved.judge_note })
+          : null;
         // Awaited, like the rejection log: a serverless function may be frozen
         // the moment the response ends, and a push left in flight goes nowhere.
         await notifyReading(saved);
@@ -501,6 +545,8 @@ const server = createServer(async (req, res) => {
             ? 'unjudged'
             : (saved.development_of == null ? 'new' : 'same'),
           ...(saved.judge_version == null ? { judge_note: saved.judge_note } : {}),
+          ...(merged?.merge ? { merge: { story: merged.merge.alias, into: merged.merge.canonical } } : {}),
+          ...(merged?.refused ? { merge_refused: merged.refused } : {}),
           // Name anything the caller sent that was not stored, so a caller
           // working from an older spec learns its model and token counts went
           // nowhere rather than assuming they landed.
@@ -658,6 +704,8 @@ const server = createServer(async (req, res) => {
         rejections: refused,
         // The caller's own account of each run, over the same range.
         caller_runs: runs,
+        // Every merge and undo, newest first; the in-force ones carry `active`.
+        merges: await mergesForAdmin(),
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });
     }
@@ -760,6 +808,62 @@ const server = createServer(async (req, res) => {
      * the developments the ones before it established — running it newest first
      * would ask the judge to match against a future it has not seen.
      */
+    // Story merges by hand: the safety valve over the caller's. An undo is a row
+    // naming the merge it undoes, never a deletion.
+    if (path === '/api/admin/merges' && req.method === 'POST') {
+      const body = await readJsonBody(req).catch(() => ({}));
+      const out = await proposeMerge(body?.stories, { source: 'admin', note: body?.note ?? null });
+      return json(res, out.merge ? 201 : 422, out.merge ? { merge: out.merge } : { error: out.refused });
+    }
+    const undo = path.match(/^\/api\/admin\/merges\/(\d+)\/undo$/);
+    if (undo && req.method === 'POST') {
+      const target = await mergeById(Number(undo[1]));
+      const inForce = new Set((await activeMerges()).map((m) => m.id));
+      if (!target || target.undoes != null || !inForce.has(target.id)) {
+        return json(res, 422, { error: `no merge ${undo[1]} in force` });
+      }
+      const body = await readJsonBody(req).catch(() => ({}));
+      const row = await addMerge({ alias: target.alias, canonical: target.canonical, source: 'admin',
+        note: body?.note ?? null, undoes: target.id });
+      console.log(`story merge ${target.id} undone: ${target.alias} is its own story again`);
+      return json(res, 201, { undo: row });
+    }
+
+    // The backfill by hand, for readings a judge outage left unjudged: the
+    // oldest one and the record as it stood when it arrived, then the answer.
+    // Strictly oldest first, because each judgement becomes part of the record
+    // the next one is judged against. Checked exactly as a caller's answer is,
+    // and stamped `backfill`, so it stays distinguishable from a judgement
+    // made at the time.
+    if (path === '/api/admin/judgements/next' && req.method === 'GET') {
+      const [reading] = await unjudgedRatings({ limit: 1 });
+      if (!reading) return json(res, 200, { reading: null, remaining: 0 });
+      const hoursBack = (Date.now() - Date.parse(reading.created_at)) / 3600_000 + PRIOR_HOURS + 1;
+      const priors = priorsBefore(await history({ hours: hoursBack, limit: 5000 }), reading);
+      const record = judgeRecord({ priors, stories: await recentStories({ before: reading.created_at }) });
+      return json(res, 200, {
+        reading, judge_version: judgeVersion(), record: record.text,
+        remaining: (await unjudgedRatings({ limit: 1000 })).length,
+      });
+    }
+    if (path === '/api/admin/judgements' && req.method === 'POST') {
+      const body = await readJsonBody(req).catch(() => ({}));
+      const [oldest] = await unjudgedRatings({ limit: 1 });
+      if (!oldest || Number(body?.reading) !== oldest.id) {
+        return json(res, 422, { error: `judge the oldest unjudged reading first: ${oldest?.id ?? 'none left'}` });
+      }
+      const hoursBack = (Date.now() - Date.parse(oldest.created_at)) / 3600_000 + PRIOR_HOURS + 1;
+      const record = judgeRecord({ priors: priorsBefore(await history({ hours: hoursBack, limit: 5000 }), oldest) });
+      const { same_story, ...judgement } = callerJudgement(body, record);
+      if (judgement.judge_version == null) return json(res, 422, { error: judgement.judge_note });
+      const saved = await setJudgement(oldest.id, { ...judgement, judge_model: 'backfill' });
+      return json(res, 200, {
+        reading: oldest.id, story: saved.story,
+        development: saved.development_of == null ? 'new' : 'same',
+        remaining: (await unjudgedRatings({ limit: 1000 })).length,
+      });
+    }
+
     if (path === '/api/admin/judge' && req.method === 'POST') {
       const limit = Math.min(Math.max(Number(url.searchParams.get('limit')) || 20, 1), 100);
       const pending = await unjudgedRatings({ limit });
@@ -776,7 +880,7 @@ const server = createServer(async (req, res) => {
           explanation: row.explanation,
           created_at: row.created_at,
           priors,
-          stories: await recentStories(),
+          stories: await recentStories({ before: row.created_at }),
         });
         await setJudgement(row.id, judgement);
         if (judgement.judge_version != null) judged += 1;

@@ -246,8 +246,7 @@ let that drift: across 231 readings it coined four names for the US-Iran war —
 developments in front of it at the time, so a name seen in passing beside a
 development is demonstrably not enough to get it reused.
 
-The number groups developments by **id**, but story fatigue and the admin board
-group by name, so a split name splits a story's age and routine level.
+Developments group by **id**; fatigue and the board group by name.
 
 v2 lifts the names out into a "Stories on record" list of their own, drawn from
 fourteen days rather than the developments' 48 hours — a story quiet for two
@@ -257,6 +256,13 @@ prompt is byte-identical to v1, so which development a reading reports is judged
 by the same text and the two versions stay comparable; a test pins that.
 
 History was not re-judged: a stored judgement is never recomputed.
+
+**v3 lets a split be mended.** Under v2 two names for one story stayed two,
+and a dormant one could return (`hormuz-conflict`, 18 September). v3 is v2 plus
+one paragraph: an answer may add `same_story`, two names on record for one
+story. A merge is a row in `story_merges`, resolved where `db.js` reads names,
+so fatigue, the board and the judge's list see one story while readings keep
+their own name. The name more readings used is kept. `/admin` can undo, by row.
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
@@ -452,8 +458,7 @@ is why every cell carries a class and an `absent` marker. The separator is a
 `::before` on each field but the first, so a hidden field takes its separator
 with it. Prompt version is that first field: `prompt_version` is `NOT NULL`, so
 it is the one small field always present, which is what makes leaving the
-separator off it safe. While model led that line it began with a stray dot,
-because source sits on its own line above rather than beside it.
+separator off it safe.
 
 **A rejection some clients can only read as a 200.** A caller agent's fetch tool
 surfaces nothing on a non-2xx — one collapses every failure into
@@ -527,11 +532,8 @@ per space where `+` costs one, which on a median 140-character explanation is
 the difference between fitting and not. Other reserved characters are still
 percent-encoded.
 
-This was first reported as an encoding-compatibility problem — `%20` rejected,
-`+` accepted — and that was wrong: the two attempts that failed were simply the
-two that were longest, because percent-encoding their spaces pushed them over.
-A 107-character URL containing `%20` goes through fine. The recommendation did
-not change; the reason it is right did.
+It was first misread as `%20` being rejected; the failures were simply the
+longest URLs, and a 107-character URL with `%20` goes through.
 
 The budget does not explain everything. Six of the last 48 stored readings would
 have needed a URL over 250 characters, one of them 285, so the limit is not the
@@ -707,9 +709,8 @@ should be lower, which is the wrong half of the job: prose about a scale does
 not move a scale.
 
 v8 was live for seventeen minutes and produced **no readings at all** —
-readings run v2, v3, v4, v7, v9, v10, v11 and skip it entirely. An earlier
-version of this note said v8 "kept rating high", which it cannot have done. The
-objection to it stands on reading the diff, not on evidence.
+readings run v2, v3, v4, v7, v9, v10, v11 and skip it entirely. The objection
+to it stands on reading the diff, not on evidence.
 
 v9 rewrote the rungs so a normal day sits at 3, and added **Examples**: the
 author's own scored readings, each headlined in eight words or fewer. Whether v9

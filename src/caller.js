@@ -110,6 +110,14 @@ app treats an unjudged reading as continuing the one before it. A reading whose
 answer is \`development_of: null\` opens a development, and the app shows its
 sentence after the label \`New: \`.
 
+When two names in the record are one story coined twice, the answer also
+carries \`same_story\` with both names, as the judge prompt describes. The
+server keeps whichever name more readings were filed under and resolves the
+other to it everywhere stories are grouped; stored readings are not renamed.
+The response says \`merge\` when it was recorded, or \`merge_refused\` with the
+reason — a name not on record, or two names already one story. A refused merge
+never affects the reading.
+
 ## 2. Submission
 
 Authentication is the header \`x-newsworthy-token\`, carrying the caller's token —
@@ -128,7 +136,8 @@ content-type: application/json
     "judge_version": ${judge.version},
     "development_of": <an id listed in the record, or null for a new development>,
     "story": "<story name, reused verbatim when the story is on record>",
-    "note": "<at most 12 words on what makes it same or new>"
+    "note": "<at most 12 words on what makes it same or new>",
+    "same_story": ["<name>", "<other name>"]
   }
 }
 \`\`\`
@@ -150,7 +159,8 @@ reading that arrives without a digest cannot afterwards be attributed to the
 scale it was rated against.
 
 The GET form carries the judgement flat, as \`judge_version\`,
-\`development_of\` (an id, or \`new\`), \`story\` and \`judge_note\`.
+\`development_of\` (an id, or \`new\`), \`story\`, \`judge_note\` and, when
+present, \`same_story\` as the two names joined by a comma.
 
 Spaces are \`+\` in that query string, because \`+\` costs one character where
 \`%20\` costs three. Other reserved characters are still percent-encoded — a

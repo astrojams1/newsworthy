@@ -135,6 +135,7 @@ export function openapiDocument({ baseUrl }) {
                         development_of: { type: ['integer', 'null'], description: 'Id of the recorded development this reports, or null for a new one.' },
                         story: { type: 'string', description: 'Story slug, reused verbatim when on record.' },
                         note: { type: 'string', description: 'At most 12 words on what makes it same or new.' },
+                        same_story: { type: 'array', items: { type: 'string' }, minItems: 2, maxItems: 2, description: 'Optional: two story names on record that are one story coined twice. Never for related stories.' },
                       },
                     },
                     // Optional, and never a rejection: a mismatch stores a

@@ -183,6 +183,11 @@
   /* The board behind the front page: one block per live story, its
      developments beneath it, newest first. */
   .stories { display: grid; gap: 0.75rem; }
+  .merges { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; font-size: 0.8125rem; }
+  .merges .undone { color: var(--ink-faint); text-decoration: line-through; }
+  .merges button, .merge-form button { font: inherit; font-size: 0.75rem; padding: 0.15rem 0.6rem; margin-left: 0.5rem; }
+  .merge-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.75rem; }
+  .merge-form input { font: inherit; font-size: 0.8125rem; padding: 0.3rem 0.5rem; border: 1px solid var(--rule); border-radius: 7px; background: var(--surface); color: var(--ink); }
   .story { border: 1px solid var(--rule); border-radius: var(--radius-card); padding: 0.75rem 0.875rem; background: var(--surface-2); }
   .story.leading { border-color: var(--series); }
   .story-head { display: flex; align-items: baseline; gap: 0.5rem; }
@@ -240,6 +245,16 @@
   <h2>Live stories</h2>
   <p class="note" id="stories-note"></p>
   <div class="stories" id="stories"></div>
+
+  <h2>Story merges</h2>
+  <p class="note">One story recorded under two names. The caller proposes a merge while judging; the name more readings used is kept. Stored readings keep their own names, and an undo restores both.</p>
+  <div id="merges"></div>
+  <form class="merge-form" id="merge-form">
+    <input name="a" placeholder="story name" autocomplete="off">
+    <input name="b" placeholder="other story name" autocomplete="off">
+    <button type="submit">Merge</button>
+    <span class="note" id="merge-status"></span>
+  </form>
 
   <h2>Recent runs</h2>
   <div class="scroll"><table id="runs">
@@ -634,6 +649,44 @@
     }).join('') || '<tr><td colspan="11" class="empty">Nothing logged yet.</td></tr>';
   }
 
+  /** Every merge, newest first: in force with an undo, or struck through once
+   *  undone. Undo rows themselves are folded into the merge they undo. */
+  function renderMerges(merges = []) {
+    const undone = new Set(merges.filter((m) => m.undoes != null).map((m) => m.undoes));
+    const rows = merges.filter((m) => m.undoes == null);
+    $('merges').innerHTML = rows.length ? `<ul class="merges">${rows.map((m) => {
+      const who = m.source === 'caller' && m.reading_id != null ? `caller, reading ${m.reading_id}` : m.source;
+      const text = `${escapeHtml(m.alias)} → ${escapeHtml(m.canonical)} · ${escapeHtml(who)} · ${escapeHtml(fmtTime.format(new Date(m.created_at)))}${m.note ? ` · ${escapeHtml(m.note)}` : ''}`;
+      return m.active
+        ? `<li>${text}<button type="button" data-undo="${m.id}">Undo</button></li>`
+        : `<li class="undone">${text}${undone.has(m.id) ? ' · undone' : ''}</li>`;
+    }).join('')}</ul>` : '<p class="empty">No merges.</p>';
+  }
+
+  const post = (path, body) => fetch(path, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', ...(token ? { 'x-admin-token': token } : {}) },
+    body: JSON.stringify(body ?? {}),
+  });
+
+  $('merges').addEventListener('click', async (event) => {
+    const id = event.target?.dataset?.undo;
+    if (!id) return;
+    event.target.disabled = true;
+    const res = await post(`/api/admin/merges/${id}/undo`);
+    if (res.ok) load();
+    else event.target.disabled = false;
+  });
+
+  $('merge-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const res = await post('/api/admin/merges', { stories: [form.a.value, form.b.value] });
+    const body = await res.json().catch(() => ({}));
+    $('merge-status').textContent = res.ok ? `${body.merge.alias} → ${body.merge.canonical}` : (body.error ?? res.statusText);
+    if (res.ok) { form.reset(); load(); }
+  });
+
   /** One collapsed entry per caller run, newest first, titled by the reading it
    *  submitted — or by its absence, which is the run a report exists for. */
   function renderCallerRuns(runs = []) {
@@ -745,6 +798,7 @@
     renderChart();
     renderRuns(data.attempts);
     renderCallerRuns(data.caller_runs);
+    renderMerges(data.merges);
     // Same badge as the front page, which means the displayed value rather
     // than the newest reading — those differ on about 60% of hours.
     applyLevel(points.length ? points.at(-1).displayed ?? points.at(-1).score : null);

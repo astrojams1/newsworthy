@@ -61,7 +61,7 @@ test('the schema asks for nothing the app cannot verify', () => {
   // answer to a retired judge version is refused.
   const body = doc().paths['/api/readings'].post.requestBody.content['application/json'].schema;
   assert.deepEqual(Object.keys(body.properties).sort(), ['explanation', 'judgement', 'prompt_sha256', 'score']);
-  assert.deepEqual(Object.keys(body.properties.judgement.properties).sort(), ['development_of', 'judge_version', 'note', 'story']);
+  assert.deepEqual(Object.keys(body.properties.judgement.properties).sort(), ['development_of', 'judge_version', 'note', 'same_story', 'story']);
   assert.deepEqual(body.required, ['score', 'explanation']);
   assert.equal(body.properties.prompt_sha256.type, 'string');
   assert.equal(body.properties.prompt_sha256.pattern, '^[0-9a-f]{64}$');
