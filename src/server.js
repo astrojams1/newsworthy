@@ -900,6 +900,19 @@ const server = createServer(async (req, res) => {
       return json(res, 200, { prompts: allPrompts() });
     }
 
+    // An API path no route answered. Recorded when the request carried a valid
+    // token, so a caller working from instructions that no longer match the
+    // server — a removed endpoint, a wrong method — leaves evidence rather than
+    // an unexplained gap. Unauthenticated misses are not recorded, for the same
+    // reason the 401 is not: a public URL must not buy a database write. The
+    // path is kept and the query string is not, since it can carry the token.
+    if (path.startsWith('/api/')) {
+      if (callerAuthorized(url, req)) {
+        await logRejection({ status: 404, reason: `no such endpoint: ${req.method} ${path}`, method: req.method });
+      }
+      return json(res, 404, { error: `no such endpoint: ${req.method} ${path}` });
+    }
+
     return serveStatic(res, path.slice(1));
   } catch (err) {
     console.error('request failed', err);

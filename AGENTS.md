@@ -57,6 +57,9 @@ release status. Calm presentation must not change the rating calibration.
   `.agents/skills/newsworthy-user-research/SKILL.md`; retain evidence and search
   lessons in `docs/user-research/runs.md` and decisions in
   `docs/user-research/opportunities.md`.
+- To check the hourly caller's runs, use
+  `.agents/skills/newsworthy-caller-review/SKILL.md`; findings go in
+  `docs/caller-reviews/ledger.md`, observations kept apart from hypotheses.
 - A push to `main` deploys to production. `main` is both the GitHub default
   branch and Vercel's production branch. Preview builds are skipped by
   `vercel.json`’s `ignoreCommand`; verify production after merge.
@@ -737,10 +740,8 @@ what a *caller* sees, while the origin says MISS, is positive evidence the cache
 sits on the caller's side — an origin cache would answer HIT with a non-zero
 age.
 
-Which matters because the fix differs. Nothing more can be done here beyond what
-already is: responses now also carry `Pragma: no-cache` and `Expires: 0` for an
-intermediary that ignores `Cache-Control`, and neither reaches a client that
-caches by URL regardless. Only the caller can defeat that, with a distinct query
+Responses also carry `Pragma: no-cache` and `Expires: 0`; neither reaches a
+client that caches by URL. Only the caller can defeat that, with a distinct query
 parameter per run. So the instructions describe it, and a stale-copy explanation
 is the first thing to check whenever a prompt change appears to have had no
 effect.

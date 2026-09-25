@@ -67,6 +67,28 @@ test('what was refused is recorded; what was unauthenticated is not', async () =
   });
 });
 
+test('an authenticated call to an endpoint that does not exist is recorded, without its query', async () => {
+  // A caller following instructions that no longer match the server — a
+  // removed endpoint, a wrong method — used to leave no trace at all, so a run
+  // that went wrong could only be explained by guessing.
+  await withServer({ port: PORTS.unknownPaths, env: { ADMIN_TOKEN: ADMIN, NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
+    const removed = await fetch(`${base}/api/readings/prepare?token=${CALLER}`, {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: '{"score":4}',
+    });
+    assert.equal(removed.status, 404);
+    assert.deepEqual(await removed.json(), { error: 'no such endpoint: POST /api/readings/prepare' });
+    assert.equal((await fetch(`${base}/api/developments?token=${CALLER}`, { method: 'POST' })).status, 404, 'a wrong method too');
+    assert.equal((await fetch(`${base}/api/nothing-here`)).status, 404, 'unauthenticated: answered, not recorded');
+
+    const { rejections } = await (await fetch(`${base}/api/admin/history?token=${ADMIN}`)).json();
+    assert.deepEqual(rejections.map((r) => [r.status, r.reason, r.method]), [
+      [404, 'no such endpoint: POST /api/developments', 'POST'],
+      [404, 'no such endpoint: POST /api/readings/prepare', 'POST'],
+    ]);
+    assert.ok(rejections.every((r) => !r.reason.includes(CALLER)), 'the token in the query is never kept');
+  });
+});
+
 test('the rejection write is awaited, not left in flight', async () => {
   // Asserted against the source, like the max_uses check in pricing.test.js,
   // because nothing running here can see the difference: a local server always
