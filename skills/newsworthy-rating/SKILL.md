@@ -54,6 +54,9 @@ submission. Success means the API confirms that the reading was stored.
 5. Submit score, explanation, prompt_sha256 and that `judgement` to
    `/api/readings`. Confirm the API stored it. If it says `"development":
    "unjudged"`, `judge_note` says why; the reading is still stored.
+6. End every run with one report to `/api/runs`, including a run that submitted
+   nothing: the searches and sources, the stories weighed, why the score and
+   the judgement, and anything that failed.
 
 The service supplies the recent history at `/api/developments`; the caller does not need
 admin credentials or the full archive. The app labels a sentence that opened a new

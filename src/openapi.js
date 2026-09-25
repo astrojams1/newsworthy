@@ -193,6 +193,27 @@ export function openapiDocument({ baseUrl }) {
           },
         },
       },
+      '/api/runs': {
+        post: {
+          operationId: 'postRunReport',
+          summary: 'Report on the run, once per run',
+          description:
+            'The last call of every run, including a run that submitted nothing. The report is the caller\u2019s own ' +
+            'account: searches and sources, the stories weighed, why the score and the judgement, and anything that ' +
+            'failed. Stored as written, never checked; not a reading.',
+          requestBody: { required: true, content: { 'application/json': { schema: {
+            type: 'object', required: ['report'], properties: {
+              reading: { type: 'integer', description: 'The id submitReading returned; omitted when nothing was submitted.' },
+              report: { type: 'string', description: 'Plain text, at most 4,000 characters; longer is cut, never refused.' },
+            },
+          } } } },
+          responses: {
+            201: { description: 'Stored.' },
+            401: { description: 'Missing or wrong token.' },
+            422: { description: 'No report text.' },
+          },
+        },
+      },
     },
     components: {
       securitySchemes: {

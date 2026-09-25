@@ -246,9 +246,8 @@ let that drift: across 231 readings it coined four names for the US-Iran war —
 developments in front of it at the time, so a name seen in passing beside a
 development is demonstrably not enough to get it reused.
 
-The blast radius was narrower than it looked: the number groups developments by
-**id**, never by name, so the front page was right throughout. Only the admin
-board grouped by name, and it showed one story as two.
+The number groups developments by **id**, but story fatigue and the admin board
+group by name, so a split name splits a story's age and routine level.
 
 v2 lifts the names out into a "Stories on record" list of their own, drawn from
 fourteen days rather than the developments' 48 hours — a story quiet for two
@@ -266,10 +265,11 @@ and submits its answer as `judgement` with the reading, so a reading lands
 judged. The server calls no model, checks the id against the developments on
 record, and stamps its own version (an answer to a retired one is refused) and
 `judge_model = 'caller'`; without a usable answer the reading stores unjudged.
-Storing first and judging after was built and dropped: it showed readings
-unjudged and needed a window to guard an order only the caller can keep. This moved off the app's API
-account when credits ran out on 2026-09-24; the cron and `/api/admin/judge`
-still spend `judge_spend_usd`. The judge cannot alter a score or reject a
+Storing first and judging after was dropped: it showed readings unjudged. This
+moved off the app's API account when credits ran out on 2026-09-24; the cron
+and `/api/admin/judge` still spend `judge_spend_usd`. Each run ends with an
+unchecked report to `/api/runs`, shown at `/admin`: Routine transcripts are
+not reachable from a session. The judge cannot alter a score or reject a
 submission — the four rejection rules stay four. Its prompts are append-only and
 pinned by hash: a stored judgement names the version that made it.
 

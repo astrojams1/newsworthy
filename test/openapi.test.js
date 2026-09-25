@@ -4,12 +4,12 @@ import { openapiDocument } from '../src/openapi.js';
 
 const doc = () => openapiDocument({ baseUrl: 'https://example.test' });
 
-test('describes the three calls a caller has to make, and nothing else', () => {
+test('describes the calls a caller makes, and nothing else', () => {
   // ChatGPT cannot submit through browsing: its interpreter has no network and
   // its browser refuses a model-assembled URL. A Custom GPT Action is the
   // supported route, and an Action is exactly this schema plus a key.
   const ops = Object.values(doc().paths).flatMap((p) => Object.values(p).map((o) => o.operationId));
-  assert.deepEqual(ops.sort(), ['getDevelopments', 'getInstructions', 'submitReading']);
+  assert.deepEqual(ops.sort(), ['getDevelopments', 'getInstructions', 'postRunReport', 'submitReading']);
 });
 
 test('auth is a header, which is the whole point of going through an Action', () => {

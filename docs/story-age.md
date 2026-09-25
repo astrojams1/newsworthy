@@ -37,6 +37,7 @@ sentences are not rewritten.
 5. Submit score, sentence, prompt digest and that `judgement` together to
    `/api/readings`. The reading is stored already judged; a null answer shows
    its sentence with `New: ` at once. Newsworthy calls no model.
+6. Post a run report to `/api/runs`, as every run does, submitted or not.
 
 The id is checked against the developments on record when the reading arrives,
 and the version stamped is the server's own; an answer to a retired version is

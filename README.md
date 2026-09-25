@@ -116,6 +116,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/prompt` | Just the current versioned prompt, as JSON |
 | `/api/developments` | The story names and developments on record, fetched by a caller after it has scored and written, to judge its reading against; read-only |
 | `/api/readings` | `POST` a reading from an external caller agent, with its answer to the judge task; the server calls no model |
+| `/api/runs` | `POST` the caller's report on its run, one per run, including runs that submitted nothing; shown under "Caller reports" at `/admin` |
 | `/api/openapi.json` | Instructions, developments and submission as an OpenAPI schema, for a ChatGPT Custom GPT Action. Unauthenticated on purpose — it describes a token-gated API without containing a token, and a schema importer cannot present one |
 | `/api/cron` | The scheduled job — runs only if nothing arrived within the interval. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
 | `/healthz` | Liveness, plus whether the database, API key and cron secret are wired up |

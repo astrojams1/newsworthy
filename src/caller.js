@@ -219,6 +219,25 @@ rewritten in transit, most often — and the answer is to send it again, not to
 shorten the sentence. A caller that shortens its explanation in response to a
 422 degrades the reading while leaving the actual fault in place.
 
+### The run report
+
+Every run ends with one report, including a run that submitted nothing — that
+run otherwise leaves no trace. It goes to \`POST ${baseUrl}/api/runs\` with the
+same authentication:
+
+\`\`\`
+{"reading": <the id the submission returned, omitted when nothing was submitted>,
+ "report": "<plain text, at most 4,000 characters>"}
+\`\`\`
+
+The report is the caller's own account, in plain sentences: the searches run and
+the sources that answered or refused, the candidate stories weighed and why the
+chosen one led, why the score sits on its rung, which recorded development the
+judgement named and why, and anything that failed or was skipped. It is stored
+as written and never checked; it is not a reading and does not suppress the
+scheduled run. A \`reading\` id that matches nothing is stored unlinked, never
+refused.
+
 ## 3. The prompt
 
 Reproduced verbatim below, version ${prompt.version}, SHA-256 \`${prompt.hash}\`.

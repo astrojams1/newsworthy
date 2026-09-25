@@ -77,6 +77,18 @@ export function ensureSchema() {
         method      TEXT,                  -- 'GET' or 'POST'
         soft_errors BOOLEAN     NOT NULL DEFAULT false -- was the 200-shaped form on
       )`;
+    // The caller's own account of each run, one row per run, whether or not it
+    // submitted a reading. A report is not a reading and is not checked: it is
+    // what the caller says it searched, weighed and decided, kept so a run can
+    // be read afterwards — the Routine's own transcript is not reachable from
+    // here, and a run that submitted nothing otherwise leaves no trace at all.
+    await sql`
+      CREATE TABLE IF NOT EXISTS caller_runs (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reading_id  BIGINT,               -- the reading it submitted, if any
+        report      TEXT        NOT NULL
+      )`;
     // Devices that asked to be told about a high reading, and the readings they
     // were told about. One row per Expo push token — the token is the whole
     // identity, so re-registering the same device is an update, not a second
@@ -146,7 +158,7 @@ const num = (value) => (value === null || value === undefined ? null : Number(va
 const NUMERIC = [
   'id', 'score', 'prompt_version', 'latency_ms', 'input_tokens', 'output_tokens',
   'cache_read_tokens', 'cache_write_tokens', 'web_search_requests', 'cost_usd',
-  'development_of', 'judge_version', 'judge_cost_usd',
+  'development_of', 'judge_version', 'judge_cost_usd', 'reading_id',
 ];
 
 /**
@@ -534,6 +546,32 @@ export async function recentRejections({ hours = 24 * 7, limit = 100 } = {}) {
       FROM rejections
      WHERE created_at >= ${since}
      ORDER BY created_at DESC, id DESC
+     LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
+/** Store one caller run report. */
+export async function logCallerRun({ reading_id = null, report }) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO caller_runs (reading_id, report) VALUES (${reading_id}, ${report})
+    RETURNING id, created_at, reading_id`;
+  return shape(rows[0]);
+}
+
+/**
+ * Run reports within the window the admin page asked for, newest first, each
+ * with the score and sentence of the reading it submitted, if any.
+ */
+export async function recentCallerRuns({ hours = 24 * 7, limit = 200 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT c.id, c.created_at, c.reading_id, c.report, r.score, r.explanation
+      FROM caller_runs c
+      LEFT JOIN ratings r ON r.id = c.reading_id
+     WHERE c.created_at >= ${since}
+     ORDER BY c.created_at DESC, c.id DESC
      LIMIT ${limit}`;
   return rows.map(shape);
 }
