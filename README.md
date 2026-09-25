@@ -39,6 +39,11 @@ Its [run ledger](docs/user-research/runs.md) retains sources and search lessons;
 the [opportunity ledger](docs/user-research/opportunities.md) tracks evidence for
 adding, removing, changing or preserving functionality.
 
+To check the hourly caller's runs against what the server recorded, use the
+[caller review skill](.agents/skills/newsworthy-caller-review/SKILL.md) with
+`scripts/caller-review.mjs`; findings are appended to the
+[caller review ledger](docs/caller-reviews/ledger.md).
+
 ### iOS, Android and web
 
 `apps/client` is the shared **Expo / React Native** interface. Mobile screens
