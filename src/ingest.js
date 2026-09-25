@@ -92,18 +92,19 @@ function cleanString(value, { field, max, required = false }) {
  */
 export function submissionFromQuery(params) {
   const body = {};
-  for (const field of ['score', 'explanation', 'prompt_sha256', 'preparation']) {
+  for (const field of ['score', 'explanation', 'prompt_sha256']) {
     const value = params.get(field);
     if (value !== null) body[field] = value;
   }
-  // The caller's answer to the judge task, flat because a query string has no
-  // nesting. Only `development_of` makes an answer; the rest ride along.
-  if (params.get('development_of') !== null) {
-    body.judgement = {
-      development_of: params.get('development_of'),
-      story: params.get('story') ?? undefined,
-      note: params.get('judge_note') ?? undefined,
-    };
+  return body;
+}
+
+/** The GET form of a judgement: the same fields as the JSON body, flat. */
+export function judgementFromQuery(params) {
+  const body = {};
+  for (const field of ['reading', 'development_of', 'story', 'note', 'judge_version']) {
+    const value = params.get(field);
+    if (value !== null) body[field] = value;
   }
   return body;
 }

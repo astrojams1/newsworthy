@@ -259,15 +259,16 @@ by the same text and the two versions stay comparable; a test pins that.
 
 History was not re-judged: a stored judgement is never recomputed.
 
-**The caller is the judge for its own readings.** Research and score stay
-independent of history: only after scoring does `/api/readings/prepare` return
-`judge_task`, the judge prompt with the recorded developments and the draft. The
-caller answers it and submits the answer as `judgement`; the server calls no
-model, checks the id against those the task offered, and stamps the task's
-version and `judge_model = 'caller'`. No answer or no preparation stores the
-reading unjudged. It moved here when the app's API credits ran out on
-2026-09-24. The cron and `/api/admin/judge`
-still call the model and spend `judge_spend_usd`. The judge cannot alter a score or reject a
+**The caller is the judge for its own readings.** A submission is stored at
+once, before any history is shown, so history cannot steer the score or the
+sentence; its 201 carries `judge_task`, the judge prompt about it. The caller
+answers at `/api/readings/judgement`, taken once, for the newest reading, within
+30 minutes. The server calls no model, checks the id against those the task
+listed, recomputed from the rows before the reading, and stamps its own version
+(an echoed retired one is refused) and `judge_model = 'caller'`. Unanswered, the
+reading stays unjudged and is announced when superseded. It moved off the app's
+API account when credits ran out on 2026-09-24; the cron and `/api/admin/judge`
+still spend `judge_spend_usd`. The judge cannot alter a score or reject a
 submission — the four rejection rules stay four. Its prompts are append-only and
 pinned by hash: a stored judgement names the version that made it.
 
@@ -356,7 +357,7 @@ development of its own, the sentence leads with a bold **New:** for two hours
 after it was saved, independently of the score’s decay; any other sentence has
 no prefix. That replaced an age prefix ("31 hours ago:") on re-reports, which
 counted how old the rest was where the reader wanted to see what was new.
-`opensDevelopment()` in `src/preparation.js` decides it from the stored
+`opensDevelopment()` in `src/story.js` decides it from the stored
 judgement — judged, and `development_of` null — so a judge outage is never
 "new". Its wording comes from the
 newest reading, and the two answer different questions: the number is a level,
@@ -898,18 +899,14 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ## Testing
 
 ```bash
-npm test        # fourteen files under test/; database tests run against PGlite,
+npm test        # every test/*.test.js; database tests run against PGlite,
                 # real Postgres in-process, so the SQL is exercised not mocked
                 # test/with-server.js is the shared harness, not a suite
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
 
-The fourteen are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
-`parse`, `preferences`, `pricing`, `prompt-rules`, `push`, `rejections`, `scheduler`
-and `story`. A count of
-individual tests
-is not kept here: it is wrong again after the next PR, and a stale number in a
-document read as authoritative is worse than no number.
+No count of files or tests is kept here: it is wrong again after the next PR,
+and a stale number read as authoritative is worse than none.
 
 **The story timeline** is off by default (`timeline` in `preferences.js`), one
 entry per development ordered by `opened`, one week long. See
@@ -920,4 +917,4 @@ for two hours from the reading’s `created_at`, not the score’s decay anchor 
 verified event date. It is bold and otherwise styled as the sentence, on the web,
 in the apps and in both widgets. The 140-character display budget includes it;
 prompts v16 and later reserve 5 characters for "New: " and ask for a body of at most 135.
-See `docs/story-age.md` for preparation, compatibility and verification limits.
+See `docs/story-age.md` for the caller sequence, compatibility and verification limits.

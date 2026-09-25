@@ -33,6 +33,7 @@ export const PORTS = {
   webSettings: 8847,
   webSettingsTheme: 8849,
   webSettingsGlyphs: 8851,
+  pushSettled: 8853,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall
@@ -82,12 +83,12 @@ export const readings = (base) => async (qs) => {
 };
 
 /**
- * The caller's whole sequence: prepare the draft, answer the judge task it
- * returns, then submit with that answer. `same` answers with the newest
- * development the task lists, read from its text the way a caller reads it;
- * `new` answers null; a number names that development.
+ * The caller's whole sequence: submit the reading, then answer the judge task
+ * its 201 carries. `same` answers with the newest development the task lists,
+ * read from its text the way a caller reads it; `new` answers null; a number
+ * names that development. `submitted` is the 201, `judged` the answer's reply.
  */
-export const caller = (base) => async (score, explanation, { answer = 'new', story = 'fixture', ...extra } = {}) => {
+export const caller = (base) => async (score, explanation, { answer = 'new', story = 'fixture' } = {}) => {
   const post = async (path, body) => {
     const res = await fetch(`${base}${path}`, {
       method: 'POST',
@@ -96,12 +97,12 @@ export const caller = (base) => async (score, explanation, { answer = 'new', sto
     });
     return { status: res.status, body: await res.json() };
   };
-  const prepared = await post('/api/readings/prepare', { score, explanation });
-  const offered = [...prepared.body.judge_task.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
+  const submitted = await post('/api/readings', { score, explanation });
+  const offered = [...submitted.body.judge_task.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
   const development_of = answer === 'new' ? null : answer === 'same' ? offered.at(-1) : answer;
-  const submitted = await post('/api/readings', {
-    score, explanation, preparation: prepared.body.preparation,
-    judgement: { development_of, story, note: `test: ${answer}` }, ...extra,
+  const judged = await post('/api/readings/judgement', {
+    reading: submitted.body.id, judge_version: submitted.body.judge_version,
+    development_of, story, note: `test: ${answer}`,
   });
-  return { ...submitted, prepared: prepared.body };
+  return { submitted, judged };
 };

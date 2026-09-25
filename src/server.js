@@ -5,18 +5,17 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { takePreparation, correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { correctUsage, failures, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, recentRatings, ratingById, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries } from './current.js';
-import { PRIOR_HOURS, judgeReading } from './story.js';
+import { AWAITING_JUDGEMENT, JUDGEMENT_MINUTES, PRIOR_HOURS, callerJudgement, judgeReading, judgeTask, opensDevelopment, priorsBefore } from './story.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
-import { SubmissionError, completeSentence, submissionFromQuery, validateSubmission } from './ingest.js';
+import { SubmissionError, completeSentence, judgementFromQuery, submissionFromQuery, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
 import { openapiDocument } from './openapi.js';
 import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
-import { prepareReading, opensDevelopment, submittedJudgement } from './preparation.js';
 import { PushError, notifyReading, subscribe as subscribePush, unsubscribe as unsubscribePush } from './push.js';
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -436,7 +435,7 @@ const server = createServer(async (req, res) => {
     // GET is accepted alongside POST because some agents can only issue a
     // plain fetch: no custom headers, no request body. Those carry the token
     // and the reading in the query string instead.
-    if ((path === '/api/readings' || path === '/api/readings/prepare') && (req.method === 'POST' || req.method === 'GET')) {
+    if (path === '/api/readings' && (req.method === 'POST' || req.method === 'GET')) {
       // Auth is softened too. A caller that cannot read a 401 is stuck
       // permanently and silently, which is the worst of the failures here, and
       // nothing is disclosed: this route and its token requirement are
@@ -458,23 +457,24 @@ const server = createServer(async (req, res) => {
       }
       try {
         const submission = validateSubmission(body);
-        if (path === '/api/readings/prepare') {
-          return json(res, 200, await prepareReading(submission));
-        }
-        const prepared = await takePreparation(body.preparation, submission.score, submission.prompt_version);
-        // Which development this reports is the caller's own answer to the
-        // judge task its preparation carried; this app calls no model for it.
-        // It cannot change the score or reject the reading — a missing or
-        // unusable answer stores the reading unjudged, carrying the reason — so
-        // the four rejection rules stay four.
-        const judgement = submittedJudgement(body, prepared);
-        // slot = NULL: an external reading never competes for a cron slot. It
-        // suppresses the next cron run by being recent, not by claiming a slot.
-        const saved = await insertRating({ ...submission, ...judgement, slot: null,
-          raw_output: prepared ? JSON.stringify({ draft: prepared.draft, explanation: submission.explanation }) : null });
-        // Awaited, like the rejection log: a serverless function may be frozen
-        // the moment the response ends, and a push left in flight goes nowhere.
-        await notifyReading(saved);
+        // A reading this one supersedes while it still awaited its judgement
+        // is settled now, unjudged, and is announced as it stands — otherwise a
+        // caller that never answers would never be announced at all.
+        const previous = await latestRating();
+        if (previous?.judge_note === AWAITING_JUDGEMENT) await notifyReading(previous);
+        // Stored before any history is shown to the caller: the score and the
+        // sentence are committed first, so the history in the judge task below
+        // cannot steer either. slot = NULL: an external reading never competes
+        // for a cron slot; it suppresses the next cron run by being recent.
+        const saved = await insertRating({ ...submission, slot: null, judge_note: AWAITING_JUDGEMENT });
+        // Not announced yet: which development it reports decides what the
+        // page shows, and that is the caller's answer to the task below.
+        const task = judgeTask({
+          reading: saved,
+          priors: priorsBefore(await history({ hours: PRIOR_HOURS }), saved),
+          // The names already in use, so one story keeps one name.
+          stories: await recentStories(),
+        });
         const verified = saved.prompt_verified === true ? 'verified'
           : saved.prompt_verified === false ? 'DIGEST MISMATCH' : 'no digest';
         console.log(
@@ -493,13 +493,12 @@ const server = createServer(async (req, res) => {
           // So a caller learns immediately whether the text it rated against
           // was the text this server sent, rather than finding out never.
           prompt_verified: saved.prompt_verified ?? null,
-          // What the reading was taken to report. 'unjudged' is its own answer:
-          // the reading is stored and displayed, the clock simply carries on
-          // from the reading before it.
-          story: saved.story ?? null,
-          development: saved.judge_version == null
-            ? 'unjudged'
-            : (saved.development_of == null ? 'new' : 'same'),
+          // The one question left: which recorded development this reports.
+          // Answered at /api/readings/judgement; this app calls no model for it.
+          development: 'pending',
+          judge_task: task.text,
+          judge_version: task.version,
+          judge_until: new Date(Date.parse(saved.created_at) + JUDGEMENT_MINUTES * 60_000).toISOString(),
           // Name anything the caller sent that was not stored, so a caller
           // working from an older spec learns its model and token counts went
           // nowhere rather than assuming they landed.
@@ -515,6 +514,52 @@ const server = createServer(async (req, res) => {
         }
         throw err;
       }
+    }
+
+    // The caller's answer to the judge task its submission was handed. It is
+    // taken only for a reading still awaiting one, still the newest, and within
+    // JUDGEMENT_MINUTES: a newer reading's task was built on this one as it
+    // stood, so a later answer would re-read what that task showed. A bad
+    // answer stores nothing and may be corrected inside the window; the
+    // reading itself is never at stake here.
+    if (path === '/api/readings/judgement' && (req.method === 'POST' || req.method === 'GET')) {
+      if (!callerAuthorized(url, req)) {
+        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+      }
+      let body;
+      try {
+        body = req.method === 'GET' ? judgementFromQuery(url.searchParams) : await readJsonBody(req);
+      } catch (err) {
+        return rejection(res, url, 400, String(err?.message ?? err), { method: req.method });
+      }
+      const refuse = (reason) => rejection(res, url, 422, `judgement: ${reason}`, { method: req.method });
+      const id = Number(body?.reading);
+      if (!Number.isInteger(id)) return refuse('reading must be the id the submission returned');
+      const reading = await ratingById(id);
+      if (!reading || reading.status !== 'ok') return refuse(`no reading ${id}`);
+      if (reading.judge_note !== AWAITING_JUDGEMENT) return refuse(`reading ${id} is not awaiting a judgement`);
+      if ((await latestRating())?.id !== id) return refuse(`reading ${id} has been superseded`);
+      if (Date.now() - Date.parse(reading.created_at) > JUDGEMENT_MINUTES * 60_000) {
+        return refuse(`reading ${id} closed to judgement after ${JUDGEMENT_MINUTES} minutes`);
+      }
+      const task = judgeTask({ reading, priors: priorsBefore(await history({ hours: PRIOR_HOURS + 1 }), reading) });
+      const judgement = callerJudgement(body, task);
+      if (judgement.judge_version == null) {
+        return json(res, 200, { ok: true, judged: false, reading: id, reason: judgement.judge_note });
+      }
+      const saved = await setJudgement(id, judgement);
+      if (!saved) return refuse(`reading ${id} is not awaiting a judgement`);
+      // Announced now that the page knows what it reports. Awaited, like the
+      // rejection log: a serverless function may be frozen the moment the
+      // response ends, and a push left in flight goes nowhere.
+      await notifyReading(saved);
+      return json(res, 200, {
+        ok: true,
+        judged: true,
+        reading: id,
+        story: saved.story,
+        development: saved.development_of == null ? 'new' : 'same',
+      });
     }
 
     // ---- push notifications --------------------------------------------

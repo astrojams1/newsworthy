@@ -77,12 +77,6 @@ export function ensureSchema() {
         method      TEXT,                  -- 'GET' or 'POST'
         soft_errors BOOLEAN     NOT NULL DEFAULT false -- was the 200-shaped form on
       )`;
-    await sql`
-      CREATE TABLE IF NOT EXISTS reading_preparations (
-        id UUID PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL,
-        score SMALLINT NOT NULL, prompt_version INTEGER NOT NULL,
-        draft TEXT NOT NULL, judgement JSONB NOT NULL
-      )`;
     // Devices that asked to be told about a high reading, and the readings they
     // were told about. One row per Expo push token — the token is the whole
     // identity, so re-registering the same device is an update, not a second
@@ -262,6 +256,13 @@ export async function latestRating() {
   return shape(rows[0]);
 }
 
+/** One reading, whole, or null. */
+export async function ratingById(id) {
+  await ensureSchema();
+  const rows = await sql`SELECT * FROM ratings WHERE id = ${id}`;
+  return rows[0] ? shape(rows[0]) : null;
+}
+
 /**
  * The newest readings, for the smoothed current score. Time-bounded as well as
  * counted: five readings is five hours while the hourly caller runs, but twenty
@@ -338,6 +339,8 @@ export async function unjudgedRatings({ limit = 20 } = {}) {
 /** Attach a judgement to a reading already stored. */
 export async function setJudgement(id, fields = {}) {
   await ensureSchema();
+  // Only ever onto a reading nothing has judged: a stored judgement is never
+  // recomputed, and the guard makes that true of two answers racing as well.
   const rows = await sql`
     UPDATE ratings
        SET story = ${fields.story ?? null},
@@ -346,7 +349,7 @@ export async function setJudgement(id, fields = {}) {
            judge_model = ${fields.judge_model ?? null},
            judge_note = ${fields.judge_note ?? null},
            judge_cost_usd = ${fields.judge_cost_usd ?? null}
-     WHERE id = ${id}
+     WHERE id = ${id} AND judge_version IS NULL
      RETURNING *`;
   return shape(rows[0]);
 }
@@ -556,27 +559,6 @@ export async function setSetting(key, value) {
   await sql`
     INSERT INTO settings (key, value, updated_at) VALUES (${key}, ${String(value)}, now())
     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
-}
-
-/** Short-lived drafts are not readings and do not suppress scheduled runs. */
-export async function savePreparation({ id, score, draft, promptVersion, judgement, createdAt }) {
-  await ensureSchema();
-  await sql`DELETE FROM reading_preparations WHERE created_at < now() - interval '1 day'`;
-  await sql`INSERT INTO reading_preparations (id, created_at, score, prompt_version, draft, judgement)
-    VALUES (${id}::uuid, ${createdAt}, ${score}, ${promptVersion}, ${draft}, ${JSON.stringify(judgement)}::jsonb)`;
-}
-
-/** Atomic, single-use. Invalid/expired receipts fall back to ordinary judging. */
-export async function takePreparation(id, score, promptVersion) {
-  if (typeof id !== 'string' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id)) return null;
-  await ensureSchema();
-  const rows = await sql`DELETE FROM reading_preparations
-    WHERE id = ${id}::uuid AND score = ${score} AND prompt_version = ${promptVersion}
-      AND created_at > now() - interval '30 minutes'
-    RETURNING judgement, draft`;
-  if (!rows[0]) return null;
-  const judgement = typeof rows[0].judgement === 'string' ? JSON.parse(rows[0].judgement) : rows[0].judgement;
-  return { judgement, draft: rows[0].draft };
 }
 
 // ---- push subscriptions ---------------------------------------------------

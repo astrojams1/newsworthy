@@ -67,7 +67,7 @@ exactly as written.
 
 The prompt's own output contract asks for a single JSON object and nothing
 else. That fixes the shape of the verdict. It does not end the caller's work:
-the object is a draft for the preparation step below, then the final payload for section 2.
+the object is the payload for section 2.
 
 A caller whose web search fails, or returns nothing, submits nothing at all. A
 score that could not be researched is worse than no score, and the server
@@ -80,55 +80,14 @@ summarizing fetch tool are unreliable digit by digit — a prediction-market rea
 came back summing past 100% and pointing the wrong way for its contract, and
 was correctly discarded rather than rated on.
 
-### Preparing the sentence
+### The sentence
 
-After research and rating, the caller sends its draft score and explanation to
-\`POST ${baseUrl}/api/readings/prepare\` with the same caller authentication.
-The score is fixed before this step and is unchanged by it: the stored history
-arrives only after research and rating, so it cannot steer either. The body is:
-
-\`\`\`
-{"score": <integer 1-10>, "explanation": "<draft sentence>"}
-\`\`\`
-
-The response has \`stored: false\`: preparation is not submission and does not
-suppress the next scheduled run. It carries \`preparation\` (an opaque, single-use
-reference valid for 30 minutes), \`judge_task\`, \`judge_version\`,
-\`display_character_limit: 140\`, \`reserved_prefix_characters: 5\` and
-\`max_explanation_characters: 135\`.
-
-### Judging the draft
-
-\`judge_task\` is a complete, self-contained question: the developments
-recorded over the last 48 hours, each with an id and story name, the story names
-on record, and the draft. The caller answers it itself, as a single JSON object
-in the format the task states: \`development_of\` (the id of the recorded
-development the draft reports, or null for a new one), \`story\` (the story
-name, reused verbatim when the story is on record) and \`note\`. No model on
-this server answers it. The answer is checked against the ids the task offered;
-an id it did not offer, or no answer, stores the reading unjudged, which the app
-treats as a continuation of the previous reading rather than as news.
-
-The app's only prefix is the label \`New: \`, shown in bold for two hours on a
-reading whose answer opens a development (\`development_of\` null). The app shows
-no age on any sentence.
-
-### Finalizing
-
-The caller finalizes the SAME development's sentence within 135 characters,
-including spaces and punctuation, keeping the score and facts unchanged. It
-counts characters with a code tool, not by estimating. The final explanation
-contains no label or timestamp: the app adds \`New: \`, which counts toward the
-FULL 140-character budget.
-
-The final submission includes the returned \`preparation\` and the \`judgement\`
-object alongside score, explanation and prompt_sha256. Changing to another
-development requires preparing again. An expired, reused, missing or invalid
-reference stores the reading unjudged without adding a rejection rule. The same
-endpoint accepts GET query parameters score and explanation for fetch-only
-clients; the GET submission carries the answer flat as \`development_of\` (an id,
-or \`new\`), \`story\` and \`judge_note\`. POST avoids URL length limits. No admin
-access or full history is needed.
+The sentence is final before anything is sent: at most 135 characters,
+including spaces and punctuation, counted with a code tool rather than
+estimated. The app may show it after the bold label \`New: \`, which takes the
+remaining 5 of a 140-character display. The label is the app's, so the
+submitted explanation carries no label or timestamp, and the budget is the same
+whether the development turns out to be new or not.
 
 ## 2. Submission
 
@@ -143,8 +102,6 @@ content-type: application/json
 {
   "score": <integer 1-10>,
   "explanation": "<sentence body, at most 135 characters including spaces and punctuation>",
-  "preparation": "<reference returned by /api/readings/prepare>",
-  "judgement": {"development_of": <id or null>, "story": "<slug>", "note": "<short reason>"},
   "prompt_sha256": "<64 lowercase hex characters, defined in section 3>"
 }
 \`\`\`
@@ -178,7 +135,7 @@ its own tooling reports before any request goes out is looking at a limit on its
 side, and the POST form, which carries the sentence in a body instead of a URL,
 is not subject to one.
 
-Those two fields are the whole reading. The \`judgement\` says which recorded development the reading reports, checked against the task its preparation carried; it is not a timestamp and cannot change the score. \`prompt_sha256\` says nothing about the
+Those two fields are the whole reading. \`prompt_sha256\` says nothing about the
 news — it reports which text this caller received, and section 3 defines it.
 
 The prompt version is stamped by the server from whatever is current, and is not a field a caller sets: a caller that
@@ -231,6 +188,40 @@ means the request did not arrive as it was sent — a query string truncated or
 rewritten in transit, most often — and the answer is to send it again, not to
 shorten the sentence. A caller that shortens its explanation in response to a
 422 degrades the reading while leaving the actual fault in place.
+
+### Judging the reading
+
+A stored reading's response carries one remaining question. \`development\` is
+\`pending\`, and \`judge_task\` asks which recorded development the reading
+reports: it lists the developments recorded over the 48 hours before it, each
+with an id and story name, the story names on record, and the reading itself.
+The history arrives only here, after the score and sentence are stored, so it
+cannot steer either. No model on this server answers the question; the caller
+does, in the format the task states, and sends the answer to
+\`POST ${baseUrl}/api/readings/judgement\` with the same authentication:
+
+\`\`\`
+{
+  "reading": <the id returned>,
+  "judge_version": <the judge_version returned>,
+  "development_of": <an id listed in the task, or null for a new development>,
+  "story": "<story name, reused verbatim when the story is on record>",
+  "note": "<at most 12 words on what makes it same or new>"
+}
+\`\`\`
+
+The GET form carries the same fields as query parameters, with
+\`development_of=new\` for null.
+
+An answer is taken once, for the newest reading, until \`judge_until\` —
+thirty minutes after it was stored. A newer reading's task was built on this
+one as it stood, which is why the window closes when one arrives. The reply is
+\`{"ok": true, "judged": true, "development": "new" | "same", ...}\`. An answer
+naming an id the task did not list, or echoing a retired \`judge_version\`,
+stores nothing and replies \`"judged": false\` with a \`reason\`; a corrected
+answer can follow inside the window. A reading never answered stays stored,
+unjudged, and the app treats it as continuing the reading before it. The label
+\`New: \` appears on a reading whose answer opens a development.
 
 ## 3. The prompt
 

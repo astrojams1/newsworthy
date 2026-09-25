@@ -114,9 +114,9 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/admin/readings/:id/usage` | `POST` corrected token counts to reprice a reading whose rating is sound but whose usage was not; omitted fields are cleared and the cost is recomputed from what survives |
 | `/api/instructions` | The whole caller workflow, rating prompt embedded — hand an agent this URL |
 | `/api/prompt` | Just the current versioned prompt, as JSON |
-| `/api/readings/prepare` | Return the judge task for a draft (recorded developments, story names and the draft, for the caller to answer), the character budget and a short-lived preparation reference; calls no model and does not store a reading |
-| `/api/readings` | `POST` a reading from an external caller agent |
-| `/api/openapi.json` | Instructions, preparation and submission as an OpenAPI schema, for a ChatGPT Custom GPT Action. Unauthenticated on purpose — it describes a token-gated API without containing a token, and a schema importer cannot present one |
+| `/api/readings` | `POST` a reading from an external caller agent. Stored at once; the 201 carries `judge_task`, the question of which recorded development it reports |
+| `/api/readings/judgement` | `POST` the caller's answer to that task, for the newest reading within 30 minutes; the server calls no model |
+| `/api/openapi.json` | Instructions, submission and judgement as an OpenAPI schema, for a ChatGPT Custom GPT Action. Unauthenticated on purpose — it describes a token-gated API without containing a token, and a schema importer cannot present one |
 | `/api/cron` | The scheduled job — runs only if nothing arrived within the interval. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
 | `/healthz` | Liveness, plus whether the database, API key and cron secret are wired up |
 

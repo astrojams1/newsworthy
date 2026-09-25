@@ -18,41 +18,37 @@ development can differ from the newest sentence’s development, so the label
 follows the newest row’s own judgement, never the score’s `since` anchor. A
 reading is new when the judge placed it (`judge_version` set) and it opened a
 development (`development_of` null). An unjudged reading is never new: a judge
-outage must not masquerade as a fresh story. Historical judgements and stored
+outage, or a reading still awaiting its caller's answer, must not masquerade
+as a fresh story. Historical judgements and stored
 sentences are not rewritten.
 
 ## Caller sequence
 
 1. Fetch current instructions and compute their prompt digest.
 2. Research current reporting, choose the score using the unchanged scale and
-   draft the sentence independently of historical readings.
-3. Send the draft and score to authenticated `/api/readings/prepare`. Newsworthy
-   calls no model: it returns `judge_task` (the judge prompt with the recorded
-   developments, story names and the draft), `judge_version`, the character
-   budget and an opaque preparation reference.
-4. Answer `judge_task` as the judge would: `development_of` (an offered id, or
-   null for a new development), `story` and `note`. A null answer means the
-   sentence is shown with `New: `.
-5. Finalize the same development’s sentence without changing its facts or score.
-   Prompts v16 and later allow 135 characters for the body and reserve 5 for the label.
-   The complete displayed sentence remains within 140 characters, including
-   spaces and punctuation. No label is submitted as prose.
-6. Submit score, final sentence, preparation reference, judgement and computed
-   prompt digest.
-   Confirm the 201/stored response. Preparation alone never saves a reading or
-   suppresses a scheduled run.
+   write the final sentence, all without any stored history. Prompts v16 and
+   later allow 135 characters for the body and reserve 5 for the label, so the
+   budget does not depend on whether the development turns out to be new.
+3. Submit score, sentence and prompt digest to `/api/readings`. The reading is
+   stored at once, before any history is shown, so history cannot steer it. The
+   201 carries `development: "pending"`, `judge_task` (the judge prompt with the
+   developments recorded before this reading, the story names and the reading)
+   and `judge_version`.
+4. Answer `judge_task` at `/api/readings/judgement`: `reading`, `judge_version`,
+   `development_of` (a listed id, or null for a new development), `story` and
+   `note`. Newsworthy calls no model. A null answer shows the sentence with
+   `New: `.
 
-The task's version and offered ids are saved with the reference, so the
-answer is checked against what the caller was shown and the version is stamped
-server-side. References are server-backed, score/version-bound, single use and
-expire in 30 minutes. A missing, invalid or expired reference, no answer, or an
-id the task did not offer stores the reading unjudged; the existing four rejection rules and 400-character
-ingestion handling are unchanged. A stored sentence always ends in punctuation:
-one arriving without an end is finished with a full stop, which can take a
-135-character body to 136. The original draft is retained alongside the final text
-for audit. A caller changing the event must prepare again. Unsubmitted drafts are
-removed after a day on subsequent preparations. Preparation costs this app
-nothing: the caller's own run answers the judge task.
+An answer is taken once, for the newest reading, within 30 minutes. It is checked
+against the ids the task listed, recomputed from the rows stored before the
+reading, and the version stamped is the server's own; an echoed retired version
+is refused. A refused answer stores nothing and can be corrected in the window.
+A reading never answered stays stored and unjudged, which the page reads as
+continuing the reading before it — never as new. It is announced to devices when
+its answer lands, or when a newer reading supersedes it. The four rejection rules
+and 400-character ingestion handling are unchanged. A stored sentence always ends
+in punctuation: one arriving without an end is finished with a full stop, which
+can take a 135-character body to 136.
 
 App-made ratings use the v16 body budget, unchanged since, and the existing generation-then-
 judge path. An intentional `NEWSWORTHY_PROMPT_VERSION` pin remains respected.
@@ -82,7 +78,7 @@ widget timing remains subject to the operating system.
 
 The writing comparison and its limitations are in
 [prompt evaluation v16](prompt-evaluations/v16.md). Tests cover the two-hour
-boundary, Unicode budgets, the judged/new rule, preparation, API fields and
+boundary, Unicode budgets, the judged/new rule, the judgement window, API fields and
 rendered app props (a bold label nested in the sentence) on all three platforms.
 The Swift formatter cases were updated but not compiled here, and the Android
 source was not compiled. Native visual parity and a replacement mobile release are

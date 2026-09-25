@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  allJudgePrompts, callerJudgement, groupDevelopments, judgeMessage, judgeReading, judgeTask, judgeVersion,
+  allJudgePrompts, callerJudgement, groupDevelopments, judgeMessage, judgeReading, judgeTask, judgeVersion, priorsBefore,
   mockJudgement, renderJudgePrompt, similarity,
 } from '../src/story.js';
 import { ADMIN_TOKEN, CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
@@ -164,42 +164,57 @@ test('similarity is symmetric and bounded', () => {
     similarity('nepal flood toll rises', 'flood in nepal'));
 });
 
-test('the caller answers the judge task, and is told what it reported', async () => {
+test('a stored reading is handed its judge task, and the answer places it', async () => {
   await withServer({ port: PORTS.storyIngest }, async (base) => {
     const submit = caller(base);
     const first = await submit(5, 'Tariff round opens on steel imports', { story: 'tariff-round' });
-    assert.equal(first.body.stored, true);
-    assert.equal(first.body.development, 'new', 'the caller found nothing like it on record');
-    assert.equal(first.body.story, 'tariff-round', 'and filed it under the story it named');
-    assert.match(first.prepared.judge_task, /^Stories on record:/m, 'the task is the judge prompt itself');
-    assert.match(first.prepared.judge_task, /Tariff round opens on steel imports\.$/, 'and ends with the draft');
+    assert.equal(first.submitted.status, 201);
+    assert.equal(first.submitted.body.stored, true, 'stored before any history is shown');
+    assert.equal(first.submitted.body.development, 'pending');
+    assert.match(first.submitted.body.judge_task, /^Stories on record:/m, 'the task is the judge prompt itself');
+    assert.match(first.submitted.body.judge_task, /Tariff round opens on steel imports\.$/, 'and ends with the stored sentence');
+    assert.deepEqual(first.judged.body, { ok: true, judged: true, reading: first.submitted.body.id, story: 'tariff-round', development: 'new' });
 
     const same = await submit(5, 'Tariff round on steel imports widens', { answer: 'same', story: 'tariff-round' });
-    assert.equal(same.body.development, 'same');
-    assert.match(same.prepared.judge_task, new RegExp(`^\\[${first.body.id}\\] tariff-round`, 'm'),
+    assert.equal(same.judged.body.development, 'same');
+    assert.match(same.submitted.body.judge_task, new RegExp(`^\\[${first.submitted.body.id}\\] tariff-round`, 'm'),
       'the recorded development is offered by id, with its story');
 
-    // An id the task did not offer, an answer without a preparation, and no
-    // answer at all each store the reading unjudged — never a rejection.
-    const unknown = await submit(5, 'Tariff round talks stall', { answer: 99999 });
-    assert.equal(unknown.status, 201);
-    assert.equal(unknown.body.development, 'unjudged');
-    const post = (body) => fetch(`${base}/api/readings`, {
+    const post = (path, body) => fetch(`${base}${path}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
       body: JSON.stringify(body),
-    }).then((r) => r.json());
-    const unprepared = await post({ score: 5, explanation: 'Tariff talks stall.', judgement: { development_of: null, story: 'x' } });
-    assert.equal(unprepared.development, 'unjudged', 'a judgement needs the task it answers');
-    const silent = await post({ score: 5, explanation: 'Tariff talks stall again.' });
-    assert.equal(silent.development, 'unjudged', 'and no model is called in its place');
+    }).then(async (r) => ({ status: r.status, body: await r.json() }));
+    const judge = (reading, answer) => post('/api/readings/judgement', { reading: reading.id, judge_version: reading.judge_version, ...answer });
+
+    // A bad answer stores nothing and can be corrected inside the window.
+    const pending = (await post('/api/readings', { score: 5, explanation: 'Tariff round talks stall.' })).body;
+    for (const [answer, why] of [
+      [{ development_of: 99999 }, 'an id the task did not offer'],
+      [{ development_of: null, judge_version: pending.judge_version - 1 }, 'a task from a retired version'],
+    ]) {
+      const out = await judge(pending, answer);
+      assert.equal(out.status, 200, why);
+      assert.equal(out.body.judged, false, why);
+      assert.ok(out.body.reason, `${why} says so`);
+    }
+    assert.equal((await judge(pending, { development_of: null, story: 'tariff-talks' })).body.judged, true, 'then corrected');
+    const again = await judge(pending, { development_of: null, story: 'tariff-talks' });
+    assert.equal(again.status, 422, 'a judgement is never recomputed');
+
+    // Only the newest reading is open: a newer one's task was built on it.
+    const older = (await post('/api/readings', { score: 4, explanation: 'Steel prices rise.' })).body;
+    await post('/api/readings', { score: 4, explanation: 'Volcano erupts.' });
+    const late = await judge(older, { development_of: null, story: 'steel' });
+    assert.equal(late.status, 422);
+    assert.match(late.body.error, /superseded/);
 
     // The GET form carries the answer flat.
-    const prep = await (await fetch(`${base}/api/readings/prepare?token=${CALLER_TOKEN}&score=6&explanation=Volcano+erupts`)).json();
-    const got = await (await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=6&explanation=Volcano+erupts`
-      + `&preparation=${prep.preparation}&development_of=new&story=volcano`)).json();
-    assert.equal(got.development, 'new');
-    assert.equal(got.story, 'volcano');
+    const got = await (await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=6&explanation=Volcano+erupts+again`)).json();
+    const answered = await (await fetch(`${base}/api/readings/judgement?token=${CALLER_TOKEN}&reading=${got.id}`
+      + `&judge_version=${got.judge_version}&development_of=new&story=volcano`)).json();
+    assert.equal(answered.development, 'new');
+    assert.equal(answered.story, 'volcano');
   });
 });
 
@@ -296,27 +311,39 @@ test('the half-life is a setting, and the chart replays whichever is set', async
   });
 });
 
-test('the judge task is the judge message, and offers only the developments it lists', () => {
-  const priors = [row(1, 'Strikes hit Larak Island', { story: 'iran-war' }), row(2, 'Strikes on Larak continue', { development_of: 1, story: 'iran-war' })];
-  const args = { score: 5, explanation: 'Larak strikes resume', created_at: at(0), priors, stories: [] };
-  const task = judgeTask(args);
-  assert.equal(task.text, judgeMessage(args), 'the caller is asked exactly what the server-side judge would be');
+test('the judge task is the judge message about the stored reading, built from what came before it', () => {
+  const rows = [
+    row(1, 'Strikes hit Larak Island', { story: 'iran-war' }),
+    row(2, 'Strikes on Larak continue', { development_of: 1, story: 'iran-war' }),
+    { id: 3, explanation: 'Larak strikes resume.', score: 5, created_at: at(0) },
+    { id: 4, explanation: 'Stored after it.', score: 5, created_at: at(-1) },
+  ];
+  const reading = rows[2];
+  const priors = priorsBefore(rows, reading);
+  assert.deepEqual(priors.map((r) => r.id), [1, 2], 'neither itself nor anything after it');
+  const task = judgeTask({ reading, priors, stories: [] });
+  assert.equal(task.text, judgeMessage({ score: 5, explanation: reading.explanation, created_at: reading.created_at, priors, stories: [] }),
+    'the caller is asked exactly what the server-side judge would be');
   assert.equal(task.version, judgeVersion());
   assert.deepEqual(task.roots, [1]);
+  assert.deepEqual(priorsBefore([row(9, 'Three days old', { created_at: at(72) }), reading], reading), [], 'nor anything past 48 hours');
 });
 
-test("a caller's answer is checked against its task, and the version is the task's", () => {
+test("a caller's answer is checked against its task, and the version stamped is the server's", () => {
   const task = { version: 2, roots: [1, 7] };
-  const same = callerJudgement({ development_of: '7', story: 'Iran War', note: 'same strikes' }, task);
+  const same = callerJudgement({ judge_version: 2, development_of: '7', story: 'Iran War', note: 'same strikes' }, task);
   assert.deepEqual(same, {
     story: 'iran-war', development_of: 7, judge_version: 2, judge_model: 'caller',
     judge_note: 'same strikes', judge_cost_usd: null,
   });
-  assert.equal(callerJudgement({ development_of: 'new', story: 'x' }, task).development_of, null, '"new" is null');
-  assert.equal(callerJudgement({ development_of: null, story: 'x' }, task).judge_version, 2, 'a new development is judged');
+  assert.equal(callerJudgement({ judge_version: '2', development_of: 'new', story: 'x' }, task).development_of, null, '"new" is null');
+  assert.equal(callerJudgement({ judge_version: 2, development_of: null, story: 'x' }, task).judge_version, 2, 'a new development is judged');
   for (const [answer, why] of [
-    [{ development_of: 3 }, 'an id the task did not offer'],
-    [{ development_of: 'seven' }, 'an id that is not one'],
+    [{ judge_version: 2, development_of: 3 }, 'an id the task did not offer'],
+    [{ judge_version: 2, development_of: 'seven' }, 'an id that is not one'],
+    [{ judge_version: 1, development_of: 7 }, 'a task from a retired version'],
+    [{ development_of: 7 }, 'no version: the task it answers is unknown'],
+    [{ judge_version: 2, story: 'x' }, 'no development_of: silence is not "new"'],
     ['not json', 'an unparseable answer'],
     [undefined, 'no answer'],
   ]) {
@@ -324,5 +351,4 @@ test("a caller's answer is checked against its task, and the version is the task
     assert.equal(out.judge_version, null, why);
     assert.ok(out.judge_note, `${why} says so`);
   }
-  assert.equal(callerJudgement({ development_of: 1 }, undefined).judge_version, null, 'no preparation, no judgement');
 });
