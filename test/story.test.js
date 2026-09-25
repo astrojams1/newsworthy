@@ -172,7 +172,7 @@ test('the caller fetches the judge task, and its answer travels with the reading
     assert.equal(first.body.development, 'new', 'stored already judged');
     assert.equal(first.body.story, 'tariff-round');
     assert.match(first.task.judge_task, /^Stories on record:/m, 'the task is the judge prompt itself');
-    assert.match(first.task.judge_task, /New reading: the caller's own/, 'with the reading left to the caller');
+    assert.doesNotMatch(first.task.judge_task, /New reading/, 'the reading is the caller\'s own, not in the task');
 
     const same = await submit(5, 'Tariff round on steel imports widens', { answer: 'same', story: 'tariff-round' });
     assert.equal(same.body.development, 'same');
@@ -301,7 +301,7 @@ test('the half-life is a setting, and the chart replays whichever is set', async
   });
 });
 
-test('the judge task is the judge message with the new reading left to the caller', () => {
+test('the judge task is the judge message without the new reading', () => {
   const priors = [
     row(1, 'Strikes hit Larak Island', { story: 'iran-war' }),
     row(2, 'Strikes on Larak continue', { development_of: 1, story: 'iran-war' }),
@@ -309,8 +309,7 @@ test('the judge task is the judge message with the new reading left to the calle
   const task = judgeTask({ priors, stories: [] });
   const full = judgeMessage({ score: 5, explanation: 'Larak strikes resume.', created_at: at(0), priors, stories: [] });
   const context = full.slice(0, full.lastIndexOf('\n\nNew reading ('));
-  assert.ok(task.text.startsWith(context), 'the caller is asked what the server-side judge would be');
-  assert.match(task.text, /New reading: the caller's own/);
+  assert.equal(task.text, context, 'the server-side judge\'s message, less the reading the caller already has');
   assert.equal(task.version, judgeVersion());
   assert.deepEqual(task.roots, [1]);
 });

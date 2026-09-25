@@ -240,19 +240,15 @@ function knownRoots(priors) {
  *
  * The hourly caller is already a capable model paying for its own run, so the
  * comparison is asked of it rather than of a model this app pays for. It is the
- * message the server-side judge is sent, with the new reading left for the
- * caller to supply: fetched after the caller has scored and written, it is read
+ * message the server-side judge is sent, less the new reading, which is the
+ * caller's own: fetched after the caller has scored and written, it is read
  * only, and the answer travels with the submission. `roots` are the ids the
  * text offers — the only ids an answer may name.
  */
 export function judgeTask({ priors = [], stories = [] } = {}) {
   return {
     version: judgeVersion(),
-    text: [
-      judgeContext({ priors, stories }),
-      '',
-      'New reading: the caller\'s own, scored and written before this was fetched.',
-    ].join('\n'),
+    text: judgeContext({ priors, stories }),
     roots: groupDevelopments(priors).slice(-MAX_PRIORS).map((g) => g.id),
   };
 }
