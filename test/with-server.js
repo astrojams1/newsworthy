@@ -17,6 +17,7 @@ export const ADMIN_TOKEN = 'test-admin-token';
 export const PORTS = {
   newLabel: 8835,
   callerRuns: 8853,
+  storyMerges: 8855,
   ingestSoftErrors: 8811,
   currentSmoothing: 8817,
   currentScoreFrom: 8819,
@@ -89,7 +90,7 @@ export const readings = (base) => async (qs) => {
  * text the way a caller reads it; `new` answers null; a number names that
  * development. The judge version is the one the instructions print.
  */
-export const caller = (base) => async (score, explanation, { answer = 'new', story = 'fixture' } = {}) => {
+export const caller = (base) => async (score, explanation, { answer = 'new', story = 'fixture', extra = {} } = {}) => {
   const { judgeVersion } = await import('../src/story.js');
   const { record } = await (await fetch(`${base}/api/developments`, { headers: { 'x-newsworthy-token': CALLER_TOKEN } })).json();
   const offered = [...record.matchAll(/^\[(\d+)\]/gm)].map((m) => Number(m[1]));
@@ -99,7 +100,7 @@ export const caller = (base) => async (score, explanation, { answer = 'new', sto
     headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
     body: JSON.stringify({
       score, explanation,
-      judgement: { judge_version: judgeVersion(), development_of, story, note: `test: ${answer}` },
+      judgement: { judge_version: judgeVersion(), development_of, story, note: `test: ${answer}`, ...extra },
     }),
   });
   return { status: res.status, body: await res.json(), record };

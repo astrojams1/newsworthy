@@ -105,6 +105,7 @@ export function submissionFromQuery(params) {
       const value = params.get(field);
       if (value !== null) body.judgement[key] = value;
     }
+    if (params.get('same_story') !== null) body.judgement.same_story = params.get('same_story').split(',');
   }
   return body;
 }

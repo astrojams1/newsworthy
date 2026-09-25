@@ -63,14 +63,14 @@ test('the judge prompt is a specification, not a set of orders', () => {
   // prevents is expensive, so the whole prompt surface keeps one voice.
   const { text } = renderJudgePrompt();
   assert.doesNotMatch(text, /\byou (must|should|will|need)\b/i);
-  assert.ok(text.length < 2000, `judge prompt is ${text.length} characters`);
+  assert.ok(text.length < 2500, `judge prompt is ${text.length} characters`);
   assert.match(text, /development_of/, 'and it names the field it wants back');
 });
 
 test('judge prompts are append-only, pinned by hash', () => {
   // A stored judgement names the version that produced it. Editing a published
   // version would reinterpret readings already recorded, silently.
-  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659' };
+  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c' };
   const prompts = allJudgePrompts();
   assert.deepEqual(prompts.map((p) => p.version), Object.keys(pins).map(Number),
     'every published version is pinned here');
@@ -108,7 +108,17 @@ test('v2 changed the naming and nothing about the developments', () => {
   const upTo = (text) => text.slice(0, text.indexOf('The id is one of the ids'));
   assert.equal(upTo(v2.text), upTo(v1.text));
   assert.notEqual(v1.text, v2.text);
-  assert.equal(judgeVersion(), 2, 'and v2 is what new readings are judged by');
+});
+
+test('v3 adds the same-story pair and keeps v2 whole', () => {
+  // A name coined twice used to be permanent. v3 lets any answer say two names
+  // on record are one story; everything v2 says is kept byte for byte, so which
+  // development a reading reports is judged by the same text.
+  const [, v2, v3] = allJudgePrompts();
+  assert.ok(v3.text.startsWith(v2.text), 'v2 verbatim, then one paragraph');
+  assert.match(v3.text.slice(v2.text.length), /"same_story"/);
+  assert.match(v3.text, /never for two stories that are related/, 'one story under two names, not related stories');
+  assert.equal(judgeVersion(), 3, 'and v3 is what new readings are judged by');
 });
 
 test('a new development still takes an existing story name', () => {

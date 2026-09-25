@@ -1,4 +1,5 @@
 import { postgresEnvKeys, sql } from './sql.js';
+import { aliasMap, canonicalStory } from './merges.js';
 
 /**
  * Schema creation is idempotent and cached per process, so a cold-started
@@ -89,6 +90,21 @@ export function ensureSchema() {
         reading_id  BIGINT,               -- the reading it submitted, if any
         report      TEXT        NOT NULL
       )`;
+    // One story under two names, and the name it goes by. Rows only: an undo is
+    // a row naming the merge it undoes, so the history of what was merged, by
+    // whom and why, is never overwritten. Readings are never renamed; names are
+    // resolved where they are read. See src/merges.js.
+    await sql`
+      CREATE TABLE IF NOT EXISTS story_merges (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        alias       TEXT        NOT NULL,
+        canonical   TEXT        NOT NULL,
+        source      TEXT        NOT NULL,  -- 'caller' or 'admin'
+        reading_id  BIGINT,                -- the reading whose run proposed it
+        note        TEXT,
+        undoes      BIGINT                 -- set on an undo row: the merge it undoes
+      )`;
     // Devices that asked to be told about a high reading, and the readings they
     // were told about. One row per Expo push token — the token is the whole
     // identity, so re-registering the same device is an update, not a second
@@ -158,7 +174,7 @@ const num = (value) => (value === null || value === undefined ? null : Number(va
 const NUMERIC = [
   'id', 'score', 'prompt_version', 'latency_ms', 'input_tokens', 'output_tokens',
   'cache_read_tokens', 'cache_write_tokens', 'web_search_requests', 'cost_usd',
-  'development_of', 'judge_version', 'judge_cost_usd', 'reading_id',
+  'development_of', 'judge_version', 'judge_cost_usd', 'reading_id', 'undoes',
 ];
 
 /**
@@ -299,7 +315,7 @@ export async function ratingsByIds(ids = []) {
     SELECT id, created_at, score, explanation, story
       FROM ratings
      WHERE id = ANY(${ids})`;
-  return rows.map(shape);
+  return withStoryNames(rows.map(shape));
 }
 
 /**
@@ -310,18 +326,82 @@ export async function ratingsByIds(ids = []) {
  * way back in. One row per name, carrying that story's freshest sentence, so
  * the name is recognisable rather than a bare token.
  */
-export async function recentStories({ days = 14, limit = 20 } = {}) {
+export async function recentStories({ days = 14, limit = 20, before = new Date() } = {}) {
   await ensureSchema();
-  const since = new Date(Date.now() - days * 24 * 3600_000);
+  const until = new Date(before);
+  const since = new Date(until.getTime() - days * 24 * 3600_000);
   const rows = await sql`
     SELECT DISTINCT ON (story) story, explanation AS latest, created_at AS latest_at
       FROM ratings
-     WHERE status = 'ok' AND story IS NOT NULL AND created_at >= ${since}
+     WHERE status = 'ok' AND story IS NOT NULL AND created_at >= ${since} AND created_at < ${until}
      ORDER BY story, created_at DESC, id DESC`;
-  return rows
-    .map(shape)
+  // Merged names collapse into the one they go by, keeping its freshest
+  // sentence, so a merged-away name is never offered for reuse.
+  const newest = new Map();
+  for (const row of await withStoryNames(rows.map(shape))) {
+    const held = newest.get(row.story);
+    if (!held || String(row.latest_at) > String(held.latest_at)) newest.set(row.story, row);
+  }
+  return [...newest.values()]
     .sort((a, b) => String(b.latest_at).localeCompare(String(a.latest_at)))
     .slice(0, limit);
+}
+
+// ---- story merges ----------------------------------------------------------
+
+/** The merges in force, oldest first: every merge no undo row points at. */
+export async function activeMerges() {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT m.id, m.created_at, m.alias, m.canonical, m.source, m.reading_id, m.note
+      FROM story_merges m
+     WHERE m.undoes IS NULL
+       AND NOT EXISTS (SELECT 1 FROM story_merges u WHERE u.undoes = m.id)
+     ORDER BY m.created_at ASC, m.id ASC`;
+  return rows.map(shape);
+}
+
+/** Every merge and undo, newest first, for the admin page. */
+export async function allMerges({ limit = 200 } = {}) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT id, created_at, alias, canonical, source, reading_id, note, undoes
+      FROM story_merges ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
+export async function addMerge({ alias, canonical, source, reading_id = null, note = null, undoes = null }) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO story_merges (alias, canonical, source, reading_id, note, undoes)
+    VALUES (${alias}, ${canonical}, ${source}, ${reading_id}, ${note}, ${undoes})
+    RETURNING id, created_at, alias, canonical, source, reading_id, note, undoes`;
+  return shape(rows[0]);
+}
+
+/** One merge row, or null. */
+export async function mergeById(id) {
+  await ensureSchema();
+  const rows = await sql`SELECT * FROM story_merges WHERE id = ${id}`;
+  return rows[0] ? shape(rows[0]) : null;
+}
+
+/** Readings filed under each stored name, and when each was first used. */
+export async function storyNameStats() {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT story, COUNT(*) AS readings, MIN(created_at) AS first
+      FROM ratings WHERE status = 'ok' AND story IS NOT NULL GROUP BY story`;
+  return rows.map((r) => ({ story: r.story, readings: num(r.readings) ?? 0, first: iso(r.first) }));
+}
+
+/** Rows with `story` resolved to the name it goes by. The row's own stored
+ *  name is what the runs table shows; everything that groups reads this. */
+async function withStoryNames(rows) {
+  if (!rows.some((r) => r.story)) return rows;
+  const map = aliasMap(await activeMerges());
+  if (map.size === 0) return rows;
+  return rows.map((r) => (r.story ? { ...r, story: canonicalStory(map, r.story) } : r));
 }
 
 /**
@@ -389,7 +469,7 @@ export async function history({ hours = 24 * 7, limit = 2000 } = {}) {
        LIMIT ${limit}
     ) recent
      ORDER BY created_at ASC, id ASC`;
-  return rows.map(shape);
+  return withStoryNames(rows.map(shape));
 }
 
 /**

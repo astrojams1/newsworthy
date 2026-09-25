@@ -110,9 +110,31 @@ character for character, however differently the new sentence is worded — a wa
 reported through a strait one hour and a capital the next is one story with one
 name. A new slug is for a story with nothing on record.`);
 
+/**
+ * v3 lets the judge say that two names on record are one story, and nothing
+ * else changes: everything in v2 is kept byte-identical and one paragraph is
+ * appended, so which development a reading reports is judged by the same text.
+ *
+ * v2 got a story named once, when it was coined, and never again: a name coined
+ * twice stayed two stories for as long as either was used, and a dormant one
+ * could come back — `hormuz-conflict` returned on 18 September after two weeks
+ * unused and split the Iran war for five days. A merge is recorded as a row and
+ * resolved wherever names are read (src/merges.js), so every run is a chance to
+ * mend a split rather than only the run that made it.
+ */
+const V3 = `${V2}
+
+Two names under "Stories on record" can be one story coined twice — the same
+war, disaster or rate cycle recorded under both. When they are, the answer adds
+"same_story": ["<one name>", "<the other>"], both copied from the list. It is
+for one story under two names, never for two stories that are related, share a
+cause or affect each other. At most one pair per answer; otherwise the key is
+left out.`;
+
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
   2: { label: 'story-vocabulary-v2', added: '2026-09-04', text: V2 },
+  3: { label: 'same-story-merge-v3', added: '2026-09-25', text: V3 },
 };
 
 export function judgeVersion() {
@@ -245,6 +267,22 @@ export function judgeRecord({ priors = [], stories = [] } = {}) {
   };
 }
 
+/**
+ * The readings a judgement of `reading` is made against: those stored before
+ * it, over the `PRIOR_HOURS` before it. The backfill judges a stored reading
+ * against the record as it stood when the reading arrived, not as it stands now.
+ *
+ * @param {Array<object>} rows ascending, oldest first
+ */
+export function priorsBefore(rows, reading) {
+  const at = Date.parse(iso(reading.created_at));
+  return rows.filter((row) => {
+    if (row.id === reading.id) return false;
+    const t = Date.parse(iso(row.created_at));
+    return (t < at || (t === at && row.id < reading.id)) && at - t <= PRIOR_HOURS * 3600_000;
+  });
+}
+
 /** The columns stored when no judgement was made, and why. */
 function unjudged(note) {
   return {
@@ -272,8 +310,9 @@ export function callerJudgement(answer, { version = judgeVersion(), roots = [] }
   const task = { version, roots };
   if (answer === undefined || answer === null) return unjudged('no judgement sent');
   let parsed;
+  let object;
   try {
-    const object = typeof answer === 'string' ? JSON.parse(answer) : answer;
+    object = typeof answer === 'string' ? JSON.parse(answer) : answer;
     if (Number(object?.judge_version) !== task.version) {
       return unjudged(`judge prompt version ${object?.judge_version ?? 'missing'}, current is ${task.version}`);
     }
@@ -293,6 +332,8 @@ export function callerJudgement(answer, { version = judgeVersion(), roots = [] }
     judge_model: 'caller',
     judge_note: parsed.note,
     judge_cost_usd: null,
+    // Not a column: a proposed merge, which the server weighs on its own.
+    ...(object.same_story !== undefined ? { same_story: object.same_story } : {}),
   };
 }
 
