@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Animated, Text, View } from 'react-native';
 import type { Development } from '@/lib/use-timeline';
 import { storyLabel, timelineAge, timelineLabels } from '@/lib/timeline';
+import { layout, leading, lineHeight, scaleCap, space, type } from '@/lib/design';
 
 type Theme = { ink: string; muted: string };
 
-// A line starts to fade this far below the header and is gone this far above
-// its lower edge. At the snap offset the first entry sits 32pt below the
-// header, just outside the fade, so the resting timeline is at full strength.
-const FADE_BELOW = 28;
-const FADE_ABOVE = 16;
+// A line starts to fade `lineFadeBelow` under the header and is gone
+// `lineFadeAbove` past it. At the snap offset the first entry sits
+// `snapBelowHeader` under the header, just outside the fade, so the resting
+// timeline is at full strength.
+const { lineFadeBelow: FADE_BELOW, lineFadeAbove: FADE_ABOVE } = layout.timeline;
 
 /**
  * Prototype. The developments behind the front page, newest first, each
@@ -48,14 +49,14 @@ export function Timeline({ developments, opacity, theme, now, scrollY, offset, f
       const sentenceKey = `s${development.root}`;
       return <View key={development.root} accessible onLayout={place(`e${development.root}`)}
         accessibilityLabel={`${age}${label ? `, ${label}` : ''}. ${development.explanation}`}
-        style={{ marginTop: index === 0 ? 0 : 44 }}>
-        {(labels[index].story || labels[index].age) && <Animated.View onLayout={place(tagKey)} style={{ opacity: fade(at(tagKey)), marginBottom: 10 }}>
-          <Text maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: 13, lineHeight: 18 }}>
+        style={{ marginTop: index === 0 ? 0 : space[11] }}>
+        {(labels[index].story || labels[index].age) && <Animated.View onLayout={place(tagKey)} style={{ opacity: fade(at(tagKey)), marginBottom: space[2.5] }}>
+          <Text maxFontSizeMultiplier={scaleCap.label} style={{ color: theme.muted, fontSize: type.footnote, lineHeight: lineHeight(type.footnote, leading.normal) }}>
             {[labels[index].story, labels[index].age].filter(Boolean).join('  ·  ')}
           </Text>
         </Animated.View>}
         <Animated.View onLayout={place(sentenceKey)} style={{ opacity: fade(at(sentenceKey)) }}>
-          <Text selectable style={{ color: theme.ink, fontSize: 17, lineHeight: 27 }}>{development.explanation}</Text>
+          <Text selectable style={{ color: theme.ink, fontSize: type.body, lineHeight: lineHeight(type.body, leading.loose) }}>{development.explanation}</Text>
         </Animated.View>
       </View>;
     })}

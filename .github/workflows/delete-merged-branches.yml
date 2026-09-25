@@ -1,0 +1,32 @@
+name: Delete merged branches
+on:
+  pull_request:
+    types: [closed]
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: read
+concurrency:
+  group: delete-merged-branches
+  cancel-in-progress: false
+jobs:
+  delete:
+    if: github.event_name != 'pull_request' || (github.event.pull_request.merged && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/delete-merged-branches.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Delete the merged branch, or sweep every merged branch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+          MODE: ${{ github.event_name == 'pull_request' && '--pr' || '--sweep' }}
+        run: node scripts/delete-merged-branches.mjs "$MODE"

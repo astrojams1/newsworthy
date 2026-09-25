@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { HeaderBackButton } from 'expo-router/react-navigation';
 import { useTheme } from '@/lib/theme';
 import { Glyph } from '@/components/glyph';
+import { size } from '@/lib/design';
 
 // On the web the navigator tints its back arrow through an SVG filter whose id
 // never changes, and a browser can keep painting the arrow in the colour it had
@@ -12,7 +13,7 @@ import { Glyph } from '@/components/glyph';
 function webBackButton(color: string) {
   return process.env.EXPO_OS === 'web'
     ? { headerLeft: (props: React.ComponentProps<typeof HeaderBackButton> & { canGoBack?: boolean }) => props.canGoBack
-      ? <HeaderBackButton {...props} backImage={() => <Glyph name="back" color={color} size={24} />} />
+      ? <HeaderBackButton {...props} backImage={() => <Glyph name="back" color={color} size={size.headerIcon} />} />
       : null }
     : {};
 }

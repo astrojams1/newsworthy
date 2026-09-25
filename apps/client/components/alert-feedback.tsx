@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Linking, Pressable, Text, View } from 'react-native';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
+import { leading, lineHeight, space, touchTarget, type, weight } from '@/lib/design';
 
 const NOTICES = {
   denied: 'Notifications are turned off for Newsworthy in your device settings.',
@@ -31,7 +32,7 @@ export function useAlertChanges() {
   return { enabled, threshold, busy, notice, toggle, choose };
 }
 
-export const noteStyle = (muted: string) => ({ color: muted, fontSize: 14, lineHeight: 20, marginTop: 12, marginHorizontal: 16 } as const);
+export const noteStyle = (muted: string) => ({ color: muted, fontSize: type.note, lineHeight: lineHeight(type.note, leading.normal), marginTop: space[3], marginHorizontal: space[4] } as const);
 
 // What sits under the controls: "Saving…" while a change is on its way, and
 // a failure when one comes back. Nothing restates the controls' own state.
@@ -40,11 +41,11 @@ export function AlertFeedback({ busy, notice }: { busy: boolean; notice: '' | No
   const note = noteStyle(theme.muted);
   return <>
     <Text testID="notifications-status" accessibilityLiveRegion="polite" style={note}>{busy ? 'Saving…' : ''}</Text>
-    {notice !== '' && <View accessibilityLiveRegion="polite" style={{ marginTop: 4 }}>
+    {notice !== '' && <View accessibilityLiveRegion="polite" style={{ marginTop: space[1] }}>
       <Text style={{ ...note, color: theme.danger }}>{NOTICES[notice]}</Text>
       {notice === 'denied' && <Pressable accessibilityRole="button" accessibilityLabel="Open device settings" testID="open-device-settings" onPress={() => Linking.openSettings()}
-        style={{ alignSelf: 'flex-start', minHeight: 48, justifyContent: 'center', marginHorizontal: 16 }}>
-        <Text style={{ color: theme.accent, fontSize: 15, fontWeight: '600' }}>Open device settings</Text>
+        style={{ alignSelf: 'flex-start', minHeight: touchTarget, justifyContent: 'center', marginHorizontal: space[4] }}>
+        <Text style={{ color: theme.accent, fontSize: type.subhead, fontWeight: weight.semibold }}>Open device settings</Text>
       </Pressable>}
     </View>}
   </>;

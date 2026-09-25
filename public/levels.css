@@ -4,7 +4,7 @@
 .level-gradient {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: var(--layer-behind);
   pointer-events: none;
   background:
     radial-gradient(ellipse at 5% 0%, rgba(var(--level-companion), var(--glow)), transparent 62%),
@@ -15,7 +15,7 @@
 }
 [data-level] > .level-gradient, [data-brand] > .level-gradient { opacity: 1; }
 ::selection { background: var(--accent); color: var(--surface); }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+:focus-visible { outline: var(--stroke-focus) solid var(--accent); outline-offset: var(--space-1); }
 @media (prefers-reduced-motion: no-preference) {
-  .level-gradient { transition: opacity 600ms ease; }
+  .level-gradient { transition: opacity var(--motion-gradient) ease; }
 }

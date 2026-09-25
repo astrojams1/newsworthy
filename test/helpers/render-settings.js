@@ -3,6 +3,7 @@
 // The shared list components are executed too, so a row's text and styles are
 // the ones the screens actually produce.
 import { readFileSync } from 'node:fs';
+import { designModules } from './design-modules.js';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
@@ -46,7 +47,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
   const calls = { setTheme: [], setTimeline: [], enable: 0, disable: 0, choose: [], replace: [], back: 0, dismissTo: [], openSettings: 0, notices: [] };
   const current = preferences.parsePreferences(stored);
   const theme = themeForLevel(3, dark);
-  const mocks = {
+  const mocks = { ...designModules,
     // The provider owns pending requests; local state only holds a notice.
     react: { ...react, useEffect() {}, useRef: current => ({ current }),
       useState: value => value === false ? [busy, () => {}] : [value, next => { if (typeof next === 'string') calls.notices.push(next); }] },
@@ -87,7 +88,7 @@ export { nodes } from './render-reading.js';
 export function renderToggle({ platform = 'web', value = false, disabled = false, dark = false } = {}) {
   const toggleSource = read('components/toggle.tsx');
   class Value { constructor(v) { this.v = v; } interpolate({ outputRange }) { return outputRange[this.v]; } }
-  const mocks = {
+  const mocks = { ...designModules,
     react: { ...react, useEffect() {}, useRef: current => ({ current }) },
     'react-native': { Pressable: 'Pressable', Animated: { Value, View: 'Animated.View', timing: () => ({ start() {} }) } },
     '@/lib/theme': { useTheme: () => themeForLevel(3, dark) },

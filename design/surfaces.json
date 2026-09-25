@@ -7,8 +7,7 @@
       "ios": -2,
       "android": 0
     },
-    "minimumTouchTarget": 48,
-    "settingsIconSize": 24
+    "minimumTouchTarget": 48
   },
   "widget": {
     "contentVerticalAlignment": "center",
@@ -44,15 +43,6 @@
     "iosWidget": "monospaced"
   },
   "settings": {
-    "rowMinHeight": 56,
-    "labelSize": 17,
-    "leadingIconSize": 22,
-    "trailingSlot": 22,
-    "trailingSize": {
-      "chevron": 20,
-      "external": 22,
-      "check": 20
-    },
     "trailingInkToCapHeight": {
       "min": 0.85,
       "max": 1.05

@@ -15,31 +15,26 @@ import { website, privacyUrl, supportUrl } from '@/lib/config';
 import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
+import { layout, leading, motion, opacity, scaleCap, scoreFont as fontFor, size, space, stroke, surfaces, touchTarget, type, weight } from '@/lib/design';
+import { readingLayout } from '@/lib/layout';
+import { CLOCK_TICK_MS, updatedAge } from '@/lib/timeline';
 
 export default function Home() {
   const theme = useTheme();
   const router = useRouter();
-  const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace';
+  const scoreFont = fontFor(process.env.EXPO_OS ?? 'web');
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const dimensions = useWindowDimensions();
-  // Static web rendering has no viewport; keep the initial content readable.
-  const width = dimensions.width || 390;
-  const height = dimensions.height || 844;
-  const fontScale = dimensions.fontScale || 1;
-  const landscape = height < 520;
-  const scoreSize = landscape ? Math.min(height * 0.26, 224) : Math.max(64, Math.min(width * 0.42, height * 0.24, 224));
-  const sentenceSize = landscape ? 16 : Math.max(18, Math.min(width * 0.045, 22));
-  const horizontal = Math.max(20, Math.min(width * 0.05, 48));
+  // Sizes, columns and the gutter follow from the window; see lib/layout.js.
+  const { width, height, fontScale, landscape, scoreSize, sentenceSize, denominatorSize, gutter: horizontal, column, sentenceColumn } = readingLayout(useWindowDimensions());
   const { reading, failed, loading, refresh } = useCurrentReading();
   const [now, setNow] = useState(Date.now());
   const [shareNotice, setShareNotice] = useState('');
-  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
-  const minutes = reading ? Math.max(0, Math.floor((now - Date.parse(reading.created_at)) / 60000)) : 0;
-  const relative = minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
+  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), CLOCK_TICK_MS); return () => clearInterval(timer); }, []);
+  const relative = reading ? updatedAge(reading.created_at, now) : '';
   // A new development's sentence leads with a bold "New:" for two hours; nothing else is styled.
   const parts = reading ? explanationParts(reading, now) : null;
-  const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</> : parts.body) : null;
+  const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: weight.bold }}>{parts.label}</Text>{` ${parts.body}`}</> : parts.body) : null;
   // Off unless chosen in Settings; off, the screen is the reading alone. The
   // server leaves out the development this reading reports, so nothing here repeats it.
   const { preferences } = usePreferences();
@@ -58,14 +53,14 @@ export default function Home() {
   const screen = viewport || height;
   const hasTimeline = Boolean(reading) && developments.length > 0;
   // Where the timeline rests: its first entry a comfortable distance below the header.
-  const snap = hasTimeline && timelineTop ? Math.max(1, timelineTop - headerHeight - 32) : 0;
+  const snap = hasTimeline && timelineTop ? Math.max(1, timelineTop - headerHeight - layout.timeline.snapBelowHeader) : 0;
   const span = snap || screen;
   // The reading is gone before any of it can reach the header, so in the
   // timeline the score and top story are entirely out of view, mid-scroll too.
-  const readingGone = Math.min(span * 0.3, 160);
+  const readingGone = Math.min(span * layout.timeline.readingGoneRatio, layout.timeline.readingGoneMax);
   const readingFade = scrollY.interpolate({ inputRange: [0, readingGone], outputRange: [1, 0], extrapolate: 'clamp' });
-  const timelineFade = scrollY.interpolate({ inputRange: [readingGone * 0.5, span * 0.6], outputRange: [0, 1], extrapolate: 'clamp' });
-  const cueFade = scrollY.interpolate({ inputRange: [0, 48], outputRange: [1, 0], extrapolate: 'clamp' });
+  const timelineFade = scrollY.interpolate({ inputRange: [readingGone * layout.timeline.fadeInStart, span * layout.timeline.fadeInEnd], outputRange: [0, 1], extrapolate: 'clamp' });
+  const cueFade = scrollY.interpolate({ inputRange: [0, layout.timeline.cueFadeDistance], outputRange: [1, 0], extrapolate: 'clamp' });
   // Native snaps with snapToOffsets. The web uses the browser's own CSS scroll
   // snap: a script that waited for the scroll to go quiet and then scrolled
   // itself fought iOS momentum, drifting and then jumping. The timeline is one
@@ -93,18 +88,21 @@ export default function Home() {
   // touches in its own area rather than passing them to the screen. Without one there is nowhere to return from,
   // so it stays plain text rather than a button that does nothing.
   const toReading = () => scrollTo(0);
-  // Up to Share and Settings, 48pt each. Web lays the bar out itself, with a
-  // 12pt end margin; native bars add their own item insets, estimated at 40.
-  const headerTapWidth = Math.max(120, width - (reading ? 96 : 48) - (process.env.EXPO_OS === 'web' ? 12 : 40));
+  // Up to Share and Settings, one touch target each. Web lays the bar out
+  // itself, with its own end inset; native bars add item insets, estimated.
+  const headerEnd = process.env.EXPO_OS === 'web' ? layout.header.webEndInset : 0;
+  const headerTapWidth = Math.max(layout.header.minimumTapWidth,
+    width - touchTarget - (reading ? touchTarget : 0) - (process.env.EXPO_OS === 'web' ? layout.header.webEndInset : layout.header.nativeItemInset));
+  const control = { minWidth: touchTarget, minHeight: touchTarget, alignItems: 'center', justifyContent: 'center' } as const;
   const brand = hasTimeline ? <Pressable accessibilityRole="button" accessibilityLabel="Newsworthy, back to the reading" onPress={toReading}
-    style={({ pressed }) => ({ width: headerTapWidth, minHeight: 48, justifyContent: 'center', alignItems: 'flex-start', opacity: pressed ? 0.6 : 1 })}>
+    style={({ pressed }) => ({ width: headerTapWidth, minHeight: touchTarget, justifyContent: 'center', alignItems: 'flex-start', opacity: pressed ? opacity.pressed : 1 })}>
     <BrandMark />
   </Pressable> : <BrandMark />;
-  const shareButton = reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
+  const shareButton = reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={control}>
     <AppIcon color={theme.accent} />
   </Pressable> : null;
-  const settingsButton = <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
-    <Glyph name="settings" color={theme.accent} size={24} />
+  const settingsButton = <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={{ ...control, marginRight: headerEnd }}>
+    <Glyph name="settings" color={theme.accent} size={size.headerIcon} />
   </Pressable>;
   const headerRight = <View style={{ flexDirection: 'row', alignItems: 'center' }}>{shareButton}{settingsButton}</View>;
   return <>
@@ -130,30 +128,30 @@ export default function Home() {
     <ReadingGradient score={reading?.score} dark={theme.dark} />
     <Animated.ScrollView ref={scroller} key={fontScale} contentInsetAdjustmentBehavior="never"
       onLayout={(event) => setViewport(event.nativeEvent.layout.height)} style={{ flex: 1, backgroundColor: 'transparent', ...(webSnap ? { scrollSnapType: 'y mandatory' } as object : null) }}
-      scrollEventThrottle={16} snapToOffsets={snap ? [0, snap] : undefined} snapToEnd={false} decelerationRate={snap ? 'fast' : 'normal'}
+      scrollEventThrottle={motion.scrollThrottle} snapToOffsets={snap ? [0, snap] : undefined} snapToEnd={false} decelerationRate={snap ? 'fast' : 'normal'}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
         useNativeDriver: process.env.EXPO_OS !== 'web',
       })}
-      contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: hasTimeline ? 0 : insets.bottom + (landscape ? 16 : 32) }}>
+      contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: hasTimeline ? 0 : insets.bottom + (landscape ? space[4] : space[8]) }}>
       {/* With a timeline the reading keeps exactly the first screen; without one it
           fills the scroll view and nothing scrolls, as before the timeline. */}
-      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: landscape ? 16 : 56 }}>
+      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: column, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? space[4] : space[6]), paddingBottom: landscape ? space[4] : space[14] }}>
         <View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
           style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
-          <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"
-            style={{ color: theme.ink, fontSize: scoreSize, lineHeight: scoreSize * 1.05, flexShrink: 1, fontWeight: '300', fontFamily: scoreFont, fontVariant: ['tabular-nums'], letterSpacing: -scoreSize * 0.055 }}>
+          <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={scaleCap.fitMinimum} maxFontSizeMultiplier={scaleCap.score} numberOfLines={1} testID="rating-score"
+            style={{ color: theme.ink, fontSize: scoreSize, lineHeight: scoreSize * leading.tight, flexShrink: 1, fontWeight: weight.light, fontFamily: scoreFont, fontVariant: ['tabular-nums'], letterSpacing: scoreSize * surfaces.reading.trackingEm }}>
             {reading?.score ?? '–'}
           </Text>
-          <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
+          <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={scaleCap.label} style={{ color: theme.muted, fontSize: denominatorSize, fontWeight: weight.light, fontFamily: scoreFont, marginLeft: surfaces.reading.denominatorGap }}>∕10</Text>
         </View>
-        <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Text>
-        {reading && <Text selectable style={{ color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Updated {relative}</Text>}
-        {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
-        {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
-        {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: cueFade }}>
+        <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * leading.relaxed, textAlign: 'center', maxWidth: sentenceColumn, marginTop: landscape ? space[3] : space[6] }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Text>
+        {reading && <Text selectable style={{ color: theme.muted, fontSize: type.caption, textAlign: 'center', marginTop: landscape ? space[2.5] : space[4.5] }}>Updated {relative}</Text>}
+        {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: type.note, textAlign: 'center', marginTop: space[3] }}>{shareNotice}</Text>}
+        {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: space[3], minWidth: touchTarget, minHeight: touchTarget }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
+        {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + space[2], opacity: cueFade }}>
           <Pressable accessibilityRole="button" accessibilityLabel="Earlier developments" onPress={showTimeline}
-            style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ width: 9, height: 9, borderRightWidth: 1.25, borderBottomWidth: 1.25, borderColor: theme.muted, transform: [{ rotate: '45deg' }], marginTop: -4 }} />
+            style={control}>
+            <View style={{ width: size.cue, height: size.cue, borderRightWidth: stroke.cue, borderBottomWidth: stroke.cue, borderColor: theme.muted, transform: [{ rotate: '45deg' }], marginTop: -space[1] }} />
           </Pressable>
         </Animated.View>}
       </Animated.View>
@@ -161,10 +159,10 @@ export default function Home() {
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
       {reading && <View onLayout={(event) => setTimelineTop(event.nativeEvent.layout.y)}
-        style={{ maxWidth: landscape ? 600 : 320 * fontScale, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
+        style={{ maxWidth: sentenceColumn, width: '100%', minHeight: hasTimeline ? screen - headerHeight - layout.timeline.snapBelowHeader : 0,
           // Its bottom padding is inside it, so the snap area runs to the end of the scroll.
-          paddingBottom: hasTimeline ? insets.bottom + 48 : 0,
-          ...(webSnap ? { scrollSnapAlign: 'start', scrollMarginTop: headerHeight + 32 } as object : null) }}>
+          paddingBottom: hasTimeline ? insets.bottom + space[12] : 0,
+          ...(webSnap ? { scrollSnapAlign: 'start', scrollMarginTop: headerHeight + layout.timeline.snapBelowHeader } as object : null) }}>
         <Timeline developments={developments} opacity={timelineFade} theme={theme} now={now} scrollY={scrollY} offset={timelineTop} fadeAt={headerHeight} />
       </View>}
     </Animated.ScrollView>

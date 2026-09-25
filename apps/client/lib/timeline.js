@@ -35,6 +35,18 @@ export function storyLabel(slug) {
   }).join(' ');
 }
 
+// How often the screen re-reads the clock for its ages.
+export const CLOCK_TICK_MS = 30_000;
+
+// The reading's own age, under the sentence: "just now", "12 min ago".
+export function updatedAge(createdAt, now = Date.now()) {
+  const minutes = Math.max(0, Math.floor((now - Date.parse(createdAt)) / 60_000));
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes} min ago`;
+  if (minutes < 1440) return `${Math.floor(minutes / 60)} hr ago`;
+  return `${Math.floor(minutes / 1440)} days ago`;
+}
+
 export function timelineAge(since, now = Date.now()) {
   const minutes = Math.max(0, Math.floor((now - Date.parse(since)) / 60_000));
   if (minutes < 1) return 'Just now';

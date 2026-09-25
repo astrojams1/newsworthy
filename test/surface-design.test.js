@@ -6,6 +6,7 @@ import { renderReading, renderShareIcon, nodes } from './helpers/render-reading.
 import { renderSettings } from './helpers/render-settings.js';
 import { renderLayout, renderSettingsLayout } from './helpers/render-layout.js';
 import { themeForLevel } from '../apps/client/lib/palette.js';
+import { size, type } from '../apps/client/lib/design.js';
 
 test('reading refreshes never add loading, saved or retry text to an existing message', () => {
   for (const platform of ['web', 'ios', 'android']) for (const saved of [false, true]) {
@@ -163,7 +164,7 @@ test('production reading component keeps typography, palette and gradient consis
 
 test('rendered-prop test catches a platform-specific denominator regression', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  const sourceOverride = source.replace('fontSize: landscape ? 17 : 20', "fontSize: process.env.EXPO_OS === 'android' ? 40 : (landscape ? 17 : 20)");
+  const sourceOverride = source.replace('fontSize: denominatorSize', "fontSize: process.env.EXPO_OS === 'android' ? 40 : denominatorSize");
   assert.notEqual(sourceOverride, source);
   assert.throws(() => inspectReading({ sourceOverride, platform: 'android', width: 390, height: 844, score: 3, dark: false }), /40 !== 20/);
 });
@@ -191,7 +192,8 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride, timeline =
   assert.equal(settings.props.accessibilityLabel, 'Settings');
   const gear = nodes(settings).find(n => n.type === 'Glyph');
   assert.equal(gear?.props.name, 'settings');
-  assert.equal(gear.props.size, contract.header.settingsIconSize);
+  assert.equal(gear.props.size, size.headerIcon);
+  assert.equal(size.headerIcon, contract.header.shareIconSize, 'the header icons share one size');
   if (platform === 'ios') {
     const leftItems = options.unstable_headerLeftItems();
     const rightItems = options.unstable_headerRightItems();
@@ -243,7 +245,7 @@ test('share artwork aligns optically with the title without moving its touch tar
 test('header gate rejects missing optical correction on iOS and a lift on the balanced glyphs', () => {
   const source = readFileSync(new URL('../apps/client/components/app-icon.tsx', import.meta.url), 'utf8');
   for (const [platform, expression] of [['web', '-2'], ['ios', '0'], ['android', '-2']]) {
-    const sourceOverride = source.replace("process.env.EXPO_OS === 'ios' ? -2 : 0", expression);
+    const sourceOverride = source.replace("shareOpticalOffsetY[process.env.EXPO_OS as 'web' | 'ios' | 'android'] ?? 0", expression);
     assert.notEqual(sourceOverride, source);
     assert.throws(() => inspectShareIcon(platform, false, sourceOverride), /platform optical alignment/);
   }
@@ -430,17 +432,17 @@ test('story timeline snaps on the web with CSS scroll snap, not a script that sc
   assert.match(source, /scrollSnapType: 'y mandatory'/);
   // Two snap areas: the reading, and the timeline below the header's clearance.
   assert.equal(source.match(/scrollSnapAlign: 'start'/g)?.length, 2);
-  assert.match(source, /scrollMarginTop: headerHeight \+ 32/);
-  assert.match(source, /snap = hasTimeline && timelineTop \? Math\.max\(1, timelineTop - headerHeight - 32\)/, 'the web snap point matches the native one');
+  assert.match(source, /scrollMarginTop: headerHeight \+ layout\.timeline\.snapBelowHeader/);
+  assert.match(source, /snap = hasTimeline && timelineTop \? Math\.max\(1, timelineTop - headerHeight - layout\.timeline\.snapBelowHeader\)/, 'the web snap point matches the native one');
 });
 
 // Reported 2026-09-25 on the web: the link arrow on Privacy and Support was
 // drawn at 18 points, 8.7 points of ink beside 11.7-point capitals, and read
 // as small and floating above the baseline. Every trailing mark now sits in
-// one slot at the size design/surfaces.json records; the ink itself is
+// one slot at the size design/tokens.json records; the ink itself is
 // measured in a browser by web-settings.test.js.
 function inspectSettingsRows(listOverride) {
-  const s = contract.settings;
+  const s = { rowMinHeight: size.rowMinHeight, labelSize: type.body, leadingIconSize: size.rowIcon, trailingSlot: size.trailingSlot, trailingSize: size.trailing };
   const marks = [];
   for (const platform of ['web', 'ios', 'android']) {
     for (const screen of ['index', 'appearance', 'threshold', 'notifications']) {
@@ -468,7 +470,7 @@ test('settings rows use the recorded icon sizes and one trailing slot', () => in
 
 test('settings gate rejects the undersized link arrow returning', () => {
   const source = readFileSync(new URL('../apps/client/components/settings-list.tsx', import.meta.url), 'utf8');
-  const listOverride = source.replace('external: 22', 'external: 18');
+  const listOverride = source.replace('export const TRAILING_SIZE = size.trailing;', 'export const TRAILING_SIZE = { ...size.trailing, external: 18 };');
   assert.notEqual(listOverride, source);
   assert.throws(() => inspectSettingsRows(listOverride), /external size/);
   const unslotted = source.replace('width: TRAILING_SLOT, ', '');

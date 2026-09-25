@@ -1,5 +1,6 @@
 // Render the actual navigator options; this does not simulate UIKit materials.
 import { readFileSync } from 'node:fs';
+import { designModules } from './design-modules.js';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
@@ -10,7 +11,7 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
   const theme = themeForLevel(score, dark);
   // Keep the defaults distinct from our palette: forgetting an override fails.
   const navigationTheme = dark => ({ dark, colors: { background: dark ? '#000' : '#fff' }, fonts: { regular: { fontFamily: 'System' } } });
-  const mocks = {
+  const mocks = { ...designModules,
     react: { ...require('react'), useEffect() {} },
     'react-native': { Appearance: {} },
     '@/components/preferences-provider': { PreferencesProvider: 'PreferencesProvider', usePreferences: () => ({ preferences: { theme: 'system' } }) },
@@ -34,7 +35,7 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
 // The settings sheet's own stack, rendered the same way.
 export function renderSettingsLayout({ platform = 'ios', dark = false } = {}) {
   const theme = themeForLevel(3, dark);
-  const mocks = { 'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }) }, '@/lib/theme': { useTheme: () => theme },
+  const mocks = { ...designModules, 'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }) }, '@/lib/theme': { useTheme: () => theme },
     'expo-router/react-navigation': { HeaderBackButton: 'HeaderBackButton' }, '@/components/glyph': { Glyph: 'Glyph' } };
   const exports = {};
   const compiled = ts.transpileModule(readFileSync(new URL('../../apps/client/app/settings/_layout.tsx', import.meta.url), 'utf8'),

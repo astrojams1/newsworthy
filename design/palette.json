@@ -92,13 +92,6 @@
       "gradientMuted": "#E0E0E6"
     }
   },
-  "radius": {
-    "control": 8,
-    "card": 16,
-    "widget": 20,
-    "icon": 9
-  },
-  "font": "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
   "identity": {
     "light": {
       "surface": "#FFFFFF",
@@ -107,6 +100,16 @@
     "dark": {
       "surface": "#101014",
       "ink": "#F2F2F5"
+    }
+  },
+  "control": {
+    "thumb": "#FFFFFF",
+    "shadow": "#000000",
+    "light": {
+      "trackOff": "#E9E9EB"
+    },
+    "dark": {
+      "trackOff": "#39393D"
     }
   }
 }

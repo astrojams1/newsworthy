@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-25T08:25:21+00:00",
+  "updated_at": "2026-09-25T08:50:49+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -925,6 +925,18 @@
       ],
       "next_action": "Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build.",
       "updated_at": "2026-09-25T08:25:21+00:00"
+    },
+    "design.tokens": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Design system made comprehensive: design/tokens.json holds every non-colour style value (type, weight, leading, tracking, 4pt space scale, radius, stroke, size, layout, opacity, motion, shadow, layer, measure, breakpoint); palette.json keeps colour and gains control colours. Expo screens, components, web CSS and admin styles now read tokens only; test/design-system.test.js rejects literals and unused tokens. Web export before/after at 390pt: Settings and Appearance pixel-identical; reading differs only in wordmark tracking (1.6→1.56pt); support/privacy wordmark tracking .18→.12em and sub-pixel spacing snaps; admin login field radius 7→8px. Native iOS/Android and widgets not rebuilt or viewed.",
+      "evidence": [
+        "npm test and npm run test:design pass; design:check clean",
+        "Before/after Chromium screenshots of /, /settings, /settings/appearance, /support, /admin in light and dark"
+      ],
+      "next_action": "Check the next native build's reading and Settings screens against the previous build; values are unchanged apart from the wordmark tracking.",
+      "updated_at": "2026-09-25T08:50:49+00:00"
     }
   },
   "events": [
@@ -5725,6 +5737,23 @@
         ],
         "next_action": "Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build.",
         "updated_at": "2026-09-25T08:25:21+00:00"
+      }
+    },
+    {
+      "sequence": 300,
+      "at": "2026-09-25T08:50:49+00:00",
+      "gate": "design.tokens",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Design system made comprehensive: design/tokens.json holds every non-colour style value (type, weight, leading, tracking, 4pt space scale, radius, stroke, size, layout, opacity, motion, shadow, layer, measure, breakpoint); palette.json keeps colour and gains control colours. Expo screens, components, web CSS and admin styles now read tokens only; test/design-system.test.js rejects literals and unused tokens. Web export before/after at 390pt: Settings and Appearance pixel-identical; reading differs only in wordmark tracking (1.6→1.56pt); support/privacy wordmark tracking .18→.12em and sub-pixel spacing snaps; admin login field radius 7→8px. Native iOS/Android and widgets not rebuilt or viewed.",
+        "evidence": [
+          "npm test and npm run test:design pass; design:check clean",
+          "Before/after Chromium screenshots of /, /settings, /settings/appearance, /support, /admin in light and dark"
+        ],
+        "next_action": "Check the next native build's reading and Settings screens against the previous build; values are unchanged apart from the wordmark tracking.",
+        "updated_at": "2026-09-25T08:50:49+00:00"
       }
     }
   ],

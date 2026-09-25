@@ -1,11 +1,12 @@
 import { Image } from 'expo-image';
 import { fromByteArray } from 'base64-js';
+import { size as sizes, stroke } from '@/lib/design';
 
 // Every app-drawn icon except the header's share mark (see app-icon.tsx, which
 // has its own per-platform glyph and optical lift): an SF Symbol on iOS and a
 // stroked 24-unit SVG elsewhere, tinted with the colour it is given. Sizes are
-// chosen by the caller from design/surfaces.json, not here.
-type GlyphSpec = { sf: string; svg: (color: string) => string; stroke?: number };
+// chosen by the caller from design/tokens.json (`size`), not here.
+type GlyphSpec = { sf: string; svg: (color: string) => string; weight?: 'check' };
 
 export const GLYPHS = {
   // Header and navigation.
@@ -21,14 +22,14 @@ export const GLYPHS = {
   // Settings rows: trailing marks.
   chevron: { sf: 'chevron.right', svg: () => '<path d="m9 18 6-6-6-6"/>' },
   external: { sf: 'arrow.up.right', svg: () => '<path d="M7 17 17 7M7 7h10v10"/>' },
-  check: { sf: 'checkmark', svg: () => '<path d="M5 12.5l4.5 4.5L19 7"/>', stroke: 2.2 },
+  check: { sf: 'checkmark', svg: () => '<path d="M5 12.5l4.5 4.5L19 7"/>', weight: 'check' },
 } as const satisfies Record<string, GlyphSpec>;
 
 export type GlyphName = keyof typeof GLYPHS;
 
-export function Glyph({ name, color, size = 22 }: { name: GlyphName; color: string; size?: number }) {
+export function Glyph({ name, color, size = sizes.rowIcon }: { name: GlyphName; color: string; size?: number }) {
   const glyph: GlyphSpec = GLYPHS[name];
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${glyph.stroke ?? 1.6}" stroke-linecap="round" stroke-linejoin="round">${glyph.svg(color)}</svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${stroke[glyph.weight ?? 'icon']}" stroke-linecap="round" stroke-linejoin="round">${glyph.svg(color)}</svg>`;
   const source = process.env.EXPO_OS === 'ios'
     ? `sf:${glyph.sf}`
     : { uri: process.env.EXPO_OS === 'android'

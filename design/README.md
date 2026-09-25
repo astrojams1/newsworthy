@@ -1,13 +1,64 @@
 # Newsworthy design system
 
-`palette.json` is the source of truth for the approved ten-level palette, brand colors, appearance, typography, and radii. Generated files must be regenerated instead of edited independently.
+Every style value on every surface comes from three source files. Nothing else
+states a colour, size, space, weight, duration or breakpoint.
+
+| Source | Holds |
+| --- | --- |
+| `palette.json` | Colour: the ten levels, brand, light/dark appearance, fixed identity colours and control colours (the switch's off track, thumb and shadow). |
+| `tokens.json` | Everything else: font stacks, the type scale, weights, leading, tracking, the 4-point space scale, radii, strokes, dashes, component sizes, layout ratios, opacity, motion, shadows, layers, measures and breakpoints. |
+| `surfaces.json` | The cross-surface contract native widgets and tests are held to: score typography, widget geometry, header icon size and optical lift. |
+
+`npm run design:generate` merges them into the generated outputs, which are
+never edited by hand:
+
+- `public/tokens.js`: every token, for the Expo app (through
+  `apps/client/lib/design.js`), the favicon and tests.
+- `public/tokens.css`: every token as a custom property named
+  `--<group>-<key>`, kebab-cased, with a half step's point as `_`
+  (`--space-2_5`, `--type-footnote`, `--stroke-chart-line`). `design/names.js`
+  defines the naming for the generator and the tests alike.
+- Android colour resources and drawables, and the iOS widget colour catalog.
 
 ```sh
 npm run design:assets   # Update tokens, native colors, widgets, icons, and share art
 npm run design:check    # Detect stale web/Android/iOS tokens
-node --test test/design.test.js
-npm run test:design     # Cross-surface typography, layout roles, theme bindings and pixels
+npm run test:design     # Tokens, cross-surface typography, layout roles, theme bindings and pixels
 ```
+
+## Using tokens
+
+In the Expo app, import from `@/lib/design`: `space[4]`, `type.body`,
+`weight.semibold`, `lineHeight(type.note, leading.normal)`, `size.rowIcon`,
+`touchTarget`, `opacity.pressed`, `motion.switch`. Colours come from `useTheme()`
+(the reading palette) or `control` (fixed control colours). Layout that follows
+the window (score and sentence sizes, columns, the gutter) is computed once in
+`apps/client/lib/layout.js`. Icons come from the glyph registry (see Icons).
+
+On the web, use the custom properties: `padding: var(--space-3) var(--space-4)`,
+`font-size: var(--type-caption)`, `border: var(--stroke-hairline) solid var(--rule)`.
+Media queries cannot read custom properties, so a breakpoint is written in
+pixels and must be one of `tokens.json`'s `breakpoint` values.
+
+`test/design-system.test.js` enforces this:
+
+- Screens, components and the layout module contain no numeric literal except
+  `0`, `1`, a halving `/ 2`, and a step of the space scale (`space[2.5]`); no
+  colour literal (hex, `rgb()`, `hsl()` or a named colour); and no string
+  `fontWeight` or `fontFamily`.
+- `public/*.css` and every `public/*.html` style block contain no raw length,
+  duration, colour, weight, line height, opacity, stroke width or z-index, and
+  no breakpoint outside the list. HTML carries no `style="…"` attribute; a
+  page adds a class.
+- Every `var(--…)` a page reads is defined, the space scale is exact 4-point
+  steps, and every token is used somewhere, so a dead token or a screen that
+  quietly restated a value shows up.
+
+Each rule has a case in the same file proving it rejects the value it exists
+to stop. To add a value, add a token and regenerate; do not add an exemption.
+Out of scope: SVG geometry drawn by the admin chart script and by the favicon
+and share-art generators, and the native widgets' Swift and Java, which are
+held to `surfaces.json` by their own tests.
 
 ## Which color belongs where?
 
@@ -259,28 +310,6 @@ leading icon; a row that opens a page shows its current value and a
 chevron, and Privacy and Support, which leave the app, end in a link arrow.
 Separators start at the label so the icons read as one column.
 
-## Icons
-
-`apps/client/components/glyph.tsx` is the one registry of app-drawn icons: the
-header gear, the web back arrow, the Settings close X, the Settings row icons
-and the trailing chevron, link arrow and check. Each entry names an SF Symbol
-for iOS and a stroked 24-unit SVG for web and Android (1.6 stroke; the check
-2.2). The header's share mark stays in `app-icon.tsx` because its glyph and
-optical lift differ by platform (see the design regression gate above). Add
-new icons to the registry rather than as separate components.
-
-Sizes live in `design/surfaces.json` (`header.settingsIconSize`, `settings`):
-24 points in the header, 22 for leading row icons against the 17-point label.
-Every trailing mark sits in one 22-point slot, so the chevron, link arrow and
-check share a column, at a size whose ink matches the label: the chevron at 20
-and the link arrow at 22 both draw about 11 points, against 11.7-point
-capitals, and rest on the baseline. The arrow at 18 drew 8.7 points that
-stopped short of the baseline and read as small and floating high (owner
-report, 2026-09-25). `test/surface-design.test.js` checks the recorded sizes
-and the slot on every platform; `test/web-settings.test.js` measures the
-rendered ink against the label's first capital in Chromium. iOS SF Symbols are
-sized by the same frame but their ink has not been measured on a device.
-
 The Notifications page is one group: the "High-score alerts" switch, then a
 Threshold row showing the chosen score ("8 or higher") that opens its own page
 of choices, 5 to 10. Below the group one line says what the switch does: "Get an
@@ -298,3 +327,25 @@ presentation and its stack, and unchanged row structure/styles during saving; `t
 requests, failure, rollback and retry. These are not native layout or iOS glass
 rendering tests. Verification limits are recorded in
 `store/settings-feedback-verification.json` and the release ledger.
+
+## Icons
+
+`apps/client/components/glyph.tsx` is the one registry of app-drawn icons: the
+header gear, the web back arrow, the Settings close X, the Settings row icons
+and the trailing chevron, link arrow and check. Each entry names an SF Symbol
+for iOS and a stroked 24-unit SVG for web and Android (`stroke.icon`; the check
+`stroke.check`). The header's share mark stays in `app-icon.tsx` because its glyph and
+optical lift differ by platform (see the design regression gate above). Add
+new icons to the registry rather than as separate components.
+
+Sizes live in `design/tokens.json` (`size`): 24 points in the header, 22 for
+leading row icons against the 17-point label.
+Every trailing mark sits in one 22-point slot, so the chevron, link arrow and
+check share a column, at a size whose ink matches the label: the chevron at 20
+and the link arrow at 22 both draw about 11 points, against 11.7-point
+capitals, and rest on the baseline. The arrow at 18 drew 8.7 points that
+stopped short of the baseline and read as small and floating high (owner
+report, 2026-09-25). `test/surface-design.test.js` checks the recorded sizes
+and the slot on every platform; `test/web-settings.test.js` measures the
+rendered ink against the label's first capital in Chromium. iOS SF Symbols are
+sized by the same frame but their ink has not been measured on a device.

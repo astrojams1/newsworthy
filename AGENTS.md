@@ -21,6 +21,8 @@ release status. Calm presentation must not change the rating calibration.
   claims against the change, and record the copy accuracy review in the PR
   description. Repeat affected checks if PR scope changes.
 - Branch off `main`, open a PR into `main`, and run `npm test` before pushing.
+  Merged branches are deleted by `.github/workflows/delete-merged-branches.yml`
+  unless they gained commits after the merge.
   Do not push directly to `main`. Vercel preview builds are currently skipped.
 - Keep extra development workspaces inside the primary Newsworthy checkout at
   `.worktrees/<task-name>/`. Do not create sibling `newsworthy-*` folders in
@@ -40,7 +42,9 @@ release status. Calm presentation must not change the rating calibration.
 - The shared interface uses Expo / React Native in `apps/client`. A browser view is not an iOS
   preview. Do not claim native builds or widgets are verified until tested.
 - For UI changes, run `npm run test:design` and extend its regression cases for
-  the reported defect. Follow `design/surfaces.json` and `design/README.md` across
+  the reported defect. Style values are tokens (`design/tokens.json`,
+  `palette.json`); `test/design-system.test.js` rejects literals. Follow
+  `design/surfaces.json` and `design/README.md` across
   web, iOS, Android and both widgets. Passing builds, shared palette generation,
   or rendered-prop tests alone do not establish native visual parity; record
   actual native verification and any untested states in the release ledger
@@ -894,18 +898,14 @@ Models are an allowlist in `src/pricing.js` — adding one requires its rates.
 ## Testing
 
 ```bash
-npm test        # fourteen files under test/; database tests run against PGlite,
+npm test        # every test/*.test.js; database tests run against PGlite,
                 # real Postgres in-process, so the SQL is exercised not mocked
                 # test/with-server.js is the shared harness, not a suite
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
 
-The fourteen are `caller`, `current`, `db`, `external-null`, `ingest`, `openapi`,
-`parse`, `preferences`, `pricing`, `prompt-rules`, `push`, `rejections`, `scheduler`
-and `story`. A count of
-individual tests
-is not kept here: it is wrong again after the next PR, and a stale number in a
-document read as authoritative is worse than no number.
+No count of files or tests is kept here: a stale number in a document read as
+authoritative is worse than no number.
 
 **The story timeline** is off by default (`timeline` in `preferences.js`), one
 entry per development ordered by `opened`, one week long. See

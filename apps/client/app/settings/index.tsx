@@ -9,6 +9,7 @@ import { privacyUrl, supportUrl } from '@/lib/config';
 import { Glyph, type GlyphName } from '@/components/glyph';
 import { RowContent, Section, SettingsPage, Trailing, rowStyle } from '@/components/settings-list';
 import { Toggle } from '@/components/toggle';
+import { layout, size, touchTarget } from '@/lib/design';
 
 const ABOUT_LINKS = [['Privacy', privacyUrl, 'privacy'], ['Support', supportUrl, 'support']] as const;
 
@@ -25,8 +26,8 @@ export default function Settings() {
   // dismissTo pops to the reading, or replaces with it when none is behind.
   const close = () => router.dismissTo('/');
   const closeButton = <Pressable testID="settings-close" accessibilityRole="button" accessibilityLabel="Close settings" onPress={close}
-    style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center', marginRight: process.env.EXPO_OS === 'web' ? 12 : 0 }}>
-    <Glyph name="close" color={theme.ink} size={20} />
+    style={{ minWidth: touchTarget, minHeight: touchTarget, alignItems: 'center', justifyContent: 'center', marginRight: process.env.EXPO_OS === 'web' ? layout.header.webEndInset : 0 }}>
+    <Glyph name="close" color={theme.ink} size={size.closeIcon} />
   </Pressable>;
   const pages: { href: '/settings/appearance' | '/settings/notifications'; icon: GlyphName; label: string; value: string; testID: string }[] = [
     { href: '/settings/appearance', icon: 'appearance', label: 'Appearance', value: appearance, testID: 'appearance-row' },
