@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { chromium } from 'playwright-core';
+import sharp from 'sharp';
 import { PORTS, withServer } from './with-server.js';
 
 // Settings' navigation in a real browser, against the real server serving the
@@ -101,6 +103,62 @@ test('the Settings back arrow follows the theme chosen on Appearance on the web'
       }
       assert.notEqual(seen[0], seen[1], 'Dark and Light draw the arrow in different colours');
       assert.equal(seen[0], seen[2], 'returning to Dark returns the arrow to its dark colour');
+    } finally {
+      await browser.close();
+    }
+  });
+});
+
+// Reported 2026-09-25: the link arrow on Privacy and Support drew 8.7 points
+// of ink beside 11.7-point capitals and stopped short of the baseline, so it
+// read as small and floating high. Measured on rendered pixels: every trailing
+// mark's ink is about the label's cap height and rests on its baseline.
+test('Settings trailing marks match the label\'s cap height and baseline on the web', { timeout: 120_000 }, async (t) => {
+  if (!executablePath) {
+    assert.ok(!process.env.CI, `no Chrome or Chromium found; set CHROME_PATH (looked in ${BROWSERS.join(', ')})`);
+    t.skip('no Chrome or Chromium on this machine; set CHROME_PATH to run it');
+    return;
+  }
+  const { settings } = JSON.parse(readFileSync(new URL('../design/surfaces.json', import.meta.url), 'utf8'));
+  await withServer({ port: PORTS.webSettingsGlyphs, env: { NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
+    const browser = await chromium.launch({ executablePath });
+    try {
+      const scale = 3;
+      const page = await browser.newPage({ colorScheme: 'light', viewport: { width: 390, height: 844 }, deviceScaleFactor: scale });
+      await page.goto(`${base}/settings`);
+      await page.getByLabel('Privacy').waitFor();
+      await page.waitForFunction(() => ['Appearance, Follow device', 'Privacy', 'Support']
+        .every(name => [...(document.querySelector(`[aria-label="${name}"]`)?.querySelectorAll('img') ?? [])].at(-1)?.naturalWidth > 0));
+      // The label's first letter is a capital with no descender, so its ink
+      // spans cap height to baseline.
+      const rows = await page.evaluate(() => ['Appearance, Follow device', 'Privacy', 'Support'].map(name => {
+        const row = document.querySelector(`[aria-label="${name}"]`);
+        const label = [...row.querySelectorAll('div[dir="auto"]')][0].getBoundingClientRect();
+        const mark = [...row.querySelectorAll('img')].at(-1).getBoundingClientRect();
+        return { name, label: { x: label.x, y: label.y, h: label.height }, mark: { x: mark.x, y: mark.y, w: mark.width, h: mark.height } };
+      }));
+      const { data, info } = await sharp(await page.screenshot()).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+      const png = { data, width: info.width };
+      const ink = (x0, y0, w, h) => {
+        let top = Infinity, bottom = -Infinity;
+        for (let y = Math.floor(y0 * scale); y < Math.ceil((y0 + h) * scale); y += 1) {
+          for (let x = Math.floor(x0 * scale); x < Math.ceil((x0 + w) * scale); x += 1) {
+            const i = (png.width * y + x) * 4;
+            if (png.data[i] + png.data[i + 1] + png.data[i + 2] < 600) { top = Math.min(top, y); bottom = Math.max(bottom, y + 1); }
+          }
+        }
+        assert.ok(bottom > top, 'visible ink');
+        return { top: top / scale, bottom: bottom / scale, height: (bottom - top) / scale };
+      };
+      for (const { name, label, mark } of rows) {
+        const cap = ink(label.x, label.y, 6, label.h);
+        const drawn = ink(mark.x, mark.y, mark.w, mark.h);
+        const ratio = drawn.height / cap.height;
+        assert.ok(ratio >= settings.trailingInkToCapHeight.min && ratio <= settings.trailingInkToCapHeight.max,
+          `${name}: trailing ink ${drawn.height.toFixed(1)}pt against ${cap.height.toFixed(1)}pt capitals`);
+        assert.ok(Math.abs(drawn.bottom - cap.bottom) <= settings.trailingBaselineTolerance,
+          `${name}: trailing ink ends ${(cap.bottom - drawn.bottom).toFixed(1)}pt above the baseline`);
+      }
     } finally {
       await browser.close();
     }

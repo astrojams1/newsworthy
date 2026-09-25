@@ -4,9 +4,8 @@ import Head from 'expo-router/head';
 import { pushSupported } from '@/lib/push';
 import { useTheme } from '@/lib/theme';
 import { THRESHOLD_CHOICES } from '@/lib/preferences';
-import { CheckIcon } from '@/components/check-icon';
 import { AlertFeedback, useAlertChanges } from '@/components/alert-feedback';
-import { RowContent, Section, SettingsPage, rowStyle } from '@/components/settings-list';
+import { RowContent, Section, SettingsPage, rowStyle, TrailingMark } from '@/components/settings-list';
 
 export default function ThresholdSettings() {
   const theme = useTheme();
@@ -22,7 +21,7 @@ export default function ThresholdSettings() {
             return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={`Alert at ${value} or higher`}
               accessibilityState={{ checked, selected: checked, disabled: busy }} testID={`threshold-${value}`} disabled={busy}
               onPress={() => choose(value)} style={rowStyle()}>
-              <RowContent index={index} label={`${value} or higher`} trailing={checked ? <CheckIcon color={theme.accent} /> : null} />
+              <RowContent index={index} label={`${value} or higher`} trailing={checked ? <TrailingMark name="check" color={theme.accent} /> : null} />
             </Pressable>;
           })}
         </Section>

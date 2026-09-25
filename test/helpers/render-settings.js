@@ -53,7 +53,6 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
     'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', ActivityIndicator: 'ActivityIndicator',
       Linking: { openSettings: async () => { calls.openSettings += 1; } }, useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
     '@/components/toggle': { Toggle: 'Toggle' },
-    '@/components/check-icon': { CheckIcon: 'CheckIcon' },
     '@/components/glyph': { Glyph: 'Glyph' },
     'expo-router/head': { __esModule: true, default: 'Head' },
     'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', Redirect: 'Redirect', useRouter: () => ({ canGoBack: () => canGoBack, back: () => { calls.back += 1; }, replace: href => calls.replace.push(href), dismissTo: href => calls.dismissTo.push(href) }) },

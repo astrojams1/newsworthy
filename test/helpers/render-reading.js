@@ -36,7 +36,7 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', useRouter: () => ({ push() {} }) },
     'expo-router/head': { default: 'Head' },
     '@/components/app-icon': { AppIcon: 'AppIcon' },
-    '@/components/settings-icon': { SettingsIcon: 'SettingsIcon' },
+    '@/components/glyph': { Glyph: 'Glyph' },
     '@/components/brand-mark': { BrandMark: 'BrandMark' },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '@/lib/theme': { useTheme: () => themeForLevel(score, dark) },

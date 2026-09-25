@@ -35,7 +35,7 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
 export function renderSettingsLayout({ platform = 'ios', dark = false } = {}) {
   const theme = themeForLevel(3, dark);
   const mocks = { 'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }) }, '@/lib/theme': { useTheme: () => theme },
-    'expo-router/react-navigation': { HeaderBackButton: 'HeaderBackButton' }, '@/components/back-icon': { BackIcon: 'BackIcon' } };
+    'expo-router/react-navigation': { HeaderBackButton: 'HeaderBackButton' }, '@/components/glyph': { Glyph: 'Glyph' } };
   const exports = {};
   const compiled = ts.transpileModule(readFileSync(new URL('../../apps/client/app/settings/_layout.tsx', import.meta.url), 'utf8'),
     { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;

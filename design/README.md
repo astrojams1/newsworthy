@@ -255,10 +255,31 @@ this in a real browser. Opening Settings no
 longer pushes a screen beside the reading, so nothing in the reading's header
 morphs into a back button. The overview groups rows under sentence-case section
 titles in the muted ink, level with the row icons. Every overview row has a
-leading icon (an SF Symbol on iOS, a stroked SVG elsewhere, from
-`components/glyph.tsx`); a row that opens a page shows its current value and a
+leading icon; a row that opens a page shows its current value and a
 chevron, and Privacy and Support, which leave the app, end in a link arrow.
 Separators start at the label so the icons read as one column.
+
+## Icons
+
+`apps/client/components/glyph.tsx` is the one registry of app-drawn icons: the
+header gear, the web back arrow, the Settings close X, the Settings row icons
+and the trailing chevron, link arrow and check. Each entry names an SF Symbol
+for iOS and a stroked 24-unit SVG for web and Android (1.6 stroke; the check
+2.2). The header's share mark stays in `app-icon.tsx` because its glyph and
+optical lift differ by platform (see the design regression gate above). Add
+new icons to the registry rather than as separate components.
+
+Sizes live in `design/surfaces.json` (`header.settingsIconSize`, `settings`):
+24 points in the header, 22 for leading row icons against the 17-point label.
+Every trailing mark sits in one 22-point slot, so the chevron, link arrow and
+check share a column, at a size whose ink matches the label: the chevron at 20
+and the link arrow at 22 both draw about 11 points, against 11.7-point
+capitals, and rest on the baseline. The arrow at 18 drew 8.7 points that
+stopped short of the baseline and read as small and floating high (owner
+report, 2026-09-25). `test/surface-design.test.js` checks the recorded sizes
+and the slot on every platform; `test/web-settings.test.js` measures the
+rendered ink against the label's first capital in Chromium. iOS SF Symbols are
+sized by the same frame but their ink has not been measured on a device.
 
 The Notifications page is one group: the "High-score alerts" switch, then a
 Threshold row showing the chosen score ("8 or higher") that opens its own page

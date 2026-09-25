@@ -3,8 +3,7 @@ import Head from 'expo-router/head';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
 import { THEME_CHOICES, type ThemePreference } from '@/lib/preferences';
-import { CheckIcon } from '@/components/check-icon';
-import { RowContent, Section, SettingsPage, rowStyle } from '@/components/settings-list';
+import { RowContent, Section, SettingsPage, rowStyle, TrailingMark } from '@/components/settings-list';
 
 export default function AppearanceSettings() {
   const theme = useTheme();
@@ -17,7 +16,7 @@ export default function AppearanceSettings() {
           const checked = preferences.theme === value;
           return <Pressable key={value} accessibilityRole="radio" accessibilityLabel={label} accessibilityState={{ checked, selected: checked }}
             testID={`theme-${value}`} onPress={() => setTheme(value as ThemePreference)} style={rowStyle()}>
-            <RowContent index={index} label={label} trailing={checked ? <CheckIcon color={theme.accent} /> : null} />
+            <RowContent index={index} label={label} trailing={checked ? <TrailingMark name="check" color={theme.accent} /> : null} />
           </Pressable>;
         })}
       </Section>
