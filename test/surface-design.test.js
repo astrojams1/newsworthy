@@ -45,10 +45,18 @@ for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · 
   });
 }
 
+test('widgets show only the time for a reading saved today', () => {
+  const { swift, java } = widgetSources();
+  assert.match(swift, /Calendar.current.isDate\(date, inSameDayAs: now\) \{ return time \}/);
+  assert.match(swift, /startOfDay\(for: now\)/, 'iOS schedules a midnight entry so the date returns');
+  assert.match(java, /String date = updatedTime\(readingDate\(reading\), System.currentTimeMillis\(\)\);/);
+  assert.match(java, /today\s*\? DateFormat.getTimeInstance\(DateFormat.SHORT\)\s*: DateFormat.getDateTimeInstance\(DateFormat.SHORT, DateFormat.SHORT\)/);
+});
+
 test('widgets keep cached timestamps and empty states free of status copy', () => {
   const { swift, java, compact, expanded, light } = widgetSources();
   assert.match(java, /setTextViewText\(R.id.widget_updated, "Updated " \+ date\)/);
-  assert.match(swift, /Text\("\\\(date.formatted/);
+  assert.match(swift, /Text\(timestampText\(date, at: entry.date\)\)/);
   assert.match(swift, /accessibilityLabel\("Updated /);
   assert.match(swift, /explanationText\(entry.reading, at: entry.date\)/);
   assert.match(swift, /Text\(verbatim: parts.label\).bold\(\) \+ Text\(verbatim: " " \+ parts.body\)/, 'the iOS label is bold and nothing else');

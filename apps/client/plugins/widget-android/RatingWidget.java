@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -172,6 +173,20 @@ public class RatingWidget extends AppWidgetProvider {
         return null;
     }
 
+    /** The time alone for a reading saved today; the date and time otherwise. */
+    static String updatedTime(Date saved, long now) {
+        Calendar day = Calendar.getInstance();
+        day.setTimeInMillis(now);
+        Calendar then = Calendar.getInstance();
+        then.setTime(saved);
+        boolean today = day.get(Calendar.YEAR) == then.get(Calendar.YEAR)
+            && day.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR);
+        DateFormat format = today
+            ? DateFormat.getTimeInstance(DateFormat.SHORT)
+            : DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        return format.format(saved);
+    }
+
     static final String NEW_LABEL = "New:";
     static final long NEW_LABEL_MS = 2 * 3_600_000L;
 
@@ -283,7 +298,7 @@ public class RatingWidget extends AppWidgetProvider {
                 views.setTextViewText(R.id.widget_score, number);
                 views.setContentDescription(R.id.widget_score, reading.optInt("score") + " out of 10");
                 views.setTextViewText(R.id.widget_explanation, displayedExplanation(reading, System.currentTimeMillis()));
-                String date = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(readingDate(reading));
+                String date = updatedTime(readingDate(reading), System.currentTimeMillis());
                 views.setTextViewText(R.id.widget_updated, "Updated " + date);
             }
             views.setViewVisibility(R.id.widget_explanation, compact ? View.GONE : View.VISIBLE);

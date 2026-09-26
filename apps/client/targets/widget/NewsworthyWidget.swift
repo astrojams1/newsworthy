@@ -112,7 +112,9 @@ struct Provider: TimelineProvider {
             let now = Date()
             // A second entry takes "New:" off at its two-hour mark even when the OS delays a refresh.
             let expiry = result.reading?.newLabelExpiry
-            let dates = [now] + (expiry.map { $0 > now ? [$0] : [] } ?? [])
+            // Another at midnight brings the date back once the reading is no longer today's.
+            let midnight = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: now))
+            let dates = ([now] + [expiry, midnight].compactMap { $0 }.filter { $0 > now }).sorted()
             let entries = dates.map { ReadingEntry(date: $0, reading: result.reading, saved: result.saved) }
             completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(30 * 60))))
         }
@@ -120,6 +122,13 @@ struct Provider: TimelineProvider {
 }
 
 /// A new development's sentence leads with a bold "New:"; everything else is plain.
+/// The time alone for a reading saved on the entry's own day; month and day before it otherwise.
+func timestampText(_ date: Date, at now: Date) -> String {
+    let time = date.formatted(date: .omitted, time: .shortened)
+    if Calendar.current.isDate(date, inSameDayAs: now) { return time }
+    return "\(date.formatted(.dateTime.month(.abbreviated).day())) · \(time)"
+}
+
 func explanationText(_ reading: Reading?, at date: Date) -> Text {
     guard let parts = reading?.explanationParts(at: date) else { return Text(verbatim: "") }
     if parts.label.isEmpty { return Text(verbatim: parts.body) }
@@ -267,7 +276,7 @@ struct ReadingContent: View {
             Group {
                 if let date = entry.reading?.updatedAt {
                     // Preserve the saved reading's absolute timestamp.
-                    Text("\(date.formatted(.dateTime.month(.abbreviated).day())) · \(date.formatted(date: .omitted, time: .shortened))")
+                    Text(timestampText(date, at: entry.date))
                         .accessibilityLabel("Updated \(date.formatted(date: .abbreviated, time: .shortened))")
                 } else {
                     Text("")
