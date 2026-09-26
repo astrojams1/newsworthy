@@ -29,5 +29,13 @@ class NewsworthyWidgetsModule : Module() {
         .putExtra("payload", payload)
       context.sendBroadcast(intent)
     }
+    // The widgets' own appearance, apart from the app's; the widget stores it.
+    AsyncFunction("setAppearance") { appearance: String ->
+      val context = appContext.reactContext ?: return@AsyncFunction
+      val intent = Intent("${context.packageName}.SET_WIDGET_APPEARANCE")
+        .setComponent(ComponentName(context.packageName, "${context.packageName}.RatingWidget"))
+        .putExtra("appearance", appearance)
+      context.sendBroadcast(intent)
+    }
   }
 }

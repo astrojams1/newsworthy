@@ -43,7 +43,7 @@ function expand(tree) {
 export function renderSettings({ platform, screen = 'index', width = 390, height = 844, dark = false, stored = {}, pushSupported = platform !== 'web', push = {}, canGoBack = true, busy = false, sourceOverride, listOverride } = {}) {
   // Recorded as plain copies: values built inside the vm context carry that
   // context's prototypes, which strict deep equality would refuse.
-  const calls = { setTheme: [], setTimeline: [], enable: 0, disable: 0, choose: [], replace: [], back: 0, dismissTo: [], openSettings: 0, notices: [] };
+  const calls = { setTheme: [], setWidgetTheme: [], setTimeline: [], enable: 0, disable: 0, choose: [], replace: [], back: 0, dismissTo: [], openSettings: 0, notices: [] };
   const current = preferences.parsePreferences(stored);
   const theme = themeForLevel(3, dark);
   const mocks = {
@@ -65,6 +65,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
     '@/components/preferences-provider': { usePreferences: () => ({
       preferences: current, loaded: true, savingNotifications: busy,
       setTheme: theme => calls.setTheme.push(theme),
+      setWidgetTheme: theme => calls.setWidgetTheme.push(theme),
       setTimeline: on => calls.setTimeline.push(on),
       subscription: {
         enable: async () => { calls.enable += 1; return push.enable ?? { ok: true }; },

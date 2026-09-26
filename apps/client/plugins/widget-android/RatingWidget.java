@@ -36,6 +36,8 @@ public class RatingWidget extends AppWidgetProvider {
 
     static final String REVISION = CACHE + ":revision";
     static final String FETCHED_AT = CACHE + ":fetchedAt";
+    // The appearance chosen for widgets in the app, apart from the app's own.
+    static final String APPEARANCE = "appearance";
 
     @Override public void onReceive(Context context, Intent intent) {
         if ((context.getPackageName() + ".SYNC_WIDGET_READING").equals(intent.getAction())) {
@@ -48,6 +50,10 @@ public class RatingWidget extends AppWidgetProvider {
                     refresh(context);
                 }
             } catch (Exception ignored) { }
+            return;
+        }
+        if ((context.getPackageName() + ".SET_WIDGET_APPEARANCE").equals(intent.getAction())) {
+            setAppearance(context, intent.getStringExtra("appearance"));
             return;
         }
         super.onReceive(context, intent);
@@ -79,6 +85,35 @@ public class RatingWidget extends AppWidgetProvider {
         if (reading != null) edit.putString(CACHE, reading.toString()).putLong(FETCHED_AT, fetchedAt);
         edit.apply();
         renderAll(context);
+    }
+
+    // The app hands the choice over on every launch; only a change re-renders.
+    static synchronized void setAppearance(Context context, String appearance) {
+        if (!"system".equals(appearance) && !"light".equals(appearance) && !"dark".equals(appearance)) return;
+        android.content.SharedPreferences cache = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE);
+        if (appearance.equals(cache.getString(APPEARANCE, "system"))) return;
+        cache.edit().putString(APPEARANCE, appearance).apply();
+        renderAll(context);
+    }
+
+    /** True or false for a chosen Dark or Light; null when widgets follow the device. */
+    static Boolean chosenDark(android.content.SharedPreferences cache) {
+        String appearance = cache.getString(APPEARANCE, "system");
+        return "dark".equals(appearance) ? Boolean.TRUE : "light".equals(appearance) ? Boolean.FALSE : null;
+    }
+
+    // Following the device keeps every colour an XML theme resource, which the
+    // host re-resolves when its theme changes. A chosen appearance must hold
+    // through that change, so only then are the colours literal values.
+    static void applyChosenAppearance(RemoteViews views, int score, boolean dark) {
+        int ink = dark ? LevelPalette.INK_DARK : LevelPalette.INK_LIGHT;
+        int muted = dark ? LevelPalette.MUTED_DARK : LevelPalette.MUTED_LIGHT;
+        views.setInt(R.id.widget_root, "setBackgroundResource", LevelPalette.background(score, dark));
+        views.setTextColor(R.id.widget_name, muted);
+        views.setTextColor(R.id.widget_score, ink);
+        views.setTextColor(R.id.widget_denominator, muted);
+        views.setTextColor(R.id.widget_explanation, ink);
+        views.setTextColor(R.id.widget_updated, muted);
     }
 
     @Override public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
@@ -202,10 +237,12 @@ public class RatingWidget extends AppWidgetProvider {
 
     static synchronized void renderAll(Context context) {
         JSONObject reading = null;
+        android.content.SharedPreferences cache = context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE);
         try {
-            JSONObject cached = new JSONObject(context.getSharedPreferences("newsworthy_widget", Context.MODE_PRIVATE).getString(CACHE, ""));
+            JSONObject cached = new JSONObject(cache.getString(CACHE, ""));
             if (valid(cached)) reading = cached;
         } catch (Exception ignored) { }
+        Boolean dark = chosenDark(cache);
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
         Intent open = new Intent(context, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -223,6 +260,7 @@ public class RatingWidget extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.widget_root, launch);
             views.setInt(R.id.widget_root, "setBackgroundResource",
                 LevelPalette.background(reading == null ? 0 : reading.optInt("score")));
+            if (dark != null) applyChosenAppearance(views, reading == null ? 0 : reading.optInt("score"), dark);
             if (reading != null) {
                 String number = Integer.toString(reading.optInt("score"));
                 // Keep the denominator in a separate, baseline-aligned TextView.

@@ -276,7 +276,9 @@ npx expo prebuild --no-install
 
 Before release, verify custom builds on devices: initial load, saved reading in
 flight mode, recovery, native sharing, light/dark mode and the Settings
-appearance override (including share sheet and alerts), the notification switch
+appearance override (including share sheet and alerts), the separate widget
+appearance (Light and Dark held against the opposite system mode, Follow device
+switching with it), the notification switch
 (permission prompt, refusal, delivery of an 8 or above, threshold change, turning
 off), large text, Android back, widget addition/refresh/offline state and the
 privacy/support links in Settings. Simulator Expo

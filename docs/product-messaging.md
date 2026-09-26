@@ -43,7 +43,7 @@ engagement, addiction or growth-hacking tactics.
   the cost of running the service, with local store equivalents. Pricing must be
   configured and verified in each store before it is described as live.
 - Settings offer an appearance choice (Follow device, Light, Dark; following the
-  device by default)
+  device by default), with a separate choice for widgets in the mobile apps,
   and, in the mobile apps only, an optional notification for readings at or
   above a chosen score — off by default, 8 when turned on, one notification per
   development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,

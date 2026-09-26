@@ -5,7 +5,7 @@
 
 /** @typedef {'system' | 'light' | 'dark'} ThemePreference */
 /** @typedef {{ enabled: boolean, threshold: number, token: string | null }} NotificationPreferences */
-/** @typedef {{ theme: ThemePreference, notifications: NotificationPreferences, timeline: boolean }} Preferences */
+/** @typedef {{ theme: ThemePreference, widgetTheme: ThemePreference, notifications: NotificationPreferences, timeline: boolean }} Preferences */
 
 export const THEME_CHOICES = /** @type {const} */ ([
   { value: 'system', label: 'Follow device' },
@@ -23,6 +23,10 @@ export const THRESHOLD_CHOICES = /** @type {const} */ ([5, 6, 7, 8, 9, 10]);
 /** @type {Preferences} */
 export const DEFAULT_PREFERENCES = Object.freeze({
   theme: 'system',
+  // The home-screen widgets' appearance, chosen apart from the app's: a widget
+  // sits on a wallpaper the app never sees. Follow device is what widgets did
+  // before there was a choice.
+  widgetTheme: 'system',
   // `token` is this device's push token once registered, kept so turning
   // notifications off can tell the server which row to delete.
   notifications: Object.freeze({ enabled: false, threshold: DEFAULT_THRESHOLD, token: null }),
@@ -61,6 +65,7 @@ export function parsePreferences(raw) {
     ? /** @type {Record<string, unknown>} */ (stored.notifications) : {};
   return {
     theme: validTheme(stored.theme) ? stored.theme : DEFAULT_PREFERENCES.theme,
+    widgetTheme: validTheme(stored.widgetTheme) ? stored.widgetTheme : DEFAULT_PREFERENCES.widgetTheme,
     notifications: {
       // Enabled only with a token to send to: a stored "on" with nothing
       // registered would show a switch the server knows nothing about.

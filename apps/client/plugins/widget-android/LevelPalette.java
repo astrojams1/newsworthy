@@ -3,6 +3,10 @@ package com.example.newsworthy;
 
 final class LevelPalette {
     private LevelPalette() {}
+    static final int INK_LIGHT = 0xFF16161A;
+    static final int MUTED_LIGHT = 0xFF30303A;
+    static final int INK_DARK = 0xFFF2F2F5;
+    static final int MUTED_DARK = 0xFFE0E0E6;
     static int background(int score) {
         switch (score) {
             case 1: return R.drawable.widget_level_1;
@@ -16,6 +20,37 @@ final class LevelPalette {
             case 9: return R.drawable.widget_level_9;
             case 10: return R.drawable.widget_level_10;
             default: return R.drawable.widget_background;
+        }
+    }
+    /** A chosen appearance, independent of the launcher's theme. */
+    static int background(int score, boolean dark) {
+        if (dark) {
+            switch (score) {
+                case 1: return R.drawable.widget_level_1_dark;
+                case 2: return R.drawable.widget_level_2_dark;
+                case 3: return R.drawable.widget_level_3_dark;
+                case 4: return R.drawable.widget_level_4_dark;
+                case 5: return R.drawable.widget_level_5_dark;
+                case 6: return R.drawable.widget_level_6_dark;
+                case 7: return R.drawable.widget_level_7_dark;
+                case 8: return R.drawable.widget_level_8_dark;
+                case 9: return R.drawable.widget_level_9_dark;
+                case 10: return R.drawable.widget_level_10_dark;
+                default: return R.drawable.widget_background_dark;
+            }
+        }
+        switch (score) {
+            case 1: return R.drawable.widget_level_1_light;
+            case 2: return R.drawable.widget_level_2_light;
+            case 3: return R.drawable.widget_level_3_light;
+            case 4: return R.drawable.widget_level_4_light;
+            case 5: return R.drawable.widget_level_5_light;
+            case 6: return R.drawable.widget_level_6_light;
+            case 7: return R.drawable.widget_level_7_light;
+            case 8: return R.drawable.widget_level_8_light;
+            case 9: return R.drawable.widget_level_9_light;
+            case 10: return R.drawable.widget_level_10_light;
+            default: return R.drawable.widget_background_light;
         }
     }
 }

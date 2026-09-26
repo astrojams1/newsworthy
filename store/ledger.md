@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-25T08:25:21+00:00
+Updated: 2026-09-26T03:48:43+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -93,6 +93,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.settings-transition | in_progress | agent | observed | Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off. | Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission. |
 | web.settings-back-arrow | waiting_user | user | observed | Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged. | Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows. |
 | web.settings-trailing-marks | waiting_user | user | observed | Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device. | Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build. |
+| widget.appearance-choice | waiting_verification | agent | observed | Settings > Appearance in the apps gains a separate Widgets choice (Follow device, Light, Dark; Follow device by default). iOS stores it in the App Group and forces colorScheme on widget content and container background; Android stores it via a broadcast to RatingWidget and, only for a chosen Light or Dark, uses generated literal-colour gradients and text colours. Follow device keeps theme resources. Rendered-prop, design-contract and pixel-geometry tests pass; the Swift and Android sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown a forced widget. | Build native packages; on iOS and Android, both widget sizes: Light held with system Dark, Dark held with system Light, Follow device switching with the system, a change applied without reopening the widget picker, and an unset store (upgrade) following the device. |
 
 ## Evidence and history
 
@@ -2933,3 +2934,13 @@ Owner report: on the web, the Settings link arrow (Privacy, Support) looked too 
 - test/surface-design.test.js checks recorded sizes and the shared slot on web, iOS and Android props
 
 Next: Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build.
+
+### 300. widget.appearance-choice — waiting_verification
+
+2026-09-26T03:48:43+00:00 · observed · agent
+
+Settings > Appearance in the apps gains a separate Widgets choice (Follow device, Light, Dark; Follow device by default). iOS stores it in the App Group and forces colorScheme on widget content and container background; Android stores it via a broadcast to RatingWidget and, only for a chosen Light or Dark, uses generated literal-colour gradients and text colours. Follow device keeps theme resources. Rendered-prop, design-contract and pixel-geometry tests pass; the Swift and Android sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown a forced widget.
+
+- Branch claude/widget-appearance-control-pfap1k; test/preferences.test.js, test/widget-sync.test.js, test/surface-design.test.js mutations, test/widget-alignment.test.js geometry hash unchanged; store/story-age-verification.json
+
+Next: Build native packages; on iOS and Android, both widget sizes: Light held with system Dark, Dark held with system Light, Follow device switching with the system, a change applied without reopening the widget picker, and an unset store (upgrade) following the device.

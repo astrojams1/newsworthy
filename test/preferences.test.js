@@ -6,15 +6,19 @@ import { createSubscriptionController } from '../apps/client/lib/subscription.js
 
 test('system appearance, no notifications and no timeline are the defaults, and a damaged store falls back field by field', () => {
   assert.deepEqual(THEME_CHOICES.map(c => [c.value, c.label]), [['system', 'Follow device'], ['light', 'Light'], ['dark', 'Dark']]);
-  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null }, timeline: false });
+  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', widgetTheme: 'system', notifications: { enabled: false, threshold: 8, token: null }, timeline: false });
   assert.deepEqual(parsePreferences(null), DEFAULT_PREFERENCES);
   assert.deepEqual(parsePreferences('{not json'), DEFAULT_PREFERENCES);
-  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, timeline: 'yes' }), DEFAULT_PREFERENCES);
-  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, timeline: true };
+  assert.deepEqual(parsePreferences({ theme: 'sepia', widgetTheme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, timeline: 'yes' }), DEFAULT_PREFERENCES);
+  const kept = { theme: 'dark', widgetTheme: 'light', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, timeline: true };
   assert.deepEqual(parsePreferences(JSON.stringify(kept)), kept);
   // An "on" with no device registered is not on: the server has nothing to send to.
   assert.deepEqual(parsePreferences({ notifications: { enabled: true, threshold: 6 } }).notifications, { enabled: false, threshold: 6, token: null });
   assert.equal(STORAGE_KEY, 'newsworthy.preferences.v1');
+  // A store written before widgets had a choice keeps its app theme and
+  // leaves widgets following the device, as they did.
+  assert.deepEqual(parsePreferences({ theme: 'dark' }).widgetTheme, 'system');
+  assert.equal(parsePreferences({ theme: 'light', widgetTheme: 'dark' }).theme, 'light', 'the two choices are independent');
 });
 
 test('the chosen appearance wins and System follows the device', () => {
@@ -115,9 +119,36 @@ for (const platform of ['ios', 'android']) {
     // Choosing Dark records the choice; nothing else is touched.
     nodes(appearance.tree).find(n => n.props?.testID === 'theme-dark').props.onPress();
     assert.deepEqual(appearance.calls.setTheme, ['dark']);
+    assert.deepEqual(appearance.calls.setWidgetTheme, [], 'the app choice leaves widgets alone');
     assert.deepEqual([calls.enable, calls.disable, calls.choose, appearance.calls.enable], [0, 0, [], 0]);
   });
 }
+
+// Reported 2026-09-26: widgets could only follow the device. The apps choose
+// the widgets' appearance on its own, beside the app's, and the website, which
+// has no widgets, keeps its single untitled choice.
+test('the apps choose the widget appearance separately from the app appearance', () => {
+  for (const platform of ['ios', 'android']) {
+    const appearance = renderSettings({ platform, screen: 'appearance', stored: { theme: 'dark', widgetTheme: 'light' } });
+    const all = nodes(appearance.tree);
+    assert.deepEqual(text(all), ['App', 'Follow device', 'Light', 'Dark', 'Widgets', 'Follow device', 'Light', 'Dark']);
+    const groups = all.filter(n => n.props?.accessibilityRole === 'radiogroup');
+    assert.deepEqual(groups.map(n => n.props.accessibilityLabel), ['App appearance', 'Widget appearance']);
+    const checked = prefix => all.filter(n => n.props?.accessibilityRole === 'radio' && n.props.testID.startsWith(prefix))
+      .map(n => [n.props.testID.slice(prefix.length), n.props.accessibilityState.checked]);
+    assert.deepEqual(checked('theme-'), [['system', false], ['light', false], ['dark', true]]);
+    assert.deepEqual(checked('widget-theme-'), [['system', false], ['light', true], ['dark', false]]);
+    const widgetRows = all.filter(n => n.props?.accessibilityRole === 'radio' && n.props.testID.startsWith('widget-theme-'));
+    assert.deepEqual(widgetRows.map(n => n.props.style.minHeight), [56, 56, 56], 'widget rows share the settings row minimum');
+    all.find(n => n.props?.testID === 'widget-theme-dark').props.onPress();
+    all.find(n => n.props?.testID === 'widget-theme-system').props.onPress();
+    assert.deepEqual(appearance.calls.setWidgetTheme, ['dark', 'system']);
+    assert.deepEqual(appearance.calls.setTheme, [], 'the widget choice leaves the app alone');
+  }
+  const web = nodes(renderSettings({ platform: 'web', screen: 'appearance' }).tree);
+  assert.ok(!web.some(n => /^widget-theme-/.test(n.props?.testID ?? '')), 'the website has no widgets');
+  assert.deepEqual(web.filter(n => n.props?.accessibilityRole === 'radiogroup').map(n => n.props.accessibilityLabel), ['Appearance']);
+});
 
 test('Privacy and Support are rows in Settings on every platform, opening the policy pages', () => {
   for (const platform of ['web', 'ios', 'android']) {

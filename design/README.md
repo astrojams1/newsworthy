@@ -39,7 +39,7 @@ The design test verifies AA text contrast across the opaque gradient stops and c
 
 ## Android
 
-`apps/client/plugins/widget-android/res/values/newsworthy_palette.xml` and its `values-night` counterpart provide automatic appearance variants. Generated `widget_level_*.xml` drawables use opaque three-stop gradients for `RemoteViews`. `RatingWidget` chooses the drawable from its own validated score, while text colors remain resource references. These resources are resolved by the host when the widget is applied, including theme reapplication.
+`apps/client/plugins/widget-android/res/values/newsworthy_palette.xml` and its `values-night` counterpart provide automatic appearance variants. Generated `widget_level_*.xml` drawables use opaque three-stop gradients for `RemoteViews`. `RatingWidget` chooses the drawable from its own validated score, while text colors remain resource references. These resources are resolved by the host when the widget is applied, including theme reapplication. That holds while widgets follow the device, the default. A Light or Dark widget appearance chosen in the app selects generated `widget_level_*_light`/`_dark` drawables with literal colours and sets the literal ink and muted colours from `LevelPalette`, so the choice holds when the launcher's theme changes; those overrides live only in `RatingWidget.applyChosenAppearance`.
 
 App icons use a white background and dark dash in light mode, and a dark background and white dash in dark mode, including adaptive and legacy icons and an Android 13 monochrome mark. The OS controls the final color of themed launcher icons. Splash backgrounds and marks use the fixed brand palette.
 
@@ -47,7 +47,7 @@ App icons use a white background and dark dash in light mode, and a dark backgro
 
 The widget target’s `Assets.xcassets` contains generated `Newsworthy*`, `Brand*`, `AccentColor`, and `Level01*` through `Level10*` color sets. Every color set has light/dark appearance entries. The app icon has uncolored light and dark variants; Expo’s source configuration selects the app icon variants and the branded splash assets.
 
-`NewsworthyWidget.swift` selects `Level07Start`, `Level07Center`, and `Level07End` (for example) from its timeline entry’s own score. The named colors include both system appearances. `NewsworthyGradientMuted` keeps timestamps readable over the gradient.
+`NewsworthyWidget.swift` selects `Level07Start`, `Level07Center`, and `Level07End` (for example) from its timeline entry’s own score. The named colors include both system appearances. `NewsworthyGradientMuted` keeps timestamps readable over the gradient. A Light or Dark widget appearance chosen in the app, read from the App Group, sets `colorScheme` on the content and on the extracted container background, which does not inherit it; Follow device leaves the scheme to the system.
 
 ## Shared Expo screens
 
