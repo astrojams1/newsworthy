@@ -49,8 +49,11 @@ score that could not be researched is worse than no score, and the server
 cannot detect the difference from a submission — only the caller can.
 
 Notes from previous runs. Search often returns links without usable snippets,
-so page fetches are usually required. Reuters, AP and BBC block automated
-fetches; NPR, Al Jazeera, CNBC and CNN answer.
+so pages are read, with \`curl\` like everything else. No list of sites is
+fixed: sources are whatever the searches turn up. A page is dated by its own
+timestamps, and one that looks stale is fetched again with \`curl\` before
+being discarded, because a web-fetch tool has served months-old copies of pages
+that were current at the source. A site that refuses is skipped.
 
 ### The sentence
 
