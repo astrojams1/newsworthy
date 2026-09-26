@@ -5,7 +5,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerRun, mergeById, storyNameStats, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
 import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges.js';
@@ -193,13 +193,26 @@ function cronAuthorized(url, req) {
  * External callers get their own token, so an agent can submit readings
  * without being handed the admin token. ADMIN_TOKEN also works.
  */
-function callerAuthorized(url, req) {
+/** Whose token authorized a caller-API request — 'caller', 'admin', or
+ *  'open' when self-hosted with none configured — or null when none did. */
+function callerIdentity(url, req) {
   const supplied =
     url.searchParams.get('token') || req.headers['x-newsworthy-token'] || req.headers['x-admin-token'];
-  if (CALLER_TOKEN && secretMatches(supplied, CALLER_TOKEN)) return true;
-  if (ADMIN_TOKEN && secretMatches(supplied, ADMIN_TOKEN)) return true;
-  if (CALLER_TOKEN || ADMIN_TOKEN) return false;
-  return !ON_VERCEL; // open only when self-hosted with nothing configured
+  if (CALLER_TOKEN && secretMatches(supplied, CALLER_TOKEN)) return 'caller';
+  if (ADMIN_TOKEN && secretMatches(supplied, ADMIN_TOKEN)) return 'admin';
+  if (CALLER_TOKEN || ADMIN_TOKEN) return null;
+  return ON_VERCEL ? null : 'open'; // open only when self-hosted with nothing configured
+}
+
+function callerAuthorized(url, req) {
+  return callerIdentity(url, req) !== null;
+}
+
+/** Record a caller-API read under whose token it came, awaited like every
+ *  other write here: a function may be frozen the moment its response ends. */
+async function recordFetch(url, req, path, format = null) {
+  const token = callerIdentity(url, req);
+  if (token) await logCallerFetch({ path, format, token });
 }
 
 async function readJsonBody(req, limitBytes = 8_192) {
@@ -430,6 +443,7 @@ const server = createServer(async (req, res) => {
       const wantsJson =
         url.searchParams.get('format') === 'json' ||
         (req.headers.accept ?? '').includes('application/json');
+      await recordFetch(url, req, path, wantsJson ? 'json' : 'text');
       if (wantsJson) {
         return json(res, 200, { version: prompt.version, hash: prompt.hash, judge_version: judge.version, instructions: text });
       }
@@ -458,6 +472,7 @@ const server = createServer(async (req, res) => {
       // Current only, for the same reason as /api/instructions above. The full
       // history stays at /api/admin/prompts, behind the admin token, where
       // reading an old version cannot be mistaken for rating against one.
+      await recordFetch(url, req, path, 'json');
       try {
         const prompt = renderPrompt(latestVersion());
         return json(res, 200, {
@@ -470,6 +485,19 @@ const server = createServer(async (req, res) => {
       } catch (err) {
         return json(res, 404, { error: String(err?.message ?? err) });
       }
+    }
+
+    // Removed on 2026-09-25 (#144), and still called by runs following the
+    // workflow from before it. A 410 names the current one, so such a run can
+    // learn it inside the run rather than submit unjudged and unreported;
+    // recorded like any refusal, so the review can count them.
+    if (path === '/api/readings/prepare') {
+      if (!callerAuthorized(url, req)) {
+        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+      }
+      return rejection(res, url, 410, 'removed on 2026-09-25: there is no prepare step. The current workflow '
+        + 'is at /api/instructions: score and write the sentence, fetch /api/developments, POST /api/readings '
+        + 'with the judgement, then POST /api/runs with a run report', { method: req.method });
     }
 
     // GET is accepted alongside POST because some agents can only issue a
@@ -574,6 +602,7 @@ const server = createServer(async (req, res) => {
         return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
       }
       const record = judgeRecord({ priors: await history({ hours: PRIOR_HOURS }), stories: await recentStories() });
+      await recordFetch(url, req, path, 'json');
       return json(res, 200, { record: record.text });
     }
 
@@ -648,13 +677,14 @@ const server = createServer(async (req, res) => {
       // Padded by the story memory and trimmed back below: a point at the left
       // edge of the range must be weighed against the same story history the
       // front page used at that moment, not against an edge.
-      const [statsRow, points, failedRuns, attempts, refused, runs, config] = await Promise.all([
+      const [statsRow, points, failedRuns, attempts, refused, runs, fetches, config] = await Promise.all([
         stats({ hours }),
         history({ hours: hours + STORY_MEMORY_HOURS }),
         failures({ hours }),
         recentAttempts(25),
         recentRejections({ hours }),
         recentCallerRuns({ hours }),
+        recentCallerFetches({ hours }),
         effectiveConfig(),
       ]);
       const ascending = points.map((p) => ({ ...p, t: Date.parse(p.created_at) }));
@@ -704,6 +734,8 @@ const server = createServer(async (req, res) => {
         rejections: refused,
         // The caller's own account of each run, over the same range.
         caller_runs: runs,
+        // Authenticated reads of the instructions, prompt and record.
+        caller_fetches: fetches,
         // Every merge and undo, newest first; the in-force ones carry `active`.
         merges: await mergesForAdmin(),
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
