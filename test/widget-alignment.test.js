@@ -27,6 +27,8 @@ test('native pixel evidence retains its source provenance and reviewed layout sc
   ];
   let geometry=source.slice(source.indexOf('// One three-line numeral size'))
     .replace('explanationText(entry.reading, at: entry.date)','Text(entry.reading?.explanation ?? "")')
+    // Same-day readings drop the month and day; the timestamp's font and frame are unchanged.
+    .replace('Text(timestampText(date, at: entry.date))','Text("\\(date.formatted(.dateTime.month(.abbreviated).day())) · \\(date.formatted(date: .omitted, time: .shortened))")')
     .replace(/\.description\("[^"]*"\)/g,'.description("")');
   for(const [now,before] of colourOnly){
     assert.equal(geometry.split(now).length,2,`Widget appearance substitution must apply exactly once: ${now}`);

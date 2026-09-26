@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-26T04:09:44+00:00",
+  "updated_at": "2026-09-26T13:07:53+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -936,6 +936,17 @@
       ],
       "next_action": "On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states.",
       "updated_at": "2026-09-26T04:09:44+00:00"
+    },
+    "widget.same-day-timestamp": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval.",
+      "evidence": [
+        "Branch claude/widget-date-time-logic-2ikz4z; test/surface-design.test.js same-day case; test/widget-alignment.test.js geometry hash unchanged; store/story-age-verification.json"
+      ],
+      "next_action": "On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight.",
+      "updated_at": "2026-09-26T13:07:53+00:00"
     }
   },
   "events": [
@@ -5784,6 +5795,22 @@
         ],
         "next_action": "On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states.",
         "updated_at": "2026-09-26T04:09:44+00:00"
+      }
+    },
+    {
+      "sequence": 303,
+      "at": "2026-09-26T13:07:53+00:00",
+      "gate": "widget.same-day-timestamp",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval.",
+        "evidence": [
+          "Branch claude/widget-date-time-logic-2ikz4z; test/surface-design.test.js same-day case; test/widget-alignment.test.js geometry hash unchanged; store/story-age-verification.json"
+        ],
+        "next_action": "On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight.",
+        "updated_at": "2026-09-26T13:07:53+00:00"
       }
     }
   ],
