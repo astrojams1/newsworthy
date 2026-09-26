@@ -1,7 +1,7 @@
 {
   "date": "2026-09-24",
   "source": "apps/client/targets/widget/NewsworthyWidget.swift",
-  "sourceSha256": "4638c474d7c080a87340e9e9f8e8d1763e8b437c4499e02afa34a633e3cd1bc2",
+  "sourceSha256": "1e3836e2fce1ee2a366a8c67d8cd4eeb236418961572c316cb808d5aff316786",
   "capturedSourceSha256": "24ce7aca6bf962cec0993a457a8a58ad6596baf3ba0f7144836fdb685d06d753",
   "geometrySha256": "ed24c3fb8a144efcfac674f7ac35590ea58b3a982ce7216345b6628165f8903b",
   "scope": "Previous pixel captures validate their captured sentences and unchanged layout/font geometry. The 2026-09-24 review permits replacing the age formatter binding with explanationText(), a bold \"New:\" label for two hours on a new development, and a timeline with an entry at the label expiry; the geometry hash is unchanged. It does not verify the bold label, new text wrapping or new screenshots. On 2026-09-26 the widget picker .description strings changed to the copy in docs/product-messaging.md; that is gallery text, not rendered widget content, and was not verified on a device. The geometry hash now ignores .description text; it was recomputed from the previous reviewed source and is identical for the new one. The 2026-09-26 widget-settings review permits an Appearance widget setting (Follow device, Light, Dark) beside Show app name: ForcedColorScheme on the content and on the extracted background, and an identity that includes the appearance. test/widget-alignment.test.js normalises exactly those edits and the geometry hash is unchanged. It does not verify forced Light or Dark widgets on a device.",
@@ -13,5 +13,5 @@
   "writingEvaluation": "docs/prompt-evaluations/v16.md",
   "webCapture": "store/source/story-age/web-new-label.png",
   "iosTypecheck": "Earlier: complete production widget sources typechecked for arm64 iOS 16.4 simulator with Xcode 16.2. Not repeated for the New label; Text + Text concatenation is available from iOS 13 (deprecated in the iOS 26 SDK, a warning only).",
-  "widgetAppearance": "Per-widget Show app name and Appearance on iOS 17+ (Edit Widget) and Android (RatingWidgetConfigure). Swift not compiled here (no Swift toolchain); Android resources linked and Java compiled against android-35; no native capture of a forced Light or Dark widget yet."
+  "widgetAppearance": "Per-widget Show app name and Appearance on iOS 17+ (Edit Widget) and Android (RatingWidgetConfigure). 2026-09-26, iOS simulators, #152 source (fae4cc6) compiled with Xcode 26.6: on iOS 18.6 both sizes honoured Show app name and Appearance (Light held under a dark system, Dark under a light one, Follow device switching); on iOS 26.5 Show app name worked but Appearance arrived as nil (AppEnum parameter) and always followed the system. The source now offers Appearance as an AppEntity; that change sits above the reviewed geometry, which is unchanged (geometrySha256), and it has not been compiled or run. Android not verified on a device."
 }

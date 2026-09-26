@@ -246,8 +246,11 @@ access. Internal testing alone does not meet this requirement. See
 - iOS: `targets/widget` contains a SwiftUI/WidgetKit extension configured by
   `@bacons/apple-targets`; prebuild generates and embeds the extension target.
   On iOS 17 and later, Edit Widget includes **Show app name**, enabled by default
-  and saved per widget. Turning it off hides the heading and enlarges the rating
-  inside either widget size. iOS 16 keeps the heading visible. The footer uses a
+  and saved per widget. Turning it off hides the heading and gives its row to the
+  rating and sentence, which keep their size, in either widget size. Edit Widget
+  also offers **Appearance** (Follow device, Light, Dark), an entity parameter:
+  iOS 26.5 passes an AppEnum widget parameter as nil. iOS 16 keeps the heading
+  visible and has no settings. The footer uses a
   compact, single-line date and time, retaining the saved-reading label when offline.
 - Android: `plugins/with-rating-widget.js` adds the native widget receiver,
   resources, WorkManager fetcher and widget settings screen
