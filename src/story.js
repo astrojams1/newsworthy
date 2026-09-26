@@ -158,6 +158,7 @@ export function allJudgePrompts() {
 }
 
 const iso = (value) => (value instanceof Date ? value.toISOString() : value);
+const day = (value) => new Date(value).toISOString().slice(0, 10);
 
 /**
  * The prior readings, grouped into the developments they reported.
@@ -224,9 +225,17 @@ function renderPriors(groups) {
  */
 function renderStories(stories = []) {
   if (stories.length === 0) return 'Stories on record: none yet.';
-  const lines = stories
-    .slice(0, MAX_STORIES)
-    .map((s) => `  ${s.story}${s.latest ? ` — ${s.latest}` : ''}`);
+  // A story with more than one sentence shows how it began as well as where it
+  // is, laid out like a development: the latest line alone once made the
+  // Trump-Xi trade summit read as the Iran war, because its last reading was
+  // about Hormuz.
+  const lines = stories.slice(0, MAX_STORIES).map((s) => {
+    if (!s.first || s.first === s.latest || !(s.readings > 1)) {
+      return `  ${s.story}${s.latest ? ` — ${s.latest}` : ''}`;
+    }
+    return `  ${s.story} · ${s.readings} readings since ${day(s.first_at)}\n`
+      + `      first: ${s.first}\n      latest (${day(s.latest_at)}): ${s.latest}`;
+  });
   return `Stories on record:\n${lines.join('\n')}`;
 }
 

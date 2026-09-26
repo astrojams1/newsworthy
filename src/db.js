@@ -339,27 +339,43 @@ export async function ratingsByIds(ids = []) {
  *
  * Wider than the 48 hours of developments it is shown beside: a story quiet for
  * two days should keep its name when it returns rather than be renamed on the
- * way back in. One row per name, carrying that story's freshest sentence, so
- * the name is recognisable rather than a bare token.
+ * way back in. One row per name, carrying the sentence it started with, its
+ * freshest one and how many readings it holds.
+ *
+ * The freshest sentence alone was not enough to recognise a story. On
+ * 2026-09-26 `us-china-trade` — the Trump-Xi summit and trade truce — was
+ * listed by its last reading, "no deal to reopen the Strait of Hormuz", beside
+ * `iran-war`, and a caller merged the two as one story. What a story is shows in
+ * how it began; where it is now shows in its latest line.
  */
 export async function recentStories({ days = 14, limit = 20, before = new Date() } = {}) {
   await ensureSchema();
   const until = new Date(before);
   const since = new Date(until.getTime() - days * 24 * 3600_000);
   const rows = await sql`
-    SELECT DISTINCT ON (story) story, explanation AS latest, created_at AS latest_at
+    SELECT story, count(*) AS readings,
+           min(created_at) AS first_at, max(created_at) AS latest_at,
+           (array_agg(explanation ORDER BY created_at ASC, id ASC))[1] AS first,
+           (array_agg(explanation ORDER BY created_at DESC, id DESC))[1] AS latest
       FROM ratings
      WHERE status = 'ok' AND story IS NOT NULL AND created_at >= ${since} AND created_at < ${until}
-     ORDER BY story, created_at DESC, id DESC`;
-  // Merged names collapse into the one they go by, keeping its freshest
-  // sentence, so a merged-away name is never offered for reuse.
-  const newest = new Map();
-  for (const row of await withStoryNames(rows.map(shape))) {
-    const held = newest.get(row.story);
-    if (!held || String(row.latest_at) > String(held.latest_at)) newest.set(row.story, row);
+     GROUP BY story`;
+  // Merged names collapse into the one they go by: its earliest sentence, its
+  // freshest and every reading between, so a merged-away name is never offered
+  // for reuse.
+  const merged = new Map();
+  for (const row of await withStoryNames(rows.map((r) => ({
+    story: r.story, readings: Number(r.readings), first: r.first, latest: r.latest,
+    first_at: new Date(r.first_at).toISOString(), latest_at: new Date(r.latest_at).toISOString(),
+  })))) {
+    const held = merged.get(row.story);
+    if (!held) { merged.set(row.story, row); continue; }
+    held.readings += row.readings;
+    if (row.first_at < held.first_at) Object.assign(held, { first: row.first, first_at: row.first_at });
+    if (row.latest_at > held.latest_at) Object.assign(held, { latest: row.latest, latest_at: row.latest_at });
   }
-  return [...newest.values()]
-    .sort((a, b) => String(b.latest_at).localeCompare(String(a.latest_at)))
+  return [...merged.values()]
+    .sort((a, b) => b.latest_at.localeCompare(a.latest_at))
     .slice(0, limit);
 }
 

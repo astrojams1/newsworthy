@@ -268,6 +268,8 @@ one paragraph: an answer may add `same_story`, two names on record for one
 story. A merge is a row in `story_merges`, resolved where `db.js` reads names,
 so fatigue, the board and the judge's list see one story while readings keep
 their own name. The name more readings used is kept. `/admin` can undo, by row.
+Names list first and latest sentences; by the latest alone, a Trump-Xi summit
+was merged into the war.
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
@@ -536,8 +538,6 @@ path, token, score — is already about 95 of those. `%20` costs three character
 per space where `+` costs one, which on a median 140-character explanation is
 the difference between fitting and not. Other reserved characters are still
 percent-encoded.
-
-It was first misread as `%20` being rejected; the failures were the longest URLs.
 
 The budget does not explain everything. Six of the last 48 stored readings would
 have needed a URL over 250 characters, one of them 285, so the limit is not the
