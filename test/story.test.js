@@ -101,6 +101,23 @@ test('the judge is shown the names already in use, and told to reuse them', () =
   assert.match(empty, /Stories on record: none yet/, 'an empty vocabulary says so');
 });
 
+test('a story on record shows how it began as well as where it is', () => {
+  // On 2026-09-26 us-china-trade, the Trump-Xi summit, was listed only by its
+  // latest line, about Hormuz, beside iran-war, and a caller merged the two.
+  const message = judgeMessage({
+    score: 4, explanation: 'Trump rejected Iran\'s Hormuz offer.', created_at: at(0),
+    stories: [
+      { story: 'us-china-trade', readings: 14, first_at: at(48), latest_at: at(20),
+        first: 'Trump hosted Xi and both extended their trade truce.',
+        latest: 'Trump and Xi ended their summit with no deal to reopen Hormuz.' },
+      { story: 'volcano', readings: 1, first_at: at(2), latest_at: at(2), first: 'A volcano erupted.', latest: 'A volcano erupted.' },
+    ],
+  });
+  assert.match(message, /us-china-trade · 14 readings since \d{4}-\d\d-\d\d\n {6}first: Trump hosted Xi/);
+  assert.match(message, /\n {6}latest \(\d{4}-\d\d-\d\d\): Trump and Xi ended/);
+  assert.match(message, /^ {2}volcano — A volcano erupted\.$/m, 'a one-sentence story stays one line');
+});
+
 test('v2 changed the naming and nothing about the developments', () => {
   // Which development a reading reports is judged by the same text in both, so
   // readings judged under either version stay comparable.
