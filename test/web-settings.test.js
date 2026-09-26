@@ -164,3 +164,40 @@ test('Settings trailing marks match the label\'s cap height and baseline on the 
     }
   });
 });
+
+// The introduction is replayed from Settings and closes back to it, whether it
+// is stepped through to Done or skipped. The website never opens it by itself.
+test('the introduction replays from Settings and returns there on the web', { timeout: 120_000 }, async (t) => {
+  if (!executablePath) {
+    assert.ok(!process.env.CI, `no Chrome or Chromium found; set CHROME_PATH (looked in ${BROWSERS.join(', ')})`);
+    t.skip('no Chrome or Chromium on this machine; set CHROME_PATH to run it');
+    return;
+  }
+  await withServer({ port: PORTS.webIntroduction, env: { NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
+    const browser = await chromium.launch({ executablePath });
+    try {
+      const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+      const arrive = async (pathname) => { await page.waitForURL(url => url.pathname === pathname, { timeout: 10_000 }); };
+      await page.goto(`${base}/`);
+      await page.getByLabel('Settings', { exact: true }).first().waitFor();
+      assert.equal(new URL(page.url()).pathname, '/', 'a first visit on the web opens on the reading');
+      await page.getByLabel('Settings', { exact: true }).first().click();
+      await arrive('/settings');
+      await page.getByTestId('introduction-row').click();
+      await arrive('/onboarding');
+      // Tapped as fast as the browser allows: each tap is one slide, even mid-animation.
+      for (let tap = 0; tap < 3; tap += 1) await page.getByTestId('onboarding-next').click();
+      await page.getByLabel('Page 4 of 4').waitFor();
+      await page.getByText('Done', { exact: true }).waitFor();
+      assert.equal(await page.getByTestId('onboarding-skip').count(), 0, 'no Skip on the last slide');
+      await page.getByTestId('onboarding-next').click();
+      await arrive('/settings');
+      await page.getByTestId('introduction-row').click();
+      await arrive('/onboarding');
+      await page.getByTestId('onboarding-skip').click();
+      await arrive('/settings');
+    } finally {
+      await browser.close();
+    }
+  });
+});

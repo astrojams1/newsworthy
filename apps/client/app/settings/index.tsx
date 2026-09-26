@@ -11,6 +11,8 @@ import { RowContent, Section, SettingsPage, Trailing, rowStyle } from '@/compone
 import { Toggle } from '@/components/toggle';
 
 const ABOUT_LINKS = [['Privacy', privacyUrl, 'privacy'], ['Support', supportUrl, 'support']] as const;
+// Opens over Settings; closing it returns here.
+const INTRODUCTION_INDEX = ABOUT_LINKS.length;
 
 export default function Settings() {
   const theme = useTheme();
@@ -57,6 +59,11 @@ export default function Settings() {
             <RowContent index={index} icon={icon} label={name} trailing={<Trailing to="external" />} />
           </Pressable>
         </Link>)}
+        <Link href="/onboarding" asChild>
+          <Pressable testID="introduction-row" accessibilityRole="button" accessibilityLabel="Introduction" accessibilityHint="Replays the introduction" style={rowStyle()}>
+            <RowContent index={INTRODUCTION_INDEX} icon="introduction" label="Introduction" trailing={<Trailing to="page" />} />
+          </Pressable>
+        </Link>
       </Section>
     </SettingsPage>
   </>;

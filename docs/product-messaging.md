@@ -56,6 +56,10 @@ repeat a tagline or explain the scale.
   development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
+- The introduction (`apps/client/lib/onboarding.js`) restates the core copy and
+  the limits above: an AI assessment that can be wrong, not a safety measure or
+  an emergency alert, fading with age. The mobile apps show it once on first
+  launch; Settings replays it. It never asks the reader to come back.
 - Do not claim that hosting processes no technical information.
 - Brand positioning must never soften, inflate or otherwise alter the rating
   scale. Published prompts are append-only; see `PROMPT-RULES.md`.
@@ -80,6 +84,7 @@ widgets and the complete app package without updating local Xcode.
   `apps/client/plugins/widget-android/res/values/widget.xml`
   (`widget_description`): widget picker copy.
 - `apps/client/app/`: shared reading screen, settings screen, search metadata, social tags and WebSite data.
+- `apps/client/lib/onboarding.js`: the introduction's slide copy.
 - `public/privacy.html`, `public/support.html`: policy and help; each has its own metadata.
 - `scripts/generate-brand.mjs`: evergreen share-art source; generates
   `public/social-card.svg`, `public/social-card.png` and `public/brand/share.png`.

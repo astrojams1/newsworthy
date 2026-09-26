@@ -6,11 +6,11 @@ import { createSubscriptionController } from '../apps/client/lib/subscription.js
 
 test('system appearance, no notifications and no timeline are the defaults, and a damaged store falls back field by field', () => {
   assert.deepEqual(THEME_CHOICES.map(c => [c.value, c.label]), [['system', 'Follow device'], ['light', 'Light'], ['dark', 'Dark']]);
-  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null }, timeline: false });
+  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null }, timeline: false, onboarded: false });
   assert.deepEqual(parsePreferences(null), DEFAULT_PREFERENCES);
   assert.deepEqual(parsePreferences('{not json'), DEFAULT_PREFERENCES);
-  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, timeline: 'yes' }), DEFAULT_PREFERENCES);
-  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, timeline: true };
+  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, timeline: 'yes', onboarded: 'yes' }), DEFAULT_PREFERENCES);
+  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, timeline: true, onboarded: true };
   assert.deepEqual(parsePreferences(JSON.stringify(kept)), kept);
   // An "on" with no device registered is not on: the server has nothing to send to.
   assert.deepEqual(parsePreferences({ notifications: { enabled: true, threshold: 6 } }).notifications, { enabled: false, threshold: 6, token: null });
@@ -31,7 +31,7 @@ test('the website shows the appearance choice and no notification setting', () =
   const overview = nodes(renderSettings({ platform: 'web' }).tree);
   assert.ok(overview.some(n => n.type === 'Head'), 'the page has its own title');
   assert.ok(!overview.some(n => n.props?.testID === 'notifications-link'), 'push notifications are a native feature');
-  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support']);
+  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support', 'Introduction']);
   const all = nodes(renderSettings({ platform: 'web', screen: 'appearance' }).tree);
   assert.ok(all.some(n => n.type === 'Head'), 'the page has its own title');
   const radios = all.filter(n => n.props?.accessibilityRole === 'radio');
@@ -122,7 +122,7 @@ for (const platform of ['ios', 'android']) {
 test('Privacy and Support are rows in Settings on every platform, opening the policy pages', () => {
   for (const platform of ['web', 'ios', 'android']) {
     const all = nodes(renderSettings({ platform }).tree);
-    const links = all.filter(n => n.type === 'Link' && !n.props.href.startsWith('/settings/'));
+    const links = all.filter(n => n.type === 'Link' && !n.props.href.startsWith('/settings/') && n.props.href !== '/onboarding');
     assert.deepEqual(links.map(n => n.props.href), ['/privacy', '/support'], platform);
     const rows = links.map(n => nodes(n).find(c => c.props?.accessibilityRole === 'link'));
     assert.deepEqual(rows.map(n => n.props.accessibilityLabel), ['Privacy', 'Support']);
@@ -358,5 +358,18 @@ test('the story timeline is a switch on the overview, off by default, on every p
     toggle.props.onValueChange(!on);
     assert.deepEqual(calls.setTimeline, [!on, !on]);
     assert.deepEqual(calls.setTheme, []);
+  }
+});
+
+test('the introduction replays from Settings on every platform, last in About', () => {
+  for (const platform of ['web', 'ios', 'android']) {
+    const all = nodes(renderSettings({ platform, stored: { onboarded: true } }).tree);
+    const link = all.find(n => n.type === 'Link' && n.props.href === '/onboarding');
+    assert.ok(link, platform);
+    const row = nodes(link).find(n => n.props?.testID === 'introduction-row');
+    assert.equal(row.props.accessibilityLabel, 'Introduction');
+    assert.equal(row.props.style.minHeight, 56);
+    assert.deepEqual(nodes(row).filter(n => n.type === 'Glyph').map(n => n.props.name), ['introduction', 'chevron']);
+    assert.equal(text(all).at(-1), 'Introduction', 'after Privacy and Support');
   }
 });

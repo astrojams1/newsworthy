@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-26T13:07:53+00:00
+Updated: 2026-09-26T23:27:28+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -95,6 +95,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | web.settings-trailing-marks | waiting_user | user | observed | Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device. | Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build. |
 | widget.appearance-choice | waiting_verification | agent | observed | Widget settings are now one definition (design/widget-settings.json: Show app name, Appearance) offered on both platforms per widget: iOS 17+ Edit Widget, and a new Android settings screen (RatingWidgetConfigure) opened by the launcher on add (optional) and on reconfigure (Android 12+), styled like the app's Settings. Android hides the heading per widget and, only for a chosen Light or Dark, uses literal-colour gradients and text. Android resources linked with aapt2 (minSdk 24, android-35) and all four widget Java classes compiled with javac against android-35 and WorkManager 2.11.2; expo prebuild produced the manifest activity and provider configure entry with the real package. Swift not compiled (no toolchain); no emulator (no KVM); nothing seen on a device. | On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states. |
 | widget.same-day-timestamp | waiting_verification | agent | observed | Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval. | On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight. |
+| ui.onboarding | waiting_verification | agent | observed | Four-slide introduction (what a reading is, the scale, fading and New:, Settings) opens once on the first native launch and replays from Settings > About > Introduction; the website never opens it itself. Verified in the web export in Chromium at 390x844, light and dark (test/web-settings.test.js steps it through Next, Done and Skip). TypeScript passes. Not run on iOS or Android: first-launch push timing, fullScreenModal presentation, horizontal paging and the Notifications row on the last slide are unseen on a device. | On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text. |
 
 ## Evidence and history
 
@@ -2975,3 +2976,13 @@ Widget timestamps drop the date for a reading saved today: iOS shows the time al
 - Branch claude/widget-date-time-logic-2ikz4z; test/surface-design.test.js same-day case; test/widget-alignment.test.js geometry hash unchanged; store/story-age-verification.json
 
 Next: On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight.
+
+### 304. ui.onboarding — waiting_verification
+
+2026-09-26T23:27:28+00:00 · observed · agent
+
+Four-slide introduction (what a reading is, the scale, fading and New:, Settings) opens once on the first native launch and replays from Settings > About > Introduction; the website never opens it itself. Verified in the web export in Chromium at 390x844, light and dark (test/web-settings.test.js steps it through Next, Done and Skip). TypeScript passes. Not run on iOS or Android: first-launch push timing, fullScreenModal presentation, horizontal paging and the Notifications row on the last slide are unseen on a device.
+
+- Branch claude/mobile-onboarding-slideshow-lcppcu; test/web-settings.test.js introduction case; test/preferences.test.js introduction row
+
+Next: On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.
