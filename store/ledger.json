@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-26T04:09:44+00:00",
+  "updated_at": "2026-09-26T09:05:43+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -930,12 +930,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Widget settings are now one definition (design/widget-settings.json: Show app name, Appearance) offered on both platforms per widget: iOS 17+ Edit Widget, and a new Android settings screen (RatingWidgetConfigure) opened by the launcher on add (optional) and on reconfigure (Android 12+), styled like the app's Settings. Android hides the heading per widget and, only for a chosen Light or Dark, uses literal-colour gradients and text. Android resources linked with aapt2 (minSdk 24, android-35) and all four widget Java classes compiled with javac against android-35 and WorkManager 2.11.2; expo prebuild produced the manifest activity and provider configure entry with the real package. Swift not compiled (no toolchain); no emulator (no KVM); nothing seen on a device.",
+      "summary": "Defect from today's simulator run fixed in source, not yet verified: iOS 26.5 passed the Appearance AppEnum parameter to the widget as nil, so Light and Dark followed the system (iOS 18.6 decoded the same binary). Appearance is now an AppEntity (AppearanceOption, three fixed options, Follow device as the query default and when unset); the intent name and Show app name are unchanged so existing widgets keep their configuration. The entity code has not been compiled or run: the EAS account's free-plan build credits and 60 CI/CD sandbox minutes are both used up until 1 Oct 2026 UTC, and this container has no Swift toolchain or KVM. Observed earlier today on the #152 code: iOS 18.6 both sizes pass checks 1 and 2 and new widgets default to Follow device with the name shown; iOS 26.5 passes check 1 and fails check 2.",
       "evidence": [
-        "test/widget-settings.test.js with nine rejection cases; design gate 85 passed; aapt2 link and javac in the session scratchpad; expo prebuild -p android"
+        "test/widget-settings.test.js rejects an AppEnum choice, a drifted default and a drifted fallback; design gate 98 passed; simulator luminance and Vision text-recognition measurements are in the previous event"
       ],
-      "next_action": "On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states.",
-      "updated_at": "2026-09-26T04:09:44+00:00"
+      "next_action": "After 1 Oct (or a plan upgrade): compile the widget, then on iOS 26.5 and 18.6 simulators, both sizes: Appearance Light under system Dark, Dark under Light, Follow device switching, Show app name off/on; upgrade from build 21 (existing widgets default to Follow device with the name shown); iOS 16.4 shows the widget with no settings; save screenshots under store/source/. Then a TestFlight build on a real iOS 26 device. Android: every check on a device or KVM emulator (preview APK), including the settings-screen look, Android 11 close-without-Done and TalkBack.",
+      "updated_at": "2026-09-26T09:05:43+00:00"
     }
   },
   "events": [
@@ -5784,6 +5784,38 @@
         ],
         "next_action": "On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states.",
         "updated_at": "2026-09-26T04:09:44+00:00"
+      }
+    },
+    {
+      "sequence": 303,
+      "at": "2026-09-26T09:02:11+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "failed",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "iOS simulators, shipped code (fae4cc6, Release, simulator build in an EAS macOS sandbox; Swift compiled cleanly, x86_64 and arm64). iOS 18.6 (iPhone 16), both sizes: Edit Widget offers Show app name (on) and Appearance (Follow device) on a new widget; name off removes the heading and moves rating and sentence up about 11 pt at the same 69-pt numeral, name on restores it; Light held with the system in Dark, Dark held with the system in Light, Follow device switched with the system; settings are per widget and persist. iOS 26.5 (iPhone 17): Show app name works the same, but Appearance has no effect: Light under a Dark system and Dark under a Light system both follow the system. The widget log shows the saved choice arriving (serializedParameters appearance = dark) and then 'Programming error: a caseDisplayRepresentations entry for AppEnum case \"to-0.0\" was not found' and 'Prepared appearance to WidgetAppearance(nil)', so the enum decodes to nil and falls back to Follow device. The same binary decodes it on iOS 18.6. Not changed by -Onone, static var representations, explicit allCases, or renaming the type or cases (renaming dropped an existing widget from the home screen). Judged from background luminance and Vision text recognition of simulator screenshots; the sandbox stopped before images could be copied out.",
+        "evidence": [
+          "Simulator measurements: iOS 18.6 medium Follow device 227 light / 51 dark system; small Dark 41 under Light; medium Light 227 under Dark; iOS 26.5 medium Light 59 under Dark, small Dark 237 under Light (luminance 0-255)"
+        ],
+        "next_action": "Find an Appearance parameter that decodes on iOS 26 (and check whether real iOS 26 devices are affected, via TestFlight once EAS build credits reset on 1 Oct). Untested: upgrade from build 21 (check 3), iOS 16 (check 5), every Android check (no KVM here, no hypervisor in the EAS sandbox, EAS cloud builds blocked by exhausted free-plan credits).",
+        "updated_at": "2026-09-26T09:02:11+00:00"
+      }
+    },
+    {
+      "sequence": 304,
+      "at": "2026-09-26T09:05:43+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Defect from today's simulator run fixed in source, not yet verified: iOS 26.5 passed the Appearance AppEnum parameter to the widget as nil, so Light and Dark followed the system (iOS 18.6 decoded the same binary). Appearance is now an AppEntity (AppearanceOption, three fixed options, Follow device as the query default and when unset); the intent name and Show app name are unchanged so existing widgets keep their configuration. The entity code has not been compiled or run: the EAS account's free-plan build credits and 60 CI/CD sandbox minutes are both used up until 1 Oct 2026 UTC, and this container has no Swift toolchain or KVM. Observed earlier today on the #152 code: iOS 18.6 both sizes pass checks 1 and 2 and new widgets default to Follow device with the name shown; iOS 26.5 passes check 1 and fails check 2.",
+        "evidence": [
+          "test/widget-settings.test.js rejects an AppEnum choice, a drifted default and a drifted fallback; design gate 98 passed; simulator luminance and Vision text-recognition measurements are in the previous event"
+        ],
+        "next_action": "After 1 Oct (or a plan upgrade): compile the widget, then on iOS 26.5 and 18.6 simulators, both sizes: Appearance Light under system Dark, Dark under Light, Follow device switching, Show app name off/on; upgrade from build 21 (existing widgets default to Follow device with the name shown); iOS 16.4 shows the widget with no settings; save screenshots under store/source/. Then a TestFlight build on a real iOS 26 device. Android: every check on a device or KVM emulator (preview APK), including the settings-screen look, Android 11 close-without-Done and TalkBack.",
+        "updated_at": "2026-09-26T09:05:43+00:00"
       }
     }
   ],
