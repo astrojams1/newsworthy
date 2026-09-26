@@ -485,8 +485,8 @@ publish.
 Every rejection is `console.warn`ed and leaves a row in `rejections`. Nothing
 was recorded about the original 422s, so which of the four rules fired could
 not be established afterwards — a log answers a question asked the same day,
-and function logs are ephemeral. The row carries the status, reason, method and
-whether `soft_errors` was set, and nothing from the request body: each reason
+and function logs are ephemeral. The row carries the status, reason, method,
+`soft_errors` and the token used (`caller`, `admin`), and nothing from the request body: each reason
 names the field at fault, so the reason is the whole finding. They surface at
 `/api/admin/history`, behind the admin token, over the range that page asks
 for — a fixed newest-25 would put an old incident's rows out of reach of every
@@ -535,8 +535,7 @@ per space where `+` costs one, which on a median 140-character explanation is
 the difference between fitting and not. Other reserved characters are still
 percent-encoded.
 
-It was first misread as `%20` being rejected; the failures were simply the
-longest URLs, and a 107-character URL with `%20` goes through.
+It was first misread as `%20` being rejected; the failures were the longest URLs.
 
 The budget does not explain everything. Six of the last 48 stored readings would
 have needed a URL over 250 characters, one of them 285, so the limit is not the

@@ -88,13 +88,17 @@ test('an authenticated call to an endpoint that does not exist is recorded, with
     const soft = await (await fetch(`${base}/api/readings/prepare?token=${CALLER}&soft_errors=1`)).json();
     assert.equal(soft.status, 410, 'soft errors carry it too');
     assert.equal((await fetch(`${base}/api/readings/prepare`, { method: 'POST' })).status, 401);
+    // A reviewer probing with the admin token is marked as one, so the probe
+    // is never read as the caller's refusal.
+    assert.equal((await fetch(`${base}/api/readings/prepare`, { method: 'POST', headers: { 'x-admin-token': ADMIN } })).status, 410);
 
     const { rejections } = await (await fetch(`${base}/api/admin/history?token=${ADMIN}`)).json();
-    assert.deepEqual(rejections.map((r) => [r.status, r.method, r.reason.split(':')[0]]), [
-      [410, 'GET', 'removed on 2026-09-25'],
-      [410, 'POST', 'removed on 2026-09-25'],
-      [404, 'POST', 'no such endpoint'],
-      [404, 'POST', 'no such endpoint'],
+    assert.deepEqual(rejections.map((r) => [r.status, r.method, r.reason.split(':')[0], r.token]), [
+      [410, 'POST', 'removed on 2026-09-25', 'admin'],
+      [410, 'GET', 'removed on 2026-09-25', 'caller'],
+      [410, 'POST', 'removed on 2026-09-25', 'caller'],
+      [404, 'POST', 'no such endpoint', 'caller'],
+      [404, 'POST', 'no such endpoint', 'caller'],
     ]);
     assert.ok(rejections.every((r) => !r.reason.includes(CALLER)), 'the token in the query is never kept');
   });

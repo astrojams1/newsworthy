@@ -54,7 +54,8 @@ for (const r of runs) {
 }
 
 console.log(`\nRejections, including authenticated calls to missing endpoints: ${rejections.length}`);
-for (const r of rejections) console.log(`  ${r.created_at.slice(0, 23)} ${r.status} ${r.method ?? ''} ${r.reason}${r.soft_errors ? ' (soft_errors)' : ''}`);
+const byWhom = (r) => (r.token && r.token !== 'caller' ? ` [${r.token} token]` : r.token ? '' : ' [token not recorded]');
+for (const r of rejections) console.log(`  ${r.created_at.slice(0, 23)} ${r.status} ${r.method ?? ''} ${r.reason}${r.soft_errors ? ' (soft_errors)' : ''}${byWhom(r)}`);
 
 console.log(`\nMerges and undos: ${merges.length}`);
 for (const m of merges) {
@@ -68,7 +69,7 @@ console.log('\nTimeline by hour:');
 const events = [
   ...fetches.map((f) => [f.created_at, `fetch ${f.path}${f.format ? ` (${f.format})` : ''}${f.token === 'caller' ? '' : ` [${f.token} token]`}`]),
   ...readings.map((r) => [r.created_at, `reading ${r.id} score ${r.score} ${r.judge_version == null ? 'UNJUDGED' : `judged v${r.judge_version}`}`]),
-  ...rejections.map((r) => [r.created_at, `REJECTED ${r.status} ${r.method ?? ''} ${r.reason.slice(0, 60)}`]),
+  ...rejections.map((r) => [r.created_at, `REJECTED ${r.status} ${r.method ?? ''} ${r.reason.slice(0, 60)}${byWhom(r)}`]),
   ...runs.map((r) => [r.created_at, `run report ${r.id} → reading ${r.reading_id ?? 'none'}`]),
 ].sort((a, b) => String(a[0]).localeCompare(String(b[0])));
 let hour = '';
