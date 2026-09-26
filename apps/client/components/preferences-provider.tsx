@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DEFAULT_PREFERENCES, STORAGE_KEY, parsePreferences, type Preferences, type ThemePreference } from '@/lib/preferences';
 import { createSubscriptionController } from '@/lib/subscription';
 import { disablePush, enablePush, updatePushThreshold } from '@/lib/push';
-import { syncWidgetAppearance } from '@/lib/widget-sync';
 
 type Notifications = Preferences['notifications'];
 type PreferencesValue = {
@@ -13,7 +12,6 @@ type PreferencesValue = {
   loaded: boolean;
   savingNotifications: boolean;
   setTheme(theme: ThemePreference): void;
-  setWidgetTheme(theme: ThemePreference): void;
   setNotifications(update: Partial<Notifications>): void;
   setTimeline(on: boolean): void;
   // The device's registration, serialised here rather than on the settings
@@ -47,10 +45,6 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
     void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
   }, []);
   const setTheme = useCallback((theme: ThemePreference) => save({ ...current.current, theme }), [save]);
-  const setWidgetTheme = useCallback((widgetTheme: ThemePreference) => save({ ...current.current, widgetTheme }), [save]);
-  // Handed over once the stored choice is known and again on every change, so
-  // a widget installed before the app last ran still gets the chosen look.
-  useEffect(() => { if (loaded) void syncWidgetAppearance(preferences.widgetTheme); }, [loaded, preferences.widgetTheme]);
   const setNotifications = useCallback((update: Partial<Notifications>) =>
     save({ ...current.current, notifications: { ...current.current.notifications, ...update } }), [save]);
   const setTimeline = useCallback((timeline: boolean) => save({ ...current.current, timeline }), [save]);
@@ -60,7 +54,7 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
     onPendingChange: setSavingNotifications,
     api: { enablePush, disablePush, updatePushThreshold },
   }), [setNotifications]);
-  return <PreferencesContext value={{ preferences, loaded, savingNotifications, setTheme, setWidgetTheme, setNotifications, setTimeline, subscription }}>{children}</PreferencesContext>;
+  return <PreferencesContext value={{ preferences, loaded, savingNotifications, setTheme, setNotifications, setTimeline, subscription }}>{children}</PreferencesContext>;
 }
 
 export function usePreferences() {

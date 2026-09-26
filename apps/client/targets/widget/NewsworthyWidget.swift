@@ -10,19 +10,18 @@ struct ReadingEntry: TimelineEntry {
     let reading: Reading?
     let saved: Bool
     var showAppName: Bool = true
-    var appearance: WidgetAppearance = .current()
+    var appearance: WidgetAppearance = .system
 }
 
-/// The appearance chosen for widgets in the app's settings, apart from the app's
-/// own. Follow device leaves the colour scheme to the system, as before.
-enum WidgetAppearance: String, Sendable {
+/// The widget's own appearance, set beside "Show app name" when editing the
+/// widget. Follow device leaves the colour scheme to the system, as before.
+enum WidgetAppearance: String, AppEnum, Sendable {
     case system, light, dark
 
-    static let key = "widget.appearance.v1"
-
-    static func current(_ defaults: UserDefaults? = UserDefaults(suiteName: WidgetConfig.appGroup)) -> WidgetAppearance {
-        defaults?.string(forKey: key).flatMap(WidgetAppearance.init(rawValue:)) ?? .system
-    }
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Appearance"
+    static let caseDisplayRepresentations: [WidgetAppearance: DisplayRepresentation] = [
+        .system: "Follow device", .light: "Light", .dark: "Dark",
+    ]
 
     var colorScheme: ColorScheme? {
         switch self {
@@ -52,6 +51,9 @@ struct ReadingWidgetConfiguration: WidgetConfigurationIntent {
 
     @Parameter(title: "Show app name", default: true)
     var showAppName: Bool
+
+    @Parameter(title: "Appearance", default: .system)
+    var appearance: WidgetAppearance
 }
 
 @available(iOS 17.0, *)
@@ -65,6 +67,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
             Provider().getSnapshot(in: context) { entry in
                 var entry = entry
                 entry.showAppName = configuration.showAppName
+                entry.appearance = configuration.appearance
                 continuation.resume(returning: entry)
             }
         }
@@ -76,6 +79,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
                 let entries = timeline.entries.map { entry in
                     var entry = entry
                     entry.showAppName = configuration.showAppName
+                    entry.appearance = configuration.appearance
                     return entry
                 }
                 continuation.resume(returning: Timeline(entries: entries, policy: timeline.policy))

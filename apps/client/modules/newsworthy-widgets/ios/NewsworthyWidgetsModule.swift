@@ -30,16 +30,5 @@ public class NewsworthyWidgetsModule: Module {
             // timeline or an offline label. The app only polls while foregrounded.
             WidgetCenter.shared.reloadTimelines(ofKind: "NewsworthyRating")
         }
-        // The widgets' own appearance, apart from the app's. Reload only on a
-        // change: the app hands the choice over on every launch.
-        AsyncFunction("setAppearance") { (appearance: String) in
-            guard ["system", "light", "dark"].contains(appearance),
-                  let identifier = Bundle.main.bundleIdentifier,
-                  let defaults = UserDefaults(suiteName: "group.\(identifier).widgets") else { return }
-            let key = "widget.appearance.v1"
-            if defaults.string(forKey: key) == appearance { return }
-            defaults.set(appearance, forKey: key)
-            WidgetCenter.shared.reloadTimelines(ofKind: "NewsworthyRating")
-        }
     }
 }

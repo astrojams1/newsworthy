@@ -107,17 +107,7 @@ export function checkWidgetDesign(sources = widgetSources()) {
 
   const java = code(sources.java);
   // Runtime paint overrides bypass theme-resource reapplication on host changes.
-  // The one exception is an appearance chosen in the app, which must hold
-  // through a host theme change: its literal colours live in one method, and
-  // that method runs only when a choice is stored.
-  const chosen = java.match(/static void applyChosenAppearance\(RemoteViews views, int score, boolean dark\) \{[\s\S]*?\n    \}/)?.[0] ?? '';
-  for (const id of ['widget_name', 'widget_score', 'widget_denominator', 'widget_explanation', 'widget_updated']) {
-    assert.match(chosen, new RegExp(`setTextColor\\(R\\.id\\.${id}, `), 'a chosen widget appearance colours every text');
-  }
-  assert.match(chosen, /LevelPalette\.background\(score, dark\)/, 'a chosen widget appearance uses its fixed gradient');
-  assert.match(java, /return "dark"\.equals\(appearance\) \? Boolean\.TRUE : "light"\.equals\(appearance\) \? Boolean\.FALSE : null;/, 'Follow device keeps theme resources');
-  assert.match(java, /if \(dark != null\) applyChosenAppearance\(views, reading == null \? 0 : reading\.optInt\("score"\), dark\);/, 'only a chosen widget appearance overrides theme resources');
-  assert.doesNotMatch(java.replace(chosen, ''), /\b(?:ForegroundColorSpan|BackgroundColorSpan|RelativeSizeSpan|AbsoluteSizeSpan|setTextColor)\b|"setTextColor"/, 'widget text must retain XML theme/size bindings');
+  assert.doesNotMatch(java, /\b(?:ForegroundColorSpan|BackgroundColorSpan|RelativeSizeSpan|AbsoluteSizeSpan|setTextColor)\b|"setTextColor"/, 'widget text must retain XML theme/size bindings');
   // The one span allowed is the bold "New:" label: weight only, so colour and
   // size still come from XML and follow a host theme change.
   const spans = java.match(/new \w+Span\([^)]*\)/g) ?? [];
@@ -158,6 +148,12 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(swift, /let denominatorFont = UIFont.monospacedSystemFont\(ofSize: WidgetTypography.denominatorSize, weight: \.light\)/, 'iOS denominator uses a monospace face');
   assert.doesNotMatch(swift, /monospacedDigitSystemFont/, 'measurement must use the full monospace face');
   assert.match(swift, /\.modifier\(WidgetSurface\(score: entry.reading\?\.score, scheme: entry.appearance.colorScheme\)\)\s*\.id\("\\\(entry.reading\?\.score \?\? 0\)-\\\(entry.appearance.rawValue\)"\)/, 'iOS score and extracted background change identity together');
+  // The appearance is the widget's own setting, beside Show app name, not the app's.
+  assert.match(swift, /@Parameter\(title: "Appearance", default: \.system\)\s*var appearance: WidgetAppearance/, 'iOS widget appearance is a widget setting');
+  assert.match(swift, /\.system: "Follow device", \.light: "Light", \.dark: "Dark"/, 'iOS widget appearance choices');
+  for (const indent of ['                ', '                    ']) {
+    assert.ok(swift.includes(`${indent}entry.showAppName = configuration.showAppName\n${indent}entry.appearance = configuration.appearance`), 'iOS widget settings reach snapshot and timeline');
+  }
   assert.match(swift, /\.modifier\(ForcedColorScheme\(scheme: entry.appearance.colorScheme\)\)\s*\.modifier\(WidgetSurface/, 'iOS widget content follows the chosen appearance');
   assert.match(swift, /\.modifier\(ForcedColorScheme\(scheme: scheme\)\)\s*\}/, 'iOS extracted background follows the chosen appearance');
   assert.match(swift, /case \.system: return nil/, 'iOS Follow device leaves the scheme to the system');

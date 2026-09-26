@@ -4,7 +4,6 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 import { latestSnapshot, readingSnapshot, validReading } from '../apps/client/lib/reading.js';
-import * as preferences from '../apps/client/lib/preferences.js';
 
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 function load(path, mocks, globals = {}) {
@@ -64,44 +63,12 @@ test('widget handoff keeps public fields and timestamp; unavailable/failed nativ
     syncReading: async (origin, payload) => received.push({ origin, payload: JSON.parse(payload) }),
   }]) {
     const { syncWidgets } = load('apps/client/lib/widget-sync.ts', {
-      expo: { requireOptionalNativeModule: () => native }, './reading': { validReading, readingSnapshot, latestSnapshot }, './preferences': preferences,
+      expo: { requireOptionalNativeModule: () => native }, './reading': { validReading, readingSnapshot, latestSnapshot },
     });
     await syncWidgets('https://example.test', { ...reading, private: 'discard' }, 1234);
     await syncWidgets('https://example.test', { ...reading, score: 99 }, 1234);
   }
   assert.deepEqual(received, [{ origin: 'https://example.test', payload: { reading, fetchedAt: 1234 } }]);
-});
-
-test('the widget appearance reaches the native side, and an old or missing bridge is harmless', async () => {
-  const received = [];
-  for (const native of [null, {}, { setAppearance: async () => { throw Error('unavailable'); } },
-    { setAppearance: async value => received.push(value) }]) {
-    const { syncWidgetAppearance } = load('apps/client/lib/widget-sync.ts', {
-      expo: { requireOptionalNativeModule: () => native }, './reading': { validReading, readingSnapshot, latestSnapshot }, './preferences': preferences,
-    });
-    for (const value of ['dark', 'sepia', 'light', 'system']) await syncWidgetAppearance(value);
-  }
-  assert.deepEqual(received, ['dark', 'light', 'system'], 'only the three choices are handed over');
-});
-
-test('native widgets store the chosen appearance where they read it, and redraw only on a change', () => {
-  const android = read('apps/client/plugins/widget-android/RatingWidget.java');
-  const kotlin = read('apps/client/modules/newsworthy-widgets/android/src/main/java/expo/modules/newsworthywidgets/NewsworthyWidgetsModule.kt');
-  const swift = read('apps/client/targets/widget/NewsworthyWidget.swift');
-  const module = read('apps/client/modules/newsworthy-widgets/ios/NewsworthyWidgetsModule.swift');
-  assert.match(kotlin, /AsyncFunction\("setAppearance"\)[\s\S]*?SET_WIDGET_APPEARANCE[\s\S]*?setComponent\(ComponentName/);
-  assert.match(android, /\.SET_WIDGET_APPEARANCE"\)\.equals\(intent\.getAction\(\)\)/);
-  assert.match(android, /if \(appearance\.equals\(cache\.getString\(APPEARANCE, "system"\)\)\) return;/);
-  assert.match(android, /!"system"\.equals\(appearance\) && !"light"\.equals\(appearance\) && !"dark"\.equals\(appearance\)/);
-  assert.match(module, /AsyncFunction\("setAppearance"\)/);
-  assert.match(module, /\["system", "light", "dark"\]\.contains\(appearance\)/);
-  assert.match(module, /let key = "widget\.appearance\.v1"/);
-  assert.match(module, /if defaults\.string\(forKey: key\) == appearance \{ return \}/);
-  assert.match(swift, /static let key = "widget\.appearance\.v1"/);
-  assert.match(swift, /UserDefaults\(suiteName: WidgetConfig\.appGroup\)/);
-  assert.match(swift, /\?\? \.system/, 'a missing or unknown value follows the device');
-  const provider = read('apps/client/components/preferences-provider.tsx');
-  assert.match(provider, /if \(loaded\) void syncWidgetAppearance\(preferences\.widgetTheme\)/, 'handed over once loaded and on every change');
 });
 
 test('native handoff wiring preserves private transport, reload and stale-worker protection', () => {
@@ -145,7 +112,7 @@ test('widget snapshots are optional, validated and synchronously available', () 
     [{ getReadings: origin => { assert.equal(origin, 'https://example.test'); return ['broken cache', JSON.stringify({ reading, fetchedAt: 123 }), JSON.stringify({ reading, fetchedAt: 1 })]; } }, { reading, fetchedAt: 123 }],
   ]) {
     const { readWidgetSnapshot } = load('apps/client/lib/widget-sync.ts', {
-      expo: { requireOptionalNativeModule: () => native }, './reading': { validReading, readingSnapshot, latestSnapshot }, './preferences': preferences,
+      expo: { requireOptionalNativeModule: () => native }, './reading': { validReading, readingSnapshot, latestSnapshot },
     });
     assert.deepEqual(JSON.parse(JSON.stringify(readWidgetSnapshot('https://example.test'))), expected);
   }

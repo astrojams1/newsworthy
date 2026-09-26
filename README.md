@@ -59,7 +59,7 @@ extensions, signing and the remaining store setup. Expo Go can verify the core
 native interface; widgets require a custom development build.
 
 Settings, the gear in the header, choose the appearance (Follow device, Light
-or Dark; in the mobile apps, separately for the app and its widgets) and, in the mobile apps, an optional notification for readings at or above
+or Dark) and, in the mobile apps, an optional notification for readings at or above
 a chosen score — off by default. The Privacy and Support links are there too,
 so the reading screen carries nothing but the reading. Native delivery needs
 push credentials on EAS; see the
@@ -102,7 +102,7 @@ actually wired up. Start there when a deploy misbehaves.
 |---|---|
 | `/` | The rating, explanation and update time, and Share and Settings controls in the header. The number is the loudest development still live — each carries its own level, aged from when it was first reported. With Show timeline turned on in Settings (off by default), a quiet chevron below it leads to a timeline of the other live developments, each tagged with its story; the scroll snaps between the reading and the timeline, and tapping the header returns to the reading (prototype) |
 | `/settings` | Settings overview: Appearance, on native Notifications, the Show timeline switch (off by default), and the Privacy and Support links. A sheet in the apps, a page on the web |
-| `/settings/appearance` | Follow device, Light or Dark; in the apps, a second choice for widgets |
+| `/settings/appearance` | Follow device, Light or Dark (the app only; on iOS each widget has its own Appearance under Edit Widget) |
 | `/settings/notifications` | Native only in the apps: optional high-score alerts and the threshold row |
 | `/settings/threshold` | Native only in the apps: the alert threshold, 5 to 10 |
 | `/privacy` | Privacy policy covering the website, apps and widgets |

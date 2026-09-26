@@ -609,9 +609,8 @@ in AsyncStorage, and `ReadingProvider` derives `dark` from the choice, so every
 written to `data-appearance` on the document, which `tokens.css` already
 honoured for the static policy pages; on native it goes through
 `Appearance.setColorScheme`, so the share sheet and alerts follow too. Widgets
-cannot read the app's store, so the apps' separate widget choice (`widgetTheme`)
-reaches them through `syncWidgetAppearance`. Follow device keeps theme
-resources; Light or Dark forces the scheme (iOS) or literal colours (Android). Every row shares one minimum
+cannot read the app's store; on iOS each widget has its own Appearance under
+Edit Widget, beside Show app name, and Android widgets follow the system. Every row shares one minimum
 height rather than a fixed one, so enlarged text grows the rows together.
 
 **Push notifications are opt-in, off by default, and 8 when turned on.** The
