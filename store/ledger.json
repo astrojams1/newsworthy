@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-26T23:27:28+00:00",
+  "updated_at": "2026-09-26T23:42:05+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -952,12 +952,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Four-slide introduction (what a reading is, the scale, fading and New:, Settings) opens once on the first native launch and replays from Settings > About > Introduction; the website never opens it itself. Verified in the web export in Chromium at 390x844, light and dark (test/web-settings.test.js steps it through Next, Done and Skip). TypeScript passes. Not run on iOS or Android: first-launch push timing, fullScreenModal presentation, horizontal paging and the Notifications row on the last slide are unseen on a device.",
+      "summary": "Introduction now has six slides in the apps: score, scale, fading, a platform-specific widget slide (iOS: Edit > Add Widget; Android: Widgets) and an optional-alerts slide, then Settings; the web keeps four. Titles are 18-24 characters and every title sits at one height (y=441 at 390x844 on all slides, iOS, Android and web variants, light and dark, in Chromium). iOS and Android variants were rendered in the web export with a temporary platform override, not on a device; SF Symbols and native fonts are unseen.",
       "evidence": [
-        "Branch claude/mobile-onboarding-slideshow-lcppcu; test/web-settings.test.js introduction case; test/preferences.test.js introduction row"
+        "test/onboarding.test.js; test/web-settings.test.js title-position case"
       ],
       "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
-      "updated_at": "2026-09-26T23:27:28+00:00"
+      "updated_at": "2026-09-26T23:42:05+00:00"
     }
   },
   "events": [
@@ -5838,6 +5838,38 @@
         ],
         "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
         "updated_at": "2026-09-26T23:27:28+00:00"
+      }
+    },
+    {
+      "sequence": 305,
+      "at": "2026-09-26T23:40:28+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Introduction now has six slides in the apps: score, scale, fading, a platform-specific widget slide (iOS: Edit > Add Widget; Android: Widgets) and an optional-alerts slide, then Settings; the web keeps four. Titles are 18-24 characters and every title sits at one height (y=441 at 390x844 on all slides, iOS, Android and web variants, light and dark, in Chromium). iOS and Android variants were rendered in the web export with a temporary platform override, not on a device; SF Symbols and native fonts are unseen.",
+        "evidence": [
+          "test/onboarding.test.js; test/web-settings.test.js title-position case"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-26T23:40:28+00:00"
+      }
+    },
+    {
+      "sequence": 306,
+      "at": "2026-09-26T23:42:05+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Introduction now has six slides in the apps: score, scale, fading, a platform-specific widget slide (iOS: Edit > Add Widget; Android: Widgets) and an optional-alerts slide, then Settings; the web keeps four. Titles are 18-24 characters and every title sits at one height (y=441 at 390x844 on all slides, iOS, Android and web variants, light and dark, in Chromium). iOS and Android variants were rendered in the web export with a temporary platform override, not on a device; SF Symbols and native fonts are unseen.",
+        "evidence": [
+          "test/onboarding.test.js; test/web-settings.test.js title-position case"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-26T23:42:05+00:00"
       }
     }
   ],

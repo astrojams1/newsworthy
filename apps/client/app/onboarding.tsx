@@ -7,13 +7,20 @@ import tokens from '../../../public/tokens.js';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
-import { pushSupported } from '@/lib/push';
 import { Glyph, type GlyphName } from '@/components/glyph';
 
 type Theme = ReturnType<typeof useTheme>;
-const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace';
+const platform = process.env.EXPO_OS === 'ios' || process.env.EXPO_OS === 'android' ? process.env.EXPO_OS : 'web';
+const scoreFont = platform === 'ios' ? 'ui-monospace' : 'monospace';
+// Every slide is the same stack of fixed heights — the illustration, one line
+// of title, four lines of body — centred as a whole, so the title sits at the
+// same height on every slide and does not jump as the reader swipes.
+const ART_HEIGHT = 220;
+const TITLE_LINE = 32;
+const BODY_LINE = 25;
+const BODY_LINES = 4;
 
-// The introduction: four slides, swiped or stepped with Next. The phone apps
+// The introduction: four slides on the web, six in the apps, swiped or stepped with Next. The phone apps
 // open it once on first launch; Settings replays it. It is marked seen as soon
 // as it opens, so closing it any way at all — Skip, Done, the system back
 // gesture — does not bring it back on the next launch.
@@ -25,7 +32,7 @@ export default function Onboarding() {
   const width = dimensions.width || 390;
   const { setOnboarded } = usePreferences();
   useEffect(() => { setOnboarded(); }, [setOnboarded]);
-  const slides = onboardingSlides({ push: pushSupported });
+  const slides = onboardingSlides(platform);
   const [index, setIndex] = useState(0);
   const pager = useRef<ScrollView>(null);
   const last = index === slides.length - 1;
@@ -55,11 +62,11 @@ export default function Onboarding() {
         importantForAccessibility={position === index ? 'auto' : 'no-hide-descendants'}
         style={{ width, flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}>
         <View style={{ width: column, alignItems: 'center' }}>
-          <View style={{ height: 220, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <View style={{ height: ART_HEIGHT, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             <Art art={slide.art} theme={theme} />
           </View>
-          <Text accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: 32, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
-          <Text style={{ color: theme.muted, fontSize: 17, lineHeight: 25, textAlign: 'center', marginTop: 14 }}>{slide.body}</Text>
+          <Text testID="onboarding-title" accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: TITLE_LINE, minHeight: TITLE_LINE, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
+          <Text style={{ color: theme.muted, fontSize: 17, lineHeight: BODY_LINE, minHeight: BODY_LINE * BODY_LINES, textAlign: 'center', marginTop: 14 }}>{slide.body}</Text>
         </View>
       </View>)}
     </ScrollView>
@@ -108,7 +115,9 @@ function Art({ art, theme }: { art: SlideArt; theme: Theme }) {
       <Text style={{ color: theme.ink, fontSize: 15 }}><Text style={{ fontWeight: '700' }}>New:</Text> first coverage of a development</Text>
     </View>
   </View>;
-  const rows: [GlyphName, string][] = [['appearance', 'Appearance'], ...(pushSupported ? [['notifications', 'Notifications'] as [GlyphName, string]] : []), ['introduction', 'Introduction']];
+  if (art === 'widget') return <HomeScreen theme={theme} />;
+  if (art === 'alert') return <Notification theme={theme} />;
+  const rows: [GlyphName, string][] = [['appearance', 'Appearance'], ...(platform !== 'web' ? [['notifications', 'Notifications'] as [GlyphName, string]] : []), ['introduction', 'Introduction']];
   return <View style={{ ...card, width: 260, overflow: 'hidden' }}>
     {rows.map(([icon, label], i) => <View key={label} style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 16, minHeight: 52 }}>
       <View style={{ marginRight: 14 }}><Glyph name={icon} color={theme.accent} size={22} /></View>
@@ -116,5 +125,61 @@ function Art({ art, theme }: { art: SlideArt; theme: Theme }) {
         <Text style={{ color: theme.ink, fontSize: 17 }}>{label}</Text>
       </View>
     </View>)}
+  </View>;
+}
+
+// The app's launcher mark: a dash, dark on white or white on near-black.
+function LauncherIcon({ theme, size }: { theme: Theme; size: number }) {
+  const identity = tokens.identity[theme.dark ? 'dark' : 'light'];
+  return <View style={{ width: size, height: size, borderRadius: platform === 'android' ? size / 2 : size * 0.225, backgroundColor: identity.surface,
+    borderWidth: 1, borderColor: theme.rule, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: size * 0.36, height: Math.max(2, size * 0.07), borderRadius: 1, backgroundColor: identity.ink }} />
+  </View>;
+}
+
+// A home screen with the small widget in the top-left two-by-two, drawn in the
+// brand palette with a dash, as the widget shows before it has a reading.
+// iOS icons are rounded squares and the widget's corners match them; Android
+// launchers draw round icons and a more rounded widget.
+function HomeScreen({ theme }: { theme: Theme }) {
+  const brand = tokens.brand[theme.dark ? 'dark' : 'light'];
+  const cell = 52, gap = 18, widget = cell * 2 + gap;
+  const icon = (key: string) => <View key={key} style={{ width: cell, height: cell, borderRadius: platform === 'android' ? cell / 2 : 12, backgroundColor: theme.rule }} />;
+  return <View style={{ padding: 18, borderRadius: 28, borderWidth: 1, borderColor: theme.rule, backgroundColor: theme.elevated, gap }}>
+    <View style={{ flexDirection: 'row', gap }}>
+      <View style={{ width: widget, height: widget, borderRadius: platform === 'android' ? 24 : 22, backgroundColor: brand.end, padding: 14, justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ color: brand.ink, fontSize: 54, lineHeight: 60, fontWeight: '300', fontFamily: scoreFont }}>–</Text>
+          <Text style={{ color: brand.gradientMuted, fontSize: 12, fontFamily: scoreFont, marginLeft: 2, marginTop: 14 }}>∕10</Text>
+        </View>
+        <View style={{ width: 52, height: 6, borderRadius: 3, backgroundColor: brand.gradientMuted, opacity: 0.45 }} />
+      </View>
+      <View style={{ gap }}>{[0, 1].map(row => <View key={row} style={{ flexDirection: 'row', gap }}>{icon(`a${row}`)}{icon(`b${row}`)}</View>)}</View>
+    </View>
+    <View style={{ flexDirection: 'row', gap }}>{['c', 'd', 'e', 'f'].map(icon)}</View>
+  </View>;
+}
+
+// A notification as each platform draws one: iOS a rounded banner with the
+// app icon beside the text, Android a card led by a small icon and the app name.
+// The text is placeholder bars, so it cannot read as a real alert.
+function Notification({ theme }: { theme: Theme }) {
+  const bar = (width: number, opacity = 1) => <View style={{ width, height: 8, borderRadius: 4, backgroundColor: theme.rule, opacity }} />;
+  if (platform === 'android') return <View style={{ width: 290, borderRadius: 24, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.rule, padding: 16, gap: 12 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <LauncherIcon theme={theme} size={22} />
+      <Text style={{ color: theme.muted, fontSize: 13 }}>Newsworthy · now</Text>
+    </View>
+    <View style={{ gap: 8 }}>{bar(210)}{bar(170, 0.7)}</View>
+  </View>;
+  return <View style={{ width: 300, borderRadius: 22, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.rule, padding: 14, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+    <LauncherIcon theme={theme} size={40} />
+    <View style={{ flex: 1, gap: 8 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ color: theme.ink, fontSize: 15, fontWeight: '600' }}>Newsworthy</Text>
+        <Text style={{ color: theme.muted, fontSize: 13 }}>now</Text>
+      </View>
+      {bar(180)}{bar(140, 0.7)}
+    </View>
   </View>;
 }

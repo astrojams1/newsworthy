@@ -58,8 +58,10 @@ repeat a tagline or explain the scale.
 - The Privacy and Support links live in Settings, not on the reading screen.
 - The introduction (`apps/client/lib/onboarding.js`) restates the core copy and
   the limits above: an AI assessment that can be wrong, not a safety measure or
-  an emergency alert, fading with age. The mobile apps show it once on first
-  launch; Settings replays it. It never asks the reader to come back.
+  an emergency alert, fading with age. In the apps it also shows how to add
+  the widget on that platform and that alerts are optional and off by default.
+  The mobile apps show it once on first launch; Settings replays it. It never
+  asks the reader to come back.
 - Do not claim that hosting processes no technical information.
 - Brand positioning must never soften, inflate or otherwise alter the rating
   scale. Published prompts are append-only; see `PROMPT-RULES.md`.

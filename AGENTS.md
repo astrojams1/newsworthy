@@ -566,9 +566,10 @@ written to `data-appearance` on the document, which `tokens.css` already
 honoured for the static policy pages; on native it goes through
 `Appearance.setColorScheme`, so the share sheet and alerts follow too. Widgets
 cannot read the app's store; each widget has its own settings instead.
-`/onboarding` is a four-slide introduction the native apps open once on first
-launch (`onboarded`, set when it opens) and Settings replays; copy in
-`lib/onboarding.js`. Every row shares one minimum
+`/onboarding` is an introduction the native apps open once on first launch
+(`onboarded`, set when it opens) and Settings replays. Copy is per platform in
+`lib/onboarding.js`: widget and alert slides in the apps only; titles 18–24
+characters at one fixed height (`test/onboarding.test.js`). Every row shares one minimum
 height rather than a fixed one, so enlarged text grows the rows together.
 
 **Push notifications are opt-in, off by default, and 8 when turned on.** The
