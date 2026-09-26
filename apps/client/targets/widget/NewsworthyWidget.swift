@@ -15,11 +15,10 @@ struct ReadingEntry: TimelineEntry {
 
 /// The widget's own appearance, set beside "Show app name" when editing the
 /// widget. Follow device leaves the colour scheme to the system, as before.
-enum WidgetAppearance: String, AppEnum, Sendable {
+enum WidgetAppearance: String, CaseIterable, Sendable {
     case system, light, dark
 
-    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Appearance"
-    static let caseDisplayRepresentations: [WidgetAppearance: DisplayRepresentation] = [
+    static let labels: [WidgetAppearance: LocalizedStringResource] = [
         .system: "Follow device", .light: "Light", .dark: "Dark",
     ]
 
@@ -52,8 +51,32 @@ struct ReadingWidgetConfiguration: WidgetConfigurationIntent {
     @Parameter(title: "Show app name", default: true)
     var showAppName: Bool
 
-    @Parameter(title: "Appearance", default: .system)
-    var appearance: WidgetAppearance
+    @Parameter(title: "Appearance")
+    var appearance: AppearanceOption?
+}
+
+/// Appearance is offered as an entity, not an AppEnum: iOS 26.5 hands a widget
+/// an AppEnum parameter as nil (FB22848510), so a chosen Light or Dark followed
+/// the device. Seen on the iOS 26.5 simulator on 2026-09-26; iOS 18.6 decoded it.
+@available(iOS 17.0, *)
+struct AppearanceOption: AppEntity {
+    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Appearance"
+    static var defaultQuery = AppearanceOptionQuery()
+
+    let value: WidgetAppearance
+    var id: String { value.rawValue }
+    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: WidgetAppearance.labels[value]!) }
+}
+
+@available(iOS 17.0, *)
+struct AppearanceOptionQuery: EntityQuery {
+    func entities(for identifiers: [String]) async throws -> [AppearanceOption] {
+        identifiers.compactMap(WidgetAppearance.init(rawValue:)).map(AppearanceOption.init(value:))
+    }
+    func suggestedEntities() async throws -> [AppearanceOption] {
+        WidgetAppearance.allCases.map(AppearanceOption.init(value:))
+    }
+    func defaultResult() async -> AppearanceOption? { AppearanceOption(value: .system) }
 }
 
 @available(iOS 17.0, *)
@@ -67,7 +90,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
             Provider().getSnapshot(in: context) { entry in
                 var entry = entry
                 entry.showAppName = configuration.showAppName
-                entry.appearance = configuration.appearance
+                entry.appearance = configuration.appearance?.value ?? .system
                 continuation.resume(returning: entry)
             }
         }
@@ -79,7 +102,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
                 let entries = timeline.entries.map { entry in
                     var entry = entry
                     entry.showAppName = configuration.showAppName
-                    entry.appearance = configuration.appearance
+                    entry.appearance = configuration.appearance?.value ?? .system
                     return entry
                 }
                 continuation.resume(returning: Timeline(entries: entries, policy: timeline.policy))
