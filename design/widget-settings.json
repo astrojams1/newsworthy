@@ -1,0 +1,17 @@
+{
+  "title": "Widget appearance",
+  "settings": [
+    { "key": "showAppName", "label": "Show app name", "type": "toggle", "default": true },
+    {
+      "key": "appearance",
+      "label": "Appearance",
+      "type": "choice",
+      "default": "system",
+      "choices": [
+        { "value": "system", "label": "Follow device" },
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" }
+      ]
+    }
+  ]
+}

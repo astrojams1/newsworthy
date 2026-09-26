@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget's own settings, opened by the launcher. Mirrors the app's
+     Settings sheet (design/surfaces.json `settings`) and iOS's Edit Widget;
+     every row comes from design/widget-settings.json. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:fitsSystemWindows="true" android:background="@color/nw_brand_tinted">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+        android:orientation="horizontal" android:gravity="center_vertical" android:paddingStart="4dp" android:paddingEnd="4dp">
+        <ImageButton android:id="@+id/widget_settings_close" android:layout_width="48dp" android:layout_height="48dp"
+            android:src="@drawable/widget_settings_close" android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/widget_settings_close"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="@string/widget_settings_title" android:textColor="@color/nw_ink" android:textSize="17sp"
+            android:textStyle="bold" android:gravity="center" android:maxLines="1" android:ellipsize="end"
+            android:accessibilityHeading="true"/>
+        <TextView android:id="@+id/widget_settings_done" android:layout_width="wrap_content" android:layout_height="48dp"
+            android:minWidth="48dp" android:paddingStart="12dp" android:paddingEnd="12dp" android:gravity="center"
+            android:text="@string/widget_settings_done" android:textColor="@color/nw_brand_accent" android:textSize="17sp"
+            android:textStyle="bold" android:background="?android:attr/selectableItemBackground"
+            android:focusable="true" android:clickable="true"/>
+    </LinearLayout>
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingTop="16dp" android:paddingBottom="32dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:background="@drawable/widget_settings_card">
+                <LinearLayout android:id="@+id/widget_setting_show_app_name" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:minHeight="56dp" android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingStart="16dp" android:paddingEnd="16dp"
+                    android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:paddingTop="4dp" android:paddingBottom="4dp" android:text="@string/widget_setting_show_app_name"
+                        android:textColor="@color/nw_ink" android:textSize="17sp"/>
+                    <Switch android:id="@+id/widget_setting_show_app_name_switch" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:thumb="@drawable/widget_settings_switch_thumb" android:track="@drawable/widget_settings_switch_track"
+                        android:showText="false" android:clickable="false" android:focusable="false"
+                        android:importantForAccessibility="no"/>
+                </LinearLayout>
+            </LinearLayout>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="28dp" android:layout_marginBottom="8dp" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
+                android:text="@string/widget_setting_appearance" android:textColor="@color/nw_muted" android:textSize="15sp"
+                android:textStyle="bold" android:accessibilityHeading="true"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:background="@drawable/widget_settings_card">
+                <LinearLayout android:id="@+id/widget_setting_appearance_system" style="@style/WidgetSettingsChoice">
+                    <TextView style="@style/WidgetSettingsChoiceLabel" android:text="@string/widget_setting_appearance_system"/>
+                    <ImageView android:id="@+id/widget_setting_appearance_system_check" style="@style/WidgetSettingsCheck"/>
+                </LinearLayout>
+                <View style="@style/WidgetSettingsSeparator"/>
+                <LinearLayout android:id="@+id/widget_setting_appearance_light" style="@style/WidgetSettingsChoice">
+                    <TextView style="@style/WidgetSettingsChoiceLabel" android:text="@string/widget_setting_appearance_light"/>
+                    <ImageView android:id="@+id/widget_setting_appearance_light_check" style="@style/WidgetSettingsCheck"/>
+                </LinearLayout>
+                <View style="@style/WidgetSettingsSeparator"/>
+                <LinearLayout android:id="@+id/widget_setting_appearance_dark" style="@style/WidgetSettingsChoice">
+                    <TextView style="@style/WidgetSettingsChoiceLabel" android:text="@string/widget_setting_appearance_dark"/>
+                    <ImageView android:id="@+id/widget_setting_appearance_dark_check" style="@style/WidgetSettingsCheck"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

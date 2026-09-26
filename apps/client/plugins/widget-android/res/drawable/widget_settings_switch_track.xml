@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app's switch (components/toggle.tsx): a 51x31 pill, the accent when on. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_checked="true">
+    <shape android:shape="rectangle">
+      <solid android:color="@color/nw_brand_accent"/>
+      <corners android:radius="15.5dp"/>
+      <size android:width="51dp" android:height="31dp"/>
+    </shape>
+  </item>
+  <item>
+    <shape android:shape="rectangle">
+      <solid android:color="@color/widget_settings_switch_off"/>
+      <corners android:radius="15.5dp"/>
+      <size android:width="51dp" android:height="31dp"/>
+    </shape>
+  </item>
+</selector>

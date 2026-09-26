@@ -4,4 +4,6 @@
     android:targetCellWidth="2" android:targetCellHeight="2"
     android:resizeMode="horizontal|vertical" android:updatePeriodMillis="0"
     android:initialLayout="@layout/rating_widget" android:previewLayout="@layout/rating_widget"
-    android:description="@string/widget_description" android:widgetCategory="home_screen"/>
+    android:description="@string/widget_description" android:widgetCategory="home_screen"
+    android:configure="com.example.newsworthy.RatingWidgetConfigure"
+    android:widgetFeatures="reconfigurable|configuration_optional"/>

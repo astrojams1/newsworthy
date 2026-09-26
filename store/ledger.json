@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-25T08:25:21+00:00",
+  "updated_at": "2026-09-26T04:09:44+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -925,6 +925,17 @@
       ],
       "next_action": "Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build.",
       "updated_at": "2026-09-25T08:25:21+00:00"
+    },
+    "widget.appearance-choice": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Widget settings are now one definition (design/widget-settings.json: Show app name, Appearance) offered on both platforms per widget: iOS 17+ Edit Widget, and a new Android settings screen (RatingWidgetConfigure) opened by the launcher on add (optional) and on reconfigure (Android 12+), styled like the app's Settings. Android hides the heading per widget and, only for a chosen Light or Dark, uses literal-colour gradients and text. Android resources linked with aapt2 (minSdk 24, android-35) and all four widget Java classes compiled with javac against android-35 and WorkManager 2.11.2; expo prebuild produced the manifest activity and provider configure entry with the real package. Swift not compiled (no toolchain); no emulator (no KVM); nothing seen on a device.",
+      "evidence": [
+        "test/widget-settings.test.js with nine rejection cases; design gate 85 passed; aapt2 link and javac in the session scratchpad; expo prebuild -p android"
+      ],
+      "next_action": "On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states.",
+      "updated_at": "2026-09-26T04:09:44+00:00"
     }
   },
   "events": [
@@ -5725,6 +5736,54 @@
         ],
         "next_action": "Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build.",
         "updated_at": "2026-09-25T08:25:21+00:00"
+      }
+    },
+    {
+      "sequence": 300,
+      "at": "2026-09-26T03:48:43+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Settings > Appearance in the apps gains a separate Widgets choice (Follow device, Light, Dark; Follow device by default). iOS stores it in the App Group and forces colorScheme on widget content and container background; Android stores it via a broadcast to RatingWidget and, only for a chosen Light or Dark, uses generated literal-colour gradients and text colours. Follow device keeps theme resources. Rendered-prop, design-contract and pixel-geometry tests pass; the Swift and Android sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown a forced widget.",
+        "evidence": [
+          "Branch claude/widget-appearance-control-pfap1k; test/preferences.test.js, test/widget-sync.test.js, test/surface-design.test.js mutations, test/widget-alignment.test.js geometry hash unchanged; store/story-age-verification.json"
+        ],
+        "next_action": "Build native packages; on iOS and Android, both widget sizes: Light held with system Dark, Dark held with system Light, Follow device switching with the system, a change applied without reopening the widget picker, and an unset store (upgrade) following the device.",
+        "updated_at": "2026-09-26T03:48:43+00:00"
+      }
+    },
+    {
+      "sequence": 301,
+      "at": "2026-09-26T03:51:33+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Moved per owner: the widget appearance is no longer an app setting. On iOS 17+ it is the widget's own Appearance setting (Follow device, Light, Dark) under Edit Widget, beside Show app name, forcing colorScheme on content and container background. The app-side choice, native module functions and Android literal-colour resources were removed; Android widgets have no settings screen and still follow the system. Swift not compiled here; no device has shown a forced widget.",
+        "evidence": [
+          "Branch claude/widget-appearance-control-pfap1k; test/helpers/widget-contract.js and surface-design mutations; widget-alignment geometry hash unchanged"
+        ],
+        "next_action": "Build iOS; on both widget sizes, Edit Widget > Appearance: Light held with system Dark, Dark held with system Light, Follow device switching; existing widgets default to Follow device. Decide whether Android gets a widget configuration screen.",
+        "updated_at": "2026-09-26T03:51:33+00:00"
+      }
+    },
+    {
+      "sequence": 302,
+      "at": "2026-09-26T04:09:44+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Widget settings are now one definition (design/widget-settings.json: Show app name, Appearance) offered on both platforms per widget: iOS 17+ Edit Widget, and a new Android settings screen (RatingWidgetConfigure) opened by the launcher on add (optional) and on reconfigure (Android 12+), styled like the app's Settings. Android hides the heading per widget and, only for a chosen Light or Dark, uses literal-colour gradients and text. Android resources linked with aapt2 (minSdk 24, android-35) and all four widget Java classes compiled with javac against android-35 and WorkManager 2.11.2; expo prebuild produced the manifest activity and provider configure entry with the real package. Swift not compiled (no toolchain); no emulator (no KVM); nothing seen on a device.",
+        "evidence": [
+          "test/widget-settings.test.js with nine rejection cases; design gate 85 passed; aapt2 link and javac in the session scratchpad; expo prebuild -p android"
+        ],
+        "next_action": "On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states.",
+        "updated_at": "2026-09-26T04:09:44+00:00"
       }
     }
   ],

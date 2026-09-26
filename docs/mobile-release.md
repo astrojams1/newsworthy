@@ -250,7 +250,10 @@ access. Internal testing alone does not meet this requirement. See
   inside either widget size. iOS 16 keeps the heading visible. The footer uses a
   compact, single-line date and time, retaining the saved-reading label when offline.
 - Android: `plugins/with-rating-widget.js` adds the native widget receiver,
-  resources and WorkManager fetcher during prebuild.
+  resources, WorkManager fetcher and widget settings screen
+  (`RatingWidgetConfigure`) during prebuild.
+- Widget settings (Show app name, Appearance) are defined once in
+  `design/widget-settings.json` and offered on both platforms, per widget.
 - A successful app refresh also hands its public reading to both widgets. iOS
   uses `group.<appId>.widgets` shared defaults and requests `NewsworthyRating`
   timeline reloads; Android delivers an explicit broadcast to its private receiver.
@@ -276,7 +279,8 @@ npx expo prebuild --no-install
 
 Before release, verify custom builds on devices: initial load, saved reading in
 flight mode, recovery, native sharing, light/dark mode and the Settings
-appearance override (including share sheet and alerts), the notification switch
+appearance override (including share sheet and alerts), each widget's own
+settings on iOS and Android (Show app name; Light and Dark held against the opposite system mode), the notification switch
 (permission prompt, refusal, delivery of an 8 or above, threshold change, turning
 off), large text, Android back, widget addition/refresh/offline state and the
 privacy/support links in Settings. Simulator Expo
