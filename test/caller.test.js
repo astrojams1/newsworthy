@@ -69,7 +69,9 @@ test('the submission is two fields, and says so', () => {
 test('the fetch guidance carries what a real run had to learn the hard way', () => {
   const text = build();
   assert.match(text, /links without usable snippets/);
-  assert.match(text, /Reuters, AP and BBC block automated\s+fetches/);
+  assert.match(text, /No list of sites is\s+fixed/);
+  assert.match(text, /looks stale is fetched again with `curl`/);
+  assert.ok(!/Reuters|CNBC|CNN answer/.test(text), 'no hard-coded source list');
 });
 
 test('a 422 is documented as storing nothing, so a retry cannot duplicate', () => {
