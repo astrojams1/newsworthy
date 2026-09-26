@@ -86,7 +86,7 @@ widgets and the complete app package without updating local Xcode.
 - `public/robots.txt`, `public/sitemap.xml`: crawler access and public page discovery.
 - `public/llms.txt`: public facts for AI readers; a voluntary reference, not a
   guaranteed discovery or ranking mechanism.
-- `src/caller.js`, `src/openapi.js`, `skills/newsworthy-rating/SKILL.md`: authorized
+- `src/caller.js`, `skills/newsworthy-rating/SKILL.md`: authorized
   rating-agent contract. A reading is score/explanation; a complete submission
   also carries the computed `prompt_sha256` provenance proof. After scoring and
   writing, the caller fetches the recorded developments, answers the judge

@@ -232,11 +232,6 @@ test('the caller fetches the record, and its answer travels with the reading', a
       assert.ok(out.body.judge_note, `${why} says so`);
     }
 
-    // The GET form carries the answer flat.
-    const got = await (await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=6&explanation=Volcano+erupts`
-      + `&judge_version=${version}&development_of=new&story=volcano`)).json();
-    assert.equal(got.development, 'new');
-    assert.equal(got.story, 'volcano');
   });
 });
 
@@ -248,7 +243,11 @@ test('the backfill judges stored readings oldest first, and stops when done', as
     // The server seeds one mock reading at startup, so there is always at least
     // one row to judge even before these.
     for (const [score, text] of [[4, 'Ferry+strike+halts+crossings'], [5, 'Ferry+strike+enters+day+two']]) {
-      await fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=${score}&explanation=${text}`);
+      await fetch(`${base}/api/readings`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
+        body: JSON.stringify({ score, explanation: text.replaceAll('+', ' ') }),
+      });
     }
 
     let guard = 0;

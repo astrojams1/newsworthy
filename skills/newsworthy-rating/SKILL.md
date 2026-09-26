@@ -13,32 +13,27 @@ Fetch the instructions and follow them. They include the current rating prompt
 inline, so this is the only thing you need to know:
 
 ```bash
-curl -s -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" "$NEWSWORTHY_URL/api/instructions?cb=$(date +%s)"
+curl -s -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" "$NEWSWORTHY_URL/api/instructions"
 ```
 
-The `cb` value is a cache-buster and differs on every run. The origin already
-answers `no-store` with a zero age, so a stale copy comes from a cache on the
-caller's side, which only a distinct URL per run defeats — one caller spent six
-hours rating against a prompt three versions behind the one being served.
+Every request to the API is made with `curl` and that header, never with a
+web-fetch tool: one that passes pages through a model paraphrases and cuts
+what it returns.
 
 | | |
 |---|---|
 | `NEWSWORTHY_URL` | e.g. `https://newsworthy-indol.vercel.app` |
 | `NEWSWORTHY_TOKEN` | the caller token (`CALLER_TOKEN` on the app) |
 
-If your HTTP client cannot set headers, use `?token=$NEWSWORTHY_TOKEN&cb=<unique-run-value>` instead —
-every endpoint accepts either.
-
 The origin generates instructions from the live prompt registry. Fetch them
-afresh each run with a distinct URL; intermediaries can still cache old copies.
-Do not cache them between runs. A complete submission includes `score`,
+afresh each run; do not cache them between runs. A complete submission includes `score`,
 `explanation` and `prompt_sha256`, computed with a code tool from the exact
 received prompt as described in the instructions. A failed search produces no
 submission. Success means the API confirms that the reading was stored.
 
 ## Order of work
 
-1. Fetch the current instructions and exact prompt with a fresh cache-buster;
+1. Fetch the current instructions and exact prompt;
    calculate its SHA-256 with a code tool as specified there.
 2. Research current news, choose the development and score it using the published
    scale. No successful search means no submission.

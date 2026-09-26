@@ -116,26 +116,12 @@ reading stays traceable. `/api/instructions` serves the whole caller workflow wi
 prompt embedded, so a caller agent is configured with a URL rather than pasted
 text — `src/caller.js` is the single copy. `CALLER_TOKEN` gates it.
 
-Not every agent can submit, and the ones that cannot are blocked by design.
-ChatGPT's interpreter has no network (`curl` cannot resolve the host) and its
-browser refuses to fetch a URL the model assembled — a model-built URL carrying
-a token is the exfiltration shape that guard exists to stop, so no wording gets
-around it. `/api/openapi.json` exists for those: it describes the caller API for
-a ChatGPT Custom GPT Action, which sends real headers. The schema is served
-unauthenticated — it describes a gated API without containing a token, and a
-schema importer cannot present one.
-
-A caller that can do neither ends its reply with the payload and states that it
-was not submitted: only the caller can enforce that a verdict is never reported
-as submitted when it was not.
-Serve it as `text/plain`: an agent's fetch tool rejected `text/markdown` before
-exposing the body.
-
-Write that page as a specification, never as imperatives. A fetch tool
-summarizes through a small model, and a page of "you must" is read by that model
-as orders to itself — two callers got back "I cannot make HTTP requests" instead
-of the content. Third-person description gives it nothing to refuse, and rules
-stated as facts about the system survive the paraphrase that commands do not.
+**Callers read the API with `curl`**, token in the `x-newsworthy-token` header.
+A web-fetch tool that passes pages through a model paraphrased, cut and cached
+what callers received. The workarounds built for such tools — a GET submission
+form, `soft_errors`, `x-newsworthy-error`, `?format=json`, `?token=`, an OpenAPI
+schema for a ChatGPT Action — were removed on 2026-09-26, once the one caller
+ran on `curl`. `/api/instructions` is `text/plain`.
 
 **A reading is two fields: score and explanation.** A complete caller submission
 also carries `prompt_sha256`, computed with a code tool from the exact received
@@ -172,7 +158,7 @@ was recorded as one rated against the current scale, and the caller's report of
 the mismatch looked like a caller error rather than a server one. Reading 81 is
 the confirmed case: it quoted three v7 rungs verbatim thirty minutes after v9
 went live, and `?version=7` reproduces those rungs exactly. The parameter was
-undocumented, unused by this app, its tests and its OpenAPI schema, and is
+undocumented, unused by this app and its tests, and is
 removed from both caller-facing endpoints. The full history stays at
 `/api/admin/prompts`, behind the admin token, where reading an old version
 cannot be confused with rating against one.
@@ -465,30 +451,13 @@ with it. Prompt version is that first field: `prompt_version` is `NOT NULL`, so
 it is the one small field always present, which is what makes leaving the
 separator off it safe.
 
-**A rejection some clients can only read as a 200.** A caller agent's fetch tool
-surfaces nothing on a non-2xx — one collapses every failure into
-`{"error_type":"CLIENT_ERROR","message":"The page returned a 422 client error"}`
-with no headers, no body and no status text. So a 422 whose whole purpose is to
-name the field at fault told one caller nothing, and it spent four attempts
-guessing before settling on a deliberately worse explanation to avoid a
-duplicate row that a 422 never creates.
-
-`x-newsworthy-error` was the first fix and it missed: that client cannot read
-headers either. `&soft_errors=1` is the one that works — rejections come back as
-`200` with `{"ok": false, "stored": false, "status": 422, "error": …}`, and a
-stored reading answers `{"ok": true, "stored": true, …}`, so such a caller
-branches on `ok`. `stored` is not decoration: a 200 meaning rejected is a trap
-for anything reading only the status line. Omitting the flag keeps ordinary
-status codes, so nothing changes for clients that can read them. Auth is
-softened too — a caller that cannot read a 401 is stuck silently and
-permanently, and nothing is disclosed that the instructions do not already
-publish.
+**A rejection is a status code with the reason in the body.**
 
 Every rejection is `console.warn`ed and leaves a row in `rejections`. Nothing
 was recorded about the original 422s, so which of the four rules fired could
 not be established afterwards — a log answers a question asked the same day,
-and function logs are ephemeral. The row carries the status, reason, method,
-`soft_errors` and the token used (`caller`, `admin`), and nothing from the request body: each reason
+and function logs are ephemeral. The row carries the status, reason, method and the
+token used (`caller`, `admin`), and nothing from the request body: each reason
 names the field at fault, so the reason is the whole finding. They surface at
 `/api/admin/history`, behind the admin token, over the range that page asks
 for — a fixed newest-25 would put an old incident's rows out of reach of every
@@ -528,19 +497,6 @@ and the prompt's 150-character guidance is style, not a limit the server enforce
 422 on a submission whose score and sentence are both well formed therefore means
 the request did not arrive as it was sent — so the fix is to send it again, not
 to shorten the sentence.
-
-**Spaces in the GET form are `+` because the URL has a length budget.** One
-client refuses to send any URL over 250 characters, rejecting it locally with a
-403 that never reaches this API, and the fixed part of a submission — host,
-path, token, score — is already about 95 of those. `%20` costs three characters
-per space where `+` costs one, which on a median 140-character explanation is
-the difference between fitting and not. Other reserved characters are still
-percent-encoded.
-
-The budget does not explain everything. Six of the last 48 stored readings would
-have needed a URL over 250 characters, one of them 285, so the limit is not the
-flat wall a single bisection made it look like. The POST form carries the
-sentence in a body and is subject to none of this.
 
 **`shape()` in `src/db.js` converts only the columns a query selected.** Emitting
 a key for an unselected column yields a null that reads as "nothing recorded"
@@ -736,10 +692,8 @@ what a *caller* sees, while the origin says MISS, is positive evidence the cache
 sits on the caller's side — an origin cache would answer HIT with a non-zero
 age.
 
-Responses also carry `Pragma: no-cache` and `Expires: 0`; neither reaches a
-client that caches by URL. Only the caller can defeat that, with a distinct query
-parameter per run. So the instructions describe it, and a stale-copy explanation
-is the first thing to check whenever a prompt change appears to have had no
+Callers now read with `curl`, which keeps no copy. A stale-copy explanation is
+still the first thing to check when a prompt change appears to have had no
 effect.
 
 **A prompt edit was unfalsifiable until callers started returning a digest.**

@@ -573,8 +573,11 @@ test('the score is smoothed, the sentence is not', async () => {
   // readings to push it out of the six-hour level window — no longer works,
   // because a development outlives the window by design.
   await withServer({ port: PORTS.currentSmoothing, env: { NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
-    const submit = (score, explanation) =>
-      fetch(`${base}/api/readings?token=${CALLER_TOKEN}&score=${score}&explanation=${explanation}`);
+    const submit = (score, explanation) => fetch(`${base}/api/readings`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-newsworthy-token': CALLER_TOKEN },
+      body: JSON.stringify({ score, explanation: explanation.replaceAll('+', ' ') }),
+    });
 
     // One development, five readings: they share a stem so the mock judge
     // groups them, which is what puts the level rule rather than the break rule

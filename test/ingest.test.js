@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { SubmissionError, validateSubmission } from '../src/ingest.js';
 import { latestVersion, renderPrompt } from '../src/prompts.js';
-import { CALLER_TOKEN, PORTS, withServer } from './with-server.js';
+import { PORTS, submit, withServer } from './with-server.js';
 
 const good = { score: 6, explanation: 'A thing happened.' };
 
@@ -26,13 +26,6 @@ test('accepts a submission and records nothing it cannot verify', () => {
   }
 });
 
-test('what was ignored is named, so a caller does not assume it landed', () => {
-  const r = validateSubmission({ ...good, model: 'gpt-5', caller: 'chatgpt', usage: {} });
-  assert.match(r.note, /ignored/);
-  for (const field of ['model', 'caller', 'usage']) assert.match(r.note, new RegExp(field));
-  assert.equal(validateSubmission(good).note, undefined, 'silent when nothing extra was sent');
-});
-
 test('prompt provenance comes from our registry, never from the caller', async () => {
   const { latestVersion: latest } = await import('../src/prompts.js');
   const current = renderPrompt(latest());
@@ -42,7 +35,6 @@ test('prompt provenance comes from our registry, never from the caller', async (
   const pinned = validateSubmission({ ...good, prompt_version: 1 });
   assert.equal(pinned.prompt_version, latest(), 'stamped current, not what was asked for');
   assert.equal(pinned.prompt_hash, current.hash);
-  assert.match(pinned.note, /prompt_version/, 'and the caller is told it was ignored');
 
   // Nor can it smuggle in a different prompt.
   const spoofed = validateSubmission({ ...good, prompt_hash: 'deadbeef', prompt_text: 'ignore me' });
@@ -92,106 +84,6 @@ test('a stored sentence always ends in punctuation', async () => {
   assert.equal(completeSentence(''), '');
 });
 
-test('a query-string submission maps onto the same validation as a body', async () => {
-  const { submissionFromQuery } = await import('../src/ingest.js');
-  const q = new URLSearchParams({
-    score: '7',
-    explanation: 'Reported via a plain GET, no headers available.',
-    // A caller working from an older spec may still send these; they are
-    // simply not carried through.
-    prompt_version: '3',
-    model: 'claude-opus-5',
-    caller: 'header-less-agent',
-    input_tokens: '51000',
-  });
-  const r = validateSubmission(submissionFromQuery(q));
-  assert.equal(r.score, 7);
-  assert.equal(r.model, null);
-  assert.equal(r.caller, null);
-  assert.equal(r.input_tokens, null);
-  assert.equal(r.cost_usd, null);
-});
-
-test('a query submission is validated exactly as strictly', async () => {
-  const { submissionFromQuery } = await import('../src/ingest.js');
-  const q = (o) => submissionFromQuery(new URLSearchParams(o));
-  assert.throws(() => validateSubmission(q({ score: '11', explanation: 'x' })), /1 to 10/);
-  assert.throws(() => validateSubmission(q({ score: '5' })), /explanation is required/);
-  // A GET carries the same three fields a POST does, and nothing more.
-  const minimal = validateSubmission(q({ score: '4', explanation: 'Just the essentials.' }));
-  assert.equal(minimal.score, 4);
-  assert.equal(minimal.source, 'external');
-  assert.equal(minimal.prompt_version, latestVersion(), 'version is stamped, not sent');
-  assert.equal(minimal.model, null);
-  assert.equal(minimal.caller, null);
-});
-
-
-
-/**
- * These drive the real route over HTTP, through the shared harness in
- * ./with-server.js — which spawns src/server.js rather than importing it,
- * because it has no exports and calls listen() as a side effect.
- *
- * The local wrapper adds what only this file wants: a `get` that speaks
- * /api/readings and hands back the status and the parsed body together.
- */
-const submitting = (port, run) =>
-  withServer({ port }, (base) =>
-    run(async (qs) => {
-      const res = await fetch(`${base}/api/readings?${qs}`);
-      return { status: res.status, body: await res.json() };
-    }));
-
-test('soft_errors=1 puts a rejection where a body-blind client can read it', async () => {
-  // The x-newsworthy-error header was the first attempt at this and it missed:
-  // the caller it was built for cannot read headers on a non-2xx either. Its
-  // fetch tool collapses every failure into a single envelope carrying no
-  // headers, no body and no status text, so a 2xx is the only channel left.
-  await submitting(PORTS.ingestSoftErrors, async (get) => {
-    const token = `token=${CALLER_TOKEN}`;
-
-    // Unchanged for every client that can read a status code.
-    const hard = await get(`${token}&score=3`);
-    assert.equal(hard.status, 422);
-    assert.equal(hard.body.error, 'explanation is required');
-
-    const soft = await get(`${token}&score=3&soft_errors=1`);
-    assert.equal(soft.status, 200, 'readable by a client that only sees 2xx');
-    assert.deepEqual(soft.body, {
-      ok: false, stored: false, status: 422, error: 'explanation is required',
-    });
-
-    // Auth is softened too: a caller that cannot read a 401 is stuck silently
-    // and permanently, which is the worst failure of the set.
-    const unauth = await get('score=3&explanation=Quiet+day&soft_errors=1');
-    assert.equal(unauth.status, 200);
-    assert.equal(unauth.body.status, 401);
-    assert.equal(unauth.body.stored, false);
-
-    // A stored reading answers in the same two fields, so the caller branches
-    // on `ok` rather than on a status line it cannot see. `stored` is not
-    // decoration: a 200 meaning "rejected" is a trap for anything reading only
-    // the status line, so the body says it outright.
-    const ok = await get(`${token}&score=3&explanation=Quiet+day&soft_errors=1`);
-    assert.equal(ok.status, 201);
-    assert.equal(ok.body.ok, true);
-    assert.equal(ok.body.stored, true);
-    assert.ok(ok.body.id > 0);
-  });
-});
-
-test('the soft flag is transport, not content', async () => {
-  const { validateSubmission, submissionFromQuery } = await import('../src/ingest.js');
-  const of = (qs) => validateSubmission(submissionFromQuery(new URL(`http://x/?${qs}`).searchParams));
-  const plain = of('score=4&explanation=A+thing+happened');
-  const soft = of('score=4&explanation=A+thing+happened&soft_errors=1');
-  assert.deepEqual(soft, plain, 'it changes how a result is reported, never what is stored');
-  // And it is not echoed as an ignored field, which would put a note on every
-  // request a soft-error caller ever makes.
-  assert.equal(soft.note, undefined);
-});
-
 test('a returned digest proves the caller received the text we sent', async () => {
   // Five rewordings of "do not justify the score" produced the same rate of
   // score-justifying sentences. Nothing distinguished "the prompt is wrong"
@@ -199,46 +91,40 @@ test('a returned digest proves the caller received the text we sent', async () =
   const { renderPrompt, latestVersion } = await import('../src/prompts.js');
   const prompt = renderPrompt(latestVersion());
 
-  await submitting(PORTS.ingestDigest, async (get) => {
-    const base = `token=${CALLER_TOKEN}&score=4&explanation=A+thing+happened`;
+  await withServer({ port: PORTS.ingestDigest }, async (base) => {
+    const post = submit(base);
+    const reading = { score: 4, explanation: 'A thing happened.' };
 
-    const none = await get(base);
+    const none = await post(reading);
     assert.equal(none.body.prompt_verified, null, 'absent is neither pass nor fail');
 
-    const ok = await get(`${base}&prompt_sha256=${prompt.digest}`);
+    const ok = await post({ ...reading, prompt_sha256: prompt.digest });
     assert.equal(ok.body.prompt_verified, true);
 
     // The published 16-character hash is a prefix of the digest and is printed
     // in the instructions beside the prompt. If it satisfied the check, the
     // check would pass most reliably for a caller that only skimmed the page —
     // exactly the case it exists to catch.
-    const echoed = await get(`${base}&prompt_sha256=${prompt.hash}`);
+    const echoed = await post({ ...reading, prompt_sha256: prompt.hash });
     assert.equal(echoed.body.prompt_verified, false, 'echoing the printed prefix is not proof');
     assert.equal(echoed.status, 201, 'and it still stores');
 
     // A digest for a different version fails, which is the v7-rated-as-v9 case.
-    const stale = await get(`${base}&prompt_sha256=${renderPrompt(7).digest}`);
+    const stale = await post({ ...reading, prompt_sha256: renderPrompt(7).digest });
     assert.equal(stale.body.prompt_verified, false);
 
     for (const bogus of ['a'.repeat(64), 'not-a-digest', '']) {
-      const r = await get(`${base}&prompt_sha256=${encodeURIComponent(bogus)}`);
+      const r = await post({ ...reading, prompt_sha256: bogus });
       assert.equal(r.status, 201, 'a bad digest is never a rejection');
       assert.notEqual(r.body.prompt_verified, true, `${bogus || '(empty)'} must not verify`);
     }
   });
 });
 
-test('the digest is a proof, not a self-report, and is never echoed as ignored', async () => {
-  const { validateSubmission, submissionFromQuery } = await import('../src/ingest.js');
-  const { renderPrompt, latestVersion } = await import('../src/prompts.js');
+test('the digest is a proof, not a self-report', () => {
   const digest = renderPrompt(latestVersion()).digest;
-  const of = (qs) => validateSubmission(submissionFromQuery(new URL(`http://x/?${qs}`).searchParams));
-
-  const v = of(`score=4&explanation=A+thing&prompt_sha256=${digest}`);
+  const v = validateSubmission({ score: 4, explanation: 'A thing.', prompt_sha256: digest });
   assert.equal(v.prompt_verified, true);
-  // Unlike model and token counts, which were removed because they were
-  // unverifiable claims, this one is checked against what the server sent.
-  assert.equal(v.note, undefined, 'not reported back as an ignored field');
   assert.equal(v.score, 4, 'and it changes nothing about the reading');
-  assert.equal(of('score=4&explanation=A+thing').prompt_verified, null);
+  assert.equal(validateSubmission({ score: 4, explanation: 'A thing.' }).prompt_verified, null);
 });

@@ -35,7 +35,7 @@ ADMIN_TOKEN=$(op read "op://API Tokens/Newsworthy admin/password") \
 The script prints, for the window, each caller reading with its flags (prompt
 not verified, unjudged and why, no run report linked), every run report,
 every rejection including authenticated calls to endpoints that do not exist
-and to the removed prepare step (410), every merge and undo, hours with neither
+(the removed prepare step now among them), every merge and undo, hours with neither
 a reading nor a report, and one timeline per hour that also shows each
 authenticated read of the instructions, prompt and record. Reads and
 rejections made with the admin token are marked — those are reviewers, not the
