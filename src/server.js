@@ -96,7 +96,7 @@ const because = (message) => ({ 'x-newsworthy-error': message });
  * a trap for anything that reads only the status line — a caller asking for
  * this has to be told plainly that nothing was written.
  */
-async function rejection(res, url, status, message, { method, record = true } = {}) {
+async function rejection(res, url, status, message, { req, method, record = true } = {}) {
   const soft = url.searchParams.get('soft_errors') === '1';
   console.warn(`reading rejected ${status}: ${message}`);
   // Stored as well as logged: the 422s of 2026-08-28 could not be attributed to
@@ -111,7 +111,11 @@ async function rejection(res, url, status, message, { method, record = true } = 
   // unauthenticated request can provoke — recording it would hand anyone who
   // can reach the host an unbounded database write. All four rules are raised
   // after callerAuthorized has passed, so none of them is lost.
-  if (record) await logRejection({ status, reason: message, method, soft_errors: soft });
+  // Whose token the refused request carried — 'caller' or 'admin', never its
+  // value — so a reviewer's own probe is never read as the caller's refusal.
+  if (record) {
+    await logRejection({ status, reason: message, method, soft_errors: soft, token: req ? callerIdentity(url, req) : null });
+  }
   if (soft) {
     return json(res, 200, { ok: false, stored: false, status, error: message }, because(message));
   }
@@ -493,11 +497,11 @@ const server = createServer(async (req, res) => {
     // recorded like any refusal, so the review can count them.
     if (path === '/api/readings/prepare') {
       if (!callerAuthorized(url, req)) {
-        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+        return rejection(res, url, 401, 'unauthorized', { req, method: req.method, record: false });
       }
       return rejection(res, url, 410, 'removed on 2026-09-25: there is no prepare step. The current workflow '
         + 'is at /api/instructions: score and write the sentence, fetch /api/developments, POST /api/readings '
-        + 'with the judgement, then POST /api/runs with a run report', { method: req.method });
+        + 'with the judgement, then POST /api/runs with a run report', { req, method: req.method });
     }
 
     // GET is accepted alongside POST because some agents can only issue a
@@ -512,7 +516,7 @@ const server = createServer(async (req, res) => {
       // unauthenticated request can provoke, so writing a row for it would
       // hand anyone who can reach the host an unbounded database write.
       if (!callerAuthorized(url, req)) {
-        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+        return rejection(res, url, 401, 'unauthorized', { req, method: req.method, record: false });
       }
       let body;
       try {
@@ -520,7 +524,7 @@ const server = createServer(async (req, res) => {
       } catch (err) {
         const message = String(err?.message ?? err);
         return rejection(res, url, err instanceof SubmissionError ? 422 : 400, message, {
-          method: req.method,
+          req, method: req.method,
         });
       }
       try {
@@ -586,7 +590,7 @@ const server = createServer(async (req, res) => {
         // of the four rules fired could not be established afterwards from
         // anything; rejections now leave a row that outlives the log.
         if (err instanceof SubmissionError) {
-          return rejection(res, url, 422, err.message, { method: req.method });
+          return rejection(res, url, 422, err.message, { req, method: req.method });
         }
         throw err;
       }
@@ -599,7 +603,7 @@ const server = createServer(async (req, res) => {
     // caller API.
     if (path === '/api/developments' && req.method === 'GET') {
       if (!callerAuthorized(url, req)) {
-        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+        return rejection(res, url, 401, 'unauthorized', { req, method: req.method, record: false });
       }
       const record = judgeRecord({ priors: await history({ hours: PRIOR_HOURS }), stories: await recentStories() });
       await recordFetch(url, req, path, 'json');
@@ -613,16 +617,16 @@ const server = createServer(async (req, res) => {
     // only, because a report does not fit a URL.
     if (path === '/api/runs' && req.method === 'POST') {
       if (!callerAuthorized(url, req)) {
-        return rejection(res, url, 401, 'unauthorized', { method: req.method, record: false });
+        return rejection(res, url, 401, 'unauthorized', { req, method: req.method, record: false });
       }
       let body;
       try {
         body = await readJsonBody(req);
       } catch (err) {
-        return rejection(res, url, 400, String(err?.message ?? err), { method: req.method });
+        return rejection(res, url, 400, String(err?.message ?? err), { req, method: req.method });
       }
       const report = typeof body?.report === 'string' ? body.report.trim() : '';
-      if (!report) return rejection(res, url, 422, 'run report: report is required', { method: req.method });
+      if (!report) return rejection(res, url, 422, 'run report: report is required', { req, method: req.method });
       // Linked only to a reading that exists; a wrong id never costs the report.
       const id = body.reading == null ? null : Number(body.reading);
       const [reading] = Number.isInteger(id) ? await ratingsByIds([id]) : [];
@@ -940,7 +944,8 @@ const server = createServer(async (req, res) => {
     // path is kept and the query string is not, since it can carry the token.
     if (path.startsWith('/api/')) {
       if (callerAuthorized(url, req)) {
-        await logRejection({ status: 404, reason: `no such endpoint: ${req.method} ${path}`, method: req.method });
+        await logRejection({ status: 404, reason: `no such endpoint: ${req.method} ${path}`, method: req.method,
+          token: callerIdentity(url, req) });
       }
       return json(res, 404, { error: `no such endpoint: ${req.method} ${path}` });
     }

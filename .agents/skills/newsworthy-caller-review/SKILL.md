@@ -37,8 +37,9 @@ not verified, unjudged and why, no run report linked), every run report,
 every rejection including authenticated calls to endpoints that do not exist
 and to the removed prepare step (410), every merge and undo, hours with neither
 a reading nor a report, and one timeline per hour that also shows each
-authenticated read of the instructions, prompt and record. Reads made with the
-admin token are marked — those are reviewers, not the caller. It prints facts
+authenticated read of the instructions, prompt and record. Reads and
+rejections made with the admin token are marked — those are reviewers, not the
+caller; rejections recorded before the token was kept are marked as such. It prints facts
 only. Read every run report in full.
 
 ## Check each run

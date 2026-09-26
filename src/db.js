@@ -118,6 +118,9 @@ export function ensureSchema() {
         note        TEXT,
         undoes      BIGINT                 -- set on an undo row: the merge it undoes
       )`;
+    // Whose token a refused request carried: 'caller' or 'admin', never its
+    // value. Null on rows from before it was recorded.
+    await sql`ALTER TABLE rejections ADD COLUMN IF NOT EXISTS token TEXT`;
     // Devices that asked to be told about a high reading, and the readings they
     // were told about. One row per Expo push token — the token is the whole
     // identity, so re-registering the same device is an update, not a second
@@ -613,8 +616,8 @@ export async function logRejection(row) {
   try {
     await ensureSchema();
     await sql`
-      INSERT INTO rejections (status, reason, method, soft_errors)
-      VALUES (${row.status}, ${row.reason}, ${row.method ?? null}, ${row.soft_errors ?? false})`;
+      INSERT INTO rejections (status, reason, method, soft_errors, token)
+      VALUES (${row.status}, ${row.reason}, ${row.method ?? null}, ${row.soft_errors ?? false}, ${row.token ?? null})`;
   } catch (err) {
     // Deliberately console.error and nothing else: a rejection that could not
     // be recorded is still a rejection the caller has to be told about.
@@ -635,7 +638,7 @@ export async function recentRejections({ hours = 24 * 7, limit = 100 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, status, reason, method, soft_errors
+    SELECT id, created_at, status, reason, method, soft_errors, token
       FROM rejections
      WHERE created_at >= ${since}
      ORDER BY created_at DESC, id DESC
