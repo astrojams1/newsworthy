@@ -17,6 +17,7 @@
     "build:web": "node scripts/build-web.js",
     "check:app": "npm run typecheck --workspace @newsworthy/client",
     "mobile:check": "node scripts/check-mobile.js",
+    "check:android-widget": "bash scripts/check-android-widget.sh",
     "mobile:ios": "npm run ios --workspace @newsworthy/client",
     "mobile:android": "npm run android --workspace @newsworthy/client",
     "pretest": "npm run build:web",

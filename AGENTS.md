@@ -63,14 +63,14 @@ release status. Calm presentation must not change the rating calibration.
 - A push to `main` deploys to production. `main` is both the GitHub default
   branch and Vercel's production branch. Preview builds are skipped by
   `vercel.json`’s `ignoreCommand`; verify production after merge.
-- `npm test` needs no cloud database — see Testing.
+- `npm test` needs no cloud database — see Testing. `scripts/cloud-setup.sh`
+  prepares cloud sessions; `npm run check:android-widget` compiles the widget.
 - The production admin token (`ADMIN_TOKEN`) is kept in the owner's 1Password
   vault. Stored readings, rejections and every prompt version sit behind it at
   `/api/admin/history` and `/api/admin/prompts`. When a task needs production
   history, such as measuring a prompt change, read the token before starting
   rather than settling for the repository's fixtures or public endpoints:
-  `op read "op://API Tokens/Newsworthy admin/password"`. Cloud sessions have no
-  `op`: download the Linux CLI from 1Password into the scratchpad and run it
+  `op read "op://API Tokens/Newsworthy admin/password"`. In cloud sessions run it
   with `OP_SERVICE_ACCOUNT_TOKEN="$OP_KEY"`; a service account must name the
   vault, as above. Ask the owner only if that fails. Pass it in the
   `x-admin-token` header, never in a file, commit, log or PR.
