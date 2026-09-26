@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="widget_name">NEWSWORTHY</string>
-    <string name="widget_description">The news rating and its update time. Tap to open Newsworthy.</string>
+    <string name="widget_description">The current news rating and when it was updated.</string>
     <string name="widget_empty_score">–</string>
     <string name="widget_denominator">"∕10"</string>
     <color name="widget_surface">@color/nw_surface</color>
