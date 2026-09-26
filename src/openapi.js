@@ -83,8 +83,9 @@ export function openapiDocument({ baseUrl }) {
           summary: 'Get the record to judge against, after scoring and writing',
           description:
             'Call this once the score and the final sentence are chosen, never before: the history it carries ' +
-            'must not steer either. Returns the story names on record and the developments recorded over 48 hours, ' +
-            'each with an id. The caller answers the judge prompt in the instructions against it and sends the answer ' +
+            'must not steer either. Returns the story names on record, the developments recorded over 48 hours, ' +
+            'each with an id, and last every reading filed under each story over 14 days (about 50,000 characters, ' +
+            'fetched once per run). The caller answers the judge prompt in the instructions against it and sends the answer ' +
             'as judgement in submitReading. Read-only; nothing is stored.',
           responses: {
             200: { description: 'The record.', content: { 'application/json': { schema: {

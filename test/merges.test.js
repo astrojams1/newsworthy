@@ -54,9 +54,10 @@ test('a caller merges two names, the page and the record read one story, and an 
     });
     assert.deepEqual(merging.body.merge, { story: 'hormuz-conflict', into: 'iran-war' }, 'the established name is kept');
     assert.doesNotMatch(await record(), /hormuz-conflict/, 'the merged-away name is no longer offered');
-    assert.match(await record(),
-      /iran-war · 4 readings since \d{4}-\d\d-\d\d\n {6}first: Iran struck two tankers near Hormuz\.\n {6}latest \(\d{4}-\d\d-\d\d\): Talks on the strait resumed\./,
-      'the merged story counts both names\' readings and begins where the older one began');
+    const merged = await record();
+    assert.match(merged, /^ {2}iran-war · 4 readings/m, 'the merged story counts both names\' readings');
+    assert.match(merged, /iran-war:\n {2}\S+ \S+ Iran struck two tankers near Hormuz\.\n(.*\n){2} {2}\S+ \S+ Talks on the strait resumed\./,
+      'and lists them all under the name kept, oldest first');
 
     const history = await admin('/api/admin/history?hours=24');
     assert.deepEqual(history.body.stories.map((s) => s.story), ['iran-war'], 'the board shows one story');

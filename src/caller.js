@@ -62,6 +62,12 @@ retrieves gets the text intact from there and nowhere else — including the
 rating prompt in section 3, which a reading is attributed to whether or not the
 caller read it verbatim.
 
+Requests to this API are made with \`curl\`, or another raw HTTP client run from
+a code tool, which returns exactly the bytes the server sent. A web-fetch tool
+that passes pages through a model paraphrases and cuts long responses, so its
+copy of a response is not the response; the JSON form above is the fallback for
+a caller that has nothing else.
+
 ## 1. Rating
 
 The caller runs the prompt in section 3 with web search enabled and answers it
@@ -94,9 +100,11 @@ whether the development turns out to be new or not.
 ### Judging the reading
 
 Once the score and sentence are final, and not before, the caller fetches
-\`GET ${baseUrl}/api/developments\` with the same authentication. Its
-\`record\` lists the story names on record and the developments recorded over
-the last 48 hours, each with an id and story name. That is the only history a
+\`GET ${baseUrl}/api/developments\` with the same authentication, once per run.
+Its \`record\` lists the story names on record, the developments recorded over
+the last 48 hours, each with an id and story name, and last, every reading filed
+under each story over 14 days — about 50,000 characters, which is why it is read
+raw and read once. That is the only history a
 caller sees, and it arrives after the reading is written, so it cannot steer the
 score or the sentence. The caller then answers the judge prompt in section 4
 about its own reading against that record — no model on this server answers it
