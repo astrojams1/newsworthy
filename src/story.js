@@ -159,6 +159,8 @@ export function allJudgePrompts() {
 
 const iso = (value) => (value instanceof Date ? value.toISOString() : value);
 const day = (value) => new Date(value).toISOString().slice(0, 10);
+const minute = (value) => new Date(value).toISOString().slice(0, 16).replace('T', ' ');
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 /**
  * The prior readings, grouped into the developments they reported.
@@ -225,18 +227,26 @@ function renderPriors(groups) {
  */
 function renderStories(stories = []) {
   if (stories.length === 0) return 'Stories on record: none yet.';
-  // A story with more than one sentence shows how it began as well as where it
-  // is, laid out like a development: the latest line alone once made the
-  // Trump-Xi trade summit read as the Iran war, because its last reading was
-  // about Hormuz.
-  const lines = stories.slice(0, MAX_STORIES).map((s) => {
-    if (!s.first || s.first === s.latest || !(s.readings > 1)) {
-      return `  ${s.story}${s.latest ? ` — ${s.latest}` : ''}`;
-    }
-    return `  ${s.story} · ${s.readings} readings since ${day(s.first_at)}\n`
-      + `      first: ${s.first}\n      latest (${day(s.latest_at)}): ${s.latest}`;
-  });
+  const lines = stories.slice(0, MAX_STORIES).map((s) => (s.sentences?.length
+    ? `  ${s.story} · ${plural(s.sentences.length, 'reading')}, ${day(s.first_at)} to ${day(s.latest_at)}`
+    : `  ${s.story}${s.latest ? ` — ${s.latest}` : ''}`));
   return `Stories on record:\n${lines.join('\n')}`;
+}
+
+/**
+ * Every reading filed under each story on record, oldest first: what a story
+ * is, in full, for deciding whether two names are one story. Listed last, after
+ * the developments, and each reading once — the developments above quote only
+ * the first and latest sentence of each. One sentence per name once made the
+ * Trump-Xi trade summit read as the Iran war, because its last reading was
+ * about Hormuz.
+ */
+function renderStoryReadings(stories = []) {
+  const listed = stories.slice(0, MAX_STORIES).filter((s) => s.sentences?.length);
+  if (listed.length === 0) return null;
+  const blocks = listed.map((s) => [`${s.story}:`,
+    ...s.sentences.map((r) => `  ${minute(r.at)} ${r.text}`)].join('\n'));
+  return `Readings by story, oldest first:\n\n${blocks.join('\n\n')}`;
 }
 
 /** The message the judge is sent, kept out of the call so a test can read it. */
@@ -270,8 +280,10 @@ function knownRoots(priors) {
  */
 export function judgeRecord({ priors = [], stories = [] } = {}) {
   const groups = groupDevelopments(priors).slice(-MAX_PRIORS);
+  const readings = renderStoryReadings(stories);
   return {
-    text: [renderStories(stories), '', renderPriors(groups)].join('\n'),
+    text: [renderStories(stories), '', renderPriors(groups),
+      ...(readings ? ['', readings] : [])].join('\n'),
     roots: groups.map((g) => g.id),
   };
 }

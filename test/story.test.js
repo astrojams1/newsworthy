@@ -101,21 +101,26 @@ test('the judge is shown the names already in use, and told to reuse them', () =
   assert.match(empty, /Stories on record: none yet/, 'an empty vocabulary says so');
 });
 
-test('a story on record shows how it began as well as where it is', () => {
+test('every reading of each story is in the record, once, after the developments', () => {
   // On 2026-09-26 us-china-trade, the Trump-Xi summit, was listed only by its
   // latest line, about Hormuz, beside iran-war, and a caller merged the two.
-  const message = judgeMessage({
-    score: 4, explanation: 'Trump rejected Iran\'s Hormuz offer.', created_at: at(0),
-    stories: [
-      { story: 'us-china-trade', readings: 14, first_at: at(48), latest_at: at(20),
-        first: 'Trump hosted Xi and both extended their trade truce.',
-        latest: 'Trump and Xi ended their summit with no deal to reopen Hormuz.' },
-      { story: 'volcano', readings: 1, first_at: at(2), latest_at: at(2), first: 'A volcano erupted.', latest: 'A volcano erupted.' },
-    ],
+  const sentences = [
+    { at: at(48), text: 'Trump hosted Xi and both extended their trade truce.' },
+    { at: at(30), text: 'Xi toured a Boeing plant on the second day of his visit.' },
+    { at: at(20), text: 'Trump and Xi ended their summit with no deal to reopen Hormuz.' },
+  ];
+  const { text } = judgeRecord({
+    stories: [{ story: 'us-china-trade', sentences, first_at: at(48), latest_at: at(20) }],
+    priors: [row(1, 'Strikes on Larak Island', { development_of: null, story: 'iran-war' })],
   });
-  assert.match(message, /us-china-trade · 14 readings since \d{4}-\d\d-\d\d\n {6}first: Trump hosted Xi/);
-  assert.match(message, /\n {6}latest \(\d{4}-\d\d-\d\d\): Trump and Xi ended/);
-  assert.match(message, /^ {2}volcano — A volcano erupted\.$/m, 'a one-sentence story stays one line');
+  assert.match(text, /^ {2}us-china-trade · 3 readings, \d{4}-\d\d-\d\d to \d{4}-\d\d-\d\d$/m,
+    'the list of names carries counts, not sentences');
+  assert.ok(text.indexOf('Recorded developments') < text.indexOf('Readings by story'),
+    'the long history comes last');
+  for (const { text: sentence } of sentences) {
+    assert.equal(text.split(sentence).length - 1, 1, `${sentence} appears exactly once`);
+  }
+  assert.match(text, /us-china-trade:\n {2}\d{4}-\d\d-\d\d \d\d:\d\d Trump hosted Xi/, 'oldest first, dated');
 });
 
 test('v2 changed the naming and nothing about the developments', () => {

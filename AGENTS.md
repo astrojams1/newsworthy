@@ -126,10 +126,8 @@ unauthenticated — it describes a gated API without containing a token, and a
 schema importer cannot present one.
 
 A caller that can do neither ends its reply with the payload and states that it
-was not submitted. `/admin` carried a paste box for exactly that and no longer
-does; the rule it served survives it, because the part that matters is the one
-only the caller can enforce — never report a verdict as submitted when it was
-not.
+was not submitted: only the caller can enforce that a verdict is never reported
+as submitted when it was not.
 Serve it as `text/plain`: an agent's fetch tool rejected `text/markdown` before
 exposing the body.
 
@@ -268,8 +266,8 @@ one paragraph: an answer may add `same_story`, two names on record for one
 story. A merge is a row in `story_merges`, resolved where `db.js` reads names,
 so fatigue, the board and the judge's list see one story while readings keep
 their own name. The name more readings used is kept. `/admin` can undo, by row.
-Names list first and latest sentences; by the latest alone, a Trump-Xi summit
-was merged into the war.
+The record ends with every reading of each story (~50k chars, read once, by
+`curl`): by its latest line alone, a Trump-Xi summit was merged into the war.
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
