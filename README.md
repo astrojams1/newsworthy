@@ -124,7 +124,6 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/developments` | The story names and developments on record, fetched by a caller after it has scored and written, to judge its reading against; read-only |
 | `/api/readings` | `POST` a reading from an external caller agent, with its answer to the judge task; the server calls no model |
 | `/api/runs` | `POST` the caller's report on its run, one per run, including runs that submitted nothing; shown under "Caller reports" at `/admin` |
-| `/api/openapi.json` | Instructions, developments and submission as an OpenAPI schema, for a ChatGPT Custom GPT Action. Unauthenticated on purpose — it describes a token-gated API without containing a token, and a schema importer cannot present one |
 | `/api/cron` | The scheduled job — runs only if nothing arrived within the interval. Vercel Cron `GET`s it; admin "Rate now" `POST`s with `?force=1` |
 | `/healthz` | Liveness, plus whether the database, API key and cron secret are wired up |
 
@@ -179,23 +178,18 @@ A run costs real money, and the work is not specific to this app. Any agent can
 do the rating with its own model and post the result. Hand it one URL:
 
 ```
-Follow https://newsworthy-indol.vercel.app/api/instructions?token=<CALLER_TOKEN>&cb=<UNIQUE_RUN_VALUE>
+Fetch https://newsworthy-indol.vercel.app/api/instructions with curl, sending the
+header "x-newsworthy-token: <CALLER_TOKEN>", and follow it.
 ```
 
 `/api/instructions` returns the whole workflow as plain text with the current
 rating prompt embedded, so there is nothing to paste into the agent and nothing
-to keep in sync. The origin generates it from the live prompt registry. Fetch
-it anew on each run with a distinct `cb` value to avoid stale caller-side caches.
-For clients that support headers, prefer `x-newsworthy-token` over a token in
-the URL. Replace the angle-bracket placeholders; never publish a real token.
+to keep in sync. The origin generates it from the live prompt registry. The
+caller API is read with `curl`, token in the header: a web-fetch tool that
+passes pages through a model paraphrases and cuts what it returns. Replace the
+angle-bracket placeholder; never publish a real token.
 
-Deliberately `text/plain`, not `text/markdown` — an agent's fetch tool rejected
-the markdown MIME type before exposing the body, and then, never having read the
-instructions, could not discover the submission path it was capable of.
-`?format=json` returns the same text in a JSON envelope.
-
-Submission is `POST /api/readings`, or the same fields as a query string on a
-plain `GET` for a client that cannot send a body or set headers.
+Submission is `POST /api/readings`.
 
 
 A reading has two fields: `score` and `explanation`. A complete caller submission
@@ -210,8 +204,7 @@ self-reported, so all of it was recorded as fact without being checkable — an
 agent inside a harness has no token counter and will estimate if asked, and a
 guessed 85,000 input tokens is $0.48 of invented spend at Opus rates. Model,
 usage and cost are recorded only for runs this app makes itself. Unrecognized fields
-the request carries are ignored, and the response names the fields that went
-nowhere.
+the request carries are ignored.
 
 `/admin` still separates the two: `stats()` sums `spend_usd` over this app's own
 runs only, and counts external readings alongside it as `external_runs`, shown
@@ -222,10 +215,6 @@ external spend to report, by the same design.
 has arrived within the configured interval, so a reading posted by an agent is
 one this app does not pay for. `skills/newsworthy-rating/SKILL.md` is the
 caller-side skill, ready to install in another agent.
-
-Both endpoints also accept `?token=`, and a reading can be submitted by `GET`
-with query parameters, for agents whose HTTP client cannot set headers or send
-a body. Validation is identical either way.
 
 Nothing in the request is trusted: the score is range-checked, strings are
 trimmed and capped, and the prompt hash and text are taken from this app's own

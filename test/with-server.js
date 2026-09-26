@@ -79,9 +79,14 @@ export async function withServer({ port, env = {} }, run) {
   }
 }
 
-/** GET /api/readings, with the status and parsed body together. */
-export const readings = (base) => async (qs) => {
-  const res = await fetch(`${base}/api/readings?${qs}`);
+/** POST /api/readings as a caller does, with the status and parsed body
+ *  together. `token: null` sends none. */
+export const submit = (base) => async (body, { token = CALLER_TOKEN } = {}) => {
+  const res = await fetch(`${base}/api/readings`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', ...(token ? { 'x-newsworthy-token': token } : {}) },
+    body: JSON.stringify(body),
+  });
   return { status: res.status, body: await res.json() };
 };
 

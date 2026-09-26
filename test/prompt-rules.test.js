@@ -148,30 +148,26 @@ test('the caller surface serves the current prompt and nothing else', async () =
   // a retired scale as one rated on the current scale — the exact thing
   // server-side stamping exists to prevent.
   await withServer({ port: PORTS.promptVersionSurface }, async (base) => {
-    const token = `token=${CALLER_TOKEN}`;
+    const headers = { 'x-newsworthy-token': CALLER_TOKEN };
     const current = renderPrompt(latestVersion());
 
-    for (const query of ['', '&version=7', '&version=1', '&version=99', '&version=abc']) {
-      const asJson = await (await fetch(`${base}/api/instructions?${token}&format=json${query}`)).json();
-      assert.equal(asJson.version, current.version, `?${query || 'none'} served v${asJson.version}`);
-      assert.equal(asJson.hash, current.hash);
-      // The page states its own version inline; that has to agree too, since
-      // that line is what the caller reports back.
-      assert.match(asJson.instructions, new RegExp(`version ${current.version}, SHA-256`));
+    for (const query of ['', '?version=7', '?version=1', '?version=99', '?version=abc']) {
+      const plain = await (await fetch(`${base}/api/instructions${query}`, { headers })).text();
+      assert.match(plain, new RegExp(`version ${current.version}, SHA-256`), `${query || 'none'}`);
 
-      const plain = await (await fetch(`${base}/api/instructions?${token}${query}`)).text();
-      assert.match(plain, new RegExp(`version ${current.version}, SHA-256`));
-
-      const prompt = await (await fetch(`${base}/api/prompt?${token}${query}`)).json();
-      assert.equal(prompt.version, current.version, `/api/prompt?${query} served v${prompt.version}`);
+      const prompt = await (await fetch(`${base}/api/prompt${query}`, { headers })).json();
+      assert.equal(prompt.version, current.version, `/api/prompt${query} served v${prompt.version}`);
       assert.equal(prompt.text, current.text);
       assert.equal(createHash('sha256').update(prompt.text, 'utf8').digest('hex'), current.digest);
     }
 
     // And what the page says matches what a submission gets stamped with,
     // which is the invariant the parameter broke.
-    const stored = await (await fetch(
-      `${base}/api/readings?${token}&score=4&explanation=A+thing+happened&prompt_sha256=${current.digest}`)).json();
+    const stored = await (await fetch(`${base}/api/readings`, {
+      method: 'POST',
+      headers: { ...headers, 'content-type': 'application/json' },
+      body: JSON.stringify({ score: 4, explanation: 'A thing happened.', prompt_sha256: current.digest }),
+    })).json();
     assert.equal(stored.prompt_version, current.version);
     assert.equal(stored.prompt_hash, current.hash);
     assert.equal(stored.prompt_verified, true, 'the served bytes verify against the stamped version');

@@ -31,7 +31,6 @@ score from 1 to 10, a brief explanation and an update time.
 
 ## Authorized rating agents
 
-- [Caller API schema](https://newsworthy-indol.vercel.app/api/openapi.json): Authentication and submission contract.
 - [Caller instructions](https://newsworthy-indol.vercel.app/api/instructions): Requires a caller token; contains the current prompt and workflow.
 
 This page describes the product. It is not the rating prompt and does not

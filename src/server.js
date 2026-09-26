@@ -10,9 +10,8 @@ import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELIN
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
 import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
-import { SubmissionError, completeSentence, submissionFromQuery, validateSubmission } from './ingest.js';
+import { SubmissionError, completeSentence, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
-import { openapiDocument } from './openapi.js';
 import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
@@ -45,15 +44,10 @@ const MIME = {
 };
 
 /**
- * Caches between here and a caller are the reason five prompt versions went
- * unevaluated: a caller kept reading a copy of /api/instructions six hours
- * stale while the server stamped its submissions with the current version. The
- * origin was already sending no-store — verified, eight consecutive fetches of
- * the canonical URL returning the current version with `x-vercel-cache: MISS`
- * and `age: 0` — so the stale copy was held by something on the caller's side.
- * Pragma and Expires are here for an intermediary that predates or ignores
- * Cache-Control; neither can fix a client that caches regardless, which is why
- * the instructions also describe a per-request cache-buster.
+ * Every response is uncacheable. A caller once read a copy of
+ * /api/instructions six hours stale while its submissions were stamped with
+ * the current version; the origin was already sending no-store, so the copy was
+ * held on the caller's side. Callers now read with curl, which keeps no copy.
  */
 const NO_STORE = {
   'cache-control': 'no-store, no-cache, must-revalidate, max-age=0',
@@ -71,33 +65,11 @@ function json(res, status, body, headers = {}) {
 }
 
 /**
- * A rejection a body-blind client can read. A caller agent's fetch tool
- * surfaces the response body only on 2xx: on a 422 it returns the status code
- * and nothing else, so the message naming the field at fault — the whole point
- * of a 422 here — never reaches the caller. One run burned four attempts
- * against that wall and settled for a worse explanation than the one it had.
- * The reason goes in a header as well as the body, and headers survive where
- * bodies do not.
- */
-const because = (message) => ({ 'x-newsworthy-error': message });
-
-/**
- * A rejection some clients can actually read.
- *
- * The header above was the first attempt and it failed: the caller it was built
- * for cannot see headers either. Its fetch tool collapses every non-2xx into
- * one envelope — `{"error_type":"CLIENT_ERROR","message":"The page returned a
- * 422 client error"}` — with no headers, no body and no status text. For that
- * client the only readable channel is a 2xx.
- *
- * So `soft_errors=1` is opt-in: a caller that sets it gets 200 with the real
- * status in the body, and every other client keeps ordinary status codes. The
- * body always carries `ok` and `stored`, because a 200 that means "rejected" is
- * a trap for anything that reads only the status line — a caller asking for
- * this has to be told plainly that nothing was written.
+ * A refusal, logged and recorded. Callers use curl, which reads the status
+ * and body as sent, so a rejection is an ordinary status code with the reason
+ * in the body.
  */
 async function rejection(res, url, status, message, { req, method, record = true } = {}) {
-  const soft = url.searchParams.get('soft_errors') === '1';
   console.warn(`reading rejected ${status}: ${message}`);
   // Stored as well as logged: the 422s of 2026-08-28 could not be attributed to
   // any of the four rules afterwards, because the logs were long gone.
@@ -114,12 +86,9 @@ async function rejection(res, url, status, message, { req, method, record = true
   // Whose token the refused request carried — 'caller' or 'admin', never its
   // value — so a reviewer's own probe is never read as the caller's refusal.
   if (record) {
-    await logRejection({ status, reason: message, method, soft_errors: soft, token: req ? callerIdentity(url, req) : null });
+    await logRejection({ status, reason: message, method, token: req ? callerIdentity(url, req) : null });
   }
-  if (soft) {
-    return json(res, 200, { ok: false, stored: false, status, error: message }, because(message));
-  }
-  return json(res, status, { error: message }, because(message));
+  return json(res, status, { error: message });
 }
 
 /** Every merge and undo, newest first, each merge marked by whether it is in
@@ -200,8 +169,8 @@ function cronAuthorized(url, req) {
 /** Whose token authorized a caller-API request — 'caller', 'admin', or
  *  'open' when self-hosted with none configured — or null when none did. */
 function callerIdentity(url, req) {
-  const supplied =
-    url.searchParams.get('token') || req.headers['x-newsworthy-token'] || req.headers['x-admin-token'];
+  // Headers only: curl sets them, and a token in a URL lands in logs.
+  const supplied = req.headers['x-newsworthy-token'] || req.headers['x-admin-token'];
   if (CALLER_TOKEN && secretMatches(supplied, CALLER_TOKEN)) return 'caller';
   if (ADMIN_TOKEN && secretMatches(supplied, ADMIN_TOKEN)) return 'admin';
   if (CALLER_TOKEN || ADMIN_TOKEN) return null;
@@ -442,33 +411,13 @@ const server = createServer(async (req, res) => {
       const baseUrl = `${proto}://${req.headers.host ?? 'localhost'}`;
       const judge = renderJudgePrompt();
       const text = callerInstructions({ baseUrl, prompt, judge });
-
-      // JSON on request, for a client that only accepts JSON.
-      const wantsJson =
-        url.searchParams.get('format') === 'json' ||
-        (req.headers.accept ?? '').includes('application/json');
-      await recordFetch(url, req, path, wantsJson ? 'json' : 'text');
-      if (wantsJson) {
-        return json(res, 200, { version: prompt.version, hash: prompt.hash, judge_version: judge.version, instructions: text });
-      }
+      await recordFetch(url, req, path, 'text');
 
       // text/plain, not text/markdown: agent fetch tools reject unfamiliar MIME
       // types before exposing the body, and one did. The content is markdown
       // either way — the header just has to be something every client accepts.
       res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8', ...NO_STORE });
       return res.end(text);
-    }
-
-    // A machine-readable description of the two caller endpoints, for an agent
-    // that can only reach the network through a declared tool — a ChatGPT
-    // Custom GPT Action being the case that forced this. Unauthenticated on
-    // purpose: it describes a token-gated API without containing a token, and
-    // the schema importer that fetches it cannot present one. The prompt stays
-    // behind /api/instructions.
-    if (path === '/api/openapi.json' && req.method === 'GET') {
-      const proto = req.headers['x-forwarded-proto'] ?? (ON_VERCEL ? 'https' : 'http');
-      const baseUrl = `${proto}://${req.headers.host ?? 'localhost'}`;
-      return json(res, 200, openapiDocument({ baseUrl }));
     }
 
     if (path === '/api/prompt' && req.method === 'GET') {
@@ -491,27 +440,7 @@ const server = createServer(async (req, res) => {
       }
     }
 
-    // Removed on 2026-09-25 (#144), and still called by runs following the
-    // workflow from before it. A 410 names the current one, so such a run can
-    // learn it inside the run rather than submit unjudged and unreported;
-    // recorded like any refusal, so the review can count them.
-    if (path === '/api/readings/prepare') {
-      if (!callerAuthorized(url, req)) {
-        return rejection(res, url, 401, 'unauthorized', { req, method: req.method, record: false });
-      }
-      return rejection(res, url, 410, 'removed on 2026-09-25: there is no prepare step. The current workflow '
-        + 'is at /api/instructions: score and write the sentence, fetch /api/developments, POST /api/readings '
-        + 'with the judgement, then POST /api/runs with a run report', { req, method: req.method });
-    }
-
-    // GET is accepted alongside POST because some agents can only issue a
-    // plain fetch: no custom headers, no request body. Those carry the token
-    // and the reading in the query string instead.
-    if (path === '/api/readings' && (req.method === 'POST' || req.method === 'GET')) {
-      // Auth is softened too. A caller that cannot read a 401 is stuck
-      // permanently and silently, which is the worst of the failures here, and
-      // nothing is disclosed: this route and its token requirement are
-      // published in the instructions.
+    if (path === '/api/readings' && req.method === 'POST') {
       // Not recorded: see `record` in rejection(). This is the one refusal an
       // unauthenticated request can provoke, so writing a row for it would
       // hand anyone who can reach the host an unbounded database write.
@@ -520,7 +449,7 @@ const server = createServer(async (req, res) => {
       }
       let body;
       try {
-        body = req.method === 'GET' ? submissionFromQuery(url.searchParams) : await readJsonBody(req);
+        body = await readJsonBody(req);
       } catch (err) {
         const message = String(err?.message ?? err);
         return rejection(res, url, err instanceof SubmissionError ? 422 : 400, message, {
@@ -556,10 +485,6 @@ const server = createServer(async (req, res) => {
         console.log(
           `external reading: ${saved.score}/10 (prompt v${saved.prompt_version}, ${verified})`);
         return json(res, 201, {
-          // Paired with the rejection shape, so a soft-error caller branches on
-          // one field rather than on a status line it may not be able to read.
-          ok: true,
-          stored: true,
           id: saved.id,
           created_at: saved.created_at,
           score: saved.score,
@@ -582,7 +507,6 @@ const server = createServer(async (req, res) => {
           // Name anything the caller sent that was not stored, so a caller
           // working from an older spec learns its model and token counts went
           // nowhere rather than assuming they landed.
-          ...(submission.note ? { note: submission.note } : {}),
         });
       } catch (err) {
         // Stored and logged, not just returned. Nothing was recorded about the

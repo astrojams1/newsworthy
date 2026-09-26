@@ -85,31 +85,6 @@ function cleanString(value, { field, max, required = false }) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
-/**
- * Some agents have only a plain GET fetch — no custom headers, no request
- * body. Their submission arrives as query parameters instead, which this maps
- * onto the same shape so it goes through exactly the same validation.
- */
-export function submissionFromQuery(params) {
-  const body = {};
-  for (const field of ['score', 'explanation', 'prompt_sha256']) {
-    const value = params.get(field);
-    if (value !== null) body[field] = value;
-  }
-  // The judgement, flat: a query string has no nesting and no null, so a new
-  // development is `development_of=new`. Absent, the reading stores unjudged.
-  if (params.get('development_of') !== null) {
-    body.judgement = {};
-    for (const [field, key] of [['development_of', 'development_of'], ['story', 'story'],
-      ['judge_note', 'note'], ['judge_version', 'judge_version']]) {
-      const value = params.get(field);
-      if (value !== null) body.judgement[key] = value;
-    }
-    if (params.get('same_story') !== null) body.judgement.same_story = params.get('same_story').split(',');
-  }
-  return body;
-}
-
 export function validateSubmission(body = {}) {
   if (typeof body !== 'object' || Array.isArray(body)) fail('body must be a JSON object');
 
@@ -127,26 +102,9 @@ export function validateSubmission(body = {}) {
   // Always the current prompt. Never the caller's claim about it.
   const prompt = renderPrompt(latestVersion());
 
-  // Usage is accepted nested or flat. The GET fallback documents flat query
-  // parameters (&web_search_requests=N) while the POST body documents a nested
-  // usage object, so a caller reading both and posting flat is following a
-  // shape this app itself publishes. It was silently dropped before, which cost
-  // a real reading its search count and quietly understated external spend.
-  // Anything else a caller sends is ignored rather than stored. Saying so
-  // beats dropping it silently: a caller following an older copy of the spec
-  // should learn its model and token counts went nowhere.
   const prompt_verified = verifyDigest(body.prompt_sha256, prompt);
 
-  const ignored = ['prompt_version', 'model', 'caller', 'usage', 'input_tokens',
-    'output_tokens', 'web_search_requests', 'measured', 'meta']
-    .filter((f) => body[f] !== undefined);
-  const note = ignored.length
-    ? `ignored (not recorded for external readings): ${ignored.join(', ')}`
-    : undefined;
-
   return {
-    note,
-
     status: 'ok',
     source: 'external',
     score,

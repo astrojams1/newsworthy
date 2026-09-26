@@ -63,10 +63,10 @@ wording requirements or calibration examples.
 2. Calculate the new hash with `renderPrompt(N+1)` and add its 16-character hash
    to the frozen table in `test/prompt-rules.test.js`. Keep every old pin unchanged.
    A mismatched old pin is a regression to investigate, not a pin to refresh.
-3. Check all caller-facing descriptions, especially `src/caller.js`,
-   `src/openapi.js`, and `skills/newsworthy-rating/SKILL.md`, for contradictory
-   instructions. The rating skill should fetch the current prompt afresh rather
-   than carry a copied version. Keep the caller reference in specification voice.
+3. Check all caller-facing descriptions, especially `src/caller.js` and
+   `skills/newsworthy-rating/SKILL.md`, for contradictory instructions. The
+   rating skill should fetch the current prompt afresh rather than carry a
+   copied version.
 4. Preserve provenance: the caller hashes the decoded `text` value from
    `/api/prompt` with a code tool; the server stamps the version. Do not publish
    the full expected digest for a caller to echo or accept its claimed version.
@@ -81,7 +81,7 @@ wording requirements or calibration examples.
 ## Validate and release
 
 - Extend relevant regression cases for the new contract: immutable old versions,
-  unchanged calibration for writing-only changes, caller/OpenAPI agreement, and
+  unchanged calibration for writing-only changes, caller agreement, and
   current-version delivery and digest verification. Follow all prompt rules,
   including the complete prompt's character budget.
 - Run `npm test` before pushing. For actual UI changes also follow the design and
@@ -91,9 +91,9 @@ wording requirements or calibration examples.
   user and required checks pass. Preview builds are skipped, so an absent preview
   is not production verification.
 - After merge, check the production deployment and fetch `/api/prompt` and
-  `/api/instructions?format=json` with authorized headers and a fresh `cb` value.
-  Compare the decoded prompt text, version and computed digest with the merged
-  registry. Verify caller and OpenAPI descriptions agree. Do not submit a fake
+  `/api/instructions` with curl and the caller token header. Compare the
+  decoded prompt text, version and computed digest with the merged registry.
+  Verify the caller descriptions agree. Do not submit a fake
   reading or trigger a paid rating merely to verify delivery.
 - Distinguish deployed prompt delivery from caller adoption. A naturally arriving
   reading with the new version and `prompt_verified: true` establishes adoption;
