@@ -10,6 +10,39 @@ struct ReadingEntry: TimelineEntry {
     let reading: Reading?
     let saved: Bool
     var showAppName: Bool = true
+    var appearance: WidgetAppearance = .system
+}
+
+/// The widget's own appearance, set beside "Show app name" when editing the
+/// widget. Follow device leaves the colour scheme to the system, as before.
+enum WidgetAppearance: String, AppEnum, Sendable {
+    case system, light, dark
+
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Appearance"
+    static let caseDisplayRepresentations: [WidgetAppearance: DisplayRepresentation] = [
+        .system: "Follow device", .light: "Light", .dark: "Dark",
+    ]
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+}
+
+/// Named colours resolve against the environment's scheme, so forcing it here
+/// selects the light or dark entry of every colour set beneath.
+struct ForcedColorScheme: ViewModifier {
+    let scheme: ColorScheme?
+    func body(content: Content) -> some View {
+        if let scheme = scheme {
+            content.environment(\.colorScheme, scheme)
+        } else {
+            content
+        }
+    }
 }
 
 @available(iOS 17.0, *)
@@ -18,6 +51,9 @@ struct ReadingWidgetConfiguration: WidgetConfigurationIntent {
 
     @Parameter(title: "Show app name", default: true)
     var showAppName: Bool
+
+    @Parameter(title: "Appearance", default: .system)
+    var appearance: WidgetAppearance
 }
 
 @available(iOS 17.0, *)
@@ -31,6 +67,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
             Provider().getSnapshot(in: context) { entry in
                 var entry = entry
                 entry.showAppName = configuration.showAppName
+                entry.appearance = configuration.appearance
                 continuation.resume(returning: entry)
             }
         }
@@ -42,6 +79,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
                 let entries = timeline.entries.map { entry in
                     var entry = entry
                     entry.showAppName = configuration.showAppName
+                    entry.appearance = configuration.appearance
                     return entry
                 }
                 continuation.resume(returning: Timeline(entries: entries, policy: timeline.policy))
@@ -241,18 +279,23 @@ struct ReadingContent: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .foregroundStyle(Color("NewsworthyInk"))
-        .modifier(WidgetSurface(score: entry.reading?.score))
+        .modifier(ForcedColorScheme(scheme: entry.appearance.colorScheme))
+        .modifier(WidgetSurface(score: entry.reading?.score, scheme: entry.appearance.colorScheme))
         // WidgetKit extracts the container background separately. Replace the whole
-        // surface when the score changes so its retained background changes too.
-        .id(entry.reading?.score)
+        // surface when the score or appearance changes so its retained background changes too.
+        .id("\(entry.reading?.score ?? 0)-\(entry.appearance.rawValue)")
     }
 }
 
 struct WidgetSurface: ViewModifier {
     let score: Int?
-    private var background: LinearGradient {
+    var scheme: ColorScheme? = nil
+    // The container background does not inherit the content's environment, so
+    // the chosen scheme is applied to the gradient itself.
+    private var background: some View {
         let prefix = score.map { String(format: "Level%02d", $0) } ?? "Brand"
         return LinearGradient(colors: [Color(prefix + "Start"), Color(prefix + "Center"), Color(prefix + "End")], startPoint: .topLeading, endPoint: .bottomTrailing)
+            .modifier(ForcedColorScheme(scheme: scheme))
     }
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {

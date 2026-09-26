@@ -3,4 +3,12 @@
     <color name="widget_surface">@color/nw_surface</color>
     <color name="widget_ink">@color/nw_ink</color>
     <color name="widget_muted">@color/nw_gradient_muted</color>
+    <color name="widget_settings_switch_off">#39393D</color>
+    <style name="WidgetSettingsTheme" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/nw_brand_tinted</item>
+        <item name="android:statusBarColor">@color/nw_brand_tinted</item>
+        <item name="android:navigationBarColor">@color/nw_brand_tinted</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorAccent">@color/nw_brand_accent</item>
+    </style>
 </resources>

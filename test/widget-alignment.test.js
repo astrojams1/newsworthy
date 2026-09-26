@@ -13,12 +13,25 @@ test('native pixel evidence retains its source provenance and reviewed layout sc
   assert.equal(review.capturedSourceSha256,proof.sourceSha256,'Review must refer to the actual captured source');
   assert.equal(sha(proof.source),review.sourceSha256,'Widget changed: refresh captures or review their scope');
   const source=readFileSync(new URL(proof.source,root),'utf8');
-  // Permitted text-only substitutions are excluded from geometry: the sentence
-  // binding, and the widget picker description (gallery copy, not layout).
-  // Full-source hash above still requires explicit review for any further edit.
-  const geometry=source.slice(source.indexOf('// One three-line numeral size'))
+  // Permitted substitutions are excluded from geometry: the sentence binding,
+  // the widget picker description (gallery copy, not layout), and the widget's
+  // Appearance setting, which selects the light or dark entry of the same
+  // colour sets and moves nothing. Each appearance substitution must be
+  // present, so none can silently stop applying. Full-source hash above still
+  // requires explicit review for any further edit.
+  const colourOnly=[
+    ['.modifier(ForcedColorScheme(scheme: entry.appearance.colorScheme))\n        .modifier(WidgetSurface(score: entry.reading?.score, scheme: entry.appearance.colorScheme))','.modifier(WidgetSurface(score: entry.reading?.score))'],
+    ['// surface when the score or appearance changes so its retained background changes too.\n        .id("\\(entry.reading?.score ?? 0)-\\(entry.appearance.rawValue)")','// surface when the score changes so its retained background changes too.\n        .id(entry.reading?.score)'],
+    ['    var scheme: ColorScheme? = nil\n    // The container background does not inherit the content\'s environment, so\n    // the chosen scheme is applied to the gradient itself.\n    private var background: some View {','    private var background: LinearGradient {'],
+    ['\n            .modifier(ForcedColorScheme(scheme: scheme))',''],
+  ];
+  let geometry=source.slice(source.indexOf('// One three-line numeral size'))
     .replace('explanationText(entry.reading, at: entry.date)','Text(entry.reading?.explanation ?? "")')
     .replace(/\.description\("[^"]*"\)/g,'.description("")');
+  for(const [now,before] of colourOnly){
+    assert.equal(geometry.split(now).length,2,`Widget appearance substitution must apply exactly once: ${now}`);
+    geometry=geometry.replace(now,before);
+  }
   assert.equal(createHash('sha256').update(geometry).digest('hex'),review.geometrySha256,
     'Captured layout and font geometry must stay identical');
 });
