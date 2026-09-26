@@ -358,6 +358,58 @@ const V17_OUTPUT_CONTRACT = `${V16_OUTPUT_CONTRACT.replace(
 
 Style: Jan 10, Oct (year only if not this one, no weekdays). US (not American), UK, EU, UN, NATO, the Fed. Digits: 3, 5%, $2 billion, a quarter point, other currencies in dollars. Claims: said. US spelling, straight apostrophes.`;
 
+// v18 changes what is measured: the current risk of a sharp market move, up or
+// down, and the development most likely to cause one, where v9 to v17 rated
+// how much the news warranted a reader's attention. The owner defined the
+// instrument that way on 2026-09-26. Sources search by time and topic rather
+// than a fixed list of sites and read prices from dated quote pages; Scale is
+// ten market-risk rungs, and step 2 and 7 separate what markets had priced
+// from what surprises them, which the first draft could not. Examples are the
+// owner's approved scores. Output is v17's with "what it means for daily life"
+// now "what it could mean for prices or savings", and the stale clause about
+// revising after the history match dropped. A new instrument: readings before
+// and after are not comparable, as with v5. See docs/prompt-evaluations/v18.md.
+const V18_SCALE = `1. Markets quiet; nothing new could move them.
+2. Known or priced-in risks; nothing new.
+3. News elsewhere; little chance of market impact.
+4. Could nudge some prices; broad markets steady.
+5. Likely to move one major market.
+6. Could move broad markets sharply this week.
+7. Unexpected shock now; sharp moves likely.
+8. Severe shock; broad markets moving sharply.
+9. Systemic crisis; markets in disorder.
+10. Extreme threat to the financial system.`;
+
+// The owner's own calibration, approved 2026-09-26. Each is a real stored
+// reading shortened to a headline; the flood example is carried from v9.
+const V18_EXAMPLES = `1 — Quiet day; no new market risk.
+2 — Fed hikes exactly as markets expected.
+3 — Foreign flood kills hundreds; no domestic effect.
+5 — Tankers struck in Hormuz; oil climbs.
+6 — Bond yields hit highest since 2007.`;
+
+const V18_INSTRUCTIONS = `Summary
+
+Rate the current risk of a sharp market move, up or down, 1-10, and name the development most likely to cause one.
+
+Sources
+
+What broke in the last few hours, searched by time and topic, not a fixed list of sites. Latest moves in futures, bond yields, oil, the dollar, volatility and bitcoin; a sharp move with no reported cause is a lead. Prices come from a dated quote page, not a search snippet. Prediction markets for one-day moves, not standing levels; at most two searches on them. Anything unavailable is skipped.
+
+Markets are shut two thirds of the time and confirm late; silence is not evidence against an event.
+
+Scale
+
+${V18_SCALE}
+
+Examples
+
+${V18_EXAMPLES}`;
+
+const V18_OUTPUT_CONTRACT = V17_OUTPUT_CONTRACT
+  .replace('what it means for daily life', 'what it could mean for prices or savings')
+  .replace(' Preserve facts, attribution and uncertainty when revising after the history match.', '');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -477,6 +529,13 @@ const REGISTRY = {
     added: '2026-09-24',
     instructions: V11_INSTRUCTIONS,
     outputContract: V17_OUTPUT_CONTRACT,
+  },
+  18: {
+    version: 18,
+    label: 'market-risk-v18',
+    added: '2026-09-26',
+    instructions: V18_INSTRUCTIONS,
+    outputContract: V18_OUTPUT_CONTRACT,
   },
 };
 
