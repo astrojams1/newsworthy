@@ -90,6 +90,19 @@ export function ensureSchema() {
         reading_id  BIGINT,               -- the reading it submitted, if any
         report      TEXT        NOT NULL
       )`;
+    // Each authenticated fetch of the caller's instructions, prompt and record:
+    // when, which path, which form, and whose token. A caller run that followed
+    // instructions this server no longer serves could otherwise not be told
+    // apart from one that fetched them and read them wrongly. No query string
+    // is kept, since it can carry the token.
+    await sql`
+      CREATE TABLE IF NOT EXISTS caller_fetches (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        path        TEXT        NOT NULL,
+        format      TEXT,                  -- 'text' or 'json' where a route serves both
+        token       TEXT        NOT NULL   -- 'caller' or 'admin': whose token, never its value
+      )`;
     // One story under two names, and the name it goes by. Rows only: an undo is
     // a row naming the merge it undoes, so the history of what was merged, by
     // whom and why, is never overwritten. Readings are never renamed; names are
@@ -627,6 +640,28 @@ export async function recentRejections({ hours = 24 * 7, limit = 100 } = {}) {
      WHERE created_at >= ${since}
      ORDER BY created_at DESC, id DESC
      LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
+/** Record one authenticated fetch. Never throws: a fetch must be served even
+ *  when its record cannot be written. Rows older than 30 days are pruned here,
+ *  so the table stays a working window rather than an archive. */
+export async function logCallerFetch({ path, format = null, token }) {
+  try {
+    await ensureSchema();
+    await sql`DELETE FROM caller_fetches WHERE created_at < now() - interval '30 days'`;
+    await sql`INSERT INTO caller_fetches (path, format, token) VALUES (${path}, ${format}, ${token})`;
+  } catch (err) {
+    console.error('could not record caller fetch', err);
+  }
+}
+
+export async function recentCallerFetches({ hours = 24 * 7, limit = 1000 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT id, created_at, path, format, token FROM caller_fetches
+     WHERE created_at >= ${since} ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
 

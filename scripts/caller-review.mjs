@@ -27,6 +27,7 @@ const readings = data.attempts.filter((r) => r.source === 'external' && inWindow
 const runs = data.caller_runs.filter(inWindow).reverse();
 const rejections = data.rejections.filter(inWindow).reverse();
 const merges = data.merges.filter(inWindow).reverse();
+const fetches = (data.caller_fetches ?? []).filter(inWindow).reverse();
 const reported = new Set(runs.map((r) => r.reading_id).filter((id) => id != null));
 
 console.log(`Window ${new Date(since).toISOString()} → ${new Date(until).toISOString()} (${base})`);
@@ -58,6 +59,22 @@ for (const r of rejections) console.log(`  ${r.created_at.slice(0, 23)} ${r.stat
 console.log(`\nMerges and undos: ${merges.length}`);
 for (const m of merges) {
   console.log(`  #${m.id} ${m.undoes ? `undo of #${m.undoes}` : `${m.alias} → ${m.canonical}`} by ${m.source}${m.reading_id ? ` (reading ${m.reading_id})` : ''}${m.note ? ` — ${m.note}` : ''}`);
+}
+
+// Every event on one timeline, grouped by hour: what each run fetched, stored,
+// was refused and reported, in the order the server saw it. Reads under the
+// admin token are marked, so a reviewer's own checks are not taken for a run's.
+console.log('\nTimeline by hour:');
+const events = [
+  ...fetches.map((f) => [f.created_at, `fetch ${f.path}${f.format ? ` (${f.format})` : ''}${f.token === 'caller' ? '' : ` [${f.token} token]`}`]),
+  ...readings.map((r) => [r.created_at, `reading ${r.id} score ${r.score} ${r.judge_version == null ? 'UNJUDGED' : `judged v${r.judge_version}`}`]),
+  ...rejections.map((r) => [r.created_at, `REJECTED ${r.status} ${r.method ?? ''} ${r.reason.slice(0, 60)}`]),
+  ...runs.map((r) => [r.created_at, `run report ${r.id} → reading ${r.reading_id ?? 'none'}`]),
+].sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+let hour = '';
+for (const [at, what] of events) {
+  if (at.slice(0, 13) !== hour) { hour = at.slice(0, 13); console.log(`  ${hour}h`); }
+  console.log(`    ${at.slice(11, 23)} ${what}`);
 }
 
 // Hours with neither a reading nor a report: the Routine fires once an hour,

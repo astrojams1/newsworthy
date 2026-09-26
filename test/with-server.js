@@ -19,6 +19,7 @@ export const PORTS = {
   callerRuns: 8853,
   storyMerges: 8855,
   unknownPaths: 8857,
+  callerFetches: 8859,
   ingestSoftErrors: 8811,
   currentSmoothing: 8817,
   currentScoreFrom: 8819,
