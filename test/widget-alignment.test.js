@@ -13,10 +13,12 @@ test('native pixel evidence retains its source provenance and reviewed layout sc
   assert.equal(review.capturedSourceSha256,proof.sourceSha256,'Review must refer to the actual captured source');
   assert.equal(sha(proof.source),review.sourceSha256,'Widget changed: refresh captures or review their scope');
   const source=readFileSync(new URL(proof.source,root),'utf8');
-  // The sole permitted text-binding substitution is excluded from geometry.
+  // Permitted text-only substitutions are excluded from geometry: the sentence
+  // binding, and the widget picker description (gallery copy, not layout).
   // Full-source hash above still requires explicit review for any further edit.
   const geometry=source.slice(source.indexOf('// One three-line numeral size'))
-    .replace('explanationText(entry.reading, at: entry.date)','Text(entry.reading?.explanation ?? "")');
+    .replace('explanationText(entry.reading, at: entry.date)','Text(entry.reading?.explanation ?? "")')
+    .replace(/\.description\("[^"]*"\)/g,'.description("")');
   assert.equal(createHash('sha256').update(geometry).digest('hex'),review.geometrySha256,
     'Captured layout and font geometry must stay identical');
 });

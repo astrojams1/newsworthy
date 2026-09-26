@@ -270,7 +270,7 @@ struct ConfigurableNewsworthyWidget: Widget {
             ReadingView(entry: entry)
         }
         .configurationDisplayName("Newsworthy")
-        .description("A number out of 10. See the news rating and when it was updated.")
+        .description("The current news rating and when it was updated.")
         .supportedFamilies([.systemSmall, .systemMedium])
         .contentMarginsDisabled()
     }
@@ -283,7 +283,7 @@ struct NewsworthyWidget: Widget {
             ReadingView(entry: entry)
         }
         .configurationDisplayName("Newsworthy")
-        .description("A number out of 10. See the news rating and when it was updated.")
+        .description("The current news rating and when it was updated.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

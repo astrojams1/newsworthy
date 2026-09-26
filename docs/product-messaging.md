@@ -21,6 +21,13 @@ facts belong in relevant help and policy sections.
 Product constraints remain: no feed, subscriptions, in-app purchases, ads, or
 engagement, addiction or growth-hacking tactics.
 
+The widget picker description, on iOS and Android alike, is:
+
+> The current news rating and when it was updated.
+
+It says what the widget shows. The picker already names the app, so it does not
+repeat a tagline or explain the scale.
+
 ## Voice and claims
 
 - Keep copy simple, calm and factual. Avoid urgency, guilt, streaks or prompts
@@ -69,6 +76,9 @@ widgets and the complete app package without updating local Xcode.
 
 ## Where copy lives
 
+- `apps/client/targets/widget/NewsworthyWidget.swift` (`.description`) and
+  `apps/client/plugins/widget-android/res/values/widget.xml`
+  (`widget_description`): widget picker copy.
 - `apps/client/app/`: shared reading screen, settings screen, search metadata, social tags and WebSite data.
 - `public/privacy.html`, `public/support.html`: policy and help; each has its own metadata.
 - `scripts/generate-brand.mjs`: evergreen share-art source; generates
