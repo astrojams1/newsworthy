@@ -7,4 +7,48 @@
     <color name="widget_surface">@color/nw_surface</color>
     <color name="widget_ink">@color/nw_ink</color>
     <color name="widget_muted">@color/nw_gradient_muted</color>
+    <color name="widget_settings_switch_off">#E9E9EB</color>
+    <style name="WidgetSettingsTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/nw_brand_tinted</item>
+        <item name="android:statusBarColor">@color/nw_brand_tinted</item>
+        <item name="android:navigationBarColor">@color/nw_brand_tinted</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:colorAccent">@color/nw_brand_accent</item>
+    </style>
+    <string name="widget_settings_done">Done</string>
+    <string name="widget_settings_close">Close without saving</string>
+    <style name="WidgetSettingsChoice">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+    <style name="WidgetSettingsChoiceLabel">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textColor">@color/nw_ink</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+    <style name="WidgetSettingsCheck">
+        <item name="android:layout_width">22dp</item>
+        <item name="android:layout_height">22dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:src">@drawable/widget_settings_check</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+    <style name="WidgetSettingsSeparator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:background">@color/nw_rule</item>
+    </style>
 </resources>

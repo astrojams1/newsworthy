@@ -36,6 +36,8 @@ release status. Calm presentation must not change the rating calibration.
 - Preserve the calm indicator: a number out of 10 and one sentence explaining why.
   No doomscrolling, subscriptions, in-app purchases, ads, or engagement,
   addiction or growth-hacking tactics.
+- Widget settings live in `design/widget-settings.json`; iOS Edit Widget and Android
+  `RatingWidgetConfigure` must offer every entry alike (`test/widget-settings.test.js`).
 - Keep admin views web-only. Preserve the web app alongside the mobile apps.
 - The shared interface uses Expo / React Native in `apps/client`. A browser view is not an iOS
   preview. Do not claim native builds or widgets are verified until tested.
@@ -609,8 +611,7 @@ in AsyncStorage, and `ReadingProvider` derives `dark` from the choice, so every
 written to `data-appearance` on the document, which `tokens.css` already
 honoured for the static policy pages; on native it goes through
 `Appearance.setColorScheme`, so the share sheet and alerts follow too. Widgets
-cannot read the app's store; on iOS each widget has its own Appearance under
-Edit Widget, beside Show app name, and Android widgets follow the system. Every row shares one minimum
+cannot read the app's store; each widget has its own settings instead. Every row shares one minimum
 height rather than a fixed one, so enlarged text grows the rows together.
 
 **Push notifications are opt-in, off by default, and 8 when turned on.** The
