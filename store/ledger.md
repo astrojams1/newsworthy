@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-27T14:07:38+00:00
+Updated: 2026-09-27T14:11:45+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -97,7 +97,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | widget.same-day-timestamp | waiting_verification | agent | observed | Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval. | On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight. |
 | ui.onboarding | waiting_verification | agent | observed | First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
 | copy.no-ai-listing | todo | agent | observed | Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing. | Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI. |
-| design.temperature-palette | waiting_verification | agent | observed | Brand palette moved from Mint to Stone (level 4, #95928A/#D7D7D1): support/privacy pages, favicon, manifest, splash marks, share card and Android widget backgrounds regenerated; share image cache key v=3 and alt text updated. Level palette as recorded before. Full npm test passes. Browser renders only; no native build, splash or widget checked on a device. | Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh. |
+| design.temperature-palette | waiting_verification | agent | observed | App icon now uses the Stone brand gradient with the brand accent dash (was deliberately uncolored white/charcoal): iOS light/dark icons, web install icons, Android legacy/round icons and a gradient adaptive launcher_background. Android resources link and compile; full npm test passes. Rendered files only; no icon seen on a home screen. | Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh. |
 
 ## Evidence and history
 
@@ -3157,5 +3157,15 @@ Next: Check reading screen and both widgets at scores 1, 5, 10 in light and dark
 Brand palette moved from Mint to Stone (level 4, #95928A/#D7D7D1): support/privacy pages, favicon, manifest, splash marks, share card and Android widget backgrounds regenerated; share image cache key v=3 and alt text updated. Level palette as recorded before. Full npm test passes. Browser renders only; no native build, splash or widget checked on a device.
 
 - store/design/gradient-iterations/shots/7-brand-stone.png
+
+Next: Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.
+
+### 322. design.temperature-palette — waiting_verification
+
+2026-09-27T14:11:45+00:00 · observed · agent
+
+App icon now uses the Stone brand gradient with the brand accent dash (was deliberately uncolored white/charcoal): iOS light/dark icons, web install icons, Android legacy/round icons and a gradient adaptive launcher_background. Android resources link and compile; full npm test passes. Rendered files only; no icon seen on a home screen.
+
+- store/design/gradient-iterations/shots/8-app-icon-stone.png
 
 Next: Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.

@@ -20,7 +20,7 @@ node scripts/capture-reading-gradient.mjs  # After a palette change: re-capture 
 | Android widget | The score in the widget's own saved reading |
 | Admin chart, links, selected controls | The admin's latest displayed score |
 | Support, privacy, static favicon, splash, share card | Stable Stone brand palette (level 4, the neutral midpoint of the scale) with a dash instead of a score |
-| App icon and home-screen shortcut | White background with a dark dash in light mode; dark background with a white dash in dark mode; deliberately uncolored |
+| App icon and home-screen shortcut | Stone brand gradient with a dark dash in light mode and a light dash in dark mode; never a level |
 | Failures | Separate semantic `danger` color, always accompanied by words or a symbol |
 | Empty/loading reading | No level assigned; neutral reading canvas and brand favicon |
 
@@ -44,11 +44,11 @@ The design test verifies AA text contrast across the opaque gradient stops and c
 
 `apps/client/plugins/widget-android/res/values/newsworthy_palette.xml` and its `values-night` counterpart provide automatic appearance variants. Generated `widget_level_*.xml` drawables use opaque three-stop gradients for `RemoteViews`. `RatingWidget` chooses the drawable from its own validated score, while text colors remain resource references. These resources are resolved by the host when the widget is applied, including theme reapplication. That holds while a widget follows the device, the default. A Light or Dark appearance chosen in the widget's settings selects generated `widget_level_*_light`/`_dark` drawables with literal colours and literal ink and muted colours from `LevelPalette`, so the choice holds when the launcher's theme changes; those overrides live only in `RatingWidget.applyChosenAppearance`.
 
-App icons use a white background and dark dash in light mode, and a dark background and white dash in dark mode, including adaptive and legacy icons and an Android 13 monochrome mark. The OS controls the final color of themed launcher icons. Splash backgrounds and marks use the fixed brand palette.
+App icons use the Stone brand gradient with the brand accent dash in both appearances, including adaptive (a gradient `launcher_background`) and legacy icons, and an Android 13 monochrome mark. The OS controls the final color of themed launcher icons. Splash backgrounds and marks use the fixed brand palette.
 
 ## iOS
 
-The widget target’s `Assets.xcassets` contains generated `Newsworthy*`, `Brand*`, `AccentColor`, and `Level01*` through `Level10*` color sets. Every color set has light/dark appearance entries. The app icon has uncolored light and dark variants; Expo’s source configuration selects the app icon variants and the branded splash assets.
+The widget target’s `Assets.xcassets` contains generated `Newsworthy*`, `Brand*`, `AccentColor`, and `Level01*` through `Level10*` color sets. Every color set has light/dark appearance entries. The app icon has Stone light and dark variants; Expo’s source configuration selects the app icon variants and the branded splash assets.
 
 `NewsworthyWidget.swift` selects `Level07Start`, `Level07Center`, and `Level07End` (for example) from its timeline entry’s own score. The named colors include both system appearances. `NewsworthyGradientMuted` keeps timestamps readable over the gradient. On iOS 17+, each widget's Appearance setting (Edit Widget, beside Show app name) can force Light or Dark: `colorScheme` is set on the content and on the extracted container background, which does not inherit it. Follow device, the default, leaves the scheme to the system.
 

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T14:07:38+00:00",
+  "updated_at": "2026-09-27T14:11:45+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -974,12 +974,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Brand palette moved from Mint to Stone (level 4, #95928A/#D7D7D1): support/privacy pages, favicon, manifest, splash marks, share card and Android widget backgrounds regenerated; share image cache key v=3 and alt text updated. Level palette as recorded before. Full npm test passes. Browser renders only; no native build, splash or widget checked on a device.",
+      "summary": "App icon now uses the Stone brand gradient with the brand accent dash (was deliberately uncolored white/charcoal): iOS light/dark icons, web install icons, Android legacy/round icons and a gradient adaptive launcher_background. Android resources link and compile; full npm test passes. Rendered files only; no icon seen on a home screen.",
       "evidence": [
-        "store/design/gradient-iterations/shots/7-brand-stone.png"
+        "store/design/gradient-iterations/shots/8-app-icon-stone.png"
       ],
       "next_action": "Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.",
-      "updated_at": "2026-09-27T14:07:38+00:00"
+      "updated_at": "2026-09-27T14:11:45+00:00"
     }
   },
   "events": [
@@ -6133,6 +6133,22 @@
         ],
         "next_action": "Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.",
         "updated_at": "2026-09-27T14:07:38+00:00"
+      }
+    },
+    {
+      "sequence": 322,
+      "at": "2026-09-27T14:11:45+00:00",
+      "gate": "design.temperature-palette",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "App icon now uses the Stone brand gradient with the brand accent dash (was deliberately uncolored white/charcoal): iOS light/dark icons, web install icons, Android legacy/round icons and a gradient adaptive launcher_background. Android resources link and compile; full npm test passes. Rendered files only; no icon seen on a home screen.",
+        "evidence": [
+          "store/design/gradient-iterations/shots/8-app-icon-stone.png"
+        ],
+        "next_action": "Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.",
+        "updated_at": "2026-09-27T14:11:45+00:00"
       }
     }
   ],
