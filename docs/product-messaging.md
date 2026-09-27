@@ -7,7 +7,7 @@ README and agent documentation. Keep descriptions of availability accurate.
 
 **World news, rated by significance.**
 
-Newsworthy uses AI to assess the significance of world news. Each reading has a
+Newsworthy assesses the significance of world news. Each reading has a
 score from 1 to 10, a brief explanation and an update time.
 
 The share image contains only the dash and wordmark on a flat pale mint background.
@@ -47,8 +47,13 @@ does not by itself call for external copy changes.
 
 - Keep copy simple, calm and factual. Avoid urgency, guilt, streaks or prompts
   designed to keep people returning. Do not describe news as needing the user.
-- Describe the score as an AI assessment of news consequence. It is not a
+- Describe the score as an assessment of news consequence. It is not a
   measurement of personal safety, a complete briefing or an emergency alert.
+- User-facing copy never mentions AI, models, language models or the providers
+  behind them: the app, widgets, website, help and privacy pages, `llms.txt`,
+  metadata and the store listing's public fields. How ratings are produced is
+  internal; say what Newsworthy does, not what does it. App Review notes, the
+  admin page and developer docs are not user-facing and stay accurate.
 - Ratings update periodically and can be wrong. Higher means more consequential;
   the displayed score fades as developments age.
 - A bold “New:” before a sentence means that reading is Newsworthy’s first
@@ -72,9 +77,9 @@ does not by itself call for external copy changes.
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
 - The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
-  a few plain sentences: a score of consequence. By the
-  owner's choice it does not mention AI or warn that ratings can be wrong; the
-  support page carries those facts. It adds that a widget exists and that
+  a few plain sentences: a score of consequence. Like all
+  user-facing copy it does not mention AI. By the owner's choice it does not
+  warn that ratings can be wrong; the support page carries that. It adds that a widget exists and that
   notifications are optional and off by default. It says what the app does,
   not how the phone works or where Settings is, and never asks the reader to
   come back. Only the mobile apps have it: they show it once on first launch,

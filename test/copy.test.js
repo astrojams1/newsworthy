@@ -39,3 +39,22 @@ test('shipped copy avoids the emotional framing the guidance rules out', () => {
   ];
   for (const path of surfaces) assert.doesNotMatch(read(path), emotional, path);
 });
+
+// "User-facing copy never mentions AI, models, language models or the providers
+// behind them." App Review notes are for the reviewer, not the listing.
+const machinery = /\bAI\b|A\.I\.|artificial intelligence|machine learning|\bLLMs?\b|language models?|\bAI model|\bClaude\b|Anthropic|\bGPT/;
+
+test('user-facing copy does not mention AI', () => {
+  const surfaces = [
+    ...files('apps/client/app', /\.(tsx?|jsx?)$/),
+    ...files('apps/client/components', /\.(tsx?|jsx?)$/),
+    ...files('apps/client/targets/widget', /\.swift$/),
+    ...files('apps/client/plugins/widget-android/res', /\.xml$/),
+    ...files('public', /\.(html|txt|webmanifest|svg)$/).filter((path) => !/admin\.html$/.test(path)),
+  ];
+  for (const path of surfaces) assert.doesNotMatch(read(path), machinery, path);
+  const { reviewNotes, ...listing } = JSON.parse(read('store/listing.json'));
+  assert.doesNotMatch(JSON.stringify(listing), machinery, 'store/listing.json');
+  const core = guidance.match(/## Core copy\n\n([\s\S]*?)\n## /)[1];
+  assert.doesNotMatch(core, machinery, 'core copy');
+});

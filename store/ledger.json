@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T04:34:38+00:00",
+  "updated_at": "2026-09-27T05:03:02+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -958,6 +958,17 @@
       ],
       "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
       "updated_at": "2026-09-27T04:34:38+00:00"
+    },
+    "copy.no-ai-listing": {
+      "state": "todo",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing.",
+      "evidence": [
+        "test/copy.test.js 'user-facing copy does not mention AI'; store/assets images inspected 2026-09-27"
+      ],
+      "next_action": "Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI.",
+      "updated_at": "2026-09-27T05:03:02+00:00"
     }
   },
   "events": [
@@ -6046,6 +6057,22 @@
         ],
         "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
         "updated_at": "2026-09-27T04:34:38+00:00"
+      }
+    },
+    {
+      "sequence": 318,
+      "at": "2026-09-27T05:03:02+00:00",
+      "gate": "copy.no-ai-listing",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing.",
+        "evidence": [
+          "test/copy.test.js 'user-facing copy does not mention AI'; store/assets images inspected 2026-09-27"
+        ],
+        "next_action": "Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI.",
+        "updated_at": "2026-09-27T05:03:02+00:00"
       }
     }
   ],
