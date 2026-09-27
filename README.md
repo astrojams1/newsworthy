@@ -2,8 +2,8 @@
 
 World news, rated by significance.
 
-Newsworthy assesses world news with a score from 1 to 10, a brief explanation
-and an update time.
+Newsworthy uses AI to assess world news with a score from 1 to 10, a brief
+explanation and an update time.
 
 [Open Newsworthy](https://newsworthy-indol.vercel.app/) ·
 [Privacy](https://newsworthy-indol.vercel.app/privacy) ·
@@ -15,7 +15,7 @@ A model checks the current top headlines every four hours by default, rates how
 worthwhile it is to look at the news right now on a deliberately harsh 1–10 scale,
 and writes one sentence explaining why. Higher scores mean more consequential
 news; the displayed score fades as developments age. A sentence that is Newsworthy’s first coverage of a development starts with a bold “New:”
-for two hours; other sentences have no prefix. Ratings are judgments,
+for two hours; other sentences have no prefix. Ratings are AI judgments,
 updated periodically, and can be wrong.
 
 ```
