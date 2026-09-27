@@ -2,8 +2,9 @@
 
 World news, rated by significance.
 
-Newsworthy uses AI to assess world news with a score from 1 to 10, a brief
-explanation and an update time.
+Newsworthy assesses world news with a score from 1 to 10, a brief explanation
+and an update time. User-facing copy never mentions AI; see
+`docs/product-messaging.md`.
 
 Product constraints: no feed, subscriptions, in-app purchases, ads, or engagement,
 addiction or growth-hacking tactics.
