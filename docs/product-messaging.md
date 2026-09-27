@@ -43,6 +43,9 @@ sentence may name what a development could mean for prices or savings; that is
 news, not a description of the scale. Internal work that changes the rating
 does not by itself call for external copy changes.
 
+The sentence never names a news outlet (the owner's convention, 2026-09-27,
+from prompt v19). Copy must not promise sources or credit outlets in it.
+
 ## Voice and claims
 
 - Keep copy simple, calm and factual. Avoid urgency, guilt, streaks or prompts

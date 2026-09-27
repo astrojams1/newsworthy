@@ -86,6 +86,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [16, 'c7f2d04f4911974b'],
     [17, '4bff3590dcbcc883'],
     [18, 'e134aa373968ebed'],
+    [19, '66043069a1277b7e'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -116,11 +117,19 @@ test('rule 7 — under the approved character limit', async () => {
   assert.ok(text.length < limit, `${text.length} characters, limit ${limit}; propose a raise to the owner first`);
 });
 
+test('rule 8 — the sentence never names a news outlet', () => {
+  // The owner's convention from 2026-09-27. Under v17's "Claims: said" the
+  // caller ended ten readings in one day with "the Wall Street Journal said".
+  // The sentence says what happened; which outlet carried it is not the news.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.match(output(renderPrompt(latestVersion()).text), /Never name news outlets\./);
+});
+
 test('the rules file lists exactly what is enforced here', async () => {
   // A rule added to the file and not to this suite is decoration.
   const rules = await readFile('PROMPT-RULES.md', 'utf8');
-  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 7,
-    'seven rules; add a test before adding an eighth');
+  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 8,
+    'eight rules; add a test before adding a ninth');
 });
 
 test('v9 moves the rungs rather than annotating them', () => {
@@ -379,4 +388,13 @@ test('v18 measures market risk, with the owner\'s scale and examples verbatim', 
     .replace(' Preserve facts, attribution and uncertainty when revising after the history match.', ''));
   const evaluation = await readFile('docs/prompt-evaluations/v18.md', 'utf8');
   assert.ok(evaluation.includes(v18.hash), 'the evaluation record names the shipped text');
+});
+
+test('v19 is v18 with outlet names ruled out of the sentence', async () => {
+  // Everything but one Style entry is v18's, so the instrument is unchanged
+  // and readings across the two are comparable.
+  const [v18, v19] = [18, 19].map(renderPrompt);
+  assert.equal(v19.text, v18.text.replace('Claims: said.', 'Claims: said or reportedly. Never name news outlets.'));
+  const evaluation = await readFile('docs/prompt-evaluations/v19.md', 'utf8');
+  assert.ok(evaluation.includes(v19.hash), 'the evaluation record names the shipped text');
 });
