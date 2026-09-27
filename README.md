@@ -378,6 +378,6 @@ mocked. No cloud database needed to run them.
 
 Edit `design/palette.json` and run `npm run design:assets` to regenerate the Expo
 backgrounds, web tokens, favicons, widget resources, and native icon assets.
-Reading surfaces follow their displayed level; app icons remain uncolored and
-switch between a dark dash on white and a white dash on dark.
+Reading surfaces follow their displayed level; the app icon, splash and share
+card use the fixed brand. `npm run design:preview` renders the result.
 See [the design system guide](design/README.md) for integration and verification.

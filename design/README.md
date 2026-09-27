@@ -2,12 +2,24 @@
 
 `palette.json` is the source of truth for the approved ten-level palette, brand colors, appearance, typography, and radii. Generated files must be regenerated instead of edited independently.
 
+The ten levels are the Temperature scale (owner choice, 2026-09-27): fog blue at 1, warm stone through the middle, deep terracotta ember at 10. The previous mint-to-rose palette was ten hand-picked hexes that doubled back in hue between 1 and 3 and jumped at 4; `store/design/gradient-iterations/` holds the alternatives considered and their renders.
+
+## Changing colors
+
+Everything colored is generated from `palette.json`, so a color change is an edit there and three commands:
+
+1. **Levels.** `scale.primary` and `scale.companion` are OKLCH anchors, `[lightness 0–1, chroma, hue degrees]`, from level 1 to level 10; any number of anchors. The generator samples ten levels along the path by arc length in OKLab, so neighbouring levels are always an equal perceptual step apart, wherever the anchors sit. `scale.names` names the ten levels. To pin exact colors instead, replace the anchors with `scale.levels: [{ name, primary, companion }, …]`.
+2. **Brand.** `brand.level` makes the brand (support and privacy pages, favicon, app icon, splash, share card, a widget without a reading) take that level's colors. Give `brand` its own `primary` and `companion` instead to set it apart from the scale.
+3. **Run:**
+
 ```sh
-npm run design:assets   # Update tokens, native colors, widgets, icons, and share art
+npm run design:assets   # Tokens, native colors, widgets, icons, splash, share art; warns on any AA failure
+npm run design:preview  # artifacts/design-preview.png: every level light and dark, step sizes, brand assets
+npm run test:design     # Contrast, even spacing, and cross-surface checks
 npm run design:check    # Detect stale web/Android/iOS tokens
-node --test test/design.test.js
-npm run test:design     # Cross-surface typography, layout roles, theme bindings and pixels
 ```
+
+What needs no hand edit: the share image's cache key is a digest of its artwork, so link previews refetch it; its alt text names no color; the reading-canvas pixel test carries its own colors, so it needs no re-capture (`node scripts/capture-reading-gradient.mjs` is only for a change to `public/levels.css`). What still needs a person: onboarding and the native apps and widgets on a device, recorded in the release ledger, and the App Store gallery art from `store/scripts/render.mjs`.
 
 ## Which color belongs where?
 
@@ -16,8 +28,8 @@ npm run test:design     # Cross-surface typography, layout roles, theme bindings
 | Main reading, favicon, browser chrome | The validated, displayed score, including saved readings |
 | Android widget | The score in the widget's own saved reading |
 | Admin chart, links, selected controls | The admin's latest displayed score |
-| Support, privacy, static favicon, splash, share card | Stable mint brand palette with a dash instead of a score |
-| App icon and home-screen shortcut | White background with a dark dash in light mode; dark background with a white dash in dark mode; deliberately uncolored |
+| Support, privacy, static favicon, splash, share card | Stable brand palette (Stone: `brand.level` 4, the neutral midpoint of the scale) with a dash instead of a score |
+| App icon and home-screen shortcut | Stone brand gradient with a dark dash in light mode and a light dash in dark mode; never a level |
 | Failures | Separate semantic `danger` color, always accompanied by words or a symbol |
 | Empty/loading reading | No level assigned; neutral reading canvas and brand favicon |
 
@@ -32,7 +44,7 @@ A static icon must not imply that an old score is current. Widgets can refresh a
 - `--ink-muted` and `--ink-faint` are for plain or lightly tinted surfaces. `--ink-on-gradient-muted` is for secondary text on stronger gradient backgrounds.
 - `data-level="1"` through `"10"` applies a reading palette. Omit it for the brand default. `data-brand` makes a brand background visible.
 - `data-appearance` reflects the app’s Light or Dark setting. Follow device removes the override and uses the system appearance; the design preview also uses this attribute.
-- The HTML manifest supplies fixed install icons. Social previews use a flat pale mint canvas with only the dash and wordmark,
+- The HTML manifest supplies fixed install icons. Social previews use a flat pale stone canvas with only the dash and wordmark,
   not a cached news score. Descriptions belong in metadata, not on the image.
 
 The design test verifies AA text contrast across the opaque gradient stops and control surfaces in both appearances. The live web background uses the same colors in layered radial washes. The number and sentence remain the source of meaning, independent of color.
@@ -41,11 +53,11 @@ The design test verifies AA text contrast across the opaque gradient stops and c
 
 `apps/client/plugins/widget-android/res/values/newsworthy_palette.xml` and its `values-night` counterpart provide automatic appearance variants. Generated `widget_level_*.xml` drawables use opaque three-stop gradients for `RemoteViews`. `RatingWidget` chooses the drawable from its own validated score, while text colors remain resource references. These resources are resolved by the host when the widget is applied, including theme reapplication. That holds while a widget follows the device, the default. A Light or Dark appearance chosen in the widget's settings selects generated `widget_level_*_light`/`_dark` drawables with literal colours and literal ink and muted colours from `LevelPalette`, so the choice holds when the launcher's theme changes; those overrides live only in `RatingWidget.applyChosenAppearance`.
 
-App icons use a white background and dark dash in light mode, and a dark background and white dash in dark mode, including adaptive and legacy icons and an Android 13 monochrome mark. The OS controls the final color of themed launcher icons. Splash backgrounds and marks use the fixed brand palette.
+App icons use the Stone brand gradient with the brand accent dash in both appearances, including adaptive (a gradient `launcher_background`) and legacy icons, and an Android 13 monochrome mark. The OS controls the final color of themed launcher icons. Splash backgrounds and marks use the fixed brand palette.
 
 ## iOS
 
-The widget target’s `Assets.xcassets` contains generated `Newsworthy*`, `Brand*`, `AccentColor`, and `Level01*` through `Level10*` color sets. Every color set has light/dark appearance entries. The app icon has uncolored light and dark variants; Expo’s source configuration selects the app icon variants and the branded splash assets.
+The widget target’s `Assets.xcassets` contains generated `Newsworthy*`, `Brand*`, `AccentColor`, and `Level01*` through `Level10*` color sets. Every color set has light/dark appearance entries. The app icon has Stone light and dark variants; Expo’s source configuration selects the app icon variants and the branded splash assets.
 
 `NewsworthyWidget.swift` selects `Level07Start`, `Level07Center`, and `Level07End` (for example) from its timeline entry’s own score. The named colors include both system appearances. `NewsworthyGradientMuted` keeps timestamps readable over the gradient. On iOS 17+, each widget's Appearance setting (Edit Widget, beside Show app name) can force Light or Dark: `colorScheme` is set on the content and on the extracted container background, which does not inherit it. Follow device, the default, leaves the scheme to the system.
 
@@ -61,7 +73,7 @@ Source assets and the Android config plugin preserve the design through Expo pre
 
 ## Preview
 
-`artifacts/level-gradients/preview.html` shows all ten palettes, favicons, widgets, controls, and fixed app identity in both appearances. It imports the production tokens and favicon renderer. The widget is a browser representation of the native three-stop treatment.
+`npm run design:preview` writes `artifacts/design-preview.png` (gitignored): all ten levels in both appearances through the production `tokens.css` and `levels.css`, the step between neighbouring levels, and the brand's share card, app icons and splash marks. It needs Chromium; set `CHROMIUM_PATH` outside the cloud image.
 
 ## Design regression gate
 

@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import sharp from 'sharp';
 import { DOMParser } from '@xmldom/xmldom';
 import tokens from '../public/tokens.js';
-import { contrast } from '../design/colors.js';
+import { contrastFailures, resolvePalette, step } from '../design/colors.js';
 import { faviconSvg, levelPalette } from '../public/design.js';
 
 test('reading identities only accept an integer level; invalid inputs cannot become SVG', () => {
@@ -19,15 +19,21 @@ test('reading identities only accept an integer level; invalid inputs cannot bec
 });
 
 test('all level and brand text meets AA on its intended surfaces in both appearances', () => {
-  for (const palette of [tokens.brand, ...tokens.levels]) for (const mode of ['light', 'dark']) {
-    const t = palette[mode];
-    for (const surface of ['start', 'center', 'end', 'surface', 'tinted', 'elevated']) {
-      for (const role of ['ink', 'gradientMuted', 'accent']) assert.ok(contrast(t[role], t[surface]) >= 4.5, `${palette.name} ${mode} ${role} on ${surface}`);
-    }
-    for (const surface of ['surface', 'tinted', 'elevated']) for (const role of ['muted', 'faint', 'danger']) {
-      assert.ok(contrast(t[role], t[surface]) >= 4.5, `${palette.name} ${mode} ${role} on ${surface}`);
-    }
-  }
+  assert.deepEqual(contrastFailures(tokens), []);
+});
+
+// The scale is a path through anchors, sampled so neighbouring levels are an
+// equal perceptual step apart; hand-picked hexes once doubled back in hue.
+test('palette levels are evenly spaced and the brand is a level of the scale', () => {
+  const steps = tokens.levels.slice(1).map((level, i) => step(tokens.levels[i].primary, level.primary));
+  assert.ok(Math.max(...steps) - Math.min(...steps) < 0.5, `uneven steps ${steps.map(s => s.toFixed(1)).join(' ')}`);
+  const source = { scale: { names: tokens.levels.map(l => l.name), primary: [[.8, .02, 240], [.5, .15, 30]], companion: [[.9, .02, 240], [.8, .06, 40]] }, brand: { name: 'B', level: 3 } };
+  const { levels, brand } = resolvePalette(source);
+  assert.deepEqual([brand.primary, brand.companion], [levels[2].primary, levels[2].companion]);
+  const explicit = resolvePalette({ scale: { levels: levels.map(({ name, primary, companion }) => ({ name, primary, companion })) }, brand: { name: 'X', primary: '#123456', companion: '#654321' } });
+  assert.deepEqual(explicit.levels, levels);
+  assert.equal(explicit.brand.primary, '#123456');
+  assert.throws(() => resolvePalette({ scale: { levels: levels.slice(1) }, brand: { level: 1 } }), /10 levels/);
 });
 
 test('web, Android, and iOS palettes are generated from the current source', () => {

@@ -1,71 +1,15 @@
 {
-  "brand": {
-    "name": "Mint",
-    "primary": "#5BB19D",
-    "companion": "#AFDEBF"
+  "scale": {
+    "name": "Temperature",
+    "about": "Fog blue at 1, warm stone through the middle, terracotta ember at 10. Anchors are OKLCH [lightness, chroma, hue]; npm run design:generate samples ten evenly spaced levels along them.",
+    "names": ["Fog", "Haze", "Pewter", "Stone", "Taupe", "Clay", "Sienna", "Rust", "Brick", "Ember"],
+    "primary": [[0.74, 0.04, 238], [0.7, 0.018, 215], [0.65, 0.018, 75], [0.59, 0.075, 55], [0.525, 0.14, 38]],
+    "companion": [[0.91, 0.025, 235], [0.89, 0.012, 200], [0.87, 0.018, 80], [0.85, 0.045, 62], [0.82, 0.07, 48]]
   },
-  "levels": [
-    {
-      "score": 1,
-      "name": "Sage",
-      "primary": "#82AE8F",
-      "companion": "#CADBA8"
-    },
-    {
-      "score": 2,
-      "name": "Mint",
-      "primary": "#5BB19D",
-      "companion": "#AFDEBF"
-    },
-    {
-      "score": 3,
-      "name": "Sea glass",
-      "primary": "#75B29F",
-      "companion": "#CDE3A3"
-    },
-    {
-      "score": 4,
-      "name": "Olive",
-      "primary": "#A5B46F",
-      "companion": "#E8E1A5"
-    },
-    {
-      "score": 5,
-      "name": "Soft gold",
-      "primary": "#C7B669",
-      "companion": "#E6DAA3"
-    },
-    {
-      "score": 6,
-      "name": "Honey",
-      "primary": "#D9A65B",
-      "companion": "#EFCD99"
-    },
-    {
-      "score": 7,
-      "name": "Apricot",
-      "primary": "#DF916E",
-      "companion": "#F2C299"
-    },
-    {
-      "score": 8,
-      "name": "Coral",
-      "primary": "#D77D7C",
-      "companion": "#EFB7A0"
-    },
-    {
-      "score": 9,
-      "name": "Rose",
-      "primary": "#CA6477",
-      "companion": "#F0A48F"
-    },
-    {
-      "score": 10,
-      "name": "Deep rose",
-      "primary": "#B74D6D",
-      "companion": "#E88B83"
-    }
-  ],
+  "brand": {
+    "name": "Stone",
+    "level": 4
+  },
   "appearance": {
     "light": {
       "surface": "#FFFFFF",

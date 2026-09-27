@@ -175,13 +175,14 @@ function SmallWidget({ score, saved, dark }: { score?: number; saved?: string; d
     <Text numberOfLines={1} style={{ color: colors.gradientMuted, fontSize: 11 }}>{widgetTime(saved)}</Text>
   </Diagonal>;
 }
-// The app's launcher mark: a dash, dark on white or white on near-black.
+// The app's launcher mark: the brand's accent dash on its diagonal,
+// never a level (scripts/generate-brand.mjs draws the real icon).
 function LauncherIcon({ theme, size }: { theme: Theme; size: number }) {
-  const identity = tokens.identity[theme.dark ? 'dark' : 'light'];
-  return <View style={{ width: size, height: size, borderRadius: platform === 'android' ? size / 2 : size * 0.225, backgroundColor: identity.surface,
-    borderWidth: 1, borderColor: theme.rule, alignItems: 'center', justifyContent: 'center' }}>
-    <View style={{ width: size * 0.36, height: Math.max(2, size * 0.07), borderRadius: 1, backgroundColor: identity.ink }} />
-  </View>;
+  const brand = palette(undefined, theme.dark) as Palette & { accent: string };
+  return <Diagonal colors={brand} radius={platform === 'android' ? size / 2 : size * 0.225}
+    style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: size * 0.36, height: Math.max(2, size * 0.07), borderRadius: 1, backgroundColor: brand.accent }} />
+  </Diagonal>;
 }
 
 // A notification as each platform draws one: iOS a rounded banner with the

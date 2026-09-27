@@ -1,8 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { withServer } from './with-server.js';
 
 const site = 'https://newsworthy-indol.vercel.app';
+// scripts/generate-brand.mjs versions the card by a digest of its artwork.
+const cardVersion = createHash('sha256').update(readFileSync(new URL('../public/social-card.svg', import.meta.url), 'utf8')).digest('hex').slice(0, 8);
 
 test('public discovery links resolve, metadata parses, and operational routes opt out of indexing', async () => {
   await withServer({ port: 8841, env: { NEWSWORTHY_NO_SCHEDULER: '1', ADMIN_TOKEN: 'test-admin-token' } }, async (base) => {
@@ -20,8 +24,8 @@ test('public discovery links resolve, metadata parses, and operational routes op
       assert.equal(html.match(/rel="canonical" href="([^"]+)"/)[1], location);
       assert.equal(html.match(/property="og:url" content="([^"]+)"/)[1], location);
       assert.equal(html.match(/property="og:title" content="([^"]+)"/)[1], html.match(/<title[^>]*>([^<]+)<\/title>/)[1]);
-      assert.equal(html.match(/property="og:image" content="([^"]+)"/)[1], site + '/social-card.png?v=2');
-      assert.equal(html.match(/name="twitter:image" content="([^"]+)"/)[1], site + '/social-card.png?v=2');
+      assert.equal(html.match(/property="og:image" content="([^"]+)"/)[1], site + `/social-card.png?v=${cardVersion}`);
+      assert.equal(html.match(/name="twitter:image" content="([^"]+)"/)[1], site + `/social-card.png?v=${cardVersion}`);
       assert.doesNotMatch(html, /doomscrolling|calm global status indicator|middle ground|constant anxiety|back to your day/i);
       if (location === site + '/') {
         assert.equal(html.match(/<title[^>]*>([^<]+)<\/title>/)[1], 'Newsworthy');
@@ -37,7 +41,7 @@ test('public discovery links resolve, metadata parses, and operational routes op
       }
     }
 
-    const card = await fetch(`${base}/social-card.png?v=2`);
+    const card = await fetch(`${base}/social-card.png?v=${cardVersion}`);
     assert.equal(card.status, 200);
     assert.equal(card.headers.get('content-type'), 'image/png');
     const bytes = Buffer.from(await card.arrayBuffer());
