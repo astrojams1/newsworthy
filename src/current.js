@@ -468,7 +468,7 @@ export function currentDisplay(ascending, {
   const loudest = loudestAt(developments, now, halfLifeHours, last.t);
 
   return {
-    sentence: sentenceFor(points, developments, last),
+    sentence: sentenceFor(points, last),
     score: loudest.displayed,
     level: last.level,
     levelRow: last.level_row,
@@ -493,17 +493,23 @@ export function currentDisplay(ascending, {
  * run starts blind, so it writes the same event again in new words. Hourly
  * rewordings of one event read as news that is not there: the WSJ report of
  * Trump rejecting Iran's Hormuz plan was written 29 ways over 27 hours. So a
- * re-report shows the sentence its development already has, word for word:
- * the one from the reading that started the development's current clock, which
- * is its first report, or the reading where it last escalated, since an
- * escalation is news again. An unjudged reading cannot be called a repeat and
- * a new development is its own sentence, so both show the newest.
+ * re-report shows its development's first report, word for word and dated
+ * when it broke, as the timeline does.
+ *
+ * Not the reading where the development last escalated. That was the first
+ * cut, and on 2026-09-27 the same Hormuz development, 24 hours old, drifted
+ * from 3-4 to 5 on unchanged news: the escalation rule restarted its clock,
+ * and the page led a day-old event with "7h —" while the timeline placed the
+ * development before it two days back. An escalation restarts the number's
+ * decay; the judge still says it is the same event, and the sentence is about
+ * the event. An unjudged reading cannot be called a repeat and a new
+ * development is its own sentence, so both show the newest.
  */
-function sentenceFor(points, developments, last) {
+function sentenceFor(points, last) {
   if (last.judge_version == null || last.development_of == null) return last;
-  const development = developments.get(last.reports);
-  const clock = development && points.find((p) => p.reports === last.reports && p.t === development.since);
-  return clock ?? points.find((p) => p.id === last.reports) ?? last;
+  return points.find((p) => p.id === last.reports)
+    ?? points.find((p) => p.reports === last.reports)
+    ?? last;
 }
 
 /**

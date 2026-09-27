@@ -431,13 +431,17 @@ test('a re-report shows its development\'s sentence word for word', () => {
     'an unjudged reading cannot be called a repeat');
 });
 
-test('an escalation inside a development is news again, and its sentence with it', () => {
+test('an escalation restarts the number, not the sentence', () => {
   // The level climbs two clear of the development's low at reading 7, where
-  // the median of five confirms the 6s; the clock restarts there, and so does
-  // the sentence. Later re-reports show reading 7's, not the first report's.
+  // the median of five confirms the 6s, and the clock restarts there. The judge
+  // still calls it one development, so the page keeps its first report and that
+  // report's date: on 2026-09-27 a drift from 3-4 to 5 on unchanged news dated a
+  // day-old event "7h" while the timeline placed the one before it two days back.
   const series = judged([3, 0], [3, 0], [3, 0], [3, 0], [3, 0], [6, 0], [6, 0], [6, 0], [6, 0]);
   const page = currentDisplay(series, { now: series.at(-1).t });
-  assert.equal(page.sentence.explanation, 'reading 7');
+  assert.equal(page.since, series[7].t, 'the number re-anchors at the escalation');
+  assert.equal(page.sentence.explanation, 'reading 0');
+  assert.equal(page.sentence.t, series[0].t, 'dated from the first report');
 });
 
 // A story that has been producing developments for `days`, one a day at `score`,
