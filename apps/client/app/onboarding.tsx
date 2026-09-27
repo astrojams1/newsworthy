@@ -175,7 +175,7 @@ function SmallWidget({ score, saved, dark }: { score?: number; saved?: string; d
     <Text numberOfLines={1} style={{ color: colors.gradientMuted, fontSize: 11 }}>{widgetTime(saved)}</Text>
   </Diagonal>;
 }
-// The app's launcher mark: the brand's accent dash on its Stone diagonal,
+// The app's launcher mark: the brand's accent dash on its diagonal,
 // never a level (scripts/generate-brand.mjs draws the real icon).
 function LauncherIcon({ theme, size }: { theme: Theme; size: number }) {
   const brand = palette(undefined, theme.dark) as Palette & { accent: string };

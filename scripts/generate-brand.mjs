@@ -10,7 +10,7 @@ const output = async (path, data) => { const target = resolve(root, path); await
 const json = data => JSON.stringify(data, null, 2) + '\n';
 function iconSvg(mode, { foreground = false, round = false } = {}) {
   const theme = tokens.brand[mode];
-  // The app icon and launch marks carry the fixed brand (Stone), never a
+  // The app icon and launch marks carry the fixed brand, never a
   // level, so a home-screen icon cannot imply a score.
   const background = 'url(#brand)';
   const ink = theme.accent;
