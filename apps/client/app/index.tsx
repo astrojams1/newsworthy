@@ -37,9 +37,11 @@ export default function Home() {
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
   const minutes = reading ? Math.max(0, Math.floor((now - Date.parse(reading.created_at)) / 60000)) : 0;
   const relative = minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
-  // A new development's sentence leads with a bold "New:" for two hours; nothing else is styled.
+  // A new development's sentence leads with a bold "New:" for two hours, then
+  // with its age in the muted colour ("5h —"); both are part of the sentence.
   const parts = reading ? explanationParts(reading, now) : null;
-  const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</> : parts.body) : null;
+  const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</>
+    : parts.age ? <><Text testID="rating-age" style={{ color: theme.muted }}>{parts.age}</Text>{` ${parts.body}`}</> : parts.body) : null;
   // Off unless chosen in Settings; off, the screen is the reading alone. The
   // server leaves out the development this reading reports, so nothing here repeats it.
   const { preferences } = usePreferences();
@@ -75,7 +77,7 @@ export default function Home() {
   const showTimeline = () => scrollTo(snap);
   const shareReading = async () => {
     if (!reading) return;
-    const message = `${reading.score}/10 · ${displayExplanation(reading)}\nUpdated ${new Date(reading.created_at).toLocaleString()}\n${website}`;
+    const message = `${reading.score}/10 · ${displayExplanation(reading)}\nChecked ${new Date(reading.created_at).toLocaleString()}\n${website}`;
     try {
       if (process.env.EXPO_OS === 'web') {
         if (navigator.share) await navigator.share({ title: 'Newsworthy', text: message });
@@ -147,7 +149,7 @@ export default function Home() {
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </View>
         <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Text>
-        {reading && <Text selectable style={{ color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Updated {relative}</Text>}
+        {reading && <Text selectable style={{ color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Checked {relative}</Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
         {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: cueFade }}>

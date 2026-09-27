@@ -136,7 +136,7 @@ test('the widget uses the real level colors, and the first slide shows the curre
     assert.match(svg, /x1="0" y1="0" x2="1" y2="1"/, 'top-left to bottom-right, as both widgets draw it');
     const text = nodes(widget).filter(n => n.type === 'Text').map(n => [n.props.children].flat().join(''));
     assert.deepEqual(text.slice(0, 3), ['NEWSWORTHY', String(score ?? '–'), '∕10']);
-    assert.match(text[3], platform === 'android' ? /^Updated / : /^\d/, 'the platform\'s own timestamp');
+    assert.match(text[3], platform === 'android' ? /^Checked / : /^\d/, 'the platform\'s own timestamp');
     // Reported 2026-09-27: the first slide's graphic was too busy. It is the
     // current score and its denominator, as the reading screen sets them.
     // Reported 2026-09-27: the description spoke of a sentence the graphic did

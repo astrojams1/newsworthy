@@ -23,6 +23,8 @@
     </LinearLayout>
     <TextView android:id="@+id/widget_explanation" android:layout_width="match_parent" android:layout_height="wrap_content"
         android:visibility="gone" android:text="" android:textColor="@color/widget_ink"/>
+    <TextView android:id="@+id/widget_explanation_age" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:visibility="gone" android:text="" android:textColor="@color/widget_muted" android:importantForAccessibility="no"/>
     <TextView android:id="@+id/widget_updated" android:layout_width="match_parent" android:layout_height="32dp"
         android:text="" android:textSize="10sp" android:maxLines="2"
         android:autoSizeTextType="uniform" android:autoSizeMinTextSize="6sp"

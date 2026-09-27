@@ -2,8 +2,10 @@ package com.example.newsworthy;
 
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.app.PendingIntent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -121,6 +123,7 @@ public class RatingWidget extends AppWidgetProvider {
         views.setTextColor(R.id.widget_score, ink);
         views.setTextColor(R.id.widget_denominator, muted);
         views.setTextColor(R.id.widget_explanation, ink);
+        views.setTextColor(R.id.widget_explanation_age, muted);
         views.setTextColor(R.id.widget_updated, muted);
     }
 
@@ -197,22 +200,59 @@ public class RatingWidget extends AppWidgetProvider {
         return saved != null && now - saved.getTime() < NEW_LABEL_MS;
     }
 
-    /** "New:" in bold before a new development's sentence; the body fitted so both stay within 140 characters. */
+    /**
+     * The muted age that leads the sentence once "New:" is off: "5h —", then
+     * "1d —" from a day; empty under an hour or without explanation_at.
+     */
+    static String sentenceAge(JSONObject reading, long now) {
+        if (isNew(reading, now) || !(reading.opt("explanation_text") instanceof String)
+            || !(reading.opt("explanation_at") instanceof String)) return "";
+        Date at = parseDate(reading.optString("explanation_at"));
+        if (at == null) return "";
+        long hours = (now - at.getTime()) / 3_600_000L;
+        if (hours < 1) return "";
+        return (hours < 24 ? hours + "h" : (hours / 24) + "d") + " —";
+    }
+
+    /**
+     * "New:" in bold, or the age, before the sentence; the body fitted so both
+     * stay within 140 characters. The age is drawn muted by a second TextView
+     * stacked on this one (see ageLayer), so here it is hidden rather than tinted.
+     */
     static CharSequence displayedExplanation(JSONObject reading, long now) {
         boolean hasBody = reading.opt("explanation_text") instanceof String;
         String label = isNew(reading, now) ? NEW_LABEL : "";
+        String age = label.isEmpty() ? sentenceAge(reading, now) : "";
+        String prefix = label.isEmpty() ? age : label;
         String body = reading.optString(hasBody ? "explanation_text" : "explanation", "");
-        int limit = 140 - (label.isEmpty() ? 0 : label.length() + 1);
+        int limit = 140 - (prefix.isEmpty() ? 0 : prefix.length() + 1);
         if (body.codePointCount(0, body.length()) > limit) {
             String cut = body.substring(0, body.offsetByCodePoints(0, limit - 1));
             int space = cut.lastIndexOf(' ');
             if (space >= 0 && cut.codePointCount(0, space) > limit / 2) cut = cut.substring(0, space);
             body = cut.trim() + "…";
         }
-        if (label.isEmpty()) return body;
-        SpannableString text = new SpannableString(label + " " + body);
-        // Weight only: a color span kept the old theme's color after a theme switch.
-        text.setSpan(new StyleSpan(Typeface.BOLD), 0, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (prefix.isEmpty()) return body;
+        SpannableString text = new SpannableString(prefix + " " + body);
+        // Weight only for "New:": a color span kept the old theme's color after a theme switch.
+        if (!label.isEmpty()) text.setSpan(new StyleSpan(Typeface.BOLD), 0, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        else text.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, age.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return text;
+    }
+
+    /**
+     * The same text for the muted layer stacked on the sentence, with everything
+     * but the age transparent. Identical text in identical views wraps
+     * identically, so the age lands exactly where the ink layer left its gap.
+     * A colour span would keep the old theme's colour after a host theme
+     * switch; transparent is the same in every theme, and both layers take
+     * their colours from XML theme resources, so both follow the switch.
+     */
+    static CharSequence ageLayer(CharSequence sentence, JSONObject reading, long now) {
+        String age = sentenceAge(reading, now);
+        if (age.isEmpty()) return "";
+        SpannableString text = new SpannableString(sentence);
+        text.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), age.length(), text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return text;
     }
 
@@ -257,9 +297,13 @@ public class RatingWidget extends AppWidgetProvider {
             number.getTextBounds("0", 0, 1, numberInk);
             text.getTextBounds("H", 0, 1, textInk);
             int top = Math.max(0, Math.round((-number.ascent() + numberInk.top) - (-text.ascent() + textInk.top)));
-            views.setViewPadding(R.id.widget_explanation, 0, top, 0, 0);
-            views.setInt(R.id.widget_explanation, "setLineHeight", lineHeight);
-            views.setInt(R.id.widget_explanation, "setMaxLines", Math.max(1, Math.min(4, (int)((availableHeight - top) / lineHeight))));
+            int lines = Math.max(1, Math.min(4, (int)((availableHeight - top) / lineHeight)));
+            // The age layer is stacked on the sentence and must wrap exactly as it does.
+            for (int id : new int[] { R.id.widget_explanation, R.id.widget_explanation_age }) {
+                views.setViewPadding(id, 0, top, 0, 0);
+                views.setInt(id, "setLineHeight", lineHeight);
+                views.setInt(id, "setMaxLines", lines);
+            }
         }
     }
 
@@ -297,11 +341,15 @@ public class RatingWidget extends AppWidgetProvider {
                 // an inline ForegroundColorSpan retained the old theme's color.
                 views.setTextViewText(R.id.widget_score, number);
                 views.setContentDescription(R.id.widget_score, reading.optInt("score") + " out of 10");
-                views.setTextViewText(R.id.widget_explanation, displayedExplanation(reading, System.currentTimeMillis()));
+                long now = System.currentTimeMillis();
+                CharSequence sentence = displayedExplanation(reading, now);
+                views.setTextViewText(R.id.widget_explanation, sentence);
+                views.setTextViewText(R.id.widget_explanation_age, ageLayer(sentence, reading, now));
                 String date = updatedTime(readingDate(reading), System.currentTimeMillis());
-                views.setTextViewText(R.id.widget_updated, "Updated " + date);
+                views.setTextViewText(R.id.widget_updated, "Checked " + date);
             }
             views.setViewVisibility(R.id.widget_explanation, compact ? View.GONE : View.VISIBLE);
+            views.setViewVisibility(R.id.widget_explanation_age, compact ? View.GONE : View.VISIBLE);
             manager.updateAppWidget(id, views);
         }
     }

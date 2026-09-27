@@ -29,7 +29,9 @@ test('native pixel evidence retains its source provenance and reviewed layout sc
     .replace('explanationText(entry.reading, at: entry.date)','Text(entry.reading?.explanation ?? "")')
     // Same-day readings drop the month and day; the timestamp's font and frame are unchanged.
     .replace('Text(timestampText(date, at: entry.date))','Text("\\(date.formatted(.dateTime.month(.abbreviated).day())) · \\(date.formatted(date: .omitted, time: .shortened))")')
-    .replace(/\.description\("[^"]*"\)/g,'.description("")');
+    .replace(/\.description\("[^"]*"\)/g,'.description("")')
+    // Spoken only: the timestamp's VoiceOver label reads "Checked" where it read "Updated".
+    .replace('.accessibilityLabel("Checked \\(','.accessibilityLabel("Updated \\(');
   for(const [now,before] of colourOnly){
     assert.equal(geometry.split(now).length,2,`Widget appearance substitution must apply exactly once: ${now}`);
     geometry=geometry.replace(now,before);

@@ -14,7 +14,7 @@ test('reading refreshes never add loading, saved or retry text to an existing me
       const text = JSON.stringify(tree.filter(n => n.type === 'Text').map(n => n.props.children));
       assert.doesNotMatch(text, /Checking|Loading|Sav(?:ed|ing)|Waiting|Refreshing|Syncing|Try again|unavailable/i);
       assert.match(text, /A quiet day for the world/);
-      assert.match(text, /Updated/);
+      assert.match(text, /Checked/);
       assertApprovedReadingCopy(tree);
     }
     const empty = nodes(renderReading({ platform, width: 390, height: 844, score: null, loading: true, failed: true }));
@@ -31,13 +31,13 @@ function assertApprovedReadingCopy(tree) {
   // Privacy and Support are reached from Settings, so nothing sits below the timestamp.
   assert.equal(text.length, 4, 'only approved reading and timestamp text');
   assert.deepEqual(text.slice(0, 3), ['3', contract.denominatorText, 'A quiet day for the world.']);
-  assert.match(text[3], /^Updated (?:just now|\d+ (?:min ago|hr ago|days ago))$/);
+  assert.match(text[3], /^Checked (?:just now|\d+ (?:min ago|hr ago|days ago))$/);
 }
 
 for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · ']) {
   test(`reading gate rejects unsolicited status: ${status}`, () => {
     const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-    const sourceOverride = source.replace('>Updated {relative}', `>${status}Updated {relative}`);
+    const sourceOverride = source.replace('>Checked {relative}', `>${status}Checked {relative}`);
     assert.notEqual(sourceOverride, source, 'regression fixture must change the rendered timestamp');
     assert.throws(() => assertApprovedReadingCopy(nodes(renderReading({
       platform: 'ios', width: 390, height: 844, saved: true, loading: true, sourceOverride,
@@ -55,11 +55,19 @@ test('widgets show only the time for a reading saved today', () => {
 
 test('widgets keep cached timestamps and empty states free of status copy', () => {
   const { swift, java, compact, expanded, light } = widgetSources();
-  assert.match(java, /setTextViewText\(R.id.widget_updated, "Updated " \+ date\)/);
+  assert.match(java, /setTextViewText\(R.id.widget_updated, "Checked " \+ date\)/);
   assert.match(swift, /Text\(timestampText\(date, at: entry.date\)\)/);
-  assert.match(swift, /accessibilityLabel\("Updated /);
+  assert.match(swift, /accessibilityLabel\("Checked /);
   assert.match(swift, /explanationText\(entry.reading, at: entry.date\)/);
   assert.match(swift, /Text\(verbatim: parts.label\).bold\(\) \+ Text\(verbatim: " " \+ parts.body\)/, 'the iOS label is bold and nothing else');
+  // Reported 2026-09-27: past two hours nothing said how old the sentence was.
+  // Its age leads it in the widget's own muted colour, and only the age is tinted.
+  assert.match(swift, /Text\(verbatim: parts.age\).foregroundColor\(Color\("NewsworthyGradientMuted"\)\) \+ Text\(verbatim: " " \+ parts.body\)/);
+  // Android stacks a muted layer on the sentence rather than tint a span, which
+  // would keep the old theme's colour after a host theme switch.
+  assert.match(java, /new ForegroundColorSpan\(Color.TRANSPARENT\), 0, age.length\(\)/, 'the ink layer leaves a gap for the age');
+  assert.match(java, /new ForegroundColorSpan\(Color.TRANSPARENT\), age.length\(\), text.length\(\)/, 'the muted layer shows the age alone');
+  assert.match(java, /views.setTextViewText\(R.id.widget_explanation_age, ageLayer\(sentence, reading, now\)\)/);
   for (const source of [swift, java, compact, expanded, light]) {
     assert.doesNotMatch(source, /"[^"\n]*(?:Saved ·|Saved reading|Saving reading|Waiting for a reading|Checking|Loading|latest rating will appear)[^"\n]*"/i);
     assert.doesNotMatch(source, /@string\/widget_waiting/);

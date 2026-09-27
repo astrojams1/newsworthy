@@ -32,7 +32,9 @@ export async function fetchReading(apiBaseUrl, fetcher = fetch) {
     if (!validReading(data)) throw new Error('Invalid reading');
     return { score: data.score, explanation: data.explanation, created_at: data.created_at,
       ...(typeof data.explanation_text === 'string' && data.explanation_text.length <= 2000
-        ? { explanation_text: data.explanation_text, explanation_new: data.explanation_new === true } : {}),
+        ? { explanation_text: data.explanation_text, explanation_new: data.explanation_new === true,
+          ...(typeof data.explanation_at === 'string' && Number.isFinite(Date.parse(data.explanation_at))
+            ? { explanation_at: data.explanation_at } : {}) } : {}),
     };
   } finally {
     clearTimeout(timeout);
