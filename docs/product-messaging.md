@@ -71,6 +71,14 @@ does not by itself call for external copy changes.
   development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
+- The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
+  a few plain sentences: a score of consequence. By the
+  owner's choice it does not mention AI or warn that ratings can be wrong; the
+  support page carries those facts. It adds that a widget exists and that
+  notifications are optional and off by default. It says what the app does,
+  not how the phone works or where Settings is, and never asks the reader to
+  come back. Only the mobile apps have it: they show it once on first launch,
+  and Settings replays it. The website has no introduction.
 - Do not claim that hosting processes no technical information.
 - Brand positioning must never soften, inflate or otherwise alter the rating
   scale. Published prompts are append-only; see `PROMPT-RULES.md`.
@@ -95,6 +103,7 @@ widgets and the complete app package without updating local Xcode.
   `apps/client/plugins/widget-android/res/values/widget.xml`
   (`widget_description`): widget picker copy.
 - `apps/client/app/`: shared reading screen, settings screen, search metadata, social tags and WebSite data.
+- `apps/client/lib/onboarding.js`: the introduction's slide copy.
 - `public/privacy.html`, `public/support.html`: policy and help; each has its own metadata.
 - `scripts/generate-brand.mjs`: evergreen share-art source; generates
   `public/social-card.svg`, `public/social-card.png` and `public/brand/share.png`.

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-26T13:07:53+00:00",
+  "updated_at": "2026-09-27T04:34:38+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -947,6 +947,17 @@
       ],
       "next_action": "On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight.",
       "updated_at": "2026-09-26T13:07:53+00:00"
+    },
+    "ui.onboarding": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
+      "evidence": [
+        "test/onboarding.test.js"
+      ],
+      "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+      "updated_at": "2026-09-27T04:34:38+00:00"
     }
   },
   "events": [
@@ -5811,6 +5822,230 @@
         ],
         "next_action": "On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight.",
         "updated_at": "2026-09-26T13:07:53+00:00"
+      }
+    },
+    {
+      "sequence": 304,
+      "at": "2026-09-26T23:27:28+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Four-slide introduction (what a reading is, the scale, fading and New:, Settings) opens once on the first native launch and replays from Settings > About > Introduction; the website never opens it itself. Verified in the web export in Chromium at 390x844, light and dark (test/web-settings.test.js steps it through Next, Done and Skip). TypeScript passes. Not run on iOS or Android: first-launch push timing, fullScreenModal presentation, horizontal paging and the Notifications row on the last slide are unseen on a device.",
+        "evidence": [
+          "Branch claude/mobile-onboarding-slideshow-lcppcu; test/web-settings.test.js introduction case; test/preferences.test.js introduction row"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-26T23:27:28+00:00"
+      }
+    },
+    {
+      "sequence": 305,
+      "at": "2026-09-26T23:40:28+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Introduction now has six slides in the apps: score, scale, fading, a platform-specific widget slide (iOS: Edit > Add Widget; Android: Widgets) and an optional-alerts slide, then Settings; the web keeps four. Titles are 18-24 characters and every title sits at one height (y=441 at 390x844 on all slides, iOS, Android and web variants, light and dark, in Chromium). iOS and Android variants were rendered in the web export with a temporary platform override, not on a device; SF Symbols and native fonts are unseen.",
+        "evidence": [
+          "test/onboarding.test.js; test/web-settings.test.js title-position case"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-26T23:40:28+00:00"
+      }
+    },
+    {
+      "sequence": 306,
+      "at": "2026-09-26T23:42:05+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Introduction now has six slides in the apps: score, scale, fading, a platform-specific widget slide (iOS: Edit > Add Widget; Android: Widgets) and an optional-alerts slide, then Settings; the web keeps four. Titles are 18-24 characters and every title sits at one height (y=441 at 390x844 on all slides, iOS, Android and web variants, light and dark, in Chromium). iOS and Android variants were rendered in the web export with a temporary platform override, not on a device; SF Symbols and native fonts are unseen.",
+        "evidence": [
+          "test/onboarding.test.js; test/web-settings.test.js title-position case"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-26T23:42:05+00:00"
+      }
+    },
+    {
+      "sequence": 307,
+      "at": "2026-09-27T00:21:23+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Introduction rewritten to plain statements (2026-09-27 owner review: copy read as emotional and taught the device). Apps: five slides (score, scale, fading, widget, optional notifications); web: three. No Settings slide, no widget or permission how-to. Titles 18-24 characters at one height (y=441 at 390x844 on every slide, iOS/Android/web variants, light and dark, Chromium with a temporary platform override). Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js copy regression; test/web-settings.test.js"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-27T00:21:23+00:00"
+      }
+    },
+    {
+      "sequence": 308,
+      "at": "2026-09-27T00:24:25+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Introduction no longer mentions AI or warns that ratings can be wrong (owner decision 2026-09-27); support page still carries both. Otherwise as before: apps five slides, web three, titles at one height. Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js no-AI regression"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-27T00:24:25+00:00"
+      }
+    },
+    {
+      "sequence": 309,
+      "at": "2026-09-27T00:57:45+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Descriptions evened to 75-83 characters, two lines each on every slide (iOS, Android and web variants at 390x844 in Chromium); the fade slide shows a bold New with no colon instead of describing 'a bold New:'. The app's own reading label is unchanged ('New:'). Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js length and New cases; test/web-settings.test.js line-count and bold checks"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-27T00:57:45+00:00"
+      }
+    },
+    {
+      "sequence": 310,
+      "at": "2026-09-27T01:13:08+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Introduction is phone-only (owner decision 2026-09-27): the web Settings has no Introduction row and /onboarding on the web redirects to the reading, checked in Chromium. Five slides on iOS and Android. Title/description heights and bold New are now checked on rendered props (test/onboarding.test.js); pixel positions were last measured in Chromium with a platform override, and nothing has been seen on a device.",
+        "evidence": [
+          "test/web-settings.test.js no-introduction case; test/onboarding.test.js; test/preferences.test.js"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T01:13:08+00:00"
+      }
+    },
+    {
+      "sequence": 311,
+      "at": "2026-09-27T01:22:14+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Illustrations redrawn from what the app and widgets show (owner report 2026-09-27: colors and widget did not match). Slides sit on the current reading's canvas (ReadingGradient); each level bar and the pictured small widget use that level's three stops, top-left to bottom-right, as both widgets draw them; the widget shows the current score and the platform's own timestamp form; the notification carries the server's title. Rendered in Chromium with a platform override and a monospace stand-in for iOS's ui-monospace. Not seen on a device: SF Mono numerals, widget corner radius and scale against the real widget.",
+        "evidence": [
+          "test/onboarding.test.js color and widget cases; store/source/widget-consistency-mono/ios-homescreen-light.png and store/source/android-phone/22-widget-default-light-v10.png as reference"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T01:22:14+00:00"
+      }
+    },
+    {
+      "sequence": 312,
+      "at": "2026-09-27T02:13:43+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Illustrations redesigned after owner review of the dark levels slide (muddy bars, stripe artifacts, tiny labels). Level and fade tiles now draw the reading screen's own canvas (readingGradientSvg) per level with that level's ink; slide 1 is the reading screen in a card on its canvas; widget and notification lifted with a shadow; art and text grouped at fixed heights; descriptions shortened to two lines. Inspected all 20 screens (5 slides x iOS/Android x light/dark) at 393x852@2x in Chromium with Inter/JetBrains Mono (iOS) and Roboto/Roboto Mono (Android) as font stand-ins. Not seen on a device: SF Pro/SF Mono metrics, iOS widget corner radius, shadow rendering on Android.",
+        "evidence": [
+          "test/onboarding.test.js tile and card canvas cases"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T02:13:43+00:00"
+      }
+    },
+    {
+      "sequence": 313,
+      "at": "2026-09-27T02:16:49+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Fade slide removed (owner decision 2026-09-27); the introduction is four slides: the reading, the scale, the widget, optional notifications. All 16 screens (iOS/Android x light/dark) inspected at 393x852@2x in Chromium with stand-in fonts. Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T02:16:49+00:00"
+      }
+    },
+    {
+      "sequence": 314,
+      "at": "2026-09-27T02:34:01+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Slides 1 and 2 combined (owner request 2026-09-27): three slides now. The first shows the reading card on its canvas above the ten level tiles, the current score ringed; the card fits a full 135-character sentence in four lines. All 12 screens (iOS/Android x light/dark) inspected at 393x852@2x in Chromium with stand-in fonts. Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js (current tile ringed)"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T02:34:01+00:00"
+      }
+    },
+    {
+      "sequence": 315,
+      "at": "2026-09-27T02:36:47+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "First slide's graphic reduced to the current score and its denominator on the reading's canvas (owner request 2026-09-27); the reading card and level tiles are removed. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T02:36:47+00:00"
+      }
+    },
+    {
+      "sequence": 316,
+      "at": "2026-09-27T04:30:02+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "First slide shows the current score with the current sentence under it, as the reading screen sets them (bold New label included), so the description's number and sentence both have an example; soft placeholder lines stand in before any reading. Inspected with a full-length sentence on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T04:30:02+00:00"
+      }
+    },
+    {
+      "sequence": 317,
+      "at": "2026-09-27T04:34:38+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T04:34:38+00:00"
       }
     }
   ],

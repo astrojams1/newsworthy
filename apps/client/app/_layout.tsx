@@ -26,7 +26,13 @@ function ThemedLayout() {
   const { reading, refresh } = useCurrentReading();
   const router = useRouter();
   useEffect(() => onNotificationOpen(() => { router.replace('/'); void refresh(); }), [router, refresh]);
-  const { preferences: { theme: appearance } } = usePreferences();
+  const { loaded, preferences: { theme: appearance, onboarded } } = usePreferences();
+  // The phone apps introduce themselves once, on the first launch, once the
+  // stored preferences say it has not happened. The website does not: a link
+  // to a reading should open on the reading.
+  useEffect(() => {
+    if (process.env.EXPO_OS !== 'web' && loaded && !onboarded) router.push('/onboarding');
+  }, [loaded, onboarded, router]);
   useEffect(() => {
     if (process.env.EXPO_OS === 'web') {
       // tokens.css already honours data-appearance, so the static policy pages
@@ -60,6 +66,8 @@ function ThemedLayout() {
       {/* Settings rises over the reading as a sheet on the phone, closed with its
           own X; on the web it is a page. Its header is its own stack's. */}
       <Stack.Screen name="settings" options={{ title: 'Settings', headerShown: false, presentation: process.env.EXPO_OS === 'web' ? 'card' : 'modal' }} />
+      {/* The introduction covers the whole screen and closes with Skip or Done. */}
+      <Stack.Screen name="onboarding" options={{ title: 'Introduction', headerShown: false, gestureEnabled: false, presentation: process.env.EXPO_OS === 'web' ? 'card' : 'fullScreenModal' }} />
     </Stack>
   </ThemeProvider>;
 }
