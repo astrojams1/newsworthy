@@ -415,6 +415,31 @@ test('the board and the front page name the same leading development', () => {
   assert.equal(leader.displayed, page.score);
 });
 
+test('a re-report shows its development\'s sentence word for word', () => {
+  // Each run starts blind and rewords the same event; the page shows the
+  // sentence the development already has instead of a paraphrase of it.
+  const repeat = currentDisplay(judged([4, 0], [4, 0], [4, 0]), { now: 2 * HOUR });
+  assert.equal(repeat.sentence.explanation, 'reading 0', 'the first report, not the rewording');
+  assert.equal(repeat.newest.id, 2, 'the newest reading is still the one that dates the page');
+
+  const fresh = currentDisplay(judged([4, 0], [4, 0], [5, 2]), { now: 2 * HOUR });
+  assert.equal(fresh.sentence.explanation, 'reading 2', 'a new development is its own sentence');
+
+  const unjudged = judged([4, 0], [4, 0], [4, 0]);
+  unjudged[2] = { ...unjudged[2], judge_version: null, development_of: null };
+  assert.equal(currentDisplay(unjudged, { now: 2 * HOUR }).sentence.explanation, 'reading 2',
+    'an unjudged reading cannot be called a repeat');
+});
+
+test('an escalation inside a development is news again, and its sentence with it', () => {
+  // The level climbs two clear of the development's low at reading 7, where
+  // the median of five confirms the 6s; the clock restarts there, and so does
+  // the sentence. Later re-reports show reading 7's, not the first report's.
+  const series = judged([3, 0], [3, 0], [3, 0], [3, 0], [3, 0], [6, 0], [6, 0], [6, 0], [6, 0]);
+  const page = currentDisplay(series, { now: series.at(-1).t });
+  assert.equal(page.sentence.explanation, 'reading 7');
+});
+
 // A story that has been producing developments for `days`, one a day at `score`,
 // then one more at `last` — the shape of a long war as the rater sees it.
 const longStory = (days, score, last, story = 'war') => {
@@ -623,6 +648,15 @@ test('a break opens a development and is shown whole, at once', async () => {
     assert.equal(body.explanation_since, undefined, 'no age is shown, so none is sent');
     assert.equal(body.story, 'volcano');
     assert.equal(body.score_from, undefined, 'the field is gone; `since` dates the number');
+
+    // The next run reports the same eruption in new words. The page keeps the
+    // sentence it had, dated by the newer reading, and it is no longer new.
+    await submit(9, 'a volcano erupted overnight, officials said', { answer: 'same', story: 'volcano' });
+    const repeat = await (await fetch(`${base}/api/current`)).json();
+    assert.equal(repeat.explanation_text, 'volcano erupts overnight.', 'the sentence it already had, word for word');
+    assert.equal(repeat.explanation, 'volcano erupts overnight.');
+    assert.equal(repeat.explanation_new, false);
+    assert.ok(repeat.created_at > body.created_at, 'dated by the reading that confirmed it');
   });
 });
 

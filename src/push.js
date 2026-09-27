@@ -101,10 +101,10 @@ export async function displayedNow({ now = Date.now() } = {}) {
 }
 
 /** The notification itself: the number and the sentence, nothing urgent. */
-export function messageFor({ score, newest }) {
+export function messageFor({ score, newest, sentence = newest }) {
   return {
     title: `Newsworthy · ${score}/10`,
-    body: newest.explanation,
+    body: sentence.explanation,
     sound: 'default',
     channelId: 'readings',
     data: { reading_id: newest.id, score },

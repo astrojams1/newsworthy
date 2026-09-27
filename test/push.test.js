@@ -67,6 +67,16 @@ test('the notification is the number the page shows and the newest sentence, not
   });
 });
 
+test('a notification on a re-report carries the sentence the page shows', () => {
+  const message = messageFor({
+    score: 8,
+    newest: { id: 6, explanation: 'A ceasefire, reworded.' },
+    sentence: { id: 5, explanation: 'A ceasefire took hold overnight.' },
+  });
+  assert.equal(message.body, 'A ceasefire took hold overnight.');
+  assert.equal(message.data.reading_id, 6);
+});
+
 test('devices register, move their threshold and leave; malformed requests are named', async () => {
   await withServer({ port: PORTS.push, env: { NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
     const push = call(base);
