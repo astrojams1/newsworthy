@@ -9,6 +9,8 @@
  * The token is read from the environment and sent only in the x-admin-token
  * header; it is never printed or written.
  */
+import { outletNamed } from './news-outlets.mjs';
+
 const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, arg, i, all) =>
   (arg.startsWith('--') ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs), []));
 const base = args.base ?? 'https://newsworthy-indol.vercel.app';
@@ -42,6 +44,7 @@ for (const r of readings) {
     r.prompt_verified !== true && `prompt_verified ${r.prompt_verified}`,
     r.judge_version == null && `unjudged (${r.judge_note ?? 'no note'})`,
     !reported.has(r.id) && 'no run report linked',
+    outletNamed(r.explanation) && `names an outlet (${outletNamed(r.explanation)}, v${r.prompt_version})`,
   ].filter(Boolean);
   const judged = r.judge_version == null ? '-' : `v${r.judge_version} ${r.story} ${r.development_of == null ? 'new' : `← ${r.development_of}`}`;
   console.log(`  ${r.id} ${r.created_at.slice(0, 16)} score ${r.score} | ${judged} | ${flags.length ? `FLAG ${flags.join('; ')}` : 'ok'}`);
