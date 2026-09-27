@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T14:21:23+00:00",
+  "updated_at": "2026-09-27T14:36:54+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -974,12 +974,10 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Onboarding follows the new palette through shared tokens (background, sample widget, button, dots); its drawn launcher icon on the notification slide now matches the Stone app icon instead of the old uncolored mark. Photographed from a local web export with the web redirect disabled (Android variant, scores 3 and 8, light and dark); iOS variant and native devices not seen.",
-      "evidence": [
-        "store/design/gradient-iterations/shots/9-onboarding.png"
-      ],
-      "next_action": "Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.",
-      "updated_at": "2026-09-27T14:21:23+00:00"
+      "summary": "Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette.",
+      "evidence": [],
+      "next_action": "Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.",
+      "updated_at": "2026-09-27T14:36:54+00:00"
     }
   },
   "events": [
@@ -6165,6 +6163,20 @@
         ],
         "next_action": "Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.",
         "updated_at": "2026-09-27T14:21:23+00:00"
+      }
+    },
+    {
+      "sequence": 324,
+      "at": "2026-09-27T14:36:54+00:00",
+      "gate": "design.temperature-palette",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette.",
+        "evidence": [],
+        "next_action": "Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.",
+        "updated_at": "2026-09-27T14:36:54+00:00"
       }
     }
   ],

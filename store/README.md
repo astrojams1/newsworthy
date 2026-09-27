@@ -131,7 +131,10 @@ node store/scripts/render.mjs
 node store/scripts/validate.mjs
 ```
 
-The renderer extends the existing mint/charcoal vector identity. Original native
+The renderer extends the mint/charcoal vector identity the app had when these
+assets were made. The app now uses the Temperature levels and the Stone brand
+(`design/palette.json`, 2026-09-27); the native captures and this renderer's
+colors predate that and need a fresh capture before the next listing update. Original native
 screens remain unchanged inside the layouts; resizing and framing are presentation
 only. It never generates a score or news sentence. Keep screenshot claims aligned
 with [product messaging](../docs/product-messaging.md).
