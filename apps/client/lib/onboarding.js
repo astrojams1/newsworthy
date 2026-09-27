@@ -1,6 +1,6 @@
 // The introduction shown once on a phone's first launch and replayed from
-// Settings. Copy follows docs/product-messaging.md: it says what the number is
-// and that it fades, and nothing about how often to come back. It does not
+// Settings. Copy follows docs/product-messaging.md: it says what the number is,
+// and nothing about how often to come back. It does not
 // mention AI or warn that ratings can be wrong; the support page does. Kept
 // here rather than in the screen so the tests read the same words.
 //
@@ -8,14 +8,14 @@
 // Illustrations are drawn per platform. Titles are kept
 // between TITLE_LENGTH.min and .max characters and bodies within BODY_LENGTH,
 // so every slide carries about the same amount of text; the screen puts every
-// title at the same height. **Word** in a body is drawn bold.
+// title at the same height.
 
 /** @typedef {'ios' | 'android'} Platform */
-/** @typedef {'scale' | 'levels' | 'fade' | 'widget' | 'alert'} SlideArt */
+/** @typedef {'scale' | 'levels' | 'widget' | 'alert'} SlideArt */
 /** @typedef {{ key: string, title: string, body: string, art: SlideArt }} Slide */
 
 export const TITLE_LENGTH = Object.freeze({ min: 18, max: 24 });
-// Counted without the ** marks. Two lines at the default text size on a phone,
+// Two lines at the default text size on a phone,
 // inside the four the screen reserves, so nothing below a title moves.
 export const BODY_LENGTH = Object.freeze({ min: 55, max: 75 });
 
@@ -30,8 +30,6 @@ export function onboardingSlides(platform) {
       body: 'Each reading is a score, a short explanation and when it was updated.' },
     { key: 'scale', art: 'levels', title: 'Ten is most significant',
       body: 'Higher scores mean more consequential news. The color follows the score.' },
-    { key: 'fade', art: 'fade', title: 'Scores fade with time',
-      body: '**New** marks a development’s first coverage. As it ages, its score eases.' },
     // Apple writes Home Screen as a name; Android does not.
     { key: 'widget', art: 'widget', title: platform === 'ios' ? 'Also on your Home Screen' : 'Also on your home screen',
       body: 'A widget shows the current rating and when it was updated.' },

@@ -15,9 +15,9 @@ const require = createRequire(import.meta.url);
 
 const platforms = ['ios', 'android'];
 
-test('both apps show the same five slides, the widget named as each platform names it', () => {
+test('both apps show the same four slides, the widget named as each platform names it', () => {
   const keys = platform => onboardingSlides(platform).map(slide => slide.key);
-  assert.deepEqual(keys('ios'), ['what', 'scale', 'fade', 'widget', 'alert']);
+  assert.deepEqual(keys('ios'), ['what', 'scale', 'widget', 'alert']);
   assert.deepEqual(keys('android'), keys('ios'));
   const slide = (platform, key) => onboardingSlides(platform).find(s => s.key === key);
   assert.equal(slide('ios', 'widget').title, 'Also on your Home Screen', 'Apple writes Home Screen as a name');
@@ -48,19 +48,11 @@ test('titles and descriptions are each about the same length on every slide', ()
   for (const platform of platforms) for (const { key, title, body } of onboardingSlides(platform)) {
     assert.ok(title.length >= TITLE_LENGTH.min && title.length <= TITLE_LENGTH.max, `${platform} ${key}: "${title}" is ${title.length} characters`);
     assert.ok(!/[.!?]$/.test(title), `${platform} ${key}: titles share one form, with no end punctuation`);
-    const plain = body.replace(/\*\*/g, '');
+    const plain = body;
     assert.ok(plain.length >= BODY_LENGTH.min && plain.length <= BODY_LENGTH.max, `${platform} ${key}: "${plain}" is ${plain.length} characters`);
   }
 });
 
-// Reported 2026-09-27: "a bold New:" described the label instead of showing it.
-test('New is shown in bold, without a colon, and never described as bold', () => {
-  const fade = onboardingSlides('ios').find(slide => slide.key === 'fade').body;
-  assert.match(fade, /\*\*New\*\* /);
-  for (const platform of platforms) for (const { body } of onboardingSlides(platform)) {
-    assert.doesNotMatch(body, /New:|\bbold\b/, body);
-  }
-});
 
 // The screen itself, executed with stand-in hooks the way the settings tests
 // run theirs: rendered props, not layout. The website cannot draw the
@@ -110,17 +102,14 @@ test('the website has no introduction; a link to it opens the reading', () => {
   assert.equal(tree.props.href, '/');
 });
 
-test('every slide reserves the same title and description heights, and New is drawn bold', () => {
+test('every slide reserves the same title and description heights', () => {
   for (const platform of platforms) {
     const all = nodes(renderIntroduction(platform));
     const titles = all.filter(n => n.props?.testID === 'onboarding-title');
     const bodies = all.filter(n => n.props?.testID === 'onboarding-body');
-    assert.equal(titles.length, 5, platform);
+    assert.equal(titles.length, 4, platform);
     assert.deepEqual(new Set(titles.map(n => `${n.props.style.minHeight}/${n.props.style.lineHeight}`)).size, 1, 'one title box for every slide');
     assert.deepEqual(new Set(bodies.map(n => `${n.props.style.minHeight}/${n.props.style.lineHeight}`)).size, 1, 'one description box for every slide');
-    const bold = all.filter(n => n.type === 'Text' && n.props.children === 'New');
-    assert.ok(bold.length >= 2 && bold.every(n => n.props.style.fontWeight === '700'), 'New is bold in the sentence and the illustration');
-    assert.ok(!JSON.stringify(bodies.map(n => n.props.children)).includes('**'), 'no markup reaches the screen');
   }
 });
 
@@ -152,7 +141,7 @@ test('the illustrations use the real level colors, and the widget is the current
     // drew a hard stripe. The tiles are the reading screen's own canvas at
     // each level, exactly as readingGradientSvg draws it.
     const tiles = all.filter(n => /^onboarding-level-\d+$/.test(n.props?.testID ?? ''));
-    assert.equal(tiles.length, 14, 'ten on the scale, four on the fade');
+    assert.equal(tiles.length, 10, 'one per level');
     for (const tile of tiles) {
       const level = Number(tile.props.testID.split('-').pop());
       const size = tile.props.style.width;

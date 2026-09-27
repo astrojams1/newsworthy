@@ -32,7 +32,7 @@ export default function Onboarding() {
   return process.env.EXPO_OS === 'web' ? <Redirect href="/" /> : <Introduction />;
 }
 
-// Five slides, swiped or stepped with Next. The apps open it once on first
+// Four slides, swiped or stepped with Next. The apps open it once on first
 // launch; Settings replays it. It is marked seen as soon as it opens, so
 // closing it any way at all — Skip, Done, the system back gesture — does not
 // bring it back on the next launch.
@@ -80,9 +80,7 @@ function Introduction() {
         </View>
         <View style={{ width: column, height: TEXT_BLOCK, alignItems: 'center' }}>
           <Text testID="onboarding-title" accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: TITLE_LINE, minHeight: TITLE_LINE, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
-          <Text testID="onboarding-body" style={{ color: theme.muted, fontSize: 17, lineHeight: BODY_LINE, minHeight: BODY_LINE * BODY_LINES, textAlign: 'center', marginTop: 12 }}>
-            {slide.body.split(/\*\*(.+?)\*\*/).map((part, i) => i % 2 ? <Text key={i} style={{ fontWeight: '700', color: theme.ink }}>{part}</Text> : part)}
-          </Text>
+          <Text testID="onboarding-body" style={{ color: theme.muted, fontSize: 17, lineHeight: BODY_LINE, minHeight: BODY_LINE * BODY_LINES, textAlign: 'center', marginTop: 12 }}>{slide.body}</Text>
         </View>
       </View>)}
     </ScrollView>
@@ -190,13 +188,6 @@ function Art({ art, theme, score, saved, explanation }: { art: SlideArt; theme: 
   if (art === 'levels') return <View style={{ gap: 10 }}>
     {[[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]].map(row => <View key={row[0]} style={{ flexDirection: 'row', gap: 10 }}>
       {row.map(level => <LevelTile key={level} level={level} size={58} dark={theme.dark} />)}
-    </View>)}
-  </View>;
-  // One development ageing: first reported at 8, marked New, then easing.
-  if (art === 'fade') return <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 12 }}>
-    {[8, 6, 4, 2].map((level, i) => <View key={level} style={{ alignItems: 'center', gap: 8 }}>
-      <Text style={{ color: theme.ink, fontSize: 13, fontWeight: '700', opacity: i === 0 ? 1 : 0 }}>New</Text>
-      <LevelTile level={level} size={64} dark={theme.dark} />
     </View>)}
   </View>;
   if (art === 'widget') return <View style={lifted}><SmallWidget score={score} saved={saved} dark={theme.dark} /></View>;

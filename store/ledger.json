@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T02:13:43+00:00",
+  "updated_at": "2026-09-27T02:16:49+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -952,12 +952,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Illustrations redesigned after owner review of the dark levels slide (muddy bars, stripe artifacts, tiny labels). Level and fade tiles now draw the reading screen's own canvas (readingGradientSvg) per level with that level's ink; slide 1 is the reading screen in a card on its canvas; widget and notification lifted with a shadow; art and text grouped at fixed heights; descriptions shortened to two lines. Inspected all 20 screens (5 slides x iOS/Android x light/dark) at 393x852@2x in Chromium with Inter/JetBrains Mono (iOS) and Roboto/Roboto Mono (Android) as font stand-ins. Not seen on a device: SF Pro/SF Mono metrics, iOS widget corner radius, shadow rendering on Android.",
+      "summary": "Fade slide removed (owner decision 2026-09-27); the introduction is four slides: the reading, the scale, the widget, optional notifications. All 16 screens (iOS/Android x light/dark) inspected at 393x852@2x in Chromium with stand-in fonts. Not seen on a device.",
       "evidence": [
-        "test/onboarding.test.js tile and card canvas cases"
+        "test/onboarding.test.js"
       ],
       "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
-      "updated_at": "2026-09-27T02:13:43+00:00"
+      "updated_at": "2026-09-27T02:16:49+00:00"
     }
   },
   "events": [
@@ -5966,6 +5966,22 @@
         ],
         "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
         "updated_at": "2026-09-27T02:13:43+00:00"
+      }
+    },
+    {
+      "sequence": 313,
+      "at": "2026-09-27T02:16:49+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Fade slide removed (owner decision 2026-09-27); the introduction is four slides: the reading, the scale, the widget, optional notifications. All 16 screens (iOS/Android x light/dark) inspected at 393x852@2x in Chromium with stand-in fonts. Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T02:16:49+00:00"
       }
     }
   ],
