@@ -10,9 +10,9 @@ decisions are where a remake starts, and
 The store gate itself (uploaded, approved, rejected) is `store.preview-video`
 in the [release ledger](../ledger.md); record it there too.
 
-| Cut | Rendered from | Why | Outputs | Verified | Open |
-|---|---|---|---|---|---|
-| [2026-09-27](#2026-09-27) | `2f4abbf` | First cut, owner request | iPhone 886×1920, Play 1080×1920, 15.1 s | Store rules, decoded frames, loudness | Guideline 2.3.4; poster frame; YouTube upload |
+| Cut | Why | What changed | Verified | Open |
+|---|---|---|---|---|
+| [2026-09-27](#2026-09-27) | First cut, owner request | Everything: six scenes, iPhone 886×1920 and Play 1080×1920, 15.1 s | Store rules, decoded frames, loudness | Guideline 2.3.4; poster frame; YouTube upload |
 
 ## Lessons
 
@@ -49,7 +49,7 @@ and add to it when a cut teaches something new; date each item.
   Goertzel magnitudes at named frequencies. FM bell tails ran seconds into
   later scenes until their length was cut to four time constants with a fade.
 - **Environment** (2026-09-27). The cloud image's ffmpeg (Playwright's)
-  encodes VP8 only: install `imageio-ffmpeg` and set `FFMPEG_PATH`. Its
+  encodes VP8 only: install `imageio-ffmpeg` under `artifacts/tools`. Its
   Chromium has no H.264 decoder, so the MP4s cannot be played locally; trust
   `--verify` and the published review page. `ffmpeg -progress` repeats its
   block, so read the last `frame=` line.
@@ -58,6 +58,28 @@ and add to it when a cut teaches something new; date each item.
   schedule, so they are not shown changing with a notification. Under prompt
   v19 a 3 means "news elsewhere; little chance of market impact", not "a
   normal day": the film shows the scale, it does not describe it.
+- **Safe defaults** (2026-09-27). In the first dry run of the skill, a
+  mistyped `--stills` fell through to a full render that would have
+  overwritten the committed cuts; only the ffmpeg preflight stopped it.
+  Rendering now takes `--render`, and an unknown or malformed option refuses
+  to run.
+- **Staleness by content** (2026-09-27). Judging staleness by the commit that
+  last changed a video flagged notes and a refactor proved identical, and
+  missed copy sources outside any scene. Each render now records every input's
+  hash in `cut.json`, and `--stale` compares content.
+- **Copy checks** (2026-09-27). A lowercase substring check could not tell
+  "Home Screen" from "home screen", and passed a rename that kept the old
+  words inside it. Each line now carries an exact `quote`, checked with case
+  and quotes by `--stale` and by `npm test`.
+- **Shell state** (2026-09-27). Exported variables do not survive between tool
+  calls, so the renderer finds an ffmpeg under `artifacts/tools` without one.
+- **Before and after** (2026-09-27). The cheapest proof of any edit is the same
+  stills before and after it; `--stills` keeps the previous run and reports
+  what changed.
+- **Dry runs** (2026-09-27). A fresh agent given only the skill found and made
+  a two-line copy change in about six minutes, twenty seconds of it commands,
+  and its report produced the five lessons above. Run one again when the skill
+  changes much.
 
 ## 2026-09-27
 

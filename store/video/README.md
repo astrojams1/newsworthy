@@ -29,11 +29,13 @@ notification card and "home screen" in lower case, as the introduction writes it
 | Time | Scene |
 |---|---|
 | 0.0–1.4 s | The splash's dash is drawn, then lifts into the reading as its empty-state dash; the header and `∕10` arrive. |
-| 1.4–4.9 s | The number rolls like an odometer drum from the dash through 1 to 10, the canvas warming from Fog to Ember, then cools back to a 3. "News, rated 1 to 10". |
-| 4.9–7.0 s | The sentence is set down and the time appears. "The number rates the news right now. The sentence names the top story." |
-| 7.0–9.4 s | The screen closes into a medium widget, every element travelling to its place in it, and a small widget splits away. "Also on your Home Screen". |
-| 9.4–12.3 s | Light gives way to dark along the canvas's own 160-degree diagonal; the widgets recede; the High-score alerts switch turns on, and a notification arrives. "Optional notifications. At the score you choose." |
-| 12.3–15.1 s | The notification's icon turns over, dark face to light, as it flies to the centre and the light spreads from it: "Newsworthy. World news, rated by significance." |
+| 1.4–4.9 s | The number rolls like an odometer drum from the dash through 1 to 10, the canvas warming from Fog to Ember, then cools back to a 3, under the introduction's first title. |
+| 4.9–7.0 s | The sentence is set down as placeholder bars and the time appears, under the introduction's first description. |
+| 7.0–9.4 s | The screen closes into a medium widget, every element travelling to its place in it, and a small widget splits away, under the widget slide's title. |
+| 9.4–12.3 s | Light gives way to dark along the canvas's own 160-degree diagonal; the widgets recede; the alerts switch turns on, and a notification arrives, under the notification slide's title. |
+| 12.3–15.1 s | The notification's icon turns over, dark face to light, as it flies to the centre and the light spreads from it; the name and the core tagline arrive. |
+
+The words themselves are only in `reel.js`, so a copy change is one edit there.
 
 ## What it may and may not claim
 
@@ -53,7 +55,7 @@ notification card and "home screen" in lower case, as the introduction writes it
   mix neighbours in OKLab, the space `design/colors.js` spaces them in. Layout
   follows `apps/client/app/index.tsx`, the widgets `NewsworthyWidget.swift` and
   `rating_widget.xml`, the settings group `settings/notifications.tsx`, and
-  the notification `src/push.js` ("Newsworthy · 8/10").
+  the notification `src/push.js`.
 - **Typefaces stand in for the system's.** SF Pro and SF Mono cannot be
   redistributed, so the iOS cut sets Inter and the numerals in Roboto Mono
   Light, whose outline matches SF Mono Light's at the same size: the same
@@ -71,19 +73,28 @@ notification card and "home screen" in lower case, as the introduction writes it
 
 ```sh
 npm ci
-node store/scripts/render-video.mjs --stale                                  # what the app changed since the last cut
-node store/scripts/render-video.mjs --platform ios --stills 1.6,5.9,8.9      # single renders and a contact sheet
-node store/scripts/render-video.mjs --platform ios --segment 2.85,3.2        # finished, blurred frames as PNGs
-FFMPEG_PATH=/path/to/ffmpeg node store/scripts/render-video.mjs              # both cuts
-FFMPEG_PATH=/path/to/ffmpeg node store/scripts/render-video.mjs --verify     # the cuts against the store rules
-FFMPEG_PATH=/path/to/ffmpeg node store/scripts/render-video.mjs --viewer     # the review page, ready to publish
+pip install --quiet --target artifacts/tools/py imageio-ffmpeg               # once: an ffmpeg with H.264 and AAC, found there
+node store/scripts/render-video.mjs --stale                                  # what changed since the last render, and which stills to look at
+node store/scripts/render-video.mjs --stills 1.6,5.9,8.9 --platform ios      # single renders, a sheet, and the changes since the last run
+node store/scripts/render-video.mjs --segment 2.85,3.2 --platform ios        # finished, blurred frames as PNGs
+node store/scripts/render-video.mjs --render                                 # both cuts, recorded in cut.json
+node store/scripts/render-video.mjs --verify                                 # the cuts against the store rules and their record
+node store/scripts/render-video.mjs --viewer                                 # the review page, ready to publish
 ```
 
-It needs Chromium (`CHROMIUM_PATH`, or the cloud image's copy) and an ffmpeg
-built with libx264 and AAC (`FFMPEG_PATH`, or `ffmpeg` on the path). Stills,
-segments, contact sheets and the review page go to `artifacts/preview-video/`.
-A full cut takes about fifteen minutes; both run in parallel in about nineteen
-on four cores.
+It needs Chromium (`CHROMIUM_PATH`, or the cloud image's copy) and, to encode,
+an ffmpeg built with libx264 and AAC: `FFMPEG_PATH`, else the one installed
+under `artifacts/tools`, else `ffmpeg` on the path. Only `--render` writes the
+cuts, and an unknown or malformed option refuses to run. Stills, segments,
+contact sheets and the review page go to `artifacts/preview-video/`. A full
+cut takes about fifteen minutes; both run in parallel in about nineteen on
+four cores.
+
+Every render records in `cut.json` its output's sha256 and the hash of every
+file the film is made from: its own source (`FILM` in `reel.js`), the app files
+each scene draws, and the files its lines quote. `--stale` compares against
+that record, and `--verify` checks each committed cut still matches it. It is
+written only by `--render`.
 
 Motion blur is sampled. Each frame averages renders spread across half the
 frame interval, a 180-degree shutter, weighted to open and close softly and

@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { CUES, DURATION, FPS } from '../store/video/timeline.js';
-import { COPY, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGETS } from '../store/video/reel.js';
+import { COPY, FILM, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGETS } from '../store/video/reel.js';
 
 // The store preview reel (store/video) is rendered rarely and slowly, so the
 // cheap facts it rests on are checked here: a remake that breaks one finds out
@@ -29,9 +29,22 @@ test('every cue and scene falls inside the film, scenes in order', () => {
 
 // --stale compares these files against the last cut; a renamed or deleted one
 // would drop out of the comparison silently.
-test('every file the reel depicts or quotes exists', () => {
+test('every file the reel is made from, depicts or quotes exists', () => {
+  for (const file of FILM) assert.ok(existsSync(file), `the film is made from missing ${file}`);
   for (const scene of SCENES) for (const file of scene.depicts) assert.ok(existsSync(file), `${scene.id} depicts missing ${file}`);
   for (const [key, line] of Object.entries(COPY)) assert.ok(existsSync(line.source), `${key} quotes missing ${line.source}`);
+});
+
+// The film quotes the app. When the app's words change, this says so in the
+// same change, rather than a store listing going on showing the old ones.
+test('every line on screen is still in its source, word for word', () => {
+  for (const [key, line] of Object.entries(COPY)) {
+    const source = readFileSync(line.source, 'utf8');
+    for (const quote of [line.quote].flat()) {
+      assert.ok(source.includes(quote), `store/video/reel.js line ${key} quotes ${quote} from ${line.source}, which no longer contains it. ` +
+        'Update the line there; the store preview video then needs a new render (.agents/skills/newsworthy-preview-reel/SKILL.md).');
+    }
+  }
 });
 
 test('each cut renders at its store size', () => {

@@ -4,6 +4,7 @@
 // The film reads its words from here; the renderer's --stale and --verify
 // read the rest; test/preview-reel.test.js keeps the paths real. When the app
 // changes, --stale lists the scenes whose sources moved since the last cut.
+import { CUES, DURATION } from './timeline.js';
 
 export const SCENES = [
   { id: 'open', start: 0, title: 'The splash dash lifts into the reading',
@@ -24,25 +25,40 @@ export const SCENES = [
     depicts: ['scripts/generate-brand.mjs', 'public/tokens.js'] },
 ];
 
-// Every line the film writes and the file it is taken from. A line may be a
-// fragment of its source; `match` is the part that must still be there when
-// the rest is illustrative (a time, a score).
+// Every line the film writes, the file it is taken from, and when it is on
+// screen. `quote` is the exact text the source must still contain, quotes and
+// tags included, so a line that changes case, loses a word or is renamed around
+// it is caught; `text` is what the film draws, which may be a fragment of it.
+const card = [CUES.card[0], CUES.flight[0] + 0.35];
 export const COPY = {
-  s1: { text: 'News, rated 1 to 10', source: 'apps/client/lib/onboarding.js' },
-  s2a: { text: 'The number rates the news right now.', source: 'apps/client/lib/onboarding.js' },
-  s2b: { text: 'The sentence names the top story.', source: 'apps/client/lib/onboarding.js' },
-  s3: { ios: 'Also on your Home Screen', android: 'Also on your home screen', source: 'apps/client/lib/onboarding.js' },
-  s4: { text: 'Optional notifications', source: 'apps/client/lib/onboarding.js' },
-  s4b: { text: 'At the score you choose.', source: 'apps/client/lib/onboarding.js' },
-  wordmark: { text: 'NEWSWORTHY', source: 'apps/client/components/brand-mark.tsx' },
-  checked: { text: 'Checked 4 min ago', match: 'Checked', source: 'apps/client/app/index.tsx' },
-  alerts: { text: 'High-score alerts', source: 'apps/client/app/settings/notifications.tsx' },
-  threshold: { text: 'Threshold', source: 'apps/client/app/settings/notifications.tsx' },
-  thresholdValue: { text: '8 or higher', match: 'or higher', source: 'apps/client/app/settings/notifications.tsx' },
-  notification: { text: 'Newsworthy · 8/10', match: 'Newsworthy · ', source: 'src/push.js' },
-  name: { text: 'Newsworthy', source: 'docs/product-messaging.md' },
-  tagline: { text: 'World news, rated by significance.', source: 'docs/product-messaging.md' },
+  s1: { text: 'News, rated 1 to 10', source: 'apps/client/lib/onboarding.js', quote: "title: 'News, rated 1 to 10'", on: CUES.s1 },
+  s2a: { text: 'The number rates the news right now.', source: 'apps/client/lib/onboarding.js', quote: "'The number rates the news right now.", on: CUES.s2 },
+  s2b: { text: 'The sentence names the top story.', source: 'apps/client/lib/onboarding.js', quote: "The sentence names the top story.'", on: [CUES.bars[0], CUES.s2[1]] },
+  s3: { ios: 'Also on your Home Screen', android: 'Also on your home screen', source: 'apps/client/lib/onboarding.js',
+    quote: ["'Also on your Home Screen'", "'Also on your home screen'"], on: CUES.s3 },
+  s4: { text: 'Optional notifications', source: 'apps/client/lib/onboarding.js', quote: "title: 'Optional notifications'", on: CUES.s4 },
+  s4b: { text: 'At the score you choose.', source: 'apps/client/lib/onboarding.js', quote: "at the score you choose.'", on: [CUES.s4[0] + 0.2, CUES.s4[1]] },
+  wordmark: { text: 'NEWSWORTHY', source: 'apps/client/components/brand-mark.tsx', quote: '>NEWSWORTHY<', on: [CUES.chrome[0], CUES.widgetsOut[1]] },
+  checked: { text: 'Checked 4 min ago', source: 'apps/client/app/index.tsx', quote: '>Checked {relative}<', on: [CUES.checked[0], CUES.morph[0] + 0.4] },
+  alerts: { text: 'High-score alerts', source: 'apps/client/app/settings/notifications.tsx', quote: 'label="High-score alerts"', on: card },
+  threshold: { text: 'Threshold', source: 'apps/client/app/settings/notifications.tsx', quote: 'label="Threshold"', on: card },
+  thresholdValue: { text: '8 or higher', source: 'apps/client/app/settings/notifications.tsx', quote: '`${threshold} or higher`', on: card },
+  notification: { text: 'Newsworthy · 8/10', source: 'src/push.js', quote: 'title: `Newsworthy · ${score}/10`', on: [CUES.notification[0], CUES.flight[0] + 0.3] },
+  name: { text: 'Newsworthy', source: 'docs/product-messaging.md', quote: '“Newsworthy”', on: [CUES.word[0], DURATION] },
+  tagline: { text: 'World news, rated by significance.', source: 'docs/product-messaging.md', quote: '**World news, rated by significance.**', on: [CUES.tagline[0], DURATION] },
 };
+
+// The files that make the picture and the sound, besides the app files above.
+// A change to one needs a new render; documentation here does not.
+export const FILM = [
+  'store/video/composition.html', 'store/video/composition.js', 'store/video/timeline.js', 'store/video/reel.js',
+  'store/video/score.mjs', 'store/scripts/render-video.mjs', 'design/colors.js',
+  'store/video/fonts/inter-latin-opsz-normal.woff2', 'store/video/fonts/roboto-latin-400-normal.woff2',
+  'store/video/fonts/roboto-latin-500-normal.woff2', 'store/video/fonts/roboto-mono-latin-300-normal.woff2',
+];
+
+// Where each render records what it was made from (see render-video.mjs).
+export const CUT_RECORD = 'store/video/cut.json';
 
 // The frame to show before a preview plays: the reading, composed, with its
 // line beneath. App Store Connect sets it by hand (Edit Poster Frame).

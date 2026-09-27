@@ -24,6 +24,10 @@ Check the relevant claims against implementation and evidence:
 - Store listing source, screenshots/captions and release ledgers when the change
   affects mobile behavior or availability. Source support, deployed web behavior,
   installed native builds and public store availability are separate claims.
+- The store preview video: `node store/scripts/render-video.mjs --stale` names
+  any scene or on-screen line the change reaches. Re-render it with
+  `.agents/skills/newsworthy-preview-reel/SKILL.md`, or say in the note that the
+  video is now out of date.
 - Caller prose, OpenAPI and rating skills when the contract changes. Preserve
   published prompt bytes and the rating/provenance rules; use the prompt-update
   skill for prompt edits.

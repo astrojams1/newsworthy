@@ -1,18 +1,19 @@
 // Renders, checks and reviews the store preview reel (store/video).
 //
-//   node store/scripts/render-video.mjs --stale        what changed in the app since the last cut
-//   node store/scripts/render-video.mjs --stills 1.2,4.9,8.4
-//                                    single renders and a contact sheet in artifacts/
+//   node store/scripts/render-video.mjs --stale          what changed since the last cut, and which stills to look at
+//   node store/scripts/render-video.mjs --stills 1.3,3.6,6.0
+//                                    single renders, a contact sheet, and what changed since the last --stills run
 //   node store/scripts/render-video.mjs --segment 2.85,3.2
 //                                    finished, motion-blurred frames of a span as PNGs
-//   node store/scripts/render-video.mjs                both cuts; --platform ios for one
-//   node store/scripts/render-video.mjs --verify       the rendered cuts against the store rules
-//   node store/scripts/render-video.mjs --viewer       the review page, ready to publish
+//   node store/scripts/render-video.mjs --render         both cuts (--platform ios for one); writes store/video/cut.json
+//   node store/scripts/render-video.mjs --verify         the committed cuts against the store rules and cut.json
+//   node store/scripts/render-video.mjs --viewer         the review page, ready to publish
 //
-// Rendering needs Chromium (CHROMIUM_PATH or the cloud image's copy); encoding,
-// --verify and --viewer need an ffmpeg with libx264 and AAC (FFMPEG_PATH, or
-// ffmpeg on PATH). The skill in .agents/skills/newsworthy-preview-reel says when
-// to use which, and store/video/ledger.md records every cut.
+// Rendering needs Chromium (CHROMIUM_PATH or the cloud image's copy); --render,
+// --verify and --viewer need an ffmpeg with libx264 and AAC: FFMPEG_PATH, else
+// one installed under artifacts/tools (see the preflight message), else ffmpeg
+// on PATH. The skill in .agents/skills/newsworthy-preview-reel says when to use
+// which, and store/video/ledger.md records every cut.
 //
 // Motion blur is sampled, not faked: each frame averages renders spread across
 // half the frame interval, a 180-degree shutter, weighted to open and close
@@ -21,8 +22,8 @@
 // rolls, so no two samples of a moving edge land far enough apart to show as
 // separate copies.
 import { createServer } from 'node:http';
-import { readFileSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmdirSync, writeFileSync } from 'node:fs';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
@@ -30,25 +31,51 @@ import { basename, dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { CUES, DOWN, DURATION, FPS, UP_STEPS, scoreAt } from '../video/timeline.js';
-import { COPY, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGETS } from '../video/reel.js';
+import { COPY, CUT_RECORD, FILM, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGETS } from '../video/reel.js';
 import { renderScore, wav } from '../video/score.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const artifacts = join(root, 'artifacts/preview-video');
-const option = name => { const i = process.argv.indexOf(`--${name}`); return i < 0 ? undefined : process.argv[i + 1]?.startsWith('--') ? true : process.argv[i + 1] ?? true; };
-const list = name => (typeof option(name) === 'string' ? option(name).split(',').map(Number) : null);
-const platforms = typeof option('platform') === 'string' ? [option('platform')] : Object.keys(TARGETS);
-const stills = list('stills'), segment = list('segment');
-const draft = Boolean(option('draft')), SHUTTER = 0.5;
-const ffmpeg = process.env.FFMPEG_PATH ?? 'ffmpeg';
-const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+
+// ---------------------------------------------------------------- arguments
+// Strict, because the one mode that overwrites the committed cuts has to be
+// asked for by name: a mistyped --stills once fell through to a full render.
+const MODES = ['stale', 'stills', 'segment', 'render', 'verify', 'viewer'];
+const OPTIONS = { stale: 'flag', stills: 'list', segment: 'list', render: 'flag', verify: 'flag', viewer: 'flag', platform: 'value', draft: 'flag' };
+const USAGE = 'Usage: node store/scripts/render-video.mjs --stale | --stills 1.3,3.6 | --segment 2.85,3.2 | --render | --verify | --viewer  [--platform ios|android] [--draft]';
+function parse(list) {
+  const out = {};
+  for (let i = 0; i < list.length; i++) {
+    const [flag, inline] = list[i].split(/=(.*)/s);
+    const name = flag.replace(/^--/, '');
+    if (!flag.startsWith('--') || !OPTIONS[name]) throw new Error(`Unknown option ${list[i]}\n${USAGE}`);
+    if (OPTIONS[name] === 'flag') {
+      if (inline !== undefined) throw new Error(`--${name} takes no value\n${USAGE}`);
+      out[name] = true;
+      continue;
+    }
+    const value = inline ?? (list[i + 1]?.startsWith('--') ? undefined : list[++i]);
+    if (!value) throw new Error(`--${name} needs a value\n${USAGE}`);
+    if (OPTIONS[name] === 'list') {
+      out[name] = value.split(',').map(Number);
+      if (out[name].some(t => !Number.isFinite(t) || t < 0 || t > DURATION)) throw new Error(`--${name} takes times in seconds from 0 to ${DURATION}`);
+    } else out[name] = value;
+  }
+  const modes = MODES.filter(m => out[m]);
+  if (modes.length !== 1) throw new Error(`${modes.length ? `Choose one of --${modes.join(', --')}` : 'Choose what to do'}.\n${USAGE}`);
+  if (out.segment && out.segment.length !== 2) throw new Error('--segment takes a start and an end, e.g. 2.85,3.2');
+  if (out.platform && !TARGETS[out.platform]) throw new Error(`Unknown platform ${out.platform}; one of ${Object.keys(TARGETS).join(', ')}`);
+  return { ...out, mode: modes[0], platforms: out.platform ? [out.platform] : Object.keys(TARGETS) };
+}
+let args;
 
 // ---------------------------------------------------------------- sampling
 // Moments with motion besides the number: the screen closing into a widget,
 // the widgets receding, the wipe, the card, the notification and the icon.
+const SHUTTER = 0.5;
 const MOVING = [CUES.morph, CUES.split, CUES.wipe, CUES.widgetsOut, CUES.card, CUES.toggle, CUES.notification, CUES.flight, CUES.word];
 function samplesAt(t, target) {
-  if (draft) return 1;
+  if (args.draft) return 1;
   let n = MOVING.some(([a, b]) => t > a - 0.05 && t < b + 0.25) ? 12 : 4;
   if (t > UP_STEPS[0].start - 0.05 && t < DOWN.start + 1.3) {
     // The drum's faces are 1.25 numeral heights apart; the numeral is about
@@ -64,16 +91,28 @@ const TO_LINEAR = Float32Array.from({ length: 256 }, (_, v) => { const c = v / 2
 const TO_SRGB = Uint8Array.from({ length: 16384 }, (_, i) => { const l = i / 16383; return Math.round(255 * (l <= 0.0031308 ? 12.92 * l : 1.055 * l ** (1 / 2.4) - 0.055)); });
 
 // ---------------------------------------------------------------- tools
-// Fail before a ten-minute render rather than at its end.
+// An ffmpeg installed where the preflight message says is found without an
+// environment variable, which does not survive between shell calls.
+const TOOLS = 'artifacts/tools/py';
+const ffmpeg = process.env.FFMPEG_PATH ?? (() => {
+  const dir = join(root, TOOLS, 'imageio_ffmpeg/binaries');
+  const found = existsSync(dir) && readdirSync(dir).find(name => name.startsWith('ffmpeg'));
+  return found ? join(dir, found) : 'ffmpeg';
+})();
+// Fail before a fifteen-minute render rather than at its end.
 function preflight() {
   const found = spawnSync(ffmpeg, ['-hide_banner', '-encoders'], { encoding: 'utf8' });
   if (found.error || !/libx264/.test(found.stdout) || !/ aac /.test(found.stdout)) {
-    throw new Error(`${ffmpeg} cannot encode H.264 and AAC. Set FFMPEG_PATH to one that can; in a cloud session:\n` +
-      '  pip install --target "$SCRATCH/py" imageio-ffmpeg\n  export FFMPEG_PATH=$(ls "$SCRATCH"/py/imageio_ffmpeg/binaries/ffmpeg-*)');
+    throw new Error(`${ffmpeg} cannot encode H.264 and AAC. From the repository root, install one where this script looks for it:\n` +
+      `  pip install --quiet --target ${TOOLS} imageio-ffmpeg\nor set FFMPEG_PATH to one that can.`);
   }
 }
 // ffmpeg's report on a file: its stream table goes to stderr.
-const probe = args => spawnSync(ffmpeg, ['-hide_banner', ...args], { encoding: 'utf8', maxBuffer: 1 << 26 });
+const probe = list => spawnSync(ffmpeg, ['-hide_banner', ...list], { encoding: 'utf8', maxBuffer: 1 << 26 });
+const git = (...list) => execFileSync('git', list, { cwd: root, encoding: 'utf8' }).trim();
+const sha256 = data => createHash('sha256').update(data).digest('hex');
+const hashOf = path => (existsSync(join(root, path)) ? sha256(readFileSync(join(root, path))) : null);
+const readText = path => (existsSync(join(root, path)) ? readFileSync(join(root, path), 'utf8') : '');
 
 // ---------------------------------------------------------------- browser
 let server, browser, origin;
@@ -99,8 +138,8 @@ async function start() {
   });
 }
 
-function run(command, args) {
-  const child = spawn(command, args, { stdio: ['pipe', 'ignore', 'pipe'] });
+function run(command, list) {
+  const child = spawn(command, list, { stdio: ['pipe', 'ignore', 'pipe'] });
   let log = '';
   child.stderr.on('data', chunk => { log = (log + chunk).slice(-4000); });
   const done = new Promise((ok, fail) => child.on('close', code => (code === 0 ? ok() : fail(new Error(`${command} exited ${code}\n${log}`)))));
@@ -131,41 +170,84 @@ async function open(platform) {
 }
 
 // ---------------------------------------------------------------- stills
-async function renderStills(platform) {
-  const { capture, page } = await open(platform);
-  await mkdir(artifacts, { recursive: true });
-  const shots = [];
-  for (const t of stills) {
-    const png = await capture(t);
-    await writeFile(join(artifacts, `${platform}-${t.toFixed(2)}.png`), png);
-    shots.push({ t, png });
-  }
-  await page.close();
-  // One sheet to review a run of stills at a glance.
-  const tile = 300, meta = await sharp(shots[0].png).metadata(), th = Math.round(tile * meta.height / meta.width), cols = Math.min(6, shots.length);
-  const rows = Math.ceil(shots.length / cols);
-  const tiles = await Promise.all(shots.map(async ({ t, png }, i) => ({
-    input: await sharp(png).resize(tile, th).composite([{ input: Buffer.from(`<svg width="${tile}" height="28"><rect width="72" height="24" rx="6" fill="#000" fill-opacity=".6"/><text x="10" y="17" font-family="monospace" font-size="15" fill="#fff">${t.toFixed(2)}s</text></svg>`), top: 4, left: 4 }]).png().toBuffer(),
+// A labelled grid of PNGs; the label sits low so the status bar stays visible.
+async function sheet(file, shots, tile = 300) {
+  const meta = await sharp(shots[0].png).metadata(), th = Math.round(tile * meta.height / meta.width);
+  const cols = Math.min(6, shots.length), rows = Math.ceil(shots.length / cols);
+  const badge = label => Buffer.from(`<svg width="${tile}" height="28"><rect width="${12 + 9 * label.length}" height="24" rx="6" fill="#000" fill-opacity=".6"/><text x="8" y="17" font-family="monospace" font-size="15" fill="#fff">${label}</text></svg>`);
+  const tiles = await Promise.all(shots.map(async ({ label, png }, i) => ({
+    input: await sharp(png).resize(tile, th).composite([{ input: badge(label), top: th - 32, left: 4 }]).png().toBuffer(),
     left: (i % cols) * (tile + 8), top: Math.floor(i / cols) * (th + 8),
   })));
-  const sheet = join(artifacts, `${platform}-sheet.png`);
-  await sharp({ create: { width: cols * (tile + 8) - 8, height: rows * (th + 8) - 8, channels: 3, background: '#222' } }).composite(tiles).png().toFile(sheet);
-  console.log(`${platform}: ${shots.length} stills, sheet at ${sheet}`);
+  await sharp({ create: { width: cols * (tile + 8) - 8, height: rows * (th + 8) - 8, channels: 3, background: '#222' } }).composite(tiles).png().toFile(file);
+}
+
+// Each run keeps the previous run's stills, so rendering the same times before
+// and after an edit shows exactly which frames it changed.
+async function renderStills(platform) {
+  const { capture, page } = await open(platform);
+  await mkdir(join(artifacts, 'previous'), { recursive: true });
+  const shots = [], changed = [], same = [];
+  for (const t of args.stills) {
+    const name = `${platform}-${t.toFixed(2)}.png`, file = join(artifacts, name), before = join(artifacts, 'previous', name);
+    const had = existsSync(file);
+    if (had) await rename(file, before);
+    const png = await capture(t);
+    await writeFile(file, png);
+    shots.push({ label: `${t.toFixed(2)}s`, png });
+    if (had) { const old = readFileSync(before); (old.equals(png) ? same : changed).push({ t, before: old, png }); }
+  }
+  await page.close();
+  await sheet(join(artifacts, `${platform}-sheet.png`), shots);
+  console.log(`${platform}: ${shots.length} stills, sheet at ${join(artifacts, `${platform}-sheet.png`)}`);
+  if (changed.length || same.length) {
+    console.log(`  since the last run: ${changed.length ? `changed ${changed.map(c => c.t.toFixed(2)).join(', ')}` : 'nothing changed'}${same.length ? `; identical ${same.map(c => c.t.toFixed(2)).join(', ')}` : ''}`);
+    if (changed.length) {
+      const pairs = changed.flatMap(c => [{ label: `${c.t.toFixed(2)} before`, png: c.before }, { label: `${c.t.toFixed(2)} after`, png: c.png }]);
+      await sheet(join(artifacts, `${platform}-changes.png`), pairs);
+      console.log(`  before and after: ${join(artifacts, `${platform}-changes.png`)}`);
+    }
+  }
+}
+
+// ---------------------------------------------------------------- record
+// What a render was made from: the hash of every file that can change the
+// film. --stale compares against it, so a commit that only touches notes, or
+// a refactor proved identical, does not read as a change to the picture.
+const inputs = () => [...new Set([...FILM, ...SCENES.flatMap(s => s.depicts), ...Object.values(COPY).map(c => c.source)])].sort();
+const recordNow = () => Object.fromEntries(inputs().map(path => [path, hashOf(path)]));
+const readRecord = () => (existsSync(join(root, CUT_RECORD)) ? JSON.parse(readText(CUT_RECORD)) : { cuts: {} });
+// Both cuts render in parallel and each records itself when done, so the
+// read-and-write is held under a lock directory (mkdir is atomic).
+async function record(platform, entry) {
+  const lock = join(root, `${CUT_RECORD}.lock`);
+  for (let tries = 0; ; tries++) {
+    try { mkdirSync(lock); break; } catch (error) {
+      if (error.code !== 'EEXIST' || tries > 300) throw error;
+      await new Promise(done => setTimeout(done, 100));
+    }
+  }
+  try {
+    const cut = readRecord();
+    cut.cuts[platform] = entry;
+    writeFileSync(join(root, CUT_RECORD), JSON.stringify(cut, null, 2) + '\n');
+  } finally { rmdirSync(lock); }
 }
 
 // ---------------------------------------------------------------- video
 async function renderVideo(platform) {
-  if (!segment) preflight();
+  if (!args.segment) preflight();
   const { capture, page, target } = await open(platform);
   const frames = Math.round(DURATION * FPS);
+  const made = recordNow();
   const audioPath = join(artifacts, `${platform}-score.wav`);
   await mkdir(artifacts, { recursive: true });
   await writeFile(audioPath, wav(renderScore({ platform })));
   const out = join(root, target.out);
   await mkdir(dirname(out), { recursive: true });
   const width = Math.round(target.width * target.scale), height = Math.round(target.height * target.scale);
-  const [first, last] = segment ? segment.map(s => Math.round(s * FPS)) : [0, frames - 1];
-  const encoder = segment ? null : run(ffmpeg, [
+  const [first, last] = args.segment ? args.segment.map(s => Math.round(s * FPS)) : [0, frames - 1];
+  const encoder = args.segment ? null : run(ffmpeg, [
     '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', `${width}x${height}`, '-framerate', String(FPS), '-i', '-', '-i', audioPath,
     '-vf', 'scale=in_range=pc:out_range=tv:out_color_matrix=bt709,format=yuv420p',
     '-frames:v', String(frames),
@@ -200,7 +282,7 @@ async function renderVideo(platform) {
     const scale = 16383 / total;
     for (let p = 0; p < frame.length; p++) frame[p] = TO_SRGB[Math.min(16383, Math.round(sum[p] * scale))];
     samples += n;
-    if (segment) {
+    if (args.segment) {
       await sharp(frame, { raw: { width, height, channels: 3 } }).png().toFile(join(artifacts, `${platform}-frame-${String(i).padStart(3, '0')}.png`));
       continue;
     }
@@ -208,51 +290,67 @@ async function renderVideo(platform) {
     if (i % 30 === 29) process.stdout.write(`\r${platform}: ${i + 1}/${frames} frames, ${samples} samples, ${((Date.now() - started) / 1000).toFixed(0)}s`);
   }
   await page.close();
-  if (segment) { console.log(`${platform}: frames ${first}–${last}, ${samples} samples, in ${artifacts}`); return; }
+  if (args.segment) { console.log(`${platform}: frames ${first}–${last}, ${samples} samples, in ${artifacts}`); return; }
   encoder.child.stdin.end();
   await encoder.done;
-  console.log(`\n${platform}: ${out}`);
+  const data = await readFile(out);
+  await record(platform, { file: target.out, bytes: data.length, sha256: sha256(data), frames, samples,
+    minutes: Number(((Date.now() - started) / 60000).toFixed(1)), inputs: made });
+  console.log(`\n${platform}: ${out}, recorded in ${CUT_RECORD}`);
 }
 
 // ---------------------------------------------------------------- stale
-// What moved since the last cut: the commit that last changed each video is
-// the source it was rendered from, because a cut is committed with its source.
+// What moved since each cut was rendered, by content: scenes whose app files
+// changed, lines whose source changed or no longer says what the film says,
+// the film's own source, and the stills that would show the difference.
 function stale() {
-  const cuts = [...new Set(Object.values(TARGETS).map(t => git('log', '-1', '--format=%h', '--', t.out)))];
-  const film = ['store/video', 'store/scripts/render-video.mjs'];
-  const depicted = [...new Set(SCENES.flatMap(s => s.depicts))];
-  for (const cut of cuts) {
-    if (!cut) { console.log('No cut is committed yet.'); continue; }
-    console.log(`Last cut: ${git('log', '-1', '--format=%h %cs %s', cut)}`);
-    // Against the working tree, so uncommitted changes count too.
-    const changed = new Set([...git('diff', '--name-only', cut, '--', ...depicted, ...film).split('\n'),
-      ...git('ls-files', '--others', '--exclude-standard', '--', ...film).split('\n')].filter(Boolean));
-    const scenes = SCENES.map(s => [s, s.depicts.filter(f => changed.has(f))]).filter(([, files]) => files.length);
-    console.log(scenes.length ? '\nScenes whose app sources changed:' : '\nNo app source the film draws has changed.');
-    for (const [s, files] of scenes) console.log(`  ${s.id.padEnd(14)} ${String(s.start).padStart(4)} s  ${s.title}\n${files.map(f => `      ${f}`).join('\n')}`);
-    const own = [...changed].filter(f => film.some(p => f === p || f.startsWith(p + '/')));
-    if (own.length) console.log(`\nThe film's own source changed (re-render to ship it):\n${own.map(f => `  ${f}`).join('\n')}`);
-    const log = git('log', '--no-merges', '--format=%h %cs %s', `${cut}..HEAD`);
-    console.log(log ? `\nCommits since the cut (look for features the film should now show):\n${log.split('\n').slice(0, 40).map(l => `  ${l}`).join('\n')}` : '\nNo commits since the cut.');
+  const cut = readRecord(), now = recordNow(), looks = new Set();
+  const look = ([a, b]) => looks.add(Number(((a + b) / 2).toFixed(2)));
+  const cuts = Object.entries(cut.cuts);
+  if (!cuts.length) console.log(`No render is recorded in ${CUT_RECORD}; render with --render.`);
+  const reports = new Map();
+  for (const [platform, entry] of cuts) {
+    const changed = inputs().filter(path => entry.inputs[path] !== now[path]);
+    const key = changed.join('\n');
+    reports.set(key, [...(reports.get(key) ?? []), platform]);
+    if (hashOf(entry.file) !== entry.sha256) console.log(`${platform}: ${entry.file} is not the file its render recorded; render it again.`);
   }
-  // Every line on screen still has to be in the file it came from.
-  const drift = [];
-  for (const [key, line] of Object.entries(COPY)) {
-    const source = readFileText(line.source).toLowerCase();
-    for (const text of [line.match ?? line.text, line.ios, line.android].filter(Boolean)) {
-      if (!source.includes(text.toLowerCase())) drift.push(`  ${key}: "${text}" is no longer in ${line.source}`);
+  for (const [key, platforms] of reports) {
+    const changed = new Set(key ? key.split('\n') : []);
+    console.log(`\n${platforms.join(' and ')}: ${changed.size ? `${changed.size} input${changed.size > 1 ? 's' : ''} changed since the render` : 'nothing the film is made from has changed since the render'}.`);
+    SCENES.forEach((s, i) => {
+      const files = s.depicts.filter(f => changed.has(f)), end = SCENES[i + 1]?.start ?? DURATION;
+      if (!files.length) return;
+      console.log(`  scene ${s.id} (${s.start}–${end} s, ${s.title}): ${files.join(', ')}`);
+      look([s.start, end]);
+    });
+    for (const [line, c] of Object.entries(COPY)) {
+      if (!changed.has(c.source)) continue;
+      console.log(`  line ${line} (${c.on[0].toFixed(2)}–${c.on[1].toFixed(2)} s): its source ${c.source} changed`);
+      look(c.on);
     }
+    const own = FILM.filter(f => changed.has(f));
+    if (own.length) console.log(`  the film's own source (a render ships it): ${own.join(', ')}`);
   }
-  console.log(drift.length ? `\nCopy that has drifted from its source:\n${drift.join('\n')}` : '\nEvery line on screen is still in its source.');
+  // Each line must still be in its source exactly, case and quotes included.
+  const drift = Object.entries(COPY).flatMap(([line, c]) => [c.quote].flat().filter(q => !readText(c.source).includes(q))
+    .map(q => { look(c.on); return `  ${line} (${c.on[0].toFixed(2)}–${c.on[1].toFixed(2)} s): ${c.source} no longer contains ${q}`; }));
+  console.log(drift.length ? `\nLines the app has changed; update COPY in store/video/reel.js:\n${drift.join('\n')}` : '\nEvery line on screen is still in its source, word for word.');
+  if (looks.size) console.log(`\nLook at: node store/scripts/render-video.mjs --stills ${[...looks].sort((a, b) => a - b).join(',')}`);
+  const base = git('log', '-1', '--format=%h', '--', CUT_RECORD);
+  if (base) {
+    const log = git('log', '--no-merges', '--format=%h %cs %s', `${base}..HEAD`);
+    console.log(log ? `\nCommits since the render was recorded (${base}); look for features the film should now show:\n${log.split('\n').slice(0, 40).map(l => `  ${l}`).join('\n')}` : `\nNo commits since the render was recorded (${base}).`);
+  }
 }
-const readFileText = path => { try { return readFileSync(join(root, path), 'utf8'); } catch { return ''; } };
 
 // ---------------------------------------------------------------- verify
 async function verify() {
   preflight();
   await mkdir(artifacts, { recursive: true });
+  const cut = readRecord();
   let failed = false;
-  for (const platform of platforms) {
+  for (const platform of args.platforms) {
     const target = TARGETS[platform], file = join(root, target.out);
     const info = probe(['-i', file]).stderr;
     if (!/Duration/.test(info)) { console.log(`${platform}: ${target.out} is missing or unreadable`); failed = true; continue; }
@@ -262,9 +360,10 @@ async function verify() {
     const frames = Number([...probe(['-nostats', '-i', file, '-map', '0:v:0', '-f', 'null', '-', '-progress', 'pipe:1']).stdout.matchAll(/^frame=(\d+)$/gm)].at(-1)?.[1] ?? 0);
     const level = Number(probe(['-i', file, '-map', '0:v:0', '-c', 'copy', '-bsf:v', 'trace_headers', '-frames:v', '1', '-f', 'null', '-']).stderr.match(/ level_idc\s+\d+ = (\d+)/)?.[1] ?? 0);
     const loud = probe(['-nostats', '-i', file, '-map', '0:a:0', '-af', 'ebur128=peak=true:framelog=quiet', '-f', 'null', '-']).stderr;
-    const data = await readFile(file), bytes = data.length, sha = createHash('sha256').update(data).digest('hex');
+    const data = await readFile(file), digest = sha256(data);
     const seconds = frames / FPS, [lo, hi] = REQUIREMENTS.seconds, a = REQUIREMENTS.audio;
     const want = `${Math.round(target.width * target.scale)}x${Math.round(target.height * target.scale)}`;
+    const recorded = cut.cuts[platform];
     const checks = [
       ['length', seconds >= lo && seconds <= hi, `${seconds.toFixed(2)} s, ${frames} frames (${lo}–${hi} s)`],
       ['frame size', video && `${video[3]}x${video[4]}` === want, `${video?.[3]}x${video?.[4]} (${want})`],
@@ -273,18 +372,19 @@ async function verify() {
       ['H.264 level', level > 0 && level <= REQUIREMENTS.maxLevel, `${(level / 10).toFixed(1)} (at most ${(REQUIREMENTS.maxLevel / 10).toFixed(1)})`],
       ['audio', audio?.[1] === a.codec && audio?.[3] === a.channels && a.rates.includes(Number(audio?.[2])) && Math.abs(Number(audio?.[4]) - a.kbps) <= 8,
         `${audio?.[1]} ${audio?.[3]} ${audio?.[2]} Hz ${audio?.[4]} kb/s`],
-      ['file size', bytes <= REQUIREMENTS.maxBytes, `${(bytes / 1e6).toFixed(1)} MB`],
+      ['file size', data.length <= REQUIREMENTS.maxBytes, `${(data.length / 1e6).toFixed(1)} MB`],
+      ['render record', recorded?.sha256 === digest, recorded ? (recorded.sha256 === digest ? `matches ${CUT_RECORD}` : `differs from ${CUT_RECORD}`) : `none in ${CUT_RECORD}`],
     ];
     console.log(`\n${platform}: ${target.out} (${target.store})`);
-    for (const [name, ok, detail] of checks) { console.log(`  ${ok ? 'pass' : 'FAIL'}  ${name.padEnd(12)} ${detail}`); failed ||= !ok; }
-    console.log(`        loudness     ${loud.match(/I:\s+(-?[\d.]+ LUFS)/)?.[1]}, peak ${loud.match(/Peak:\s+(-?[\d.]+ dBFS)/)?.[1]}`);
-    console.log(`        sha256       ${sha}`);
+    for (const [name, ok, detail] of checks) { console.log(`  ${ok ? 'pass' : 'FAIL'}  ${name.padEnd(13)} ${detail}`); failed ||= !ok; }
+    console.log(`        loudness      ${loud.match(/I:\s+(-?[\d.]+ LUFS)/)?.[1]}, peak ${loud.match(/Peak:\s+(-?[\d.]+ dBFS)/)?.[1]}`);
+    console.log(`        sha256        ${digest}`);
     // Frames decoded from the file itself, to look at.
-    const sheet = join(artifacts, `${platform}-mp4-sheet.png`);
-    probe(['-y', '-loglevel', 'error', '-i', file, '-vf', `fps=24/${DURATION},scale=222:-1,tile=8x3:padding=6:color=0x222222`, '-frames:v', '1', sheet]);
-    console.log(`        sheet        ${sheet}`);
+    const contact = join(artifacts, `${platform}-mp4-sheet.png`);
+    probe(['-y', '-loglevel', 'error', '-i', file, '-vf', `fps=24/${DURATION},scale=222:-1,tile=8x3:padding=6:color=0x222222`, '-frames:v', '1', contact]);
+    console.log(`        sheet         ${contact}`);
   }
-  if (failed) { console.log('\nA cut breaks the store rules.'); process.exitCode = 1; }
+  if (failed) { console.log('\nA cut breaks the store rules or its render record.'); process.exitCode = 1; }
 }
 
 // ---------------------------------------------------------------- viewer
@@ -316,12 +416,12 @@ async function viewer() {
 
 // ---------------------------------------------------------------- main
 try {
-  for (const platform of platforms) if (!TARGETS[platform]) throw new Error(`Unknown platform ${platform}`);
-  if (option('stale')) stale();
-  else if (option('verify')) await verify();
-  else if (option('viewer')) await viewer();
-  else for (const platform of platforms) {
-    if (stills) await renderStills(platform);
+  args = parse(process.argv.slice(2));
+  if (args.mode === 'stale') stale();
+  else if (args.mode === 'verify') await verify();
+  else if (args.mode === 'viewer') await viewer();
+  else for (const platform of args.platforms) {
+    if (args.mode === 'stills') await renderStills(platform);
     else await renderVideo(platform);
   }
 } catch (error) {
