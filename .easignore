@@ -22,6 +22,7 @@ apps/client/android/
 # Store listing artwork and verification captures are not app build inputs.
 /store/source/
 /store/assets/
+/store/video/
 
 # EAS records the source commit separately; omit packed repository history.
 /.git

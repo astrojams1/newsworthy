@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T14:36:54+00:00",
+  "updated_at": "2026-09-27T22:14:28+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -978,6 +978,19 @@
       "evidence": [],
       "next_action": "Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.",
       "updated_at": "2026-09-27T14:36:54+00:00"
+    },
+    "store.preview-video": {
+      "state": "waiting_user",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store.",
+      "evidence": [
+        "store/assets/apple/app-preview/iphone-886x1920.mp4 and store/assets/google-play/video/promo-1080x1920.mp4: 453 frames each, profile_idc 100 and level_idc 40 read from the streams, -15.8 LUFS integrated, -3.0 dBFS peak.",
+        "Frames decoded from both MP4s inspected, including the fastest odometer rolls for motion blur and a dark frame contrast-stretched for banding.",
+        "Apple guideline 2.3.4: previews may only use video screen captures of the app itself, so App Review may refuse this cut as an app preview. Google Play: a YouTube link, at least 80% representative of the in-app experience."
+      ],
+      "next_action": "Owner reviews both cuts. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.",
+      "updated_at": "2026-09-27T22:14:28+00:00"
     }
   },
   "events": [
@@ -6177,6 +6190,24 @@
         "evidence": [],
         "next_action": "Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.",
         "updated_at": "2026-09-27T14:36:54+00:00"
+      }
+    },
+    {
+      "sequence": 325,
+      "at": "2026-09-27T22:14:28+00:00",
+      "gate": "store.preview-video",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store.",
+        "evidence": [
+          "store/assets/apple/app-preview/iphone-886x1920.mp4 and store/assets/google-play/video/promo-1080x1920.mp4: 453 frames each, profile_idc 100 and level_idc 40 read from the streams, -15.8 LUFS integrated, -3.0 dBFS peak.",
+          "Frames decoded from both MP4s inspected, including the fastest odometer rolls for motion blur and a dark frame contrast-stretched for banding.",
+          "Apple guideline 2.3.4: previews may only use video screen captures of the app itself, so App Review may refuse this cut as an app preview. Google Play: a YouTube link, at least 80% representative of the in-app experience."
+        ],
+        "next_action": "Owner reviews both cuts. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.",
+        "updated_at": "2026-09-27T22:14:28+00:00"
       }
     }
   ],

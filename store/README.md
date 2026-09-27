@@ -81,6 +81,7 @@ still blocks app creation. See the ledger for current gates and exact next actio
 | [apple-review-resubmission.json](apple-review-resubmission.json) | Confirmed build 7 Waiting for Review readback |
 | [disclosures.md](disclosures.md) | Evidence for privacy and content declarations |
 | [scripts/](scripts/) | Reproduce, validate, and upload the Apple listing |
+| [video/](video/) | The 15-second preview video's source; renders to `assets/apple/app-preview/` and `assets/google-play/video/` |
 
 ## Verified status
 
@@ -173,6 +174,17 @@ coverage and its limits are documented in [the design system](../design/README.m
 The pasted macOS crash report identified Android Emulator startup, not
 Newsworthy. Local emulator library/resource paths were corrected, and the
 emulator then booted and ran the earlier APK successfully.
+
+## Preview video
+
+`node store/scripts/render-video.mjs` renders a 15-second preview for each
+store from [video/](video/): 886×1920 for Apple's iPhone app previews and
+1080×1920 for Google Play, which takes a YouTube link. It draws the current
+Temperature palette and Stone brand, uses placeholder bars rather than any
+news sentence, and speaks only in approved copy. It is a reconstruction, not
+a screen capture: Apple's guideline 2.3.4 limits previews to "video screen
+captures of the app itself", so App Review may refuse it as a preview. Neither
+video has been uploaded. See [the video README](video/README.md).
 
 ## Update Apple through its API
 

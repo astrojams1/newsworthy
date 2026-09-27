@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-27T14:36:54+00:00
+Updated: 2026-09-27T22:14:28+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -98,6 +98,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | ui.onboarding | waiting_verification | agent | observed | First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
 | copy.no-ai-listing | todo | agent | observed | Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing. | Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI. |
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
+| store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
 
 ## Evidence and history
 
@@ -3188,3 +3189,15 @@ Palette source is now OKLCH scale anchors plus brand.level in design/palette.jso
 
 
 Next: Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.
+
+### 325. store.preview-video — waiting_user
+
+2026-09-27T22:14:28+00:00 · observed · user
+
+15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store.
+
+- store/assets/apple/app-preview/iphone-886x1920.mp4 and store/assets/google-play/video/promo-1080x1920.mp4: 453 frames each, profile_idc 100 and level_idc 40 read from the streams, -15.8 LUFS integrated, -3.0 dBFS peak.
+- Frames decoded from both MP4s inspected, including the fastest odometer rolls for motion blur and a dark frame contrast-stretched for banding.
+- Apple guideline 2.3.4: previews may only use video screen captures of the app itself, so App Review may refuse this cut as an app preview. Google Play: a YouTube link, at least 80% representative of the in-app experience.
+
+Next: Owner reviews both cuts. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.
