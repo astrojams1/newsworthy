@@ -104,6 +104,6 @@ test('the label follows the judgement the reading arrived with', async () => {
     assert.equal(after.score,9,'the louder volcano still supplies the score');
     assert.equal(after.since,first.body.created_at);
     assert.equal(after.explanation_new,false,'the sentence re-reports its own development');
-    assert.equal(after.explanation,'A tanker was hit at Hormuz.','stored with its end');
+    assert.equal(after.explanation,'hormuz tanker strike alpha.','a re-report shows its development\'s sentence, stored with its end');
   });
 });

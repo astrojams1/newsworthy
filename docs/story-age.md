@@ -21,6 +21,11 @@ development (`development_of` null). An unjudged reading is never new: a judge
 outage must not masquerade as a fresh story. Historical judgements and stored
 sentences are not rewritten.
 
+Since 2026-09-27 a judged re-report does not show its own rewording: the page
+shows the sentence of the reading that started its development's current clock,
+word for word (`sentenceFor()` in `src/current.js`). The label still follows the
+newest reading's judgement, so a re-report carries none, as before.
+
 ## Caller sequence
 
 1. Fetch current instructions and compute their prompt digest.
