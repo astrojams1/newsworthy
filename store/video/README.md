@@ -3,7 +3,14 @@
 A 15-second motion piece for the store listings, rendered frame by frame from
 code. `composition.js` draws the picture as a pure function of time,
 `score.mjs` synthesises the sound from the same clock (`timeline.js`), and
-`store/scripts/render-video.mjs` captures and encodes both.
+`store/scripts/render-video.mjs` captures and encodes both. `reel.js` lists
+what the film is made of: its scenes and the app files each one draws, every
+line on screen with the file it quotes, and the outputs with the store rules
+they meet. `viewer.html` is the review page.
+
+To remake it, use the
+[preview-reel skill](../../.agents/skills/newsworthy-preview-reel/SKILL.md);
+every cut is recorded in the [ledger](ledger.md).
 
 | Output | Size | For |
 |---|---|---|
@@ -36,10 +43,11 @@ notification card and "home screen" in lower case, as the introduction writes it
   number rolls through the whole scale and settles low, on 3, so the film does
   not suggest the news usually reads high; the notification shows 8, the
   default threshold. Neither is a claim about what any day scores.
-- **Every word is approved copy.** The lines are the introduction's titles and
-  body (`apps/client/lib/onboarding.js`), a fragment of its notification line,
-  and the core copy from `docs/product-messaging.md`. No AI, no urgency, no
-  claims of rank, no call to download.
+- **Every word is approved copy.** Each line in `reel.js` names the file it
+  quotes: the introduction's titles and body (`apps/client/lib/onboarding.js`),
+  a fragment of its notification line, the app's own labels and the core copy
+  from `docs/product-messaging.md`. No AI, no urgency, no claims of rank, no
+  call to download.
 - **The design is the app's.** Colours come from `public/tokens.js` and the
   reading canvas is the four layers of `public/levels.css`; fractional levels
   mix neighbours in OKLab, the space `design/colors.js` spaces them in. Layout
@@ -63,15 +71,19 @@ notification card and "home screen" in lower case, as the introduction writes it
 
 ```sh
 npm ci
-FFMPEG_PATH=/path/to/ffmpeg node store/scripts/render-video.mjs              # both cuts
+node store/scripts/render-video.mjs --stale                                  # what the app changed since the last cut
 node store/scripts/render-video.mjs --platform ios --stills 1.6,5.9,8.9      # single renders and a contact sheet
 node store/scripts/render-video.mjs --platform ios --segment 2.85,3.2        # finished, blurred frames as PNGs
+FFMPEG_PATH=/path/to/ffmpeg node store/scripts/render-video.mjs              # both cuts
+FFMPEG_PATH=/path/to/ffmpeg node store/scripts/render-video.mjs --verify     # the cuts against the store rules
+FFMPEG_PATH=/path/to/ffmpeg node store/scripts/render-video.mjs --viewer     # the review page, ready to publish
 ```
 
 It needs Chromium (`CHROMIUM_PATH`, or the cloud image's copy) and an ffmpeg
-built with libx264 and AAC (`FFMPEG_PATH`, or `ffmpeg` on the path). Stills
-and segments go to `artifacts/preview-video/`; a full render takes about ten
-minutes a cut.
+built with libx264 and AAC (`FFMPEG_PATH`, or `ffmpeg` on the path). Stills,
+segments, contact sheets and the review page go to `artifacts/preview-video/`.
+A full cut takes about fifteen minutes; both run in parallel in about nineteen
+on four cores.
 
 Motion blur is sampled. Each frame averages renders spread across half the
 frame interval, a 180-degree shutter, weighted to open and close softly and

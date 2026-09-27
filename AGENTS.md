@@ -64,6 +64,9 @@ release status. Calm presentation must not change the rating calibration.
 - To check the hourly caller's runs, use
   `.agents/skills/newsworthy-caller-review/SKILL.md`; findings go in
   `docs/caller-reviews/ledger.md`, observations kept apart from hypotheses.
+- To remake the store preview videos, use
+  `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
+  `store/video/ledger.md`.
 - A push to `main` deploys to production. `main` is both the GitHub default
   branch and Vercel's production branch. Preview builds are skipped by
   `vercel.json`’s `ignoreCommand`; verify production after merge.

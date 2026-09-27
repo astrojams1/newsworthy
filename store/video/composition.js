@@ -10,6 +10,7 @@
 import tokens from '../../public/tokens.js';
 import { hexToOklab } from '../../design/colors.js';
 import { CUES, DOWN, UP_STEPS, scoreAt, spring, bezier } from './timeline.js';
+import { say } from './reel.js';
 
 const query = new URLSearchParams(location.search);
 const IOS = query.get('platform') !== 'android';
@@ -129,17 +130,19 @@ function textWidth(text, family, weight, size, tracking = 0) {
 
 // ---------------------------------------------------------------- platform
 const SEMI = IOS ? 600 : 500;
+// Every line on screen comes from store/video/reel.js, which names its source.
+const line = key => say(key, IOS ? 'ios' : 'android');
 const P = IOS ? {
   status: { h: 58, time: { x: 81, y: 33, size: 17 } }, nav: 80, header: 102, bottom: 34,
   wordmark: { x: 20, size: 13, tracking: 1.6 },
   widget: { radius: 22, pad: 16, head: 10, headTracking: 2, time: '9:37 AM', timeSize: 11, gap: 1, headH: 14, timeH: 16, stack: 8 },
-  home: 'Also on your Home Screen', denom: 20,
+  denom: 20,
   title: 27, sub: 19, notifTop: 60, sheetInset: 22,
 } : {
   status: { h: 30, time: { x: 30, y: 16, size: 14 } }, nav: 56, header: 84, bottom: 24,
   wordmark: { x: 20, size: 13, tracking: 1.6 },
   widget: { radius: 20, pad: 12, head: 10, headTracking: 1.8, time: 'Checked 9:37 AM', timeSize: 10, gap: 2, headH: 14, timeH: 14, stack: 8 },
-  home: 'Also on your home screen', denom: 20,
+  denom: 20,
   title: 26, sub: 18, notifTop: 40, sheetInset: 20,
 };
 
@@ -319,7 +322,7 @@ function world(mode) {
   // The small widget sits under the medium one until it slides out.
   w.small = el(root, {});
   w.smallFrame = el(w.small, { overflow: 'hidden' });
-  w.smallHead = el(w.small, {}, 'NEWSWORTHY');
+  w.smallHead = el(w.small, {}, line('wordmark'));
   w.smallNum = numeral(w.small, false);
   w.smallTime = el(w.small, {}, P.widget.time);
   w.med = el(root, {});
@@ -330,10 +333,10 @@ function world(mode) {
   // The screen's contents, clipped to the frame while it shrinks.
   w.content = el(w.med, { left: '0', top: '0', width: px(W), height: px(H) });
   w.bars = [0, 1, 2, 3].map(() => el(w.content, {}));
-  w.checked = el(w.content, {}, 'Checked 4 min ago');
+  w.checked = el(w.content, {}, line('checked'));
   w.widgetTime = el(w.content, {}, P.widget.time);
   w.num = numeral(w.content, true);
-  w.wordmark = el(w.content, {}, 'NEWSWORTHY');
+  w.wordmark = el(w.content, {}, line('wordmark'));
   w.capsule = el(w.content, {});
   w.share = glyph(w.content, 'share', 24);
   w.gear = glyph(w.content, 'gear', 24);
@@ -345,15 +348,15 @@ function world(mode) {
   w.statusIcons.innerHTML = statusIcons();
   // Notifications: the settings group, then the notification it produces.
   w.card = el(root, { overflow: 'hidden', borderStyle: 'solid', borderWidth: '1px' });
-  w.row1 = el(w.card, {}, 'High-score alerts');
+  w.row1 = el(w.card, {}, line('alerts'));
   w.track = el(w.card, {});
   w.thumb = el(w.track, {});
   w.rule = el(w.card, {});
-  w.row2 = el(w.card, {}, 'Threshold');
-  w.value = el(w.card, {}, '8 or higher');
+  w.row2 = el(w.card, {}, line('threshold'));
+  w.value = el(w.card, {}, line('thresholdValue'));
   w.chevron = glyph(w.card, 'chevron', 20);
   w.note = el(root, { borderStyle: 'solid', borderWidth: '1px' });
-  w.noteTitle = el(root, {}, 'Newsworthy · 8/10');
+  w.noteTitle = el(root, {}, line('notification'));
   w.noteMeta = el(root, {}, IOS ? 'now' : 'Newsworthy · now');
   w.noteBars = [0, 1].map(() => el(root, {}));
   // The launcher icon, which carries the notification and ends the film.
@@ -361,14 +364,14 @@ function world(mode) {
   w.iconDash = el(w.icon, {});
   w.sheen = el(w.icon, {});
   w.endWord = el(root, { overflow: 'hidden' });
-  w.endWordText = el(w.endWord, {}, 'Newsworthy');
-  w.endTag = el(root, {}, 'World news, rated by significance.');
-  w.s1 = superLine(root, 'News, rated 1 to 10');
-  w.s2a = superLine(root, 'The number rates the news right now.');
-  w.s2b = superLine(root, 'The sentence names the top story.');
-  w.s3 = superLine(root, P.home);
-  w.s4 = superLine(root, 'Optional notifications');
-  w.s4b = superLine(root, 'At the score you choose.');
+  w.endWordText = el(w.endWord, {}, line('name'));
+  w.endTag = el(root, {}, line('tagline'));
+  w.s1 = superLine(root, line('s1'));
+  w.s2a = superLine(root, line('s2a'));
+  w.s2b = superLine(root, line('s2b'));
+  w.s3 = superLine(root, line('s3'));
+  w.s4 = superLine(root, line('s4'));
+  w.s4b = superLine(root, line('s4b'));
   return w;
 }
 function statusIcons() {
