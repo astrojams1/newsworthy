@@ -59,10 +59,11 @@ repeat a tagline or explain the scale.
 - The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
   a few plain sentences: a score of consequence that fades with age. By the
   owner's choice it does not mention AI or warn that ratings can be wrong; the
-  support page carries those facts. In the apps it adds that a widget exists and that
+  support page carries those facts. It adds that a widget exists and that
   notifications are optional and off by default. It says what the app does,
   not how the phone works or where Settings is, and never asks the reader to
-  come back. The mobile apps show it once on first launch; Settings replays it.
+  come back. Only the mobile apps have it: they show it once on first launch,
+  and Settings replays it. The website has no introduction.
 - Do not claim that hosting processes no technical information.
 - Brand positioning must never soften, inflate or otherwise alter the rating
   scale. Published prompts are append-only; see `PROMPT-RULES.md`.

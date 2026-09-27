@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T00:57:45+00:00",
+  "updated_at": "2026-09-27T01:13:08+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -952,12 +952,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Descriptions evened to 75-83 characters, two lines each on every slide (iOS, Android and web variants at 390x844 in Chromium); the fade slide shows a bold New with no colon instead of describing 'a bold New:'. The app's own reading label is unchanged ('New:'). Not seen on a device.",
+      "summary": "Introduction is phone-only (owner decision 2026-09-27): the web Settings has no Introduction row and /onboarding on the web redirects to the reading, checked in Chromium. Five slides on iOS and Android. Title/description heights and bold New are now checked on rendered props (test/onboarding.test.js); pixel positions were last measured in Chromium with a platform override, and nothing has been seen on a device.",
       "evidence": [
-        "test/onboarding.test.js length and New cases; test/web-settings.test.js line-count and bold checks"
+        "test/web-settings.test.js no-introduction case; test/onboarding.test.js; test/preferences.test.js"
       ],
-      "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
-      "updated_at": "2026-09-27T00:57:45+00:00"
+      "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+      "updated_at": "2026-09-27T01:13:08+00:00"
     }
   },
   "events": [
@@ -5918,6 +5918,22 @@
         ],
         "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
         "updated_at": "2026-09-27T00:57:45+00:00"
+      }
+    },
+    {
+      "sequence": 310,
+      "at": "2026-09-27T01:13:08+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Introduction is phone-only (owner decision 2026-09-27): the web Settings has no Introduction row and /onboarding on the web redirects to the reading, checked in Chromium. Five slides on iOS and Android. Title/description heights and bold New are now checked on rendered props (test/onboarding.test.js); pixel positions were last measured in Chromium with a platform override, and nothing has been seen on a device.",
+        "evidence": [
+          "test/web-settings.test.js no-introduction case; test/onboarding.test.js; test/preferences.test.js"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T01:13:08+00:00"
       }
     }
   ],

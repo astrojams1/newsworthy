@@ -4,13 +4,13 @@
 // mention AI or warn that ratings can be wrong; the support page does. Kept
 // here rather than in the screen so the tests read the same words.
 //
-// Widgets and notifications exist only in the apps, so the website has
-// neither slide; their illustrations are drawn per platform. Titles are kept
+// The introduction exists only in the phone apps; the website has none.
+// Illustrations are drawn per platform. Titles are kept
 // between TITLE_LENGTH.min and .max characters and bodies within BODY_LENGTH,
 // so every slide carries about the same amount of text; the screen puts every
 // title at the same height. **Word** in a body is drawn bold.
 
-/** @typedef {'ios' | 'android' | 'web'} Platform */
+/** @typedef {'ios' | 'android'} Platform */
 /** @typedef {'scale' | 'levels' | 'fade' | 'widget' | 'alert'} SlideArt */
 /** @typedef {{ key: string, title: string, body: string, art: SlideArt }} Slide */
 
@@ -25,7 +25,6 @@ export const BODY_LENGTH = Object.freeze({ min: 70, max: 85 });
 
 /** @param {Platform} platform @returns {Slide[]} */
 export function onboardingSlides(platform) {
-  const native = platform === 'ios' || platform === 'android';
   return [
     { key: 'what', art: 'scale', title: 'News, rated 1 to 10',
       body: 'Each reading is a score, a short explanation and the time it was last updated.' },
@@ -33,12 +32,10 @@ export function onboardingSlides(platform) {
       body: 'Higher scores mean more consequential news. The color changes with the score.' },
     { key: 'fade', art: 'fade', title: 'Scores fade with time',
       body: '**New** marks the first coverage of a development. As it ages, its score eases.' },
-    ...(native ? [
-      // Apple writes Home Screen as a name; Android does not.
-      { key: 'widget', art: /** @type {const} */ ('widget'), title: platform === 'ios' ? 'Also on your Home Screen' : 'Also on your home screen',
-        body: 'A widget shows the current rating and when it was updated, without opening the app.' },
-      { key: 'alert', art: /** @type {const} */ ('alert'), title: 'Optional notifications',
-        body: 'Off by default. When on, one notification per development, at the score you choose.' },
-    ] : []),
+    // Apple writes Home Screen as a name; Android does not.
+    { key: 'widget', art: 'widget', title: platform === 'ios' ? 'Also on your Home Screen' : 'Also on your home screen',
+      body: 'A widget shows the current rating and when it was updated, without opening the app.' },
+    { key: 'alert', art: 'alert', title: 'Optional notifications',
+      body: 'Off by default. When on, one notification per development, at the score you choose.' },
   ];
 }

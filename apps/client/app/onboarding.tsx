@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
-import Head from 'expo-router/head';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import tokens from '../../../public/tokens.js';
 import { useTheme } from '@/lib/theme';
@@ -9,7 +8,7 @@ import { usePreferences } from '@/components/preferences-provider';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
 
 type Theme = ReturnType<typeof useTheme>;
-const platform = process.env.EXPO_OS === 'ios' || process.env.EXPO_OS === 'android' ? process.env.EXPO_OS : 'web';
+const platform = process.env.EXPO_OS === 'ios' ? 'ios' : 'android';
 const scoreFont = platform === 'ios' ? 'ui-monospace' : 'monospace';
 // Every slide is the same stack of fixed heights — the illustration, one line
 // of title, four lines of body — centred as a whole, so the title sits at the
@@ -19,11 +18,17 @@ const TITLE_LINE = 32;
 const BODY_LINE = 25;
 const BODY_LINES = 4;
 
-// The introduction: three slides on the web, five in the apps, swiped or stepped with Next. The phone apps
-// open it once on first launch; Settings replays it. It is marked seen as soon
-// as it opens, so closing it any way at all — Skip, Done, the system back
-// gesture — does not bring it back on the next launch.
+// The introduction belongs to the phone apps. The website has no route to it,
+// and a typed or shared link lands on the reading.
 export default function Onboarding() {
+  return process.env.EXPO_OS === 'web' ? <Redirect href="/" /> : <Introduction />;
+}
+
+// Five slides, swiped or stepped with Next. The apps open it once on first
+// launch; Settings replays it. It is marked seen as soon as it opens, so
+// closing it any way at all — Skip, Done, the system back gesture — does not
+// bring it back on the next launch.
+function Introduction() {
   const theme = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -48,7 +53,6 @@ export default function Onboarding() {
   };
   const column = Math.min(width - 48, 400);
   return <View testID="onboarding" style={{ flex: 1, backgroundColor: theme.tinted, paddingTop: insets.top, paddingBottom: insets.bottom }}>
-    {process.env.EXPO_OS === 'web' && <Head><title>Introduction · Newsworthy</title></Head>}
     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 12, minHeight: 56, alignItems: 'center' }}>
       {!last && <Pressable testID="onboarding-skip" accessibilityRole="button" accessibilityLabel="Skip introduction" onPress={close}
         style={{ minWidth: 48, minHeight: 48, paddingHorizontal: 12, alignItems: 'center', justifyContent: 'center' }}>

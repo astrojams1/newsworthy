@@ -11,7 +11,8 @@ import { RowContent, Section, SettingsPage, Trailing, rowStyle } from '@/compone
 import { Toggle } from '@/components/toggle';
 
 const ABOUT_LINKS = [['Privacy', privacyUrl, 'privacy'], ['Support', supportUrl, 'support']] as const;
-// Opens over Settings; closing it returns here.
+// Opens over Settings; closing it returns here. The phone apps only: the
+// website has no introduction.
 const INTRODUCTION_INDEX = ABOUT_LINKS.length;
 
 export default function Settings() {
@@ -59,11 +60,11 @@ export default function Settings() {
             <RowContent index={index} icon={icon} label={name} trailing={<Trailing to="external" />} />
           </Pressable>
         </Link>)}
-        <Link href="/onboarding" asChild>
+        {process.env.EXPO_OS !== 'web' && <Link href="/onboarding" asChild>
           <Pressable testID="introduction-row" accessibilityRole="button" accessibilityLabel="Introduction" accessibilityHint="Replays the introduction" style={rowStyle()}>
             <RowContent index={INTRODUCTION_INDEX} icon="introduction" label="Introduction" trailing={<Trailing to="page" />} />
           </Pressable>
-        </Link>
+        </Link>}
       </Section>
     </SettingsPage>
   </>;

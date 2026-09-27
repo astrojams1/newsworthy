@@ -165,9 +165,9 @@ test('Settings trailing marks match the label\'s cap height and baseline on the 
   });
 });
 
-// The introduction is replayed from Settings and closes back to it, whether it
-// is stepped through to Done or skipped. The website never opens it by itself.
-test('the introduction replays from Settings and returns there on the web', { timeout: 120_000 }, async (t) => {
+// The introduction belongs to the phone apps. On the web, Settings offers no
+// row for it and a typed or shared link to it lands on the reading.
+test('the website has no introduction: no Settings row, and its link opens the reading', { timeout: 120_000 }, async (t) => {
   if (!executablePath) {
     assert.ok(!process.env.CI, `no Chrome or Chromium found; set CHROME_PATH (looked in ${BROWSERS.join(', ')})`);
     t.skip('no Chrome or Chromium on this machine; set CHROME_PATH to run it');
@@ -177,46 +177,15 @@ test('the introduction replays from Settings and returns there on the web', { ti
     const browser = await chromium.launch({ executablePath });
     try {
       const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
-      const arrive = async (pathname) => { await page.waitForURL(url => url.pathname === pathname, { timeout: 10_000 }); };
       await page.goto(`${base}/`);
       await page.getByLabel('Settings', { exact: true }).first().waitFor();
       assert.equal(new URL(page.url()).pathname, '/', 'a first visit on the web opens on the reading');
-      await page.getByLabel('Settings', { exact: true }).first().click();
-      await arrive('/settings');
-      await page.getByTestId('introduction-row').click();
-      await arrive('/onboarding');
-      // Every title at the same height and on one line, so nothing jumps between slides.
-      await page.getByTestId('onboarding-title').first().waitFor();
-      const titles = await page.getByTestId('onboarding-title').evaluateAll(nodes => nodes.map(node => {
-        const box = node.getBoundingClientRect();
-        return { text: node.textContent, y: box.y, lines: Math.round(box.height / parseFloat(getComputedStyle(node).lineHeight)) };
-      }));
-      assert.equal(titles.length, 3);
-      for (const title of titles) {
-        assert.ok(Math.abs(title.y - titles[0].y) < 0.5, `"${title.text}" sits at ${title.y}, the first at ${titles[0].y}`);
-        assert.equal(title.lines, 1, `"${title.text}" fits one line`);
-      }
-      // Every description runs to the same number of lines, measured by its text rather than its reserved box.
-      const bodies = await page.getByTestId('onboarding-body').evaluateAll(nodes => nodes.map(node => {
-        const range = document.createRange(); range.selectNodeContents(node);
-        const tops = new Set([...range.getClientRects()].map(rect => Math.round(rect.top)));
-        return { text: node.textContent, lines: tops.size };
-      }));
-      assert.equal(new Set(bodies.map(body => body.lines)).size, 1, `line counts differ: ${JSON.stringify(bodies)}`);
-      // Tapped as fast as the browser allows: each tap is one slide, even mid-animation.
-      for (let tap = 0; tap < 2; tap += 1) await page.getByTestId('onboarding-next').click();
-      await page.getByLabel('Page 3 of 3').waitFor();
-      // The fade slide's New is drawn bold inside the sentence, with no colon.
-      const label = await page.getByText('New', { exact: true }).evaluateAll(nodes => nodes.map(node => getComputedStyle(node).fontWeight));
-      assert.ok(label.length >= 1 && label.every(weight => Number(weight) >= 700), `bold New: ${label}`);
-      await page.getByText('Done', { exact: true }).waitFor();
-      assert.equal(await page.getByTestId('onboarding-skip').count(), 0, 'no Skip on the last slide');
-      await page.getByTestId('onboarding-next').click();
-      await arrive('/settings');
-      await page.getByTestId('introduction-row').click();
-      await arrive('/onboarding');
-      await page.getByTestId('onboarding-skip').click();
-      await arrive('/settings');
+      await page.goto(`${base}/settings`);
+      await page.getByLabel('Support').waitFor();
+      assert.equal(await page.getByTestId('introduction-row').count(), 0, 'no Introduction row on the web');
+      await page.goto(`${base}/onboarding`);
+      await page.waitForURL(url => url.pathname === '/', { timeout: 10_000 });
+      assert.equal(await page.getByTestId('onboarding').count(), 0, 'no slides drawn on the web');
     } finally {
       await browser.close();
     }

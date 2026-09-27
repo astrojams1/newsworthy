@@ -31,7 +31,7 @@ test('the website shows the appearance choice and no notification setting', () =
   const overview = nodes(renderSettings({ platform: 'web' }).tree);
   assert.ok(overview.some(n => n.type === 'Head'), 'the page has its own title');
   assert.ok(!overview.some(n => n.props?.testID === 'notifications-link'), 'push notifications are a native feature');
-  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support', 'Introduction']);
+  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support']);
   const all = nodes(renderSettings({ platform: 'web', screen: 'appearance' }).tree);
   assert.ok(all.some(n => n.type === 'Head'), 'the page has its own title');
   const radios = all.filter(n => n.props?.accessibilityRole === 'radio');
@@ -361,8 +361,9 @@ test('the story timeline is a switch on the overview, off by default, on every p
   }
 });
 
-test('the introduction replays from Settings on every platform, last in About', () => {
-  for (const platform of ['web', 'ios', 'android']) {
+test('the introduction replays from Settings in the phone apps, last in About, and the website has no row', () => {
+  assert.ok(!nodes(renderSettings({ platform: 'web' }).tree).some(n => n.type === 'Link' && n.props.href === '/onboarding'), 'no introduction on the web');
+  for (const platform of ['ios', 'android']) {
     const all = nodes(renderSettings({ platform, stored: { onboarded: true } }).tree);
     const link = all.find(n => n.type === 'Link' && n.props.href === '/onboarding');
     assert.ok(link, platform);
