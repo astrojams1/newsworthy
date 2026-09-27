@@ -10,6 +10,7 @@ says so in its own entry. Each window starts where the previous one ended.
 | [2026-09-25-01](#2026-09-25-01) | 2026-09-25 18:00 → 22:40 | 7259df4 | 5 / 4 / 1 | 19:03 (reading 758) | Cause of the 19:03 run |
 | [2026-09-26-01](#2026-09-26-01) | 2026-09-25 22:40 → 2026-09-26 02:13 | 4833e57 | 4 / 2 / 3 | 00:03 (763), 02:03 (765) | Where the pre-#144 workflow comes from |
 | [2026-09-26-02](#2026-09-26-02) | 2026-09-26 02:13 → 08:08 | 3861907, then fae4cc6 | 6 / 6 / 5 | 06:03 (769), 07:03 (770), 08:03 (771) | Caller-side cache of the Routine URL: confirm |
+| [2026-09-26-03](#2026-09-26-03) | 2026-09-26 08:08 → 2026-09-27 05:11 | 53910ed → f725e6d (7 deploys) | 21 / 21 / 0 | 10:03 (773) | Breakout detection on a trading day; null `story` on unjudged points; unlinked report |
 
 ## 2026-09-25-01
 
@@ -215,3 +216,108 @@ a URL cache. The review has not changed the Routine.
 
 **Open questions.** Does a per-run URL end the stale runs? Why do unjudged
 history points carry a null `story`?
+
+## 2026-09-26-03
+
+**Window** 2026-09-26 08:08 → 2026-09-27 05:11 UTC. Production moved through
+#154, #156, #157, #158, #159, #160, #161 and #162, from `53910ed` to `f725e6d`.
+The Routine prompt changed four times; each change is listed under Changes
+below.
+
+**Counts.** 21 caller readings (772–792) and 21 run reports; one report was not
+linked to its reading (see flagged). 0 rejections. 2 merge rows: the caller's
+#4 and its undo, #5. No hours without a reading. The prompt was verified on
+every reading.
+
+**Changes in the window, in order:**
+- **09:02:** the Routine fetches the instructions at a URL that is new on every
+  run (`&run=<UTC time>`).
+- **10:03:** the caller merged `us-china-trade` into `iran-war` (merge #4).
+  The owner had it undone at 11:46 (#5).
+- **12:05:** #156 lists each story by its first and latest sentence.
+- **12:32:** the Routine reads the caller API with `curl`.
+- **12:38:** #157 puts every reading of each story in the record, fetched once
+  per run.
+- **22:25:** the Routine sends the token in a header, and `&run=` is dropped.
+- **22:44:** #159 removes the GET form, `soft_errors`, URL tokens,
+  `?format=json`, the prepare 410 and the OpenAPI schema.
+- **23:14:** the Routine reads every page with `curl`, news sites included,
+  and never uses the web-fetch tool.
+- **23:20:** #160 drops the fixed source list from the notes.
+- **00:27 Sep 27:** #161 ships prompt v18, which measures market risk.
+
+**Reviewer probes, not the caller.**
+- Five fetches made with the caller token: `/api/developments` at 11:43,
+  11:46, 12:06 and 12:39, and `/api/instructions` twice at 22:45. They are
+  logged exactly like the caller's own requests, and are discounted in the
+  counts below.
+- One admin-token fetch of `/api/prompt` at 00:28, already marked as admin in
+  the log.
+
+**Observations: the workflow.**
+- **Every run fetched the instructions before acting** (21 of 21). No run
+  called the removed prepare step, and there were no rejections. The runs at
+  11:03 and 12:03 fetched the instructions twice in a row.
+- **Every run fetched `/api/developments` exactly once**, with the probes
+  above excluded.
+- **Every reading was judged v3 onto development 766**, Trump's rejection of
+  Iran's plan. From 03:04 on the 26th this was the top story in every run.
+- **No merge was proposed after #4.**
+
+**Observations: stale pages.** Reports described stale copies of the NPR
+sections page, CNN's homepage and `lite.cnn.com` at 11:04, 12:04, 15:04 and
+23:03. At 14:04 a report described CNN's RSS feed as stale; that feed really is
+stale at the source, with its last items in April 2023. None of the six reports
+after 23:14, when the Routine switched to `curl` for every page, mention a
+stale page. On 26 Sep at 22:58 UTC the reviewer fetched the CNN homepage,
+`lite.cnn.com` and NPR `/sections/news/` with `curl`, and all three were
+current.
+
+**Observations: v18 (readings 788–792).**
+- All five were stamped v18 with the prompt verified. The last v17 reading was
+  787 at 00:03.
+- **Scores:** v17 readings in the window ran 3–4; v18 readings are 5, 5, 5, 5,
+  5.
+- **Reasoning:** every v18 report reasons in market terms. Friday's oil drop
+  was priced on hopes of the deal, so the rejection is likely to move oil at
+  the reopen. Broad markets were calm (VIX about 15), which keeps the score
+  below 6.
+- **Prices:** the runs read prices from dated pages (Schwab's Friday update,
+  the Rio Times briefing, the Coinbase and CoinGecko APIs).
+- **Other candidates:** the 04:03 run also weighed the Sep 30 shutdown
+  deadline, which is the kind of scan beyond the lead story that v18 asks for.
+- **A figure to watch:** two runs, at 02:03 and 04:03, took Brent at "about
+  $88.9–89" from the Rio Times briefing. Yahoo's dated quote and AP gave
+  Brent's Sep 25 close as $97.44. The score did not rest on that figure.
+
+**Flagged: 10:03 (reading 773).** The run report (run 14) was posted 0.3 s
+after the reading was stored, and without its id, so it reads as "no reading
+submitted". The report describes that same reading. The run also proposed
+merge #4, which the owner judged wrong and had undone. Why the id was missing
+is unknown; it happened once in 21 runs.
+
+**Hypotheses.**
+- *Stale copies came from the caller's web-fetch tool, not from the sources.*
+  Still open, and more strongly supported than before.
+  - Stale instructions stopped once the URL changed on every run: 21 of 21
+    runs since fetched first.
+  - Stale news pages stopped once every page was read with `curl`: 0 of 6
+    runs since.
+  - The same pages were current when the reviewer fetched them with `curl`.
+
+  It is not confirmed, because transcripts are not reachable and some stale
+  reports do not name the tool they used.
+- *The Rio Times briefing carries a wrong Brent figure.* Open. It is supported
+  only by the disagreement with two other dated sources.
+
+**Actions taken in the window** are the changes listed above, all made at the
+owner's direction. The review changed nothing further.
+
+**Open questions.**
+- Does v18 catch a breakout on a trading day? Futures reopen Sunday at about
+  22:00 UTC.
+- Why do unjudged history points carry a null `story`? This is unchanged from
+  the last review.
+- Why was the 10:03 report posted without its id?
+- Does a dated page with a wrong figure, like the Rio Times Brent, affect any
+  score?
