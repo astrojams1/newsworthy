@@ -10,17 +10,21 @@ import { usePreferences } from '@/components/preferences-provider';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
+import { displayExplanation } from '@/lib/story-age';
+import { readingGradientSvg } from '@/lib/reading-gradient';
+import { themeForLevel } from '@/lib/palette';
 
 type Theme = ReturnType<typeof useTheme>;
 const platform = process.env.EXPO_OS === 'ios' ? 'ios' : 'android';
 const scoreFont = platform === 'ios' ? 'ui-monospace' : 'monospace';
 // Every slide is the same stack of fixed heights — the illustration, one line
-// of title, four lines of body — centred as a whole, so the title sits at the
-// same height on every slide and does not jump as the reader swipes.
-const ART_HEIGHT = 220;
+// of title, room for three of description — centred as a whole, so the title
+// sits at the same height on every slide and does not jump as the reader swipes.
+const ART_HEIGHT = 260;
 const TITLE_LINE = 32;
 const BODY_LINE = 25;
-const BODY_LINES = 4;
+const BODY_LINES = 3;
+const TEXT_BLOCK = TITLE_LINE + 12 + BODY_LINE * BODY_LINES;
 
 // The introduction belongs to the phone apps. The website has no route to it,
 // and a typed or shared link lands on the reading.
@@ -70,19 +74,19 @@ function Introduction() {
       onScrollBeginDrag={() => { target.current = null; }} onScroll={event => scrolled(event.nativeEvent.contentOffset.x)}>
       {slides.map((slide, position) => <View key={slide.key} testID={`onboarding-slide-${slide.key}`} accessibilityElementsHidden={position !== index}
         importantForAccessibility={position === index ? 'auto' : 'no-hide-descendants'}
-        style={{ width, flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}>
-        <View style={{ width: column, alignItems: 'center' }}>
-          <View style={{ height: ART_HEIGHT, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Art art={slide.art} theme={theme} score={reading?.score} saved={reading?.created_at} />
-          </View>
+        style={{ width, flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 24 }}>
+        <View style={{ height: ART_HEIGHT, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginBottom: 36 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <Art art={slide.art} theme={theme} score={reading?.score} saved={reading?.created_at} explanation={reading ? displayExplanation(reading) : undefined} />
+        </View>
+        <View style={{ width: column, height: TEXT_BLOCK, alignItems: 'center' }}>
           <Text testID="onboarding-title" accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: TITLE_LINE, minHeight: TITLE_LINE, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
-          <Text testID="onboarding-body" style={{ color: theme.muted, fontSize: 17, lineHeight: BODY_LINE, minHeight: BODY_LINE * BODY_LINES, textAlign: 'center', marginTop: 14 }}>
+          <Text testID="onboarding-body" style={{ color: theme.muted, fontSize: 17, lineHeight: BODY_LINE, minHeight: BODY_LINE * BODY_LINES, textAlign: 'center', marginTop: 12 }}>
             {slide.body.split(/\*\*(.+?)\*\*/).map((part, i) => i % 2 ? <Text key={i} style={{ fontWeight: '700', color: theme.ink }}>{part}</Text> : part)}
           </Text>
         </View>
       </View>)}
     </ScrollView>
-    <View style={{ alignItems: 'center', paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24, gap: 24 }}>
+    <View style={{ alignItems: 'center', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16, gap: 24 }}>
       <View accessible accessibilityLabel={`Page ${index + 1} of ${slides.length}`} style={{ flexDirection: 'row', gap: 8 }}>
         {slides.map((slide, position) => <View key={slide.key}
           // On the reading's gradient the hairline rule color disappears, so
@@ -114,9 +118,7 @@ function palette(score: number | undefined, dark: boolean): Palette {
 function Diagonal({ colors, radius, children, style, testID }: { colors: Palette; radius: number; children?: React.ReactNode; style: object; testID?: string }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const svg = size.width > 0 ? `<svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${colors.start}"/><stop offset=".5" stop-color="${colors.center}"/><stop offset="1" stop-color="${colors.end}"/></linearGradient></defs><rect width="${size.width}" height="${size.height}" rx="${radius}" fill="url(#g)"/></svg>` : null;
-  const uri = svg && (process.env.EXPO_OS === 'android'
-    ? `data:image/svg+xml;base64,${fromByteArray(Uint8Array.from(svg, char => char.charCodeAt(0)))}`
-    : `data:image/svg+xml,${encodeURIComponent(svg)}`);
+  const uri = svg && svgUri(svg);
   return <View testID={testID} style={{ ...style, borderRadius: radius, overflow: 'hidden' }}
     onLayout={({ nativeEvent: { layout } }) => setSize(current => current.width === layout.width && current.height === layout.height ? current : { width: layout.width, height: layout.height })}>
     {uri && <Image source={{ uri }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
@@ -135,29 +137,70 @@ function widgetTime(saved: string | undefined) {
   return today ? time : `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · ${time}`;
 }
 
-function Art({ art, theme, score, saved }: { art: SlideArt; theme: Theme; score?: number; saved?: string }) {
-  const card = { backgroundColor: theme.elevated, borderRadius: 20, borderWidth: 1, borderColor: theme.rule } as const;
-  if (art === 'scale') return <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-    <Text style={{ color: theme.ink, fontSize: 150, lineHeight: 170, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -8 }}>{score ?? '–'}</Text>
-    <Text style={{ color: theme.muted, fontSize: 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
+// The reading screen's own wording for its update time.
+function relative(saved: string) {
+  const minutes = Math.max(0, Math.floor((Date.now() - Date.parse(saved)) / 60000));
+  return minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
+}
+
+// The reading screen in small, on its own canvas: the score, its sentence and
+// when it was updated, laid out as the reading screen lays them out.
+function ReadingCard({ theme, score, saved, explanation }: { theme: Theme; score?: number; saved?: string; explanation?: string }) {
+  const width = 250, height = 260;
+  const svg = score ? readingGradientSvg(score, theme.dark, width, height) : null;
+  return <View testID="onboarding-reading" style={{ width, height, borderRadius: 28, overflow: 'hidden', backgroundColor: theme.surface,
+    borderWidth: 1, borderColor: theme.rule, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 22 }}>
+    {svg && <Image source={{ uri: svgUri(svg) }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
+    <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+      <Text style={{ color: theme.ink, fontSize: 88, lineHeight: 96, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -88 * 0.055 }}>{score ?? '–'}</Text>
+      <Text style={{ color: theme.muted, fontSize: 14, fontWeight: '300', fontFamily: scoreFont, marginLeft: 2 }}>∕10</Text>
+    </View>
+    {explanation
+      ? <Text numberOfLines={3} style={{ color: theme.ink, fontSize: 13, lineHeight: 19, textAlign: 'center', marginTop: 10 }}>{explanation}</Text>
+      : <View style={{ gap: 7, alignItems: 'center', marginTop: 14 }}>{[170, 130].map(w => <View key={w} style={{ width: w, height: 7, borderRadius: 4, backgroundColor: theme.muted, opacity: 0.2 }} />)}</View>}
+    {saved && <Text style={{ color: theme.muted, fontSize: 10, marginTop: 10 }}>Updated {relative(saved)}</Text>}
   </View>;
-  if (art === 'levels') return <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 200 }}>
-    {tokens.levels.map((_: unknown, i: number) => <View key={i} style={{ alignItems: 'center', gap: 6 }}>
-      <Diagonal testID={`onboarding-level-${i + 1}`} colors={palette(i + 1, theme.dark)} radius={6} style={{ width: 22, height: 36 + i * 14 }} />
-      <Text style={{ color: theme.muted, fontSize: 12, fontFamily: scoreFont }}>{i + 1}</Text>
+}
+
+// A level as the reading screen draws it: the same canvas the app shows at
+// that score (readingGradientSvg), in small, with the number in that level's
+// ink. The widgets' three-stop diagonal reads well across a widget but turns
+// into a hard stripe on a tile this size, so the tiles use the app's canvas.
+function svgUri(svg: string) {
+  return process.env.EXPO_OS === 'android'
+    ? `data:image/svg+xml;base64,${fromByteArray(Uint8Array.from(svg, char => char.charCodeAt(0)))}`
+    : `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+function LevelTile({ level, size, dark }: { level: number; size: number; dark: boolean }) {
+  const ink = themeForLevel(level, dark);
+  const svg = readingGradientSvg(level, dark, size, size);
+  return <View testID={`onboarding-level-${level}`} style={{ width: size, height: size, borderRadius: Math.round(size * 0.26), overflow: 'hidden',
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: ink.rule }}>
+    {svg && <Image source={{ uri: svgUri(svg) }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
+    <Text style={{ color: ink.ink, fontSize: Math.round(size * 0.4), fontWeight: '300', fontFamily: scoreFont }}>{level}</Text>
+  </View>;
+}
+
+// Lifts a card off the reading's gradient, which in light mode is close to the
+// widget's own colors. The shadow sits on a wrapper: a clipped view cannot cast one.
+const lifted = { borderRadius: 24, boxShadow: '0 10px 30px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08)' } as const;
+
+function Art({ art, theme, score, saved, explanation }: { art: SlideArt; theme: Theme; score?: number; saved?: string; explanation?: string }) {
+  if (art === 'scale') return <View style={lifted}><ReadingCard theme={theme} score={score} saved={saved} explanation={explanation} /></View>;
+  if (art === 'levels') return <View style={{ gap: 10 }}>
+    {[[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]].map(row => <View key={row[0]} style={{ flexDirection: 'row', gap: 10 }}>
+      {row.map(level => <LevelTile key={level} level={level} size={58} dark={theme.dark} />)}
     </View>)}
   </View>;
-  if (art === 'fade') return <View style={{ alignItems: 'center', gap: 22 }}>
-    <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 18 }}>
-      {[8, 6, 4, 2].map((value, i) => <Text key={value}
-        style={{ color: theme.ink, opacity: 1 - i * 0.24, fontSize: 64 - i * 12, fontWeight: '300', fontFamily: scoreFont }}>{value}</Text>)}
-    </View>
-    <View style={{ ...card, paddingHorizontal: 18, paddingVertical: 12 }}>
-      <Text style={{ color: theme.ink, fontSize: 15, fontWeight: '700' }}>New</Text>
-    </View>
+  // One development ageing: first reported at 8, marked New, then easing.
+  if (art === 'fade') return <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 12 }}>
+    {[8, 6, 4, 2].map((level, i) => <View key={level} style={{ alignItems: 'center', gap: 8 }}>
+      <Text style={{ color: theme.ink, fontSize: 13, fontWeight: '700', opacity: i === 0 ? 1 : 0 }}>New</Text>
+      <LevelTile level={level} size={64} dark={theme.dark} />
+    </View>)}
   </View>;
-  if (art === 'widget') return <SmallWidget score={score} saved={saved} dark={theme.dark} />;
-  return <Notification theme={theme} />;
+  if (art === 'widget') return <View style={lifted}><SmallWidget score={score} saved={saved} dark={theme.dark} /></View>;
+  return <View style={lifted}><Notification theme={theme} /></View>;
 }
 
 // The small widget as it is drawn on each platform (NewsworthyWidget.swift,

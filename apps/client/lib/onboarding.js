@@ -17,7 +17,7 @@
 export const TITLE_LENGTH = Object.freeze({ min: 18, max: 24 });
 // Counted without the ** marks. Two lines at the default text size on a phone,
 // inside the four the screen reserves, so nothing below a title moves.
-export const BODY_LENGTH = Object.freeze({ min: 70, max: 85 });
+export const BODY_LENGTH = Object.freeze({ min: 55, max: 75 });
 
 // Each slide states what the app does, plainly. It does not teach the phone
 // (how to add a widget, where a switch is) or point at Settings: people know
@@ -27,15 +27,15 @@ export const BODY_LENGTH = Object.freeze({ min: 70, max: 85 });
 export function onboardingSlides(platform) {
   return [
     { key: 'what', art: 'scale', title: 'News, rated 1 to 10',
-      body: 'Each reading is a score, a short explanation and the time it was last updated.' },
+      body: 'Each reading is a score, a short explanation and when it was updated.' },
     { key: 'scale', art: 'levels', title: 'Ten is most significant',
-      body: 'Higher scores mean more consequential news. The color changes with the score.' },
+      body: 'Higher scores mean more consequential news. The color follows the score.' },
     { key: 'fade', art: 'fade', title: 'Scores fade with time',
-      body: '**New** marks the first coverage of a development. As it ages, its score eases.' },
+      body: '**New** marks a development’s first coverage. As it ages, its score eases.' },
     // Apple writes Home Screen as a name; Android does not.
     { key: 'widget', art: 'widget', title: platform === 'ios' ? 'Also on your Home Screen' : 'Also on your home screen',
-      body: 'A widget shows the current rating and when it was updated, without opening the app.' },
+      body: 'A widget shows the current rating and when it was updated.' },
     { key: 'alert', art: 'alert', title: 'Optional notifications',
-      body: 'Off by default. When on, one notification per development, at the score you choose.' },
+      body: 'Off by default. When on, one per development, at the score you choose.' },
   ];
 }

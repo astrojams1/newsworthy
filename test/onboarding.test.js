@@ -6,6 +6,8 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as onboarding from '../apps/client/lib/onboarding.js';
 import { themeForLevel } from '../apps/client/lib/palette.js';
+import * as storyAge from '../apps/client/lib/story-age.js';
+import * as readingGradient from '../apps/client/lib/reading-gradient.js';
 import { nodes } from './helpers/render-reading.js';
 
 const { BODY_LENGTH, TITLE_LENGTH, onboardingSlides } = onboarding;
@@ -24,7 +26,7 @@ test('both apps show the same five slides, the widget named as each platform nam
   assert.match(slide('ios', 'widget').body, /the current rating and when it was updated/);
   for (const platform of ['ios', 'android']) {
     assert.match(slide(platform, 'alert').body, /^Off by default\./, 'notifications are described as optional first');
-    assert.match(slide(platform, 'alert').body, /one notification per development/);
+    assert.match(slide(platform, 'alert').body, /one per development/);
   }
 });
 
@@ -76,12 +78,15 @@ function renderIntroduction(platform, { score = 3, dark = false } = {}) {
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '../../../public/tokens.js': { __esModule: true, default: require('../public/tokens.js').default ?? require('../public/tokens.js') },
     '@/lib/theme': { useTheme: () => themeForLevel(score, dark) },
-    '@/components/reading-provider': { useCurrentReading: () => ({ reading: score ? { score, created_at: new Date().toISOString() } : null }) },
+    '@/components/reading-provider': { useCurrentReading: () => ({ reading: score ? { score, created_at: new Date().toISOString(), explanation: 'A sample sentence.' } : null }) },
     '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
     'expo-image': { Image: 'Image' },
     'base64-js': { fromByteArray: bytes => Buffer.from(bytes).toString('base64') },
     '@/components/preferences-provider': { usePreferences: () => ({ setOnboarded() {} }) },
     '@/lib/onboarding': onboarding,
+    '@/lib/story-age': storyAge,
+    '@/lib/reading-gradient': readingGradient,
+    '@/lib/palette': { themeForLevel },
   };
   const exports = {};
   vm.runInNewContext(compiled, { exports, process: { env: { EXPO_OS: platform } }, require: name => {
@@ -143,13 +148,21 @@ test('the illustrations use the real level colors, and the widget is the current
     const text = nodes(widget).filter(n => n.type === 'Text').map(n => [n.props.children].flat().join(''));
     assert.deepEqual(text.slice(0, 3), ['NEWSWORTHY', String(score ?? '–'), '∕10']);
     assert.match(text[3], platform === 'android' ? /^Updated / : /^\d/, 'the platform\'s own timestamp');
-    const bars = all.filter(n => /^onboarding-level-\d+$/.test(n.props?.testID ?? ''));
-    assert.equal(bars.length, 10);
-    bars.forEach((bar, i) => {
-      const level = tokens.levels[i][mode];
-      const drawn = svgOf(bar, platform);
-      for (const stop of [level.start, level.center, level.end]) assert.ok(drawn.includes(stop), `level ${i + 1} ${mode} stop ${stop}`);
-    });
+    // Reported 2026-09-27: the widget's three-stop diagonal on a small tile
+    // drew a hard stripe. The tiles are the reading screen's own canvas at
+    // each level, exactly as readingGradientSvg draws it.
+    const tiles = all.filter(n => /^onboarding-level-\d+$/.test(n.props?.testID ?? ''));
+    assert.equal(tiles.length, 14, 'ten on the scale, four on the fade');
+    for (const tile of tiles) {
+      const level = Number(tile.props.testID.split('-').pop());
+      const size = tile.props.style.width;
+      assert.equal(svgOf(tile, platform), readingGradient.readingGradientSvg(level, dark, size, size), `level ${level} ${mode}`);
+      assert.equal(nodes(tile).find(n => n.type === 'Text').props.style.color, themeForLevel(level, dark).ink, 'the level\'s own ink');
+    }
+    const card = all.find(n => n.props?.testID === 'onboarding-reading');
+    const cardText = nodes(card).filter(n => n.type === 'Text').map(n => [n.props.children].flat().join(''));
+    assert.equal(cardText[0], String(score ?? '–'), 'the reading card shows the current score');
+    if (score) assert.equal(svgOf(card, platform), readingGradient.readingGradientSvg(score, dark, card.props.style.width, card.props.style.height), 'on the reading\'s own canvas');
   }
 });
 

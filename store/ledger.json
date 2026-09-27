@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T01:22:14+00:00",
+  "updated_at": "2026-09-27T02:13:43+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -952,12 +952,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Illustrations redrawn from what the app and widgets show (owner report 2026-09-27: colors and widget did not match). Slides sit on the current reading's canvas (ReadingGradient); each level bar and the pictured small widget use that level's three stops, top-left to bottom-right, as both widgets draw them; the widget shows the current score and the platform's own timestamp form; the notification carries the server's title. Rendered in Chromium with a platform override and a monospace stand-in for iOS's ui-monospace. Not seen on a device: SF Mono numerals, widget corner radius and scale against the real widget.",
+      "summary": "Illustrations redesigned after owner review of the dark levels slide (muddy bars, stripe artifacts, tiny labels). Level and fade tiles now draw the reading screen's own canvas (readingGradientSvg) per level with that level's ink; slide 1 is the reading screen in a card on its canvas; widget and notification lifted with a shadow; art and text grouped at fixed heights; descriptions shortened to two lines. Inspected all 20 screens (5 slides x iOS/Android x light/dark) at 393x852@2x in Chromium with Inter/JetBrains Mono (iOS) and Roboto/Roboto Mono (Android) as font stand-ins. Not seen on a device: SF Pro/SF Mono metrics, iOS widget corner radius, shadow rendering on Android.",
       "evidence": [
-        "test/onboarding.test.js color and widget cases; store/source/widget-consistency-mono/ios-homescreen-light.png and store/source/android-phone/22-widget-default-light-v10.png as reference"
+        "test/onboarding.test.js tile and card canvas cases"
       ],
       "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
-      "updated_at": "2026-09-27T01:22:14+00:00"
+      "updated_at": "2026-09-27T02:13:43+00:00"
     }
   },
   "events": [
@@ -5950,6 +5950,22 @@
         ],
         "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
         "updated_at": "2026-09-27T01:22:14+00:00"
+      }
+    },
+    {
+      "sequence": 312,
+      "at": "2026-09-27T02:13:43+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Illustrations redesigned after owner review of the dark levels slide (muddy bars, stripe artifacts, tiny labels). Level and fade tiles now draw the reading screen's own canvas (readingGradientSvg) per level with that level's ink; slide 1 is the reading screen in a card on its canvas; widget and notification lifted with a shadow; art and text grouped at fixed heights; descriptions shortened to two lines. Inspected all 20 screens (5 slides x iOS/Android x light/dark) at 393x852@2x in Chromium with Inter/JetBrains Mono (iOS) and Roboto/Roboto Mono (Android) as font stand-ins. Not seen on a device: SF Pro/SF Mono metrics, iOS widget corner radius, shadow rendering on Android.",
+        "evidence": [
+          "test/onboarding.test.js tile and card canvas cases"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T02:13:43+00:00"
       }
     }
   ],
