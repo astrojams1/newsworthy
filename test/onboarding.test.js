@@ -140,13 +140,14 @@ test('the widget uses the real level colors, and the first slide shows the curre
     // Reported 2026-09-27: the first slide's graphic was too busy. It is the
     // current score and its denominator, as the reading screen sets them.
     // Reported 2026-09-27: the description spoke of a sentence the graphic did
-    // not show. It shows the current sentence under the score, as the app does.
+    // not show. It shows where the sentence sits under the score.
     const scoreArt = all.find(n => n.props?.testID === 'onboarding-score');
     const texts = nodes(scoreArt).filter(n => n.type === 'Text');
     assert.deepEqual(texts.slice(0, 2).map(n => [n.props.children].flat().join('')), [String(score ?? '–'), '∕10']);
+    // The owner asked for the sentence abstract rather than literal: lines, never text.
     const sentence = all.find(n => n.props?.testID === 'onboarding-sentence');
-    if (score) assert.equal([sentence.props.children].flat(Infinity).filter(v => typeof v === 'string').join(''), 'A sample sentence.');
-    else assert.equal(sentence, undefined, 'no sentence before any reading; placeholder lines instead');
+    assert.equal(nodes(sentence).filter(n => n.type === 'Text').length, 0, 'the sentence is drawn as lines');
+    assert.ok(nodes(sentence).filter(n => n.type === 'View').length >= 3);
     assert.ok(!all.some(n => /^onboarding-level-/.test(n.props?.testID ?? '') || n.props?.testID === 'onboarding-reading'), 'no tiles or card');
   }
 });
