@@ -28,6 +28,21 @@ The widget picker description, on iOS and Android alike, is:
 It says what the widget shows. The picker already names the app, so it does not
 repeat a tagline or explain the scale.
 
+## What the score measures, internally
+
+Internally, the score is the current risk of a sharp market move, up or down,
+and the reading names the development most likely to cause one (prompt v18,
+the owner's definition, 2026-09-26). That framing governs the rating prompt,
+its evaluations, caller reviews and internal docs.
+
+External copy stays framed around news by significance, by the owner's
+decision: the tagline, descriptions, store listing, help pages, `llms.txt` and
+metadata do not describe the score as market risk and do not mention markets,
+prices, trading or investing as what the number measures. The reading's own
+sentence may name what a development could mean for prices or savings; that is
+news, not a description of the scale. Internal work that changes the rating
+does not by itself call for external copy changes.
+
 ## Voice and claims
 
 - Keep copy simple, calm and factual. Avoid urgency, guilt, streaks or prompts

@@ -837,8 +837,8 @@ attention. Sources search by time and topic, never a fixed site list, and read
 prices from dated quote pages. Steps 2 and 7 separate priced-in from surprise:
 without them a fully expected Fed hike scored 6 to 7. Scale and Examples are
 the owner's approved wording. Readings across v17 and v18 are not comparable.
-The tagline "rated by significance" predates it. The
-[record](docs/prompt-evaluations/v18.md) holds every test run.
+External copy stays "news by significance" by the owner's decision; see
+`docs/product-messaging.md`. The [record](docs/prompt-evaluations/v18.md) holds every test run.
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
