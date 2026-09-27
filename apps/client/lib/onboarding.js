@@ -1,7 +1,7 @@
 // The introduction shown once on a phone's first launch and replayed from
-// Settings. Copy follows docs/product-messaging.md: it says what the number is,
-// that it can be wrong and that it fades, and nothing about how often to come
-// back. Kept here rather than in the screen so the tests read the same words.
+// Settings. Copy follows docs/product-messaging.md: it says what the number is
+// and that it fades, and nothing about how often to come back. It does not
+// mention AI or warn that ratings can be wrong; support and policy pages do. Kept here rather than in the screen so the tests read the same words.
 //
 // Widgets and notifications exist only in the apps, so the website has
 // neither slide; their illustrations are drawn per platform. Titles are kept between TITLE_LENGTH.min and .max characters so
@@ -26,9 +26,9 @@ export function onboardingSlides(platform) {
   const native = platform === 'ios' || platform === 'android';
   return [
     { key: 'what', art: 'scale', title: 'News, rated 1 to 10',
-      body: 'Newsworthy uses AI to assess world news. Each reading has a score, a brief explanation and an update time.' },
+      body: 'Newsworthy assesses world news. Each reading has a score, a brief explanation and an update time.' },
     { key: 'scale', art: 'levels', title: 'Ten is most significant',
-      body: 'The score is an AI assessment of how consequential the news is. It can be wrong.' },
+      body: 'Higher scores mean more consequential news.' },
     { key: 'fade', art: 'fade', title: 'Scores fade with time',
       body: 'As a development ages, its score eases. A bold New: marks its first coverage.' },
     ...(native ? [

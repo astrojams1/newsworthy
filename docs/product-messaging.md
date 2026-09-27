@@ -57,8 +57,9 @@ repeat a tagline or explain the scale.
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
 - The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
-  a few plain sentences: an AI assessment of consequence that can be wrong and
-  fades with age. In the apps it adds that a widget exists and that
+  a few plain sentences: a score of consequence that fades with age. By the
+  owner's choice it does not mention AI or warn that ratings can be wrong; the
+  support page carries those facts. In the apps it adds that a widget exists and that
   notifications are optional and off by default. It says what the app does,
   not how the phone works or where Settings is, and never asks the reader to
   come back. The mobile apps show it once on first launch; Settings replays it.

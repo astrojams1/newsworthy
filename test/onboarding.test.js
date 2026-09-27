@@ -26,6 +26,8 @@ test('the introduction states what the app does, without teaching the device or 
   for (const platform of platforms) for (const { key, title, body } of onboardingSlides(platform)) {
     const text = `${title} ${body}`;
     assert.doesNotMatch(text, /\bSettings\b|\btap\b|touch and hold|\bswipe\b|\bpermission\b|\basks?\b/i, `${platform} ${key}: "${text}"`);
+    // Reported 2026-09-27: no mention of AI and no warnings that it can err.
+    assert.doesNotMatch(text, /\bAI\b|artificial|\bmodel\b|mistake|\bwrong\b|\berrors?\b|accura/i, `${platform} ${key}: "${text}"`);
     assert.doesNotMatch(text, /\byou ask\b|\byours?\b.*\bown\b|!|\bjust\b|\bonly if\b|\bworry|\bcalm|\banxi|\bbreath/i, `${platform} ${key}: no emotional framing`);
   }
 });
