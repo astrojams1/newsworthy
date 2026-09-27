@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BODY_MAX_LENGTH, TITLE_LENGTH, onboardingSlides } from '../apps/client/lib/onboarding.js';
+import { BODY_LENGTH, TITLE_LENGTH, onboardingSlides } from '../apps/client/lib/onboarding.js';
 
 const platforms = ['ios', 'android', 'web'];
 
@@ -32,10 +32,22 @@ test('the introduction states what the app does, without teaching the device or 
   }
 });
 
-test('titles are about the same length and bodies fit the same four lines on every slide', () => {
+// Reported 2026-09-27: descriptions ran from 43 to 106 characters, so some
+// slides read as a caption and others as a paragraph.
+test('titles and descriptions are each about the same length on every slide', () => {
   for (const platform of platforms) for (const { key, title, body } of onboardingSlides(platform)) {
     assert.ok(title.length >= TITLE_LENGTH.min && title.length <= TITLE_LENGTH.max, `${platform} ${key}: "${title}" is ${title.length} characters`);
     assert.ok(!/[.!?]$/.test(title), `${platform} ${key}: titles share one form, with no end punctuation`);
-    assert.ok(body.length <= BODY_MAX_LENGTH, `${platform} ${key}: body is ${body.length} characters`);
+    const plain = body.replace(/\*\*/g, '');
+    assert.ok(plain.length >= BODY_LENGTH.min && plain.length <= BODY_LENGTH.max, `${platform} ${key}: "${plain}" is ${plain.length} characters`);
+  }
+});
+
+// Reported 2026-09-27: "a bold New:" described the label instead of showing it.
+test('New is shown in bold, without a colon, and never described as bold', () => {
+  const fade = onboardingSlides('web').find(slide => slide.key === 'fade').body;
+  assert.match(fade, /\*\*New\*\* /);
+  for (const platform of platforms) for (const { body } of onboardingSlides(platform)) {
+    assert.doesNotMatch(body, /New:|\bbold\b/, body);
   }
 });

@@ -196,9 +196,19 @@ test('the introduction replays from Settings and returns there on the web', { ti
         assert.ok(Math.abs(title.y - titles[0].y) < 0.5, `"${title.text}" sits at ${title.y}, the first at ${titles[0].y}`);
         assert.equal(title.lines, 1, `"${title.text}" fits one line`);
       }
+      // Every description runs to the same number of lines, measured by its text rather than its reserved box.
+      const bodies = await page.getByTestId('onboarding-body').evaluateAll(nodes => nodes.map(node => {
+        const range = document.createRange(); range.selectNodeContents(node);
+        const tops = new Set([...range.getClientRects()].map(rect => Math.round(rect.top)));
+        return { text: node.textContent, lines: tops.size };
+      }));
+      assert.equal(new Set(bodies.map(body => body.lines)).size, 1, `line counts differ: ${JSON.stringify(bodies)}`);
       // Tapped as fast as the browser allows: each tap is one slide, even mid-animation.
       for (let tap = 0; tap < 2; tap += 1) await page.getByTestId('onboarding-next').click();
       await page.getByLabel('Page 3 of 3').waitFor();
+      // The fade slide's New is drawn bold inside the sentence, with no colon.
+      const label = await page.getByText('New', { exact: true }).evaluateAll(nodes => nodes.map(node => getComputedStyle(node).fontWeight));
+      assert.ok(label.length >= 1 && label.every(weight => Number(weight) >= 700), `bold New: ${label}`);
       await page.getByText('Done', { exact: true }).waitFor();
       assert.equal(await page.getByTestId('onboarding-skip').count(), 0, 'no Skip on the last slide');
       await page.getByTestId('onboarding-next').click();

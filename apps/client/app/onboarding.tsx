@@ -65,7 +65,9 @@ export default function Onboarding() {
             <Art art={slide.art} theme={theme} />
           </View>
           <Text testID="onboarding-title" accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: TITLE_LINE, minHeight: TITLE_LINE, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
-          <Text style={{ color: theme.muted, fontSize: 17, lineHeight: BODY_LINE, minHeight: BODY_LINE * BODY_LINES, textAlign: 'center', marginTop: 14 }}>{slide.body}</Text>
+          <Text testID="onboarding-body" style={{ color: theme.muted, fontSize: 17, lineHeight: BODY_LINE, minHeight: BODY_LINE * BODY_LINES, textAlign: 'center', marginTop: 14 }}>
+            {slide.body.split(/\*\*(.+?)\*\*/).map((part, i) => i % 2 ? <Text key={i} style={{ fontWeight: '700', color: theme.ink }}>{part}</Text> : part)}
+          </Text>
         </View>
       </View>)}
     </ScrollView>
@@ -111,7 +113,7 @@ function Art({ art, theme }: { art: SlideArt; theme: Theme }) {
         style={{ color: theme.ink, opacity: 1 - i * 0.24, fontSize: 64 - i * 12, fontWeight: '300', fontFamily: scoreFont }}>{score}</Text>)}
     </View>
     <View style={{ ...card, paddingHorizontal: 18, paddingVertical: 12 }}>
-      <Text style={{ color: theme.ink, fontSize: 15 }}><Text style={{ fontWeight: '700' }}>New:</Text> first coverage of a development</Text>
+      <Text style={{ color: theme.ink, fontSize: 15, fontWeight: '700' }}>New</Text>
     </View>
   </View>;
   if (art === 'widget') return <HomeScreen theme={theme} />;

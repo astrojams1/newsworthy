@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T00:24:25+00:00",
+  "updated_at": "2026-09-27T00:57:45+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -952,12 +952,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Introduction no longer mentions AI or warns that ratings can be wrong (owner decision 2026-09-27); support page still carries both. Otherwise as before: apps five slides, web three, titles at one height. Not seen on a device.",
+      "summary": "Descriptions evened to 75-83 characters, two lines each on every slide (iOS, Android and web variants at 390x844 in Chromium); the fade slide shows a bold New with no colon instead of describing 'a bold New:'. The app's own reading label is unchanged ('New:'). Not seen on a device.",
       "evidence": [
-        "test/onboarding.test.js no-AI regression"
+        "test/onboarding.test.js length and New cases; test/web-settings.test.js line-count and bold checks"
       ],
       "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
-      "updated_at": "2026-09-27T00:24:25+00:00"
+      "updated_at": "2026-09-27T00:57:45+00:00"
     }
   },
   "events": [
@@ -5902,6 +5902,22 @@
         ],
         "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
         "updated_at": "2026-09-27T00:24:25+00:00"
+      }
+    },
+    {
+      "sequence": 309,
+      "at": "2026-09-27T00:57:45+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Descriptions evened to 75-83 characters, two lines each on every slide (iOS, Android and web variants at 390x844 in Chromium); the fade slide shows a bold New with no colon instead of describing 'a bold New:'. The app's own reading label is unchanged ('New:'). Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js length and New cases; test/web-settings.test.js line-count and bold checks"
+        ],
+        "next_action": "On iOS and Android: a fresh install opens the introduction over the reading once; Skip, Done and Android back return to the reading and it does not reopen on relaunch; Settings > Introduction replays it and returns to Settings; swipe paging and large text.",
+        "updated_at": "2026-09-27T00:57:45+00:00"
       }
     }
   ],

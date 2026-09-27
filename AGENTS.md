@@ -570,7 +570,8 @@ cannot read the app's store; each widget has its own settings instead.
 (`onboarded`, set when it opens) and Settings replays. Copy is in
 `lib/onboarding.js`: plain statements of what the app does, never how the
 device works or where Settings is; widget and notification slides in the apps
-only; titles 18–24 characters at one fixed height (`test/onboarding.test.js`). Every row shares one minimum
+only; titles 18–24 and descriptions 70–85 characters, titles at one height, a
+bold **New** with no colon (`test/onboarding.test.js`). Every row shares one minimum
 height rather than a fixed one, so enlarged text grows the rows together.
 
 **Push notifications are opt-in, off by default, and 8 when turned on.** The
