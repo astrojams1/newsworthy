@@ -853,6 +853,12 @@ the owner's approved wording. Readings across v17 and v18 are not comparable.
 External copy stays "news by significance" by the owner's decision; see
 `docs/product-messaging.md`. The [record](docs/prompt-evaluations/v18.md) holds every test run.
 
+**v19: the sentence never names a news outlet.** The owner's convention,
+2026-09-27, and rule 8 in `PROMPT-RULES.md`. v17's "Claims: said" ended ten
+readings in a day with "the Wall Street Journal said". v19 is v18 but for that
+Style entry: a report is attributed with "reportedly" or the people it cites.
+The [record](docs/prompt-evaluations/v19.md) holds the test runs.
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.

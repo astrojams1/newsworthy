@@ -410,6 +410,14 @@ const V18_OUTPUT_CONTRACT = V17_OUTPUT_CONTRACT
   .replace('what it means for daily life', 'what it could mean for prices or savings')
   .replace(' Preserve facts, attribution and uncertainty when revising after the history match.', '');
 
+// v19 never names a news outlet in the sentence. The owner set this as a
+// convention on 2026-09-27, after v17's "Claims: said" produced ten readings in
+// a day ending "the Wall Street Journal said". A report's attribution stays,
+// as "reportedly" or the people it cites. Only that Style entry changes; the
+// rest is v18's verbatim. See docs/prompt-evaluations/v19.md.
+const V19_OUTPUT_CONTRACT = V18_OUTPUT_CONTRACT
+  .replace('Claims: said.', 'Claims: said or reportedly. Never name news outlets.');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -536,6 +544,13 @@ const REGISTRY = {
     added: '2026-09-26',
     instructions: V18_INSTRUCTIONS,
     outputContract: V18_OUTPUT_CONTRACT,
+  },
+  19: {
+    version: 19,
+    label: 'no-outlet-names-v19',
+    added: '2026-09-27',
+    instructions: V18_INSTRUCTIONS,
+    outputContract: V19_OUTPUT_CONTRACT,
   },
 };
 
