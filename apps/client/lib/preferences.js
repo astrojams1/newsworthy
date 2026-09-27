@@ -5,7 +5,7 @@
 
 /** @typedef {'system' | 'light' | 'dark'} ThemePreference */
 /** @typedef {{ enabled: boolean, threshold: number, token: string | null }} NotificationPreferences */
-/** @typedef {{ theme: ThemePreference, notifications: NotificationPreferences, timeline: boolean }} Preferences */
+/** @typedef {{ theme: ThemePreference, notifications: NotificationPreferences, timeline: boolean, onboarded: boolean }} Preferences */
 
 export const THEME_CHOICES = /** @type {const} */ ([
   { value: 'system', label: 'Follow device' },
@@ -29,6 +29,9 @@ export const DEFAULT_PREFERENCES = Object.freeze({
   // The story timeline below the reading. Off unless chosen: the product is
   // one number and one sentence, and the timeline is an addition to it.
   timeline: false,
+  // Whether the introduction has been shown. The phone apps show it once, on
+  // the first launch; Settings replays it without changing this.
+  onboarded: false,
 });
 
 // Versioned like the reading cache, so a future shape change can migrate
@@ -70,6 +73,7 @@ export function parsePreferences(raw) {
     },
     // Only an explicit true turns it on; anything else is the default.
     timeline: stored.timeline === true,
+    onboarded: stored.onboarded === true,
   };
 }
 

@@ -164,3 +164,30 @@ test('Settings trailing marks match the label\'s cap height and baseline on the 
     }
   });
 });
+
+// The introduction belongs to the phone apps. On the web, Settings offers no
+// row for it and a typed or shared link to it lands on the reading.
+test('the website has no introduction: no Settings row, and its link opens the reading', { timeout: 120_000 }, async (t) => {
+  if (!executablePath) {
+    assert.ok(!process.env.CI, `no Chrome or Chromium found; set CHROME_PATH (looked in ${BROWSERS.join(', ')})`);
+    t.skip('no Chrome or Chromium on this machine; set CHROME_PATH to run it');
+    return;
+  }
+  await withServer({ port: PORTS.webIntroduction, env: { NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
+    const browser = await chromium.launch({ executablePath });
+    try {
+      const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+      await page.goto(`${base}/`);
+      await page.getByLabel('Settings', { exact: true }).first().waitFor();
+      assert.equal(new URL(page.url()).pathname, '/', 'a first visit on the web opens on the reading');
+      await page.goto(`${base}/settings`);
+      await page.getByLabel('Support').waitFor();
+      assert.equal(await page.getByTestId('introduction-row').count(), 0, 'no Introduction row on the web');
+      await page.goto(`${base}/onboarding`);
+      await page.waitForURL(url => url.pathname === '/', { timeout: 10_000 });
+      assert.equal(await page.getByTestId('onboarding').count(), 0, 'no slides drawn on the web');
+    } finally {
+      await browser.close();
+    }
+  });
+});
