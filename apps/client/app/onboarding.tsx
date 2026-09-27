@@ -20,7 +20,7 @@ const scoreFont = platform === 'ios' ? 'ui-monospace' : 'monospace';
 // Every slide is the same stack of fixed heights — the illustration, one line
 // of title, room for three of description — centred as a whole, so the title
 // sits at the same height on every slide and does not jump as the reader swipes.
-const ART_HEIGHT = 260;
+const ART_HEIGHT = 290;
 const TITLE_LINE = 32;
 const BODY_LINE = 25;
 const BODY_LINES = 3;
@@ -144,19 +144,20 @@ function relative(saved: string) {
 // The reading screen in small, on its own canvas: the score, its sentence and
 // when it was updated, laid out as the reading screen lays them out.
 function ReadingCard({ theme, score, saved, explanation }: { theme: Theme; score?: number; saved?: string; explanation?: string }) {
-  const width = 250, height = 260;
+  // As wide as the scale beneath it: ten 30-point tiles and nine 4-point gaps.
+  const width = 10 * 30 + 9 * 4, height = 226;
   const svg = score ? readingGradientSvg(score, theme.dark, width, height) : null;
   return <View testID="onboarding-reading" style={{ width, height, borderRadius: 28, overflow: 'hidden', backgroundColor: theme.surface,
-    borderWidth: 1, borderColor: theme.rule, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 22 }}>
+    borderWidth: 1, borderColor: theme.rule, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 26 }}>
     {svg && <Image source={{ uri: svgUri(svg) }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
     <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-      <Text style={{ color: theme.ink, fontSize: 88, lineHeight: 96, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -88 * 0.055 }}>{score ?? '–'}</Text>
+      <Text style={{ color: theme.ink, fontSize: 72, lineHeight: 80, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -72 * 0.055 }}>{score ?? '–'}</Text>
       <Text style={{ color: theme.muted, fontSize: 14, fontWeight: '300', fontFamily: scoreFont, marginLeft: 2 }}>∕10</Text>
     </View>
     {explanation
-      ? <Text numberOfLines={3} style={{ color: theme.ink, fontSize: 13, lineHeight: 19, textAlign: 'center', marginTop: 10 }}>{explanation}</Text>
+      ? <Text numberOfLines={4} style={{ color: theme.ink, fontSize: 12, lineHeight: 17, textAlign: 'center', marginTop: 6 }}>{explanation}</Text>
       : <View style={{ gap: 7, alignItems: 'center', marginTop: 14 }}>{[170, 130].map(w => <View key={w} style={{ width: w, height: 7, borderRadius: 4, backgroundColor: theme.muted, opacity: 0.2 }} />)}</View>}
-    {saved && <Text style={{ color: theme.muted, fontSize: 10, marginTop: 10 }}>Updated {relative(saved)}</Text>}
+    {saved && <Text style={{ color: theme.muted, fontSize: 10, marginTop: 8 }}>Updated {relative(saved)}</Text>}
   </View>;
 }
 
@@ -169,11 +170,12 @@ function svgUri(svg: string) {
     ? `data:image/svg+xml;base64,${fromByteArray(Uint8Array.from(svg, char => char.charCodeAt(0)))}`
     : `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
-function LevelTile({ level, size, dark }: { level: number; size: number; dark: boolean }) {
+function LevelTile({ level, size, dark, current = false }: { level: number; size: number; dark: boolean; current?: boolean }) {
   const ink = themeForLevel(level, dark);
   const svg = readingGradientSvg(level, dark, size, size);
+  // The current score's tile is ringed in its own ink, so the scale says where today sits.
   return <View testID={`onboarding-level-${level}`} style={{ width: size, height: size, borderRadius: Math.round(size * 0.26), overflow: 'hidden',
-    alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: ink.rule }}>
+    alignItems: 'center', justifyContent: 'center', borderWidth: current ? 2 : 1, borderColor: current ? ink.ink : ink.rule }}>
     {svg && <Image source={{ uri: svgUri(svg) }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
     <Text style={{ color: ink.ink, fontSize: Math.round(size * 0.4), fontWeight: '300', fontFamily: scoreFont }}>{level}</Text>
   </View>;
@@ -184,11 +186,13 @@ function LevelTile({ level, size, dark }: { level: number; size: number; dark: b
 const lifted = { borderRadius: 24, boxShadow: '0 10px 30px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08)' } as const;
 
 function Art({ art, theme, score, saved, explanation }: { art: SlideArt; theme: Theme; score?: number; saved?: string; explanation?: string }) {
-  if (art === 'scale') return <View style={lifted}><ReadingCard theme={theme} score={score} saved={saved} explanation={explanation} /></View>;
-  if (art === 'levels') return <View style={{ gap: 10 }}>
-    {[[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]].map(row => <View key={row[0]} style={{ flexDirection: 'row', gap: 10 }}>
-      {row.map(level => <LevelTile key={level} level={level} size={58} dark={theme.dark} />)}
-    </View>)}
+  // The reading screen in small, above the scale it sits on: ten tiles, each
+  // level in its own colors, the current score's ringed.
+  if (art === 'scale') return <View style={{ alignItems: 'center', gap: 18 }}>
+    <View style={lifted}><ReadingCard theme={theme} score={score} saved={saved} explanation={explanation} /></View>
+    <View style={{ flexDirection: 'row', gap: 4 }}>
+      {Array.from({ length: 10 }, (_, i) => <LevelTile key={i} level={i + 1} size={30} dark={theme.dark} current={score === i + 1} />)}
+    </View>
   </View>;
   if (art === 'widget') return <View style={lifted}><SmallWidget score={score} saved={saved} dark={theme.dark} /></View>;
   return <View style={lifted}><Notification theme={theme} /></View>;

@@ -11,7 +11,7 @@
 // title at the same height.
 
 /** @typedef {'ios' | 'android'} Platform */
-/** @typedef {'scale' | 'levels' | 'widget' | 'alert'} SlideArt */
+/** @typedef {'scale' | 'widget' | 'alert'} SlideArt */
 /** @typedef {{ key: string, title: string, body: string, art: SlideArt }} Slide */
 
 export const TITLE_LENGTH = Object.freeze({ min: 18, max: 24 });
@@ -27,9 +27,7 @@ export const BODY_LENGTH = Object.freeze({ min: 55, max: 75 });
 export function onboardingSlides(platform) {
   return [
     { key: 'what', art: 'scale', title: 'News, rated 1 to 10',
-      body: 'Each reading is a score, a short explanation and when it was updated.' },
-    { key: 'scale', art: 'levels', title: 'Ten is most significant',
-      body: 'Higher scores mean more consequential news. The color follows the score.' },
+      body: 'Each reading has a short explanation.\nHigher means more consequential.' },
     // Apple writes Home Screen as a name; Android does not.
     { key: 'widget', art: 'widget', title: platform === 'ios' ? 'Also on your Home Screen' : 'Also on your home screen',
       body: 'A widget shows the current rating and when it was updated.' },

@@ -15,9 +15,9 @@ const require = createRequire(import.meta.url);
 
 const platforms = ['ios', 'android'];
 
-test('both apps show the same four slides, the widget named as each platform names it', () => {
+test('both apps show the same three slides, the widget named as each platform names it', () => {
   const keys = platform => onboardingSlides(platform).map(slide => slide.key);
-  assert.deepEqual(keys('ios'), ['what', 'scale', 'widget', 'alert']);
+  assert.deepEqual(keys('ios'), ['what', 'widget', 'alert']);
   assert.deepEqual(keys('android'), keys('ios'));
   const slide = (platform, key) => onboardingSlides(platform).find(s => s.key === key);
   assert.equal(slide('ios', 'widget').title, 'Also on your Home Screen', 'Apple writes Home Screen as a name');
@@ -107,7 +107,7 @@ test('every slide reserves the same title and description heights', () => {
     const all = nodes(renderIntroduction(platform));
     const titles = all.filter(n => n.props?.testID === 'onboarding-title');
     const bodies = all.filter(n => n.props?.testID === 'onboarding-body');
-    assert.equal(titles.length, 4, platform);
+    assert.equal(titles.length, 3, platform);
     assert.deepEqual(new Set(titles.map(n => `${n.props.style.minHeight}/${n.props.style.lineHeight}`)).size, 1, 'one title box for every slide');
     assert.deepEqual(new Set(bodies.map(n => `${n.props.style.minHeight}/${n.props.style.lineHeight}`)).size, 1, 'one description box for every slide');
   }
@@ -142,6 +142,7 @@ test('the illustrations use the real level colors, and the widget is the current
     // each level, exactly as readingGradientSvg draws it.
     const tiles = all.filter(n => /^onboarding-level-\d+$/.test(n.props?.testID ?? ''));
     assert.equal(tiles.length, 10, 'one per level');
+    assert.deepEqual(tiles.filter(t => t.props.style.borderWidth === 2).map(t => t.props.testID), score ? [`onboarding-level-${score}`] : [], 'only the current score is ringed');
     for (const tile of tiles) {
       const level = Number(tile.props.testID.split('-').pop());
       const size = tile.props.style.width;
