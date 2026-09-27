@@ -23,8 +23,11 @@ outage must not masquerade as a fresh story. Historical judgements and stored
 sentences are not rewritten.
 
 Since 2026-09-27 a judged re-report does not show its own rewording: the page
-shows the sentence of the reading that started its development's current clock,
-word for word (`sentenceFor()` in `src/current.js`). The label still follows the
+shows its development's first report, word for word (`sentenceFor()` in
+`src/current.js`). Until later that day it showed the reading where the
+development last escalated instead; a drift from 3–4 to 5 on unchanged news
+then dated a day-old event “7h —” while the timeline placed the development
+before it two days back. An escalation restarts the number, not the sentence. The label still follows the
 newest reading's judgement, so a re-report carries none, as before.
 
 Since 2026-09-27 that age is back, as a quiet prefix. A development can hold the
@@ -77,8 +80,7 @@ name for that reason: reusing `explanation_since` would have brought the old
 “31 hours ago:” prefix back on those builds.
 
 `explanation_at` is when the shown sentence's reading was saved: for a re-report,
-the reading that started its development's current clock, whose sentence
-`sentenceFor()` shows. It is not `since`, which dates the development the number
+its development's first report, whose sentence `sentenceFor()` shows. It is not `since`, which dates the development the number
 is about. Once “New:” is off, clients lead the sentence with its age, floored:
 nothing under an hour, where “Checked” says as much, then “1h —” to “23h —”, then
 “1d —” and on. A response or cache without `explanation_at` shows no age.
