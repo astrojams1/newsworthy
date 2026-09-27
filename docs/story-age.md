@@ -4,8 +4,9 @@ A reading can say **New:** The Fed raised rates a quarter point. The label, in
 bold, means this reading is Newsworthy’s first coverage of that development. It
 stays for two hours after the reading was saved and then comes off. It is not a
 verified event date or a claim that the broader story, such as inflation, is new.
-Every other sentence has no prefix; the update time printed beside it dates the
-reading.
+After that the sentence leads with how long ago it was first reported, in the
+muted colour: **5h —**, then **1d —** from a day. The time below it, “Checked 3
+min ago”, says when Newsworthy last looked at the news.
 
 Until 2026-09-24 the app printed an age instead: **31 hours ago:** before a
 sentence re-reporting a development covered earlier, and nothing on a new one.
@@ -25,6 +26,13 @@ Since 2026-09-27 a judged re-report does not show its own rewording: the page
 shows the sentence of the reading that started its development's current clock,
 word for word (`sentenceFor()` in `src/current.js`). The label still follows the
 newest reading's judgement, so a re-report carries none, as before.
+
+Since 2026-09-27 that age is back, as a quiet prefix. A development can hold the
+page for a day or more with the same sentence, and with nothing after “New:” an
+hour-old sentence and a day-old one looked the same. The owner chose the form
+from prototypes: a short muted age leading the sentence, no badge or extra line.
+“Updated” became “Checked” at the same time, because the time printed is when the
+news was last checked, not when the sentence changed.
 
 ## Caller sequence
 
@@ -58,23 +66,42 @@ judge path. An intentional `NEWSWORTHY_PROMPT_VERSION` pin remains respected.
 
 ## Display and compatibility
 
-`/api/current` sends `explanation_text` and `explanation_new`. Clients show a bold
+`/api/current` sends `explanation_text`, `explanation_new` and `explanation_at`. Clients show a bold
 “New:” before `explanation_text` while `explanation_new` is true and fewer than two
 hours have passed since `created_at`, recomputing as time passes. `explanation`
 carries the same sentence unlabelled, so a client that shows it as-is never keeps
 a stale label. `explanation_since` is no longer sent: installed builds that read
 it find it missing and show no age, which is the new behaviour for re-reports;
-they cannot show the label until they are replaced.
+they cannot show the label until they are replaced. `explanation_at` is a new
+name for that reason: reusing `explanation_since` would have brought the old
+“31 hours ago:” prefix back on those builds.
+
+`explanation_at` is when the shown sentence's reading was saved: for a re-report,
+the reading that started its development's current clock, whose sentence
+`sentenceFor()` shows. It is not `since`, which dates the development the number
+is about. Once “New:” is off, clients lead the sentence with its age, floored:
+nothing under an hour, where “Checked” says as much, then “1h —” to “23h —”, then
+“1d —” and on. A response or cache without `explanation_at` shows no age.
 
 Only the label’s weight changes: it keeps the sentence’s colour and size, so it
-reads as part of the sentence rather than a badge. Share text carries it as plain
-“New: ”. Overlong legacy sentences are shortened with an ellipsis only for display,
-within 140 characters including the label; storage is unchanged. Counting uses
+reads as part of the sentence rather than a badge. The age changes only colour,
+to the muted text colour the timestamp uses. Share text carries either as plain
+text. Overlong legacy sentences are shortened with an ellipsis only for display,
+within 140 characters including the prefix; storage is unchanged. “23h — ” is six
+characters, one over the five prompts reserve, so a 135-character body loses its
+last word to an ellipsis for those hours.
+
+Android cannot tint part of a widget sentence with a colour span: the span keeps
+the old theme's colour after a theme switch. It stacks a second TextView,
+`widget_explanation_age`, on the sentence with identical text and settings. Each
+layer hides the other's part with a transparent span, and both take their colours
+from theme resources. Counting uses
 Unicode code points consistently.
 
 The app advances its display clock every 30 seconds. The iOS widget adds a
-timeline entry at the label’s two-hour mark; Android redraws on its 30-minute
-periodic worker, so there the label can stay up to 30 minutes longer. Actual
+timeline entry at the label’s two-hour mark and at each of the next twelve hours
+of the sentence's age; Android redraws on its 30-minute periodic worker, so there
+the label, or an hour of age, can lag by up to 30 minutes. Actual
 widget timing remains subject to the operating system.
 
 ## Verification boundary
@@ -83,6 +110,10 @@ The writing comparison and its limitations are in
 [prompt evaluation v16](prompt-evaluations/v16.md). Tests cover the two-hour
 boundary, Unicode budgets, the judged/new rule, the caller's judgement, API fields and
 rendered app props (a bold label nested in the sentence) on all three platforms.
-The Swift formatter cases were updated but not compiled here, and the Android
-source was not compiled. Native visual parity and a replacement mobile release are
+The age adds tests for its boundaries, budget, API field and rendered props (a
+muted age nested in the sentence) on all three platforms; the web export was
+checked in Chromium in light and dark (`store/source/story-age/web-sentence-age.png`).
+The Swift formatter cases were updated but not compiled here (no Swift toolchain).
+The Android widget sources compile and link, but the stacked age layer has not
+been seen on a device. Native visual parity and a replacement mobile release are
 not established by these checks; see `store/story-age-verification.json`.

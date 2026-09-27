@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-27T05:03:02+00:00
+Updated: 2026-09-27T09:10:21+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -73,7 +73,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 | apple.review-state | done | agent | observed | Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical. | — |
-| story-age.native | todo | agent | observed | PR137 replaces the story-age prefix with a bold "New:" on a sentence that opened its own development, for two hours after its reading was saved, in the app, the iOS widget (bold Text, timeline entry at expiry) and the Android widget (bold StyleSpan, 30-minute redraw). Prompt v16 raises the body budget to 135. Web export verified in Chromium; the Swift and Android widget sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown the label. | Build replacement native packages and verify on both widget sizes, light and dark, score 10 and enlarged text: bold "New:" on a new development, none on a re-report, and the label dropping at two hours (up to 30 minutes later on Android). Compile the Swift native test with xcrun. |
+| story-age.native | todo | agent | observed | The sentence now leads with a muted age once "New:" is off ("5h —", then "1d —", from the new explanation_at field), and the timestamp reads "Checked" instead of "Updated", in the app and both widgets. iOS: muted Text in NewsworthyGradientMuted plus hourly timeline entries; Swift not compiled here (no toolchain). Android: a second TextView stacked on the sentence with transparent spans, so colours stay theme resources; resources link and Java compiles against android-35, but no device has shown it. Web export verified in Chromium, light and dark. | On both widget sizes, light and dark, score 10 and enlarged text: muted age aligned exactly at the start of the sentence on Android (stacked layer), the age advancing hourly on iOS, "New:" still bold for two hours, and "Checked" in the timestamp. Compile the Swift native test with xcrun. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
 | apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
@@ -3127,3 +3127,13 @@ Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, priv
 - test/copy.test.js 'user-facing copy does not mention AI'; store/assets images inspected 2026-09-27
 
 Next: Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI.
+
+### 319. story-age.native — todo
+
+2026-09-27T09:10:21+00:00 · observed · agent
+
+The sentence now leads with a muted age once "New:" is off ("5h —", then "1d —", from the new explanation_at field), and the timestamp reads "Checked" instead of "Updated", in the app and both widgets. iOS: muted Text in NewsworthyGradientMuted plus hourly timeline entries; Swift not compiled here (no toolchain). Android: a second TextView stacked on the sentence with transparent spans, so colours stay theme resources; resources link and Java compiles against android-35, but no device has shown it. Web export verified in Chromium, light and dark.
+
+- store/source/story-age/web-sentence-age.png; store/story-age-verification.json; npm run check:android-widget; npm test 345 passed
+
+Next: On both widget sizes, light and dark, score 10 and enlarged text: muted age aligned exactly at the start of the sentence on Android (stacked layer), the age advancing hourly on iOS, "New:" still bold for two hours, and "Checked" in the timestamp. Compile the Swift native test with xcrun.

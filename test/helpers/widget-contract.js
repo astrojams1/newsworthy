@@ -76,15 +76,27 @@ export function checkWidgetDesign(sources = widgetSources()) {
       }
     }
     else {
-      assert.equal(attr(explanation.parentNode, 'layout_height'), 'wrap_content', 'expanded centered row fits content');
-      assert.equal(attr(explanation, 'layout_height'), 'wrap_content', 'expanded text fits centered row');
+      assert.equal(attr(explanation.parentNode.parentNode, 'layout_height'), 'wrap_content', 'expanded centered row fits content');
+      for (const node of [explanation.parentNode, explanation]) assert.equal(attr(node, 'layout_height'), 'wrap_content', 'expanded text fits centered row');
       assert.equal(attr(explanation, 'maxLines'), String(c.expandedExplanationLines), 'expanded context limit');
       assert.equal(attr(explanation, 'textSize'), `${c.explanationSize}sp`, 'expanded explanation size');
       assert.equal(attr(explanation, 'lineHeight'), `${c.explanationLineHeight}sp`, 'expanded line rhythm');
-      assert.equal(explanation.parentNode, score.parentNode.parentNode, 'description beside numeral');
-      assert.equal(attr(explanation.parentNode, 'orientation'), 'horizontal', 'expanded description direction');
-      assert.equal(attr(explanation, 'layout_marginStart'), `${c.columnGap}dp`, 'expanded column gap');
+      // The sentence and its muted age layer are stacked in one frame beside the numeral.
+      const frame = explanation.parentNode;
+      assert.equal(frame.tagName, 'FrameLayout', 'the sentence and its age layer share one frame');
+      assert.equal(frame.parentNode, score.parentNode.parentNode, 'description beside numeral');
+      assert.equal(attr(frame.parentNode, 'orientation'), 'horizontal', 'expanded description direction');
+      assert.equal(attr(frame, 'layout_marginStart'), `${c.columnGap}dp`, 'expanded column gap');
       assert.equal(attr(explanation, 'ellipsize'), 'end', 'bounded explanation truncates');
+      // Identical text in identically set views wraps identically, which is what
+      // puts the age exactly where the ink layer leaves its gap.
+      const age = one(doc, n => attr(n, 'id') === '@+id/widget_explanation_age', 'expanded age layer');
+      assert.equal(age.parentNode, frame, 'the age layer is stacked on the sentence');
+      for (const name of ['layout_width', 'layout_height', 'gravity', 'includeFontPadding', 'textSize', 'lineHeight', 'maxLines', 'ellipsize']) {
+        assert.equal(attr(age, name), attr(explanation, name), `the age layer matches the sentence's ${name}`);
+      }
+      assert.equal(attr(age, 'textColor'), '@color/widget_muted', 'the age is muted by theme resource');
+      assert.equal(attr(age, 'importantForAccessibility'), 'no', 'the sentence alone is read aloud');
     }
   }
   for (const mode of ['light', 'dark']) {
@@ -111,17 +123,20 @@ export function checkWidgetDesign(sources = widgetSources()) {
   // settings, which must hold through a host theme change: its literal colours
   // live in one method, and that method runs only for a chosen appearance.
   const chosen = java.match(/static void applyChosenAppearance\(RemoteViews views, int score, boolean dark\) \{[\s\S]*?\n    \}/)?.[0] ?? '';
-  for (const id of ['widget_name', 'widget_score', 'widget_denominator', 'widget_explanation', 'widget_updated']) {
+  for (const id of ['widget_name', 'widget_score', 'widget_denominator', 'widget_explanation', 'widget_explanation_age', 'widget_updated']) {
     assert.match(chosen, new RegExp(`setTextColor\\(R\\.id\\.${id}, `), 'a chosen widget appearance colours every text');
   }
   assert.match(chosen, /LevelPalette\.background\(score, dark\)/, 'a chosen widget appearance uses its fixed gradient');
   assert.match(java, /return "dark"\.equals\(appearance\) \? Boolean\.TRUE : "light"\.equals\(appearance\) \? Boolean\.FALSE : null;/, 'Follow device keeps theme resources');
   assert.match(java, /if \(dark != null\) applyChosenAppearance\(views, reading == null \? 0 : reading\.optInt\("score"\), dark\);/, 'only a chosen widget appearance overrides theme resources');
-  assert.doesNotMatch(java.replace(chosen, ''), /\b(?:ForegroundColorSpan|BackgroundColorSpan|RelativeSizeSpan|AbsoluteSizeSpan|setTextColor)\b|"setTextColor"/, 'widget text must retain XML theme/size bindings');
-  // The one span allowed is the bold "New:" label: weight only, so colour and
-  // size still come from XML and follow a host theme change.
+  const transparent = /new ForegroundColorSpan\(Color\.TRANSPARENT\)/g;
+  assert.doesNotMatch(java.replace(chosen, '').replace(transparent, '').replace('import android.text.style.ForegroundColorSpan;', ''), /\b(?:ForegroundColorSpan|BackgroundColorSpan|RelativeSizeSpan|AbsoluteSizeSpan|setTextColor)\b|"setTextColor"/, 'widget text must retain XML theme/size bindings');
+  // The spans allowed are the bold "New:" label, weight only, and transparent
+  // spans that hide each stacked layer's other part: the same in every theme,
+  // so colour and size still come from XML and follow a host theme change.
   const spans = java.match(/new \w+Span\([^)]*\)/g) ?? [];
-  assert.deepEqual(spans, ['new StyleSpan(Typeface.BOLD)'], 'widget text must retain XML theme/size bindings');
+  assert.deepEqual(spans, ['new StyleSpan(Typeface.BOLD)', 'new ForegroundColorSpan(Color.TRANSPARENT)', 'new ForegroundColorSpan(Color.TRANSPARENT)'],
+    'widget text must retain XML theme/size bindings');
   assert.deepEqual(extract(java, /boolean compact\s*=\s*width\s*<\s*(\d+)\s*\|\|\s*height\s*<\s*(\d+)\s*;/, 'compact selection'), [c.expandedMinWidth, c.expandedMinHeight]);
   assert.deepEqual(extract(java, /float scoreSize\s*=\s*(\d+)\s*;/, 'Android runtime score'), [c.compactScore]);
   assert.equal(c.compactScore, c.expandedScore, 'shared numeral size');

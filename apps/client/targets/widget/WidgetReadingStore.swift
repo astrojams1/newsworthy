@@ -6,6 +6,7 @@ struct Reading: Codable, Equatable, Sendable {
     let created_at: String
     var explanation_text: String? = nil
     var explanation_new: Bool? = nil
+    var explanation_at: String? = nil
 
     private static func date(_ raw: String) -> Date? {
         let formatter = ISO8601DateFormatter()
@@ -23,22 +24,37 @@ struct Reading: Codable, Equatable, Sendable {
         return updatedAt?.addingTimeInterval(2 * 3600)
     }
 
-    /// The label ("New:" or empty) and the body, fitted together within 140 characters.
-    func explanationParts(at now: Date) -> (label: String, body: String) {
+    /// When the shown sentence was first reported; absent from older servers and caches.
+    var sentenceAt: Date? { explanation_text == nil ? nil : explanation_at.flatMap(Reading.date) }
+
+    /// The muted age that leads the sentence once "New:" is off: "5h —", then "1d —"
+    /// from a day; empty under an hour or without `explanation_at`.
+    func sentenceAge(at now: Date) -> String {
+        guard newLabelExpiry.map({ now < $0 }) != true, let at = sentenceAt else { return "" }
+        let hours = Int((now.timeIntervalSince(at) / 3600).rounded(.down))
+        if hours < 1 { return "" }
+        return hours < 24 ? "\(hours)h —" : "\(hours / 24)d —"
+    }
+
+    /// The label ("New:" or empty), the age ("5h —" or empty) and the body, fitted together within 140 characters.
+    func explanationParts(at now: Date) -> (label: String, age: String, body: String) {
         let label = newLabelExpiry.map { now < $0 } == true ? "New:" : ""
+        let age = label.isEmpty ? sentenceAge(at: now) : ""
+        let prefix = label.isEmpty ? age : label
         let body = explanation_text ?? explanation
-        let limit = 140 - (label.isEmpty ? 0 : label.unicodeScalars.count + 1)
-        if body.unicodeScalars.count <= limit { return (label, body) }
+        let limit = 140 - (prefix.isEmpty ? 0 : prefix.unicodeScalars.count + 1)
+        if body.unicodeScalars.count <= limit { return (label, age, body) }
         var cut = String(String.UnicodeScalarView(body.unicodeScalars.prefix(limit - 1)))
         if let space = cut.lastIndex(of: " "), cut[..<space].unicodeScalars.count > limit / 2 {
             cut = String(cut[..<space])
         }
-        return (label, cut.trimmingCharacters(in: .whitespacesAndNewlines) + "…")
+        return (label, age, cut.trimmingCharacters(in: .whitespacesAndNewlines) + "…")
     }
 
     func displayedExplanation(at now: Date) -> String {
         let parts = explanationParts(at: now)
-        return parts.label.isEmpty ? parts.body : "\(parts.label) \(parts.body)"
+        let prefix = parts.label.isEmpty ? parts.age : parts.label
+        return prefix.isEmpty ? parts.body : "\(prefix) \(parts.body)"
     }
 
     var isValid: Bool {

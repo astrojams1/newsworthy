@@ -20,10 +20,17 @@
                 android:includeFontPadding="false" android:fontFamily="monospace" android:textColor="@color/widget_muted"
                 android:importantForAccessibility="no"/>
         </LinearLayout>
-        <TextView android:id="@+id/widget_explanation" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-            android:layout_marginStart="16dp" android:gravity="top|start" android:includeFontPadding="false"
-            android:text="" android:textSize="14sp" android:lineHeight="20sp" android:maxLines="4"
-            android:ellipsize="end" android:textColor="@color/widget_ink"/>
+        <FrameLayout android:id="@+id/widget_sentence" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp">
+          <TextView android:id="@+id/widget_explanation" android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:gravity="top|start" android:includeFontPadding="false"
+              android:text="" android:textSize="14sp" android:lineHeight="20sp" android:maxLines="4"
+              android:ellipsize="end" android:textColor="@color/widget_ink"/>
+          <TextView android:id="@+id/widget_explanation_age" android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:gravity="top|start" android:includeFontPadding="false"
+              android:text="" android:textSize="14sp" android:lineHeight="20sp" android:maxLines="4"
+              android:ellipsize="end" android:textColor="@color/widget_muted" android:importantForAccessibility="no"/>
+        </FrameLayout>
       </LinearLayout>
     </LinearLayout>
     <TextView android:id="@+id/widget_updated" android:layout_width="match_parent" android:layout_height="32dp"

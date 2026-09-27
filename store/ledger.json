@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T05:03:02+00:00",
+  "updated_at": "2026-09-27T09:10:21+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -709,12 +709,12 @@
       "state": "todo",
       "owner": "agent",
       "basis": "observed",
-      "summary": "PR137 replaces the story-age prefix with a bold \"New:\" on a sentence that opened its own development, for two hours after its reading was saved, in the app, the iOS widget (bold Text, timeline entry at expiry) and the Android widget (bold StyleSpan, 30-minute redraw). Prompt v16 raises the body budget to 135. Web export verified in Chromium; the Swift and Android widget sources were not compiled here (no Swift toolchain or Android SDK) and no native build has shown the label.",
+      "summary": "The sentence now leads with a muted age once \"New:\" is off (\"5h —\", then \"1d —\", from the new explanation_at field), and the timestamp reads \"Checked\" instead of \"Updated\", in the app and both widgets. iOS: muted Text in NewsworthyGradientMuted plus hourly timeline entries; Swift not compiled here (no toolchain). Android: a second TextView stacked on the sentence with transparent spans, so colours stay theme resources; resources link and Java compiles against android-35, but no device has shown it. Web export verified in Chromium, light and dark.",
       "evidence": [
-        "PR137; store/story-age-verification.json; store/source/story-age/web-new-label.png; npm test 297 passed (Swift native test skipped without xcrun), design 71 passed."
+        "store/source/story-age/web-sentence-age.png; store/story-age-verification.json; npm run check:android-widget; npm test 345 passed"
       ],
-      "next_action": "Build replacement native packages and verify on both widget sizes, light and dark, score 10 and enlarged text: bold \"New:\" on a new development, none on a re-report, and the label dropping at two hours (up to 30 minutes later on Android). Compile the Swift native test with xcrun.",
-      "updated_at": "2026-09-24T12:12:26+00:00"
+      "next_action": "On both widget sizes, light and dark, score 10 and enlarged text: muted age aligned exactly at the start of the sentence on Android (stacked layer), the age advancing hourly on iOS, \"New:\" still bold for two hours, and \"Checked\" in the timestamp. Compile the Swift native test with xcrun.",
+      "updated_at": "2026-09-27T09:10:21+00:00"
     },
     "apple.testflight-15": {
       "state": "done",
@@ -6073,6 +6073,22 @@
         ],
         "next_action": "Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI.",
         "updated_at": "2026-09-27T05:03:02+00:00"
+      }
+    },
+    {
+      "sequence": 319,
+      "at": "2026-09-27T09:10:21+00:00",
+      "gate": "story-age.native",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "The sentence now leads with a muted age once \"New:\" is off (\"5h —\", then \"1d —\", from the new explanation_at field), and the timestamp reads \"Checked\" instead of \"Updated\", in the app and both widgets. iOS: muted Text in NewsworthyGradientMuted plus hourly timeline entries; Swift not compiled here (no toolchain). Android: a second TextView stacked on the sentence with transparent spans, so colours stay theme resources; resources link and Java compiles against android-35, but no device has shown it. Web export verified in Chromium, light and dark.",
+        "evidence": [
+          "store/source/story-age/web-sentence-age.png; store/story-age-verification.json; npm run check:android-widget; npm test 345 passed"
+        ],
+        "next_action": "On both widget sizes, light and dark, score 10 and enlarged text: muted age aligned exactly at the start of the sentence on Android (stacked layer), the age advancing hourly on iOS, \"New:\" still bold for two hours, and \"Checked\" in the timestamp. Compile the Swift native test with xcrun.",
+        "updated_at": "2026-09-27T09:10:21+00:00"
       }
     }
   ],

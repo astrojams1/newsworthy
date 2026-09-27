@@ -61,9 +61,11 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
   the displayed score fades as developments age.
 - A bold “New:” before a sentence means that reading is Newsworthy’s first
   coverage of the development, for two hours after it was saved. It is not a
-  verified event date or a claim that the broader story is new. Other sentences,
-  including ones Newsworthy could not match to earlier coverage, have no label.
-  The 140-character display budget includes the label.
+  verified event date or a claim that the broader story is new. After that, and
+  on any sentence covered earlier, a fainter “5h —” or “1d —” says how long ago
+  that sentence was first reported. The time below it says when Newsworthy last
+  checked (“Checked 3 min ago”). The 140-character display budget includes either
+  prefix.
 - A saved reading keeps its original update timestamp. Widgets can drop the
   label later than the app, depending on the operating system. Do not promise
   real-time updates.

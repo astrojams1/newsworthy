@@ -114,14 +114,19 @@ struct Provider: TimelineProvider {
             let expiry = result.reading?.newLabelExpiry
             // Another at midnight brings the date back once the reading is no longer today's.
             let midnight = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: now))
-            let dates = ([now] + [expiry, midnight].compactMap { $0 }.filter { $0 > now }).sorted()
+            // And one at each of the next twelve hours of the sentence's age, so "5h —" becomes "6h —" on time.
+            let hours: [Date] = result.reading?.sentenceAt.map { at in
+                let next = (now.timeIntervalSince(at) / 3600).rounded(.down) + 1
+                return (0..<12).map { at.addingTimeInterval((next + Double($0)) * 3600) }
+            } ?? []
+            let dates = ([now] + ([expiry, midnight].compactMap { $0 } + hours).filter { $0 > now }).sorted()
             let entries = dates.map { ReadingEntry(date: $0, reading: result.reading, saved: result.saved) }
             completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(30 * 60))))
         }
     }
 }
 
-/// A new development's sentence leads with a bold "New:"; everything else is plain.
+/// A new development's sentence leads with a bold "New:"; an older one with its age in the muted colour.
 /// The time alone for a reading saved on the entry's own day; month and day before it otherwise.
 func timestampText(_ date: Date, at now: Date) -> String {
     let time = date.formatted(date: .omitted, time: .shortened)
@@ -131,8 +136,11 @@ func timestampText(_ date: Date, at now: Date) -> String {
 
 func explanationText(_ reading: Reading?, at date: Date) -> Text {
     guard let parts = reading?.explanationParts(at: date) else { return Text(verbatim: "") }
-    if parts.label.isEmpty { return Text(verbatim: parts.body) }
-    return Text(verbatim: parts.label).bold() + Text(verbatim: " " + parts.body)
+    if !parts.label.isEmpty { return Text(verbatim: parts.label).bold() + Text(verbatim: " " + parts.body) }
+    if !parts.age.isEmpty {
+        return Text(verbatim: parts.age).foregroundColor(Color("NewsworthyGradientMuted")) + Text(verbatim: " " + parts.body)
+    }
+    return Text(verbatim: parts.body)
 }
 
 // One three-line numeral size for both families. The description can grow with
@@ -277,7 +285,7 @@ struct ReadingContent: View {
                 if let date = entry.reading?.updatedAt {
                     // Preserve the saved reading's absolute timestamp.
                     Text(timestampText(date, at: entry.date))
-                        .accessibilityLabel("Updated \(date.formatted(date: .abbreviated, time: .shortened))")
+                        .accessibilityLabel("Checked \(date.formatted(date: .abbreviated, time: .shortened))")
                 } else {
                     Text("")
                 }

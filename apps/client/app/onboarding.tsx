@@ -123,12 +123,12 @@ function Diagonal({ colors, radius, children, style, testID }: { colors: Palette
 
 // The widgets' own timestamp: the time alone for a reading saved today, the
 // date before it otherwise. iOS joins them with a dot; Android prefixes
-// "Updated" and uses its short date.
+// "Checked" and uses its short date.
 function widgetTime(saved: string | undefined) {
   const date = saved ? new Date(saved) : new Date();
   const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   const today = date.toDateString() === new Date().toDateString();
-  if (platform === 'android') return `Updated ${today ? time : `${date.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} ${time}`}`;
+  if (platform === 'android') return `Checked ${today ? time : `${date.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} ${time}`}`;
   return today ? time : `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · ${time}`;
 }
 
