@@ -85,6 +85,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [15, 'a591b4ed45980b21'],
     [16, 'c7f2d04f4911974b'],
     [17, '4bff3590dcbcc883'],
+    [18, 'e134aa373968ebed'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -338,4 +339,44 @@ test('v17 adds house style and date exemptions to v16 and nothing else', async (
       for (const row of batch) assert.equal(row.characters, [...row.explanation].length, 'counts reflect the unmodified outputs');
     }
   }
+});
+
+test('v18 measures market risk, with the owner\'s scale and examples verbatim', async () => {
+  // The owner defined the score on 2026-09-26 as the current risk of a sharp
+  // market move, up or down. A new instrument, so these pins are the owner's
+  // approved wording, not a paraphrase: a prompt that quietly rephrases the
+  // scale measures something nobody wrote.
+  const v18 = renderPrompt(18);
+  assert.match(v18.text, /^Summary\n\nRate the current risk of a sharp market move, up or down, 1-10/);
+  assert.deepEqual(rungsOf(v18.text).map((l) => l.replace(/^\d+\.\s*/, '')), [
+    'Markets quiet; nothing new could move them.',
+    'Known or priced-in risks; nothing new.',
+    'News elsewhere; little chance of market impact.',
+    'Could nudge some prices; broad markets steady.',
+    'Likely to move one major market.',
+    'Could move broad markets sharply this week.',
+    'Unexpected shock now; sharp moves likely.',
+    'Severe shock; broad markets moving sharply.',
+    'Systemic crisis; markets in disorder.',
+    'Extreme threat to the financial system.',
+  ]);
+  assert.deepEqual(examplesOf(v18.text), [
+    '1 — Quiet day; no new market risk.',
+    '2 — Fed hikes exactly as markets expected.',
+    '3 — Foreign flood kills hundreds; no domestic effect.',
+    '5 — Tankers struck in Hormuz; oil climbs.',
+    '6 — Bond yields hit highest since 2007.',
+  ]);
+  // Sources name no fixed list of sites, and prices come from quote pages.
+  const sources = v18.text.split('\nSources\n')[1].split('\nScale\n')[0];
+  assert.match(sources, /not a fixed list of sites/);
+  assert.match(sources, /Prices come from a dated quote page, not a search snippet/);
+  assert.match(sources, /silence is not evidence against an event/, 'the v6 lag guard survives');
+  // Output is v17's but for two edits.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.equal(output(v18.text), output(renderPrompt(17).text)
+    .replace('what it means for daily life', 'what it could mean for prices or savings')
+    .replace(' Preserve facts, attribution and uncertainty when revising after the history match.', ''));
+  const evaluation = await readFile('docs/prompt-evaluations/v18.md', 'utf8');
+  assert.ok(evaluation.includes(v18.hash), 'the evaluation record names the shipped text');
 });

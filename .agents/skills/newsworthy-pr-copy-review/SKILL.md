@@ -28,6 +28,12 @@ Check the relevant claims against implementation and evidence:
   published prompt bytes and the rating/provenance rules; use the prompt-update
   skill for prompt edits.
 
+The score is market risk internally and news significance externally, by the
+owner's decision (see "What the score measures, internally" in
+`docs/product-messaging.md`). A difference between the two is intended, not a
+contradiction to correct; external copy must not describe the score as market
+risk.
+
 Correct contradictions introduced or exposed by the change in the same PR. Keep
 still-accurate copy; do not force edits to every document or add promotional
 claims merely because a feature exists. Use existing product decisions as the
