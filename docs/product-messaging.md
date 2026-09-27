@@ -77,9 +77,9 @@ does not by itself call for external copy changes.
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
 - The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
-  a few plain sentences: a score of consequence. By the
-  owner's choice it does not mention AI or warn that ratings can be wrong; the
-  support page carries those facts. It adds that a widget exists and that
+  a few plain sentences: a score of consequence. Like all
+  user-facing copy it does not mention AI. By the owner's choice it does not
+  warn that ratings can be wrong; the support page carries that. It adds that a widget exists and that
   notifications are optional and off by default. It says what the app does,
   not how the phone works or where Settings is, and never asks the reader to
   come back. Only the mobile apps have it: they show it once on first launch,

@@ -1,7 +1,8 @@
 // The introduction shown once on a phone's first launch and replayed from
 // Settings. Copy follows docs/product-messaging.md: it says what the number is,
-// and nothing about how often to come back. It does not
-// mention AI or warn that ratings can be wrong; the support page does. Kept
+// and nothing about how often to come back. Like all
+// user-facing copy it does not mention AI, and it does not warn that ratings
+// can be wrong; the support page does. Kept
 // here rather than in the screen so the tests read the same words.
 //
 // The introduction exists only in the phone apps; the website has none.
