@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-27T01:13:08+00:00
+Updated: 2026-09-27T01:22:14+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -95,7 +95,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | web.settings-trailing-marks | waiting_user | user | observed | Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device. | Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build. |
 | widget.appearance-choice | waiting_verification | agent | observed | Widget settings are now one definition (design/widget-settings.json: Show app name, Appearance) offered on both platforms per widget: iOS 17+ Edit Widget, and a new Android settings screen (RatingWidgetConfigure) opened by the launcher on add (optional) and on reconfigure (Android 12+), styled like the app's Settings. Android hides the heading per widget and, only for a chosen Light or Dark, uses literal-colour gradients and text. Android resources linked with aapt2 (minSdk 24, android-35) and all four widget Java classes compiled with javac against android-35 and WorkManager 2.11.2; expo prebuild produced the manifest activity and provider configure entry with the real package. Swift not compiled (no toolchain); no emulator (no KVM); nothing seen on a device. | On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states. |
 | widget.same-day-timestamp | waiting_verification | agent | observed | Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval. | On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight. |
-| ui.onboarding | waiting_verification | agent | observed | Introduction is phone-only (owner decision 2026-09-27): the web Settings has no Introduction row and /onboarding on the web redirects to the reading, checked in Chromium. Five slides on iOS and Android. Title/description heights and bold New are now checked on rendered props (test/onboarding.test.js); pixel positions were last measured in Chromium with a platform override, and nothing has been seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
+| ui.onboarding | waiting_verification | agent | observed | Illustrations redrawn from what the app and widgets show (owner report 2026-09-27: colors and widget did not match). Slides sit on the current reading's canvas (ReadingGradient); each level bar and the pictured small widget use that level's three stops, top-left to bottom-right, as both widgets draw them; the widget shows the current score and the platform's own timestamp form; the notification carries the server's title. Rendered in Chromium with a platform override and a monospace stand-in for iOS's ui-monospace. Not seen on a device: SF Mono numerals, widget corner radius and scale against the real widget. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
 
 ## Evidence and history
 
@@ -3044,5 +3044,15 @@ Next: On iOS and Android: a fresh install opens the introduction over the readin
 Introduction is phone-only (owner decision 2026-09-27): the web Settings has no Introduction row and /onboarding on the web redirects to the reading, checked in Chromium. Five slides on iOS and Android. Title/description heights and bold New are now checked on rendered props (test/onboarding.test.js); pixel positions were last measured in Chromium with a platform override, and nothing has been seen on a device.
 
 - test/web-settings.test.js no-introduction case; test/onboarding.test.js; test/preferences.test.js
+
+Next: On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.
+
+### 311. ui.onboarding — waiting_verification
+
+2026-09-27T01:22:14+00:00 · observed · agent
+
+Illustrations redrawn from what the app and widgets show (owner report 2026-09-27: colors and widget did not match). Slides sit on the current reading's canvas (ReadingGradient); each level bar and the pictured small widget use that level's three stops, top-left to bottom-right, as both widgets draw them; the widget shows the current score and the platform's own timestamp form; the notification carries the server's title. Rendered in Chromium with a platform override and a monospace stand-in for iOS's ui-monospace. Not seen on a device: SF Mono numerals, widget corner radius and scale against the real widget.
+
+- test/onboarding.test.js color and widget cases; store/source/widget-consistency-mono/ios-homescreen-light.png and store/source/android-phone/22-widget-default-light-v10.png as reference
 
 Next: On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.

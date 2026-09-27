@@ -2,9 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
+import { fromByteArray } from 'base64-js';
 import tokens from '../../../public/tokens.js';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
+import { useCurrentReading } from '@/components/reading-provider';
+import { ReadingGradient } from '@/components/reading-gradient';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
 
 type Theme = ReturnType<typeof useTheme>;
@@ -35,6 +39,7 @@ function Introduction() {
   const dimensions = useWindowDimensions();
   const width = dimensions.width || 390;
   const { setOnboarded } = usePreferences();
+  const { reading } = useCurrentReading();
   useEffect(() => { setOnboarded(); }, [setOnboarded]);
   const slides = onboardingSlides(platform);
   const [index, setIndex] = useState(0);
@@ -52,7 +57,9 @@ function Introduction() {
     if (page !== index && page >= 0 && page < slides.length) setIndex(page);
   };
   const column = Math.min(width - 48, 400);
-  return <View testID="onboarding" style={{ flex: 1, backgroundColor: theme.tinted, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+  // The reading's own canvas, as on the reading screen behind it.
+  return <View testID="onboarding" style={{ flex: 1, backgroundColor: theme.surface, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+    <ReadingGradient score={reading?.score} dark={theme.dark} />
     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 12, minHeight: 56, alignItems: 'center' }}>
       {!last && <Pressable testID="onboarding-skip" accessibilityRole="button" accessibilityLabel="Skip introduction" onPress={close}
         style={{ minWidth: 48, minHeight: 48, paddingHorizontal: 12, alignItems: 'center', justifyContent: 'center' }}>
@@ -66,7 +73,7 @@ function Introduction() {
         style={{ width, flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}>
         <View style={{ width: column, alignItems: 'center' }}>
           <View style={{ height: ART_HEIGHT, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Art art={slide.art} theme={theme} />
+            <Art art={slide.art} theme={theme} score={reading?.score} saved={reading?.created_at} />
           </View>
           <Text testID="onboarding-title" accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: TITLE_LINE, minHeight: TITLE_LINE, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
           <Text testID="onboarding-body" style={{ color: theme.muted, fontSize: 17, lineHeight: BODY_LINE, minHeight: BODY_LINE * BODY_LINES, textAlign: 'center', marginTop: 14 }}>
@@ -78,7 +85,9 @@ function Introduction() {
     <View style={{ alignItems: 'center', paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24, gap: 24 }}>
       <View accessible accessibilityLabel={`Page ${index + 1} of ${slides.length}`} style={{ flexDirection: 'row', gap: 8 }}>
         {slides.map((slide, position) => <View key={slide.key}
-          style={{ width: position === index ? 20 : 8, height: 8, borderRadius: 4, backgroundColor: position === index ? theme.accent : theme.rule }} />)}
+          // On the reading's gradient the hairline rule color disappears, so
+          // the inactive dots are the muted ink, faded.
+          style={{ width: position === index ? 20 : 8, height: 8, borderRadius: 4, backgroundColor: position === index ? theme.accent : theme.muted, opacity: position === index ? 1 : 0.3 }} />)}
       </View>
       <Pressable testID="onboarding-next" accessibilityRole="button" accessibilityLabel={last ? 'Done' : 'Next'} onPress={() => last ? close() : go(index + 1)}
         style={({ pressed }) => ({ width: column, minHeight: 52, borderRadius: 14, backgroundColor: theme.accent, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.8 : 1 })}>
@@ -88,42 +97,85 @@ function Introduction() {
   </View>;
 }
 
-// Illustrations are drawn from the app's own parts — the score type, the level
-// palette, the widget and launcher mark — so they read as the app rather than as art.
-// None shows a real reading: a slide must not look like the current news.
-function Art({ art, theme }: { art: SlideArt; theme: Theme }) {
-  const mode = theme.dark ? 'dark' : 'light';
+// Illustrations are drawn from what the app and its widgets actually show: the
+// score type, each level's own colors, the widget's layout and the
+// notification's title. Where a score appears it is the current one, so the
+// widget pictured is the widget the reader would add; before any reading has
+// arrived it shows the dash the app and the widget show.
+type Palette = { start: string; center: string; end: string; ink: string; gradientMuted: string };
+function palette(score: number | undefined, dark: boolean): Palette {
+  const level = score && score >= 1 && score <= 10 ? tokens.levels[score - 1] : tokens.brand;
+  return (level as any)[dark ? 'dark' : 'light'];
+}
+
+// The widgets' background: three stops from the top-left corner to the
+// bottom-right (LinearGradient .topLeading → .bottomTrailing on iOS,
+// android:angle="315" on Android), clipped to the widget's corners.
+function Diagonal({ colors, radius, children, style, testID }: { colors: Palette; radius: number; children?: React.ReactNode; style: object; testID?: string }) {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const svg = size.width > 0 ? `<svg xmlns="http://www.w3.org/2000/svg" width="${size.width}" height="${size.height}"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${colors.start}"/><stop offset=".5" stop-color="${colors.center}"/><stop offset="1" stop-color="${colors.end}"/></linearGradient></defs><rect width="${size.width}" height="${size.height}" rx="${radius}" fill="url(#g)"/></svg>` : null;
+  const uri = svg && (process.env.EXPO_OS === 'android'
+    ? `data:image/svg+xml;base64,${fromByteArray(Uint8Array.from(svg, char => char.charCodeAt(0)))}`
+    : `data:image/svg+xml,${encodeURIComponent(svg)}`);
+  return <View testID={testID} style={{ ...style, borderRadius: radius, overflow: 'hidden' }}
+    onLayout={({ nativeEvent: { layout } }) => setSize(current => current.width === layout.width && current.height === layout.height ? current : { width: layout.width, height: layout.height })}>
+    {uri && <Image source={{ uri }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
+    {children}
+  </View>;
+}
+
+// The widgets' own timestamp: the time alone for a reading saved today, the
+// date before it otherwise. iOS joins them with a dot; Android prefixes
+// "Updated" and uses its short date.
+function widgetTime(saved: string | undefined) {
+  const date = saved ? new Date(saved) : new Date();
+  const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  const today = date.toDateString() === new Date().toDateString();
+  if (platform === 'android') return `Updated ${today ? time : `${date.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} ${time}`}`;
+  return today ? time : `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · ${time}`;
+}
+
+function Art({ art, theme, score, saved }: { art: SlideArt; theme: Theme; score?: number; saved?: string }) {
   const card = { backgroundColor: theme.elevated, borderRadius: 20, borderWidth: 1, borderColor: theme.rule } as const;
-  if (art === 'scale') return <View style={{ ...card, width: 240, paddingVertical: 28, alignItems: 'center' }}>
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={{ color: theme.ink, fontSize: 72, lineHeight: 80, fontWeight: '300', fontFamily: scoreFont }}>–</Text>
-      <Text style={{ color: theme.muted, fontSize: 18, fontWeight: '300', fontFamily: scoreFont, marginLeft: 4, marginTop: 20 }}>∕10</Text>
-    </View>
-    <View style={{ gap: 8, marginTop: 18, alignItems: 'center' }}>
-      <View style={{ width: 176, height: 8, borderRadius: 4, backgroundColor: theme.rule }} />
-      <View style={{ width: 132, height: 8, borderRadius: 4, backgroundColor: theme.rule }} />
-    </View>
-    <View style={{ width: 72, height: 6, borderRadius: 3, backgroundColor: theme.rule, opacity: 0.7, marginTop: 16 }} />
+  if (art === 'scale') return <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+    <Text style={{ color: theme.ink, fontSize: 150, lineHeight: 170, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -8 }}>{score ?? '–'}</Text>
+    <Text style={{ color: theme.muted, fontSize: 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
   </View>;
   if (art === 'levels') return <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 200 }}>
-    {tokens.levels.map((level: any, i: number) => <View key={i} style={{ alignItems: 'center', gap: 6 }}>
-      <View style={{ width: 22, height: 36 + i * 14, borderRadius: 6, backgroundColor: level[mode].end }} />
+    {tokens.levels.map((_: unknown, i: number) => <View key={i} style={{ alignItems: 'center', gap: 6 }}>
+      <Diagonal testID={`onboarding-level-${i + 1}`} colors={palette(i + 1, theme.dark)} radius={6} style={{ width: 22, height: 36 + i * 14 }} />
       <Text style={{ color: theme.muted, fontSize: 12, fontFamily: scoreFont }}>{i + 1}</Text>
     </View>)}
   </View>;
   if (art === 'fade') return <View style={{ alignItems: 'center', gap: 22 }}>
     <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 18 }}>
-      {[8, 6, 4, 2].map((score, i) => <Text key={score}
-        style={{ color: theme.ink, opacity: 1 - i * 0.24, fontSize: 64 - i * 12, fontWeight: '300', fontFamily: scoreFont }}>{score}</Text>)}
+      {[8, 6, 4, 2].map((value, i) => <Text key={value}
+        style={{ color: theme.ink, opacity: 1 - i * 0.24, fontSize: 64 - i * 12, fontWeight: '300', fontFamily: scoreFont }}>{value}</Text>)}
     </View>
     <View style={{ ...card, paddingHorizontal: 18, paddingVertical: 12 }}>
       <Text style={{ color: theme.ink, fontSize: 15, fontWeight: '700' }}>New</Text>
     </View>
   </View>;
-  if (art === 'widget') return <HomeScreen theme={theme} />;
+  if (art === 'widget') return <SmallWidget score={score} saved={saved} dark={theme.dark} />;
   return <Notification theme={theme} />;
 }
 
+// The small widget as it is drawn on each platform (NewsworthyWidget.swift,
+// RatingWidget.java): the wordmark, the score and its denominator, then the
+// update time, over the level's diagonal. Corners: iOS's system widget radius,
+// Android's 20dp.
+function SmallWidget({ score, saved, dark }: { score?: number; saved?: string; dark: boolean }) {
+  const colors = palette(score, dark);
+  return <Diagonal testID="onboarding-widget" colors={colors} radius={platform === 'android' ? 20 : 24}
+    style={{ width: 176, height: 176, padding: 16, justifyContent: 'space-between' }}>
+    <Text style={{ color: colors.ink, fontSize: 10, letterSpacing: 2 }}>NEWSWORTHY</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+      <Text style={{ color: colors.ink, fontSize: 69, lineHeight: 76, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -69 * 0.04 }}>{score ?? '–'}</Text>
+      <Text style={{ color: colors.gradientMuted, fontSize: 12, fontFamily: scoreFont, marginLeft: platform === 'android' ? 2 : 1 }}>∕10</Text>
+    </View>
+    <Text numberOfLines={1} style={{ color: colors.gradientMuted, fontSize: 11 }}>{widgetTime(saved)}</Text>
+  </Diagonal>;
+}
 // The app's launcher mark: a dash, dark on white or white on near-black.
 function LauncherIcon({ theme, size }: { theme: Theme; size: number }) {
   const identity = tokens.identity[theme.dark ? 'dark' : 'light'];
@@ -133,32 +185,10 @@ function LauncherIcon({ theme, size }: { theme: Theme; size: number }) {
   </View>;
 }
 
-// A home screen with the small widget in the top-left two-by-two, drawn in the
-// brand palette with a dash, as the widget shows before it has a reading.
-// iOS icons are rounded squares and the widget's corners match them; Android
-// launchers draw round icons and a more rounded widget.
-function HomeScreen({ theme }: { theme: Theme }) {
-  const brand = tokens.brand[theme.dark ? 'dark' : 'light'];
-  const cell = 52, gap = 18, widget = cell * 2 + gap;
-  const icon = (key: string) => <View key={key} style={{ width: cell, height: cell, borderRadius: platform === 'android' ? cell / 2 : 12, backgroundColor: theme.rule }} />;
-  return <View style={{ padding: 18, borderRadius: 28, borderWidth: 1, borderColor: theme.rule, backgroundColor: theme.elevated, gap }}>
-    <View style={{ flexDirection: 'row', gap }}>
-      <View style={{ width: widget, height: widget, borderRadius: platform === 'android' ? 24 : 22, backgroundColor: brand.end, padding: 14, justifyContent: 'space-between' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ color: brand.ink, fontSize: 54, lineHeight: 60, fontWeight: '300', fontFamily: scoreFont }}>–</Text>
-          <Text style={{ color: brand.gradientMuted, fontSize: 12, fontFamily: scoreFont, marginLeft: 2, marginTop: 14 }}>∕10</Text>
-        </View>
-        <View style={{ width: 52, height: 6, borderRadius: 3, backgroundColor: brand.gradientMuted, opacity: 0.45 }} />
-      </View>
-      <View style={{ gap }}>{[0, 1].map(row => <View key={row} style={{ flexDirection: 'row', gap }}>{icon(`a${row}`)}{icon(`b${row}`)}</View>)}</View>
-    </View>
-    <View style={{ flexDirection: 'row', gap }}>{['c', 'd', 'e', 'f'].map(icon)}</View>
-  </View>;
-}
-
 // A notification as each platform draws one: iOS a rounded banner with the
 // app icon beside the text, Android a card led by a small icon and the app name.
-// The text is placeholder bars, so it cannot read as a real alert.
+// The title is the one sent ("Newsworthy · 8/10", 8 being the default
+// score); the sentence is left as placeholder bars.
 function Notification({ theme }: { theme: Theme }) {
   const bar = (width: number, opacity = 1) => <View style={{ width, height: 8, borderRadius: 4, backgroundColor: theme.rule, opacity }} />;
   if (platform === 'android') return <View style={{ width: 290, borderRadius: 24, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.rule, padding: 16, gap: 12 }}>
@@ -166,13 +196,14 @@ function Notification({ theme }: { theme: Theme }) {
       <LauncherIcon theme={theme} size={22} />
       <Text style={{ color: theme.muted, fontSize: 13 }}>Newsworthy · now</Text>
     </View>
+    <Text style={{ color: theme.ink, fontSize: 15, fontWeight: '600' }}>Newsworthy · 8/10</Text>
     <View style={{ gap: 8 }}>{bar(210)}{bar(170, 0.7)}</View>
   </View>;
   return <View style={{ width: 300, borderRadius: 22, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.rule, padding: 14, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
     <LauncherIcon theme={theme} size={40} />
     <View style={{ flex: 1, gap: 8 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ color: theme.ink, fontSize: 15, fontWeight: '600' }}>Newsworthy</Text>
+        <Text style={{ color: theme.ink, fontSize: 15, fontWeight: '600' }}>Newsworthy · 8/10</Text>
         <Text style={{ color: theme.muted, fontSize: 13 }}>now</Text>
       </View>
       {bar(180)}{bar(140, 0.7)}

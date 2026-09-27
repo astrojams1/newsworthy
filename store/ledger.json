@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T01:13:08+00:00",
+  "updated_at": "2026-09-27T01:22:14+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -952,12 +952,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Introduction is phone-only (owner decision 2026-09-27): the web Settings has no Introduction row and /onboarding on the web redirects to the reading, checked in Chromium. Five slides on iOS and Android. Title/description heights and bold New are now checked on rendered props (test/onboarding.test.js); pixel positions were last measured in Chromium with a platform override, and nothing has been seen on a device.",
+      "summary": "Illustrations redrawn from what the app and widgets show (owner report 2026-09-27: colors and widget did not match). Slides sit on the current reading's canvas (ReadingGradient); each level bar and the pictured small widget use that level's three stops, top-left to bottom-right, as both widgets draw them; the widget shows the current score and the platform's own timestamp form; the notification carries the server's title. Rendered in Chromium with a platform override and a monospace stand-in for iOS's ui-monospace. Not seen on a device: SF Mono numerals, widget corner radius and scale against the real widget.",
       "evidence": [
-        "test/web-settings.test.js no-introduction case; test/onboarding.test.js; test/preferences.test.js"
+        "test/onboarding.test.js color and widget cases; store/source/widget-consistency-mono/ios-homescreen-light.png and store/source/android-phone/22-widget-default-light-v10.png as reference"
       ],
       "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
-      "updated_at": "2026-09-27T01:13:08+00:00"
+      "updated_at": "2026-09-27T01:22:14+00:00"
     }
   },
   "events": [
@@ -5934,6 +5934,22 @@
         ],
         "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
         "updated_at": "2026-09-27T01:13:08+00:00"
+      }
+    },
+    {
+      "sequence": 311,
+      "at": "2026-09-27T01:22:14+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Illustrations redrawn from what the app and widgets show (owner report 2026-09-27: colors and widget did not match). Slides sit on the current reading's canvas (ReadingGradient); each level bar and the pictured small widget use that level's three stops, top-left to bottom-right, as both widgets draw them; the widget shows the current score and the platform's own timestamp form; the notification carries the server's title. Rendered in Chromium with a platform override and a monospace stand-in for iOS's ui-monospace. Not seen on a device: SF Mono numerals, widget corner radius and scale against the real widget.",
+        "evidence": [
+          "test/onboarding.test.js color and widget cases; store/source/widget-consistency-mono/ios-homescreen-light.png and store/source/android-phone/22-widget-default-light-v10.png as reference"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T01:22:14+00:00"
       }
     }
   ],

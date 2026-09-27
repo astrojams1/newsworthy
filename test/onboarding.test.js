@@ -64,17 +64,22 @@ test('New is shown in bold, without a colon, and never described as bold', () =>
 // run theirs: rendered props, not layout. The website cannot draw the
 // introduction any more, so the fixed heights that keep every title at one
 // height are checked here rather than in a browser.
-function renderIntroduction(platform) {
+function renderIntroduction(platform, { score = 3, dark = false } = {}) {
   const source = readFileSync(new URL('../apps/client/app/onboarding.tsx', import.meta.url), 'utf8');
   const compiled = ts.transpileModule(source, { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
   const react = require('react');
   const mocks = {
-    react: { ...react, useEffect() {}, useRef: current => ({ current }), useState: value => [value, () => {}] },
+    // A laid-out size, so the gradients are drawn.
+    react: { ...react, useEffect() {}, useRef: current => ({ current }), useState: value => [value && typeof value === 'object' && 'width' in value ? { width: 100, height: 100 } : value, () => {}] },
     'react-native': { Pressable: 'Pressable', ScrollView: 'ScrollView', Text: 'Text', View: 'View', useWindowDimensions: () => ({ width: 390, height: 844 }) },
     'expo-router': { Redirect: 'Redirect', useRouter: () => ({ canGoBack: () => true, back() {}, replace() {} }) },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
     '../../../public/tokens.js': { __esModule: true, default: require('../public/tokens.js').default ?? require('../public/tokens.js') },
-    '@/lib/theme': { useTheme: () => themeForLevel(null, false) },
+    '@/lib/theme': { useTheme: () => themeForLevel(score, dark) },
+    '@/components/reading-provider': { useCurrentReading: () => ({ reading: score ? { score, created_at: new Date().toISOString() } : null }) },
+    '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
+    'expo-image': { Image: 'Image' },
+    'base64-js': { fromByteArray: bytes => Buffer.from(bytes).toString('base64') },
     '@/components/preferences-provider': { usePreferences: () => ({ setOnboarded() {} }) },
     '@/lib/onboarding': onboarding,
   };
@@ -111,5 +116,46 @@ test('every slide reserves the same title and description heights, and New is dr
     const bold = all.filter(n => n.type === 'Text' && n.props.children === 'New');
     assert.ok(bold.length >= 2 && bold.every(n => n.props.style.fontWeight === '700'), 'New is bold in the sentence and the illustration');
     assert.ok(!JSON.stringify(bodies.map(n => n.props.children)).includes('**'), 'no markup reaches the screen');
+  }
+});
+
+// Reported 2026-09-27: the illustrations' colors and the widget did not match
+// what the app and the widgets actually show. Each level is drawn with its own
+// three stops, the widget with the current reading's, and the screen sits on
+// the reading's canvas.
+const svgOf = (node, platform) => {
+  const uri = nodes(node).find(n => n.type === 'Image').props.source.uri;
+  return platform === 'android' ? Buffer.from(uri.split(',')[1], 'base64').toString() : decodeURIComponent(uri.split(',')[1]);
+};
+
+test('the illustrations use the real level colors, and the widget is the current reading\'s widget', async () => {
+  const tokens = (await import('../public/tokens.js')).default;
+  for (const platform of platforms) for (const dark of [false, true]) for (const score of [3, 8, null]) {
+    const mode = dark ? 'dark' : 'light';
+    const all = nodes(renderIntroduction(platform, { score, dark }));
+    const canvas = all.find(n => n.type === 'ReadingGradient');
+    assert.deepEqual([canvas.props.score, canvas.props.dark], [score ?? undefined, dark], 'the reading screen\'s canvas behind the slides');
+    const widget = all.find(n => n.props?.testID === 'onboarding-widget');
+    const colors = (score ? tokens.levels[score - 1] : tokens.brand)[mode];
+    const svg = svgOf(widget, platform);
+    for (const stop of [colors.start, colors.center, colors.end]) assert.ok(svg.includes(stop), `${platform} ${mode} ${score}: widget stop ${stop}`);
+    assert.match(svg, /x1="0" y1="0" x2="1" y2="1"/, 'top-left to bottom-right, as both widgets draw it');
+    const text = nodes(widget).filter(n => n.type === 'Text').map(n => [n.props.children].flat().join(''));
+    assert.deepEqual(text.slice(0, 3), ['NEWSWORTHY', String(score ?? '–'), '∕10']);
+    assert.match(text[3], platform === 'android' ? /^Updated / : /^\d/, 'the platform\'s own timestamp');
+    const bars = all.filter(n => /^onboarding-level-\d+$/.test(n.props?.testID ?? ''));
+    assert.equal(bars.length, 10);
+    bars.forEach((bar, i) => {
+      const level = tokens.levels[i][mode];
+      const drawn = svgOf(bar, platform);
+      for (const stop of [level.start, level.center, level.end]) assert.ok(drawn.includes(stop), `level ${i + 1} ${mode} stop ${stop}`);
+    });
+  }
+});
+
+test('the notification carries the title the server sends', () => {
+  for (const platform of platforms) {
+    const all = nodes(renderIntroduction(platform));
+    assert.ok(all.some(n => n.type === 'Text' && n.props.children === 'Newsworthy · 8/10'), platform);
   }
 });
