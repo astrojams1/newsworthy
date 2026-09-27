@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { outletNamed } from '../scripts/news-outlets.mjs';
+import { outletNamed } from '../src/outlets.js';
 
 test('the caller review flags the stored sentences that named an outlet', () => {
   // Readings 770, 745 and 676, verbatim: the cases prompt v19 was written for.

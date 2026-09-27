@@ -9,7 +9,7 @@
  * The token is read from the environment and sent only in the x-admin-token
  * header; it is never printed or written.
  */
-import { outletNamed } from './news-outlets.mjs';
+import { outletNamed } from '../src/outlets.js';
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, arg, i, all) =>
   (arg.startsWith('--') ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs), []));

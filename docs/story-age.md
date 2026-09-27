@@ -30,6 +30,14 @@ then dated a day-old event “7h —” while the timeline placed the developmen
 before it two days back. An escalation restarts the number, not the sentence. The label still follows the
 newest reading's judgement, so a re-report carries none, as before.
 
+The first report shown is the earliest that names no news outlet
+(`outletNamed()` in `src/outlets.js`), still dated from the development's first
+report; the timeline shows the same one. A development can outlive a prompt
+change: on 2026-09-27 the Hormuz development's first report, from v17, ended
+“the Wall Street Journal said”, and showing it word for word put an outlet back
+on the page the day v19 removed them. A development every report of which names
+one keeps its first.
+
 Since 2026-09-27 that age is back, as a quiet prefix. A development can hold the
 page for a day or more with the same sentence, and with nothing after “New:” an
 hour-old sentence and a day-old one looked the same. The owner chose the form

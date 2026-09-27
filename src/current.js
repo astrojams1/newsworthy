@@ -56,6 +56,8 @@
 /** How far above the median a reading must sit to be treated as a break rather
  *  than as noise. Two, because the rater's own disagreement is about 0.6 and a
  *  one-point gap is inside it. */
+import { outletNamed } from './outlets.js';
+
 const SHOCK_MARGIN = 2;
 
 /** Below this there is nothing to take a median of, and the newest reading is
@@ -494,7 +496,8 @@ export function currentDisplay(ascending, {
  * rewordings of one event read as news that is not there: the WSJ report of
  * Trump rejecting Iran's Hormuz plan was written 29 ways over 27 hours. So a
  * re-report shows its development's first report, word for word and dated
- * when it broke, as the timeline does.
+ * when it broke, as the timeline does — the first that names no news outlet,
+ * where an older prompt let one through (see standingSentence()).
  *
  * Not the reading where the development last escalated. That was the first
  * cut, and on 2026-09-27 the same Hormuz development, 24 hours old, drifted
@@ -507,9 +510,27 @@ export function currentDisplay(ascending, {
  */
 function sentenceFor(points, last) {
   if (last.judge_version == null || last.development_of == null) return last;
-  return points.find((p) => p.id === last.reports)
-    ?? points.find((p) => p.reports === last.reports)
-    ?? last;
+  const reports = points.filter((p) => p.reports === last.reports);
+  const first = points.find((p) => p.id === last.reports) ?? reports[0];
+  if (!first) return last;
+  const shown = standingSentence([first, ...reports]);
+  return shown === first ? first : { ...shown, t: first.t };
+}
+
+/**
+ * Which of a development's reports stands for it: the earliest that names no
+ * news outlet, else the earliest. A development can outlive a prompt change,
+ * and its first report was written under the rules of its day: on 2026-09-27
+ * the Hormuz development's first report, from v17, ended "the Wall Street
+ * Journal said", and showing it word for word put an outlet back on the page
+ * the day v19 took them out of new sentences. Passing over that report once
+ * is the price of keeping the rule; the sentence chosen is still one the
+ * development already had, so it does not change with each rewording.
+ *
+ * @param {Array<{explanation?: string}>} reports oldest first
+ */
+function standingSentence(reports) {
+  return reports.find((r) => !outletNamed(r.explanation)) ?? reports[0];
 }
 
 /**
@@ -569,10 +590,11 @@ export function activeStories(ascending, {
   for (const point of points) {
     const seen = readings.get(point.reports);
     if (seen) {
+      seen.all.push(point);
       seen.latest = point;
       seen.count += 1;
     } else {
-      readings.set(point.reports, { first: point, latest: point, count: 1 });
+      readings.set(point.reports, { all: [point], latest: point, count: 1 });
     }
   }
 
@@ -596,7 +618,9 @@ export function activeStories(ascending, {
       opened: development.opened,
       age_hours: Math.round((ageMs / 3600_000) * 10) / 10,
       readings: heard?.count ?? 0,
-      first: heard?.first?.explanation ?? null,
+      // The sentence that stands for it, as the front page chooses one, so the
+      // timeline and the page cannot show one development two ways.
+      first: heard ? standingSentence(heard.all).explanation ?? null : null,
       latest: heard?.latest?.explanation ?? null,
       latest_at: heard?.latest?.created_at ?? null,
       // The one the front page number is about, right now.

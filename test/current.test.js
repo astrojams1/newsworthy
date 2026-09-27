@@ -444,6 +444,30 @@ test('an escalation restarts the number, not the sentence', () => {
   assert.equal(page.sentence.t, series[0].t, 'dated from the first report');
 });
 
+test('a re-report never brings back an outlet its first report named', () => {
+  // Readings 766, 777 and 799 on 2026-09-27, verbatim: the Hormuz development's
+  // first report came from v17 and named the Wall Street Journal, which v19
+  // took out of new sentences. Showing it word for word put the outlet back on
+  // the page, in words the page had not been showing. The earliest report that
+  // names no outlet stands for the development instead, still dated from the
+  // first report, and the timeline shows the same one.
+  const series = judged([3, 0], [3, 0], [5, 0]);
+  series[0].explanation = "Trump rejected Iran's plan to reopen the Strait of Hormuz, a key oil route, within a week, the Wall Street Journal said.";
+  series[1].explanation = "President Trump rejected Iran's plan to reopen the Strait of Hormuz within 7 days, US officials said, leaving the key oil route mostly shut.";
+  series[2].explanation = "President Trump rejected Iran's offer to reopen the Strait of Hormuz in 7 days, so oil and gas prices could rise when trading resumes.";
+  const page = currentDisplay(series, { now: series.at(-1).t });
+  assert.equal(page.sentence.explanation, series[1].explanation, 'the earliest report without an outlet');
+  assert.equal(page.sentence.t, series[0].t, 'still dated from the first report');
+
+  const board = activeStories(series, { now: series.at(-1).t });
+  assert.equal(board[0].developments[0].first, series[1].explanation, 'the timeline shows the same sentence');
+
+  // A development whose reports all name one keeps its first, rather than
+  // changing words every hour.
+  for (const row of series) row.explanation = `${row.explanation.slice(0, -1)}, Reuters said.`;
+  assert.equal(currentDisplay(series, { now: series.at(-1).t }).sentence.explanation, series[0].explanation);
+});
+
 // A story that has been producing developments for `days`, one a day at `score`,
 // then one more at `last` — the shape of a long war as the rater sees it.
 const longStory = (days, score, last, story = 'war') => {

@@ -53,7 +53,7 @@ only. Read every run report in full.
 - **No news outlet named.** From prompt v19 (rule 8 in `PROMPT-RULES.md`) the
   sentence never names a news outlet, even as the source or the subject; a
   report is attributed with "reportedly" or the people it cites. The script
-  flags names from `scripts/news-outlets.mjs`, but that list is not every
+  flags names from `src/outlets.js`, but that list is not every
   outlet, so read every sentence. Record each case with its prompt version: on
   v19 or later it is a contract breach; before v19 it is expected, not a finding.
 - **Judgement sound.** `same` or `new` is defensible against the record the

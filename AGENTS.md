@@ -370,7 +370,9 @@ judged re-report rewords the same event: the WSJ report of Trump rejecting
 Iran's Hormuz plan came back 29 ways over 27 hours. `sentenceFor()` in
 `src/current.js` shows instead, word for word, its development's first report,
 dated from it as the timeline is — not where it last escalated, which dated a
-day-old event "7h". `created_at` stays the newest reading's. A new development and an
+day-old event "7h". The first that names no outlet (`src/outlets.js`): an
+older prompt's first report put "the Wall Street Journal said" back on the page
+after v19. `created_at` stays the newest reading's. A new development and an
 unjudged reading show their own sentence. Push uses the same one.
 
 `basis` is one of `new` (the newest reading opened or escalated the development

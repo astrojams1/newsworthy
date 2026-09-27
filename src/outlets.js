@@ -1,8 +1,10 @@
 /**
  * Whether a stored sentence names a news outlet, which prompt v19 forbids
- * (rule 8 in PROMPT-RULES.md). Used by the caller review as a flag, not a
+ * (rule 8 in PROMPT-RULES.md). The caller review uses it as a flag, not a
  * verdict: the list is the outlets a caller is likely to cite, not every
- * outlet there is, so a reviewer still reads every sentence. Case-sensitive,
+ * outlet there is, so a reviewer still reads every sentence. The front page
+ * uses it to pass over a development's older reports that named one (see
+ * sentenceFor() in src/current.js). Case-sensitive,
  * and multi-word where a short name is also an ordinary word or a market
  * ("an economist", "the Nikkei fell").
  */
