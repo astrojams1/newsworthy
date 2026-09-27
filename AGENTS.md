@@ -365,6 +365,14 @@ on top in the evening is still named in the evening, with a smaller number
 beside it — never "nothing new". The score’s `since` anchor and the sentence’s
 `explanation_new` flag answer separate questions.
 
+**A re-report shows the sentence it repeats.** Each run starts blind, so a
+judged re-report rewords the same event: the WSJ report of Trump rejecting
+Iran's Hormuz plan came back 29 ways over 27 hours. `sentenceFor()` in
+`src/current.js` shows instead, word for word, the sentence of the reading that
+started the development's current clock — its first report, or where it last
+escalated. `created_at` stays the newest reading's. A new development and an
+unjudged reading show their own sentence. Push uses the same one.
+
 `basis` is one of `new` (the newest reading opened or escalated the development
 the number is about, at full value), `routine` (it did, but its story's age
 discounted it), `aged` (a decayed level) or `stale`. The level

@@ -288,14 +288,18 @@ const server = createServer(async (req, res) => {
       // slowly; the sentence answers "what happened", which is a fact about
       // right now — so a story still on top this evening is still named this
       // evening, with a smaller number beside it.
+      // A re-report shows its development's existing sentence rather than a
+      // rewording of it; see sentenceFor() in src/current.js. `created_at` is
+      // still the newest reading's: the sentence was confirmed then.
       const newest = current.newest;
+      const sentence = current.sentence;
       // Rows are stored with an end already; rows from before that rule get
       // one here, so every client, native widgets included, receives a
       // finished sentence without a rebuild. `explanation_new` marks a sentence
       // that opened its own development; clients show a bold "New:" before it
       // for two hours from `created_at`. `explanation` stays unlabelled so an
       // installed build that shows it as-is never keeps a stale "New:".
-      const explanationFields = { explanation_text: completeSentence(newest.explanation), explanation_new: opensDevelopment(newest) };
+      const explanationFields = { explanation_text: completeSentence(sentence.explanation), explanation_new: opensDevelopment(newest) };
       return json(res, 200, {
         score: current.score,
         explanation: explanationFields.explanation_text,

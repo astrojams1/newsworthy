@@ -395,9 +395,9 @@ function replay(ascending, {
  * maximum across them moves up only when one re-anchors or a new one opens —
  * both of which are events, not arithmetic.
  *
- * The sentence still comes from the newest reading, so in the hour those two
- * disagree the number describes the loudest story and the sentence names the
- * one just rated. That is the accepted cost: the alternative is pairing the
+ * The sentence still comes from the development the newest reading reports
+ * (see sentenceFor()), so in the hour those two disagree the number describes
+ * the loudest story and the sentence names the one just rated. That is the accepted cost: the alternative is pairing the
  * number with an older story's sentence, which reads as an app that has
  * stopped.
  */
@@ -468,6 +468,7 @@ export function currentDisplay(ascending, {
   const loudest = loudestAt(developments, now, halfLifeHours, last.t);
 
   return {
+    sentence: sentenceFor(points, developments, last),
     score: loudest.displayed,
     level: last.level,
     levelRow: last.level_row,
@@ -484,6 +485,25 @@ export function currentDisplay(ascending, {
     fatigue: loudest.fatigue,
     reports: last.reports,
   };
+}
+
+/**
+ * The reading whose sentence the page shows. Usually the newest; but a reading
+ * the judge placed in a development already on record is a re-report, and each
+ * run starts blind, so it writes the same event again in new words. Hourly
+ * rewordings of one event read as news that is not there: the WSJ report of
+ * Trump rejecting Iran's Hormuz plan was written 29 ways over 27 hours. So a
+ * re-report shows the sentence its development already has, word for word:
+ * the one from the reading that started the development's current clock, which
+ * is its first report, or the reading where it last escalated, since an
+ * escalation is news again. An unjudged reading cannot be called a repeat and
+ * a new development is its own sentence, so both show the newest.
+ */
+function sentenceFor(points, developments, last) {
+  if (last.judge_version == null || last.development_of == null) return last;
+  const development = developments.get(last.reports);
+  const clock = development && points.find((p) => p.reports === last.reports && p.t === development.since);
+  return clock ?? points.find((p) => p.id === last.reports) ?? last;
 }
 
 /**
@@ -626,7 +646,7 @@ export function activeStories(ascending, {
  * moves, not from `since`, the decay anchor an escalation restarts.
  *
  * The development the newest reading reported is left out: its sentence is
- * already on the page above, in newer words. `activeStories()` marks it from
+ * already on the page above. `activeStories()` marks it from
  * the replay by identity before anything is filtered, because a re-report is
  * worded differently from the sentence the development opened with, and
  * because the newest reading can re-report a development older than the live
