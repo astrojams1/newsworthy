@@ -1,71 +1,15 @@
 {
+  "scale": {
+    "name": "Temperature",
+    "about": "Fog blue at 1, warm stone through the middle, terracotta ember at 10. Anchors are OKLCH [lightness, chroma, hue]; npm run design:generate samples ten evenly spaced levels along them.",
+    "names": ["Fog", "Haze", "Pewter", "Stone", "Taupe", "Clay", "Sienna", "Rust", "Brick", "Ember"],
+    "primary": [[0.74, 0.04, 238], [0.7, 0.018, 215], [0.65, 0.018, 75], [0.59, 0.075, 55], [0.525, 0.14, 38]],
+    "companion": [[0.91, 0.025, 235], [0.89, 0.012, 200], [0.87, 0.018, 80], [0.85, 0.045, 62], [0.82, 0.07, 48]]
+  },
   "brand": {
     "name": "Stone",
-    "primary": "#95928A",
-    "companion": "#D7D7D1"
+    "level": 4
   },
-  "levels": [
-    {
-      "score": 1,
-      "name": "Fog",
-      "primary": "#94AFC2",
-      "companion": "#D2E4F0"
-    },
-    {
-      "score": 2,
-      "name": "Haze",
-      "primary": "#93A6AE",
-      "companion": "#D2E0E5"
-    },
-    {
-      "score": 3,
-      "name": "Pewter",
-      "primary": "#949C9C",
-      "companion": "#D3DCDB"
-    },
-    {
-      "score": 4,
-      "name": "Stone",
-      "primary": "#95928A",
-      "companion": "#D7D7D1"
-    },
-    {
-      "score": 5,
-      "name": "Taupe",
-      "primary": "#998777",
-      "companion": "#DBD3C7"
-    },
-    {
-      "score": 6,
-      "name": "Clay",
-      "primary": "#9D7C64",
-      "companion": "#DFCEBD"
-    },
-    {
-      "score": 7,
-      "name": "Sienna",
-      "primary": "#A07151",
-      "companion": "#E3C9B3"
-    },
-    {
-      "score": 8,
-      "name": "Rust",
-      "primary": "#A56444",
-      "companion": "#E6C3AB"
-    },
-    {
-      "score": 9,
-      "name": "Brick",
-      "primary": "#A85636",
-      "companion": "#E9BDA4"
-    },
-    {
-      "score": 10,
-      "name": "Ember",
-      "primary": "#AB4726",
-      "companion": "#EBB79D"
-    }
-  ],
   "appearance": {
     "light": {
       "surface": "#FFFFFF",

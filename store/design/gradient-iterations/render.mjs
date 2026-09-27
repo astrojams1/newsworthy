@@ -7,17 +7,17 @@ import { chromium } from 'playwright-core';
 import { iterations, oklchToHex, hexToOklab } from './palettes.mjs';
 
 const here = new URL('.', import.meta.url).pathname;
-const palette = JSON.parse(readFileSync(new URL('../../../design/palette.json', import.meta.url)));
-const look = palette.appearance;
+import tokens from '../../../public/tokens.js';
+const look = tokens.appearance;
 const scores = [...Array(10)].map((_, i) => i + 1);
 
 const current = {
   id: 'current', name: 'Current (for comparison)', texture: 'none',
   idea: 'Sage, mint, sea glass, olive, gold, honey, apricot, coral, rose. The hue doubles back between 1 and 3 and jumps at 4.',
-  levels: palette.levels.map(l => ({ primary: l.primary, companion: l.companion })),
+  levels: tokens.levels.map(l => ({ primary: l.primary, companion: l.companion })),
 };
 const sets = [current, ...iterations.map(it => ({
-  ...it, levels: scores.map(s => ({ primary: oklchToHex(it.primary((s - 1) / 9)), companion: oklchToHex(it.companion((s - 1) / 9)) })),
+  ...it, levels: scores.map(s => it.hexes ? { primary: it.hexes.primary[s - 1], companion: it.hexes.companion[s - 1] } : { primary: oklchToHex(it.primary((s - 1) / 9)), companion: oklchToHex(it.companion((s - 1) / 9)) }),
 }))];
 
 const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)).join(',');

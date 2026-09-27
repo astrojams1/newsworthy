@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -27,6 +28,13 @@ const social = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630
 await output('public/brand/share.png', await sharp(Buffer.from(social)).png().toBuffer());
 await output('public/social-card.svg', social);
 await output('public/social-card.png', await sharp(Buffer.from(social)).png().toBuffer());
+// Link previews cache the card by URL, so its query carries a digest of the
+// artwork: a colour change refreshes previews without anyone bumping it.
+const cardVersion = createHash('sha256').update(social).digest('hex').slice(0, 8);
+for (const page of ['public/privacy.html', 'public/support.html', 'apps/client/app/+html.tsx']) {
+  const path = resolve(root, page);
+  await writeFile(path, (await readFile(path, 'utf8')).replace(/social-card\.png\?v=[\w]+/g, `social-card.png?v=${cardVersion}`));
+}
 // Expo source assets survive prebuild; native projects consume them through
 // app.config.js and the existing widget config plugin.
 await output('apps/client/assets/icon.png', await sharp(Buffer.from(iconSvg('light'))).removeAlpha().png().toBuffer());

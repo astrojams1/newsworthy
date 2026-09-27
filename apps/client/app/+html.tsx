@@ -15,15 +15,15 @@ export default function Html({ children }: PropsWithChildren) {
 <meta property="og:title" content="Newsworthy" />
 <meta property="og:description" content="World news, rated by significance." />
 <meta property="og:url" content="https://newsworthy-indol.vercel.app/" />
-<meta property="og:image" content="https://newsworthy-indol.vercel.app/social-card.png?v=3" />
+<meta property="og:image" content="https://newsworthy-indol.vercel.app/social-card.png?v=c6df6c54" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="Newsworthy wordmark and dash on a pale stone background." />
+<meta property="og:image:alt" content="Newsworthy wordmark and dash." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Newsworthy" />
 <meta name="twitter:description" content="World news, rated by significance." />
-<meta name="twitter:image" content="https://newsworthy-indol.vercel.app/social-card.png?v=3" />
-<meta name="twitter:image:alt" content="Newsworthy wordmark and dash on a pale stone background." />
+<meta name="twitter:image" content="https://newsworthy-indol.vercel.app/social-card.png?v=c6df6c54" />
+<meta name="twitter:image:alt" content="Newsworthy wordmark and dash." />
 
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Newsworthy', url: 'https://newsworthy-indol.vercel.app/', description: 'World news, rated by significance.' }) }} />
   </head><body><main style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>{children}</main></body></html>;

@@ -2,15 +2,24 @@
 
 `palette.json` is the source of truth for the approved ten-level palette, brand colors, appearance, typography, and radii. Generated files must be regenerated instead of edited independently.
 
-The ten levels are the Temperature palette (owner choice, 2026-09-27): fog blue at 1, warm stone through the middle, deep terracotta ember at 10. They are sampled by arc length along one OKLab path, so every neighbouring pair is the same perceptual step apart; the previous mint-to-rose palette doubled back in hue between 1 and 3 and jumped at 4. `store/design/gradient-iterations/` holds the path (`palettes.mjs`), the alternatives considered and their renders.
+The ten levels are the Temperature scale (owner choice, 2026-09-27): fog blue at 1, warm stone through the middle, deep terracotta ember at 10. The previous mint-to-rose palette was ten hand-picked hexes that doubled back in hue between 1 and 3 and jumped at 4; `store/design/gradient-iterations/` holds the alternatives considered and their renders.
+
+## Changing colors
+
+Everything colored is generated from `palette.json`, so a color change is an edit there and three commands:
+
+1. **Levels.** `scale.primary` and `scale.companion` are OKLCH anchors, `[lightness 0–1, chroma, hue degrees]`, from level 1 to level 10; any number of anchors. The generator samples ten levels along the path by arc length in OKLab, so neighbouring levels are always an equal perceptual step apart, wherever the anchors sit. `scale.names` names the ten levels. To pin exact colors instead, replace the anchors with `scale.levels: [{ name, primary, companion }, …]`.
+2. **Brand.** `brand.level` makes the brand (support and privacy pages, favicon, app icon, splash, share card, a widget without a reading) take that level's colors. Give `brand` its own `primary` and `companion` instead to set it apart from the scale.
+3. **Run:**
 
 ```sh
-npm run design:assets   # Update tokens, native colors, widgets, icons, and share art
+npm run design:assets   # Tokens, native colors, widgets, icons, splash, share art; warns on any AA failure
+npm run design:preview  # artifacts/design-preview.png: every level light and dark, step sizes, brand assets
+npm run test:design     # Contrast, even spacing, and cross-surface checks
 npm run design:check    # Detect stale web/Android/iOS tokens
-node --test test/design.test.js
-npm run test:design     # Cross-surface typography, layout roles, theme bindings and pixels
-node scripts/capture-reading-gradient.mjs  # After a palette change: re-capture Chromium reference pixels
 ```
+
+What needs no hand edit: the share image's cache key is a digest of its artwork, so link previews refetch it; its alt text names no color; the reading-canvas pixel test carries its own colors, so it needs no re-capture (`node scripts/capture-reading-gradient.mjs` is only for a change to `public/levels.css`). What still needs a person: onboarding and the native apps and widgets on a device, recorded in the release ledger, and the App Store gallery art from `store/scripts/render.mjs`.
 
 ## Which color belongs where?
 
@@ -19,7 +28,7 @@ node scripts/capture-reading-gradient.mjs  # After a palette change: re-capture 
 | Main reading, favicon, browser chrome | The validated, displayed score, including saved readings |
 | Android widget | The score in the widget's own saved reading |
 | Admin chart, links, selected controls | The admin's latest displayed score |
-| Support, privacy, static favicon, splash, share card | Stable Stone brand palette (level 4, the neutral midpoint of the scale) with a dash instead of a score |
+| Support, privacy, static favicon, splash, share card | Stable brand palette (Stone: `brand.level` 4, the neutral midpoint of the scale) with a dash instead of a score |
 | App icon and home-screen shortcut | Stone brand gradient with a dark dash in light mode and a light dash in dark mode; never a level |
 | Failures | Separate semantic `danger` color, always accompanied by words or a symbol |
 | Empty/loading reading | No level assigned; neutral reading canvas and brand favicon |
@@ -64,7 +73,7 @@ Source assets and the Android config plugin preserve the design through Expo pre
 
 ## Preview
 
-`artifacts/level-gradients/preview.html` shows all ten palettes, favicons, widgets, controls, and fixed app identity in both appearances. It imports the production tokens and favicon renderer. The widget is a browser representation of the native three-stop treatment.
+`npm run design:preview` writes `artifacts/design-preview.png` (gitignored): all ten levels in both appearances through the production `tokens.css` and `levels.css`, the step between neighbouring levels, and the brand's share card, app icons and splash marks. It needs Chromium; set `CHROMIUM_PATH` outside the cloud image.
 
 ## Design regression gate
 

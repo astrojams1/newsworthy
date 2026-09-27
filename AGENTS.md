@@ -36,6 +36,8 @@ release status. Calm presentation must not change the rating calibration.
 - Preserve the calm indicator: a number out of 10 and one sentence explaining why.
   No doomscrolling, subscriptions, in-app purchases, ads, or engagement,
   addiction or growth-hacking tactics.
+- Colors: edit `design/palette.json` (OKLCH scale anchors, `brand.level`) and follow
+  "Changing colors" in `design/README.md`; never hand-edit generated tokens or assets.
 - Widget settings live in `design/widget-settings.json`; iOS Edit Widget and Android
   `RatingWidgetConfigure` must offer every entry alike (`test/widget-settings.test.js`).
 - Keep admin views web-only. Preserve the web app alongside the mobile apps.

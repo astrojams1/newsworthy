@@ -25,7 +25,8 @@
     "design:check": "node scripts/generate-design.mjs --check",
     "test:design": "node --test test/design.test.js test/reading-gradient.test.js test/surface-design.test.js test/widget-alignment.test.js test/widget-settings.test.js",
     "ledger": "node store/scripts/ledger.mjs",
-    "design:assets": "npm run design:generate && node scripts/generate-brand.mjs"
+    "design:assets": "npm run design:generate && node scripts/generate-brand.mjs",
+    "design:preview": "node scripts/design-preview.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.0",
