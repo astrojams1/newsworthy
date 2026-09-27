@@ -10,6 +10,7 @@ import { usePreferences } from '@/components/preferences-provider';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
+import { explanationParts } from '@/lib/story-age';
 
 type Theme = ReturnType<typeof useTheme>;
 const platform = process.env.EXPO_OS === 'ios' ? 'ios' : 'android';
@@ -73,7 +74,7 @@ function Introduction() {
         importantForAccessibility={position === index ? 'auto' : 'no-hide-descendants'}
         style={{ width, flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 24 }}>
         <View style={{ height: ART_HEIGHT, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginBottom: 36 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Art art={slide.art} theme={theme} score={reading?.score} saved={reading?.created_at} />
+          <Art art={slide.art} theme={theme} score={reading?.score} saved={reading?.created_at} sentence={explanationParts(reading)} />
         </View>
         <View style={{ width: column, height: TEXT_BLOCK, alignItems: 'center' }}>
           <Text testID="onboarding-title" accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: TITLE_LINE, minHeight: TITLE_LINE, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
@@ -142,11 +143,21 @@ function svgUri(svg: string) {
 // widget's own colors. The shadow sits on a wrapper: a clipped view cannot cast one.
 const lifted = { borderRadius: 24, boxShadow: '0 10px 30px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08)' } as const;
 
-function Art({ art, theme, score, saved }: { art: SlideArt; theme: Theme; score?: number; saved?: string }) {
-  // The score as the reading screen sets it, and nothing else.
-  if (art === 'scale') return <View testID="onboarding-score" style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-    <Text style={{ color: theme.ink, fontSize: 160, lineHeight: 176, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -160 * 0.055 }}>{score ?? '–'}</Text>
-    <Text style={{ color: theme.muted, fontSize: 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
+function Art({ art, theme, score, saved, sentence }: { art: SlideArt; theme: Theme; score?: number; saved?: string; sentence: { label: string; body: string } }) {
+  // The top of the reading screen: the score and, under it, the sentence naming
+  // the top story, both as the app sets them (a new development's bold label
+  // included). Before any reading has arrived, two soft lines stand for the
+  // sentence, as the dash stands for the score.
+  if (art === 'scale') return <View testID="onboarding-score" style={{ alignItems: 'center', width: '100%' }}>
+    <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+      <Text style={{ color: theme.ink, fontSize: 112, lineHeight: 124, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -112 * 0.055 }}>{score ?? '–'}</Text>
+      <Text style={{ color: theme.muted, fontSize: 18, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
+    </View>
+    {sentence.body
+      ? <Text testID="onboarding-sentence" numberOfLines={4} style={{ color: theme.ink, fontSize: 14, lineHeight: 20, textAlign: 'center', maxWidth: 270, marginTop: 10 }}>
+          {sentence.label ? <><Text style={{ fontWeight: '700' }}>{sentence.label}</Text>{' '}</> : null}{sentence.body}
+        </Text>
+      : <View style={{ gap: 8, alignItems: 'center', marginTop: 16 }}>{[220, 160].map(w => <View key={w} style={{ width: w, height: 8, borderRadius: 4, backgroundColor: theme.muted, opacity: 0.2 }} />)}</View>}
   </View>;
   if (art === 'widget') return <View style={lifted}><SmallWidget score={score} saved={saved} dark={theme.dark} /></View>;
   return <View style={lifted}><Notification theme={theme} /></View>;

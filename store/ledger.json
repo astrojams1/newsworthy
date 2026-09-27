@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T02:36:47+00:00",
+  "updated_at": "2026-09-27T04:30:02+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -952,12 +952,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "First slide's graphic reduced to the current score and its denominator on the reading's canvas (owner request 2026-09-27); the reading card and level tiles are removed. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
+      "summary": "First slide shows the current score with the current sentence under it, as the reading screen sets them (bold New label included), so the description's number and sentence both have an example; soft placeholder lines stand in before any reading. Inspected with a full-length sentence on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
       "evidence": [
         "test/onboarding.test.js"
       ],
       "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
-      "updated_at": "2026-09-27T02:36:47+00:00"
+      "updated_at": "2026-09-27T04:30:02+00:00"
     }
   },
   "events": [
@@ -6014,6 +6014,22 @@
         ],
         "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
         "updated_at": "2026-09-27T02:36:47+00:00"
+      }
+    },
+    {
+      "sequence": 316,
+      "at": "2026-09-27T04:30:02+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "First slide shows the current score with the current sentence under it, as the reading screen sets them (bold New label included), so the description's number and sentence both have an example; soft placeholder lines stand in before any reading. Inspected with a full-length sentence on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
+        "evidence": [
+          "test/onboarding.test.js"
+        ],
+        "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
+        "updated_at": "2026-09-27T04:30:02+00:00"
       }
     }
   ],
