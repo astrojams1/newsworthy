@@ -62,10 +62,9 @@ Settings, the gear in the header, choose the appearance (Follow device, Light
 or Dark) and, in the mobile apps, an optional notification for readings at or above
 a chosen score — off by default. The Privacy and Support links are there too,
 so the reading screen carries nothing but the reading. The mobile apps open an
-introduction once, on first launch: six slides covering the score, fading, the
-widget and optional alerts, with the widget and alert steps written for iOS or
-Android. Settings → Introduction replays it; the website's version has four slides,
-without widgets and alerts. Native delivery needs
+introduction once, on first launch: five short slides on the score, the scale,
+fading, the widget and optional notifications. Settings → Introduction replays
+it; the website's version has three slides, without the widget and notifications. Native delivery needs
 push credentials on EAS; see the
 [mobile release guide](docs/mobile-release.md#push-notifications).
 
@@ -106,7 +105,7 @@ actually wired up. Start there when a deploy misbehaves.
 |---|---|
 | `/` | The rating, explanation and update time, and Share and Settings controls in the header. The number is the loudest development still live — each carries its own level, aged from when it was first reported. With Show timeline turned on in Settings (off by default), a quiet chevron below it leads to a timeline of the other live developments, each tagged with its story; the scroll snaps between the reading and the timeline, and tapping the header returns to the reading (prototype) |
 | `/settings` | Settings overview: Appearance, on native Notifications, the Show timeline switch (off by default), and the Privacy, Support and Introduction rows. A sheet in the apps, a page on the web |
-| `/onboarding` | The introduction: six slides in the apps (widget and alert slides per platform), four on the web, with Skip, Next and Done. Every title sits at the same height. Opens once on a phone's first launch (`onboarded` in `preferences.js`); Settings replays it |
+| `/onboarding` | The introduction: five slides in the apps (widget and notifications included), three on the web, with Skip, Next and Done. Every title sits at the same height. Opens once on a phone's first launch (`onboarded` in `preferences.js`); Settings replays it |
 | `/settings/appearance` | Follow device, Light or Dark (the app only; each widget has its own settings, see `design/widget-settings.json`) |
 | `/settings/notifications` | Native only in the apps: optional high-score alerts and the threshold row |
 | `/settings/threshold` | Native only in the apps: the alert threshold, 5 to 10 |

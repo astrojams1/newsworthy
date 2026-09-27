@@ -56,12 +56,12 @@ repeat a tagline or explain the scale.
   development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
-- The introduction (`apps/client/lib/onboarding.js`) restates the core copy and
-  the limits above: an AI assessment that can be wrong, not a safety measure or
-  an emergency alert, fading with age. In the apps it also shows how to add
-  the widget on that platform and that alerts are optional and off by default.
-  The mobile apps show it once on first launch; Settings replays it. It never
-  asks the reader to come back.
+- The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
+  a few plain sentences: an AI assessment of consequence that can be wrong and
+  fades with age. In the apps it adds that a widget exists and that
+  notifications are optional and off by default. It says what the app does,
+  not how the phone works or where Settings is, and never asks the reader to
+  come back. The mobile apps show it once on first launch; Settings replays it.
 - Do not claim that hosting processes no technical information.
 - Brand positioning must never soften, inflate or otherwise alter the rating
   scale. Published prompts are append-only; see `PROMPT-RULES.md`.

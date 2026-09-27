@@ -7,7 +7,6 @@ import tokens from '../../../public/tokens.js';
 import { useTheme } from '@/lib/theme';
 import { usePreferences } from '@/components/preferences-provider';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
-import { Glyph, type GlyphName } from '@/components/glyph';
 
 type Theme = ReturnType<typeof useTheme>;
 const platform = process.env.EXPO_OS === 'ios' || process.env.EXPO_OS === 'android' ? process.env.EXPO_OS : 'web';
@@ -20,7 +19,7 @@ const TITLE_LINE = 32;
 const BODY_LINE = 25;
 const BODY_LINES = 4;
 
-// The introduction: four slides on the web, six in the apps, swiped or stepped with Next. The phone apps
+// The introduction: three slides on the web, five in the apps, swiped or stepped with Next. The phone apps
 // open it once on first launch; Settings replays it. It is marked seen as soon
 // as it opens, so closing it any way at all — Skip, Done, the system back
 // gesture — does not bring it back on the next launch.
@@ -84,7 +83,7 @@ export default function Onboarding() {
 }
 
 // Illustrations are drawn from the app's own parts — the score type, the level
-// palette, the settings glyphs — so they read as the app rather than as art.
+// palette, the widget and launcher mark — so they read as the app rather than as art.
 // None shows a real reading: a slide must not look like the current news.
 function Art({ art, theme }: { art: SlideArt; theme: Theme }) {
   const mode = theme.dark ? 'dark' : 'light';
@@ -116,16 +115,7 @@ function Art({ art, theme }: { art: SlideArt; theme: Theme }) {
     </View>
   </View>;
   if (art === 'widget') return <HomeScreen theme={theme} />;
-  if (art === 'alert') return <Notification theme={theme} />;
-  const rows: [GlyphName, string][] = [['appearance', 'Appearance'], ...(platform !== 'web' ? [['notifications', 'Notifications'] as [GlyphName, string]] : []), ['introduction', 'Introduction']];
-  return <View style={{ ...card, width: 260, overflow: 'hidden' }}>
-    {rows.map(([icon, label], i) => <View key={label} style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 16, minHeight: 52 }}>
-      <View style={{ marginRight: 14 }}><Glyph name={icon} color={theme.accent} size={22} /></View>
-      <View style={{ flex: 1, alignSelf: 'stretch', justifyContent: 'center', borderTopWidth: i === 0 ? 0 : 1, borderTopColor: theme.rule }}>
-        <Text style={{ color: theme.ink, fontSize: 17 }}>{label}</Text>
-      </View>
-    </View>)}
-  </View>;
+  return <Notification theme={theme} />;
 }
 
 // The app's launcher mark: a dash, dark on white or white on near-black.

@@ -191,14 +191,14 @@ test('the introduction replays from Settings and returns there on the web', { ti
         const box = node.getBoundingClientRect();
         return { text: node.textContent, y: box.y, lines: Math.round(box.height / parseFloat(getComputedStyle(node).lineHeight)) };
       }));
-      assert.equal(titles.length, 4);
+      assert.equal(titles.length, 3);
       for (const title of titles) {
         assert.ok(Math.abs(title.y - titles[0].y) < 0.5, `"${title.text}" sits at ${title.y}, the first at ${titles[0].y}`);
         assert.equal(title.lines, 1, `"${title.text}" fits one line`);
       }
       // Tapped as fast as the browser allows: each tap is one slide, even mid-animation.
-      for (let tap = 0; tap < 3; tap += 1) await page.getByTestId('onboarding-next').click();
-      await page.getByLabel('Page 4 of 4').waitFor();
+      for (let tap = 0; tap < 2; tap += 1) await page.getByTestId('onboarding-next').click();
+      await page.getByLabel('Page 3 of 3').waitFor();
       await page.getByText('Done', { exact: true }).waitFor();
       assert.equal(await page.getByTestId('onboarding-skip').count(), 0, 'no Skip on the last slide');
       await page.getByTestId('onboarding-next').click();
