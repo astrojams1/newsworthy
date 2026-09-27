@@ -39,7 +39,8 @@ every rejection including authenticated calls to endpoints that do not exist
 a reading nor a report, and one timeline per hour that also shows each
 authenticated read of the instructions, prompt and record. Reads and
 rejections made with the admin token are marked — those are reviewers, not the
-caller; rejections recorded before the token was kept are marked as such. It prints facts
+caller; rejections recorded before the token was kept are marked as such. A sentence
+naming a listed news outlet is flagged. It prints facts
 only. Read every run report in full.
 
 ## Check each run
@@ -49,6 +50,12 @@ only. Read every run report in full.
 - **Contract followed.** Prompt verified; judgement present and accepted; the
   sentence final before `/api/developments` was fetched (reports sometimes say
   otherwise — record it); one report per run, linked to its reading.
+- **No news outlet named.** From prompt v19 (rule 8 in `PROMPT-RULES.md`) the
+  sentence never names a news outlet, even as the source or the subject; a
+  report is attributed with "reportedly" or the people it cites. The script
+  flags names from `scripts/news-outlets.mjs`, but that list is not every
+  outlet, so read every sentence. Record each case with its prompt version: on
+  v19 or later it is a contract breach; before v19 it is expected, not a finding.
 - **Judgement sound.** `same` or `new` is defensible against the record the
   reading was judged with; a proposed `same_story` joins one story coined twice,
   never related stories. A doubtful merge is raised with the owner, who can undo
