@@ -27,7 +27,7 @@ export const BODY_LENGTH = Object.freeze({ min: 55, max: 75 });
 export function onboardingSlides(platform) {
   return [
     { key: 'what', art: 'scale', title: 'News, rated 1 to 10',
-      body: 'Each reading has a short explanation.\nHigher means more consequential.' },
+      body: 'The number rates the news right now.\nThe sentence names the top story.' },
     // Apple writes Home Screen as a name; Android does not.
     { key: 'widget', art: 'widget', title: platform === 'ios' ? 'Also on your Home Screen' : 'Also on your home screen',
       body: 'A widget shows the current rating and when it was updated.' },
