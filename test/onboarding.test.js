@@ -122,7 +122,7 @@ const svgOf = (node, platform) => {
   return platform === 'android' ? Buffer.from(uri.split(',')[1], 'base64').toString() : decodeURIComponent(uri.split(',')[1]);
 };
 
-test('the illustrations use the real level colors, and the widget is the current reading\'s widget', async () => {
+test('the widget uses the real level colors, and the first slide shows the current score alone', async () => {
   const tokens = (await import('../public/tokens.js')).default;
   for (const platform of platforms) for (const dark of [false, true]) for (const score of [3, 8, null]) {
     const mode = dark ? 'dark' : 'light';
@@ -137,22 +137,11 @@ test('the illustrations use the real level colors, and the widget is the current
     const text = nodes(widget).filter(n => n.type === 'Text').map(n => [n.props.children].flat().join(''));
     assert.deepEqual(text.slice(0, 3), ['NEWSWORTHY', String(score ?? '–'), '∕10']);
     assert.match(text[3], platform === 'android' ? /^Updated / : /^\d/, 'the platform\'s own timestamp');
-    // Reported 2026-09-27: the widget's three-stop diagonal on a small tile
-    // drew a hard stripe. The tiles are the reading screen's own canvas at
-    // each level, exactly as readingGradientSvg draws it.
-    const tiles = all.filter(n => /^onboarding-level-\d+$/.test(n.props?.testID ?? ''));
-    assert.equal(tiles.length, 10, 'one per level');
-    assert.deepEqual(tiles.filter(t => t.props.style.borderWidth === 2).map(t => t.props.testID), score ? [`onboarding-level-${score}`] : [], 'only the current score is ringed');
-    for (const tile of tiles) {
-      const level = Number(tile.props.testID.split('-').pop());
-      const size = tile.props.style.width;
-      assert.equal(svgOf(tile, platform), readingGradient.readingGradientSvg(level, dark, size, size), `level ${level} ${mode}`);
-      assert.equal(nodes(tile).find(n => n.type === 'Text').props.style.color, themeForLevel(level, dark).ink, 'the level\'s own ink');
-    }
-    const card = all.find(n => n.props?.testID === 'onboarding-reading');
-    const cardText = nodes(card).filter(n => n.type === 'Text').map(n => [n.props.children].flat().join(''));
-    assert.equal(cardText[0], String(score ?? '–'), 'the reading card shows the current score');
-    if (score) assert.equal(svgOf(card, platform), readingGradient.readingGradientSvg(score, dark, card.props.style.width, card.props.style.height), 'on the reading\'s own canvas');
+    // Reported 2026-09-27: the first slide's graphic was too busy. It is the
+    // current score and its denominator, as the reading screen sets them.
+    const scoreArt = all.find(n => n.props?.testID === 'onboarding-score');
+    assert.deepEqual(nodes(scoreArt).filter(n => n.type === 'Text').map(n => [n.props.children].flat().join('')), [String(score ?? '–'), '∕10']);
+    assert.ok(!all.some(n => /^onboarding-level-/.test(n.props?.testID ?? '') || n.props?.testID === 'onboarding-reading'), 'no tiles or card');
   }
 });
 

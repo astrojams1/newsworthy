@@ -10,9 +10,6 @@ import { usePreferences } from '@/components/preferences-provider';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
-import { displayExplanation } from '@/lib/story-age';
-import { readingGradientSvg } from '@/lib/reading-gradient';
-import { themeForLevel } from '@/lib/palette';
 
 type Theme = ReturnType<typeof useTheme>;
 const platform = process.env.EXPO_OS === 'ios' ? 'ios' : 'android';
@@ -76,7 +73,7 @@ function Introduction() {
         importantForAccessibility={position === index ? 'auto' : 'no-hide-descendants'}
         style={{ width, flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 24 }}>
         <View style={{ height: ART_HEIGHT, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginBottom: 36 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Art art={slide.art} theme={theme} score={reading?.score} saved={reading?.created_at} explanation={reading ? displayExplanation(reading) : undefined} />
+          <Art art={slide.art} theme={theme} score={reading?.score} saved={reading?.created_at} />
         </View>
         <View style={{ width: column, height: TEXT_BLOCK, alignItems: 'center' }}>
           <Text testID="onboarding-title" accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: TITLE_LINE, minHeight: TITLE_LINE, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
@@ -135,64 +132,21 @@ function widgetTime(saved: string | undefined) {
   return today ? time : `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · ${time}`;
 }
 
-// The reading screen's own wording for its update time.
-function relative(saved: string) {
-  const minutes = Math.max(0, Math.floor((Date.now() - Date.parse(saved)) / 60000));
-  return minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
-}
-
-// The reading screen in small, on its own canvas: the score, its sentence and
-// when it was updated, laid out as the reading screen lays them out.
-function ReadingCard({ theme, score, saved, explanation }: { theme: Theme; score?: number; saved?: string; explanation?: string }) {
-  // As wide as the scale beneath it: ten 30-point tiles and nine 4-point gaps.
-  const width = 10 * 30 + 9 * 4, height = 226;
-  const svg = score ? readingGradientSvg(score, theme.dark, width, height) : null;
-  return <View testID="onboarding-reading" style={{ width, height, borderRadius: 28, overflow: 'hidden', backgroundColor: theme.surface,
-    borderWidth: 1, borderColor: theme.rule, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 26 }}>
-    {svg && <Image source={{ uri: svgUri(svg) }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
-    <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-      <Text style={{ color: theme.ink, fontSize: 72, lineHeight: 80, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -72 * 0.055 }}>{score ?? '–'}</Text>
-      <Text style={{ color: theme.muted, fontSize: 14, fontWeight: '300', fontFamily: scoreFont, marginLeft: 2 }}>∕10</Text>
-    </View>
-    {explanation
-      ? <Text numberOfLines={4} style={{ color: theme.ink, fontSize: 12, lineHeight: 17, textAlign: 'center', marginTop: 6 }}>{explanation}</Text>
-      : <View style={{ gap: 7, alignItems: 'center', marginTop: 14 }}>{[170, 130].map(w => <View key={w} style={{ width: w, height: 7, borderRadius: 4, backgroundColor: theme.muted, opacity: 0.2 }} />)}</View>}
-    {saved && <Text style={{ color: theme.muted, fontSize: 10, marginTop: 8 }}>Updated {relative(saved)}</Text>}
-  </View>;
-}
-
-// A level as the reading screen draws it: the same canvas the app shows at
-// that score (readingGradientSvg), in small, with the number in that level's
-// ink. The widgets' three-stop diagonal reads well across a widget but turns
-// into a hard stripe on a tile this size, so the tiles use the app's canvas.
+// An SVG as an image source; Android's expo-image decodes data URLs as base64.
 function svgUri(svg: string) {
   return process.env.EXPO_OS === 'android'
     ? `data:image/svg+xml;base64,${fromByteArray(Uint8Array.from(svg, char => char.charCodeAt(0)))}`
     : `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
-function LevelTile({ level, size, dark, current = false }: { level: number; size: number; dark: boolean; current?: boolean }) {
-  const ink = themeForLevel(level, dark);
-  const svg = readingGradientSvg(level, dark, size, size);
-  // The current score's tile is ringed in its own ink, so the scale says where today sits.
-  return <View testID={`onboarding-level-${level}`} style={{ width: size, height: size, borderRadius: Math.round(size * 0.26), overflow: 'hidden',
-    alignItems: 'center', justifyContent: 'center', borderWidth: current ? 2 : 1, borderColor: current ? ink.ink : ink.rule }}>
-    {svg && <Image source={{ uri: svgUri(svg) }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
-    <Text style={{ color: ink.ink, fontSize: Math.round(size * 0.4), fontWeight: '300', fontFamily: scoreFont }}>{level}</Text>
-  </View>;
-}
-
 // Lifts a card off the reading's gradient, which in light mode is close to the
 // widget's own colors. The shadow sits on a wrapper: a clipped view cannot cast one.
 const lifted = { borderRadius: 24, boxShadow: '0 10px 30px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08)' } as const;
 
-function Art({ art, theme, score, saved, explanation }: { art: SlideArt; theme: Theme; score?: number; saved?: string; explanation?: string }) {
-  // The reading screen in small, above the scale it sits on: ten tiles, each
-  // level in its own colors, the current score's ringed.
-  if (art === 'scale') return <View style={{ alignItems: 'center', gap: 18 }}>
-    <View style={lifted}><ReadingCard theme={theme} score={score} saved={saved} explanation={explanation} /></View>
-    <View style={{ flexDirection: 'row', gap: 4 }}>
-      {Array.from({ length: 10 }, (_, i) => <LevelTile key={i} level={i + 1} size={30} dark={theme.dark} current={score === i + 1} />)}
-    </View>
+function Art({ art, theme, score, saved }: { art: SlideArt; theme: Theme; score?: number; saved?: string }) {
+  // The score as the reading screen sets it, and nothing else.
+  if (art === 'scale') return <View testID="onboarding-score" style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+    <Text style={{ color: theme.ink, fontSize: 160, lineHeight: 176, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -160 * 0.055 }}>{score ?? '–'}</Text>
+    <Text style={{ color: theme.muted, fontSize: 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
   </View>;
   if (art === 'widget') return <View style={lifted}><SmallWidget score={score} saved={saved} dark={theme.dark} /></View>;
   return <View style={lifted}><Notification theme={theme} /></View>;
