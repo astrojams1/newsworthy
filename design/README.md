@@ -2,11 +2,14 @@
 
 `palette.json` is the source of truth for the approved ten-level palette, brand colors, appearance, typography, and radii. Generated files must be regenerated instead of edited independently.
 
+The ten levels are the Temperature palette (owner choice, 2026-09-27): fog blue at 1, warm stone through the middle, deep terracotta ember at 10. They are sampled by arc length along one OKLab path, so every neighbouring pair is the same perceptual step apart; the previous mint-to-rose palette doubled back in hue between 1 and 3 and jumped at 4. `store/design/gradient-iterations/` holds the path (`palettes.mjs`), the alternatives considered and their renders.
+
 ```sh
 npm run design:assets   # Update tokens, native colors, widgets, icons, and share art
 npm run design:check    # Detect stale web/Android/iOS tokens
 node --test test/design.test.js
 npm run test:design     # Cross-surface typography, layout roles, theme bindings and pixels
+node scripts/capture-reading-gradient.mjs  # After a palette change: re-capture Chromium reference pixels
 ```
 
 ## Which color belongs where?

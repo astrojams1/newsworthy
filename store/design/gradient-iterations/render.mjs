@@ -1,5 +1,7 @@
 // Renders each iteration (and the current palette) to PNG with Chromium.
 // node store/design/gradient-iterations/render.mjs
+// The shots were rendered before Temperature shipped, so "Current" in them is
+// the old mint-to-rose palette; re-running now labels the shipped palette.
 import { writeFileSync, readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 import { iterations, oklchToHex, hexToOklab } from './palettes.mjs';

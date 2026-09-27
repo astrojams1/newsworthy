@@ -7,63 +7,63 @@
   "levels": [
     {
       "score": 1,
-      "name": "Sage",
-      "primary": "#82AE8F",
-      "companion": "#CADBA8"
+      "name": "Fog",
+      "primary": "#94AFC2",
+      "companion": "#D2E4F0"
     },
     {
       "score": 2,
-      "name": "Mint",
-      "primary": "#5BB19D",
-      "companion": "#AFDEBF"
+      "name": "Haze",
+      "primary": "#93A6AE",
+      "companion": "#D2E0E5"
     },
     {
       "score": 3,
-      "name": "Sea glass",
-      "primary": "#75B29F",
-      "companion": "#CDE3A3"
+      "name": "Pewter",
+      "primary": "#949C9C",
+      "companion": "#D3DCDB"
     },
     {
       "score": 4,
-      "name": "Olive",
-      "primary": "#A5B46F",
-      "companion": "#E8E1A5"
+      "name": "Stone",
+      "primary": "#95928A",
+      "companion": "#D7D7D1"
     },
     {
       "score": 5,
-      "name": "Soft gold",
-      "primary": "#C7B669",
-      "companion": "#E6DAA3"
+      "name": "Taupe",
+      "primary": "#998777",
+      "companion": "#DBD3C7"
     },
     {
       "score": 6,
-      "name": "Honey",
-      "primary": "#D9A65B",
-      "companion": "#EFCD99"
+      "name": "Clay",
+      "primary": "#9D7C64",
+      "companion": "#DFCEBD"
     },
     {
       "score": 7,
-      "name": "Apricot",
-      "primary": "#DF916E",
-      "companion": "#F2C299"
+      "name": "Sienna",
+      "primary": "#A07151",
+      "companion": "#E3C9B3"
     },
     {
       "score": 8,
-      "name": "Coral",
-      "primary": "#D77D7C",
-      "companion": "#EFB7A0"
+      "name": "Rust",
+      "primary": "#A56444",
+      "companion": "#E6C3AB"
     },
     {
       "score": 9,
-      "name": "Rose",
-      "primary": "#CA6477",
-      "companion": "#F0A48F"
+      "name": "Brick",
+      "primary": "#A85636",
+      "companion": "#E9BDA4"
     },
     {
       "score": 10,
-      "name": "Deep rose",
-      "primary": "#B74D6D",
-      "companion": "#E88B83"
+      "name": "Ember",
+      "primary": "#AB4726",
+      "companion": "#EBB79D"
     }
   ],
   "appearance": {

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-27T09:10:21+00:00
+Updated: 2026-09-27T13:49:55+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -97,6 +97,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | widget.same-day-timestamp | waiting_verification | agent | observed | Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval. | On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight. |
 | ui.onboarding | waiting_verification | agent | observed | First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
 | copy.no-ai-listing | todo | agent | observed | Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing. | Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI. |
+| design.temperature-palette | waiting_verification | agent | observed | Level palette replaced with refined Temperature (fog blue 1, stone middle, terracotta ember 10), evenly spaced in OKLab (step 3.2-3.4 vs 2.6-8.1 before). Tokens, iOS color sets and Android drawables regenerated; AA contrast, CSS-vs-SVG reference pixels and full npm test pass. Browser renders only; no native app, widget or device check yet. | Check reading screen and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. |
 
 ## Evidence and history
 
@@ -3137,3 +3138,14 @@ The sentence now leads with a muted age once "New:" is off ("5h —", then "1d �
 - store/source/story-age/web-sentence-age.png; store/story-age-verification.json; npm run check:android-widget; npm test 345 passed
 
 Next: On both widget sizes, light and dark, score 10 and enlarged text: muted age aligned exactly at the start of the sentence on Android (stacked layer), the age advancing hourly on iOS, "New:" still bold for two hours, and "Checked" in the timestamp. Compile the Swift native test with xcrun.
+
+### 320. design.temperature-palette — waiting_verification
+
+2026-09-27T13:49:55+00:00 · observed · agent
+
+Level palette replaced with refined Temperature (fog blue 1, stone middle, terracotta ember 10), evenly spaced in OKLab (step 3.2-3.4 vs 2.6-8.1 before). Tokens, iOS color sets and Android drawables regenerated; AA contrast, CSS-vs-SVG reference pixels and full npm test pass. Browser renders only; no native app, widget or device check yet.
+
+- store/design/gradient-iterations/shots/6-temperature-refined.png
+- test/fixtures/reading-gradient.json re-captured by scripts/capture-reading-gradient.mjs
+
+Next: Check reading screen and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds.

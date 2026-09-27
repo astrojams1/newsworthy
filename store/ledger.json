@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T09:10:21+00:00",
+  "updated_at": "2026-09-27T13:49:55+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -969,6 +969,18 @@
       ],
       "next_action": "Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI.",
       "updated_at": "2026-09-27T05:03:02+00:00"
+    },
+    "design.temperature-palette": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Level palette replaced with refined Temperature (fog blue 1, stone middle, terracotta ember 10), evenly spaced in OKLab (step 3.2-3.4 vs 2.6-8.1 before). Tokens, iOS color sets and Android drawables regenerated; AA contrast, CSS-vs-SVG reference pixels and full npm test pass. Browser renders only; no native app, widget or device check yet.",
+      "evidence": [
+        "store/design/gradient-iterations/shots/6-temperature-refined.png",
+        "test/fixtures/reading-gradient.json re-captured by scripts/capture-reading-gradient.mjs"
+      ],
+      "next_action": "Check reading screen and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds.",
+      "updated_at": "2026-09-27T13:49:55+00:00"
     }
   },
   "events": [
@@ -6089,6 +6101,23 @@
         ],
         "next_action": "On both widget sizes, light and dark, score 10 and enlarged text: muted age aligned exactly at the start of the sentence on Android (stacked layer), the age advancing hourly on iOS, \"New:\" still bold for two hours, and \"Checked\" in the timestamp. Compile the Swift native test with xcrun.",
         "updated_at": "2026-09-27T09:10:21+00:00"
+      }
+    },
+    {
+      "sequence": 320,
+      "at": "2026-09-27T13:49:55+00:00",
+      "gate": "design.temperature-palette",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Level palette replaced with refined Temperature (fog blue 1, stone middle, terracotta ember 10), evenly spaced in OKLab (step 3.2-3.4 vs 2.6-8.1 before). Tokens, iOS color sets and Android drawables regenerated; AA contrast, CSS-vs-SVG reference pixels and full npm test pass. Browser renders only; no native app, widget or device check yet.",
+        "evidence": [
+          "store/design/gradient-iterations/shots/6-temperature-refined.png",
+          "test/fixtures/reading-gradient.json re-captured by scripts/capture-reading-gradient.mjs"
+        ],
+        "next_action": "Check reading screen and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds.",
+        "updated_at": "2026-09-27T13:49:55+00:00"
       }
     }
   ],

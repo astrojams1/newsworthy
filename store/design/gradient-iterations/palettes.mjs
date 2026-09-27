@@ -82,3 +82,30 @@ export function hexToOklab(hex) {
     1.9779984951 * l - 2.4285922050 * m + .4505937099 * s,
     .0259040371 * l + .7827717662 * m - .8086757660 * s];
 }
+
+// Temperature, refined: a path through OKLab anchors, sampled by arc length so
+// every step between neighbouring levels is the same perceptual size.
+const toLab = ([L, C, h]) => [L, C * Math.cos(h * Math.PI / 180), C * Math.sin(h * Math.PI / 180)];
+const toLch = ([L, a, b]) => [L, Math.hypot(a, b), (Math.atan2(b, a) * 180 / Math.PI + 360) % 360];
+function evenPath(anchors) {
+  const pts = anchors.map(toLab), dense = [];
+  for (let i = 0; i < pts.length - 1; i++) for (let k = 0; k < 200; k++) {
+    const u = k / 200; dense.push(pts[i].map((v, j) => lerp(v, pts[i + 1][j], u)));
+  }
+  dense.push(pts.at(-1));
+  const len = [0];
+  for (let i = 1; i < dense.length; i++) len.push(len[i - 1] + Math.hypot(...dense[i].map((v, j) => v - dense[i - 1][j])));
+  return t => {
+    const target = t * len.at(-1);
+    let i = len.findIndex(l => l >= target); if (i <= 0) return toLch(dense[0]);
+    const u = (target - len[i - 1]) / (len[i] - len[i - 1]);
+    return toLch(dense[i - 1].map((v, j) => lerp(v, dense[i][j], u)));
+  };
+}
+iterations.push({
+  id: 'temperature-refined', name: 'Temperature, refined',
+  idea: 'Even steps end to end. Fog rather than sky at 1, warm stone through the middle, clay, then a deep terracotta ember at 10.',
+  texture: 'stone',
+  primary: evenPath([[.74, .04, 238], [.70, .018, 215], [.65, .018, 75], [.59, .075, 55], [.525, .14, 38]]),
+  companion: evenPath([[.91, .025, 235], [.89, .012, 200], [.87, .018, 80], [.85, .045, 62], [.82, .07, 48]]),
+});
