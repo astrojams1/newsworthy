@@ -20,8 +20,8 @@ test('public discovery links resolve, metadata parses, and operational routes op
       assert.equal(html.match(/rel="canonical" href="([^"]+)"/)[1], location);
       assert.equal(html.match(/property="og:url" content="([^"]+)"/)[1], location);
       assert.equal(html.match(/property="og:title" content="([^"]+)"/)[1], html.match(/<title[^>]*>([^<]+)<\/title>/)[1]);
-      assert.equal(html.match(/property="og:image" content="([^"]+)"/)[1], site + '/social-card.png?v=2');
-      assert.equal(html.match(/name="twitter:image" content="([^"]+)"/)[1], site + '/social-card.png?v=2');
+      assert.equal(html.match(/property="og:image" content="([^"]+)"/)[1], site + '/social-card.png?v=3');
+      assert.equal(html.match(/name="twitter:image" content="([^"]+)"/)[1], site + '/social-card.png?v=3');
       assert.doesNotMatch(html, /doomscrolling|calm global status indicator|middle ground|constant anxiety|back to your day/i);
       if (location === site + '/') {
         assert.equal(html.match(/<title[^>]*>([^<]+)<\/title>/)[1], 'Newsworthy');
@@ -37,7 +37,7 @@ test('public discovery links resolve, metadata parses, and operational routes op
       }
     }
 
-    const card = await fetch(`${base}/social-card.png?v=2`);
+    const card = await fetch(`${base}/social-card.png?v=3`);
     assert.equal(card.status, 200);
     assert.equal(card.headers.get('content-type'), 'image/png');
     const bytes = Buffer.from(await card.arrayBuffer());

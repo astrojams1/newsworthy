@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T13:49:55+00:00",
+  "updated_at": "2026-09-27T14:07:38+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -974,13 +974,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Level palette replaced with refined Temperature (fog blue 1, stone middle, terracotta ember 10), evenly spaced in OKLab (step 3.2-3.4 vs 2.6-8.1 before). Tokens, iOS color sets and Android drawables regenerated; AA contrast, CSS-vs-SVG reference pixels and full npm test pass. Browser renders only; no native app, widget or device check yet.",
+      "summary": "Brand palette moved from Mint to Stone (level 4, #95928A/#D7D7D1): support/privacy pages, favicon, manifest, splash marks, share card and Android widget backgrounds regenerated; share image cache key v=3 and alt text updated. Level palette as recorded before. Full npm test passes. Browser renders only; no native build, splash or widget checked on a device.",
       "evidence": [
-        "store/design/gradient-iterations/shots/6-temperature-refined.png",
-        "test/fixtures/reading-gradient.json re-captured by scripts/capture-reading-gradient.mjs"
+        "store/design/gradient-iterations/shots/7-brand-stone.png"
       ],
-      "next_action": "Check reading screen and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds.",
-      "updated_at": "2026-09-27T13:49:55+00:00"
+      "next_action": "Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.",
+      "updated_at": "2026-09-27T14:07:38+00:00"
     }
   },
   "events": [
@@ -6118,6 +6117,22 @@
         ],
         "next_action": "Check reading screen and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds.",
         "updated_at": "2026-09-27T13:49:55+00:00"
+      }
+    },
+    {
+      "sequence": 321,
+      "at": "2026-09-27T14:07:38+00:00",
+      "gate": "design.temperature-palette",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Brand palette moved from Mint to Stone (level 4, #95928A/#D7D7D1): support/privacy pages, favicon, manifest, splash marks, share card and Android widget backgrounds regenerated; share image cache key v=3 and alt text updated. Level palette as recorded before. Full npm test passes. Browser renders only; no native build, splash or widget checked on a device.",
+        "evidence": [
+          "store/design/gradient-iterations/shots/7-brand-stone.png"
+        ],
+        "next_action": "Check reading screen, splash and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds. store/scripts/render.mjs still hardcodes green-tinted gallery ink for the next store gallery refresh.",
+        "updated_at": "2026-09-27T14:07:38+00:00"
       }
     }
   ],

@@ -19,7 +19,7 @@ node scripts/capture-reading-gradient.mjs  # After a palette change: re-capture 
 | Main reading, favicon, browser chrome | The validated, displayed score, including saved readings |
 | Android widget | The score in the widget's own saved reading |
 | Admin chart, links, selected controls | The admin's latest displayed score |
-| Support, privacy, static favicon, splash, share card | Stable mint brand palette with a dash instead of a score |
+| Support, privacy, static favicon, splash, share card | Stable Stone brand palette (level 4, the neutral midpoint of the scale) with a dash instead of a score |
 | App icon and home-screen shortcut | White background with a dark dash in light mode; dark background with a white dash in dark mode; deliberately uncolored |
 | Failures | Separate semantic `danger` color, always accompanied by words or a symbol |
 | Empty/loading reading | No level assigned; neutral reading canvas and brand favicon |
@@ -35,7 +35,7 @@ A static icon must not imply that an old score is current. Widgets can refresh a
 - `--ink-muted` and `--ink-faint` are for plain or lightly tinted surfaces. `--ink-on-gradient-muted` is for secondary text on stronger gradient backgrounds.
 - `data-level="1"` through `"10"` applies a reading palette. Omit it for the brand default. `data-brand` makes a brand background visible.
 - `data-appearance` reflects the app’s Light or Dark setting. Follow device removes the override and uses the system appearance; the design preview also uses this attribute.
-- The HTML manifest supplies fixed install icons. Social previews use a flat pale mint canvas with only the dash and wordmark,
+- The HTML manifest supplies fixed install icons. Social previews use a flat pale stone canvas with only the dash and wordmark,
   not a cached news score. Descriptions belong in metadata, not on the image.
 
 The design test verifies AA text contrast across the opaque gradient stops and control surfaces in both appearances. The live web background uses the same colors in layered radial washes. The number and sentence remain the source of meaning, independent of color.

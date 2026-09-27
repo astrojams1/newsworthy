@@ -10,7 +10,7 @@ README and agent documentation. Keep descriptions of availability accurate.
 Newsworthy assesses the significance of world news. Each reading has a
 score from 1 to 10, a brief explanation and an update time.
 
-The share image contains only the dash and wordmark on a flat pale mint background.
+The share image contains only the dash and wordmark on a flat pale stone background.
 The link title is “Newsworthy”; its description is the core copy above.
 
 Describe the product directly. Avoid emotional framing about anxiety, switching

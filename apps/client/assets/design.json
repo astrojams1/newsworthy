@@ -10,9 +10,9 @@
     }
   },
   "brand": {
-    "name": "Mint",
-    "primary": "#5BB19D",
-    "companion": "#AFDEBF",
+    "name": "Stone",
+    "primary": "#95928A",
+    "companion": "#D7D7D1",
     "light": {
       "surface": "#FFFFFF",
       "ink": "#16161A",
@@ -24,12 +24,12 @@
       "glow": 0.48,
       "veil": 0.12,
       "gradientMuted": "#30303A",
-      "start": "#D9EFE0",
-      "center": "#EBF6F3",
-      "end": "#97CEC1",
-      "accent": "#273B39",
-      "tinted": "#F2F9F7",
-      "elevated": "#FCFEFD"
+      "start": "#ECECE9",
+      "center": "#F2F2F1",
+      "end": "#BCBAB5",
+      "accent": "#343435",
+      "tinted": "#F7F6F6",
+      "elevated": "#FEFEFD"
     },
     "dark": {
       "surface": "#101014",
@@ -42,12 +42,12 @@
       "glow": 0.23,
       "veil": 0.09,
       "gradientMuted": "#E0E0E6",
-      "start": "#353F3B",
-      "center": "#171E20",
-      "end": "#355F57",
-      "accent": "#BFDCD7",
-      "tinted": "#182022",
-      "elevated": "#1A1C1E"
+      "start": "#3E3E3F",
+      "center": "#1C1C1F",
+      "end": "#51504E",
+      "accent": "#D2D1D1",
+      "tinted": "#1D1D20",
+      "elevated": "#1C1C1F"
     }
   }
 }
