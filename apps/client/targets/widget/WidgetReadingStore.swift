@@ -33,7 +33,7 @@ struct Reading: Codable, Equatable, Sendable {
         guard newLabelExpiry.map({ now < $0 }) != true, let at = sentenceAt else { return "" }
         let hours = Int((now.timeIntervalSince(at) / 3600).rounded(.down))
         if hours < 1 { return "" }
-        return hours < 24 ? "\(hours)h —" : "\(hours / 24)d —"
+        return hours < 24 ? "\(hours)h\u{00A0}—" : "\(hours / 24)d\u{00A0}—"
     }
 
     /// The label ("New:" or empty), the age ("5h —" or empty) and the body, fitted together within 140 characters.

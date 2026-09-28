@@ -211,7 +211,7 @@ public class RatingWidget extends AppWidgetProvider {
         if (at == null) return "";
         long hours = (now - at.getTime()) / 3_600_000L;
         if (hours < 1) return "";
-        return (hours < 24 ? hours + "h" : (hours / 24) + "d") + " —";
+        return (hours < 24 ? hours + "h" : (hours / 24) + "d") + "\u00A0—";
     }
 
     /**

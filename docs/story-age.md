@@ -5,7 +5,9 @@ bold, means this reading is Newsworthy’s first coverage of that development. I
 stays for two hours after the reading was saved and then comes off. It is not a
 verified event date or a claim that the broader story, such as inflation, is new.
 After that the sentence leads with how long ago it was first reported, in the
-muted colour: **5h —**, then **1d —** from a day. The time below it, “Checked 3
+muted colour: **5h —**, then **1d —** from a day. The space before the dash is
+non-breaking in the app and both widgets, so a line never ends on “5h” with the
+dash leading the next. The time below it, “Checked 3
 min ago”, says when Newsworthy last looked at the news.
 
 Until 2026-09-24 the app printed an age instead: **31 hours ago:** before a
