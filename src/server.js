@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
 import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
-import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries } from './current.js';
+import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries, frontPageSpans } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
 import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
@@ -630,7 +630,13 @@ const server = createServer(async (req, res) => {
       ]);
       const ascending = points.map((p) => ({ ...p, t: Date.parse(p.created_at) }));
       const developmentRoots = await rootTimes(ascending);
-      const from = Date.now() - hours * 3600_000;
+      const now = Date.now();
+      const from = now - hours * 3600_000;
+      const series = displayedSeries(ascending, {
+        halfLifeHours: config.halfLifeHours,
+        storyHalfLifeDays: config.storyHalfLifeDays,
+        roots: developmentRoots,
+      });
       return json(res, 200, {
         hours,
         // The board behind the front page: every story still live, and the
@@ -653,13 +659,13 @@ const server = createServer(async (req, res) => {
         // Each point carries what the front page would have shown at that
         // moment, so the chart can draw the displayed value against the raw
         // readings without reimplementing the rule.
-        points: displayedSeries(ascending, {
-          halfLifeHours: config.halfLifeHours,
-          storyHalfLifeDays: config.storyHalfLifeDays,
-          roots: developmentRoots,
-        })
+        points: series
           .filter((p) => p.t >= from)
           .map(({ t, level_row: _levelRow, ...rest }) => rest),
+        // Which story was on the front page, and when, over the same range:
+        // the Gantt chart. From the same replay, so an unjudged reading counts
+        // where the page put it.
+        front_page: frontPageSpans(series, { from, now, roots: developmentRoots }),
         half_life_hours: config.halfLifeHours,
         story_half_life_days: config.storyHalfLifeDays,
         judge_model: config.judgeModel,

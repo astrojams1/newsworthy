@@ -684,3 +684,44 @@ export function developmentTimeline(stories, { now = Date.now(), hours = TIMELIN
       explanation: d.first,
     }));
 }
+
+/**
+ * The admin page's Gantt chart: which story was on the front page, and when.
+ * Each reading holds the page from its own time until the next reading (the
+ * newest until `now`) and is given to the story of the development it
+ * reported, so an unjudged reading counts for the development the replay
+ * inherited it into. At any moment exactly one story is on the page, so no
+ * two spans overlap and the rows add up to the range. Back-to-back hours of
+ * one story are one span. Rows are ordered by when the story first appears.
+ *
+ * `points` are `displayedSeries()` rows, ascending, carrying `t`, `id`,
+ * `story` and `reports`; `roots` is `rootTimes()`, for a development opened
+ * before the rows begin. A story of `null` is a development the judge could
+ * not place.
+ *
+ * @returns {Array<{story: string|null, hours: number, spans: Array<{from: string, to: string}>}>}
+ */
+export function frontPageSpans(points, { from = -Infinity, now = Date.now(), roots = new Map() } = {}) {
+  const storyOf = new Map(points.map((p) => [p.id, p.story ?? null]));
+  for (const [id, root] of roots) if (!storyOf.has(id)) storyOf.set(id, root.story ?? null);
+  const rows = new Map();
+  points.forEach((point, index) => {
+    const next = points[index + 1];
+    const start = Math.max(point.t, from);
+    const end = Math.min(next ? next.t : now, now);
+    if (end <= start) return;
+    const story = storyOf.get(point.reports) ?? point.story ?? null;
+    const row = rows.get(story) ?? { story, spans: [] };
+    rows.set(story, row);
+    const last = row.spans.at(-1);
+    if (last && last[1] === start) last[1] = end;
+    else row.spans.push([start, end]);
+  });
+  return [...rows.values()]
+    .sort((a, b) => a.spans[0][0] - b.spans[0][0])
+    .map((row) => ({
+      story: row.story,
+      hours: Math.round(row.spans.reduce((sum, [a, b]) => sum + b - a, 0) / 360_000) / 10,
+      spans: row.spans.map(([a, b]) => ({ from: new Date(a).toISOString(), to: new Date(b).toISOString() })),
+    }));
+}
