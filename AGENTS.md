@@ -455,15 +455,13 @@ column was empty for every row until `recentAttempts()` selected `story`,
 query did not ask for, so `judge_version` was absent rather than null, and the
 cell read it as "not judged".
 
-**The runs table becomes cards below 720px.** Ten columns on a phone is a
-horizontal scroll showing three words at a time. Each row reflows to timestamp
-and score, then the explanation, then the small fields as one dotted line — and
-absent values leave that line entirely rather than printing five dashes, which
-is why every cell carries a class and an `absent` marker. The separator is a
-`::before` on each field but the first, so a hidden field takes its separator
-with it. Prompt version is that first field: `prompt_version` is `NOT NULL`, so
-it is the one small field always present, which is what makes leaving the
-separator off it safe.
+**The admin page is designed for a phone first.** Charts are drawn at their
+shown width so axis text stays legible, and a runs column no row in view fills
+is left out. Below 720px each run is a wrapping flex row: timestamp and score,
+the explanation, then the small fields as one dotted line. Absent values leave
+that line (every cell carries a class and an `absent` marker). The separator is
+a `::before` on each field but source, which opens the line and is never absent,
+so a hidden field takes its separator with it.
 
 **A rejection is a status code with the reason in the body.**
 

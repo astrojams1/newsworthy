@@ -213,8 +213,8 @@ the request carries are ignored.
 
 `/admin` still separates the two: `stats()` sums `spend_usd` over this app's own
 runs only, and counts external readings alongside it as `external_runs`, shown
-as a count marked *unpriced* rather than a second spend figure — there is no
-external spend to report, by the same design.
+as an *External* count rather than a second spend figure — there is no external
+spend to report, by the same design.
 
 **And it suppresses the next cron run.** The scheduler only rates when nothing
 has arrived within the configured interval, so a reading posted by an agent is
