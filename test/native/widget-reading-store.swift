@@ -38,13 +38,13 @@ struct StoreTests {
         // The sentence's age leads it, muted, once "New:" is off: hours, then days; nothing under an hour.
         rereport.explanation_at = "2026-09-16T18:05:00.000Z"
         precondition(rereport.sentenceAge(at: origin.addingTimeInterval(59 * 60)) == "")
-        precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(5 * 3600 + 59 * 60)) == "5h — The Fed raised rates a quarter point.")
-        precondition(rereport.explanationParts(at: origin.addingTimeInterval(23 * 3600)).age == "23h —")
-        precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(26 * 3600)) == "1d — The Fed raised rates a quarter point.")
+        precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(5 * 3600 + 59 * 60)) == "5h\u{00A0}· The Fed raised rates a quarter point.")
+        precondition(rereport.explanationParts(at: origin.addingTimeInterval(23 * 3600)).age == "23h\u{00A0}·")
+        precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(26 * 3600)) == "1d\u{00A0}· The Fed raised rates a quarter point.")
         var aging = fresh
         aging.explanation_at = "2026-09-16T18:05:00.000Z"
         precondition(aging.explanationParts(at: origin.addingTimeInterval(119 * 60)).age == "", "New: wins while it is on")
-        precondition(aging.displayedExplanation(at: origin.addingTimeInterval(2 * 3600)) == "2h — The Fed raised rates a quarter point.")
+        precondition(aging.displayedExplanation(at: origin.addingTimeInterval(2 * 3600)) == "2h\u{00A0}· The Fed raised rates a quarter point.")
         fresh.explanation_text = String(repeating: "😀 ", count: 200)
         let fitted = fresh.displayedExplanation(at: origin)
         precondition(fitted.hasPrefix("New: ") && fitted.unicodeScalars.count <= 140 && fitted.hasSuffix("…"))

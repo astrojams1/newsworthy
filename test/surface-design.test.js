@@ -168,9 +168,13 @@ function inspectReading(options) {
   assert.equal(score.props.adjustsFontSizeToFit, true);
   assert.ok(score.props.style.fontSize <= c.maximumScore);
   if (!landscape) assert.ok(score.props.style.fontSize >= c.minimumPortraitScore);
+  // Pretty wrapping is a web-only refinement with no native equivalent; the
+  // grid test asserts it separately, so it stays out of the parity comparison.
+  const { textWrap, ...explanationStyle } = explanation.props.style;
+  assert.equal(textWrap, options.platform === 'web' ? 'pretty' : undefined);
   // Copy out data: vm object prototypes are intentionally from another realm.
   return JSON.parse(JSON.stringify({ score: { ...score.props.style, fontFamily: 'monospace' }, denominator: { ...denominator.props.style, fontFamily: 'monospace' },
-    explanation: explanation.props.style, alignment: score.parent.props.style,
+    explanation: explanationStyle, alignment: score.parent.props.style,
     gradient: gradient.props, number: score.props.children }));
 }
 
@@ -457,7 +461,8 @@ test('story timeline prototype sits a full screen below the reading, in the sent
     // A quiet cue announces the timeline instead.
     assert.ok(withTimeline.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
     assert.ok(!without.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
-    // The timeline shares the sentence's column rather than keeping a margin of its own.
+    // On an upright phone the timeline shares the sentence's column rather
+    // than keeping a margin of its own.
     const sentence = withTimeline.find(n => n.props?.testID === 'rating-explanation');
     const timeline = withTimeline.find(n => n.type === 'Timeline');
     assert.equal(timeline.parent.props.style.maxWidth, sentence.props.style.maxWidth);
@@ -479,15 +484,22 @@ test('the sentence keeps one narrow measure on every screen, and a wide screen l
   // desktop's width. The owner prefers the narrow one, without wide margins
   // around the timeline.
   const development = { root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' };
-  const cases = [[402, 874, 1], [874, 402, 2], [1440, 900, 3], [2560, 1400, 3]];
+  const cases = [[402, 874, 1], [743, 340, 2], [874, 402, 2], [1440, 900, 3], [2560, 1400, 3]];
   for (const platform of ['ios', 'android', 'web']) {
     for (const [width, height, columns] of cases) {
       const tree = nodes(renderReading({ platform, width, height, timeline: [development] }));
       const sentence = tree.find(n => n.props?.testID === 'rating-explanation');
-      assert.equal(sentence.props.style.maxWidth, 320, `${platform} ${width}×${height} sentence measure`);
+      // One measure in characters where there is room: 320pt at 17pt, in
+      // proportion to the sentence's size. An upright phone keeps 320pt.
+      const upright = height >= 520 && width < 600;
+      assert.equal(Math.round(sentence.props.style.maxWidth), Math.round(upright ? 320 : 320 * sentence.props.style.fontSize / 17), `${platform} ${width}×${height} sentence measure`);
       const timeline = tree.find(n => n.type === 'Timeline');
       assert.equal(timeline.props.columns, columns, `${platform} ${width}×${height} columns`);
-      assert.equal(timeline.parent.props.style.maxWidth, columns * 320 + (columns - 1) * timeline.props.gap, `${platform} ${width}×${height} grid width`);
+      // Up to 320 a column; narrower where Safari's landscape page cannot fit two at full width.
+      const available = width - 2 * Math.max(20, Math.min(width * 0.05, 48));
+      assert.equal(timeline.parent.props.style.maxWidth, Math.min(available, columns * 320 + (columns - 1) * timeline.props.gap), `${platform} ${width}×${height} grid width`);
+      // The web wraps the sentence with text-wrap: pretty; native has no equivalent.
+      assert.equal(sentence.props.style.textWrap, platform === 'web' ? 'pretty' : undefined, `${platform} sentence wrap`);
     }
   }
 });

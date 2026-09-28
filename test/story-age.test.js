@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { displayExplanation, explanationParts, isNew, sentenceAge, EXPLANATION_CHARACTER_LIMIT } from '../apps/client/lib/story-age.js';
 import { opensDevelopment } from '../src/story.js';
 import { withServer, PORTS, CALLER_TOKEN, caller } from './with-server.js';
@@ -32,20 +33,20 @@ test('once "New:" is off, the sentence leads with how long ago it was first repo
   // Reported 2026-09-27: a development can hold the page for a day with the
   // same sentence, and past two hours nothing said how old it was.
   const rereport = { ...fresh, explanation_new: false, explanation_at: start };
-  for (const [minutes, age] of [[0,''],[59,''],[60,'1h —'],[5 * 60 + 59,'5h —'],[23 * 60 + 59,'23h —'],[24 * 60,'1d —'],[74 * 60,'3d —']]) {
+  for (const [minutes, age] of [[0,''],[59,''],[60,'1h\u00A0·'],[5 * 60 + 59,'5h\u00A0·'],[23 * 60 + 59,'23h\u00A0·'],[24 * 60,'1d\u00A0·'],[74 * 60,'3d\u00A0·']]) {
     assert.equal(sentenceAge(rereport, origin + minutes * 60000), age, `${minutes} minutes`);
   }
-  assert.equal(displayExplanation(rereport, origin + 26 * hour), `1d — ${text}`);
+  assert.equal(displayExplanation(rereport, origin + 26 * hour), `1d\u00A0· ${text}`);
   const opened = { ...fresh, explanation_at: start };
   assert.deepEqual(explanationParts(opened, origin + 119 * 60000), { label: 'New:', age: '', body: text }, 'New: wins while it is on');
-  assert.deepEqual(explanationParts(opened, origin + 2 * hour), { label: '', age: '2h —', body: text }, 'then the age takes its place');
+  assert.deepEqual(explanationParts(opened, origin + 2 * hour), { label: '', age: '2h\u00A0·', body: text }, 'then the age takes its place');
   assert.equal(sentenceAge({ ...rereport, explanation_at: undefined }, origin + 5 * hour), '', 'an older server sends no time');
   assert.equal(sentenceAge({ ...rereport, explanation_at: 'nonsense' }, origin + 5 * hour), '');
   assert.equal(sentenceAge({ score: 7, explanation: text, explanation_at: start, created_at: start }, origin + 5 * hour), '',
     'an old cache without the unlabelled body keeps its stored sentence');
   const long = 'a'.repeat(135);
   const fitted = displayExplanation({ ...rereport, explanation_text: long }, origin + 12 * hour);
-  assert.ok(fitted.startsWith('12h — ') && Array.from(fitted).length <= 140 && fitted.endsWith('…'), 'the age counts toward 140');
+  assert.ok(fitted.startsWith('12h\u00A0· ') && Array.from(fitted).length <= 140 && fitted.endsWith('…'), 'the age counts toward 140');
 });
 
 test('the 140-character display budget includes the label and counts Unicode code points', () => {
@@ -87,7 +88,7 @@ test('all app surfaces lead an older sentence with its age, muted and inside the
     const at = minutes => nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + minutes * 60000 }));
     const five = at(5 * 60 + 10);
     const age = five.find(n=>n.props.testID === 'rating-age');
-    assert.equal(age.props.children, '5h —');
+    assert.equal(age.props.children, '5h\u00A0·');
     assert.equal(age.props.style.fontWeight, undefined, 'colour only: the age keeps the sentence weight');
     const sentence = five.find(n=>n.props.testID === 'rating-explanation');
     const [inner, rest] = sentence.props.children.props.children;
@@ -148,4 +149,19 @@ test('the label follows the judgement the reading arrived with', async () => {
       'explanation_at dates the sentence shown, its first report, not the re-report that confirmed it');
     assert.equal(after.created_at,again.body.created_at,'created_at stays the newest reading');
   });
+});
+
+test('the age and its dot never part across a line break, on any surface', () => {
+  // Asked 2026-09-28: with balanced lines the browser moves breaks around
+  // more, and an ordinary space let a line end on "5h" with the separator
+  // leading the next. The owner then chose a middle dot over the em dash,
+  // matching the timeline's tag lines. The space before it is non-breaking in
+  // the app and in both widgets' own formatters.
+  const age = sentenceAge({ ...fresh, explanation_new: false, explanation_at: start }, origin + 5 * hour);
+  assert.equal(age, '5h\u00A0·');
+  assert.ok(!age.includes(' '), 'no ordinary space inside the prefix');
+  const swift = readFileSync(new URL('../apps/client/targets/widget/WidgetReadingStore.swift', import.meta.url), 'utf8');
+  const java = readFileSync(new URL('../apps/client/plugins/widget-android/RatingWidget.java', import.meta.url), 'utf8');
+  assert.match(swift, /"\\\(hours\)h\\u\{00A0\}·" : "\\\(hours \/ 24\)d\\u\{00A0\}·"/, 'iOS widget');
+  assert.match(java, /"d"\) \+ "\\u00A0·";/, 'Android widget');
 });

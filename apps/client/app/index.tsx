@@ -17,10 +17,20 @@ import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
 
-// The sentence keeps one narrow measure on every screen, upright or turned,
-// phone or desktop. Where the screen is wider than that, the timeline fills
-// it with a grid of entries in the same measure rather than wide margins.
+// The sentence keeps one measure in characters on wide screens: 320pt at the
+// 17pt of a turned phone and the timeline, widened in proportion where the
+// text is larger, so the desktop's 22pt breaks its lines where landscape does
+// rather than taking an extra line. An upright phone keeps 320pt. On the web
+// the sentence and the timeline wrap with text-wrap: pretty, so neither ends
+// on a stranded word; the owner chose it over balance, which evened every
+// line (2026-09-28).
+// Where the screen is wider, the timeline fills it with a grid of entries
+// rather than wide margins: as many columns as fit at GRID_MIN wide, each up
+// to COLUMN. Safari in landscape leaves a phone about 740pt, which two full
+// 320pt columns and their margins do not fit.
 const COLUMN = 320;
+const COLUMN_SIZE = 17;
+const GRID_MIN = 280;
 const GRID_GAP = 48;
 const GRID_MAX_COLUMNS = 3;
 
@@ -48,9 +58,14 @@ export default function Home() {
   const scoreSize = landscape ? Math.min(height * 0.22, 224) : Math.max(64, Math.min(width * 0.42, height * 0.24, 224));
   const sentenceSize = landscape ? 17 : Math.max(18, Math.min(width * 0.045, 22));
   const horizontal = Math.max(20, Math.min(width * 0.05, 48));
-  const column = COLUMN * fontScale;
-  const columns = Math.max(1, Math.min(GRID_MAX_COLUMNS, Math.floor((width - horizontal * 2 + GRID_GAP) / (column + GRID_GAP))));
-  const gridWidth = columns * column + (columns - 1) * GRID_GAP;
+  // An upright phone keeps 320pt: its width, not the desktop, sets the
+  // measure there, and four shorter lines suit a narrow screen better than
+  // three that run nearly edge to edge.
+  const uprightPhone = !landscape && width < 600;
+  const column = COLUMN * (uprightPhone ? 1 : sentenceSize / COLUMN_SIZE) * fontScale;
+  const available = width - horizontal * 2;
+  const columns = Math.max(1, Math.min(GRID_MAX_COLUMNS, Math.floor((available + GRID_GAP) / (GRID_MIN * fontScale + GRID_GAP))));
+  const gridWidth = Math.min(available, columns * COLUMN * fontScale + (columns - 1) * GRID_GAP);
   const { reading, failed, loading, refresh } = useCurrentReading();
   // Nothing is drawn until there is something to say: a placeholder dash, then
   // the reading, then the gradient was three layouts in the first second. Once
@@ -72,7 +87,7 @@ export default function Home() {
   const minutes = reading ? Math.max(0, Math.floor((now - Date.parse(reading.created_at)) / 60000)) : 0;
   const relative = minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
   // A new development's sentence leads with a bold "New:" for two hours, then
-  // with its age in the muted colour ("5h —"); both are part of the sentence.
+  // with its age in the muted colour ("5h ·"); both are part of the sentence.
   const parts = reading ? explanationParts(reading, now) : null;
   const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</>
     : parts.age ? <><Text testID="rating-age" style={{ color: theme.muted }}>{parts.age}</Text>{` ${parts.body}`}</> : parts.body) : null;
@@ -195,7 +210,7 @@ export default function Home() {
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
-        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
+        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24, ...(process.env.EXPO_OS === 'web' ? { textWrap: 'pretty' } as object : null) }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
         {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>Checked {relative}</Animated.Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
@@ -206,8 +221,8 @@ export default function Home() {
           </Pressable>
         </Animated.View>}
       </Animated.View>
-      {/* Entries share the sentence's measure, so the timeline has no margin of
-          its own; where the screen fits more than one, they form a grid. At least
+      {/* Entries keep about the sentence's measure, so the timeline has no margin
+          of its own; where the screen fits more than one, they form a grid. At least
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
       {reading && <View style={{ maxWidth: gridWidth, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,

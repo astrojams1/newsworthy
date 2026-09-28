@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-28T06:19:04+00:00",
+  "updated_at": "2026-09-28T07:31:19+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1008,12 +1008,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner follow-up 2026-09-28: landscape phone web and desktop web drew the sentence at different widths (480pt vs 320pt). The owner prefers the narrow one, so the sentence is 320pt (scaled with text size) on every screen, and the landscape score is 22% of height to keep the spacing. The timeline becomes a grid of up to three 320pt columns where the screen fits them (two on a landscape phone, three on desktop), every entry tagged in full; fade positions sum row heights. Verified in headless Chromium only; native apps untested.",
+      "summary": "Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words; upright phones keep 320pt. The sentence and timeline wrap with text-wrap: pretty on the web (owner chose it over balance). Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. The age prefix is '5h ·' with a non-breaking space in the app and both widgets. Verified in headless Chromium only.",
       "evidence": [
-        "test/web-landscape.test.js asserts a 320pt sentence and a 2-column landscape / 3-column desktop grid with no line at strength under the header; surface-design asserts measure and columns across ios/android/web at four sizes; npm test and npm run test:design pass"
+        "test/web-landscape.test.js: at 743x340 the sentence and timeline entries wrap pretty, the cue is on the first screen, the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure, grid widths and web-only pretty; story-age tests pin '5h ·' in JS and the widget sources; npm test and npm run test:design pass; Android widget compiles"
       ],
-      "next_action": "Owner: check iPhone Safari landscape and desktop web after merge; iPad and native landscape untested.",
-      "updated_at": "2026-09-28T06:19:04+00:00"
+      "next_action": "Owner: check iPhone Safari landscape and portrait and desktop after merge. Widgets pick up the dot in the next native build, unverified on a device; Swift widget test not run here.",
+      "updated_at": "2026-09-28T07:31:19+00:00"
     },
     "ui.header-icon-size": {
       "state": "waiting_verification",
@@ -6390,6 +6390,70 @@
         ],
         "next_action": "Owner: check iPhone Safari landscape and desktop web after merge; iPad and native landscape untested.",
         "updated_at": "2026-09-28T06:19:04+00:00"
+      }
+    },
+    {
+      "sequence": 335,
+      "at": "2026-09-28T06:56:20+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-up 2026-09-28 on production 53f1f5f from iPhone Safari: the landscape timeline stayed one column (Safari's landscape page is ~743pt, too narrow for two 320pt columns), and the landscape sentence ended on a stranded word unlike desktop. Grid columns now narrow to 280pt so two fit; the sentence uses text-wrap: balance on the web and timeline entries text-wrap: pretty. Prototype on the branch; the owner has not yet chosen between this and a number-beside-sentence landscape layout. Verified in headless Chromium only.",
+        "evidence": [
+          "test/web-landscape.test.js adds a 743x340 case: balanced sentence, cue on the first screen, two columns; surface-design adds 743x340 to the grid cases and asserts balance on web only; npm test and npm run test:design pass"
+        ],
+        "next_action": "Owner: choose balance or side-by-side landscape; then check iPhone Safari after merge. Native apps have no balance equivalent and are untested in landscape.",
+        "updated_at": "2026-09-28T06:56:20+00:00"
+      }
+    },
+    {
+      "sequence": 336,
+      "at": "2026-09-28T07:06:26+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-up 2026-09-28 on production 53f1f5f from iPhone Safari: the landscape timeline stayed one column (Safari's landscape page is ~743pt), and landscape took 3 lines where desktop took 4. The sentence measure is now 320pt per 17pt of its size (~414pt at desktop's 22pt), so landscape, portrait and desktop break at the same words; web lines are balanced (text-wrap: balance), timeline entries pretty; grid columns narrow to 280pt so Safari landscape gets two. Verified in headless Chromium only.",
+        "evidence": [
+          "test/web-landscape.test.js: at 743x340 the sentence is balanced, the cue on the first screen and the timeline two columns, and desktop matches its line count and break words; surface-design asserts the proportional measure, grid widths and web-only balance; npm test and npm run test:design pass"
+        ],
+        "next_action": "Owner: approve, then check iPhone Safari landscape and desktop after merge. Native apps have no balance equivalent and are untested in landscape.",
+        "updated_at": "2026-09-28T07:06:26+00:00"
+      }
+    },
+    {
+      "sequence": 337,
+      "at": "2026-09-28T07:12:39+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words in 3 lines; an upright phone keeps 320pt (4 lines at 18pt). The sentence and timeline entries use text-wrap: balance on the web. Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. Verified in headless Chromium only.",
+        "evidence": [
+          "test/web-landscape.test.js: at 743x340 the sentence and every timeline entry are balanced, the cue is on the first screen and the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure (upright phones 320pt), grid widths and web-only balance; npm test and npm run test:design pass"
+        ],
+        "next_action": "Owner: approve, then check iPhone Safari landscape and portrait and desktop after merge. Native apps have no balance equivalent and are untested in landscape.",
+        "updated_at": "2026-09-28T07:12:39+00:00"
+      }
+    },
+    {
+      "sequence": 338,
+      "at": "2026-09-28T07:31:19+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words; upright phones keep 320pt. The sentence and timeline wrap with text-wrap: pretty on the web (owner chose it over balance). Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. The age prefix is '5h ·' with a non-breaking space in the app and both widgets. Verified in headless Chromium only.",
+        "evidence": [
+          "test/web-landscape.test.js: at 743x340 the sentence and timeline entries wrap pretty, the cue is on the first screen, the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure, grid widths and web-only pretty; story-age tests pin '5h ·' in JS and the widget sources; npm test and npm run test:design pass; Android widget compiles"
+        ],
+        "next_action": "Owner: check iPhone Safari landscape and portrait and desktop after merge. Widgets pick up the dot in the next native build, unverified on a device; Swift widget test not run here.",
+        "updated_at": "2026-09-28T07:31:19+00:00"
       }
     }
   ],

@@ -21,9 +21,12 @@ export function isNew(reading, now = Date.now()) {
 
 /**
  * How long ago the shown sentence's development was first reported, as the
- * muted prefix that leads it once "New:" has come off: "5h —", then "1d —"
+ * muted prefix that leads it once "New:" has come off: "5h ·", then "1d ·"
  * from a day. Nothing under an hour, where "Checked" beside it says as much,
  * and nothing without `explanation_at`, which an older server or cache lacks.
+ * A middle dot, as the timeline's tag lines separate story from age (owner
+ * choice, 2026-09-28; it was an em dash). The space before it does not
+ * break, so a line never ends on "5h" with the dot leading the next.
  */
 export function sentenceAge(reading, now = Date.now()) {
   if (!reading || isNew(reading, now) || typeof reading.explanation_text !== 'string'
@@ -32,7 +35,7 @@ export function sentenceAge(reading, now = Date.now()) {
   if (!Number.isFinite(at) || !Number.isFinite(now)) return '';
   const hours = Math.floor((now - at) / 3600_000);
   if (hours < 1) return '';
-  return `${hours < 24 ? `${hours}h` : `${Math.floor(hours / 24)}d`} —`;
+  return `${hours < 24 ? `${hours}h` : `${Math.floor(hours / 24)}d`}\u00A0·`;
 }
 
 /** A display guard for legacy/overlong readings; stored prose is never changed. */

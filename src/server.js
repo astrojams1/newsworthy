@@ -301,7 +301,7 @@ const server = createServer(async (req, res) => {
       // installed build that shows it as-is never keeps a stale "New:".
       // `explanation_at` is when the shown sentence was saved — for a re-report,
       // its development's first report — and clients lead the sentence with
-      // its age ("5h —") once "New:" is off. It is not `since`, which dates the
+      // its age ("5h ·") once "New:" is off. It is not `since`, which dates the
       // development the number is about, and not the removed
       // `explanation_since`, which old builds still print as "31 hours ago:".
       const explanationFields = {
