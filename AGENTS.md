@@ -260,11 +260,10 @@ their own name. The name more readings used is kept. `/admin` can undo, by row.
 The record ends with every reading of each story (~50k chars, read once, by
 `curl`): by its latest line alone, a Trump-Xi summit was merged into the war.
 
-**v4: a market reaching a level is a development.** v1 predates the v18
-market-risk score and read "US borrowing costs hit their highest since 2007"
-(reading 827) as added detail on a two-day-old event. v4 is v3 plus one
-paragraph: a record or multi-year high or low is new the first time no
-development names it, under the story that moved it; a figure moving again is not.
+**v4: a market reaching a level is a development.** v3 plus one paragraph: a
+record or multi-year high or low is new the first time no development names it,
+under the story that moved it. v3 had filed reading 827's 2007-high yields as
+detail on a two-day-old event.
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
@@ -298,13 +297,13 @@ level climbs two clear of its usual level re-anchors there and its clock
 restarts.
 
 Two points, against the development's usual level — the median of its levels
-since it last anchored, over at most 48 hours so every range replays alike — and only on a level the median confirms. Two because
-that is the margin the shock rule already uses and the rater's self-disagreement
-is about 0.6. Not against the anchor: an all-time maximum lets one early peak
-lock a development at the floor for as long as it runs — the first fix, and it
-changed nothing. Not against its lowest level, the second: over 63 hourly
-re-reports of one event that low sank to 4 by chance, a touch of 6 restarted the
-clock, and on 2026-09-28 the page jumped 2 to 6 on unchanged news. Against the level rather than the decayed value, because a rise
+since it last anchored, over at most 48 hours so every range replays alike —
+only on a level the median confirms. Two is the shock rule's margin; the rater's
+self-disagreement is about 0.6. Not against the anchor: one early peak locks a
+development at the floor as long as it runs — the first fix, which changed
+nothing. Not against its lowest level, the second: over 63 re-reports of one
+event it sank to 4 by chance, and a touch of 6 jumped the page 2 to 6 on
+2026-09-28. Against the level rather than the decayed value, because a rise
 the news did not make is a sawtooth: the number would fall for half a day and
 spring back on unchanged readings. And not on shock levels: letting those anchor
 doubled the upward steps over the stored series (23 rises against 12, 18 of them
