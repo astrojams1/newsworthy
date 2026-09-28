@@ -24,6 +24,7 @@
   .wrap { max-width: 1040px; margin: 0 auto; padding: 2rem clamp(1rem, 4vw, 2rem) 4rem; }
   header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem 1rem; margin-bottom: 2rem; }
   h1 { font-size: 1.0625rem; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  h1 a { color: inherit; text-decoration: none; }
   h2 { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
        color: var(--ink-muted); margin: 2.5rem 0 0.875rem; }
   a { color: var(--series); }
@@ -40,18 +41,15 @@
   .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 1.25rem; }
 
   .tiles { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
-  .tile { background: var(--surface-2); border: 1px solid var(--rule); border-radius: var(--radius-card); padding: 0.875rem 1rem; }
+  .tile { padding: 0.25rem 0; }
   .tile dt { font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); }
   .tile dd { margin: 0.25rem 0 0; font-size: 1.5rem; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-  .tile dd small { font-size: 0.8125rem; color: var(--ink-faint); }
 
-  /* align-items:end lines the button up with the selects — it drifted when the
-     labels carried helper text of their own, so that moved to .note below. */
-  .settings { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: end; }
+  /* align-items:end keeps the selects level when a label wraps to two lines. */
+  .settings { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem 1rem; align-items: end; }
   .field { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.75rem;
            letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
-  .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; min-width: 170px; }
-  .settings button { padding: 0.45rem 1.1rem; }
+  .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; width: 100%; }
   /* Below the fields, not beside them: a button and a labelled select are
      different heights, so aligning them on one row leaves one of the two
      visibly off. */
@@ -61,12 +59,6 @@
   /* An empty note still claims its top margin, which left a gap under the
      fields on the common case where nothing has been changed. */
   .note:empty { display: none; }
-  .settings textarea, .settings input {
-    font: inherit; font-size: 0.875rem; color: var(--ink);
-    background: var(--surface); border: 1px solid var(--rule);
-    border-radius: var(--radius-control); padding: 0.45rem 0.6rem; min-width: 170px;
-  }
-  .settings textarea { width: 100%; resize: vertical; font-family: ui-monospace, monospace; font-size: 0.8125rem; }
   #run-status { font-size: 0.8125rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
   .note { font-size: 0.75rem; color: var(--ink-faint); margin: 0.75rem 0 0; max-width: 70ch; }
 
@@ -89,11 +81,11 @@
   .raw-dot.shock { fill: var(--series); stroke: var(--series); }
   .legend { font-size: 0.75rem; color: var(--ink-faint); display: flex; gap: 0.25rem 1rem;
             align-items: center; flex-wrap: wrap; margin-bottom: 0.5rem; }
-  .legend b { font-weight: 500; color: var(--ink-muted); }
   .legend .swatch { display: inline-block; width: 1.25rem; height: 0; vertical-align: middle;
                     border-top: 2px solid var(--series); margin-right: 0.375rem; }
   .legend .swatch.raw { border: 1.25px solid var(--ink-faint); width: .5rem; height: .5rem;
                         border-radius: 50%; }
+  .legend .swatch.shock { background: var(--series); border-color: var(--series); }
   .crosshair { stroke: var(--ink-faint); stroke-width: 1; stroke-dasharray: 3 3; }
   /* Failures carry a glyph as well as colour — never colour alone. */
   .failure-mark { stroke: var(--danger); stroke-width: 1.75; stroke-linecap: round; }
@@ -138,49 +130,46 @@
    * single dotted line. Absent values drop out of that line entirely rather
    * than printing five dashes for a caller reading that records no usage.
    */
-  /* 'external agent' wrapped to two lines once Prompt took a share of the
-     width; it is a fixed vocabulary of three short values, so it never needs to. */
+  /* A fixed vocabulary of short values; never worth a wrap. */
   #runs td.source, #runs td.prompt, #runs td.story { white-space: nowrap; }
   td.story .opened { color: var(--series); }
   @media (max-width: 720px) {
-    #runs, #runs tbody, #runs tr, #runs td { display: block; }
+    #runs, #runs tbody { display: block; }
     #runs thead { display: none; }
     #runs { font-size: 0.875rem; }
-    #runs tr { border-bottom: 1px solid var(--rule); padding: 0.875rem 0; }
+    #runs tr { display: flex; flex-wrap: wrap; align-items: baseline; border-bottom: 1px solid var(--rule); padding: 0.875rem 0; }
     #runs td { border: none; padding: 0; text-align: left; }
     .scroll { overflow-x: visible; }
 
-    #runs td.when { display: inline; font-size: 0.8125rem; color: var(--ink-muted); }
-    #runs td.score { display: inline; float: right; font-weight: 500; }
-    #runs td.explanation { margin: 0.375rem 0 0; color: var(--ink); }
-    #runs td.notes { margin: 0.375rem 0 0; font-size: 0.8125rem; }
+    #runs td.when { flex: 1; font-size: 0.8125rem; color: var(--ink-muted); }
+    #runs td.score { font-weight: 500; }
+    #runs td.explanation { flex-basis: 100%; margin: 0.375rem 0 0; color: var(--ink); }
+    #runs td.notes { flex-basis: 100%; margin: 0.375rem 0 0; font-size: 0.8125rem; }
     #runs td.explanation.absent { display: none; } /* the note already says why */
 
     #runs td.source, #runs td.story, #runs td.prompt, #runs td.model, #runs td.tokens,
     #runs td.cost, #runs td.time {
-      display: inline; font-size: 0.75rem; color: var(--ink-faint);
+      margin-top: 0.375rem; font-size: 0.75rem; color: var(--ink-faint);
     }
-    /* Source opens the strip on its own line. Inline, it joined the timestamp
-       whenever the explanation above it was hidden, and margin-top on an inline
-       box does nothing. */
-    #runs td.source { display: block; margin-top: 0.375rem; }
-    /* A leading separator on everything but the first field means a hidden
-       field takes its separator with it, and no chain of dots is left behind.
-       Prompt is the first: prompt_version is NOT NULL, so every row has one,
-       and it opens the strip. When model opened it the line began with a stray
-       dot, because source sits on its own line above rather than beside it. */
-    #runs td.story::before, #runs td.model::before, #runs td.tokens::before,
-    #runs td.cost::before, #runs td.time::before { content: ' · '; }
+    /* Each row is a wrapping flex line: the explanation and note take a whole
+       line, so source opens the strip beneath them. A leading separator on
+       every later field means a hidden field takes its separator with it. */
+    #runs td.story::before, #runs td.prompt::before, #runs td.model::before, #runs td.tokens::before,
+    #runs td.cost::before, #runs td.time::before { content: '\00a0·\00a0'; }
     #runs td.absent:not(.explanation) { display: none; }
-    #runs td.empty { display: block; }
+    #runs td.empty { flex-basis: 100%; }
   }
-  /* Narrow screens: title on its own line so the controls stay on one row. */
+  /* Phones are the main screen for this page. */
   @media (max-width: 560px) {
-    header h1 { flex: 1 0 100%; }
-    header .spacer { display: none; }
-    /* Four legend lines pushed the chart off a phone screen. The two series
-       have to be named; the counts are readable off the chart itself. */
-    .legend-extra { display: none; }
+    .wrap { padding: 1.25rem 1rem 3rem; }
+    header { margin-bottom: 1.25rem; }
+    h2 { margin-top: 2rem; }
+    .tiles { grid-template-columns: repeat(3, 1fr); gap: 0.75rem 0.5rem; }
+    .tile dd { font-size: 1.25rem; }
+    .controls button { flex: 1; }
+    /* iOS zooms into any field under 16px when it takes focus. */
+    select, input, .settings select, .merge-form input { font-size: 16px; }
+    button { min-height: 2.5rem; }
   }
   /* The board behind the front page: one block per live story, its
      developments beneath it, newest first. */
@@ -189,13 +178,15 @@
   .merges .undone { color: var(--ink-faint); text-decoration: line-through; }
   .merges button, .merge-form button { font: inherit; font-size: 0.75rem; padding: 0.15rem 0.6rem; margin-left: 0.5rem; }
   .merge-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.75rem; }
-  .merge-form input { font: inherit; font-size: 0.8125rem; padding: 0.3rem 0.5rem; border: 1px solid var(--rule); border-radius: 7px; background: var(--surface); color: var(--ink); }
-  .story { border: 1px solid var(--rule); border-radius: var(--radius-card); padding: 0.75rem 0.875rem; background: var(--surface-2); }
-  .story.leading { border-color: var(--series); }
+  .merge-form { flex-wrap: nowrap; }
+  .merge-form input { font: inherit; font-size: 0.8125rem; padding: 0.3rem 0.5rem; border: 1px solid var(--rule); border-radius: 7px; background: var(--surface); color: var(--ink); flex: 1; min-width: 0; max-width: 12rem; }
+  .merge-form span { color: var(--ink-faint); }
+  .merge-form button { margin-left: 0; }
+  .stories .story { border: 1px solid var(--rule); border-radius: var(--radius-card); padding: 0.75rem 0.875rem; background: var(--surface-2); }
+  .stories .story.leading { border-color: var(--series); }
   .story-head { display: flex; align-items: baseline; gap: 0.5rem; }
   .story-name { font-weight: 600; font-size: 0.9375rem; }
   .story-score { font-variant-numeric: tabular-nums; font-size: 1.25rem; font-weight: 300; margin-left: auto; }
-  .story-score small { font-size: 0.75rem; color: var(--ink-faint); }
   .on-page { font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--series); }
   .story-state { color: var(--ink-faint); font-size: 0.75rem; margin: 0.125rem 0 0.375rem; }
   .story-state span + span::before { content: ' · '; }
@@ -206,7 +197,8 @@
   .dev-meta { color: var(--ink-faint); font-size: 0.75rem; margin-top: 0.125rem; }
   .dev-meta span + span::before { content: ' · '; }
   .empty { color: var(--ink-muted); font-size: 0.875rem; padding: 2rem 0; }
-  details summary { cursor: pointer; font-size: 0.8125rem; color: var(--ink-muted); }
+  details summary { cursor: pointer; font-size: 0.8125rem; color: var(--ink-muted); padding: 0.375rem 0; }
+  .versions > details { margin-left: 1rem; }
   pre { white-space: pre-wrap; font-size: 0.75rem; background: var(--surface-2);
         border: 1px solid var(--rule); border-radius: var(--radius-control); padding: 0.875rem; overflow-x: auto; }
 </style>
@@ -217,11 +209,10 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Newsworthy · admin</h1>
+    <h1><a href="/">Newsworthy</a></h1>
     <span class="spacer"></span>
     <span id="run-status"></span>
     <button id="refresh" type="button">Rate now</button>
-    <a href="/">← app</a>
   </header>
 
   <div class="controls" role="group" aria-label="Time range">
@@ -229,52 +220,47 @@
     <button type="button" data-hours="168" aria-pressed="true">7d</button>
     <button type="button" data-hours="720" aria-pressed="false">30d</button>
     <button type="button" data-hours="8760" aria-pressed="false">All</button>
-    <span class="spacer"></span>
-    <span id="status" style="font-size:.75rem;color:var(--ink-faint)"></span>
   </div>
 
   <dl class="tiles" id="tiles"></dl>
 
-  <h2>Score over time</h2>
+  <h2>Score</h2>
   <figure>
-    <figcaption id="caption">Newsworthiness, 1–10.</figcaption>
+    <figcaption id="caption">Score, 1–10.</figcaption>
     <div class="chart">
       <svg id="chart" viewBox="0 0 900 300" role="img" aria-labelledby="caption"></svg>
       <div class="tooltip" id="tooltip" hidden></div>
     </div>
   </figure>
 
-  <h2>On the front page</h2>
+  <h2>Front page</h2>
   <figure>
-    <figcaption>Which story the front page's sentence was about, from each reading to the next. The number above can be about a louder story at the same time.</figcaption>
     <svg id="gantt" viewBox="0 0 900 40" role="img" aria-label="Which story was on the front page, over time"></svg>
   </figure>
 
   <h2>Live stories</h2>
-  <p class="note" id="stories-note"></p>
   <div class="stories" id="stories"></div>
 
-  <h2>Story merges</h2>
-  <p class="note">One story recorded under two names. The caller proposes a merge while judging; the name more readings used is kept. Stored readings keep their own names, and an undo restores both.</p>
+  <h2>Merges</h2>
   <div id="merges"></div>
   <form class="merge-form" id="merge-form">
-    <input name="a" placeholder="story name" autocomplete="off">
-    <input name="b" placeholder="other story name" autocomplete="off">
+    <input name="a" placeholder="alias" aria-label="Story to merge" autocomplete="off" autocapitalize="off">
+    <span aria-hidden="true">→</span>
+    <input name="b" placeholder="story" aria-label="Story to keep" autocomplete="off" autocapitalize="off">
     <button type="submit">Merge</button>
     <span class="note" id="merge-status"></span>
   </form>
 
-  <h2>Recent runs</h2>
+  <h2>Runs</h2>
   <div class="scroll"><table id="runs">
-    <thead><tr><th class="when">When</th><th class="num">Score</th><th>Explanation</th><th>Source</th><th>Story</th><th>Prompt</th><th>Model</th><th class="num">Tokens</th><th class="num">Cost</th><th class="num">Time</th><th>Notes</th></tr></thead>
+    <thead></thead>
     <tbody></tbody>
   </table></div>
 
   <h2>Caller reports</h2>
-  <p class="note">Each run's own account of what it searched, weighed and decided, as the caller wrote it. Not checked.</p>
   <div id="caller-runs"></div>
 
-  <h2>Prompt versions</h2>
+  <h2>Prompts</h2>
   <div id="prompts"></div>
 
   <h2>Settings</h2>
@@ -285,13 +271,13 @@
     <label class="field">Rate every
       <select id="interval"></select>
     </label>
-    <label class="field">Score halves every
+    <label class="field">Development half-life
       <select id="half-life"></select>
     </label>
-    <label class="field">Stories go stale over
+    <label class="field">Story half-life
       <select id="story-half-life"></select>
     </label>
-    <label class="field">Story judge
+    <label class="field">Judge
       <select id="judge-model"></select>
     </label>
   </div>
@@ -299,14 +285,8 @@
   <div class="settings-actions" id="settings-actions" hidden>
     <button id="save" type="button">Save</button>
   </div>
-
-  <h2>Story judge</h2>
-  <p class="note" id="judge-note">Each reading is judged once, on arrival, against the last
-    two days: does it report a development already recorded, or a new one? The number on the
-    front page is that development's level, aged from when it was first reported. Readings
-    stored before the judge existed carry no judgement and inherit the reading before them.</p>
   <div class="settings-actions">
-    <button id="judge" type="button">Judge stored readings</button>
+    <button id="judge" type="button">Judge unjudged readings</button>
     <span id="judge-status" style="font-size:.8125rem;color:var(--ink-muted);margin-left:.5rem"></span>
   </div>
 </div>
@@ -331,9 +311,18 @@
   let points = [];
   let failures = [];
 
-  const W = 900, H = 300, PAD = { t: 12, r: 16, b: 28, l: 30 };
-  const plotW = W - PAD.l - PAD.r;
-  const plotH = H - PAD.t - PAD.b;
+  const PAD = { t: 12, r: 16, b: 28, l: 30 };
+  // Drawn at the width it is shown at, so axis text stays 11px on a phone
+  // rather than a 900-unit drawing scaled down to half that.
+  let W = 900, H = 300, plotW = 0, plotH = 0, narrow = false;
+  function measure() {
+    W = Math.max(280, Math.round(chart.parentElement.clientWidth)) || 900;
+    narrow = W < 600;
+    H = narrow ? 200 : 300;
+    plotW = W - PAD.l - PAD.r;
+    plotH = H - PAD.t - PAD.b;
+    chart.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  }
 
   // Y is locked to the full 1–10 scale: auto-scaling a fixed-range rating
   // would exaggerate ordinary variation.
@@ -360,19 +349,19 @@
       // The displayed value, which is what the front page and the favicon show.
       // This read the raw newest reading, so the tile could disagree with the
       // badge three hundred lines below it and with the page itself.
-      ['Now', current ? `${current.displayed ?? current.score}<small>/10</small>` : '–'],
+      ['Now', current ? current.displayed ?? current.score : '–'],
       ['Average', s.avg_score != null ? s.avg_score.toFixed(1) : '–'],
       ['Range', s.min_score != null ? `${s.min_score}–${s.max_score}` : '–'],
       ['Readings', s.ok ?? 0],
       ['Failures', s.errors ?? 0],
       ['Spend', usd(s.spend_usd)],
       // Cost, not count: an external reading is one this app did not pay for.
-      ...(s.external_runs ? [['By agents', `${s.external_runs}<small> · unpriced</small>`]] : []),
+      ...(s.external_runs ? [['External', s.external_runs]] : []),
       ['Per run', usd(s.avg_cost_usd)],
       // The judge makes no reading and does no search, so its spend is counted
       // apart: "spend" stays a glance at what rating cost.
-      ...(s.judge_spend_usd ? [['Judging', usd(s.judge_spend_usd)]] : []),
-      ['Monthly est.', usdRounded(data.projected_monthly_usd)],
+      ...(s.judge_spend_usd ? [['Judge', usd(s.judge_spend_usd)]] : []),
+      ['Monthly', usdRounded(data.projected_monthly_usd)],
     ];
     $('tiles').innerHTML = tiles
       .map(([k, v]) => `<div class="tile"><dt>${k}</dt><dd>${v}</dd></div>`)
@@ -393,7 +382,7 @@
     const out = [];
     if (hours > 48) {
       const days = (t1 - t0) / 86_400_000;
-      const step = Math.max(1, Math.ceil(days / 7));
+      const step = Math.max(1, Math.ceil(days / (narrow ? 4 : 7)));
       const cursor = new Date(t0);
       cursor.setHours(0, 0, 0, 0);
       if (cursor.getTime() < t0) cursor.setDate(cursor.getDate() + 1);
@@ -403,7 +392,7 @@
       }
     }
     if (out.length < 2) {
-      const count = Math.min(6, Math.max(2, coords.length));
+      const count = Math.min(narrow ? 4 : 6, Math.max(2, coords.length));
       for (let i = 0; i < count; i += 1) {
         const at = t0 + ((t1 - t0) * i) / (count - 1);
         out.push({ t: at, cx: x(at) });
@@ -413,6 +402,7 @@
   }
 
   function renderChart() {
+    measure();
     if (points.length === 0) {
       chart.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" class="axis-label">No readings in this range yet.</text>`;
       return;
@@ -430,7 +420,9 @@
 
     const ticks = tickPositions(coords).map(({ t: at, cx }) => {
       const label = hours <= 48 ? fmtClock.format(at) : fmtShort.format(at);
-      return `<text class="axis-label" x="${cx.toFixed(1)}" y="${H - 8}" text-anchor="middle">${label}</text>`;
+      // Edge labels hang inward so a narrow chart does not clip them.
+      const anchor = cx < PAD.l + 24 ? 'start' : cx > W - PAD.r - 24 ? 'end' : 'middle';
+      return `<text class="axis-label" x="${cx.toFixed(1)}" y="${H - 8}" text-anchor="${anchor}">${label}</text>`;
     });
 
     // The line is what the front page shows; the scatter is what was recorded.
@@ -464,26 +456,29 @@
    * (`frontPageSpans()`), from the same replay as the chart above, so an
    * unjudged reading is drawn where the page put it. Hover a bar for its times.
    */
-  function renderGantt(rows = []) {
+  let ganttRows = [];
+  function renderGantt(rows = ganttRows) {
+    ganttRows = rows;
     const svg = $('gantt');
     if (rows.length === 0) {
       svg.setAttribute('viewBox', `0 0 ${W} 40`);
       svg.innerHTML = `<text x="${W / 2}" y="24" text-anchor="middle" class="axis-label">No readings in this range yet.</text>`;
       return;
     }
-    const LABEL = 150, RIGHT = 56, ROW = 24, BAR = 12, AXIS = 24;
+    const LABEL = narrow ? 96 : 150, RIGHT = narrow ? 32 : 56, ROW = 24, BAR = 12, AXIS = 24;
     const spans = rows.flatMap((row) => row.spans.map((span) => [Date.parse(span.from), Date.parse(span.to)]));
     const t0 = Math.min(...spans.map(([a]) => a)), t1 = Math.max(...spans.map(([, b]) => b));
     const x = (t) => LABEL + ((t - t0) / Math.max(1, t1 - t0)) * (W - LABEL - RIGHT);
     const height = rows.length * ROW + AXIS;
     const ticks = [];
     if (t1 - t0 > 48 * 3600_000) {
-      const step = Math.max(1, Math.ceil((t1 - t0) / 86_400_000 / 7));
+      const step = Math.max(1, Math.ceil((t1 - t0) / 86_400_000 / (narrow ? 4 : 7)));
       const cursor = new Date(t0);
       cursor.setHours(24, 0, 0, 0);
       for (; cursor.getTime() <= t1; cursor.setDate(cursor.getDate() + step)) ticks.push([cursor.getTime(), fmtShort.format(cursor)]);
     } else {
-      for (let i = 0; i < 6; i += 1) { const at = t0 + ((t1 - t0) * i) / 5; ticks.push([at, fmtClock.format(at)]); }
+      const n = narrow ? 4 : 6;
+      for (let i = 0; i < n; i += 1) { const at = t0 + ((t1 - t0) * i) / (n - 1); ticks.push([at, fmtClock.format(at)]); }
     }
     const when = (t) => `${fmtShort.format(t)} ${fmtClock.format(t)}`;
     const grid = ticks.map(([at, label]) => `<line class="grid-line" x1="${x(at).toFixed(1)}" x2="${x(at).toFixed(1)}" y1="0" y2="${rows.length * ROW}"></line>`
@@ -613,7 +608,7 @@
   const usd = (n) => (n == null ? '–' : `$${n.toFixed(2)}`);
   const usdRounded = (n) => (n == null ? '–' : `$${Math.round(n).toLocaleString()}`);
   /**
-   * Server-decided, one of three: cron, manual, external agent. Callers used to
+   * Server-decided, one of three: cron, manual, external. Callers used to
    * name themselves, so the column read 'unnamed-agent' one run and
    * 'cowork-cloud-scheduled' the next for the same kind of event.
    *
@@ -621,7 +616,7 @@
    * has, so it gets no emphasis.
    */
   const sourceCell = (r) =>
-    `<span class="muted">${r.source === 'external' ? 'external agent' : escapeHtml(r.source ?? 'cron')}</span>`;
+    `<span class="muted">${escapeHtml(r.source ?? 'cron')}</span>`;
 
   /**
    * The version, and whether the caller proved it received that version's text.
@@ -682,25 +677,30 @@
   const cell = (cls, value) =>
     value == null ? `<td class="${cls} absent">${none}</td>` : `<td class="${cls}">${value}</td>`;
 
+  const RUN_COLUMNS = [
+    ['when', 'When', (r) => fmtTime.format(new Date(r.created_at))],
+    ['score num', 'Score', (r) => (r.status === 'ok' ? String(r.score) : null)],
+    ['explanation', 'Explanation', (r) => (r.status === 'ok' ? escapeHtml(r.explanation ?? '') : null)],
+    ['source', 'Source', sourceCell],
+    ['story', 'Story', storyCell],
+    ['prompt', 'Prompt', promptCell],
+    ['model', 'Model', modelCell],
+    ['tokens num', 'Tokens', (r) => (r.input_tokens != null
+      ? `${fmtCompact(r.input_tokens)} / ${fmtCompact(r.output_tokens)}` : null)],
+    ['cost num', 'Cost', (r) => (r.cost_usd != null ? usd(r.cost_usd) : null)],
+    ['time num', 'Time', (r) => (r.latency_ms != null ? fmtDuration(r.latency_ms) : null)],
+    ['notes', 'Notes', noteCell],
+  ];
+
+  /** A column no row in view fills is left out: external readings record no
+   *  model, tokens, cost or time, and four columns of dashes said nothing. */
   function renderRuns(rows) {
-    $('runs').querySelector('tbody').innerHTML = rows.map((r) => {
-      const ok = r.status === 'ok';
-      return `
-      <tr>
-        ${cell('when', fmtTime.format(new Date(r.created_at)))}
-        ${cell('score num', ok ? `${r.score}/10` : null)}
-        ${cell('explanation', ok ? escapeHtml(r.explanation ?? '') : null)}
-        ${cell('source', sourceCell(r))}
-        ${cell('story', storyCell(r))}
-        ${cell('prompt', promptCell(r))}
-        ${cell('model', modelCell(r))}
-        ${cell('tokens num', r.input_tokens != null
-          ? `${fmtCompact(r.input_tokens)} / ${fmtCompact(r.output_tokens)}` : null)}
-        ${cell('cost num', r.cost_usd != null ? usd(r.cost_usd) : null)}
-        ${cell('time num', r.latency_ms != null ? fmtDuration(r.latency_ms) : null)}
-        ${cell('notes', noteCell(r))}
-      </tr>`;
-    }).join('') || '<tr><td colspan="11" class="empty">Nothing logged yet.</td></tr>';
+    const columns = RUN_COLUMNS.filter(([, , value], i) => i < 3 || rows.some((r) => value(r) != null));
+    $('runs').querySelector('thead').innerHTML =
+      `<tr>${columns.map(([cls, label]) => `<th class="${cls}">${label}</th>`).join('')}</tr>`;
+    $('runs').querySelector('tbody').innerHTML = rows.map((r) =>
+      `<tr>${columns.map(([cls, , value]) => cell(cls, value(r))).join('')}</tr>`,
+    ).join('') || `<tr><td colspan="${columns.length}" class="empty">Nothing logged yet.</td></tr>`;
   }
 
   /** Every merge, newest first: in force with an undo, or struck through once
@@ -760,11 +760,15 @@
     const res = await api('/api/admin/prompts');
     if (!res.ok) return;
     const { prompts } = await res.json();
-    $('prompts').innerHTML = prompts.map((p) => `
-      <details>
-        <summary>v${p.version} · ${escapeHtml(p.added)}</summary>
-        <pre>${escapeHtml(p.text)}</pre>
-      </details>`).join('');
+    const latest = prompts.at(-1);
+    const each = [...prompts].reverse().map((p) => `
+        <details>
+          <summary>v${p.version} · ${escapeHtml(p.added)}</summary>
+          <pre>${escapeHtml(p.text)}</pre>
+        </details>`).join('');
+    $('prompts').innerHTML = latest
+      ? `<details class="versions"><summary>v${latest.version} · ${escapeHtml(latest.added)} · ${prompts.length} versions</summary>${each}</details>`
+      : '';
   }
 
   /**
@@ -777,23 +781,17 @@
    * disagree with the chart or the page about which development leads.
    */
   function renderStories(stories = []) {
-    const note = $('stories-note');
     if (stories.length === 0) {
-      $('stories').innerHTML = '<p class="empty">No development is live. Every story is older than the lookback.</p>';
-      note.textContent = '';
+      $('stories').innerHTML = '<p class="empty">None live.</p>';
       return;
     }
-    const devs = stories.reduce((n, s) => n + s.developments.length, 0);
-    note.textContent =
-      `${stories.length} ${stories.length === 1 ? 'story' : 'stories'}, ${devs} ${devs === 1 ? 'development' : 'developments'}`
-      + ' — each ageing on its own clock. The front page shows the loudest.';
 
     $('stories').innerHTML = stories.map((s) => `
       <div class="story${s.leading ? ' leading' : ''}">
         <div class="story-head">
           <span class="story-name">${escapeHtml(s.story ?? 'unfiled')}</span>
-          ${s.leading ? '<span class="on-page">on the front page</span>' : ''}
-          <span class="story-score">${s.displayed}<small>/10</small></span>
+          ${s.leading ? '<span class="on-page">shown</span>' : ''}
+          <span class="story-score">${s.displayed}</span>
         </div>
         <div class="story-state">${storyState(s)}</div>
         ${s.developments.map((d) => `
@@ -802,46 +800,41 @@
             <div class="dev-body">
               <div>${escapeHtml(d.latest ?? d.first ?? '')}</div>
               <div class="dev-meta">
-                <span>broke ${ago(d.since)}</span>
-                <span>${d.readings} reading${d.readings === 1 ? '' : 's'}</span>
+                <span>${ago(d.since)}</span>
+                <span>${d.readings}×</span>
                 ${d.breakthrough ? '<span>breakthrough</span>'
-                  : d.fatigue < 1 ? `<span>routine, ${Math.round(d.fatigue * 100)}% weight</span>` : ''}
-                ${d.leading ? '<span>the number above</span>' : ''}
+                  : d.fatigue < 1 ? `<span>${Math.round(d.fatigue * 100)}%</span>` : ''}
+                ${d.leading ? '<span class="on-page">shown</span>' : ''}
               </div>
             </div>
           </div>`).join('')}
       </div>`).join('');
   }
 
-  /** Where a story stands now, as one dotted line under its name. The weights
-   *  beside each development are what they got when they opened; this is what
-   *  the next one would get, which is the number that says whether the story
-   *  is worn out. Only readings the judge could not place have no story to be
-   *  weighed against. */
+  /** Where a story stands now: age, developments on record, routine level,
+   *  the weight the next development would open at, and the score that would
+   *  open whole. Unfiled readings have no story to be weighed against. */
   function storyState(s) {
-    if (s.routine == null) return '<span>unfiled — no story to weigh these against, so they open at full weight</span>';
-    const age = s.age_days < 1 ? 'under a day' : `${Math.round(s.age_days)} day${Math.round(s.age_days) === 1 ? '' : 's'}`;
+    if (s.routine == null) return '<span>unfiled · full weight</span>';
+    const age = s.age_days < 1 ? '<1d' : `${Math.round(s.age_days)}d`;
     return [
-      `<span>running ${age}, ${s.on_record} development${s.on_record === 1 ? '' : 's'} on record</span>`,
-      `<span>routinely scores ${s.routine}</span>`,
-      `<span>a new development opens at ${Math.round(s.fatigue * 100)}% weight</span>`,
-      s.breakthrough_at <= 10
-        ? `<span>a ${s.breakthrough_at} or higher opens whole</span>`
-        : '<span>nothing on the scale would count as a breakthrough</span>',
+      `<span>${age}</span>`,
+      `<span>${s.on_record} dev${s.on_record === 1 ? '' : 's'}</span>`,
+      `<span>routine ${s.routine}</span>`,
+      `<span>next ${Math.round(s.fatigue * 100)}%</span>`,
+      `<span>${s.breakthrough_at <= 10 ? `${s.breakthrough_at}+ whole` : 'no breakthrough'}</span>`,
     ].join('');
   }
 
-  /** "3 hours ago", for a development's age. The chart uses clock times; a
-   *  development is read as an age, which is what the decay is a function of. */
+  /** A development's age, which is what its decay is a function of. */
   function ago(iso) {
     const hours = (Date.now() - Date.parse(iso)) / 3600_000;
-    if (hours < 1) return `${Math.max(1, Math.round(hours * 60))} min ago`;
-    if (hours < 24) return `${Math.round(hours)}h ago`;
-    return `${Math.round(hours / 24)}d ago`;
+    if (hours < 1) return `${Math.max(1, Math.round(hours * 60))}m`;
+    if (hours < 24) return `${Math.round(hours)}h`;
+    return `${Math.round(hours / 24)}d`;
   }
 
   async function load() {
-    $('status').textContent = 'loading…';
     const res = await api(`/api/admin/history?hours=${hours}`);
     if (res.status === 401) return askForToken();
     const data = await res.json();
@@ -857,18 +850,14 @@
     // Same badge as the front page, which means the displayed value rather
     // than the newest reading — those differ on about 60% of hours.
     applyLevel(points.length ? points.at(-1).displayed ?? points.at(-1).score : null);
-    // The reading count lives in the tiles above; repeating it here said the
-    // same number twice on one screen.
-    const breaks = points.filter((p) => p.basis === 'new').length;
-    const halfLife = data.half_life_hours;
+    // Half-lives are in Settings; new developments are the filled dots.
     $('caption').innerHTML =
       '<span class="legend">'
-      + `<span><b><span class="swatch"></span>Displayed</b> — the loudest development, halving every ${halfLife}h; a story's routine developments fade over ${escapeHtml(String(data.story_half_life_days))}d</span>`
-      + '<span><b><span class="swatch raw"></span>Readings</b> — as submitted</span>'
-      + (breaks ? `<span class="legend-extra">${breaks} new development${breaks === 1 ? '' : 's'}</span>` : '')
-      + (failures.length ? '<span class="legend-extra">✕ failed run</span>' : '')
+      + '<span><span class="swatch"></span>Displayed</span>'
+      + '<span><span class="swatch raw"></span>Readings</span>'
+      + '<span><span class="swatch raw shock"></span>New</span>'
+      + (failures.length ? '<span>✕ Failed</span>' : '')
       + '</span>';
-    $('status').textContent = `updated ${fmtClock.format(new Date())}`;
   }
 
   for (const button of document.querySelectorAll('[data-hours]')) {
@@ -1057,7 +1046,7 @@
         // the button said the same two numbers a third time.
         status.textContent = '';
       } else {
-        status.textContent = 'Run failed — see Recent runs';
+        status.textContent = 'Run failed — see Runs';
       }
       await load();
     } catch {
@@ -1072,7 +1061,7 @@
   await loadSettings();
   await renderPrompts();
   setInterval(load, 60_000);
-  window.addEventListener('resize', renderChart);
+  window.addEventListener('resize', () => { renderChart(); renderGantt(); });
 </script>
 </body>
 </html>
