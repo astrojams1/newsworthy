@@ -117,7 +117,7 @@ test('turned to landscape, the timeline fades out under the header rather than r
       // Reported 2026-09-28 with a desktop and a landscape screenshot: the
       // landscape sentence ran twice as wide as the desktop one. The owner
       // prefers the narrow measure, so it is the same on every screen.
-      assert.ok(sentence.width > 280 && sentence.width <= 320, `landscape sentence keeps the desktop's narrow column (${Math.round(sentence.width)}pt)`);
+      assert.ok(sentence.width > 280 && sentence.width <= 320, `landscape sentence keeps a narrow column (${Math.round(sentence.width)}pt)`);
       // ...and the timeline fills the width as a grid of that measure rather
       // than keeping wide margins.
       const grid = await timelineColumns(opened);
@@ -156,7 +156,23 @@ test('turned to landscape, the timeline fades out under the header rather than r
       await desktop.getByTestId('timeline').waitFor();
       await desktop.waitForTimeout(1200);
       const desktopSentence = await desktop.getByTestId('rating-explanation').boundingBox();
-      assert.ok(desktopSentence.width > 280 && desktopSentence.width <= 320, `desktop sentence column (${Math.round(desktopSentence.width)}pt)`);
+      // Asked 2026-09-28: why is landscape three lines and desktop four, with
+      // room to spare on both? The measure widens with the text size, so the
+      // desktop's 22pt sentence breaks where the landscape one does.
+      const lines = page => page.getByTestId('rating-explanation').evaluate(n => Math.round(n.getBoundingClientRect().height / parseFloat(getComputedStyle(n).lineHeight)));
+      const breaks = page => page.getByTestId('rating-explanation').evaluate(n => {
+        const range = document.createRange();
+        const walker = document.createTreeWalker(n, NodeFilter.SHOW_TEXT); const words = [];
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          for (const match of node.textContent.matchAll(/\S+/g)) {
+            range.setStart(node, match.index); range.setEnd(node, match.index + match[0].length);
+            words.push({ word: match[0], top: Math.round(range.getBoundingClientRect().top) });
+          }
+        }
+        return words.filter((w, i) => i > 0 && w.top !== words[i - 1].top).map(w => w.word);
+      });
+      assert.equal(await lines(desktop), await lines(safari), 'desktop and Safari landscape take the same number of lines');
+      assert.deepEqual(await breaks(desktop), await breaks(safari), 'and break at the same words');
       const desktopGrid = await timelineColumns(desktop);
       assert.equal(desktopGrid.columns, 3, 'desktop timeline is three columns');
       await scrollIntoTimeline(desktop, desktopSize);

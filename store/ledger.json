@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-28T06:56:20+00:00",
+  "updated_at": "2026-09-28T07:06:26+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1008,12 +1008,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner follow-up 2026-09-28 on production 53f1f5f from iPhone Safari: the landscape timeline stayed one column (Safari's landscape page is ~743pt, too narrow for two 320pt columns), and the landscape sentence ended on a stranded word unlike desktop. Grid columns now narrow to 280pt so two fit; the sentence uses text-wrap: balance on the web and timeline entries text-wrap: pretty. Prototype on the branch; the owner has not yet chosen between this and a number-beside-sentence landscape layout. Verified in headless Chromium only.",
+      "summary": "Owner follow-up 2026-09-28 on production 53f1f5f from iPhone Safari: the landscape timeline stayed one column (Safari's landscape page is ~743pt), and landscape took 3 lines where desktop took 4. The sentence measure is now 320pt per 17pt of its size (~414pt at desktop's 22pt), so landscape, portrait and desktop break at the same words; web lines are balanced (text-wrap: balance), timeline entries pretty; grid columns narrow to 280pt so Safari landscape gets two. Verified in headless Chromium only.",
       "evidence": [
-        "test/web-landscape.test.js adds a 743x340 case: balanced sentence, cue on the first screen, two columns; surface-design adds 743x340 to the grid cases and asserts balance on web only; npm test and npm run test:design pass"
+        "test/web-landscape.test.js: at 743x340 the sentence is balanced, the cue on the first screen and the timeline two columns, and desktop matches its line count and break words; surface-design asserts the proportional measure, grid widths and web-only balance; npm test and npm run test:design pass"
       ],
-      "next_action": "Owner: choose balance or side-by-side landscape; then check iPhone Safari after merge. Native apps have no balance equivalent and are untested in landscape.",
-      "updated_at": "2026-09-28T06:56:20+00:00"
+      "next_action": "Owner: approve, then check iPhone Safari landscape and desktop after merge. Native apps have no balance equivalent and are untested in landscape.",
+      "updated_at": "2026-09-28T07:06:26+00:00"
     },
     "ui.header-icon-size": {
       "state": "waiting_verification",
@@ -6406,6 +6406,22 @@
         ],
         "next_action": "Owner: choose balance or side-by-side landscape; then check iPhone Safari after merge. Native apps have no balance equivalent and are untested in landscape.",
         "updated_at": "2026-09-28T06:56:20+00:00"
+      }
+    },
+    {
+      "sequence": 336,
+      "at": "2026-09-28T07:06:26+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-up 2026-09-28 on production 53f1f5f from iPhone Safari: the landscape timeline stayed one column (Safari's landscape page is ~743pt), and landscape took 3 lines where desktop took 4. The sentence measure is now 320pt per 17pt of its size (~414pt at desktop's 22pt), so landscape, portrait and desktop break at the same words; web lines are balanced (text-wrap: balance), timeline entries pretty; grid columns narrow to 280pt so Safari landscape gets two. Verified in headless Chromium only.",
+        "evidence": [
+          "test/web-landscape.test.js: at 743x340 the sentence is balanced, the cue on the first screen and the timeline two columns, and desktop matches its line count and break words; surface-design asserts the proportional measure, grid widths and web-only balance; npm test and npm run test:design pass"
+        ],
+        "next_action": "Owner: approve, then check iPhone Safari landscape and desktop after merge. Native apps have no balance equivalent and are untested in landscape.",
+        "updated_at": "2026-09-28T07:06:26+00:00"
       }
     }
   ],

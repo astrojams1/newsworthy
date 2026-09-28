@@ -17,13 +17,17 @@ import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
 
-// The sentence keeps one narrow measure on every screen, and on the web its
-// lines are balanced, so however many it takes they read as one even block,
-// never a long line and a stranded last word. Where the screen is wider, the
-// timeline fills it with a grid of entries rather than wide margins: as many
-// columns as fit at GRID_MIN wide, each up to COLUMN. Safari in landscape
-// leaves a phone about 740pt, which two full 320pt columns and margins miss.
+// The sentence keeps one measure in characters on every screen: 320pt at the
+// 17pt of a turned phone and the timeline, widened in proportion where the
+// text is larger, so the desktop's 22pt breaks its lines where landscape does
+// rather than taking an extra line. On the web its lines are balanced, so
+// they read as one even block, never a long line and a stranded last word.
+// Where the screen is wider, the timeline fills it with a grid of entries
+// rather than wide margins: as many columns as fit at GRID_MIN wide, each up
+// to COLUMN. Safari in landscape leaves a phone about 740pt, which two full
+// 320pt columns and their margins do not fit.
 const COLUMN = 320;
+const COLUMN_SIZE = 17;
 const GRID_MIN = 280;
 const GRID_GAP = 48;
 const GRID_MAX_COLUMNS = 3;
@@ -52,7 +56,7 @@ export default function Home() {
   const scoreSize = landscape ? Math.min(height * 0.22, 224) : Math.max(64, Math.min(width * 0.42, height * 0.24, 224));
   const sentenceSize = landscape ? 17 : Math.max(18, Math.min(width * 0.045, 22));
   const horizontal = Math.max(20, Math.min(width * 0.05, 48));
-  const column = COLUMN * fontScale;
+  const column = COLUMN * sentenceSize / COLUMN_SIZE * fontScale;
   const available = width - horizontal * 2;
   const columns = Math.max(1, Math.min(GRID_MAX_COLUMNS, Math.floor((available + GRID_GAP) / (GRID_MIN * fontScale + GRID_GAP))));
   const gridWidth = Math.min(available, columns * COLUMN * fontScale + (columns - 1) * GRID_GAP);

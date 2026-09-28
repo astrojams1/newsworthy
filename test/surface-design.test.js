@@ -461,10 +461,12 @@ test('story timeline prototype sits a full screen below the reading, in the sent
     // A quiet cue announces the timeline instead.
     assert.ok(withTimeline.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
     assert.ok(!without.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
-    // The timeline shares the sentence's column rather than keeping a margin of its own.
+    // The timeline shares the sentence's measure in characters rather than
+    // keeping a margin of its own: its 17pt entries take 320pt, as the
+    // sentence takes 320pt per 17pt of its own size.
     const sentence = withTimeline.find(n => n.props?.testID === 'rating-explanation');
     const timeline = withTimeline.find(n => n.type === 'Timeline');
-    assert.equal(timeline.parent.props.style.maxWidth, sentence.props.style.maxWidth);
+    assert.equal(timeline.parent.props.style.maxWidth, Math.round(sentence.props.style.maxWidth * 17 / sentence.props.style.fontSize));
     // However short, the timeline is a screen tall below the header, so its top can reach the snap offset.
     assert.equal(timeline.parent.props.style.minHeight, 874 - 44 - 32);
     assert.deepEqual(timeline.props.developments, [development]);
@@ -488,7 +490,8 @@ test('the sentence keeps one narrow measure on every screen, and a wide screen l
     for (const [width, height, columns] of cases) {
       const tree = nodes(renderReading({ platform, width, height, timeline: [development] }));
       const sentence = tree.find(n => n.props?.testID === 'rating-explanation');
-      assert.equal(sentence.props.style.maxWidth, 320, `${platform} ${width}×${height} sentence measure`);
+      // One measure in characters: 320pt at 17pt, in proportion to the sentence's size.
+      assert.equal(Math.round(sentence.props.style.maxWidth), Math.round(320 * sentence.props.style.fontSize / 17), `${platform} ${width}×${height} sentence measure`);
       const timeline = tree.find(n => n.type === 'Timeline');
       assert.equal(timeline.props.columns, columns, `${platform} ${width}×${height} columns`);
       // Up to 320 a column; narrower where Safari's landscape page cannot fit two at full width.
