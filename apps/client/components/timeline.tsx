@@ -82,7 +82,7 @@ export function Timeline({ developments, opacity, theme, now, scrollY, offset, f
               </Text>
             </Animated.View>}
             <Animated.View style={{ opacity: fade(at(sentenceTop)) }}>
-              <Text selectable style={{ color: theme.ink, fontSize: 17, lineHeight: 27 }}>{development.explanation}</Text>
+              <Text selectable style={{ color: theme.ink, fontSize: 17, lineHeight: 27, ...(process.env.EXPO_OS === 'web' ? { textWrap: 'pretty' } as object : null) }}>{development.explanation}</Text>
             </Animated.View>
           </View>;
         })}

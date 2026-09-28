@@ -135,6 +135,20 @@ test('turned to landscape, the timeline fades out under the header rather than r
       await scrollIntoTimeline(opened, landscape);
       assert.deepEqual(await linesUnderHeader(opened), [], 'no timeline line at strength under the header');
 
+      // Reported 2026-09-28 from iPhone Safari: its landscape page is about
+      // 743pt wide, too narrow for two full columns, and the timeline stayed
+      // one column between wide margins. Columns narrow to fit two.
+      const safariSize = { width: 743, height: 340 };
+      const safari = await openReading(browser, safariSize);
+      await safari.goto(`${base}/`);
+      await safari.getByTestId('timeline').waitFor();
+      await safari.waitForTimeout(1200);
+      // Balanced lines: no stranded last word, and the sentence still fits the first screen.
+      assert.equal(await safari.getByTestId('rating-explanation').evaluate(n => getComputedStyle(n).textWrap || getComputedStyle(n).textWrapStyle), 'balance');
+      const safariCue = await safari.getByLabel('Earlier developments').first().boundingBox();
+      assert.ok(safariCue.y + safariCue.height <= safariSize.height, 'the cue is on the first screen at Safari\'s size');
+      assert.equal((await timelineColumns(safari)).columns, 2, 'Safari landscape timeline is two columns');
+
       // The desktop gets the same sentence and a wider grid.
       const desktopSize = { width: 1440, height: 900 };
       const desktop = await openReading(browser, desktopSize);

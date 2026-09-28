@@ -17,10 +17,14 @@ import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
 
-// The sentence keeps one narrow measure on every screen, upright or turned,
-// phone or desktop. Where the screen is wider than that, the timeline fills
-// it with a grid of entries in the same measure rather than wide margins.
+// The sentence keeps one narrow measure on every screen, and on the web its
+// lines are balanced, so however many it takes they read as one even block,
+// never a long line and a stranded last word. Where the screen is wider, the
+// timeline fills it with a grid of entries rather than wide margins: as many
+// columns as fit at GRID_MIN wide, each up to COLUMN. Safari in landscape
+// leaves a phone about 740pt, which two full 320pt columns and margins miss.
 const COLUMN = 320;
+const GRID_MIN = 280;
 const GRID_GAP = 48;
 const GRID_MAX_COLUMNS = 3;
 
@@ -49,8 +53,9 @@ export default function Home() {
   const sentenceSize = landscape ? 17 : Math.max(18, Math.min(width * 0.045, 22));
   const horizontal = Math.max(20, Math.min(width * 0.05, 48));
   const column = COLUMN * fontScale;
-  const columns = Math.max(1, Math.min(GRID_MAX_COLUMNS, Math.floor((width - horizontal * 2 + GRID_GAP) / (column + GRID_GAP))));
-  const gridWidth = columns * column + (columns - 1) * GRID_GAP;
+  const available = width - horizontal * 2;
+  const columns = Math.max(1, Math.min(GRID_MAX_COLUMNS, Math.floor((available + GRID_GAP) / (GRID_MIN * fontScale + GRID_GAP))));
+  const gridWidth = Math.min(available, columns * COLUMN * fontScale + (columns - 1) * GRID_GAP);
   const { reading, failed, loading, refresh } = useCurrentReading();
   // Nothing is drawn until there is something to say: a placeholder dash, then
   // the reading, then the gradient was three layouts in the first second. Once
@@ -195,7 +200,7 @@ export default function Home() {
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
-        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
+        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24, ...(process.env.EXPO_OS === 'web' ? { textWrap: 'balance' } as object : null) }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
         {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>Checked {relative}</Animated.Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
@@ -206,8 +211,8 @@ export default function Home() {
           </Pressable>
         </Animated.View>}
       </Animated.View>
-      {/* Entries share the sentence's measure, so the timeline has no margin of
-          its own; where the screen fits more than one, they form a grid. At least
+      {/* Entries keep about the sentence's measure, so the timeline has no margin
+          of its own; where the screen fits more than one, they form a grid. At least
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
       {reading && <View style={{ maxWidth: gridWidth, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-28T06:19:04+00:00",
+  "updated_at": "2026-09-28T06:56:20+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1008,12 +1008,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner follow-up 2026-09-28: landscape phone web and desktop web drew the sentence at different widths (480pt vs 320pt). The owner prefers the narrow one, so the sentence is 320pt (scaled with text size) on every screen, and the landscape score is 22% of height to keep the spacing. The timeline becomes a grid of up to three 320pt columns where the screen fits them (two on a landscape phone, three on desktop), every entry tagged in full; fade positions sum row heights. Verified in headless Chromium only; native apps untested.",
+      "summary": "Owner follow-up 2026-09-28 on production 53f1f5f from iPhone Safari: the landscape timeline stayed one column (Safari's landscape page is ~743pt, too narrow for two 320pt columns), and the landscape sentence ended on a stranded word unlike desktop. Grid columns now narrow to 280pt so two fit; the sentence uses text-wrap: balance on the web and timeline entries text-wrap: pretty. Prototype on the branch; the owner has not yet chosen between this and a number-beside-sentence landscape layout. Verified in headless Chromium only.",
       "evidence": [
-        "test/web-landscape.test.js asserts a 320pt sentence and a 2-column landscape / 3-column desktop grid with no line at strength under the header; surface-design asserts measure and columns across ios/android/web at four sizes; npm test and npm run test:design pass"
+        "test/web-landscape.test.js adds a 743x340 case: balanced sentence, cue on the first screen, two columns; surface-design adds 743x340 to the grid cases and asserts balance on web only; npm test and npm run test:design pass"
       ],
-      "next_action": "Owner: check iPhone Safari landscape and desktop web after merge; iPad and native landscape untested.",
-      "updated_at": "2026-09-28T06:19:04+00:00"
+      "next_action": "Owner: choose balance or side-by-side landscape; then check iPhone Safari after merge. Native apps have no balance equivalent and are untested in landscape.",
+      "updated_at": "2026-09-28T06:56:20+00:00"
     },
     "ui.header-icon-size": {
       "state": "waiting_verification",
@@ -6390,6 +6390,22 @@
         ],
         "next_action": "Owner: check iPhone Safari landscape and desktop web after merge; iPad and native landscape untested.",
         "updated_at": "2026-09-28T06:19:04+00:00"
+      }
+    },
+    {
+      "sequence": 335,
+      "at": "2026-09-28T06:56:20+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-up 2026-09-28 on production 53f1f5f from iPhone Safari: the landscape timeline stayed one column (Safari's landscape page is ~743pt, too narrow for two 320pt columns), and the landscape sentence ended on a stranded word unlike desktop. Grid columns now narrow to 280pt so two fit; the sentence uses text-wrap: balance on the web and timeline entries text-wrap: pretty. Prototype on the branch; the owner has not yet chosen between this and a number-beside-sentence landscape layout. Verified in headless Chromium only.",
+        "evidence": [
+          "test/web-landscape.test.js adds a 743x340 case: balanced sentence, cue on the first screen, two columns; surface-design adds 743x340 to the grid cases and asserts balance on web only; npm test and npm run test:design pass"
+        ],
+        "next_action": "Owner: choose balance or side-by-side landscape; then check iPhone Safari after merge. Native apps have no balance equivalent and are untested in landscape.",
+        "updated_at": "2026-09-28T06:56:20+00:00"
       }
     }
   ],
