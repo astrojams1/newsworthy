@@ -11,7 +11,7 @@ says so in its own entry. Each window starts where the previous one ended.
 | [2026-09-26-01](#2026-09-26-01) | 2026-09-25 22:40 → 2026-09-26 02:13 | 4833e57 | 4 / 2 / 3 | 00:03 (763), 02:03 (765) | Where the pre-#144 workflow comes from |
 | [2026-09-26-02](#2026-09-26-02) | 2026-09-26 02:13 → 08:08 | 3861907, then fae4cc6 | 6 / 6 / 5 | 06:03 (769), 07:03 (770), 08:03 (771) | Caller-side cache of the Routine URL: confirm |
 | [2026-09-26-03](#2026-09-26-03) | 2026-09-26 08:08 → 2026-09-27 05:11 | 53910ed → f725e6d (7 deploys) | 21 / 21 / 0 | 10:03 (773) | Breakout detection on a trading day; null `story` on unjudged points; unlinked report |
-| [2026-09-28-01](#2026-09-28-01) | 2026-09-27 05:11 → 2026-09-28 10:02 | 815d382 → 6916149 | 28 / 28 / 0 | none | Page shows a v17 sentence naming an outlet; new events folded into one 55-hour development; CNBC refused every run |
+| [2026-09-28-01](#2026-09-28-01) | 2026-09-27 05:11 → 2026-09-28 10:02 | f725e6d → 6916149 | 28 / 28 / 0 | none | Page shows a v17 sentence naming an outlet; new events folded into one 55-hour development; CNBC refused in 24 of 28 runs |
 
 ## 2026-09-25-01
 
@@ -326,8 +326,13 @@ owner's direction. The review changed nothing further.
 ## 2026-09-28-01
 
 **Window** 2026-09-27 05:11 → 2026-09-28 10:02 UTC. Production moved from
-`815d382` (#165) to `6916149` (#183). The changes that touch the caller or the
-sentence:
+`f725e6d` (#162) to `6916149` (#183). The first merges in the window were:
+- **05:11:** #163, user-facing copy;
+- **06:27:** #164, the previous ledger entry;
+- **08:11:** #165, which makes a re-report show its development's existing
+  sentence. Runs 793–795 predate it.
+
+The changes that touch the caller or the sentence:
 - **08:26 Sep 27:** #166 ships prompt v19, whose sentence never names a news
   outlet.
 - **09:02:** #167 makes the review script flag a sentence that names an outlet.
