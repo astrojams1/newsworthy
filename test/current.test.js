@@ -294,6 +294,40 @@ test('a one-point drift never restarts the clock', () => {
   }
 });
 
+test('a long run of re-reports cannot restart the clock by noise alone', () => {
+  // Development 766 as stored, 2026-09-26 03:04 to 09-28 17:04: 63 hourly
+  // readings the judge called the same event. The level dipped to 4 overnight
+  // and touched 6 once; measured from that low, the rise restarted the clock
+  // and the page jumped from 2 to 6 on unchanged news. Its usual level was 5.
+  const scores = [4, 3, 4, 4, 4, 4, 4, 4, 3, 3, 4, 3, 3, 4, 4, 4, 3, 4, 4, 4, 4, 3, 5, 5, 5, 5, 5,
+    5, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6, 5,
+    6, 5, 6, 5];
+  const series = judged(...scores.map((score) => [score, 0]));
+  const out = displayedSeries(series);
+  for (let i = 1; i < out.length; i += 1) {
+    assert.ok(out[i].displayed - out[i - 1].displayed < 2,
+      `rose from ${out[i - 1].displayed} to ${out[i].displayed} at reading ${i}`);
+  }
+  const page = currentDisplay(series, { now: series.at(-1).t });
+  assert.equal(page.since, series[0].t, 'the clock never restarted');
+});
+
+test('the usual level does not depend on how much history was fetched', () => {
+  // `/api/current` replays four weeks and the admin chart up to a year, so a
+  // baseline over everything since the anchor could re-anchor on one and not
+  // the other. Twenty days of 5s, sixteen of 6s, then 7s: over the whole run
+  // the usual level is 5 and a 7 clears it; over four weeks it is 6.
+  const scores = [...Array(20 * 24).fill(5), ...Array(16 * 24).fill(6), ...Array(6).fill(7)];
+  const series = judged(...scores.map((score) => [score, 0]));
+  const recent = series.filter((p) => series.at(-1).t - p.t <= 28 * 24 * HOUR);
+  const roots = new Map([[0, { t: series[0].t }]]);
+  const now = series.at(-1).t;
+  const whole = currentDisplay(series, { now, roots });
+  const fourWeeks = currentDisplay(recent, { now, roots });
+  assert.equal(fourWeeks.since, whole.since, 'the same anchor from either range');
+  assert.equal(fourWeeks.score, whole.score);
+});
+
 test('a new development on a faded story is shown at once', () => {
   // Ageing must not swallow the next break. An 8 that has decayed for a day is
   // at 2; a genuinely new development scored 6 shows 6 the hour it arrives.
