@@ -129,6 +129,9 @@ widgets and the complete app package without updating local Xcode.
 - `README.md`, `AGENTS.md`: developer and coding-agent guidance.
 - `store/`: canonical mobile listing copy, native captures, artwork, upload scripts,
   release evidence and account-owner steps; `docs/store-listing.md` points there.
+- `store/video/reel.js`: every line of the store preview video, each naming the
+  file above it quotes; `render-video.mjs --stale` reports a line that has
+  drifted, and the preview-reel skill re-renders it.
 
 If the production domain or release status changes, update all applicable
 surfaces above, plus `mobile.release.json`. Search engines and social platforms

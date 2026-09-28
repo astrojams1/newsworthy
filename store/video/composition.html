@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Newsworthy preview</title>
+<!-- No favicon request: the renderer treats any failed load as an error. -->
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+  .world, .layer { position: absolute; inset: 0; }
+  .world * { position: absolute; box-sizing: border-box; }
+  .world .flow, .world .flow * { position: static; }
+  .t { white-space: pre; line-height: 0; }
+  #grain { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: overlay; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script type="module" src="./composition.js"></script>
+</body>
+</html>

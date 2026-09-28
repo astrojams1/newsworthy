@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-28T01:21:33+00:00
+Updated: 2026-09-28T02:15:32+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -99,6 +99,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | copy.no-ai-listing | todo | agent | observed | Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing. | Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI. |
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
 | web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
+| store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
 
 ## Evidence and history
 
@@ -3232,3 +3233,16 @@ Owner reversed the scroll request 2026-09-28: the staggered fade (number, senten
 - test/surface-design.test.js reading-order case
 
 Next: Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK
+
+### 329. store.preview-video — waiting_user
+
+2026-09-28T02:15:32+00:00 · observed · user
+
+15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store.
+
+- store/assets/apple/app-preview/iphone-886x1920.mp4 and store/assets/google-play/video/promo-1080x1920.mp4: 453 frames each, profile_idc 100 and level_idc 40 read from the streams, -15.8 LUFS integrated, -3.0 dBFS peak.
+- Frames decoded from both MP4s inspected, including the fastest odometer rolls for motion blur and a dark frame contrast-stretched for banding.
+- Apple guideline 2.3.4: previews may only use video screen captures of the app itself, so App Review may refuse this cut as an app preview. Google Play: a YouTube link, at least 80% representative of the in-app experience.
+- Rendered before #171-#173 changed the home screen: without the timeline the reading now sits 16 pt lower, and it fades in on load where the film lifts the splash's dash into it. render-video.mjs --stale lists the change; store/video/ledger.md tracks the remake.
+
+Next: Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.
