@@ -87,14 +87,7 @@ export default function Home() {
   // The reading is gone before any of it can reach the header, so in the
   // timeline the score and top story are entirely out of view, mid-scroll too.
   const readingGone = Math.min(span * 0.3, 160);
-  // Leaving for the timeline, the reading fades in reverse reading order: the
-  // Checked time, then the sentence, then the number. Coming back it returns in
-  // the order it loads: number, sentence, time. Each part is also held by its
-  // load fade, so a scroll mid-load cannot show a part early.
-  const scrollFade = (from: number, to: number) => scrollY.interpolate({ inputRange: [readingGone * from, readingGone * to], outputRange: [1, 0], extrapolate: 'clamp' });
-  const numberOpacity = hasTimeline ? Animated.multiply(reveal, scrollFade(0.4, 1)) : reveal;
-  const sentenceOpacity = hasTimeline ? Animated.multiply(sentenceIn, scrollFade(0.2, 0.8)) : sentenceIn;
-  const checkedOpacity = hasTimeline ? Animated.multiply(checkedIn, scrollFade(0, 0.6)) : checkedIn;
+  const readingFade = scrollY.interpolate({ inputRange: [0, readingGone], outputRange: [1, 0], extrapolate: 'clamp' });
   const timelineFade = scrollY.interpolate({ inputRange: [readingGone * 0.5, span * 0.6], outputRange: [0, 1], extrapolate: 'clamp' });
   const cueFade = scrollY.interpolate({ inputRange: [0, 48], outputRange: [1, 0], extrapolate: 'clamp' });
   // Native snaps with snapToOffsets. The web uses the browser's own CSS scroll
@@ -170,18 +163,18 @@ export default function Home() {
           fills the scroll view and nothing scrolls, as before the timeline. Both
           are one screen with the same padding, so the reading does not move when
           the timeline arrives after it. */}
-      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: insets.bottom + (landscape ? 16 : 56) }}>
+      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: insets.bottom + (landscape ? 16 : 56) }}>
         <Animated.View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
-          style={{ opacity: numberOpacity, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
+          style={{ opacity: reveal, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
           <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"
             style={{ color: theme.ink, fontSize: scoreSize, lineHeight: scoreSize * 1.05, flexShrink: 1, fontWeight: '300', fontFamily: scoreFont, fontVariant: ['tabular-nums'], letterSpacing: -scoreSize * 0.055 }}>
             {reading?.score ?? '–'}
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
-        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceOpacity, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
-        {reading && <Animated.Text selectable style={{ opacity: checkedOpacity, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Checked {relative}</Animated.Text>}
-        {shareNotice !== '' && <Animated.Text accessibilityLiveRegion="polite" style={{ opacity: checkedOpacity, color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Animated.Text>}
+        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
+        {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Checked {relative}</Animated.Text>}
+        {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
         {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: Animated.multiply(cueIn, cueFade) }}>
           <Pressable accessibilityRole="button" accessibilityLabel="Earlier developments" onPress={showTimeline}

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-28T00:52:10+00:00
+Updated: 2026-09-28T01:21:33+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -98,7 +98,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | ui.onboarding | waiting_verification | agent | observed | First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
 | copy.no-ai-listing | todo | agent | observed | Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing. | Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI. |
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
-| web.home-load | waiting_verification | user | observed | Owner asked 2026-09-28 for the reading to fade in order on load and on scrolling to and from the timeline. Load: number with gradient and Share, then sentence, then Checked time (450ms each, 250ms apart). Scroll: time, sentence, number fade out in turn and return number first. Observed in headless Chromium against a delayed mock API; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
+| web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
 
 ## Evidence and history
 
@@ -3220,5 +3220,15 @@ Owner asked 2026-09-28 for the reading to fade in order on load and on scrolling
 
 - test/surface-design.test.js reading-order and scroll-order cases
 - Chromium captures of load and of scroll offsets 0-160px
+
+Next: Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK
+
+### 328. web.home-load — waiting_verification
+
+2026-09-28T01:21:33+00:00 · observed · user
+
+Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified.
+
+- test/surface-design.test.js reading-order case
 
 Next: Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK
