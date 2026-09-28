@@ -31,11 +31,14 @@ export function storyHalfLifeLabel(days) {
   if (days === 7) return 'a week';
   if (days === 14) return 'two weeks';
   if (days === 30) return 'a month';
+  if (days === 90) return 'three months';
   return `${days} days`;
 }
 
 export function halfLifeLabel(hours) {
-  return hours === 24 ? 'a day' : `${hours} hours`;
+  if (hours === 24) return 'a day';
+  if (hours === 48) return 'two days';
+  return `${hours} hours`;
 }
 
 export function intervalLabel(minutes) {

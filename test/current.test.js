@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { TIMELINE_HOURS, activeStories, agedScore, currentDisplay, currentReading, developmentTimeline, displayedSeries, frontPageSpans } from '../src/current.js';
+import * as current from '../src/current.js';
+import { TIMELINE_HOURS, agedScore, currentReading, developmentTimeline, frontPageSpans } from '../src/current.js';
 import { storyLabel, timelineAge, timelineLabels, validDevelopment } from '../apps/client/lib/timeline.js';
 import { CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
 
@@ -9,6 +10,15 @@ const readings = (...scores) =>
   scores.map((score, i) => ({ score, explanation: `reading ${i}`, created_at: `t${i}` }));
 
 const HOUR = 3600_000;
+
+// The rule is tested at a 12-hour development half-life and a 7-day story
+// half-life, whatever the shipped defaults are: the arithmetic below (an 8 that
+// reads 4 twelve hours later, a fortnight-old story's 5 opening at about 1) is
+// easiest to follow there. A test that sets either passes its own.
+const RULE = { halfLifeHours: 12, storyHalfLifeDays: 7 };
+const displayedSeries = (series, options = {}) => current.displayedSeries(series, { ...RULE, ...options });
+const currentDisplay = (series, options = {}) => current.currentDisplay(series, { ...RULE, ...options });
+const activeStories = (series, options = {}) => current.activeStories(series, { ...RULE, ...options });
 
 /**
  * An ascending series of judged readings. `spec` entries are [score, root],
@@ -394,13 +404,13 @@ test('a point keeps its own story, and names the leading one separately', () => 
 
 test('a development older than the lookback leaves the board', () => {
   // What is live is the same set that competes for the front page. A story
-  // nobody has added to in three days is at the floor and no longer competing,
-  // so it stops accumulating there.
+  // nobody has added to in six days is past three halvings at the longest
+  // half-life and no longer competing, so it stops accumulating there.
   const series = [
     { id: 1, t: 0, score: 8, story: 'old', development_of: null, explanation: 'old news' },
-    { id: 2, t: 80 * HOUR, score: 4, story: 'now', development_of: null, explanation: 'todays news' },
+    { id: 2, t: 150 * HOUR, score: 4, story: 'now', development_of: null, explanation: 'todays news' },
   ].map((r) => ({ ...r, judge_version: 1, created_at: new Date(r.t).toISOString() }));
-  const board = activeStories(series, { now: 80 * HOUR });
+  const board = activeStories(series, { now: 150 * HOUR });
   assert.deepEqual(board.map((s) => s.story), ['now']);
 });
 
@@ -589,7 +599,7 @@ test('the quiet band tracks the rater, then falls to the floor', () => {
   assert.equal(out[0].displayed, 3);
   assert.equal(out[2].displayed, 3, 'the first hours read what the rater said');
   assert.equal(out.at(-1).displayed, 1);
-  assert.equal(agedScore(3, 24 * HOUR) < 1, true, 'three halvings of 3 is under 1');
+  assert.equal(agedScore(3, 24 * HOUR, RULE.halfLifeHours) < 1, true, 'two halvings of 3 is under 1');
 });
 
 test('the score is smoothed, the sentence is not', async () => {
@@ -598,7 +608,7 @@ test('the score is smoothed, the sentence is not', async () => {
   // sentence sitting beside a current number reads as an app that has stopped.
   // No startup tick: an empty database makes the scheduler rate immediately
   // with a RANDOM mock score, and that reading now opens a development of its
-  // own that stays live for three days. The old workaround — submit five
+  // own that stays live for six days. The old workaround — submit five
   // readings to push it out of the six-hour level window — no longer works,
   // because a development outlives the window by design.
   await withServer({ port: PORTS.currentSmoothing, env: { NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
@@ -737,20 +747,20 @@ test('an escalated development keeps its first-coverage place and age in the tim
 });
 
 test('a re-report of a development older than the window drops nothing from the timeline', () => {
-  // X opens at hour 0, Y at hour 70, and the newest reading re-reports X at
-  // hour 74 without re-anchoring it. X is past the live window, so it is not
+  // X opens at hour 0, Y at hour 140, and the newest reading re-reports X at
+  // hour 148 without re-anchoring it. X is past the live window, so it is not
   // in the timeline; Y is not on the page and must stay.
   const at = (id, hour, score, root, story) => ({
     id, t: hour * HOUR, score, story, explanation: `sentence ${id}`,
     created_at: new Date(hour * HOUR).toISOString(), judge_version: 1, development_of: root === id ? null : root,
   });
-  const series = [at(0, 0, 4, 0, 'x'), at(1, 70, 4, 1, 'y'), at(2, 74, 4, 0, 'x')];
-  const stories = activeStories(series, { now: 74 * HOUR });
+  const series = [at(0, 0, 4, 0, 'x'), at(1, 140, 4, 1, 'y'), at(2, 148, 4, 0, 'x')];
+  const stories = activeStories(series, { now: 148 * HOUR });
   assert.deepEqual(stories.flatMap((story) => story.developments).map((d) => [d.root, d.on_page]), [[1, false]]);
-  assert.deepEqual(developmentTimeline(stories, { now: 74 * HOUR }).map((d) => d.root), [1]);
+  assert.deepEqual(developmentTimeline(stories, { now: 148 * HOUR }).map((d) => d.root), [1]);
 });
 
-test('the timeline reaches back one week by first coverage; the board keeps its three days', () => {
+test('the timeline reaches back one week by first coverage; the board keeps its six days', () => {
   const at = (id, day, story) => ({
     id, t: day * 24 * HOUR, score: 4, story, explanation: `sentence ${id}`,
     created_at: new Date(day * 24 * HOUR).toISOString(), judge_version: 1, development_of: null,
@@ -758,8 +768,8 @@ test('the timeline reaches back one week by first coverage; the board keeps its 
   // Developments first covered 8, 5 and 2 days before the newest reading.
   const series = [at(0, 0, 'a'), at(1, 3, 'b'), at(2, 6, 'c'), at(3, 8, 'd')];
   const now = 8 * 24 * HOUR;
-  assert.deepEqual(activeStories(series, { now }).flatMap((s) => s.developments).map((d) => d.root).sort(), [2, 3],
-    'the board is unchanged: three days');
+  assert.deepEqual(activeStories(series, { now }).flatMap((s) => s.developments).map((d) => d.root).sort(), [1, 2, 3],
+    'the board is unchanged: six days');
   const stories = activeStories(series, { now, liveHours: TIMELINE_HOURS });
   // 8 days is past the window; 5 and 2 are inside it; 3 is on the page.
   assert.deepEqual(developmentTimeline(stories, { now }).map((d) => d.root), [2, 1]);

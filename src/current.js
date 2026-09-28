@@ -66,37 +66,43 @@ const MIN_WINDOW = 3;
  *  skip the news", which is what a story nobody has added to in two days is. */
 const FLOOR = 1;
 
-/** Hours for a development's level to halve. Twelve: a 7 breaking in the
- *  morning reads 5 by evening and 4 the next morning, which is the shape asked
- *  for — a decay measured in hours of a day, not in days. Adjustable from
- *  /admin, because the right value is a matter of taste about the front page
- *  and the chart replays whatever is set. */
-const DEFAULT_HALF_LIFE_HOURS = 12;
+/** Hours for a development's level to halve. Forty-eight, the owner's choice
+ *  on 2026-09-28 after replaying a week of production readings: at twelve a 4
+ *  reached the floor within a day and the page sat at 1 most of the week; at
+ *  forty-eight the same peaks land the same hour and fall over days, and the
+ *  hour-to-hour movement fell from 0.15 to 0.07. Adjustable from /admin,
+ *  because the right value is a matter of taste about the front page and the
+ *  chart replays whatever is set. */
+const DEFAULT_HALF_LIFE_HOURS = 48;
 
 /** Offered in the admin picker. Nothing here is magic; they are a spread from
  *  "aggressive" to "gentle" wide enough to tell apart on the chart. */
-const HALF_LIFE_CHOICES = [4, 6, 8, 12, 24];
+const HALF_LIFE_CHOICES = [4, 6, 8, 12, 24, 48];
 
-/** How far back the replay reads to find a development's first report. Three
+/** How far back the replay reads to find a development's first report. Six
  *  days: at the longest half-life that is three halvings, so a development
  *  older than this is at the floor either way, and its exact age stops
  *  mattering. Roots older than the window are still fetched by id, so `since`
  *  is the real first report rather than the edge of the window. */
-const LOOKBACK_HOURS = 72;
+const LOOKBACK_HOURS = 144;
 
 /** Days for a story's routine developments to lose half their weight.
  *
  *  A development's half-life says how fast one event goes stale. This says how
  *  fast a *thread* does: a war in its sixth month produces a development every
  *  day, each scored 5 by a rater that has no memory of the previous four
- *  hundred, and none of them is worth a reader's time. Seven days, so a story
- *  a fortnight old carries a quarter of the weight and one two months old
- *  carries almost none — unless it does something it has not done before,
- *  which is what `SHOCK_MARGIN` below is for. Adjustable from /admin. */
-const DEFAULT_STORY_HALF_LIFE_DAYS = 7;
+ *  hundred, and none of them is worth a reader's time. Ninety days, the owner's
+ *  choice on 2026-09-28 alongside the 48-hour development half-life. Memory
+ *  stops at `STORY_MEMORY_DAYS`, so no story is older than 28 days here and a
+ *  routine development keeps at least 2^(-28/90), about 81%, of its score —
+ *  a gentle discount, where seven days (the first default) cut a fortnight-old
+ *  story's daily 5 to about 1. A development two clear of the routine level
+ *  escapes it entirely, which is what `SHOCK_MARGIN` below is for. Adjustable
+ *  from /admin. */
+const DEFAULT_STORY_HALF_LIFE_DAYS = 90;
 
 /** Offered in the admin picker. */
-const STORY_HALF_LIFE_CHOICES = [3, 7, 14, 30];
+const STORY_HALF_LIFE_CHOICES = [3, 7, 14, 30, 90];
 
 /** How long a story is remembered: how far back its developments count toward
  *  its age and its routine level, and how long a silence makes it new again.
@@ -629,7 +635,7 @@ export function activeStories(ascending, {
       fatigue: state ? Math.round(state.fatigue * 100) / 100 : 1,
       breakthrough_at: state ? state.routine + SHOCK_MARGIN : null,
       // How many developments over the memory window set that routine level;
-      // the ones listed above are only the last 72 hours of them.
+      // the ones listed above are only the last `LOOKBACK_HOURS` of them.
       on_record: state?.opened ?? 0,
     };
   });
