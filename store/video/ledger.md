@@ -13,16 +13,21 @@ in the [release ledger](../ledger.md); record it there too.
 | Cut | Why | What changed | Verified | Open |
 |---|---|---|---|---|
 | [2026-09-27](#2026-09-27) | First cut, owner request | Everything: six scenes, iPhone 886×1920 and Play 1080×1920, 15.1 s | Store rules, decoded frames, loudness | Guideline 2.3.4; poster frame; YouTube upload |
+| [2026-09-28](#2026-09-28) | Re-render of unchanged source, testing the tooling | Nothing to the eye: capture, grain and render reporting | Repeat renders, store rules, the copy-change path, banding | As the first cut |
 
 ## Lessons
 
 What a past cut cost to learn. Read before changing the film or the renderer,
 and add to it when a cut teaches something new; date each item.
 
-- **Capture scale** (2026-09-27). `Page.captureScreenshot` on a second CDP
-  session ignores Playwright's device-scale emulation, so frames came out at
-  443×960. The capture passes `clip.scale`; after any change to capture, check
-  the first still's pixel size.
+- **Capture** (2026-09-27). `Page.captureScreenshot` on a second CDP session
+  ignores Playwright's device-scale emulation, so frames first came out at
+  443×960. Passing `clip.scale` fixed the size but re-applied the emulation on
+  every capture, and now and then a frame of the widget morph came out
+  differently in two runs of the same source. The session now sets the
+  metrics once. After any change to capture, check a still's pixel size and
+  render a moving span twice: two iPhone runs of `--segment 7.3,7.85` should
+  match.
 - **Motion blur** (2026-09-27). Four fixed samples per frame left the fastest
   odometer rolls as stacked copies of each digit. Sampling now follows the
   speed, up to forty per frame, weighted and summed in linear light. After a
@@ -80,6 +85,21 @@ and add to it when a cut teaches something new; date each item.
   a two-line copy change in about six minutes, twenty seconds of it commands,
   and its report produced the five lessons above. Run one again when the skill
   changes much.
+- **Interrupted renders** (2026-09-27). The renderer encoded straight over the
+  committed cut, so a render stopped midway left a truncated file in its
+  place. It now encodes in `artifacts/` and moves the cut into place only when
+  complete.
+- **Reproducibility** (2026-09-28). With the metrics set once, the iPhone cut
+  renders byte for byte the same from the same source; four renders agreed.
+  The Android cut does not: two renders differ in a few frames by a few pixels
+  a level or two apart, at the edges of strokes and text as they move in (the
+  header's gear at 1.17 s, a line at 4.93 s), and the encoder carries each
+  through the rest of its group of frames. Ruled out: the grain, which now has
+  one noise pixel per device pixel on both cuts; partial raster
+  (`--disable-partial-raster`); GPU raster (`--disable-gpu`). Untested: whether
+  Android's 2.5× device scale, where the iPhone's is 2×, is the reason.
+  `--segment 0,1.3 --platform android` shows it in half a minute: frames 35–38
+  vary between runs.
 
 ## 2026-09-27
 
@@ -130,3 +150,55 @@ cores.
 2.3.4, or pair its titles with a device screen recording. Set the poster frame
 by hand in App Store Connect (6.0 s, the composed reading). Upload the Play cut
 to YouTube, ads off and not age-restricted, once the Google app exists.
+
+## 2026-09-28
+
+**Why.** Not a request: a test of the tooling. Rendering unchanged source
+should reproduce the committed cuts, so that the next remake can tell what it
+changed. It did not quite. The audio matched, and so did every frame but those
+of the screen closing into the widget (7.33–7.83 s: 16 on iPhone, 15 on
+Android), which on iPhone differed by up to 18 of 255 levels around the
+numeral, bars and wordmark. Two renders of that span from one source differed
+too, so the variable was the renderer; see Capture and Reproducibility under
+Lessons.
+
+**What changed.** Nothing to the eye; every line resolves to the first cut's
+words.
+
+- Capture sets the device scale once, not with every sample. Stills are
+  unchanged by it, but frames of the roll and the morph now differ from the
+  first cut by at worst 48.9 dB PSNR on iPhone, and the rolling numeral could
+  not be told apart side by side at one and a half times the size.
+- The grain has one noise pixel per device pixel. The iPhone's tile is the one
+  it had; Android's is finer, which brought its cut from 13.5 to 15.3 MB, the
+  iPhone's rate per pixel. A dark frame stretched eightfold shows no banding.
+- A cut is encoded in `artifacts/` and moved into place when complete, and a
+  render then says how it differs from the cut it replaced.
+- `--stale` suggests one still per moment rather than one per line.
+
+**Outputs.**
+- `store/assets/apple/app-preview/iphone-886x1920.mp4`: 12.5 MB, sha256
+  `4f0d4d8c3020eb2ff66e4995df82a47e62734588eafd7e7c9e37aa0e1cadd6ba`.
+- `store/assets/google-play/video/promo-1080x1920.mp4`: 15.3 MB, sha256
+  `1b42560a2c21d3f138b13b7f42287563f8abd6facbfe5d5119161e267fbb6bb5`.
+
+**Verified.** The last render reported the iPhone cut byte for byte the cut
+it replaced, the fourth iPhone render in a row to agree, and the Android cut
+changed from the one it replaced in two frames (1.17 and 1.33 s) at 79.2 dB.
+`--verify` passes both: 453 frames, 15.10 s, 30 fps, H.264 High at level 4.0,
+stereo AAC 256 kb/s at 48 kHz, −15.8 LUFS, −3.0 dBFS peak, each matching its
+record; `--stale` reports nothing changed. The Android contact sheet decoded
+from its MP4 shows every scene. A temporary edit to the introduction's first
+title made `--stale` name the lines drawn from that file, the one that
+drifted and four stills, and made `npm test` fail with its instructions; the
+edit was undone. `npm test` passed.
+
+**Not verified.** As for the first cut: the sound by ear, native parity and
+App Review. Why Android renders vary.
+
+**Cost.** iPhone 3,569 samples, Android 3,800: both in parallel in about 18
+minutes on four cores, the iPhone's in 14. `--segment` about 0.17 s per
+sample.
+
+**Open.** As the first cut: guideline 2.3.4, the poster frame, the YouTube
+upload and listening. The review page plays these files.

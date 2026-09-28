@@ -27,13 +27,14 @@ node store/scripts/render-video.mjs --stale
 ```
 
 It compares every file the film is made from with the hashes the last render
-recorded in `store/video/cut.json`, so notes and refactors proved identical do
-not show up. It lists the scenes whose app files changed, each line whose source
-changed with the seconds it is on screen, the film's own source, any line whose
-source no longer says it word for word, and a ready `--stills` command for the
-affected moments. Last come the commits since the render was recorded: a
-feature the film does not show yet appears only there, so read them for
-anything the owner would want shown. That report is the scope of the remake.
+recorded in `store/video/cut.json`, so a change to notes, or to files the film
+does not use, does not show up. It lists the scenes whose app files changed,
+each line whose source changed with the seconds it is on screen, the film's
+own source, any line whose source no longer says it word for word, and a ready
+`--stills` command for the affected moments. Last come the commits since the
+render was recorded: a feature the film does not show yet appears only there,
+so read them for anything the owner would want shown. That report is the scope
+of the remake.
 
 ## Decide what the cut needs
 
@@ -92,7 +93,7 @@ compares itself with the previous run of the same times:
    still before and after. Unchanged scenes should say identical; a refactor
    should change nothing at all. Read the sheets, then the changed frames at full
    size or cropped to the change.
-3. **Motion** (`--segment 2.85,3.2`, about 0.25 s per sample) writes finished,
+3. **Motion** (`--segment 2.85,3.2`, about 0.17 s per sample) writes finished,
    motion-blurred frames of a span. Use it for anything fast before a full render.
 
 ## Render, then verify
@@ -105,7 +106,7 @@ renderer finds it without any environment variable:
 pip install --quiet --target artifacts/tools/py imageio-ffmpeg
 ```
 
-Render both cuts in parallel, about 19 minutes on four cores, and wait on the
+Render both cuts in parallel, about 18 minutes on four cores, and wait on the
 logs' `exit` lines rather than polling. Only `--render` writes the cuts; any
 other or mistyped option refuses to run.
 
@@ -113,8 +114,16 @@ other or mistyped option refuses to run.
 for p in ios android; do (node store/scripts/render-video.mjs --render --platform $p > artifacts/preview-video/render-$p.log 2>&1; echo "exit $?" >> artifacts/preview-video/render-$p.log) & done; wait
 ```
 
-Each render records its output's hash and every input's in `store/video/cut.json`.
-Do not edit a render input while a render runs, or the record is stale on arrival.
+Each render records its output's hash and every input's in `store/video/cut.json`,
+then compares the cut with the one it replaced: byte for byte the same, the
+same picture, or the seconds where frames changed and the lowest PSNR among
+them. A change should show where it was made and nowhere else, which is the
+check that a refactor or a renderer fix did not reach the picture. The iPhone
+cut renders byte for byte the same from the same source. The Android cut may
+not: a few pixels can land a level or two apart in a few frames, reported
+above 50 dB, which cannot be seen. An interrupted render leaves the last cut
+in place. Do not edit a render input while a render runs, or the record is
+stale on arrival.
 
 Then `--verify`: every store rule, pass or fail, whether each file still matches
 its record, each sha256, and a contact sheet decoded from the MP4 itself. Look
@@ -154,7 +163,7 @@ owner to listen.
 
 **Outputs.** Each file with its size and sha256 from `--verify`; their inputs are in `cut.json`.
 
-**Verified.** The `--verify` result, the stills and frames looked at, loudness, tests.
+**Verified.** What each render said changed against the cut it replaced, the `--verify` result, the stills and frames looked at, loudness, tests.
 
 **Not verified.** At least the sound by ear, native parity and App Review.
 

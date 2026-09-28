@@ -23,7 +23,7 @@
 // separate copies.
 import { createServer } from 'node:http';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmdirSync, writeFileSync } from 'node:fs';
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
@@ -158,12 +158,13 @@ async function open(platform) {
   if (errors.length) throw new Error(errors.join('\n'));
   const cdp = await page.context().newCDPSession(page);
   // A second CDP session does not carry Playwright's device-scale emulation,
-  // so the clip asks for device pixels itself; the result matches
-  // page.screenshot() pixel for pixel, in a little less time.
-  const clip = { x: 0, y: 0, width: target.width, height: target.height, scale: target.scale };
+  // so it sets the same metrics once. A clip with a scale instead re-applied
+  // the emulation on every capture, and now and then a capture during the
+  // widget morph differed from one run to the next.
+  await cdp.send('Emulation.setDeviceMetricsOverride', { width: target.width, height: target.height, deviceScaleFactor: target.scale, mobile: false });
   const capture = async t => {
     await page.evaluate(t => window.NW.render(t), t);
-    const { data } = await cdp.send('Page.captureScreenshot', { format: 'png', optimizeForSpeed: true, clip });
+    const { data } = await cdp.send('Page.captureScreenshot', { format: 'png', optimizeForSpeed: true });
     return Buffer.from(data, 'base64');
   };
   return { page, capture, target };
@@ -212,8 +213,8 @@ async function renderStills(platform) {
 
 // ---------------------------------------------------------------- record
 // What a render was made from: the hash of every file that can change the
-// film. --stale compares against it, so a commit that only touches notes, or
-// a refactor proved identical, does not read as a change to the picture.
+// film. --stale compares against it, so a commit that touches only notes, or
+// files the film does not use, does not read as a change to the picture.
 const inputs = () => [...new Set([...FILM, ...SCENES.flatMap(s => s.depicts), ...Object.values(COPY).map(c => c.source)])].sort();
 const recordNow = () => Object.fromEntries(inputs().map(path => [path, hashOf(path)]));
 const readRecord = () => (existsSync(join(root, CUT_RECORD)) ? JSON.parse(readText(CUT_RECORD)) : { cuts: {} });
@@ -243,7 +244,10 @@ async function renderVideo(platform) {
   const audioPath = join(artifacts, `${platform}-score.wav`);
   await mkdir(artifacts, { recursive: true });
   await writeFile(audioPath, wav(renderScore({ platform })));
-  const out = join(root, target.out);
+  // The cut is encoded beside the scratch files and moved into place only
+  // once complete, so an interrupted render leaves the last cut intact; the
+  // cut it replaces is kept there too, to say what changed.
+  const out = join(root, target.out), partial = join(artifacts, `${platform}-partial.mp4`), replaced = join(artifacts, `${platform}-replaced.mp4`);
   await mkdir(dirname(out), { recursive: true });
   const width = Math.round(target.width * target.scale), height = Math.round(target.height * target.scale);
   const [first, last] = args.segment ? args.segment.map(s => Math.round(s * FPS)) : [0, frames - 1];
@@ -257,7 +261,7 @@ async function renderVideo(platform) {
     '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
     // Apple: a stereo AAC track at 256 kbps, 44.1 or 48 kHz, is required.
     '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2',
-    '-movflags', '+faststart', out,
+    '-movflags', '+faststart', partial,
   ]);
   const started = Date.now();
   const sum = new Float32Array(width * height * 3), frame = Buffer.alloc(width * height * 3);
@@ -293,10 +297,32 @@ async function renderVideo(platform) {
   if (args.segment) { console.log(`${platform}: frames ${first}–${last}, ${samples} samples, in ${artifacts}`); return; }
   encoder.child.stdin.end();
   await encoder.done;
+  const had = existsSync(out);
+  if (had) await copyFile(out, replaced);
+  await rename(partial, out);
   const data = await readFile(out);
   await record(platform, { file: target.out, bytes: data.length, sha256: sha256(data), frames, samples,
     minutes: Number(((Date.now() - started) / 60000).toFixed(1)), inputs: made });
-  console.log(`\n${platform}: ${out}, recorded in ${CUT_RECORD}`);
+  const verdict = !had ? 'a new cut' : readFileSync(replaced).equals(data) ? 'byte for byte the cut it replaced' : difference(replaced, out);
+  console.log(`\n${platform}: ${out}, recorded in ${CUT_RECORD}; ${verdict}.`);
+}
+
+// Where a new cut differs from the one it replaced, by decoded frame. The
+// encoder carries any change through the rest of its group of frames, so read
+// the spans: a change should show where it was made and nowhere else.
+function difference(before, after) {
+  const { stdout } = spawnSync(ffmpeg, ['-loglevel', 'error', '-i', before, '-i', after, '-lavfi', '[0:v][1:v]psnr=stats_file=-', '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 1 << 26 });
+  const changed = stdout.split('\n').map(line => /^n:(\d+) .*psnr_avg:(\S+)/.exec(line)).filter(m => m && m[2] !== 'inf')
+    .map(m => ({ frame: Number(m[1]) - 1, db: Number(m[2]) }));
+  if (!changed.length) return 'the same picture as the cut it replaced';
+  const spans = [];
+  for (const { frame } of changed) {
+    const span = spans.at(-1);
+    if (span && frame === span[1] + 1) span[1] = frame; else spans.push([frame, frame]);
+  }
+  const at = frame => (frame / FPS).toFixed(2);
+  return `changed from the cut it replaced at ${spans.map(([a, b]) => (a === b ? at(a) : `${at(a)}–${at(b)}`)).join(', ')} s, ` +
+    `${changed.length} frames, lowest ${Math.min(...changed.map(c => c.db)).toFixed(1)} dB PSNR`;
 }
 
 // ---------------------------------------------------------------- stale
@@ -304,8 +330,8 @@ async function renderVideo(platform) {
 // changed, lines whose source changed or no longer says what the film says,
 // the film's own source, and the stills that would show the difference.
 function stale() {
-  const cut = readRecord(), now = recordNow(), looks = new Set();
-  const look = ([a, b]) => looks.add(Number(((a + b) / 2).toFixed(2)));
+  const cut = readRecord(), now = recordNow(), spans = [];
+  const look = span => spans.push(span);
   const cuts = Object.entries(cut.cuts);
   if (!cuts.length) console.log(`No render is recorded in ${CUT_RECORD}; render with --render.`);
   const reports = new Map();
@@ -336,7 +362,11 @@ function stale() {
   const drift = Object.entries(COPY).flatMap(([line, c]) => [c.quote].flat().filter(q => !readText(c.source).includes(q))
     .map(q => { look(c.on); return `  ${line} (${c.on[0].toFixed(2)}–${c.on[1].toFixed(2)} s): ${c.source} no longer contains ${q}`; }));
   console.log(drift.length ? `\nLines the app has changed; update COPY in store/video/reel.js:\n${drift.join('\n')}` : '\nEvery line on screen is still in its source, word for word.');
-  if (looks.size) console.log(`\nLook at: node store/scripts/render-video.mjs --stills ${[...looks].sort((a, b) => a - b).join(',')}`);
+  // A still at each span's middle, skipping a span whose middle half already
+  // holds one: two lines on screen together need one still, not two.
+  const looks = spans.map(([a, b]) => ({ mid: (a + b) / 2, half: (b - a) / 4 })).sort((x, y) => x.mid - y.mid)
+    .reduce((kept, { mid, half }) => (kept.some(t => Math.abs(t - mid) <= half) ? kept : [...kept, Number(mid.toFixed(2))]), []);
+  if (looks.length) console.log(`\nLook at: node store/scripts/render-video.mjs --stills ${looks.join(',')}`);
   const base = git('log', '-1', '--format=%h', '--', CUT_RECORD);
   if (base) {
     const log = git('log', '--no-merges', '--format=%h %cs %s', `${base}..HEAD`);

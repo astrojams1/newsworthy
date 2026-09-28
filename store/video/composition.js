@@ -676,10 +676,12 @@ function render(t) {
   } else { mask(dark.root, 'none'); mask(light.root, 'none'); }
 }
 
-// A fixed, fine grain keeps the soft gradients from banding once encoded.
-function grainTile() {
-  const c = document.createElement('canvas'); c.width = c.height = 256;
-  const g = c.getContext('2d'), img = g.createImageData(256, 256);
+// A fixed, fine grain keeps the soft gradients from banding once encoded. The
+// tile has one noise pixel per device pixel, so the browser never scales it
+// and both cuts carry the same grain.
+function grainTile(size) {
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const g = c.getContext('2d'), img = g.createImageData(size, size);
   let seed = 7;
   const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
   for (let i = 0; i < img.data.length; i += 4) { const v = 128 + (rand() + rand() + rand() - 1.5) * 60; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
@@ -694,7 +696,7 @@ window.NW = {
     await document.fonts.ready;
     layout();
     worlds = [world('light'), world('dark')];
-    grain = el(stage, { position: 'absolute', inset: '0', zIndex: '10', opacity: '0.07', backgroundImage: `url(${grainTile()})`, backgroundSize: '128px 128px' });
+    grain = el(stage, { position: 'absolute', inset: '0', zIndex: '10', opacity: '0.07', backgroundImage: `url(${grainTile(Math.round(128 * devicePixelRatio))})`, backgroundSize: '128px 128px' });
     grain.id = 'grain';
     render(0);
     return { W, H, platform: IOS ? 'ios' : 'android', steps: UP_STEPS.length };

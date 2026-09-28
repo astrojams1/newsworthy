@@ -177,8 +177,8 @@ emulator then booted and ran the earlier APK successfully.
 
 ## Preview video
 
-`node store/scripts/render-video.mjs` renders a 15-second preview for each
-store from [video/](video/): 886×1920 for Apple's iPhone app previews and
+`node store/scripts/render-video.mjs --render` renders a 15-second preview for
+each store from [video/](video/): 886×1920 for Apple's iPhone app previews and
 1080×1920 for Google Play, which takes a YouTube link. It draws the current
 Temperature palette and Stone brand, uses placeholder bars rather than any
 news sentence, and speaks only in approved copy. It is a reconstruction, not

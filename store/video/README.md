@@ -85,16 +85,24 @@ node store/scripts/render-video.mjs --viewer                                 # t
 It needs Chromium (`CHROMIUM_PATH`, or the cloud image's copy) and, to encode,
 an ffmpeg built with libx264 and AAC: `FFMPEG_PATH`, else the one installed
 under `artifacts/tools`, else `ffmpeg` on the path. Only `--render` writes the
-cuts, and an unknown or malformed option refuses to run. Stills, segments,
-contact sheets and the review page go to `artifacts/preview-video/`. A full
-cut takes about fifteen minutes; both run in parallel in about nineteen on
-four cores.
+cuts, and an unknown or malformed option refuses to run. Each cut is encoded
+in `artifacts/preview-video/` and moved into place only when complete, so an
+interrupted render leaves the last cut as it was. Stills, segments, contact
+sheets and the review page go there too. Both cuts render in parallel in about
+eighteen minutes on four cores, the iPhone's in about fourteen.
 
 Every render records in `cut.json` its output's sha256 and the hash of every
 file the film is made from: its own source (`FILM` in `reel.js`), the app files
 each scene draws, and the files its lines quote. `--stale` compares against
 that record, and `--verify` checks each committed cut still matches it. It is
 written only by `--render`.
+
+A render then compares its cut with the one it replaced, frame by decoded
+frame, and prints the seconds where frames changed and the lowest PSNR among
+them. From the same source the iPhone cut comes out byte for byte the same.
+The Android cut can differ in a few frames by a few pixels a level or two
+apart, which reads above 50 dB; why is not established (the ledger lists what
+was ruled out).
 
 Motion blur is sampled. Each frame averages renders spread across half the
 frame interval, a 180-degree shutter, weighted to open and close softly and
@@ -103,7 +111,8 @@ nothing moves, twelve through the transitions, and up to forty while the
 number rolls, so a moving edge is never sampled more than about four device
 pixels apart. Four fixed samples left the fastest rolls as stacked copies of
 each digit. `--draft` renders one sample per frame. A fixed grain at a few
-percent keeps the soft gradients from banding once encoded.
+percent keeps the soft gradients from banding once encoded; it has one noise
+pixel per device pixel, so the browser never scales it.
 
 The sound is synthesised, not sampled: a pad whose filter opens as the scale
 warms, an A major pentatonic note per digit, filtered noise under the
