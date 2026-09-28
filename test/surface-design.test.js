@@ -478,14 +478,14 @@ test('story timeline prototype sits a full screen below the reading, in the sent
   }
 });
 
-test('the sentence keeps one narrow measure on every screen, and a wide screen lays the timeline out as a grid of it', () => {
+test('the sentence keeps a narrow column on every screen, and the timeline is one column sharing it', () => {
   // Reported 2026-09-28: landscape on the phone web drew a sentence twice the
-  // desktop's width. The owner prefers the narrow one, without wide margins
-  // around the timeline.
+  // desktop's width. A grid of timeline columns followed and the owner
+  // dropped it, in landscape and then on desktop: one column everywhere.
   const development = { root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' };
-  const cases = [[402, 874, 1], [743, 340, 1], [874, 402, 1], [1440, 900, 3], [2560, 1400, 3]];
+  const cases = [[402, 874], [743, 340], [874, 402], [1440, 900], [2560, 1400]];
   for (const platform of ['ios', 'android', 'web']) {
-    for (const [width, height, columns] of cases) {
+    for (const [width, height] of cases) {
       const tree = nodes(renderReading({ platform, width, height, timeline: [development] }));
       const sentence = tree.find(n => n.props?.testID === 'rating-explanation');
       // An upright phone 320pt; a turned phone one column a little wider,
@@ -495,11 +495,8 @@ test('the sentence keeps one narrow measure on every screen, and a wide screen l
       const upright = !landscape && width < 600;
       assert.equal(Math.round(sentence.props.style.maxWidth), Math.round(landscape ? 400 : upright ? 320 : 320 * sentence.props.style.fontSize / 17), `${platform} ${width}×${height} sentence measure`);
       const timeline = tree.find(n => n.type === 'Timeline');
-      assert.equal(timeline.props.columns, columns, `${platform} ${width}×${height} columns`);
-      // Landscape: the timeline shares the sentence's column. Larger screens:
-      // up to 320 a grid column.
-      const available = width - 2 * Math.max(20, Math.min(width * 0.05, 48));
-      assert.equal(timeline.parent.props.style.maxWidth, Math.min(available, landscape ? 400 : columns * 320 + (columns - 1) * timeline.props.gap), `${platform} ${width}×${height} timeline width`);
+      assert.equal(timeline.props.columns, undefined, `${platform} ${width}×${height}: no grid`);
+      assert.equal(timeline.parent.props.style.maxWidth, sentence.props.style.maxWidth, `${platform} ${width}×${height}: the timeline shares the sentence's column`);
       assert.equal(sentence.props.style.textWrap, undefined, `${platform} browser's own wrapping`);
     }
   }

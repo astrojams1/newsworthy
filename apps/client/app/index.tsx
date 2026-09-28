@@ -18,20 +18,16 @@ import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
 
 // An upright phone sets the sentence and the timeline in 320pt. A turned
-// phone gives both one column a little wider, 400pt, so the text sits
-// naturally on the wider screen without spanning it; a grid of timeline
-// columns there was tried and dropped (owner, 2026-09-28). Larger screens
-// widen the sentence in proportion to its size, 320pt per 17pt, and lay the
-// timeline out as a grid: as many columns as fit at GRID_MIN wide, each up to
-// COLUMN. The browser's own wrapping is used: text-wrap: pretty was dropped
-// because WebKit's, which every iOS browser uses, re-lays out the whole
-// paragraph and read as balance there.
+// phone gives both a column a little wider, 400pt, so the text sits
+// naturally on the wider screen without spanning it. Larger screens widen
+// the sentence in proportion to its size, 320pt per 17pt. The timeline is
+// one column everywhere and shares the sentence's; a grid of timeline columns
+// was tried and dropped (owner, 2026-09-28). The browser's own wrapping is
+// used: text-wrap: pretty was dropped because WebKit's, which every iOS
+// browser uses, re-lays out the whole paragraph and read as balance there.
 const COLUMN = 320;
 const LANDSCAPE_COLUMN = 400;
 const COLUMN_SIZE = 17;
-const GRID_MIN = 280;
-const GRID_GAP = 48;
-const GRID_MAX_COLUMNS = 3;
 
 export default function Home() {
   const theme = useTheme();
@@ -59,9 +55,6 @@ export default function Home() {
   const horizontal = Math.max(20, Math.min(width * 0.05, 48));
   const uprightPhone = !landscape && width < 600;
   const column = (landscape ? LANDSCAPE_COLUMN : uprightPhone ? COLUMN : COLUMN * sentenceSize / COLUMN_SIZE) * fontScale;
-  const available = width - horizontal * 2;
-  const columns = landscape ? 1 : Math.max(1, Math.min(GRID_MAX_COLUMNS, Math.floor((available + GRID_GAP) / (GRID_MIN * fontScale + GRID_GAP))));
-  const gridWidth = Math.min(available, landscape ? column : columns * COLUMN * fontScale + (columns - 1) * GRID_GAP);
   const { reading, failed, loading, refresh } = useCurrentReading();
   // Nothing is drawn until there is something to say: a placeholder dash, then
   // the reading, then the gradient was three layouts in the first second. Once
@@ -217,15 +210,14 @@ export default function Home() {
           </Pressable>
         </Animated.View>}
       </Animated.View>
-      {/* Entries keep about the sentence's measure, so the timeline has no margin
-          of its own; where the screen fits more than one, they form a grid. At least
+      {/* Shares the sentence's column, so it has no margin of its own. At least
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
-      {reading && <View style={{ maxWidth: gridWidth, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
+      {reading && <View style={{ maxWidth: column, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
           // Its bottom padding is inside it, so the snap area runs to the end of the scroll.
           paddingBottom: hasTimeline ? insets.bottom + 48 : 0,
           ...(webSnap ? { scrollSnapAlign: 'start', scrollMarginTop: headerHeight + 32 } as object : null) }}>
-        <Timeline developments={developments} opacity={timelineFade} theme={theme} now={now} scrollY={scrollY} offset={timelineTop} fadeAt={headerHeight} columns={columns} gap={GRID_GAP} />
+        <Timeline developments={developments} opacity={timelineFade} theme={theme} now={now} scrollY={scrollY} offset={timelineTop} fadeAt={headerHeight} />
       </View>}
     </Animated.ScrollView>
     </View>

@@ -64,7 +64,7 @@ async function linesUnderHeader(page) {
 }
 
 // Timeline entries are the accessible groups carrying an entry's label; the
-// grid's columns are the distinct left edges among them.
+// timeline's columns are the distinct left edges among them.
 async function timelineColumns(page) {
   return page.evaluate(() => {
     const entries = [...document.querySelectorAll('[data-testid="timeline"] [aria-label]')].map(node => node.getBoundingClientRect());
@@ -153,7 +153,7 @@ test('turned to landscape, the timeline fades out under the header rather than r
       assert.equal(wraps.length, developments.length, 'every entry sentence found');
       assert.ok(!wraps.includes('pretty'), 'timeline entries use the browser\'s own wrapping too');
 
-      // The desktop gets the same sentence and a wider grid.
+      // The desktop: a wider sentence, and still one timeline column.
       const desktopSize = { width: 1440, height: 900 };
       const desktop = await openReading(browser, desktopSize);
       await desktop.goto(`${base}/`);
@@ -162,7 +162,7 @@ test('turned to landscape, the timeline fades out under the header rather than r
       const desktopSentence = await desktop.getByTestId('rating-explanation').boundingBox();
       assert.ok(desktopSentence.width > 380 && desktopSentence.width <= 415, `desktop sentence: 320pt per 17pt of its 22pt (${Math.round(desktopSentence.width)}pt)`);
       const desktopGrid = await timelineColumns(desktop);
-      assert.equal(desktopGrid.columns, 3, 'desktop timeline is three columns');
+      assert.equal(desktopGrid.columns, 1, 'desktop timeline is one column');
       await scrollIntoTimeline(desktop, desktopSize);
       assert.deepEqual(await linesUnderHeader(desktop), [], 'no desktop timeline line at strength under the header');
     } finally {
