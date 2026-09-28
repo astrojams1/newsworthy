@@ -358,7 +358,7 @@ the same way until `/api/admin/judge` backfills it.
 **The sentence comes from the newest reading.** When that reading opened a
 development of its own, the sentence leads with a bold **New:** for two hours
 after it was saved, independently of the score’s decay; after that it leads with
-a muted age ("5h —"). "New:" had replaced a "31 hours ago:" prefix; the owner
+a muted age ("5h ·"). "New:" had replaced a "31 hours ago:" prefix; the owner
 asked for a quiet age back on 2026-09-27, as a story can hold the page a day.
 `opensDevelopment()` in `src/story.js` decides it from the stored
 judgement — judged, and `development_of` null — so a judge outage is never
@@ -903,7 +903,7 @@ entry per development ordered by `opened`, one week long. See
 for two hours from the reading’s `created_at`, not the score’s decay anchor or a
 verified event date. It is bold and otherwise styled as the sentence, on the web,
 in the apps and in both widgets. After it, the sentence leads with its age, muted:
-"5h —", "1d —", from `explanation_at` (its reading's time, not `since`); Android
+"5h ·", "1d ·", from `explanation_at` (its reading's time, not `since`); Android
 stacks a muted layer, as colour spans go stale on a theme switch. The timestamp
 reads "Checked". The 140 budget includes either prefix;
 prompts v16 and later reserve 5 characters for "New: " and ask for a body of at most 135.

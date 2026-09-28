@@ -114,7 +114,7 @@ struct Provider: TimelineProvider {
             let expiry = result.reading?.newLabelExpiry
             // Another at midnight brings the date back once the reading is no longer today's.
             let midnight = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: now))
-            // And one at each of the next twelve hours of the sentence's age, so "5h —" becomes "6h —" on time.
+            // And one at each of the next twelve hours of the sentence's age, so "5h ·" becomes "6h ·" on time.
             let hours: [Date] = result.reading?.sentenceAt.map { at in
                 let next = (now.timeIntervalSince(at) / 3600).rounded(.down) + 1
                 return (0..<12).map { at.addingTimeInterval((next + Double($0)) * 3600) }

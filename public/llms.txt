@@ -41,6 +41,6 @@ or credentials are published here.
 When a sentence is the first coverage of a new development, it starts with a
 bold "New:" for two hours after that reading was saved. After that, a sentence
 starts with how long ago Newsworthy first reported it, in a fainter colour
-("5h —", then "1d —"). "New" means new to Newsworthy, not a verified event date.
+("5h ·", then "1d ·"). "New" means new to Newsworthy, not a verified event date.
 The separate update time ("Checked 3 min ago") identifies the saved reading; the
 displayed score can change afterward.

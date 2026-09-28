@@ -85,7 +85,7 @@ export default function Home() {
   const minutes = reading ? Math.max(0, Math.floor((now - Date.parse(reading.created_at)) / 60000)) : 0;
   const relative = minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
   // A new development's sentence leads with a bold "New:" for two hours, then
-  // with its age in the muted colour ("5h —"); both are part of the sentence.
+  // with its age in the muted colour ("5h ·"); both are part of the sentence.
   const parts = reading ? explanationParts(reading, now) : null;
   const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</>
     : parts.age ? <><Text testID="rating-age" style={{ color: theme.muted }}>{parts.age}</Text>{` ${parts.body}`}</> : parts.body) : null;

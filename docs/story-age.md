@@ -5,9 +5,10 @@ bold, means this reading is Newsworthy’s first coverage of that development. I
 stays for two hours after the reading was saved and then comes off. It is not a
 verified event date or a claim that the broader story, such as inflation, is new.
 After that the sentence leads with how long ago it was first reported, in the
-muted colour: **5h —**, then **1d —** from a day. The space before the dash is
-non-breaking in the app and both widgets, so a line never ends on “5h” with the
-dash leading the next. The time below it, “Checked 3
+muted colour: **5h ·**, then **1d ·** from a day. A middle dot rather than the em
+dash it was until 2026-09-28 (owner choice), matching the timeline's tag lines.
+The space before it is non-breaking in the app and both widgets, so a line never
+ends on “5h” with the dot leading the next. The time below it, “Checked 3
 min ago”, says when Newsworthy last looked at the news.
 
 Until 2026-09-24 the app printed an age instead: **31 hours ago:** before a
@@ -84,14 +85,14 @@ name for that reason: reusing `explanation_since` would have brought the old
 `explanation_at` is when the shown sentence's reading was saved: for a re-report,
 its development's first report, whose sentence `sentenceFor()` shows. It is not `since`, which dates the development the number
 is about. Once “New:” is off, clients lead the sentence with its age, floored:
-nothing under an hour, where “Checked” says as much, then “1h —” to “23h —”, then
-“1d —” and on. A response or cache without `explanation_at` shows no age.
+nothing under an hour, where “Checked” says as much, then “1h ·” to “23h ·”, then
+“1d ·” and on. A response or cache without `explanation_at` shows no age.
 
 Only the label’s weight changes: it keeps the sentence’s colour and size, so it
 reads as part of the sentence rather than a badge. The age changes only colour,
 to the muted text colour the timestamp uses. Share text carries either as plain
 text. Overlong legacy sentences are shortened with an ellipsis only for display,
-within 140 characters including the prefix; storage is unchanged. “23h — ” is six
+within 140 characters including the prefix; storage is unchanged. “23h · ” is six
 characters, one over the five prompts reserve, so a 135-character body loses its
 last word to an ellipsis for those hours.
 
