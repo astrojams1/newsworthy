@@ -450,7 +450,9 @@ test('story timeline is off by default: with the setting off the screen is the r
     const block = off.find(n => n.type === 'AnimatedView' && n.props?.style?.maxWidth != null);
     assert.equal(block.props.style.flex, 1, 'the reading fills the scroll view, so nothing scrolls');
     assert.equal(block.props.style.minHeight, undefined, 'not a window-sized block that overflows it');
-    assert.equal(block.props.style.opacity, 1, 'the reading never fades with scrolling');
+    assert.equal(block.props.style.opacity, undefined, 'the block itself never fades');
+    const number = off.find(n => n.props?.testID === 'rating-score').parent.props.style.opacity;
+    assert.equal(number.multiply, undefined, 'with nothing to scroll to, nothing fades with scrolling');
   }
 });
 
@@ -555,4 +557,31 @@ test('the web asks for a monospace face that has a Light weight before the gener
   assert.equal(web.at(-1), 'monospace', 'the generic family stays the last resort');
   const score = nodes(renderReading({ platform: 'web', width: 390, height: 844, score: 3 })).find(n => n.props?.testID === 'rating-score');
   assert.equal(score.props.style.fontFamily, contract.scoreFont.web);
+});
+
+// Owner request 2026-09-28: scrolling to the timeline and back fades the
+// reading in the same order as it loads. Leaving, the time goes first and the
+// number last; returning, the number comes first and the time last.
+test('scrolling to the timeline fades the reading in reverse reading order, and back in reading order', () => {
+  const development = { root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' };
+  for (const platform of ['ios', 'android', 'web']) {
+    const list = nodes(renderReading({ platform, width: 402, height: 874, timeline: [development] }));
+    const number = list.find(n => n.props?.testID === 'rating-score').parent.props.style.opacity;
+    const sentence = list.find(n => n.props?.testID === 'rating-explanation').props.style.opacity;
+    const checked = list.find(n => n.type === 'Text' && Array.isArray(n.props.children) && n.props.children[0] === 'Checked ').props.style.opacity;
+    const ranges = [checked, sentence, number].map(value => {
+      assert.ok(value.multiply, 'held by its load fade and its scroll fade');
+      const [load, scroll] = value.multiply;
+      assert.equal(load.value, 1);
+      assert.deepEqual([...scroll.config.outputRange], [1, 0]);
+      assert.equal(scroll.config.extrapolate, 'clamp');
+      return scroll.config.inputRange;
+    });
+    for (let i = 1; i < ranges.length; i++) {
+      assert.ok(ranges[i][0] > ranges[i - 1][0], 'each part starts fading after the one below it');
+      assert.ok(ranges[i][1] > ranges[i - 1][1], 'and is gone after it');
+    }
+    assert.equal(ranges[0][0], 0, 'the time starts fading at the first movement');
+    assert.ok(ranges[2][1] <= 160, 'the number is gone before it can reach the header');
+  }
 });
