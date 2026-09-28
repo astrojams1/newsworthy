@@ -47,10 +47,10 @@
 
   /* align-items:end lines the button up with the selects — it drifted when the
      labels carried helper text of their own, so that moved to .note below. */
-  .settings { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: end; }
+  .settings { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem 1rem; align-items: end; }
   .field { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.75rem;
            letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
-  .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; min-width: 170px; }
+  .settings select { text-transform: none; letter-spacing: normal; font-size: 0.875rem; width: 100%; }
   .settings button { padding: 0.45rem 1.1rem; }
   /* Below the fields, not beside them: a button and a labelled select are
      different heights, so aligning them on one row leaves one of the two
@@ -142,37 +142,42 @@
   #runs td.source, #runs td.prompt, #runs td.story { white-space: nowrap; }
   td.story .opened { color: var(--series); }
   @media (max-width: 720px) {
-    #runs, #runs tbody, #runs tr, #runs td { display: block; }
+    #runs, #runs tbody { display: block; }
     #runs thead { display: none; }
     #runs { font-size: 0.875rem; }
-    #runs tr { border-bottom: 1px solid var(--rule); padding: 0.875rem 0; }
+    #runs tr { display: flex; flex-wrap: wrap; align-items: baseline; border-bottom: 1px solid var(--rule); padding: 0.875rem 0; }
     #runs td { border: none; padding: 0; text-align: left; }
     .scroll { overflow-x: visible; }
 
-    #runs td.when { display: inline; font-size: 0.8125rem; color: var(--ink-muted); }
-    #runs td.score { display: inline; float: right; font-weight: 500; }
-    #runs td.explanation { margin: 0.375rem 0 0; color: var(--ink); }
-    #runs td.notes { margin: 0.375rem 0 0; font-size: 0.8125rem; }
+    #runs td.when { flex: 1; font-size: 0.8125rem; color: var(--ink-muted); }
+    #runs td.score { font-weight: 500; }
+    #runs td.explanation { flex-basis: 100%; margin: 0.375rem 0 0; color: var(--ink); }
+    #runs td.notes { flex-basis: 100%; margin: 0.375rem 0 0; font-size: 0.8125rem; }
     #runs td.explanation.absent { display: none; } /* the note already says why */
 
     #runs td.source, #runs td.story, #runs td.prompt, #runs td.model, #runs td.tokens,
     #runs td.cost, #runs td.time {
-      display: inline; font-size: 0.75rem; color: var(--ink-faint);
+      margin-top: 0.375rem; font-size: 0.75rem; color: var(--ink-faint);
     }
-    /* Source opens the strip: every row has one, and every row has an
-       explanation or a note above it, so inline-block starts a new line and
-       still takes a margin. A leading separator on every later field means a
-       hidden field takes its separator with it. */
-    #runs td.source { display: inline-block; margin-top: 0.375rem; }
+    /* Each row is a wrapping flex line: the explanation and note take a whole
+       line, so source opens the strip beneath them. A leading separator on
+       every later field means a hidden field takes its separator with it. */
     #runs td.story::before, #runs td.prompt::before, #runs td.model::before, #runs td.tokens::before,
     #runs td.cost::before, #runs td.time::before { content: '\00a0·\00a0'; }
     #runs td.absent:not(.explanation) { display: none; }
-    #runs td.empty { display: block; }
+    #runs td.empty { flex-basis: 100%; }
   }
-  /* Narrow screens: title on its own line so the controls stay on one row. */
+  /* Phones are the main screen for this page. */
   @media (max-width: 560px) {
-    header h1 { flex: 1 0 100%; }
-    header .spacer { display: none; }
+    .wrap { padding: 1.25rem 1rem 3rem; }
+    header { margin-bottom: 1.25rem; }
+    h2 { margin-top: 2rem; }
+    .tiles { grid-template-columns: repeat(3, 1fr); gap: 0.75rem 0.5rem; }
+    .tile dd { font-size: 1.25rem; }
+    .controls button { flex: 1; }
+    /* iOS zooms into any field under 16px when it takes focus. */
+    select, input, .settings select, .merge-form input { font-size: 16px; }
+    button { min-height: 2.5rem; }
   }
   /* The board behind the front page: one block per live story, its
      developments beneath it, newest first. */
@@ -181,7 +186,10 @@
   .merges .undone { color: var(--ink-faint); text-decoration: line-through; }
   .merges button, .merge-form button { font: inherit; font-size: 0.75rem; padding: 0.15rem 0.6rem; margin-left: 0.5rem; }
   .merge-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.75rem; }
-  .merge-form input { font: inherit; font-size: 0.8125rem; padding: 0.3rem 0.5rem; border: 1px solid var(--rule); border-radius: 7px; background: var(--surface); color: var(--ink); }
+  .merge-form { flex-wrap: nowrap; }
+  .merge-form input { font: inherit; font-size: 0.8125rem; padding: 0.3rem 0.5rem; border: 1px solid var(--rule); border-radius: 7px; background: var(--surface); color: var(--ink); flex: 1; min-width: 0; max-width: 12rem; }
+  .merge-form span { color: var(--ink-faint); }
+  .merge-form button { margin-left: 0; }
   .stories .story { border: 1px solid var(--rule); border-radius: var(--radius-card); padding: 0.75rem 0.875rem; background: var(--surface-2); }
   .stories .story.leading { border-color: var(--series); }
   .story-head { display: flex; align-items: baseline; gap: 0.5rem; }
@@ -198,7 +206,8 @@
   .dev-meta { color: var(--ink-faint); font-size: 0.75rem; margin-top: 0.125rem; }
   .dev-meta span + span::before { content: ' · '; }
   .empty { color: var(--ink-muted); font-size: 0.875rem; padding: 2rem 0; }
-  details summary { cursor: pointer; font-size: 0.8125rem; color: var(--ink-muted); }
+  details summary { cursor: pointer; font-size: 0.8125rem; color: var(--ink-muted); padding: 0.375rem 0; }
+  .versions > details { margin-left: 1rem; }
   pre { white-space: pre-wrap; font-size: 0.75rem; background: var(--surface-2);
         border: 1px solid var(--rule); border-radius: var(--radius-control); padding: 0.875rem; overflow-x: auto; }
 </style>
@@ -244,8 +253,9 @@
   <h2>Merges</h2>
   <div id="merges"></div>
   <form class="merge-form" id="merge-form">
-    <input name="a" placeholder="story" aria-label="Story" autocomplete="off">
-    <input name="b" placeholder="story" aria-label="Other story" autocomplete="off">
+    <input name="a" placeholder="alias" aria-label="Story to merge" autocomplete="off" autocapitalize="off">
+    <span aria-hidden="true">→</span>
+    <input name="b" placeholder="story" aria-label="Story to keep" autocomplete="off" autocapitalize="off">
     <button type="submit">Merge</button>
     <span class="note" id="merge-status"></span>
   </form>
@@ -310,9 +320,18 @@
   let points = [];
   let failures = [];
 
-  const W = 900, H = 300, PAD = { t: 12, r: 16, b: 28, l: 30 };
-  const plotW = W - PAD.l - PAD.r;
-  const plotH = H - PAD.t - PAD.b;
+  const PAD = { t: 12, r: 16, b: 28, l: 30 };
+  // Drawn at the width it is shown at, so axis text stays 11px on a phone
+  // rather than a 900-unit drawing scaled down to half that.
+  let W = 900, H = 300, plotW = 0, plotH = 0, narrow = false;
+  function measure() {
+    W = Math.max(280, Math.round(chart.parentElement.clientWidth)) || 900;
+    narrow = W < 600;
+    H = narrow ? 200 : 300;
+    plotW = W - PAD.l - PAD.r;
+    plotH = H - PAD.t - PAD.b;
+    chart.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  }
 
   // Y is locked to the full 1–10 scale: auto-scaling a fixed-range rating
   // would exaggerate ordinary variation.
@@ -372,7 +391,7 @@
     const out = [];
     if (hours > 48) {
       const days = (t1 - t0) / 86_400_000;
-      const step = Math.max(1, Math.ceil(days / 7));
+      const step = Math.max(1, Math.ceil(days / (narrow ? 4 : 7)));
       const cursor = new Date(t0);
       cursor.setHours(0, 0, 0, 0);
       if (cursor.getTime() < t0) cursor.setDate(cursor.getDate() + 1);
@@ -382,7 +401,7 @@
       }
     }
     if (out.length < 2) {
-      const count = Math.min(6, Math.max(2, coords.length));
+      const count = Math.min(narrow ? 4 : 6, Math.max(2, coords.length));
       for (let i = 0; i < count; i += 1) {
         const at = t0 + ((t1 - t0) * i) / (count - 1);
         out.push({ t: at, cx: x(at) });
@@ -392,6 +411,7 @@
   }
 
   function renderChart() {
+    measure();
     if (points.length === 0) {
       chart.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" class="axis-label">No readings in this range yet.</text>`;
       return;
@@ -409,7 +429,9 @@
 
     const ticks = tickPositions(coords).map(({ t: at, cx }) => {
       const label = hours <= 48 ? fmtClock.format(at) : fmtShort.format(at);
-      return `<text class="axis-label" x="${cx.toFixed(1)}" y="${H - 8}" text-anchor="middle">${label}</text>`;
+      // Edge labels hang inward so a narrow chart does not clip them.
+      const anchor = cx < PAD.l + 24 ? 'start' : cx > W - PAD.r - 24 ? 'end' : 'middle';
+      return `<text class="axis-label" x="${cx.toFixed(1)}" y="${H - 8}" text-anchor="${anchor}">${label}</text>`;
     });
 
     // The line is what the front page shows; the scatter is what was recorded.
@@ -443,26 +465,29 @@
    * (`frontPageSpans()`), from the same replay as the chart above, so an
    * unjudged reading is drawn where the page put it. Hover a bar for its times.
    */
-  function renderGantt(rows = []) {
+  let ganttRows = [];
+  function renderGantt(rows = ganttRows) {
+    ganttRows = rows;
     const svg = $('gantt');
     if (rows.length === 0) {
       svg.setAttribute('viewBox', `0 0 ${W} 40`);
       svg.innerHTML = `<text x="${W / 2}" y="24" text-anchor="middle" class="axis-label">No readings in this range yet.</text>`;
       return;
     }
-    const LABEL = 150, RIGHT = 56, ROW = 24, BAR = 12, AXIS = 24;
+    const LABEL = narrow ? 96 : 150, RIGHT = narrow ? 32 : 56, ROW = 24, BAR = 12, AXIS = 24;
     const spans = rows.flatMap((row) => row.spans.map((span) => [Date.parse(span.from), Date.parse(span.to)]));
     const t0 = Math.min(...spans.map(([a]) => a)), t1 = Math.max(...spans.map(([, b]) => b));
     const x = (t) => LABEL + ((t - t0) / Math.max(1, t1 - t0)) * (W - LABEL - RIGHT);
     const height = rows.length * ROW + AXIS;
     const ticks = [];
     if (t1 - t0 > 48 * 3600_000) {
-      const step = Math.max(1, Math.ceil((t1 - t0) / 86_400_000 / 7));
+      const step = Math.max(1, Math.ceil((t1 - t0) / 86_400_000 / (narrow ? 4 : 7)));
       const cursor = new Date(t0);
       cursor.setHours(24, 0, 0, 0);
       for (; cursor.getTime() <= t1; cursor.setDate(cursor.getDate() + step)) ticks.push([cursor.getTime(), fmtShort.format(cursor)]);
     } else {
-      for (let i = 0; i < 6; i += 1) { const at = t0 + ((t1 - t0) * i) / 5; ticks.push([at, fmtClock.format(at)]); }
+      const n = narrow ? 4 : 6;
+      for (let i = 0; i < n; i += 1) { const at = t0 + ((t1 - t0) * i) / (n - 1); ticks.push([at, fmtClock.format(at)]); }
     }
     const when = (t) => `${fmtShort.format(t)} ${fmtClock.format(t)}`;
     const grid = ticks.map(([at, label]) => `<line class="grid-line" x1="${x(at).toFixed(1)}" x2="${x(at).toFixed(1)}" y1="0" y2="${rows.length * ROW}"></line>`
@@ -744,11 +769,15 @@
     const res = await api('/api/admin/prompts');
     if (!res.ok) return;
     const { prompts } = await res.json();
-    $('prompts').innerHTML = prompts.map((p) => `
-      <details>
-        <summary>v${p.version} · ${escapeHtml(p.added)}</summary>
-        <pre>${escapeHtml(p.text)}</pre>
-      </details>`).join('');
+    const latest = prompts.at(-1);
+    const each = [...prompts].reverse().map((p) => `
+        <details>
+          <summary>v${p.version} · ${escapeHtml(p.added)}</summary>
+          <pre>${escapeHtml(p.text)}</pre>
+        </details>`).join('');
+    $('prompts').innerHTML = latest
+      ? `<details class="versions"><summary>v${latest.version} · ${escapeHtml(latest.added)} · ${prompts.length} versions</summary>${each}</details>`
+      : '';
   }
 
   /**
@@ -1041,7 +1070,7 @@
   await loadSettings();
   await renderPrompts();
   setInterval(load, 60_000);
-  window.addEventListener('resize', renderChart);
+  window.addEventListener('resize', () => { renderChart(); renderGantt(); });
 </script>
 </body>
 </html>
