@@ -7,7 +7,9 @@ import { PORTS, withServer } from './with-server.js';
 // The reading and its timeline in landscape on the phone web, against the
 // exported app. Reported 2026-09-28 from iOS Safari with two screenshots:
 // after turning the phone, the timeline scrolled under the wordmark at full
-// strength, and a black strip ran down the notch side of the page.
+// strength. Then: the column was too wide in landscape, and the number,
+// sentence, Checked time and cue sat too close together. The black notch
+// side is Safari's and stays: it balances the browser's own right edge.
 const BROWSERS = [process.env.CHROME_PATH, '/opt/pw-browsers/chromium',
   '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser',
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
@@ -72,9 +74,8 @@ test('turned to landscape, the timeline fades out under the header rather than r
       assert.ok(await turned.evaluate(() => document.querySelector('[data-testid="timeline"]').getBoundingClientRect().top < 0),
         'the scroll reached past the timeline\'s first entry');
       assert.deepEqual(await linesUnderHeader(turned), [], 'no timeline line at strength under the header after turning');
-      // Safari paints the notch side from the document background.
-      assert.equal(await turned.evaluate(() => document.documentElement.style.backgroundColor !== ''), true,
-        'the document carries the reading surface as its background');
+      assert.equal(await turned.evaluate(() => document.documentElement.style.backgroundColor), '',
+        'no document background: Safari keeps the notch side black');
 
       // Opened already in landscape: the first render after the static HTML
       // must take the landscape layout, not keep the portrait one.
@@ -83,9 +84,18 @@ test('turned to landscape, the timeline fades out under the header rather than r
       await opened.getByTestId('timeline').waitFor();
       await opened.waitForTimeout(1200);
       const sentence = await opened.getByTestId('rating-explanation').boundingBox();
-      assert.ok(sentence.width > 400, `landscape sentence uses the wide column (${Math.round(sentence.width)}pt)`);
+      assert.ok(sentence.width > 400 && sentence.width <= 480, `landscape sentence keeps a readable column (${Math.round(sentence.width)}pt)`);
+      const timeline = await opened.getByTestId('timeline').boundingBox();
+      assert.ok(timeline.width <= 480, `landscape timeline keeps the same column (${Math.round(timeline.width)}pt)`);
+      const score = await opened.getByTestId('rating-score').boundingBox();
+      const checked = await opened.getByText(/^Checked /).boundingBox();
       const cue = await opened.getByLabel('Earlier developments').first().boundingBox();
       assert.ok(cue.y + cue.height <= landscape.height, 'the timeline cue is on the first screen');
+      // Room between the parts: the first cut had 12pt, 10pt and the cue's
+      // chevron almost touching the Checked line.
+      assert.ok(sentence.y - (score.y + score.height) >= 16, `space above the sentence (${Math.round(sentence.y - score.y - score.height)}pt)`);
+      assert.ok(checked.y - (sentence.y + sentence.height) >= 14, `space above Checked (${Math.round(checked.y - sentence.y - sentence.height)}pt)`);
+      assert.ok(cue.y + cue.height / 2 - (checked.y + checked.height) >= 28, `space above the cue's chevron (${Math.round(cue.y + cue.height / 2 - checked.y - checked.height)}pt)`);
       await scrollIntoTimeline(opened, landscape);
       assert.deepEqual(await linesUnderHeader(opened), [], 'no timeline line at strength under the header');
     } finally {
