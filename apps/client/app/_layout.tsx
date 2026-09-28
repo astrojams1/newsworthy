@@ -57,7 +57,11 @@ function ThemedLayout() {
     let chrome = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     if (!chrome) { chrome = document.createElement('meta'); chrome.name = 'theme-color'; document.head.appendChild(chrome); }
     chrome.content = theme.center;
-  }, [reading?.score, theme.dark, theme.center]);
+    // Safari paints whatever the page does not cover — the notch side in
+    // landscape, overscroll — with the document's own background. Unset,
+    // that was black beside a stone or fog reading.
+    document.documentElement.style.backgroundColor = theme.surface;
+  }, [reading?.score, theme.dark, theme.center, theme.surface]);
   return <ThemeProvider value={navigationTheme}>
     <StatusBar style={theme.dark ? 'light' : 'dark'} />
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,

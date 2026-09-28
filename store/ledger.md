@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-28T02:15:32+00:00
+Updated: 2026-09-28T02:41:27+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -100,6 +100,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
 | web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
 | store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
+| web.landscape-layout | waiting_verification | agent | observed | Owner report 2026-09-28 (iOS Safari, landscape): timeline ran under the wordmark at full strength after turning the phone; black strip down the notch side. Causes: web onLayout fires only on resize, so line positions went stale after rotation (now summed from heights); window size read during hydration kept the portrait layout on a landscape load (now hydration-safe); no document background, so Safari painted the uncovered notch side black (now the reading surface). Verified in headless Chromium with emulated insets; the notch-side colour is not verified on an iPhone. | Owner: check landscape on iPhone Safari after merge, both upright-then-turned and opened in landscape; confirm the notch side matches the page. Native apps unchanged in behaviour but untested in landscape. |
 
 ## Evidence and history
 
@@ -3246,3 +3247,13 @@ Next: Owner checks production in iOS Safari after merge; check native load in th
 - Rendered before #171-#173 changed the home screen: without the timeline the reading now sits 16 pt lower, and it fades in on load where the film lifts the splash's dash into it. render-video.mjs --stale lists the change; store/video/ledger.md tracks the remake.
 
 Next: Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.
+
+### 330. web.landscape-layout — waiting_verification
+
+2026-09-28T02:41:27+00:00 · observed · agent
+
+Owner report 2026-09-28 (iOS Safari, landscape): timeline ran under the wordmark at full strength after turning the phone; black strip down the notch side. Causes: web onLayout fires only on resize, so line positions went stale after rotation (now summed from heights); window size read during hydration kept the portrait layout on a landscape load (now hydration-safe); no document background, so Safari painted the uncovered notch side black (now the reading surface). Verified in headless Chromium with emulated insets; the notch-side colour is not verified on an iPhone.
+
+- test/web-landscape.test.js fails before, passes after; npm test and npm run test:design pass
+
+Next: Owner: check landscape on iPhone Safari after merge, both upright-then-turned and opened in landscape; confirm the notch side matches the page. Native apps unchanged in behaviour but untested in landscape.

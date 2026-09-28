@@ -49,6 +49,7 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     // The hook fetches nothing when the setting is off; the mock mirrors that.
     '@/lib/use-timeline': { useTimeline: (enabled) => (enabled ? timeline : []) },
     '@/components/preferences-provider': { usePreferences: () => ({ preferences: { timeline: timelineOn } }) },
+    '@/lib/window-size': { useWindowSize: () => ({ width, height, fontScale }) },
     '@/lib/config': { website: 'https://example.test', privacyUrl: '/privacy', supportUrl: '/support' },
   };
   const exports = {};

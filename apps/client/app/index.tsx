@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, Text, View, Share, useWindowDimensions } from 'react-native';
+import { Animated, Pressable, Text, View, Share } from 'react-native';
+import { useWindowSize } from '@/lib/window-size';
 import { Stack, useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { AppIcon } from '@/components/app-icon';
@@ -25,7 +26,7 @@ export default function Home() {
   const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : process.env.EXPO_OS === 'web' ? 'ui-monospace, SFMono-Regular, Menlo, monospace' : 'monospace';
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const dimensions = useWindowDimensions();
+  const dimensions = useWindowSize();
   // Static web rendering has no viewport; keep the initial content readable.
   const width = dimensions.width || 390;
   const height = dimensions.height || 844;
@@ -163,7 +164,11 @@ export default function Home() {
           fills the scroll view and nothing scrolls, as before the timeline. Both
           are one screen with the same padding, so the reading does not move when
           the timeline arrives after it. */}
-      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: insets.bottom + (landscape ? 16 : 56) }}>
+      {/* The timeline starts where the reading ends. Measured from the reading's
+          height, which changes whenever the timeline moves: on the web onLayout
+          fires only on a resize, and the timeline's own position went stale
+          after a rotation, so its lines stopped fading under the header. */}
+      <Animated.View onLayout={(event) => setTimelineTop(event.nativeEvent.layout.y + event.nativeEvent.layout.height)} style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: insets.bottom + (landscape ? 16 : 56) }}>
         <Animated.View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
           style={{ opacity: reveal, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
           <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"
@@ -186,8 +191,7 @@ export default function Home() {
       {/* Shares the sentence's column, so it has no margin of its own. At least
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
-      {reading && <View onLayout={(event) => setTimelineTop(event.nativeEvent.layout.y)}
-        style={{ maxWidth: landscape ? 600 : 320 * fontScale, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
+      {reading && <View style={{ maxWidth: landscape ? 600 : 320 * fontScale, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
           // Its bottom padding is inside it, so the snap area runs to the end of the scroll.
           paddingBottom: hasTimeline ? insets.bottom + 48 : 0,
           ...(webSnap ? { scrollSnapAlign: 'start', scrollMarginTop: headerHeight + 32 } as object : null) }}>

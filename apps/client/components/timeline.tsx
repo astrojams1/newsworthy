@@ -10,6 +10,8 @@ type Theme = { ink: string; muted: string };
 // header, just outside the fade, so the resting timeline is at full strength.
 const FADE_BELOW = 28;
 const FADE_ABOVE = 16;
+const ENTRY_GAP = 44;
+const TAG_GAP = 10;
 
 /**
  * Prototype. The developments behind the front page, newest first, each
@@ -27,34 +29,44 @@ export function Timeline({ developments, opacity, theme, now, scrollY, offset, f
   developments: Development[]; opacity: Animated.AnimatedInterpolation<number>; theme: Theme; now: number;
   scrollY: Animated.Value; offset: number; fadeAt: number;
 }) {
-  const [tops, setTops] = useState<Record<string, number>>({});
+  // Heights, not positions: on the web onLayout fires only when a view is
+  // resized, so a line moved by its neighbours (a rotation reflows them) kept
+  // its old position and stopped fading, running under the header in
+  // landscape. Positions are summed from the heights instead.
+  const [heights, setHeights] = useState<Record<string, number>>({});
   if (!developments.length) return null;
   const labels = timelineLabels(developments, now);
-  const place = (key: string) => (event: { nativeEvent: { layout: { y: number } } }) => {
-    const y = event.nativeEvent.layout.y;
-    setTops((known) => (known[key] === y ? known : { ...known, [key]: y }));
+  const measure = (key: string) => (event: { nativeEvent: { layout: { height: number } } }) => {
+    const height = event.nativeEvent.layout.height;
+    setHeights((known) => (known[key] === height ? known : { ...known, [key]: height }));
   };
   // Content y of a line → its opacity as it scrolls towards the header.
   const fade = (top: number | undefined) => top === undefined ? 1 : scrollY.interpolate({
     inputRange: [top - fadeAt - FADE_BELOW, top - fadeAt + FADE_ABOVE], outputRange: [1, 0], extrapolate: 'clamp',
   });
+  let entryTop: number | undefined = 0;
   return <Animated.View testID="timeline" accessibilityLabel="Earlier developments" style={{ width: '100%', opacity }}>
     {developments.map((development, index) => {
       const label = storyLabel(development.story);
       const age = timelineAge(development.since, now);
-      const entry = tops[`e${development.root}`];
-      const at = (key: string) => entry === undefined || tops[key] === undefined ? undefined : offset + entry + tops[key];
       const tagKey = `t${development.root}`;
-      const sentenceKey = `s${development.root}`;
-      return <View key={development.root} accessible onLayout={place(`e${development.root}`)}
+      const hasTag = Boolean(labels[index].story || labels[index].age);
+      const entry = entryTop === undefined ? undefined : entryTop + (index === 0 ? 0 : ENTRY_GAP);
+      const tagHeight = hasTag ? heights[tagKey] : 0;
+      const tagTop = entry;
+      const sentenceTop = entry === undefined || tagHeight === undefined ? undefined : entry + (hasTag ? tagHeight + TAG_GAP : 0);
+      const entryHeight = heights[`e${development.root}`];
+      entryTop = entry === undefined || entryHeight === undefined ? undefined : entry + entryHeight;
+      const at = (top: number | undefined) => top === undefined ? undefined : offset + top;
+      return <View key={development.root} accessible onLayout={measure(`e${development.root}`)}
         accessibilityLabel={`${age}${label ? `, ${label}` : ''}. ${development.explanation}`}
-        style={{ marginTop: index === 0 ? 0 : 44 }}>
-        {(labels[index].story || labels[index].age) && <Animated.View onLayout={place(tagKey)} style={{ opacity: fade(at(tagKey)), marginBottom: 10 }}>
+        style={{ marginTop: index === 0 ? 0 : ENTRY_GAP }}>
+        {hasTag && <Animated.View onLayout={measure(tagKey)} style={{ opacity: fade(at(tagTop)), marginBottom: TAG_GAP }}>
           <Text maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: 13, lineHeight: 18 }}>
             {[labels[index].story, labels[index].age].filter(Boolean).join('  ·  ')}
           </Text>
         </Animated.View>}
-        <Animated.View onLayout={place(sentenceKey)} style={{ opacity: fade(at(sentenceKey)) }}>
+        <Animated.View style={{ opacity: fade(at(sentenceTop)) }}>
           <Text selectable style={{ color: theme.ink, fontSize: 17, lineHeight: 27 }}>{development.explanation}</Text>
         </Animated.View>
       </View>;
