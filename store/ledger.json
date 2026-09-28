@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-28T02:15:32+00:00",
+  "updated_at": "2026-09-28T02:52:18+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1003,6 +1003,17 @@
       ],
       "next_action": "Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.",
       "updated_at": "2026-09-28T02:15:32+00:00"
+    },
+    "web.landscape-layout": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner follow-up 2026-09-28: black notch side preferred (balances Safari's right edge), so the document background change is reverted. Landscape column narrowed from 600 to 480pt for the sentence and timeline; landscape spacing opened: score→sentence 12→20pt, sentence→Checked 10→16pt, cue area 16→48pt, score 26%→24% of height, sentence 16→17pt. Timeline fade after rotation and hydration-safe window size kept. Verified in headless Chromium only.",
+      "evidence": [
+        "test/web-landscape.test.js asserts column ≤480pt and the gaps; fails on the previous values, passes now; npm test and npm run test:design pass"
+      ],
+      "next_action": "Owner: check iPhone Safari landscape after merge (turned from portrait and opened in landscape). Native apps untested in landscape.",
+      "updated_at": "2026-09-28T02:52:18+00:00"
     }
   },
   "events": [
@@ -6288,6 +6299,38 @@
         ],
         "next_action": "Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.",
         "updated_at": "2026-09-28T02:15:32+00:00"
+      }
+    },
+    {
+      "sequence": 330,
+      "at": "2026-09-28T02:41:27+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner report 2026-09-28 (iOS Safari, landscape): timeline ran under the wordmark at full strength after turning the phone; black strip down the notch side. Causes: web onLayout fires only on resize, so line positions went stale after rotation (now summed from heights); window size read during hydration kept the portrait layout on a landscape load (now hydration-safe); no document background, so Safari painted the uncovered notch side black (now the reading surface). Verified in headless Chromium with emulated insets; the notch-side colour is not verified on an iPhone.",
+        "evidence": [
+          "test/web-landscape.test.js fails before, passes after; npm test and npm run test:design pass"
+        ],
+        "next_action": "Owner: check landscape on iPhone Safari after merge, both upright-then-turned and opened in landscape; confirm the notch side matches the page. Native apps unchanged in behaviour but untested in landscape.",
+        "updated_at": "2026-09-28T02:41:27+00:00"
+      }
+    },
+    {
+      "sequence": 331,
+      "at": "2026-09-28T02:52:18+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-up 2026-09-28: black notch side preferred (balances Safari's right edge), so the document background change is reverted. Landscape column narrowed from 600 to 480pt for the sentence and timeline; landscape spacing opened: score→sentence 12→20pt, sentence→Checked 10→16pt, cue area 16→48pt, score 26%→24% of height, sentence 16→17pt. Timeline fade after rotation and hydration-safe window size kept. Verified in headless Chromium only.",
+        "evidence": [
+          "test/web-landscape.test.js asserts column ≤480pt and the gaps; fails on the previous values, passes now; npm test and npm run test:design pass"
+        ],
+        "next_action": "Owner: check iPhone Safari landscape after merge (turned from portrait and opened in landscape). Native apps untested in landscape.",
+        "updated_at": "2026-09-28T02:52:18+00:00"
       }
     }
   ],

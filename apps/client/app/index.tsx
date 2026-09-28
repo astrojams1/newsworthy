@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, Text, View, Share, useWindowDimensions } from 'react-native';
+import { Animated, Pressable, Text, View, Share } from 'react-native';
+import { useWindowSize } from '@/lib/window-size';
 import { Stack, useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { AppIcon } from '@/components/app-icon';
@@ -16,6 +17,11 @@ import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
 
+// Landscape phones are wide and short: the sentence and the timeline keep a
+// readable measure (about 60 characters) rather than spanning the screen, and
+// the reading keeps the portrait rhythm between number, sentence, time and cue.
+const LANDSCAPE_COLUMN = 480;
+
 export default function Home() {
   const theme = useTheme();
   const router = useRouter();
@@ -25,14 +31,14 @@ export default function Home() {
   const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : process.env.EXPO_OS === 'web' ? 'ui-monospace, SFMono-Regular, Menlo, monospace' : 'monospace';
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const dimensions = useWindowDimensions();
+  const dimensions = useWindowSize();
   // Static web rendering has no viewport; keep the initial content readable.
   const width = dimensions.width || 390;
   const height = dimensions.height || 844;
   const fontScale = dimensions.fontScale || 1;
   const landscape = height < 520;
-  const scoreSize = landscape ? Math.min(height * 0.26, 224) : Math.max(64, Math.min(width * 0.42, height * 0.24, 224));
-  const sentenceSize = landscape ? 16 : Math.max(18, Math.min(width * 0.045, 22));
+  const scoreSize = landscape ? Math.min(height * 0.24, 224) : Math.max(64, Math.min(width * 0.42, height * 0.24, 224));
+  const sentenceSize = landscape ? 17 : Math.max(18, Math.min(width * 0.045, 22));
   const horizontal = Math.max(20, Math.min(width * 0.05, 48));
   const { reading, failed, loading, refresh } = useCurrentReading();
   // Nothing is drawn until there is something to say: a placeholder dash, then
@@ -163,7 +169,11 @@ export default function Home() {
           fills the scroll view and nothing scrolls, as before the timeline. Both
           are one screen with the same padding, so the reading does not move when
           the timeline arrives after it. */}
-      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: insets.bottom + (landscape ? 16 : 56) }}>
+      {/* The timeline starts where the reading ends. Measured from the reading's
+          height, which changes whenever the timeline moves: on the web onLayout
+          fires only on a resize, and the timeline's own position went stale
+          after a rotation, so its lines stopped fading under the header. */}
+      <Animated.View onLayout={(event) => setTimelineTop(event.nativeEvent.layout.y + event.nativeEvent.layout.height)} style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? LANDSCAPE_COLUMN : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 8 : 24), paddingBottom: insets.bottom + (landscape ? 48 : 56) }}>
         <Animated.View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
           style={{ opacity: reveal, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
           <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"
@@ -172,8 +182,8 @@ export default function Home() {
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
-        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
-        {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Checked {relative}</Animated.Text>}
+        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? LANDSCAPE_COLUMN : 320 * fontScale, marginTop: landscape ? 20 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
+        {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>Checked {relative}</Animated.Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
         {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: Animated.multiply(cueIn, cueFade) }}>
@@ -186,8 +196,7 @@ export default function Home() {
       {/* Shares the sentence's column, so it has no margin of its own. At least
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
-      {reading && <View onLayout={(event) => setTimelineTop(event.nativeEvent.layout.y)}
-        style={{ maxWidth: landscape ? 600 : 320 * fontScale, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
+      {reading && <View style={{ maxWidth: landscape ? LANDSCAPE_COLUMN : 320 * fontScale, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
           // Its bottom padding is inside it, so the snap area runs to the end of the scroll.
           paddingBottom: hasTimeline ? insets.bottom + 48 : 0,
           ...(webSnap ? { scrollSnapAlign: 'start', scrollMarginTop: headerHeight + 32 } as object : null) }}>
