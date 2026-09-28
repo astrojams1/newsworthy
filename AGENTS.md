@@ -260,6 +260,12 @@ their own name. The name more readings used is kept. `/admin` can undo, by row.
 The record ends with every reading of each story (~50k chars, read once, by
 `curl`): by its latest line alone, a Trump-Xi summit was merged into the war.
 
+**v4: a market reaching a level is a development.** v1 predates the v18
+market-risk score and read "US borrowing costs hit their highest since 2007"
+(reading 827) as added detail on a two-day-old event. v4 is v3 plus one
+paragraph: a record or multi-year high or low is new the first time no
+development names it, under the story that moved it; a figure moving again is not.
+
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
 caller fetches `/api/developments` — story names and developments, data only —
