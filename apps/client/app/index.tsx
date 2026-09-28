@@ -20,8 +20,10 @@ import { usePreferences } from '@/components/preferences-provider';
 // The sentence keeps one measure in characters on wide screens: 320pt at the
 // 17pt of a turned phone and the timeline, widened in proportion where the
 // text is larger, so the desktop's 22pt breaks its lines where landscape does
-// rather than taking an extra line. An upright phone keeps 320pt. On the web its lines are balanced, so
-// they read as one even block, never a long line and a stranded last word.
+// rather than taking an extra line. An upright phone keeps 320pt. On the web
+// the sentence and the timeline wrap with text-wrap: pretty, so neither ends
+// on a stranded word; the owner chose it over balance, which evened every
+// line (2026-09-28).
 // Where the screen is wider, the timeline fills it with a grid of entries
 // rather than wide margins: as many columns as fit at GRID_MIN wide, each up
 // to COLUMN. Safari in landscape leaves a phone about 740pt, which two full
@@ -208,7 +210,7 @@ export default function Home() {
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
-        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24, ...(process.env.EXPO_OS === 'web' ? { textWrap: 'balance' } as object : null) }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
+        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24, ...(process.env.EXPO_OS === 'web' ? { textWrap: 'pretty' } as object : null) }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
         {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>Checked {relative}</Animated.Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}

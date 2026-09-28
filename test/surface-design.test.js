@@ -168,10 +168,10 @@ function inspectReading(options) {
   assert.equal(score.props.adjustsFontSizeToFit, true);
   assert.ok(score.props.style.fontSize <= c.maximumScore);
   if (!landscape) assert.ok(score.props.style.fontSize >= c.minimumPortraitScore);
-  // Balanced lines are a web-only refinement with no native equivalent; the
+  // Pretty wrapping is a web-only refinement with no native equivalent; the
   // grid test asserts it separately, so it stays out of the parity comparison.
   const { textWrap, ...explanationStyle } = explanation.props.style;
-  assert.equal(textWrap, options.platform === 'web' ? 'balance' : undefined);
+  assert.equal(textWrap, options.platform === 'web' ? 'pretty' : undefined);
   // Copy out data: vm object prototypes are intentionally from another realm.
   return JSON.parse(JSON.stringify({ score: { ...score.props.style, fontFamily: 'monospace' }, denominator: { ...denominator.props.style, fontFamily: 'monospace' },
     explanation: explanationStyle, alignment: score.parent.props.style,
@@ -498,8 +498,8 @@ test('the sentence keeps one narrow measure on every screen, and a wide screen l
       // Up to 320 a column; narrower where Safari's landscape page cannot fit two at full width.
       const available = width - 2 * Math.max(20, Math.min(width * 0.05, 48));
       assert.equal(timeline.parent.props.style.maxWidth, Math.min(available, columns * 320 + (columns - 1) * timeline.props.gap), `${platform} ${width}×${height} grid width`);
-      // The web balances the sentence's lines; native has no equivalent.
-      assert.equal(sentence.props.style.textWrap, platform === 'web' ? 'balance' : undefined, `${platform} sentence wrap`);
+      // The web wraps the sentence with text-wrap: pretty; native has no equivalent.
+      assert.equal(sentence.props.style.textWrap, platform === 'web' ? 'pretty' : undefined, `${platform} sentence wrap`);
     }
   }
 });

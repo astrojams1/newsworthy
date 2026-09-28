@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-28T07:12:39+00:00
+Updated: 2026-09-28T07:31:19+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -100,7 +100,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
 | web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
 | store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
-| web.landscape-layout | waiting_verification | agent | observed | Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words in 3 lines; an upright phone keeps 320pt (4 lines at 18pt). The sentence and timeline entries use text-wrap: balance on the web. Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. Verified in headless Chromium only. | Owner: approve, then check iPhone Safari landscape and portrait and desktop after merge. Native apps have no balance equivalent and are untested in landscape. |
+| web.landscape-layout | waiting_verification | agent | observed | Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words; upright phones keep 320pt. The sentence and timeline wrap with text-wrap: pretty on the web (owner chose it over balance). Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. The age prefix is '5h ·' with a non-breaking space in the app and both widgets. Verified in headless Chromium only. | Owner: check iPhone Safari landscape and portrait and desktop after merge. Widgets pick up the dot in the next native build, unverified on a device; Swift widget test not run here. |
 | ui.header-icon-size | waiting_verification | agent | observed | Owner report 2026-09-28: the Settings X was 20pt beside the 24pt gear. Every nav-bar icon (share, gear, Settings X, web back arrow) now uses header.iconSize 24; npm test and test:design pass on rendered props. Not yet seen on a device or in a browser. | Check the X against the gear on iOS (SF Symbol xmark), Android and web; iOS 26 glass capsule untested. |
 
 ## Evidence and history
@@ -3328,3 +3328,13 @@ Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size 
 - test/web-landscape.test.js: at 743x340 the sentence and every timeline entry are balanced, the cue is on the first screen and the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure (upright phones 320pt), grid widths and web-only balance; npm test and npm run test:design pass
 
 Next: Owner: approve, then check iPhone Safari landscape and portrait and desktop after merge. Native apps have no balance equivalent and are untested in landscape.
+
+### 338. web.landscape-layout — waiting_verification
+
+2026-09-28T07:31:19+00:00 · observed · agent
+
+Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words; upright phones keep 320pt. The sentence and timeline wrap with text-wrap: pretty on the web (owner chose it over balance). Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. The age prefix is '5h ·' with a non-breaking space in the app and both widgets. Verified in headless Chromium only.
+
+- test/web-landscape.test.js: at 743x340 the sentence and timeline entries wrap pretty, the cue is on the first screen, the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure, grid widths and web-only pretty; story-age tests pin '5h ·' in JS and the widget sources; npm test and npm run test:design pass; Android widget compiles
+
+Next: Owner: check iPhone Safari landscape and portrait and desktop after merge. Widgets pick up the dot in the next native build, unverified on a device; Swift widget test not run here.

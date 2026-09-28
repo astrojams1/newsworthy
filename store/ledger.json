@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-28T07:12:39+00:00",
+  "updated_at": "2026-09-28T07:31:19+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1008,12 +1008,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words in 3 lines; an upright phone keeps 320pt (4 lines at 18pt). The sentence and timeline entries use text-wrap: balance on the web. Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. Verified in headless Chromium only.",
+      "summary": "Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words; upright phones keep 320pt. The sentence and timeline wrap with text-wrap: pretty on the web (owner chose it over balance). Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. The age prefix is '5h ·' with a non-breaking space in the app and both widgets. Verified in headless Chromium only.",
       "evidence": [
-        "test/web-landscape.test.js: at 743x340 the sentence and every timeline entry are balanced, the cue is on the first screen and the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure (upright phones 320pt), grid widths and web-only balance; npm test and npm run test:design pass"
+        "test/web-landscape.test.js: at 743x340 the sentence and timeline entries wrap pretty, the cue is on the first screen, the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure, grid widths and web-only pretty; story-age tests pin '5h ·' in JS and the widget sources; npm test and npm run test:design pass; Android widget compiles"
       ],
-      "next_action": "Owner: approve, then check iPhone Safari landscape and portrait and desktop after merge. Native apps have no balance equivalent and are untested in landscape.",
-      "updated_at": "2026-09-28T07:12:39+00:00"
+      "next_action": "Owner: check iPhone Safari landscape and portrait and desktop after merge. Widgets pick up the dot in the next native build, unverified on a device; Swift widget test not run here.",
+      "updated_at": "2026-09-28T07:31:19+00:00"
     },
     "ui.header-icon-size": {
       "state": "waiting_verification",
@@ -6438,6 +6438,22 @@
         ],
         "next_action": "Owner: approve, then check iPhone Safari landscape and portrait and desktop after merge. Native apps have no balance equivalent and are untested in landscape.",
         "updated_at": "2026-09-28T07:12:39+00:00"
+      }
+    },
+    {
+      "sequence": 338,
+      "at": "2026-09-28T07:31:19+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words; upright phones keep 320pt. The sentence and timeline wrap with text-wrap: pretty on the web (owner chose it over balance). Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. The age prefix is '5h ·' with a non-breaking space in the app and both widgets. Verified in headless Chromium only.",
+        "evidence": [
+          "test/web-landscape.test.js: at 743x340 the sentence and timeline entries wrap pretty, the cue is on the first screen, the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure, grid widths and web-only pretty; story-age tests pin '5h ·' in JS and the widget sources; npm test and npm run test:design pass; Android widget compiles"
+        ],
+        "next_action": "Owner: check iPhone Safari landscape and portrait and desktop after merge. Widgets pick up the dot in the next native build, unverified on a device; Swift widget test not run here.",
+        "updated_at": "2026-09-28T07:31:19+00:00"
       }
     }
   ],
