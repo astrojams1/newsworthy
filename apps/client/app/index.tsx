@@ -19,7 +19,10 @@ import { usePreferences } from '@/components/preferences-provider';
 export default function Home() {
   const theme = useTheme();
   const router = useRouter();
-  const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : 'monospace';
+  // Light (300) needs a face that has one. Safari's generic monospace is Menlo,
+  // which has only Regular and Bold, so the web drew the score at Regular;
+  // ui-monospace is SF Mono there, which has Light.
+  const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : process.env.EXPO_OS === 'web' ? 'ui-monospace, SFMono-Regular, Menlo, monospace' : 'monospace';
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const dimensions = useWindowDimensions();
@@ -32,6 +35,20 @@ export default function Home() {
   const sentenceSize = landscape ? 16 : Math.max(18, Math.min(width * 0.045, 22));
   const horizontal = Math.max(20, Math.min(width * 0.05, 48));
   const { reading, failed, loading, refresh } = useCurrentReading();
+  // Nothing is drawn until there is something to say: a placeholder dash, then
+  // the reading, then the gradient was three layouts in the first second. Once
+  // there is, it arrives in reading order, fading in place without moving: the
+  // number (with its gradient and Share), then the sentence, then when it was
+  // checked. A reading already at hand when the screen mounts is shown at once.
+  const ready = Boolean(reading) || (failed && !loading);
+  const reveal = useRef(new Animated.Value(ready ? 1 : 0)).current;
+  const sentenceIn = useRef(new Animated.Value(ready ? 1 : 0)).current;
+  const checkedIn = useRef(new Animated.Value(ready ? 1 : 0)).current;
+  useEffect(() => {
+    if (!ready) return;
+    const fade = (value: Animated.Value) => Animated.timing(value, { toValue: 1, duration: 450, useNativeDriver: process.env.EXPO_OS !== 'web' });
+    Animated.stagger(250, [fade(reveal), fade(sentenceIn), fade(checkedIn)]).start();
+  }, [ready, reveal, sentenceIn, checkedIn]);
   const [now, setNow] = useState(Date.now());
   const [shareNotice, setShareNotice] = useState('');
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
@@ -59,6 +76,11 @@ export default function Home() {
   const [viewport, setViewport] = useState(0);
   const screen = viewport || height;
   const hasTimeline = Boolean(reading) && developments.length > 0;
+  // The timeline arrives after the reading; its cue fades in rather than appearing.
+  const cueIn = useRef(new Animated.Value(hasTimeline ? 1 : 0)).current;
+  useEffect(() => {
+    Animated.timing(cueIn, { toValue: hasTimeline ? 1 : 0, duration: 250, useNativeDriver: process.env.EXPO_OS !== 'web' }).start();
+  }, [hasTimeline, cueIn]);
   // Where the timeline rests: its first entry a comfortable distance below the header.
   const snap = hasTimeline && timelineTop ? Math.max(1, timelineTop - headerHeight - 32) : 0;
   const span = snap || screen;
@@ -103,7 +125,7 @@ export default function Home() {
     <BrandMark />
   </Pressable> : <BrandMark />;
   const shareButton = reading ? <Pressable accessibilityRole="button" accessibilityLabel="Share this reading" onPress={shareReading} style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
-    <AppIcon color={theme.accent} />
+    <Animated.View style={{ opacity: reveal }}><AppIcon color={theme.accent} /></Animated.View>
   </Pressable> : null;
   const settingsButton = <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
     <Glyph name="settings" color={theme.accent} size={24} />
@@ -129,30 +151,32 @@ export default function Home() {
         { type: 'custom' as const, element: settingsButton, hidesSharedBackground: false },
       ] : undefined }} />
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
-    <ReadingGradient score={reading?.score} dark={theme.dark} />
+    <Animated.View pointerEvents="none" style={{ position: 'absolute', inset: 0, opacity: reveal }}><ReadingGradient score={reading?.score} dark={theme.dark} /></Animated.View>
     <Animated.ScrollView ref={scroller} key={fontScale} contentInsetAdjustmentBehavior="never"
       onLayout={(event) => setViewport(event.nativeEvent.layout.height)} style={{ flex: 1, backgroundColor: 'transparent', ...(webSnap ? { scrollSnapType: 'y mandatory' } as object : null) }}
       scrollEventThrottle={16} snapToOffsets={snap ? [0, snap] : undefined} snapToEnd={false} decelerationRate={snap ? 'fast' : 'normal'}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
         useNativeDriver: process.env.EXPO_OS !== 'web',
       })}
-      contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingHorizontal: horizontal, paddingBottom: hasTimeline ? 0 : insets.bottom + (landscape ? 16 : 32) }}>
+      contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingHorizontal: horizontal }}>
       {/* With a timeline the reading keeps exactly the first screen; without one it
-          fills the scroll view and nothing scrolls, as before the timeline. */}
-      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: landscape ? 16 : 56 }}>
-        <View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
-          style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
+          fills the scroll view and nothing scrolls, as before the timeline. Both
+          are one screen with the same padding, so the reading does not move when
+          the timeline arrives after it. */}
+      <Animated.View style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? 600 : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 16 : 24), paddingBottom: insets.bottom + (landscape ? 16 : 56) }}>
+        <Animated.View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
+          style={{ opacity: reveal, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
           <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"
             style={{ color: theme.ink, fontSize: scoreSize, lineHeight: scoreSize * 1.05, flexShrink: 1, fontWeight: '300', fontFamily: scoreFont, fontVariant: ['tabular-nums'], letterSpacing: -scoreSize * 0.055 }}>
             {reading?.score ?? '–'}
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
-        </View>
-        <Text selectable testID="rating-explanation" style={{ color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Text>
-        {reading && <Text selectable style={{ color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Checked {relative}</Text>}
+        </Animated.View>
+        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: landscape ? 600 : 320 * fontScale, marginTop: landscape ? 12 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
+        {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 10 : 18 }}>Checked {relative}</Animated.Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
-        {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: cueFade }}>
+        {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: Animated.multiply(cueIn, cueFade) }}>
           <Pressable accessibilityRole="button" accessibilityLabel="Earlier developments" onPress={showTimeline}
             style={{ minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: 9, height: 9, borderRightWidth: 1.25, borderBottomWidth: 1.25, borderColor: theme.muted, transform: [{ rotate: '45deg' }], marginTop: -4 }} />

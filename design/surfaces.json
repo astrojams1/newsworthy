@@ -38,7 +38,7 @@
     "minimumPortraitScore": 64
   },
   "scoreFont": {
-    "web": "monospace",
+    "web": "ui-monospace, SFMono-Regular, Menlo, monospace",
     "ios": "ui-monospace",
     "android": "monospace",
     "iosWidget": "monospaced"

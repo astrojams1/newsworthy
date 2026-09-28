@@ -13,7 +13,7 @@ in the [release ledger](../ledger.md); record it there too.
 | Cut | Why | What changed | Verified | Open |
 |---|---|---|---|---|
 | [2026-09-27](#2026-09-27) | First cut, owner request | Everything: six scenes, iPhone 886×1920 and Play 1080×1920, 15.1 s | Store rules, decoded frames, loudness | Guideline 2.3.4; poster frame; YouTube upload |
-| [2026-09-28](#2026-09-28) | Re-render of unchanged source, testing the tooling | Nothing to the eye: capture, grain and render reporting | Repeat renders, store rules, the copy-change path, banding | As the first cut |
+| [2026-09-28](#2026-09-28) | Re-render of unchanged source, testing the tooling | Nothing to the eye: capture, grain and render reporting | Repeat renders, store rules, the copy-change path, banding | Home screen from #171–#173; as the first cut |
 
 ## Lessons
 
@@ -201,4 +201,9 @@ minutes on four cores, the iPhone's in 14. `--segment` about 0.17 s per
 sample.
 
 **Open.** As the first cut: guideline 2.3.4, the poster frame, the YouTube
-upload and listening. The review page plays these files.
+upload and listening. The review page plays these files. Since this render,
+#171–#173 changed the home screen: without the timeline the reading sits
+16 pt lower (`layout()` still has the old bottom padding), and on load it fades
+in, number then sentence then time, where the film lifts the splash's dash into
+it. `--stale` lists `apps/client/app/index.tsx` and `design/surfaces.json`,
+whose change is web-only. The next remake starts there.
