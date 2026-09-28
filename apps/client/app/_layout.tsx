@@ -7,6 +7,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter } from 'expo-r
 import { onNotificationOpen } from '@/lib/push';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
+import { headerEdges } from '@/lib/header-edges';
 // A deep link or a cold start on /settings still gets the reading screen
 // underneath it, so the native back button exists rather than depending on
 // how the screen was reached.
@@ -61,7 +62,7 @@ function ThemedLayout() {
   return <ThemeProvider value={navigationTheme}>
     <StatusBar style={theme.dark ? 'light' : 'dark'} />
     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent,
-      headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted } }}>
+      headerShadowVisible: false, contentStyle: { backgroundColor: theme.tinted }, ...headerEdges }}>
       <Stack.Screen name="index" options={{ title: 'Newsworthy', headerTitle: () => null, headerTransparent: true, headerStyle: { backgroundColor: 'transparent' } }} />
       {/* Settings rises over the reading as a sheet on the phone, closed with its
           own X; on the web it is a page. Its header is its own stack's. */}

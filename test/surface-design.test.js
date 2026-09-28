@@ -359,6 +359,26 @@ test('notification saving never adds a control or changes the row geometry', () 
   }
 });
 
+// Reported 2026-09-28: iOS 26 Safari keeps the page clear of the notch in
+// landscape yet reports it as an inset, and the header added it again, so the
+// wordmark sat a notch's width in from Safari's black strip. Native apps draw
+// under the notch and keep the inset.
+test('web headers ignore side safe-area insets; native headers keep them', () => {
+  for (const platform of ['ios', 'android', 'web']) {
+    const root = nodes(renderLayout({ platform })).find(n => n.props.screenOptions).props.screenOptions;
+    const settings = renderSettingsLayout({ platform }).props.screenOptions;
+    for (const options of [root, settings]) {
+      if (platform === 'web') {
+        assert.equal(JSON.stringify(options.headerLeftContainerStyle), JSON.stringify({ marginStart: 0 }));
+        assert.equal(JSON.stringify(options.headerRightContainerStyle), JSON.stringify({ marginEnd: 0 }));
+      } else {
+        assert.equal(options.headerLeftContainerStyle, undefined, `${platform} keeps the navigator's inset`);
+        assert.equal(options.headerRightContainerStyle, undefined, `${platform} keeps the navigator's inset`);
+      }
+    }
+  }
+});
+
 test('Settings rises as a sheet on the phone and stays a page on the web', () => {
   for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) {
     const all = nodes(renderLayout({ platform, dark }));

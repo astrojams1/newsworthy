@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { HeaderBackButton } from 'expo-router/react-navigation';
 import { useTheme } from '@/lib/theme';
 import { Glyph } from '@/components/glyph';
+import { headerEdges } from '@/lib/header-edges';
 
 // On the web the navigator tints its back arrow through an SVG filter whose id
 // never changes, and a browser can keep painting the arrow in the colour it had
@@ -25,7 +26,7 @@ export const unstable_settings = { initialRouteName: 'index' };
 export default function SettingsLayout() {
   const theme = useTheme();
   return <Stack screenOptions={{ headerStyle: { backgroundColor: theme.tinted }, headerTintColor: theme.accent, headerShadowVisible: false,
-    headerTitleStyle: { color: theme.ink }, headerBackButtonDisplayMode: 'minimal', contentStyle: { backgroundColor: theme.tinted }, ...webBackButton(theme.accent) }}>
+    headerTitleStyle: { color: theme.ink }, headerBackButtonDisplayMode: 'minimal', contentStyle: { backgroundColor: theme.tinted }, ...webBackButton(theme.accent), ...headerEdges }}>
     {/* The overview has no visible title: the sheet it sits in and its rows say
         what it is. Its only way out is its X, not a back arrow inherited from
         the reading behind it. */}

@@ -26,12 +26,28 @@ const developments = [
   ['eu-energy', 110, 'European gas prices rose after a Norwegian outage, and governments said storage is full enough for winter.'],
 ].map(([story, hours, explanation], index) => ({ root: index + 1, story, since: hoursAgo(hours), score: 4, displayed: 1, leading: false, explanation }));
 
-async function openReading(browser, viewport) {
+async function openReading(browser, viewport, notch = 0) {
   const context = await browser.newContext({ viewport, colorScheme: 'dark', isMobile: true, hasTouch: true });
   await context.addInitScript(() => localStorage.setItem('newsworthy.preferences.v1', JSON.stringify({ timeline: true, theme: 'system' })));
   await context.route('**/api/current', route => route.fulfill({ json: current }));
   await context.route('**/api/timeline', route => route.fulfill({ json: { developments } }));
-  return context.newPage();
+  const page = await context.newPage();
+  // iOS 26 Safari reports the notch as an inset while keeping the page clear
+  // of it. Chromium can report one too; the page cannot tell the difference.
+  if (notch) await (await context.newCDPSession(page)).send('Emulation.setSafeAreaInsetsOverride', { insets: { left: notch, right: 0, top: 0, bottom: 21 } });
+  return page;
+}
+
+// Header margins from the page's own edges: the wordmark's left and the
+// Settings gear's right.
+async function headerEdges(page, gearLabel) {
+  return page.evaluate(label => {
+    const visible = node => node && node.getBoundingClientRect().width > 0;
+    const brand = [...document.querySelectorAll('[aria-label="Newsworthy, back to the reading"], [aria-label="Newsworthy"]')].find(visible)
+      ?? [...document.querySelectorAll('div')].find(node => node.textContent === 'NEWSWORTHY' && !node.children.length);
+    const gear = [...document.querySelectorAll(`[aria-label="${label}"]`)].find(visible);
+    return { left: Math.round(brand.getBoundingClientRect().left), right: Math.round(window.innerWidth - gear.getBoundingClientRect().right) };
+  }, gearLabel);
 }
 
 // Every timeline line whose top has scrolled above the header's lower edge
@@ -64,7 +80,7 @@ test('turned to landscape, the timeline fades out under the header rather than r
     try {
       const landscape = { width: 874, height: 360 };
       // Opened upright, then turned: the case in the report.
-      const turned = await openReading(browser, { width: 390, height: 780 });
+      const turned = await openReading(browser, { width: 390, height: 780 }, 62);
       await turned.goto(`${base}/`);
       await turned.getByTestId('timeline').waitFor();
       await turned.waitForTimeout(1200);
@@ -74,6 +90,11 @@ test('turned to landscape, the timeline fades out under the header rather than r
       assert.ok(await turned.evaluate(() => document.querySelector('[data-testid="timeline"]').getBoundingClientRect().top < 0),
         'the scroll reached past the timeline\'s first entry');
       assert.deepEqual(await linesUnderHeader(turned), [], 'no timeline line at strength under the header after turning');
+      // Reported 2026-09-28 with a third screenshot: the wordmark sat a second
+      // notch's width in from Safari's black strip, the gear near the far edge.
+      const edges = await headerEdges(turned, 'Settings');
+      assert.ok(edges.left < 40, `the wordmark keeps the header's own margin, not the notch inset (${edges.left}pt from the edge)`);
+      assert.ok(Math.abs(edges.left - edges.right) <= 16, `header margins match left and right (${edges.left}pt and ${edges.right}pt)`);
       assert.equal(await turned.evaluate(() => document.documentElement.style.backgroundColor), '',
         'no document background: Safari keeps the notch side black');
 
