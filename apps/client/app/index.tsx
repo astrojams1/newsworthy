@@ -30,7 +30,13 @@ export default function Home() {
   // ui-monospace is SF Mono there, which has Light.
   const scoreFont = process.env.EXPO_OS === 'ios' ? 'ui-monospace' : process.env.EXPO_OS === 'web' ? 'ui-monospace, SFMono-Regular, Menlo, monospace' : 'monospace';
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
+  // On the web the reading is hidden under Settings, and its header measures 0
+  // there; laid out with that, the reading came back 64pt high for a frame and
+  // then dropped into place. The last real height stands in until it returns.
+  const measuredHeader = useHeaderHeight();
+  const lastHeader = useRef(measuredHeader);
+  if (measuredHeader) lastHeader.current = measuredHeader;
+  const headerHeight = measuredHeader || lastHeader.current;
   const dimensions = useWindowSize();
   // Static web rendering has no viewport; keep the initial content readable.
   const width = dimensions.width || 390;
@@ -78,7 +84,9 @@ export default function Home() {
   const [timelineTop, setTimelineTop] = useState(0);
   // The scroll view's own height, not the window's: on the web export the
   // window dimensions can stay at the static-render fallback, which sized the
-  // reading taller than the screen and pushed the cue below the fold.
+  // reading taller than the screen and pushed the cue below the fold. Both
+  // measurements ignore a height of 0: on the web the reading is hidden under
+  // Settings and measures 0, and adopting that reflowed it on the way back.
   const [viewport, setViewport] = useState(0);
   const screen = viewport || height;
   const hasTimeline = Boolean(reading) && developments.length > 0;
@@ -159,7 +167,7 @@ export default function Home() {
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
     <Animated.View pointerEvents="none" style={{ position: 'absolute', inset: 0, opacity: reveal }}><ReadingGradient score={reading?.score} dark={theme.dark} /></Animated.View>
     <Animated.ScrollView ref={scroller} key={fontScale} contentInsetAdjustmentBehavior="never"
-      onLayout={(event) => setViewport(event.nativeEvent.layout.height)} style={{ flex: 1, backgroundColor: 'transparent', ...(webSnap ? { scrollSnapType: 'y mandatory' } as object : null) }}
+      onLayout={(event) => { if (event.nativeEvent.layout.height) setViewport(event.nativeEvent.layout.height); }} style={{ flex: 1, backgroundColor: 'transparent', ...(webSnap ? { scrollSnapType: 'y mandatory' } as object : null) }}
       scrollEventThrottle={16} snapToOffsets={snap ? [0, snap] : undefined} snapToEnd={false} decelerationRate={snap ? 'fast' : 'normal'}
       onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
         useNativeDriver: process.env.EXPO_OS !== 'web',
@@ -173,7 +181,7 @@ export default function Home() {
           height, which changes whenever the timeline moves: on the web onLayout
           fires only on a resize, and the timeline's own position went stale
           after a rotation, so its lines stopped fading under the header. */}
-      <Animated.View onLayout={(event) => setTimelineTop(event.nativeEvent.layout.y + event.nativeEvent.layout.height)} style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? LANDSCAPE_COLUMN : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 8 : 24), paddingBottom: insets.bottom + (landscape ? 48 : 56) }}>
+      <Animated.View onLayout={(event) => { if (event.nativeEvent.layout.height) setTimelineTop(event.nativeEvent.layout.y + event.nativeEvent.layout.height); }} style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: landscape ? LANDSCAPE_COLUMN : 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 8 : 24), paddingBottom: insets.bottom + (landscape ? 48 : 56) }}>
         <Animated.View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
           style={{ opacity: reveal, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
           <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"

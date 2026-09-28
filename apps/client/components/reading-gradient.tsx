@@ -17,7 +17,10 @@ export function ReadingGradient({ score, dark }: { score?: number; dark: boolean
   }, [score, dark, size.width, size.height]);
   return <View pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
     testID="reading-gradient" style={{ position: 'absolute', inset: 0 }}
-    onLayout={({ nativeEvent: { layout } }) => setSize(current => current.width === layout.width && current.height === layout.height ? current : { width: layout.width, height: layout.height })}>
+    // A screen hidden behind another on the web (Settings is a page there)
+    // reports 0x0. Keeping the last real size keeps the image, so returning
+    // does not paint a frame without the gradient and then build it again.
+    onLayout={({ nativeEvent: { layout } }) => setSize(current => !layout.width || !layout.height || (current.width === layout.width && current.height === layout.height) ? current : { width: layout.width, height: layout.height })}>
     {uri && <Image source={{ uri }} contentFit="fill" style={{ position: 'absolute', inset: 0 }} />}
   </View>;
 }
