@@ -131,10 +131,36 @@ for one story under two names, never for two stories that are related, share a
 cause or affect each other. At most one pair per answer; otherwise the key is
 left out.`;
 
+/**
+ * v4 says a market reaching a level is a development, and nothing else changes:
+ * v3 is kept byte-identical and one paragraph is appended.
+ *
+ * v1 was written while the score rated a reader's attention. Since rating
+ * prompt v18 it rates the risk of a sharp market move, but the judge still
+ * read a market's move as detail about the event behind it: v1 counts "a toll
+ * crossing a threshold" as new and "a revised figure, or added detail" as the
+ * same, and a record in a market fits both. On 2026-09-28 reading 827, "US
+ * borrowing costs hit their highest since 2007 after President Trump rejected
+ * Iran's truce offer", was judged "Same Trump rejection of Iran offer; adds
+ * yield reaction detail" and joined a development two and a half days old.
+ *
+ * The line it draws is the level, not the figure: oil up 3% and then 4% is one
+ * development restated, a first record is another. It keeps the slug of the
+ * story behind the move, so a war's daily market records are weighed against
+ * the war's routine level rather than opening a fresh story at full value.
+ */
+const V4 = `${V3}
+
+A market at a record, or its highest or lowest in years, is a new development
+the first time no recorded development names that level, under the slug of the
+story that moved it. A figure already reported moving again short of such a
+level, oil up 3% then 4%, restates its development.`;
+
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
   2: { label: 'story-vocabulary-v2', added: '2026-09-04', text: V2 },
   3: { label: 'same-story-merge-v3', added: '2026-09-25', text: V3 },
+  4: { label: 'market-levels-v4', added: '2026-09-28', text: V4 },
 };
 
 export function judgeVersion() {
