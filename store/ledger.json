@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-28T07:31:19+00:00",
+  "updated_at": "2026-09-28T08:29:00+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1008,12 +1008,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner follow-ups 2026-09-28: the sentence measure is 320pt per 17pt of its size on wide screens (~414pt at desktop's 22pt), so landscape and desktop break at the same words; upright phones keep 320pt. The sentence and timeline wrap with text-wrap: pretty on the web (owner chose it over balance). Grid columns narrow to 280pt so Safari's ~743pt landscape page gets two. The age prefix is '5h ·' with a non-breaking space in the app and both widgets. Verified in headless Chromium only.",
+      "summary": "Owner follow-ups 2026-09-28 after production 93e2c3f (#180): the sentence and the timeline share one column, scaled with text size: 320pt upright, 360pt in landscape, 414pt on larger screens (22pt sentence, three lines rather than four). The timeline grid is removed on every screen, and CSS text-wrap is dropped: in Chrome on iPhone, WebKit's pretty read as balance. Timeline code is back to its pre-#179 form. The landscape score stays 22% of height: measured in headless Chromium at 743x340 with a 21pt bottom inset, today's sentence takes three lines, the chevron is on screen, and the reading is 346pt tall, 6pt over the viewport (353pt at 24%). Verified in headless Chromium only.",
       "evidence": [
-        "test/web-landscape.test.js: at 743x340 the sentence and timeline entries wrap pretty, the cue is on the first screen, the timeline is two columns, and desktop matches its line count and break words; surface-design asserts the measure, grid widths and web-only pretty; story-age tests pin '5h ·' in JS and the widget sources; npm test and npm run test:design pass; Android widget compiles"
+        "surface-design pins 320/360/414 for the sentence and the timeline on iOS, Android and web, and no text-wrap; web-landscape: 874x360 sentence and timeline within 360pt with the spacing checks, 743x340 chevron on the first screen and every sentence and timeline node on the browser's own wrapping; story-age pins '5h\\u00A0·' in both widget formatters; mutations (pretty on the timeline, an ordinary space in the Android widget, a 320pt desktop column) each fail a test; npm test and npm run test:design pass"
       ],
-      "next_action": "Owner: check iPhone Safari landscape and portrait and desktop after merge. Widgets pick up the dot in the next native build, unverified on a device; Swift widget test not run here.",
-      "updated_at": "2026-09-28T07:31:19+00:00"
+      "next_action": "Owner: check iPhone landscape and portrait and desktop after merge. Native apps untested in landscape.",
+      "updated_at": "2026-09-28T08:29:00+00:00"
     },
     "ui.header-icon-size": {
       "state": "waiting_verification",
@@ -6454,6 +6454,22 @@
         ],
         "next_action": "Owner: check iPhone Safari landscape and portrait and desktop after merge. Widgets pick up the dot in the next native build, unverified on a device; Swift widget test not run here.",
         "updated_at": "2026-09-28T07:31:19+00:00"
+      }
+    },
+    {
+      "sequence": 339,
+      "at": "2026-09-28T08:29:00+00:00",
+      "gate": "web.landscape-layout",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner follow-ups 2026-09-28 after production 93e2c3f (#180): the sentence and the timeline share one column, scaled with text size: 320pt upright, 360pt in landscape, 414pt on larger screens (22pt sentence, three lines rather than four). The timeline grid is removed on every screen, and CSS text-wrap is dropped: in Chrome on iPhone, WebKit's pretty read as balance. Timeline code is back to its pre-#179 form. The landscape score stays 22% of height: measured in headless Chromium at 743x340 with a 21pt bottom inset, today's sentence takes three lines, the chevron is on screen, and the reading is 346pt tall, 6pt over the viewport (353pt at 24%). Verified in headless Chromium only.",
+        "evidence": [
+          "surface-design pins 320/360/414 for the sentence and the timeline on iOS, Android and web, and no text-wrap; web-landscape: 874x360 sentence and timeline within 360pt with the spacing checks, 743x340 chevron on the first screen and every sentence and timeline node on the browser's own wrapping; story-age pins '5h\\u00A0·' in both widget formatters; mutations (pretty on the timeline, an ordinary space in the Android widget, a 320pt desktop column) each fail a test; npm test and npm run test:design pass"
+        ],
+        "next_action": "Owner: check iPhone landscape and portrait and desktop after merge. Native apps untested in landscape.",
+        "updated_at": "2026-09-28T08:29:00+00:00"
       }
     }
   ],

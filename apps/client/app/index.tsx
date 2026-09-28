@@ -17,22 +17,17 @@ import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
 
-// The sentence keeps one measure in characters on wide screens: 320pt at the
-// 17pt of a turned phone and the timeline, widened in proportion where the
-// text is larger, so the desktop's 22pt breaks its lines where landscape does
-// rather than taking an extra line. An upright phone keeps 320pt. On the web
-// the sentence and the timeline wrap with text-wrap: pretty, so neither ends
-// on a stranded word; the owner chose it over balance, which evened every
-// line (2026-09-28).
-// Where the screen is wider, the timeline fills it with a grid of entries
-// rather than wide margins: as many columns as fit at GRID_MIN wide, each up
-// to COLUMN. Safari in landscape leaves a phone about 740pt, which two full
-// 320pt columns and their margins do not fit.
+// The sentence and the timeline share one column, scaled with the text size:
+// 320pt on an upright phone; 360pt turned, a little wider so the text sits
+// naturally on the wider screen without spanning it; and 414pt on larger
+// screens, where the sentence is 22pt, so a typical one takes three lines
+// rather than four. Turned, the reading keeps the portrait rhythm between
+// number, sentence, time and cue. A grid of timeline columns and CSS
+// text-wrap were both tried and dropped (2026-09-28): WebKit's pretty, which
+// every iOS browser uses, re-lays out the whole paragraph and read as balance.
 const COLUMN = 320;
-const COLUMN_SIZE = 17;
-const GRID_MIN = 280;
-const GRID_GAP = 48;
-const GRID_MAX_COLUMNS = 3;
+const LANDSCAPE_COLUMN = 360;
+const WIDE_COLUMN = 414;
 
 export default function Home() {
   const theme = useTheme();
@@ -58,14 +53,7 @@ export default function Home() {
   const scoreSize = landscape ? Math.min(height * 0.22, 224) : Math.max(64, Math.min(width * 0.42, height * 0.24, 224));
   const sentenceSize = landscape ? 17 : Math.max(18, Math.min(width * 0.045, 22));
   const horizontal = Math.max(20, Math.min(width * 0.05, 48));
-  // An upright phone keeps 320pt: its width, not the desktop, sets the
-  // measure there, and four shorter lines suit a narrow screen better than
-  // three that run nearly edge to edge.
-  const uprightPhone = !landscape && width < 600;
-  const column = COLUMN * (uprightPhone ? 1 : sentenceSize / COLUMN_SIZE) * fontScale;
-  const available = width - horizontal * 2;
-  const columns = Math.max(1, Math.min(GRID_MAX_COLUMNS, Math.floor((available + GRID_GAP) / (GRID_MIN * fontScale + GRID_GAP))));
-  const gridWidth = Math.min(available, columns * COLUMN * fontScale + (columns - 1) * GRID_GAP);
+  const column = (landscape ? LANDSCAPE_COLUMN : width < 600 ? COLUMN : WIDE_COLUMN) * fontScale;
   const { reading, failed, loading, refresh } = useCurrentReading();
   // Nothing is drawn until there is something to say: a placeholder dash, then
   // the reading, then the gradient was three layouts in the first second. Once
@@ -201,7 +189,7 @@ export default function Home() {
           height, which changes whenever the timeline moves: on the web onLayout
           fires only on a resize, and the timeline's own position went stale
           after a rotation, so its lines stopped fading under the header. */}
-      <Animated.View onLayout={(event) => { if (event.nativeEvent.layout.height) setTimelineTop(event.nativeEvent.layout.y + event.nativeEvent.layout.height); }} style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: 440, width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 8 : 24), paddingBottom: insets.bottom + (landscape ? 48 : 56) }}>
+      <Animated.View onLayout={(event) => { if (event.nativeEvent.layout.height) setTimelineTop(event.nativeEvent.layout.y + event.nativeEvent.layout.height); }} style={{ ...(hasTimeline ? { minHeight: screen } : { flex: 1 }), ...(webSnap ? { scrollSnapAlign: 'start' } as object : null), justifyContent: 'center', maxWidth: Math.max(440, column), width: '100%', alignItems: 'center', opacity: hasTimeline ? readingFade : 1, paddingTop: headerHeight + (landscape ? 8 : 24), paddingBottom: insets.bottom + (landscape ? 48 : 56) }}>
         <Animated.View accessible accessibilityRole="header" accessibilityLabel={reading ? `${reading.score} out of 10` : 'Rating unavailable'} accessibilityLiveRegion="polite"
           style={{ opacity: reveal, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', maxWidth: '100%' }}>
           <Text selectable accessible={false} adjustsFontSizeToFit minimumFontScale={0.3} maxFontSizeMultiplier={1.2} numberOfLines={1} testID="rating-score"
@@ -210,7 +198,7 @@ export default function Home() {
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
-        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24, ...(process.env.EXPO_OS === 'web' ? { textWrap: 'pretty' } as object : null) }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
+        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
         {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>Checked {relative}</Animated.Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
@@ -221,15 +209,14 @@ export default function Home() {
           </Pressable>
         </Animated.View>}
       </Animated.View>
-      {/* Entries keep about the sentence's measure, so the timeline has no margin
-          of its own; where the screen fits more than one, they form a grid. At least
+      {/* Shares the sentence's column, so it has no margin of its own. At least
           a screen tall below the header, so however short, its top can reach
           the snap offset; a fixed padding left one entry short of it. */}
-      {reading && <View style={{ maxWidth: gridWidth, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
+      {reading && <View style={{ maxWidth: column, width: '100%', minHeight: hasTimeline ? screen - headerHeight - 32 : 0,
           // Its bottom padding is inside it, so the snap area runs to the end of the scroll.
           paddingBottom: hasTimeline ? insets.bottom + 48 : 0,
           ...(webSnap ? { scrollSnapAlign: 'start', scrollMarginTop: headerHeight + 32 } as object : null) }}>
-        <Timeline developments={developments} opacity={timelineFade} theme={theme} now={now} scrollY={scrollY} offset={timelineTop} fadeAt={headerHeight} columns={columns} gap={GRID_GAP} />
+        <Timeline developments={developments} opacity={timelineFade} theme={theme} now={now} scrollY={scrollY} offset={timelineTop} fadeAt={headerHeight} />
       </View>}
     </Animated.ScrollView>
     </View>
