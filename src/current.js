@@ -689,8 +689,11 @@ export function developmentTimeline(stories, { now = Date.now(), hours = TIMELIN
  * The admin page's Gantt chart: which story was on the front page, and when.
  * Each reading holds the page from its own time until the next reading (the
  * newest until `now`) and is given to the story of the development it
- * reported, so an unjudged reading counts for the development the replay
- * inherited it into. At any moment exactly one story is on the page, so no
+ * reported, whose sentence the page showed, so an unjudged reading counts for
+ * the development the replay inherited it into. The sentence rather than the
+ * loudest development the number is about, by the owner's choice on
+ * 2026-09-28: the number is smoothed, and following it drew a long story as a
+ * solid line through hours when other stories held the headline. At any moment exactly one story is on the page, so no
  * two spans overlap and the rows add up to the range. Back-to-back hours of
  * one story are one span. Rows are ordered by when the story was last on the
  * page, most recent first, so the story on the page now heads the chart.
