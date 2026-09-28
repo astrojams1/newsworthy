@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { TIMELINE_HOURS, activeStories, agedScore, currentDisplay, currentReading, developmentTimeline, displayedSeries } from '../src/current.js';
+import { TIMELINE_HOURS, activeStories, agedScore, currentDisplay, currentReading, developmentTimeline, displayedSeries, frontPageSpans } from '../src/current.js';
 import { storyLabel, timelineAge, timelineLabels, validDevelopment } from '../apps/client/lib/timeline.js';
 import { CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
 
@@ -804,4 +804,33 @@ test('story slugs read as tags, and timeline ages are coarse', () => {
   assert.equal(timelineAge('2026-09-24T07:00:00Z', now), '5 hr ago');
   assert.equal(timelineAge('2026-09-23T06:00:00Z', now), 'Yesterday');
   assert.equal(timelineAge('2026-09-21T12:00:00Z', now), '3 days ago');
+});
+
+test('the admin Gantt chart gives every hour to the one story on the front page', () => {
+  // X breaks at 0 and holds the page to 8; Y takes it at 8 and 9; X returns
+  // at 10 and 11 as the same development; an unjudged reading at 12 is
+  // inherited into X's development; Z breaks at 13.
+  const series = judged(
+    [7, 0], [7, 0], [6, 0], [6, 0], [6, 0], [5, 0], [5, 0], [5, 0],
+    [6, 8], [6, 8],
+    [5, 0], [5, 0],
+    [5, 0],
+    [4, 13],
+  ).map((row, i) => ({ ...row, story: i >= 8 && i <= 9 ? 'y' : i === 13 ? 'z' : i === 12 ? null : 'x' }));
+  series[12] = { ...series[12], judge_version: null, development_of: null };
+  const now = 14 * HOUR;
+  const rows = frontPageSpans(displayedSeries(series), { now });
+  const hours = (row) => row.spans.map((span) => [Date.parse(span.from) / HOUR, Date.parse(span.to) / HOUR]);
+  // Ordered by when last on the page, most recent first; X is two stretches
+  // with a gap for Y, and the unjudged hour counts for X, where the replay
+  // put it.
+  assert.deepEqual(rows.map((row) => row.story), ['z', 'x', 'y']);
+  assert.deepEqual(hours(rows[0]), [[13, 14]]);
+  assert.deepEqual(hours(rows[1]), [[0, 8], [10, 13]]);
+  assert.deepEqual(hours(rows[2]), [[8, 10]]);
+  assert.deepEqual(rows.map((row) => row.hours), [1, 11, 2]);
+  // The rows add up to the range, and the range can start mid-stretch.
+  const cut = frontPageSpans(displayedSeries(series), { from: 4 * HOUR, now });
+  assert.deepEqual(hours(cut.find((row) => row.story === 'x')), [[4, 8], [10, 13]]);
+  assert.equal(cut.reduce((sum, row) => sum + row.hours, 0), 10);
 });

@@ -423,7 +423,8 @@ about why an 8 from this morning now reads 4, or which of two running stories
 the 4 belongs to. `activeStories()` in `src/current.js` returns every story
 still live and the developments inside it: what each broke at, what that has
 decayed to, when, how many readings reported it, and which one the page is
-currently about. `/admin` renders it under "Live stories".
+currently about. `/admin` renders it under "Live stories", beside a Gantt
+chart of which story held the page, reading to reading (`frontPageSpans()`).
 
 Each story's header carries where the *story* stands now, which its developments
 cannot: the weight printed beside a development is the one it got when it
