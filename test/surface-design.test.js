@@ -450,8 +450,7 @@ test('story timeline is off by default: with the setting off the screen is the r
     const block = off.find(n => n.type === 'AnimatedView' && n.props?.style?.maxWidth != null);
     assert.equal(block.props.style.flex, 1, 'the reading fills the scroll view, so nothing scrolls');
     assert.equal(block.props.style.minHeight, undefined, 'not a window-sized block that overflows it');
-    assert.equal(block.props.style.opacity.value, 1, 'shown at once when the reading is already here, and never faded by scrolling');
-    assert.equal(block.props.style.opacity.from, undefined, 'not a scroll interpolation');
+    assert.equal(block.props.style.opacity, 1, 'the reading never fades with scrolling');
   }
 });
 
@@ -512,22 +511,39 @@ test('settings gate rejects the undersized link arrow returning', () => {
 
 // Reported 2026-09-28 on iOS Safari: the page loaded as a dash, then the reading
 // a line higher, then the gradient and Share, then a shift as the timeline cue
-// arrived. Until there is a reading or a failure to report, nothing is drawn;
-// the reading, its gradient and Share then fade in on one value.
-test('the first reading fades in once, with its gradient and Share, instead of replacing a placeholder', () => {
+// arrived. Until there is a reading or a failure to report, nothing is drawn.
+// Then the owner asked for it to arrive in reading order: the number (with its
+// gradient and Share), then the sentence, then the Checked time, each fading in
+// place on its own value so nothing moves.
+test('the first reading arrives in reading order, number then sentence then time, instead of replacing a placeholder', () => {
+  const src = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
+  assert.match(src, /Animated\.stagger\(\d+, \[fade\(reveal\), fade\(sentenceIn\), fade\(checkedIn\)\]\)/, 'number, then sentence, then time');
   for (const platform of ['ios', 'android', 'web']) {
-    const find = (tree, predicate) => nodes(tree).find(predicate);
-    const blockOf = tree => find(tree, n => n.type === 'AnimatedView' && n.props?.style?.maxWidth != null);
-    const waiting = renderReading({ platform, width: 402, height: 874, score: null, loading: true });
-    assert.equal(blockOf(waiting).props.style.opacity.value, 0, 'no placeholder dash while the first reading loads');
-    const failed = renderReading({ platform, width: 402, height: 874, score: null, failed: true });
-    assert.equal(blockOf(failed).props.style.opacity.value, 1, 'a failure is reported at once');
-    const tree = renderReading({ platform, width: 402, height: 874, score: 3 });
-    const reveal = blockOf(tree).props.style.opacity;
-    const gradient = find(tree, n => n.type === 'ReadingGradient');
-    assert.equal(gradient.parent.props.style.opacity, reveal, 'the gradient arrives with the reading');
-    const share = find(tree, n => n.type === 'Screen').props.options.headerRight().props.children[0];
-    assert.equal(find(share, n => n.type === 'AppIcon').parent.props.style.opacity, reveal, 'Share arrives with the reading');
+    const all = tree => nodes(tree);
+    const parts = tree => {
+      const list = all(tree);
+      return {
+        number: list.find(n => n.props?.testID === 'rating-score').parent.props.style.opacity,
+        sentence: list.find(n => n.props?.testID === 'rating-explanation').props.style.opacity,
+        checked: list.find(n => n.type === 'Text' && Array.isArray(n.props.children) && n.props.children[0] === 'Checked ')?.props.style.opacity,
+        gradient: list.find(n => n.type === 'ReadingGradient').parent.props.style.opacity,
+        list,
+      };
+    };
+    const waiting = parts(renderReading({ platform, width: 402, height: 874, score: null, loading: true }));
+    assert.equal(waiting.number.value, 0, 'no placeholder dash while the first reading loads');
+    assert.equal(waiting.sentence.value, 0);
+    const failed = parts(renderReading({ platform, width: 402, height: 874, score: null, failed: true }));
+    assert.equal(failed.number.value, 1, 'a failure is reported at once');
+    assert.equal(failed.sentence.value, 1);
+    const shown = parts(renderReading({ platform, width: 402, height: 874, score: 3 }));
+    assert.ok(shown.checked, 'the Checked line is rendered');
+    const values = [shown.number, shown.sentence, shown.checked];
+    assert.equal(new Set(values).size, 3, 'number, sentence and time each fade on their own value');
+    for (const value of values) assert.equal(value.value, 1, 'a reading already at hand is shown at once');
+    assert.equal(shown.gradient, shown.number, 'the gradient arrives with the number');
+    const share = shown.list.find(n => n.type === 'Screen').props.options.headerRight().props.children[0];
+    assert.equal(nodes(share).find(n => n.type === 'AppIcon').parent.props.style.opacity, shown.number, 'Share arrives with the number');
   }
 });
 

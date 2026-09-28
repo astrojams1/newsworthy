@@ -31,7 +31,7 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     react: { ...react, useEffect() {}, useState: value => [value, () => {}], useRef: value => ({ current: value }) },
     'react-native': { View: 'View', Text: 'Text', Pressable: 'Pressable', Share: {}, useWindowDimensions: () => ({ width, height, fontScale }),
       AccessibilityInfo: { isReduceMotionEnabled: async () => false },
-      Animated: { ScrollView: 'ScrollView', View: 'AnimatedView', event: () => () => {}, timing: () => ({ start() {} }),
+      Animated: { ScrollView: 'ScrollView', View: 'AnimatedView', Text: 'Text', event: () => () => {}, timing: () => ({ start() {} }), stagger: () => ({ start() {} }),
         multiply: (a, b) => ({ multiply: [a, b] }),
         Value: class { constructor(value) { this.value = value; } interpolate(config) { return { from: this, config, interpolate() { return this; } }; } setValue() {} } } },
     'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', useRouter: () => ({ push() {} }) },
