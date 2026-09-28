@@ -148,6 +148,12 @@ test('turned to landscape, the timeline fades out under the header rather than r
       const safariCue = await safari.getByLabel('Earlier developments').first().boundingBox();
       assert.ok(safariCue.y + safariCue.height <= safariSize.height, 'the cue is on the first screen at Safari\'s size');
       assert.equal((await timelineColumns(safari)).columns, 2, 'Safari landscape timeline is two columns');
+      // The timeline's entries are balanced too, as the sentence is.
+      const wraps = await safari.evaluate(texts => [...document.querySelectorAll('[data-testid="timeline"] div')]
+        .filter(node => texts.includes(node.textContent) && !node.children.length)
+        .map(node => getComputedStyle(node).textWrap || getComputedStyle(node).textWrapStyle), developments.map(d => d.explanation));
+      assert.equal(wraps.length, developments.length, 'every entry sentence found');
+      assert.deepEqual([...new Set(wraps)], ['balance']);
 
       // The desktop gets the same sentence and a wider grid.
       const desktopSize = { width: 1440, height: 900 };
