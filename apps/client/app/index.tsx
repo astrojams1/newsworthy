@@ -4,7 +4,7 @@ import { useWindowSize } from '@/lib/window-size';
 import { Stack, useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { AppIcon } from '@/components/app-icon';
-import { Glyph } from '@/components/glyph';
+import { Glyph, HEADER_ICON_SIZE } from '@/components/glyph';
 import { BrandMark } from '@/components/brand-mark';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
@@ -142,7 +142,7 @@ export default function Home() {
     <Animated.View style={{ opacity: reveal }}><AppIcon color={theme.accent} /></Animated.View>
   </Pressable> : null;
   const settingsButton = <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
-    <Glyph name="settings" color={theme.accent} size={24} />
+    <Glyph name="settings" color={theme.accent} size={HEADER_ICON_SIZE} />
   </Pressable>;
   const headerRight = <View style={{ flexDirection: 'row', alignItems: 'center' }}>{shareButton}{settingsButton}</View>;
   return <>

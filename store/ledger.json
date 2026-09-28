@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-28T03:19:57+00:00",
+  "updated_at": "2026-09-28T05:00:39+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1014,6 +1014,17 @@
       ],
       "next_action": "Owner: check iPhone Safari landscape after merge, both orientations (notch left and right).",
       "updated_at": "2026-09-28T03:19:57+00:00"
+    },
+    "ui.header-icon-size": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner report 2026-09-28: the Settings X was 20pt beside the 24pt gear. Every nav-bar icon (share, gear, Settings X, web back arrow) now uses header.iconSize 24; npm test and test:design pass on rendered props. Not yet seen on a device or in a browser.",
+      "evidence": [
+        "test/surface-design.test.js 'every navigation-bar icon is drawn at one size'"
+      ],
+      "next_action": "Check the X against the gear on iOS (SF Symbol xmark), Android and web; iOS 26 glass capsule untested.",
+      "updated_at": "2026-09-28T05:00:39+00:00"
     }
   },
   "events": [
@@ -6347,6 +6358,22 @@
         ],
         "next_action": "Owner: check iPhone Safari landscape after merge, both orientations (notch left and right).",
         "updated_at": "2026-09-28T03:19:57+00:00"
+      }
+    },
+    {
+      "sequence": 333,
+      "at": "2026-09-28T05:00:39+00:00",
+      "gate": "ui.header-icon-size",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner report 2026-09-28: the Settings X was 20pt beside the 24pt gear. Every nav-bar icon (share, gear, Settings X, web back arrow) now uses header.iconSize 24; npm test and test:design pass on rendered props. Not yet seen on a device or in a browser.",
+        "evidence": [
+          "test/surface-design.test.js 'every navigation-bar icon is drawn at one size'"
+        ],
+        "next_action": "Check the X against the gear on iOS (SF Symbol xmark), Android and web; iOS 26 glass capsule untested.",
+        "updated_at": "2026-09-28T05:00:39+00:00"
       }
     }
   ],

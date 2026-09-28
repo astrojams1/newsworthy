@@ -216,7 +216,7 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride, timeline =
   assert.equal(settings.props.accessibilityLabel, 'Settings');
   const gear = nodes(settings).find(n => n.type === 'Glyph');
   assert.equal(gear?.props.name, 'settings');
-  assert.equal(gear.props.size, contract.header.settingsIconSize);
+  assert.equal(gear.props.size, contract.header.iconSize);
   if (platform === 'ios') {
     const leftItems = options.unstable_headerLeftItems();
     const rightItems = options.unstable_headerRightItems();
@@ -251,8 +251,8 @@ test('native header keeps plain brand/share controls and accessible touch target
 function inspectShareIcon(platform, dark, sourceOverride) {
   const color = themeForLevel(3, dark).accent;
   const { props } = renderShareIcon({ platform, color, sourceOverride });
-  assert.equal(props.style.width, contract.header.shareIconSize);
-  assert.equal(props.style.height, contract.header.shareIconSize);
+  assert.equal(props.style.width, contract.header.iconSize);
+  assert.equal(props.style.height, contract.header.iconSize);
   assert.equal(props.style.transform?.[0]?.translateY, contract.header.shareOpticalOffsetY[platform], 'share artwork keeps its platform optical alignment');
   assert.equal(props.tintColor, color);
   if (platform === 'ios') assert.equal(props.source, 'sf:square.and.arrow.up');
@@ -379,6 +379,21 @@ test('web headers ignore side safe-area insets; native headers keep them', () =>
   }
 });
 
+// Reported 2026-09-28: the Settings X was drawn at 20 beside a 24-point gear,
+// so opening Settings shrank the icon in the same corner.
+test('every navigation-bar icon is drawn at one size', () => {
+  for (const platform of ['ios', 'android', 'web']) {
+    const options = nodes(renderSettings({ platform }).tree).find(n => n.type === 'Screen').props.options;
+    const close = nodes(options.headerRight()).find(n => n.type === 'Glyph');
+    assert.equal(close.props.name, 'close');
+    assert.equal(close.props.size, contract.header.iconSize, `${platform} Settings X matches the gear`);
+    const header = renderReading({ platform, width: 390, height: 844 });
+    const gear = nodes(nodes(header).find(n => n.type === 'Screen').props.options.headerRight()).find(n => n.type === 'Glyph');
+    assert.equal(gear.props.size, contract.header.iconSize, `${platform} gear`);
+    assert.equal(renderShareIcon({ platform, color: '#000' }).props.style.width, contract.header.iconSize, `${platform} share`);
+  }
+});
+
 test('Settings rises as a sheet on the phone and stays a page on the web', () => {
   for (const platform of ['ios', 'android', 'web']) for (const dark of [false, true]) {
     const all = nodes(renderLayout({ platform, dark }));
@@ -405,6 +420,7 @@ test('Settings rises as a sheet on the phone and stays a page on the web', () =>
       const arrow = button.props.backImage({ tintColor: '#000' });
       assert.equal(arrow.type, 'Glyph');
       assert.equal(arrow.props.name, 'back');
+      assert.equal(arrow.props.size, contract.header.iconSize, 'the back arrow matches the other navigation-bar icons');
       assert.equal(arrow.props.color, themeForLevel(3, dark).accent, 'the arrow is drawn in this theme\'s accent');
       assert.equal(options.headerLeft({ canGoBack: false }), null, 'nothing to go back to draws no arrow');
     } else {
