@@ -821,15 +821,16 @@ test('the admin Gantt chart gives every hour to the one story on the front page'
   const now = 14 * HOUR;
   const rows = frontPageSpans(displayedSeries(series), { now });
   const hours = (row) => row.spans.map((span) => [Date.parse(span.from) / HOUR, Date.parse(span.to) / HOUR]);
-  // Ordered by first appearance; X is two stretches with a gap for Y, and the
-  // unjudged hour counts for X, where the replay put it.
-  assert.deepEqual(rows.map((row) => row.story), ['x', 'y', 'z']);
-  assert.deepEqual(hours(rows[0]), [[0, 8], [10, 13]]);
-  assert.deepEqual(hours(rows[1]), [[8, 10]]);
-  assert.deepEqual(hours(rows[2]), [[13, 14]]);
-  assert.deepEqual(rows.map((row) => row.hours), [11, 2, 1]);
+  // Ordered by when last on the page, most recent first; X is two stretches
+  // with a gap for Y, and the unjudged hour counts for X, where the replay
+  // put it.
+  assert.deepEqual(rows.map((row) => row.story), ['z', 'x', 'y']);
+  assert.deepEqual(hours(rows[0]), [[13, 14]]);
+  assert.deepEqual(hours(rows[1]), [[0, 8], [10, 13]]);
+  assert.deepEqual(hours(rows[2]), [[8, 10]]);
+  assert.deepEqual(rows.map((row) => row.hours), [1, 11, 2]);
   // The rows add up to the range, and the range can start mid-stretch.
   const cut = frontPageSpans(displayedSeries(series), { from: 4 * HOUR, now });
-  assert.deepEqual(hours(cut[0]), [[4, 8], [10, 13]]);
+  assert.deepEqual(hours(cut.find((row) => row.story === 'x')), [[4, 8], [10, 13]]);
   assert.equal(cut.reduce((sum, row) => sum + row.hours, 0), 10);
 });

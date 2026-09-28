@@ -692,7 +692,8 @@ export function developmentTimeline(stories, { now = Date.now(), hours = TIMELIN
  * reported, so an unjudged reading counts for the development the replay
  * inherited it into. At any moment exactly one story is on the page, so no
  * two spans overlap and the rows add up to the range. Back-to-back hours of
- * one story are one span. Rows are ordered by when the story first appears.
+ * one story are one span. Rows are ordered by when the story was last on the
+ * page, most recent first, so the story on the page now heads the chart.
  *
  * `points` are `displayedSeries()` rows, ascending, carrying `t`, `id`,
  * `story` and `reports`; `roots` is `rootTimes()`, for a development opened
@@ -718,7 +719,7 @@ export function frontPageSpans(points, { from = -Infinity, now = Date.now(), roo
     else row.spans.push([start, end]);
   });
   return [...rows.values()]
-    .sort((a, b) => a.spans[0][0] - b.spans[0][0])
+    .sort((a, b) => b.spans.at(-1)[1] - a.spans.at(-1)[1])
     .map((row) => ({
       story: row.story,
       hours: Math.round(row.spans.reduce((sum, [a, b]) => sum + b - a, 0) / 360_000) / 10,
