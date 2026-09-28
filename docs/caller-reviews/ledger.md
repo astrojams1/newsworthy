@@ -11,6 +11,7 @@ says so in its own entry. Each window starts where the previous one ended.
 | [2026-09-26-01](#2026-09-26-01) | 2026-09-25 22:40 → 2026-09-26 02:13 | 4833e57 | 4 / 2 / 3 | 00:03 (763), 02:03 (765) | Where the pre-#144 workflow comes from |
 | [2026-09-26-02](#2026-09-26-02) | 2026-09-26 02:13 → 08:08 | 3861907, then fae4cc6 | 6 / 6 / 5 | 06:03 (769), 07:03 (770), 08:03 (771) | Caller-side cache of the Routine URL: confirm |
 | [2026-09-26-03](#2026-09-26-03) | 2026-09-26 08:08 → 2026-09-27 05:11 | 53910ed → f725e6d (7 deploys) | 21 / 21 / 0 | 10:03 (773) | Breakout detection on a trading day; null `story` on unjudged points; unlinked report |
+| [2026-09-28-01](#2026-09-28-01) | 2026-09-27 05:11 → 2026-09-28 10:02 | f725e6d → 6916149 | 28 / 28 / 0 | none | Page shows a v17 sentence naming an outlet; new events folded into one 55-hour development; CNBC refused in 24 of 28 runs |
 
 ## 2026-09-25-01
 
@@ -321,3 +322,130 @@ owner's direction. The review changed nothing further.
 - Why was the 10:03 report posted without its id?
 - Does a dated page with a wrong figure, like the Rio Times Brent, affect any
   score?
+
+## 2026-09-28-01
+
+**Window** 2026-09-27 05:11 → 2026-09-28 10:02 UTC. Production moved from
+`f725e6d` (#162) to `6916149` (#183). The first merges in the window were:
+- **05:11:** #163, user-facing copy;
+- **06:27:** #164, the previous ledger entry;
+- **08:11:** #165, which makes a re-report show its development's existing
+  sentence. Runs 793–795 predate it.
+
+The changes that touch the caller or the sentence:
+- **08:26 Sep 27:** #166 ships prompt v19, whose sentence never names a news
+  outlet.
+- **09:02:** #167 makes the review script flag a sentence that names an outlet.
+- **09:17:** #168 leads an older sentence with its age and says "Checked".
+- **10:54:** #169 makes a re-report show its development's first report, not
+  the reading where it last escalated.
+
+The rest (#170–#183) is app and admin design. No Routine change is known in the
+window.
+
+**Counts.** 28 caller readings (793–820) and 28 run reports, each linked to its
+reading. 0 rejections, 0 merges, no hours without a reading. The prompt was
+verified on every reading. There were no reviewer probes with the caller token.
+The script lists 25 readings because admin history returns the newest 25
+attempts; 793–795 were read from the history points instead.
+
+**Observations: the workflow.**
+- **Every run fetched the instructions, the prompt and `/api/developments`
+  once each** (28 of 28). Each run stored one reading and posted one report
+  about 10 s later.
+- **v19 was adopted at the first run after it shipped**: 796 at 09:04 Sep 27.
+  793–795 are v18. No reading was flagged for naming an outlet.
+- **Every reading was judged v3 onto development 766**, Trump's rejection of
+  Iran's Hormuz plan, first reported 03:04 Sep 26. At the window's end that
+  development had been the sentence for 55 hours. No new development and no
+  merge was proposed.
+- **Scores:** 5 on Sunday while markets were shut; 4 for five runs after the
+  reopen (00:04–04:04 Sep 28); then 5 from 05:04. The page showed 2, then 1
+  from 13:04 Sep 27.
+- **One transient failure:** at 07:04 Sep 28 the first `/api/developments`
+  request failed with an SSL connect error and was retried once successfully
+  (run 59).
+
+**Observations: the page (checked at 10:02 Sep 28).** `/api/current` shows
+score 1 with reading 766's sentence: "Trump rejected Iran's plan to reopen the
+Strait of Hormuz, a key oil route, within a week, the Wall Street Journal
+said." That sentence was written under v17. Since #169, a re-report shows its
+development's first report word for word, so the page carries an outlet name
+that v19 forbids. The script's outlet flag checks readings, not what the page
+shows, so it did not catch this.
+
+**Observations: the first trading session under v18/v19.** Futures reopened at
+about 22:00 UTC Sunday. From then on, reports quoted dated prices:
+- WTI up 1.5–2.4% (93.78–94.38 against 92.16–92.41);
+- S&P futures down about 0.4%, Nasdaq futures down about 0.7%;
+- gold down about 2%, bitcoin down 1.3–1.7%;
+- KOSPI down 2.3–2.7%;
+- VIX 14.87 (run 57).
+
+Every run attributed the oil move to the Hormuz rejection and restated it as
+the same development "with the oil reaction". Reports from 04:04 onward also
+listed events that appear nowhere else in the record:
+- "a reported cruise missile at a vessel in Hormuz";
+- "Houthi attacks on Riyadh" and "Houthi drones intercepted near Riyadh";
+- "Houthi attacks on Saudi infrastructure";
+- OpenAI halting some advanced model training.
+
+Each run chose the rejection over them and said why.
+
+**Observations: sources.**
+- CNBC refused (Access Denied) in 24 of 28 reports, sometimes twice in one run.
+- Other refusals: fxstreet and Vantage Markets (Cloudflare or JavaScript
+  challenges), stooq (connection reset), AP via usnews (HTTP/2 stream error).
+- Prices came from Yahoo's chart API in most runs. Two runs read Brent from
+  Yahoo's front month at about $99, while news pages gave about $106. Run 56
+  said the Yahoo Brent contract "looked like a contract roll" and used the news
+  figure instead.
+- Prediction markets were searched in about one run in five, and no run used a
+  one-day figure from them.
+
+**Hypotheses.**
+- *The sentence anchors on a two-day-old cause, so newer events never reach the
+  judge.* Open. A run explains today's oil move by the rejection, writes the
+  rejection, and the judge then correctly calls that sentence a re-report. A
+  Houthi strike on Saudi infrastructure or a missile at a vessel would only
+  become a development if a run wrote about it. Evidence for it: the candidates
+  lists above. Evidence it has not met: whether those events were real, dated
+  and material. The reports name them only in passing, and the review has not
+  checked them against sources.
+- *Stale copies came from the caller's web-fetch tool* (from 2026-09-26-03). Not
+  contradicted: 0 of 28 reports mention a stale page. Still not confirmed.
+- *The Rio Times carries a wrong Brent figure* (from 2026-09-26-03). Open.
+  Brent's front month rolled over the weekend, so a figure $7–9 away from
+  another dated source may be a different contract, not a wrong one. That
+  weakens the hypothesis.
+
+**Actions taken.** None; this review changes nothing.
+
+**Proposed, for the owner.**
+- Stop the page showing an outlet name from a pre-v19 first report. The
+  cheapest fix is on the server: drop a trailing attribution clause such as
+  ", the Wall Street Journal said", or fall back to the newest sentence when the
+  first report names an outlet. Also point the script's outlet check at
+  `/api/current`.
+- Before changing the prompt or the judge over the anchoring hypothesis, confirm
+  it. Check whether the Houthi and cruise-missile events were real, dated and
+  material in the reporting of Sep 27–28.
+- Drop nothing yet for CNBC. It costs one refused fetch per run, and the prompt
+  names no sites.
+
+**Answers to the last review's open questions.**
+- *Breakout detection on a trading day:* no breakout was reported in this
+  session. Runs named the old cause of today's moves (see the hypothesis
+  above). Whether a breakout existed is unestablished.
+- *Null `story` on unjudged points:* no unjudged readings in this window; not
+  tested.
+- *The 10:03 report without its id:* not repeated; 28 of 28 reports are linked.
+- *Rio Times Brent:* see the hypotheses; it did not affect any score here.
+
+**Open questions.**
+- Were the Houthi strikes on Riyadh and the missile at a vessel new, material
+  developments on Sep 27–28?
+- Should a re-report whose first report predates v19 show that sentence?
+- Does the development-766 streak end on its own when something new breaks,
+  and how large must that be?
+
