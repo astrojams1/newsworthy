@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-28T02:52:18+00:00
+Updated: 2026-09-28T03:19:57+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -100,7 +100,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
 | web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
 | store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
-| web.landscape-layout | waiting_verification | agent | observed | Owner follow-up 2026-09-28: black notch side preferred (balances Safari's right edge), so the document background change is reverted. Landscape column narrowed from 600 to 480pt for the sentence and timeline; landscape spacing opened: score→sentence 12→20pt, sentence→Checked 10→16pt, cue area 16→48pt, score 26%→24% of height, sentence 16→17pt. Timeline fade after rotation and hydration-safe window size kept. Verified in headless Chromium only. | Owner: check iPhone Safari landscape after merge (turned from portrait and opened in landscape). Native apps untested in landscape. |
+| web.landscape-layout | waiting_verification | agent | observed | Owner follow-up 2026-09-28 on production 5d50a2d: the wordmark sat a notch's width in from Safari's black strip. iOS 26 Safari keeps the page clear of the notch in landscape yet reports it as a safe-area inset, which the navigator header added as a margin. Web headers (reading and Settings) now drop side insets; native keep them. Verified in headless Chromium with an emulated 62pt inset: wordmark 24pt from the edge, matching the gear. | Owner: check iPhone Safari landscape after merge, both orientations (notch left and right). |
 
 ## Evidence and history
 
@@ -3267,3 +3267,13 @@ Owner follow-up 2026-09-28: black notch side preferred (balances Safari's right 
 - test/web-landscape.test.js asserts column ≤480pt and the gaps; fails on the previous values, passes now; npm test and npm run test:design pass
 
 Next: Owner: check iPhone Safari landscape after merge (turned from portrait and opened in landscape). Native apps untested in landscape.
+
+### 332. web.landscape-layout — waiting_verification
+
+2026-09-28T03:19:57+00:00 · observed · agent
+
+Owner follow-up 2026-09-28 on production 5d50a2d: the wordmark sat a notch's width in from Safari's black strip. iOS 26 Safari keeps the page clear of the notch in landscape yet reports it as a safe-area inset, which the navigator header added as a margin. Web headers (reading and Settings) now drop side insets; native keep them. Verified in headless Chromium with an emulated 62pt inset: wordmark 24pt from the edge, matching the gear.
+
+- test/web-landscape.test.js header-edge assertion and surface-design 'web headers ignore side safe-area insets' both fail without the fix, pass with it; npm test and npm run test:design pass
+
+Next: Owner: check iPhone Safari landscape after merge, both orientations (notch left and right).

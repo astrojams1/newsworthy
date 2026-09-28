@@ -6,6 +6,14 @@ import ts from 'typescript';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
 const require = createRequire(import.meta.url);
 const source = readFileSync(new URL('../../apps/client/app/_layout.tsx', import.meta.url), 'utf8');
+// The real header-edge options for a platform, compiled as the app would.
+function headerEdges(platform) {
+  const exports = {};
+  const compiled = ts.transpileModule(readFileSync(new URL('../../apps/client/lib/header-edges.ts', import.meta.url), 'utf8'),
+    { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+  vm.runInNewContext(compiled, { exports, process: { env: { EXPO_OS: platform } } });
+  return exports;
+}
 export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {}) {
   const theme = themeForLevel(score, dark);
   // Keep the defaults distinct from our palette: forgetting an override fails.
@@ -20,6 +28,7 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
     '@/lib/push': { onNotificationOpen: () => () => {} },
     'expo-status-bar': { StatusBar: 'StatusBar' },
     '@/lib/theme': { useTheme: () => theme },
+    '@/lib/header-edges': headerEdges(platform),
   };
   const exports = {};
   const compiled = ts.transpileModule(source, { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
@@ -35,7 +44,8 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
 export function renderSettingsLayout({ platform = 'ios', dark = false } = {}) {
   const theme = themeForLevel(3, dark);
   const mocks = { 'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }) }, '@/lib/theme': { useTheme: () => theme },
-    'expo-router/react-navigation': { HeaderBackButton: 'HeaderBackButton' }, '@/components/glyph': { Glyph: 'Glyph' } };
+    'expo-router/react-navigation': { HeaderBackButton: 'HeaderBackButton' }, '@/components/glyph': { Glyph: 'Glyph' },
+    '@/lib/header-edges': headerEdges(platform) };
   const exports = {};
   const compiled = ts.transpileModule(readFileSync(new URL('../../apps/client/app/settings/_layout.tsx', import.meta.url), 'utf8'),
     { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
