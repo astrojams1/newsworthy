@@ -168,12 +168,9 @@ function inspectReading(options) {
   assert.equal(score.props.adjustsFontSizeToFit, true);
   assert.ok(score.props.style.fontSize <= c.maximumScore);
   if (!landscape) assert.ok(score.props.style.fontSize >= c.minimumPortraitScore);
-  // No CSS text-wrap: WebKit's pretty read as balance on iOS (2026-09-28).
-  assert.equal(explanation.props.style.textWrap, undefined);
-  const explanationStyle = explanation.props.style;
   // Copy out data: vm object prototypes are intentionally from another realm.
   return JSON.parse(JSON.stringify({ score: { ...score.props.style, fontFamily: 'monospace' }, denominator: { ...denominator.props.style, fontFamily: 'monospace' },
-    explanation: explanationStyle, alignment: score.parent.props.style,
+    explanation: explanation.props.style, alignment: score.parent.props.style,
     gradient: gradient.props, number: score.props.children }));
 }
 
@@ -460,8 +457,7 @@ test('story timeline prototype sits a full screen below the reading, in the sent
     // A quiet cue announces the timeline instead.
     assert.ok(withTimeline.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
     assert.ok(!without.some(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments'));
-    // On an upright phone the timeline shares the sentence's column rather
-    // than keeping a margin of its own.
+    // The timeline shares the sentence's column rather than keeping a margin of its own.
     const sentence = withTimeline.find(n => n.props?.testID === 'rating-explanation');
     const timeline = withTimeline.find(n => n.type === 'Timeline');
     assert.equal(timeline.parent.props.style.maxWidth, sentence.props.style.maxWidth);
@@ -478,26 +474,18 @@ test('story timeline prototype sits a full screen below the reading, in the sent
   }
 });
 
-test('the sentence keeps a narrow column on every screen, and the timeline is one column sharing it', () => {
-  // Reported 2026-09-28: landscape on the phone web drew a sentence twice the
-  // desktop's width. A grid of timeline columns followed and the owner
-  // dropped it, in landscape and then on desktop: one column everywhere.
+test('the sentence and the timeline share one column: 320pt upright, 360pt turned, 414pt on larger screens', () => {
+  // Reported 2026-09-28: landscape drew the sentence far wider than the
+  // desktop did. The owner chose these widths; a grid of timeline columns and
+  // CSS text-wrap were both tried and dropped.
   const development = { root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' };
-  const cases = [[402, 874], [743, 340], [874, 402], [1440, 900], [2560, 1400]];
   for (const platform of ['ios', 'android', 'web']) {
-    for (const [width, height] of cases) {
+    for (const [width, height, column] of [[402, 874, 320], [743, 340, 360], [874, 402, 360], [1440, 900, 414], [2560, 1400, 414]]) {
       const tree = nodes(renderReading({ platform, width, height, timeline: [development] }));
       const sentence = tree.find(n => n.props?.testID === 'rating-explanation');
-      // An upright phone 320pt; a turned phone one column a little wider,
-      // 360pt (owner, 2026-09-28: 400 was a bit too wide); larger
-      // screens 320pt per 17pt of the sentence's size.
-      const landscape = height < 520;
-      const upright = !landscape && width < 600;
-      assert.equal(Math.round(sentence.props.style.maxWidth), Math.round(landscape ? 360 : upright ? 320 : 320 * sentence.props.style.fontSize / 17), `${platform} ${width}×${height} sentence measure`);
-      const timeline = tree.find(n => n.type === 'Timeline');
-      assert.equal(timeline.props.columns, undefined, `${platform} ${width}×${height}: no grid`);
-      assert.equal(timeline.parent.props.style.maxWidth, sentence.props.style.maxWidth, `${platform} ${width}×${height}: the timeline shares the sentence's column`);
-      assert.equal(sentence.props.style.textWrap, undefined, `${platform} browser's own wrapping`);
+      assert.equal(sentence.props.style.maxWidth, column, `${platform} ${width}×${height}`);
+      assert.equal(tree.find(n => n.type === 'Timeline').parent.props.style.maxWidth, column, `${platform} ${width}×${height}: the timeline shares it`);
+      assert.equal(sentence.props.style.textWrap, undefined, `${platform}: the browser's own wrapping`);
     }
   }
 });

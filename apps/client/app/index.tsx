@@ -17,17 +17,17 @@ import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
 
-// An upright phone sets the sentence and the timeline in 320pt. A turned
-// phone gives both a column a little wider, 360pt, so the text sits
-// naturally on the wider screen without spanning it. Larger screens widen
-// the sentence in proportion to its size, 320pt per 17pt. The timeline is
-// one column everywhere and shares the sentence's; a grid of timeline columns
-// was tried and dropped (owner, 2026-09-28). The browser's own wrapping is
-// used: text-wrap: pretty was dropped because WebKit's, which every iOS
-// browser uses, re-lays out the whole paragraph and read as balance there.
+// The sentence and the timeline share one column, scaled with the text size:
+// 320pt on an upright phone; 360pt turned, a little wider so the text sits
+// naturally on the wider screen without spanning it; and 414pt on larger
+// screens, where the sentence is 22pt, so a typical one takes three lines
+// rather than four. Turned, the reading keeps the portrait rhythm between
+// number, sentence, time and cue. A grid of timeline columns and CSS
+// text-wrap were both tried and dropped (2026-09-28): WebKit's pretty, which
+// every iOS browser uses, re-lays out the whole paragraph and read as balance.
 const COLUMN = 320;
 const LANDSCAPE_COLUMN = 360;
-const COLUMN_SIZE = 17;
+const WIDE_COLUMN = 414;
 
 export default function Home() {
   const theme = useTheme();
@@ -53,8 +53,7 @@ export default function Home() {
   const scoreSize = landscape ? Math.min(height * 0.22, 224) : Math.max(64, Math.min(width * 0.42, height * 0.24, 224));
   const sentenceSize = landscape ? 17 : Math.max(18, Math.min(width * 0.045, 22));
   const horizontal = Math.max(20, Math.min(width * 0.05, 48));
-  const uprightPhone = !landscape && width < 600;
-  const column = (landscape ? LANDSCAPE_COLUMN : uprightPhone ? COLUMN : COLUMN * sentenceSize / COLUMN_SIZE) * fontScale;
+  const column = (landscape ? LANDSCAPE_COLUMN : width < 600 ? COLUMN : WIDE_COLUMN) * fontScale;
   const { reading, failed, loading, refresh } = useCurrentReading();
   // Nothing is drawn until there is something to say: a placeholder dash, then
   // the reading, then the gradient was three layouts in the first second. Once

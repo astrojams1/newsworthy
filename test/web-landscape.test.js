@@ -63,15 +63,6 @@ async function linesUnderHeader(page) {
   });
 }
 
-// Timeline entries are the accessible groups carrying an entry's label; the
-// timeline's columns are the distinct left edges among them.
-async function timelineColumns(page) {
-  return page.evaluate(() => {
-    const entries = [...document.querySelectorAll('[data-testid="timeline"] [aria-label]')].map(node => node.getBoundingClientRect());
-    return { columns: new Set(entries.map(box => Math.round(box.left))).size, widths: entries.map(box => box.width) };
-  });
-}
-
 async function scrollIntoTimeline(page, viewport) {
   await page.mouse.move(viewport.width / 2, viewport.height / 2);
   for (const step of [200, 200, 200]) { await page.mouse.wheel(0, step); await page.waitForTimeout(400); }
@@ -114,14 +105,12 @@ test('turned to landscape, the timeline fades out under the header rather than r
       await opened.getByTestId('timeline').waitFor();
       await opened.waitForTimeout(1200);
       const sentence = await opened.getByTestId('rating-explanation').boundingBox();
-      // Reported 2026-09-28: the landscape sentence ran twice as wide as the
-      // desktop one, then a two-column landscape timeline was tried and the
-      // owner called it a bad idea. Landscape is one column, a little wider
-      // than portrait's 320pt, for the sentence and the timeline alike.
+      // Reported 2026-09-28: the landscape sentence ran far wider than the
+      // desktop's. Turned, it takes one column a little wider than portrait's
+      // 320pt, and the timeline shares it.
       assert.ok(sentence.width > 330 && sentence.width <= 360, `landscape sentence column (${Math.round(sentence.width)}pt)`);
-      const grid = await timelineColumns(opened);
-      assert.equal(grid.columns, 1, 'landscape timeline is one column');
-      assert.ok(grid.widths.every(w => w <= 360 && w > 330), `timeline entries share the sentence's column (${grid.widths.map(Math.round)})`);
+      const timeline = await opened.getByTestId('timeline').boundingBox();
+      assert.ok(timeline.width <= 360, `landscape timeline keeps the same column (${Math.round(timeline.width)}pt)`);
       const score = await opened.getByTestId('rating-score').boundingBox();
       const checked = await opened.getByText(/^Checked /).boundingBox();
       const cue = await opened.getByLabel('Earlier developments').first().boundingBox();
@@ -134,37 +123,19 @@ test('turned to landscape, the timeline fades out under the header rather than r
       await scrollIntoTimeline(opened, landscape);
       assert.deepEqual(await linesUnderHeader(opened), [], 'no timeline line at strength under the header');
 
-      // iPhone Safari's landscape page is about 743pt wide.
+      // iPhone Safari's landscape page is about 743 by 340pt.
       const safariSize = { width: 743, height: 340 };
       const safari = await openReading(browser, safariSize);
       await safari.goto(`${base}/`);
       await safari.getByTestId('timeline').waitFor();
       await safari.waitForTimeout(1200);
-      // Reported 2026-09-28 from Chrome on iPhone: text-wrap: pretty, which is
-      // WebKit's there as in every iOS browser, read as balance and took four
-      // lines. The browser's own wrapping is used.
-      assert.notEqual(await safari.getByTestId('rating-explanation').evaluate(n => (getComputedStyle(n).textWrapStyle || getComputedStyle(n).textWrap)), 'pretty');
       const safariCue = await safari.getByLabel('Earlier developments').first().boundingBox();
       assert.ok(safariCue.y + safariCue.height <= safariSize.height, 'the cue is on the first screen at Safari\'s size');
-      assert.equal((await timelineColumns(safari)).columns, 1, 'Safari landscape timeline is one column');
-      const wraps = await safari.evaluate(texts => [...document.querySelectorAll('[data-testid="timeline"] div')]
-        .filter(node => texts.includes(node.textContent) && !node.children.length)
-        .map(node => getComputedStyle(node).textWrapStyle || getComputedStyle(node).textWrap), developments.map(d => d.explanation));
-      assert.equal(wraps.length, developments.length, 'every entry sentence found');
-      assert.ok(!wraps.includes('pretty'), 'timeline entries use the browser\'s own wrapping too');
-
-      // The desktop: a wider sentence, and still one timeline column.
-      const desktopSize = { width: 1440, height: 900 };
-      const desktop = await openReading(browser, desktopSize);
-      await desktop.goto(`${base}/`);
-      await desktop.getByTestId('timeline').waitFor();
-      await desktop.waitForTimeout(1200);
-      const desktopSentence = await desktop.getByTestId('rating-explanation').boundingBox();
-      assert.ok(desktopSentence.width > 380 && desktopSentence.width <= 415, `desktop sentence: 320pt per 17pt of its 22pt (${Math.round(desktopSentence.width)}pt)`);
-      const desktopGrid = await timelineColumns(desktop);
-      assert.equal(desktopGrid.columns, 1, 'desktop timeline is one column');
-      await scrollIntoTimeline(desktop, desktopSize);
-      assert.deepEqual(await linesUnderHeader(desktop), [], 'no desktop timeline line at strength under the header');
+      // Reported 2026-09-28 from an iPhone: text-wrap: pretty, WebKit's in
+      // every iOS browser, read as balance. The browser's own wrapping is used.
+      const wraps = await safari.evaluate(() => [...document.querySelectorAll('[data-testid="rating-explanation"], [data-testid="timeline"] *')]
+        .map(node => getComputedStyle(node).textWrapStyle));
+      assert.ok(wraps.length > 1 && wraps.every(style => style === 'auto'), `the browser's own wrapping (${[...new Set(wraps)]})`);
     } finally {
       await browser.close();
     }

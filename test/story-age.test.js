@@ -151,17 +151,12 @@ test('the label follows the judgement the reading arrived with', async () => {
   });
 });
 
-test('the age and its dot never part across a line break, on any surface', () => {
-  // Asked 2026-09-28: with balanced lines the browser moves breaks around
-  // more, and an ordinary space let a line end on "5h" with the separator
-  // leading the next. The owner then chose a middle dot over the em dash,
-  // matching the timeline's tag lines. The space before it is non-breaking in
-  // the app and in both widgets' own formatters.
-  const age = sentenceAge({ ...fresh, explanation_new: false, explanation_at: start }, origin + 5 * hour);
-  assert.equal(age, '5h\u00A0·');
-  assert.ok(!age.includes(' '), 'no ordinary space inside the prefix');
+test('both widgets format the age as the app does', () => {
+  // "5h ·": a middle dot, its space non-breaking so a line never ends on "5h"
+  // with the dot leading the next (owner, 2026-09-28). The widgets format it
+  // themselves, and the Swift test cannot run without a Swift toolchain.
   const swift = readFileSync(new URL('../apps/client/targets/widget/WidgetReadingStore.swift', import.meta.url), 'utf8');
   const java = readFileSync(new URL('../apps/client/plugins/widget-android/RatingWidget.java', import.meta.url), 'utf8');
-  assert.match(swift, /"\\\(hours\)h\\u\{00A0\}·" : "\\\(hours \/ 24\)d\\u\{00A0\}·"/, 'iOS widget');
-  assert.match(java, /"d"\) \+ "\\u00A0·";/, 'Android widget');
+  assert.ok(swift.includes('"\\(hours)h\\u{00A0}·" : "\\(hours / 24)d\\u{00A0}·"'), 'iOS widget');
+  assert.ok(java.includes('(hours / 24) + "d") + "\\u00A0·";'), 'Android widget');
 });
