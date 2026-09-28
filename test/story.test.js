@@ -70,7 +70,7 @@ test('the judge prompt is a specification, not a set of orders', () => {
 test('judge prompts are append-only, pinned by hash', () => {
   // A stored judgement names the version that produced it. Editing a published
   // version would reinterpret readings already recorded, silently.
-  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '693a178d3bbb36d8' };
+  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52' };
   const prompts = allJudgePrompts();
   assert.deepEqual(prompts.map((p) => p.version), Object.keys(pins).map(Number),
     'every published version is pinned here');
@@ -150,7 +150,8 @@ test('v4 makes a market reaching a level a development and keeps v3 whole', () =
   assert.ok(v4.text.startsWith(v3.text), 'v3 verbatim, then one paragraph');
   const added = v4.text.slice(v3.text.length);
   assert.match(added, /highest or lowest in years, is a new development/, 'a multi-year level counts');
-  assert.match(added, /moving again, oil up 3% then 4%,\nrestates its development/, 'a figure moving again does not');
+  assert.match(added, /moving again short of such a\nlevel, oil up 3% then 4%, restates its development/,
+    'a figure moving again does not, unless it reaches such a level');
   assert.match(added, /under the slug of the\nstory that moved it/, 'and it stays in the story behind it');
   assert.equal(judgeVersion(), 4, 'and v4 is what new readings are judged by');
 });

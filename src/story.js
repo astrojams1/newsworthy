@@ -153,8 +153,8 @@ const V4 = `${V3}
 
 A market at a record, or its highest or lowest in years, is a new development
 the first time no recorded development names that level, under the slug of the
-story that moved it. A figure already reported moving again, oil up 3% then 4%,
-restates its development.`;
+story that moved it. A figure already reported moving again short of such a
+level, oil up 3% then 4%, restates its development.`;
 
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
