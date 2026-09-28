@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-27T14:36:54+00:00",
+  "updated_at": "2026-09-28T00:19:50+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -978,6 +978,18 @@
       "evidence": [],
       "next_action": "Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.",
       "updated_at": "2026-09-27T14:36:54+00:00"
+    },
+    "web.home-load": {
+      "state": "waiting_verification",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Owner report 2026-09-28 (iOS Safari): the score drew at Regular, not Light, and the home screen loaded in four jumps (placeholder dash, reading, gradient and Share, timeline-cue shift). Web now asks for ui-monospace first; the reading, gradient and Share fade in together once; the reading keeps one layout with or without a timeline and the cue fades in. Observed in headless Chromium against a delayed mock API only; not yet seen in iOS Safari (SF Mono Light cannot be checked off Apple) and native load untested on device.",
+      "evidence": [
+        "test/surface-design.test.js regression cases",
+        "Chromium frame capture of the load sequence before and after"
+      ],
+      "next_action": "Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK",
+      "updated_at": "2026-09-28T00:19:50+00:00"
     }
   },
   "events": [
@@ -6177,6 +6189,23 @@
         "evidence": [],
         "next_action": "Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.",
         "updated_at": "2026-09-27T14:36:54+00:00"
+      }
+    },
+    {
+      "sequence": 325,
+      "at": "2026-09-28T00:19:50+00:00",
+      "gate": "web.home-load",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner report 2026-09-28 (iOS Safari): the score drew at Regular, not Light, and the home screen loaded in four jumps (placeholder dash, reading, gradient and Share, timeline-cue shift). Web now asks for ui-monospace first; the reading, gradient and Share fade in together once; the reading keeps one layout with or without a timeline and the cue fades in. Observed in headless Chromium against a delayed mock API only; not yet seen in iOS Safari (SF Mono Light cannot be checked off Apple) and native load untested on device.",
+        "evidence": [
+          "test/surface-design.test.js regression cases",
+          "Chromium frame capture of the load sequence before and after"
+        ],
+        "next_action": "Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK",
+        "updated_at": "2026-09-28T00:19:50+00:00"
       }
     }
   ],

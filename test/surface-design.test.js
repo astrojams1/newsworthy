@@ -406,6 +406,14 @@ test('story timeline prototype sits a full screen below the reading, in the sent
     assert.equal(block(without).props.style.flex, 1);
     assert.equal(block(without).props.style.minHeight, undefined);
     assert.equal(block(withTimeline).props.style.alignItems, 'center');
+    // Reported 2026-09-28: the timeline arrives after the reading, and the reading
+    // jumped when it did. Both states pad the reading alike, and the scroll view
+    // adds none of its own, so a screen-tall block centres it at the same height.
+    for (const key of ['paddingTop', 'paddingBottom', 'justifyContent']) assert.equal(block(without).props.style[key], block(withTimeline).props.style[key], key);
+    for (const list of [without, withTimeline]) assert.equal(list.find(n => n.type === 'ScrollView').props.contentContainerStyle.paddingBottom, undefined);
+    // Its cue fades in with the timeline rather than appearing.
+    const cue = withTimeline.find(n => n.type === 'Pressable' && n.props.accessibilityLabel === 'Earlier developments').parent;
+    assert.ok(cue.props.style.opacity.multiply, 'the cue fades in as well as out');
     // The first screen is the scroll view's measured height, not the window's:
     // the web export's window height can stay at its static fallback, which put
     // the cue below the fold.
@@ -442,7 +450,8 @@ test('story timeline is off by default: with the setting off the screen is the r
     const block = off.find(n => n.type === 'AnimatedView' && n.props?.style?.maxWidth != null);
     assert.equal(block.props.style.flex, 1, 'the reading fills the scroll view, so nothing scrolls');
     assert.equal(block.props.style.minHeight, undefined, 'not a window-sized block that overflows it');
-    assert.equal(block.props.style.opacity, 1, 'the reading never fades');
+    assert.equal(block.props.style.opacity.value, 1, 'shown at once when the reading is already here, and never faded by scrolling');
+    assert.equal(block.props.style.opacity.from, undefined, 'not a scroll interpolation');
   }
 });
 
@@ -499,4 +508,35 @@ test('settings gate rejects the undersized link arrow returning', () => {
   const unslotted = source.replace('width: TRAILING_SLOT, ', '');
   assert.notEqual(unslotted, source);
   assert.throws(() => inspectSettingsRows(unslotted), /shared slot/);
+});
+
+// Reported 2026-09-28 on iOS Safari: the page loaded as a dash, then the reading
+// a line higher, then the gradient and Share, then a shift as the timeline cue
+// arrived. Until there is a reading or a failure to report, nothing is drawn;
+// the reading, its gradient and Share then fade in on one value.
+test('the first reading fades in once, with its gradient and Share, instead of replacing a placeholder', () => {
+  for (const platform of ['ios', 'android', 'web']) {
+    const find = (tree, predicate) => nodes(tree).find(predicate);
+    const blockOf = tree => find(tree, n => n.type === 'AnimatedView' && n.props?.style?.maxWidth != null);
+    const waiting = renderReading({ platform, width: 402, height: 874, score: null, loading: true });
+    assert.equal(blockOf(waiting).props.style.opacity.value, 0, 'no placeholder dash while the first reading loads');
+    const failed = renderReading({ platform, width: 402, height: 874, score: null, failed: true });
+    assert.equal(blockOf(failed).props.style.opacity.value, 1, 'a failure is reported at once');
+    const tree = renderReading({ platform, width: 402, height: 874, score: 3 });
+    const reveal = blockOf(tree).props.style.opacity;
+    const gradient = find(tree, n => n.type === 'ReadingGradient');
+    assert.equal(gradient.parent.props.style.opacity, reveal, 'the gradient arrives with the reading');
+    const share = find(tree, n => n.type === 'Screen').props.options.headerRight().props.children[0];
+    assert.equal(find(share, n => n.type === 'AppIcon').parent.props.style.opacity, reveal, 'Share arrives with the reading');
+  }
+});
+
+// Reported 2026-09-28: the web score read heavy. Safari's generic monospace is
+// Menlo, which has no Light, so weight 300 drew at Regular.
+test('the web asks for a monospace face that has a Light weight before the generic fallback', () => {
+  const web = contract.scoreFont.web.split(',').map(s => s.trim());
+  assert.equal(web[0], 'ui-monospace', 'SF Mono in Safari, with its Light face');
+  assert.equal(web.at(-1), 'monospace', 'the generic family stays the last resort');
+  const score = nodes(renderReading({ platform: 'web', width: 390, height: 844, score: 3 })).find(n => n.props?.testID === 'rating-score');
+  assert.equal(score.props.style.fontFamily, contract.scoreFont.web);
 });

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-27T14:36:54+00:00
+Updated: 2026-09-28T00:19:50+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -98,6 +98,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | ui.onboarding | waiting_verification | agent | observed | First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
 | copy.no-ai-listing | todo | agent | observed | Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing. | Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI. |
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
+| web.home-load | waiting_verification | user | observed | Owner report 2026-09-28 (iOS Safari): the score drew at Regular, not Light, and the home screen loaded in four jumps (placeholder dash, reading, gradient and Share, timeline-cue shift). Web now asks for ui-monospace first; the reading, gradient and Share fade in together once; the reading keeps one layout with or without a timeline and the cue fades in. Observed in headless Chromium against a delayed mock API only; not yet seen in iOS Safari (SF Mono Light cannot be checked off Apple) and native load untested on device. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
 
 ## Evidence and history
 
@@ -3188,3 +3189,14 @@ Palette source is now OKLCH scale anchors plus brand.level in design/palette.jso
 
 
 Next: Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.
+
+### 325. web.home-load — waiting_verification
+
+2026-09-28T00:19:50+00:00 · observed · user
+
+Owner report 2026-09-28 (iOS Safari): the score drew at Regular, not Light, and the home screen loaded in four jumps (placeholder dash, reading, gradient and Share, timeline-cue shift). Web now asks for ui-monospace first; the reading, gradient and Share fade in together once; the reading keeps one layout with or without a timeline and the cue fades in. Observed in headless Chromium against a delayed mock API only; not yet seen in iOS Safari (SF Mono Light cannot be checked off Apple) and native load untested on device.
+
+- test/surface-design.test.js regression cases
+- Chromium frame capture of the load sequence before and after
+
+Next: Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK
