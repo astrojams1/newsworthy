@@ -21,7 +21,11 @@ the filter instead dropped the wrong development when the newest reading
 re-reported one older than the window. The timeline is at least a screen tall
 below the header, so one short entry can still reach the snap offset. Tag
 lines show story and age only where they change from the entry above, so
-"Yesterday" is said once. It reaches back one week (`TIMELINE_DAYS`) by first
+"Yesterday" is said once. On a screen wide enough for two or three sentence
+columns (landscape phones, tablets, desktop) the entries form a grid in the
+sentence's measure, read across then down, rather than one column between wide
+margins; there every entry carries its full tag, since the entry before it is
+beside it rather than above. It reaches back one week (`TIMELINE_DAYS`) by first
 coverage and ends there, because a timeline that scrolls forever is a feed.
 `recentStories()` hands the judge names from two weeks, twice that span, so
 every tag in the timeline is a name the judge could still reuse. It gathers developments with `activeStories({ liveHours })`

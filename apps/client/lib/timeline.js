@@ -47,15 +47,18 @@ export function timelineAge(since, now = Date.now()) {
 // Each entry's tag line says only what changed from the entry above: a run of
 // one story is tagged once, and "Yesterday" is said once however many
 // developments broke yesterday. An entry with nothing new gets no tag line.
-export function timelineLabels(developments, now = Date.now()) {
+// In a grid of several columns the entry before is beside or a row above, not
+// above, so every entry is tagged in full and the sentences of a row align.
+export function timelineLabels(developments, now = Date.now(), columns = 1) {
   let story = null;
   let age = null;
   return developments.map((development, index) => {
     const nextStory = storyLabel(development.story);
     const nextAge = timelineAge(development.since, now);
+    const full = index === 0 || columns > 1;
     const label = {
-      story: index === 0 || nextStory !== story ? nextStory : null,
-      age: index === 0 || nextAge !== age ? nextAge : null,
+      story: full || nextStory !== story ? nextStory : null,
+      age: full || nextAge !== age ? nextAge : null,
     };
     story = nextStory;
     age = nextAge;

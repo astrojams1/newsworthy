@@ -474,6 +474,24 @@ test('story timeline prototype sits a full screen below the reading, in the sent
   }
 });
 
+test('the sentence keeps one narrow measure on every screen, and a wide screen lays the timeline out as a grid of it', () => {
+  // Reported 2026-09-28: landscape on the phone web drew a sentence twice the
+  // desktop's width. The owner prefers the narrow one, without wide margins
+  // around the timeline.
+  const development = { root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' };
+  const cases = [[402, 874, 1], [874, 402, 2], [1440, 900, 3], [2560, 1400, 3]];
+  for (const platform of ['ios', 'android', 'web']) {
+    for (const [width, height, columns] of cases) {
+      const tree = nodes(renderReading({ platform, width, height, timeline: [development] }));
+      const sentence = tree.find(n => n.props?.testID === 'rating-explanation');
+      assert.equal(sentence.props.style.maxWidth, 320, `${platform} ${width}×${height} sentence measure`);
+      const timeline = tree.find(n => n.type === 'Timeline');
+      assert.equal(timeline.props.columns, columns, `${platform} ${width}×${height} columns`);
+      assert.equal(timeline.parent.props.style.maxWidth, columns * 320 + (columns - 1) * timeline.props.gap, `${platform} ${width}×${height} grid width`);
+    }
+  }
+});
+
 test('story timeline is off by default: with the setting off the screen is the reading alone', () => {
   const development = { root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' };
   for (const platform of ['ios', 'android', 'web']) {

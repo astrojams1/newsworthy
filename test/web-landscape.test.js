@@ -63,6 +63,15 @@ async function linesUnderHeader(page) {
   });
 }
 
+// Timeline entries are the accessible groups carrying an entry's label; the
+// grid's columns are the distinct left edges among them.
+async function timelineColumns(page) {
+  return page.evaluate(() => {
+    const entries = [...document.querySelectorAll('[data-testid="timeline"] [aria-label]')].map(node => node.getBoundingClientRect());
+    return { columns: new Set(entries.map(box => Math.round(box.left))).size, widths: entries.map(box => box.width) };
+  });
+}
+
 async function scrollIntoTimeline(page, viewport) {
   await page.mouse.move(viewport.width / 2, viewport.height / 2);
   for (const step of [200, 200, 200]) { await page.mouse.wheel(0, step); await page.waitForTimeout(400); }
@@ -105,9 +114,15 @@ test('turned to landscape, the timeline fades out under the header rather than r
       await opened.getByTestId('timeline').waitFor();
       await opened.waitForTimeout(1200);
       const sentence = await opened.getByTestId('rating-explanation').boundingBox();
-      assert.ok(sentence.width > 400 && sentence.width <= 480, `landscape sentence keeps a readable column (${Math.round(sentence.width)}pt)`);
-      const timeline = await opened.getByTestId('timeline').boundingBox();
-      assert.ok(timeline.width <= 480, `landscape timeline keeps the same column (${Math.round(timeline.width)}pt)`);
+      // Reported 2026-09-28 with a desktop and a landscape screenshot: the
+      // landscape sentence ran twice as wide as the desktop one. The owner
+      // prefers the narrow measure, so it is the same on every screen.
+      assert.ok(sentence.width > 280 && sentence.width <= 320, `landscape sentence keeps the desktop's narrow column (${Math.round(sentence.width)}pt)`);
+      // ...and the timeline fills the width as a grid of that measure rather
+      // than keeping wide margins.
+      const grid = await timelineColumns(opened);
+      assert.equal(grid.columns, 2, 'landscape timeline is two columns');
+      assert.ok(grid.widths.every(w => w <= 320 && w > 280), `grid entries keep the sentence's measure (${grid.widths.map(Math.round)})`);
       const score = await opened.getByTestId('rating-score').boundingBox();
       const checked = await opened.getByText(/^Checked /).boundingBox();
       const cue = await opened.getByLabel('Earlier developments').first().boundingBox();
@@ -119,6 +134,19 @@ test('turned to landscape, the timeline fades out under the header rather than r
       assert.ok(cue.y + cue.height / 2 - (checked.y + checked.height) >= 28, `space above the cue's chevron (${Math.round(cue.y + cue.height / 2 - checked.y - checked.height)}pt)`);
       await scrollIntoTimeline(opened, landscape);
       assert.deepEqual(await linesUnderHeader(opened), [], 'no timeline line at strength under the header');
+
+      // The desktop gets the same sentence and a wider grid.
+      const desktopSize = { width: 1440, height: 900 };
+      const desktop = await openReading(browser, desktopSize);
+      await desktop.goto(`${base}/`);
+      await desktop.getByTestId('timeline').waitFor();
+      await desktop.waitForTimeout(1200);
+      const desktopSentence = await desktop.getByTestId('rating-explanation').boundingBox();
+      assert.ok(desktopSentence.width > 280 && desktopSentence.width <= 320, `desktop sentence column (${Math.round(desktopSentence.width)}pt)`);
+      const desktopGrid = await timelineColumns(desktop);
+      assert.equal(desktopGrid.columns, 3, 'desktop timeline is three columns');
+      await scrollIntoTimeline(desktop, desktopSize);
+      assert.deepEqual(await linesUnderHeader(desktop), [], 'no desktop timeline line at strength under the header');
     } finally {
       await browser.close();
     }

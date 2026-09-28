@@ -783,6 +783,18 @@ test('tag lines say only what changed from the entry above', () => {
   ]);
 });
 
+test('in a grid of several columns every entry is tagged in full', () => {
+  const now = Date.parse('2026-09-24T12:00:00Z');
+  const entry = (story, since) => ({ story, since });
+  assert.deepEqual(timelineLabels([
+    entry('us-iran-war', '2026-09-23T10:00:00Z'),
+    entry('us-iran-war', '2026-09-23T08:00:00Z'),
+  ], now, 2), [
+    { story: 'US Iran War', age: 'Yesterday' },
+    { story: 'US Iran War', age: 'Yesterday' },
+  ]);
+});
+
 test('story slugs read as tags, and timeline ages are coarse', () => {
   assert.equal(storyLabel('us-iran-war'), 'US Iran War');
   assert.equal(storyLabel('eu-ai-act'), 'EU AI Act');
