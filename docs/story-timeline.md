@@ -27,7 +27,7 @@ sentence's; a grid of columns on wide screens was tried and dropped (owner,
 coverage and ends there, because a timeline that scrolls forever is a feed.
 `recentStories()` hands the judge names from two weeks, twice that span, so
 every tag in the timeline is a name the judge could still reuse. It gathers developments with `activeStories({ liveHours })`
-at that span while the board keeps its 72 hours, and the replay's four weeks of
+at that span while the board keeps its `LOOKBACK_HOURS` (144), and the replay's four weeks of
 rows already cover it. Its `limit` of 100 is a guard against a judge opening a
 development per reading, not the design's bound. On the home screen the reading keeps
 the whole first screen with a chevron beneath. "A screen" is the scroll view's

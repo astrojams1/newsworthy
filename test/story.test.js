@@ -299,12 +299,14 @@ test('the half-life is a setting, and the chart replays whichever is set', async
       });
 
     const before = await (await admin('/api/admin/settings')).json();
-    assert.equal(before.half_life_hours, 12, 'twelve hours by default');
+    assert.equal(before.half_life_hours, 48, 'two days by default');
     assert.ok(before.half_lives.some((h) => h.hours === 24));
+    assert.equal(before.half_lives.find((h) => h.hours === 48).label, 'two days');
     assert.ok(before.judge_model);
 
-    assert.equal(before.story_half_life_days, 7, 'stories fade over a week by default');
+    assert.equal(before.story_half_life_days, 90, 'stories fade over three months by default');
     assert.ok(before.story_half_lives.some((d) => d.days === 30));
+    assert.equal(before.story_half_lives.find((d) => d.days === 90).label, 'three months');
 
     const saved = await (await admin('/api/admin/settings', {
       method: 'POST',

@@ -260,7 +260,7 @@ const server = createServer(async (req, res) => {
       // Four weeks of readings, not the six-hour level window: a development is
       // weighed against how long its story has been running and what it has
       // routinely scored, so the replay has to reach back as far as a story is
-      // remembered. Developments themselves still only compete for three days,
+      // remembered. Developments themselves still only compete for six days,
       // and the level rule still runs on the six-hour window inside it.
       const { halfLifeHours, storyHalfLifeDays } = await effectiveConfig();
       const rows = await history({ hours: STORY_MEMORY_HOURS });

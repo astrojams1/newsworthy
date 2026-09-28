@@ -192,7 +192,7 @@ current top news, so a story that dominates for days is re-rated at about the
 same number hour after hour: the median of five 5s is 5 forever. The renewed
 US-Iran strikes held the page between 4 and 6 for four days. So each development
 carries its own level, decaying from when it was first reported — halving every
-12 hours by default, floored at 1 — and the page shows **the loudest
+48 hours by default, floored at 1 — and the page shows **the loudest
 development still live**.
 
 **The loudest, not the one this hour's reading named.** Reading only the named
@@ -316,8 +316,8 @@ So the page has the memory the rater lacks. A story's developments over the last
 `STORY_MEMORY_DAYS` (28) give it an age and a routine level, the median of what
 its developments have scored. A development opening within the shock margin of
 that routine level is what the story does every day: it opens at its score times
-`2^(-age / storyHalfLifeDays)`, seven days by default, so a fortnight-old story's
-daily 5 opens at about 1. A story with nothing on record is fresh and pays
+`2^(-age / storyHalfLifeDays)`, 90 days by default (seven gave a fortnight-old
+story's daily 5 about 1; memory caps age at 28 days, so 90 keeps ≥81%). A story with nothing on record is fresh and pays
 nothing; a reading with no story — a judge outage — cannot be attributed and
 pays nothing either.
 
@@ -344,9 +344,9 @@ story's routine level is a breakthrough at full value, anything less is churn.
 the development opened at a fraction of its score because its story has been
 doing this for weeks. `/api/current` reports `fatigue`, the fraction kept — 1 for
 a fresh story or a breakthrough. The story half-life is a setting beside the
-development half-life at `/admin` (`story_half_life_days`, one of 3, 7, 14, 30).
+development half-life at `/admin` (`story_half_life_days`, one of 3, 7, 14, 30, 90).
 The replay reads four weeks of rows for it, where it read three days before;
-developments themselves still compete for only three days.
+developments themselves still compete for only `LOOKBACK_HOURS`.
 
 **A judge outage is "inherit", not "new".** A reading with `judge_version` null
 takes the previous reading's development rather than opening one, because an
@@ -388,7 +388,7 @@ than from a row, and `since` dates it.
 
 `/api/current` reads four weeks of rows (`STORY_MEMORY_HOURS`) so a development
 can be weighed against its story, but a development competes for the page only
-for 72 hours (`LOOKBACK_HOURS`), three halvings at the longest half-life — past
+for 144 hours (`LOOKBACK_HOURS`), three halvings at the longest half-life — past
 that it is at the floor and its exact age stops mattering. A root whose first report is older than that is fetched by
 id, so `since` is the real first report rather than the edge of the window. The
 score is re-aged at request time, not at the last reading's timestamp: ten hours
@@ -400,7 +400,8 @@ and answering 503 was a bug in the first cut. `basis`, `level`, `story` and
 number is the first thing anyone debugging a surprising front page wants.
 
 **The half-life is a setting, not a constant.** It sits beside model and cadence
-at `/admin` (`half_life_hours`, one of 4, 6, 8, 12, 24) because the right value
+at `/admin` (`half_life_hours`, one of 4, 6, 8, 12, 24, 48; 48h/90d
+chosen 2026-09-28 from a week's replay) because the right value
 is a matter of taste about the front page, and the chart replays whatever is set
 over readings already stored — so a change is visible against real history
 immediately rather than after a week of new readings.
