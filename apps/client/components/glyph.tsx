@@ -27,6 +27,11 @@ export const GLYPHS = {
 
 export type GlyphName = keyof typeof GLYPHS;
 
+// Every navigation-bar icon is drawn at one size (`header.iconSize` in
+// design/surfaces.json): the gear, the Settings X, the web back arrow and
+// app-icon.tsx's share mark. The X at 20 read as smaller than the gear.
+export const HEADER_ICON_SIZE = 24;
+
 export function Glyph({ name, color, size = 22 }: { name: GlyphName; color: string; size?: number }) {
   const glyph: GlyphSpec = GLYPHS[name];
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${glyph.stroke ?? 1.6}" stroke-linecap="round" stroke-linejoin="round">${glyph.svg(color)}</svg>`;

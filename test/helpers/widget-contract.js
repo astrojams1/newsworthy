@@ -200,3 +200,6 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.doesNotMatch(swift, /systemSmall \? (?:52|72)/, 'no smaller compact numeral');
   assert.match(swift, /\.foregroundStyle\(Color\("NewsworthyInk"\)\)/, 'iOS primary text uses adaptive ink');
 }
+
+// The glyph registry's header size, for render helpers that mock the module.
+export const glyphModule = { Glyph: 'Glyph', HEADER_ICON_SIZE: Number(/HEADER_ICON_SIZE = (\d+)/.exec(read('apps/client/components/glyph.tsx'))[1]) };

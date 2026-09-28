@@ -289,8 +289,8 @@ for iOS and a stroked 24-unit SVG for web and Android (1.6 stroke; the check
 optical lift differ by platform (see the design regression gate above). Add
 new icons to the registry rather than as separate components.
 
-Sizes live in `design/surfaces.json` (`header.settingsIconSize`, `settings`):
-24 points in the header, 22 for leading row icons against the 17-point label.
+Sizes live in `design/surfaces.json` (`header.iconSize`, `settings`):
+24 points for every navigation-bar icon (share, gear, Settings X, back arrow), 22 for leading row icons against the 17-point label.
 Every trailing mark sits in one 22-point slot, so the chevron, link arrow and
 check share a column, at a size whose ink matches the label: the chevron at 20
 and the link arrow at 22 both draw about 11 points, against 11.7-point

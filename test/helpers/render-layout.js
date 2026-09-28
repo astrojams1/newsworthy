@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
+import { glyphModule } from './widget-contract.js';
 const require = createRequire(import.meta.url);
 const source = readFileSync(new URL('../../apps/client/app/_layout.tsx', import.meta.url), 'utf8');
 // The real header-edge options for a platform, compiled as the app would.
@@ -44,7 +45,7 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
 export function renderSettingsLayout({ platform = 'ios', dark = false } = {}) {
   const theme = themeForLevel(3, dark);
   const mocks = { 'expo-router': { Stack: Object.assign(() => {}, { Screen: 'Screen' }) }, '@/lib/theme': { useTheme: () => theme },
-    'expo-router/react-navigation': { HeaderBackButton: 'HeaderBackButton' }, '@/components/glyph': { Glyph: 'Glyph' },
+    'expo-router/react-navigation': { HeaderBackButton: 'HeaderBackButton' }, '@/components/glyph': glyphModule,
     '@/lib/header-edges': headerEdges(platform) };
   const exports = {};
   const compiled = ts.transpileModule(readFileSync(new URL('../../apps/client/app/settings/_layout.tsx', import.meta.url), 'utf8'),

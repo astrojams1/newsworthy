@@ -8,6 +8,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as preferences from '../../apps/client/lib/preferences.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
+import { glyphModule } from './widget-contract.js';
 
 const require = createRequire(import.meta.url);
 const react = require('react');
@@ -53,7 +54,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
     'react-native': { View: 'View', Text: 'Text', ScrollView: 'ScrollView', Pressable: 'Pressable', ActivityIndicator: 'ActivityIndicator',
       Linking: { openSettings: async () => { calls.openSettings += 1; } }, useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
     '@/components/toggle': { Toggle: 'Toggle' },
-    '@/components/glyph': { Glyph: 'Glyph' },
+    '@/components/glyph': glyphModule,
     'expo-router/head': { __esModule: true, default: 'Head' },
     'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', Redirect: 'Redirect', useRouter: () => ({ canGoBack: () => canGoBack, back: () => { calls.back += 1; }, replace: href => calls.replace.push(href), dismissTo: href => calls.dismissTo.push(href) }) },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },

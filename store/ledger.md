@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-28T03:19:57+00:00
+Updated: 2026-09-28T05:00:39+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -101,6 +101,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
 | store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
 | web.landscape-layout | waiting_verification | agent | observed | Owner follow-up 2026-09-28 on production 5d50a2d: the wordmark sat a notch's width in from Safari's black strip. iOS 26 Safari keeps the page clear of the notch in landscape yet reports it as a safe-area inset, which the navigator header added as a margin. Web headers (reading and Settings) now drop side insets; native keep them. Verified in headless Chromium with an emulated 62pt inset: wordmark 24pt from the edge, matching the gear. | Owner: check iPhone Safari landscape after merge, both orientations (notch left and right). |
+| ui.header-icon-size | waiting_verification | agent | observed | Owner report 2026-09-28: the Settings X was 20pt beside the 24pt gear. Every nav-bar icon (share, gear, Settings X, web back arrow) now uses header.iconSize 24; npm test and test:design pass on rendered props. Not yet seen on a device or in a browser. | Check the X against the gear on iOS (SF Symbol xmark), Android and web; iOS 26 glass capsule untested. |
 
 ## Evidence and history
 
@@ -3277,3 +3278,13 @@ Owner follow-up 2026-09-28 on production 5d50a2d: the wordmark sat a notch's wid
 - test/web-landscape.test.js header-edge assertion and surface-design 'web headers ignore side safe-area insets' both fail without the fix, pass with it; npm test and npm run test:design pass
 
 Next: Owner: check iPhone Safari landscape after merge, both orientations (notch left and right).
+
+### 333. ui.header-icon-size — waiting_verification
+
+2026-09-28T05:00:39+00:00 · observed · agent
+
+Owner report 2026-09-28: the Settings X was 20pt beside the 24pt gear. Every nav-bar icon (share, gear, Settings X, web back arrow) now uses header.iconSize 24; npm test and test:design pass on rendered props. Not yet seen on a device or in a browser.
+
+- test/surface-design.test.js 'every navigation-bar icon is drawn at one size'
+
+Next: Check the X against the gear on iOS (SF Symbol xmark), Android and web; iOS 26 glass capsule untested.

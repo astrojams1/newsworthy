@@ -1,14 +1,13 @@
 {
   "denominatorText": "\u221510",
   "header": {
-    "shareIconSize": 24,
+    "iconSize": 24,
     "shareOpticalOffsetY": {
       "web": 0,
       "ios": -2,
       "android": 0
     },
-    "minimumTouchTarget": 48,
-    "settingsIconSize": 24
+    "minimumTouchTarget": 48
   },
   "widget": {
     "contentVerticalAlignment": "center",
