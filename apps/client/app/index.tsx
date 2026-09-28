@@ -18,7 +18,7 @@ import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
 
 // An upright phone sets the sentence and the timeline in 320pt. A turned
-// phone gives both a column a little wider, 400pt, so the text sits
+// phone gives both a column a little wider, 360pt, so the text sits
 // naturally on the wider screen without spanning it. Larger screens widen
 // the sentence in proportion to its size, 320pt per 17pt. The timeline is
 // one column everywhere and shares the sentence's; a grid of timeline columns
@@ -26,7 +26,7 @@ import { usePreferences } from '@/components/preferences-provider';
 // used: text-wrap: pretty was dropped because WebKit's, which every iOS
 // browser uses, re-lays out the whole paragraph and read as balance there.
 const COLUMN = 320;
-const LANDSCAPE_COLUMN = 400;
+const LANDSCAPE_COLUMN = 360;
 const COLUMN_SIZE = 17;
 
 export default function Home() {

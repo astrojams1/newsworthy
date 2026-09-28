@@ -489,11 +489,11 @@ test('the sentence keeps a narrow column on every screen, and the timeline is on
       const tree = nodes(renderReading({ platform, width, height, timeline: [development] }));
       const sentence = tree.find(n => n.props?.testID === 'rating-explanation');
       // An upright phone 320pt; a turned phone one column a little wider,
-      // 400pt (owner, 2026-09-28: a landscape grid was a bad idea); larger
+      // 360pt (owner, 2026-09-28: 400 was a bit too wide); larger
       // screens 320pt per 17pt of the sentence's size.
       const landscape = height < 520;
       const upright = !landscape && width < 600;
-      assert.equal(Math.round(sentence.props.style.maxWidth), Math.round(landscape ? 400 : upright ? 320 : 320 * sentence.props.style.fontSize / 17), `${platform} ${width}×${height} sentence measure`);
+      assert.equal(Math.round(sentence.props.style.maxWidth), Math.round(landscape ? 360 : upright ? 320 : 320 * sentence.props.style.fontSize / 17), `${platform} ${width}×${height} sentence measure`);
       const timeline = tree.find(n => n.type === 'Timeline');
       assert.equal(timeline.props.columns, undefined, `${platform} ${width}×${height}: no grid`);
       assert.equal(timeline.parent.props.style.maxWidth, sentence.props.style.maxWidth, `${platform} ${width}×${height}: the timeline shares the sentence's column`);

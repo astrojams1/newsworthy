@@ -118,10 +118,10 @@ test('turned to landscape, the timeline fades out under the header rather than r
       // desktop one, then a two-column landscape timeline was tried and the
       // owner called it a bad idea. Landscape is one column, a little wider
       // than portrait's 320pt, for the sentence and the timeline alike.
-      assert.ok(sentence.width > 360 && sentence.width <= 400, `landscape sentence column (${Math.round(sentence.width)}pt)`);
+      assert.ok(sentence.width > 330 && sentence.width <= 360, `landscape sentence column (${Math.round(sentence.width)}pt)`);
       const grid = await timelineColumns(opened);
       assert.equal(grid.columns, 1, 'landscape timeline is one column');
-      assert.ok(grid.widths.every(w => w <= 400 && w > 360), `timeline entries share the sentence's column (${grid.widths.map(Math.round)})`);
+      assert.ok(grid.widths.every(w => w <= 360 && w > 330), `timeline entries share the sentence's column (${grid.widths.map(Math.round)})`);
       const score = await opened.getByTestId('rating-score').boundingBox();
       const checked = await opened.getByText(/^Checked /).boundingBox();
       const cue = await opened.getByLabel('Earlier developments').first().boundingBox();
