@@ -292,7 +292,7 @@ level climbs two clear of its usual level re-anchors there and its clock
 restarts.
 
 Two points, against the development's usual level — the median of its levels
-since it last anchored — and only on a level the median confirms. Two because
+since it last anchored, over at most 48 hours so every range replays alike — and only on a level the median confirms. Two because
 that is the margin the shock rule already uses and the rater's self-disagreement
 is about 0.6. Not against the anchor: an all-time maximum lets one early peak
 lock a development at the floor for as long as it runs — the first fix, and it

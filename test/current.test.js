@@ -312,6 +312,22 @@ test('a long run of re-reports cannot restart the clock by noise alone', () => {
   assert.equal(page.since, series[0].t, 'the clock never restarted');
 });
 
+test('the usual level does not depend on how much history was fetched', () => {
+  // `/api/current` replays four weeks and the admin chart up to a year, so a
+  // baseline over everything since the anchor could re-anchor on one and not
+  // the other. Twenty days of 5s, sixteen of 6s, then 7s: over the whole run
+  // the usual level is 5 and a 7 clears it; over four weeks it is 6.
+  const scores = [...Array(20 * 24).fill(5), ...Array(16 * 24).fill(6), ...Array(6).fill(7)];
+  const series = judged(...scores.map((score) => [score, 0]));
+  const recent = series.filter((p) => series.at(-1).t - p.t <= 28 * 24 * HOUR);
+  const roots = new Map([[0, { t: series[0].t }]]);
+  const now = series.at(-1).t;
+  const whole = currentDisplay(series, { now, roots });
+  const fourWeeks = currentDisplay(recent, { now, roots });
+  assert.equal(fourWeeks.since, whole.since, 'the same anchor from either range');
+  assert.equal(fourWeeks.score, whole.score);
+});
+
 test('a new development on a faded story is shown at once', () => {
   // Ageing must not swallow the next break. An 8 that has decayed for a day is
   // at 2; a genuinely new development scored 6 shows 6 the hour it arrives.

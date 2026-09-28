@@ -168,15 +168,26 @@ function rootFor(point, previousRoot, level, anchor) {
   return previousRoot;
 }
 
+/** How far back a development's usual level looks. Far inside the four weeks
+ *  `/api/current` reads, so every caller of `replay()` holds the same levels
+ *  whatever range it asked for and the chart cannot disagree with the page; and
+ *  bounded, so a development re-reported for a year is not sorted in full on
+ *  every reading. Two days is the default half-life, about fifty readings at
+ *  the hourly caller's pace. */
+const USUAL_LEVEL_HOURS = 48;
+
 /**
- * The level a development usually shows since it was last anchored: the median
- * of those levels, upper middle on an even count as `storyState()` takes it.
- * A rise is measured from here rather than from the lowest of them, because
- * the lowest level of a long run of noisy readings sinks by chance alone, and
- * a development re-reported for days then restarts on unchanged news.
+ * The level a development usually shows: the median of its levels since it was
+ * last anchored, over the last `USUAL_LEVEL_HOURS`, upper middle on an even
+ * count as `storyState()` takes it. A rise is measured from here rather than
+ * from the lowest of them, because the lowest level of a long run of noisy
+ * readings sinks by chance alone, and a development re-reported for days then
+ * restarts on unchanged news. `levels` is [{ t, level }], oldest first, and
+ * loses what has left the window.
  */
-function usualLevel(levels) {
-  const sorted = [...levels].sort((a, b) => a - b);
+function usualLevel(levels, t) {
+  while (levels.length > 1 && t - levels[0].t > USUAL_LEVEL_HOURS * 3600_000) levels.shift();
+  const sorted = levels.map((l) => l.level).sort((a, b) => a - b);
   return sorted[Math.floor(sorted.length / 2)];
 }
 
@@ -322,8 +333,8 @@ function replay(ascending, {
         // place and date each one where it broke.
         opened: known?.t ?? point.t,
         // The levels this development has shown since it was last anchored;
-        // their median is what a later rise is measured against.
-        levels: [opening],
+        // their recent median is what a later rise is measured against.
+        levels: [{ t: point.t, level: opening }],
         story,
       };
       developments.set(root, development);
@@ -341,7 +352,7 @@ function replay(ascending, {
       // the same margin the shock rule uses and for the same reason: the
       // rater's disagreement with itself is about 0.6, so anything smaller is
       // inside the error bar. Measured against the median of its levels since
-      // it was last anchored, not against the anchor, because a single early
+      // it was last anchored (see usualLevel()), not against the anchor, because a single early
       // peak would otherwise lock the development at the floor for as long as
       // it ran; and not against the lowest of those levels, which is what it
       // was until 2026-09-28: over sixty hourly re-reports of one event the
@@ -360,7 +371,7 @@ function replay(ascending, {
       // a page bouncing as much as the readings it was smoothing. The cost is
       // about an hour of lag on a sharp escalation, until the median confirms
       // it. A sharp escalation is the judge's case, not this one's.
-      if (level - usualLevel(development.levels) >= SHOCK_MARGIN) {
+      if (level - usualLevel(development.levels, point.t) >= SHOCK_MARGIN) {
         // An escalation is weighed against the story the same way an opening
         // is: two clear of what the story routinely does is a breakthrough at
         // full value, anything less is the story's daily churn, discounted.
@@ -373,9 +384,9 @@ function replay(ascending, {
         development.routine = worth.routine;
         development.breakthrough = worth.breakthrough;
         development.since = point.t;
-        development.levels = [level];
+        development.levels = [{ t: point.t, level }];
       } else {
-        development.levels.push(level);
+        development.levels.push({ t: point.t, level });
       }
     }
 
