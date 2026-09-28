@@ -288,15 +288,17 @@ one: a story the judge keeps calling a single development sits at the floor
 however far it escalates. Replayed over the stored series with story identity
 stood in by keywords — the crudest judge there is — four days of intensifying
 US-Iran strikes showed 1 on the day the rater said 7. So a development whose
-level climbs two clear of its own recent low re-anchors there and its clock
+level climbs two clear of its usual level re-anchors there and its clock
 restarts.
 
-Two points, against the development's own low, and only on a level the median
-confirms. Two because that is the margin the shock rule already uses and the
-rater's self-disagreement is about 0.6. Against the low rather than the anchor,
-because measuring against an all-time maximum lets one early peak lock a
-development at the floor for as long as it runs — that was the first fix and it
-changed nothing. Against the level rather than the decayed value, because a rise
+Two points, against the development's usual level — the median of its levels
+since it last anchored — and only on a level the median confirms. Two because
+that is the margin the shock rule already uses and the rater's self-disagreement
+is about 0.6. Not against the anchor: an all-time maximum lets one early peak
+lock a development at the floor for as long as it runs — the first fix, and it
+changed nothing. Not against its lowest level, the second: over 63 hourly
+re-reports of one event that low sank to 4 by chance, a touch of 6 restarted the
+clock, and on 2026-09-28 the page jumped 2 to 6 on unchanged news. Against the level rather than the decayed value, because a rise
 the news did not make is a sawtooth: the number would fall for half a day and
 spring back on unchanged readings. And not on shock levels: letting those anchor
 doubled the upward steps over the stored series (23 rises against 12, 18 of them

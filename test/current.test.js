@@ -294,6 +294,24 @@ test('a one-point drift never restarts the clock', () => {
   }
 });
 
+test('a long run of re-reports cannot restart the clock by noise alone', () => {
+  // Development 766 as stored, 2026-09-26 03:04 to 09-28 17:04: 63 hourly
+  // readings the judge called the same event. The level dipped to 4 overnight
+  // and touched 6 once; measured from that low, the rise restarted the clock
+  // and the page jumped from 2 to 6 on unchanged news. Its usual level was 5.
+  const scores = [4, 3, 4, 4, 4, 4, 4, 4, 3, 3, 4, 3, 3, 4, 4, 4, 3, 4, 4, 4, 4, 3, 5, 5, 5, 5, 5,
+    5, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6, 5,
+    6, 5, 6, 5];
+  const series = judged(...scores.map((score) => [score, 0]));
+  const out = displayedSeries(series);
+  for (let i = 1; i < out.length; i += 1) {
+    assert.ok(out[i].displayed - out[i - 1].displayed < 2,
+      `rose from ${out[i - 1].displayed} to ${out[i].displayed} at reading ${i}`);
+  }
+  const page = currentDisplay(series, { now: series.at(-1).t });
+  assert.equal(page.since, series[0].t, 'the clock never restarted');
+});
+
 test('a new development on a faded story is shown at once', () => {
   // Ageing must not swallow the next break. An 8 that has decayed for a day is
   // at 2; a genuinely new development scored 6 shows 6 the hour it arrives.

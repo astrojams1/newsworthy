@@ -169,6 +169,18 @@ function rootFor(point, previousRoot, level, anchor) {
 }
 
 /**
+ * The level a development usually shows since it was last anchored: the median
+ * of those levels, upper middle on an even count as `storyState()` takes it.
+ * A rise is measured from here rather than from the lowest of them, because
+ * the lowest level of a long run of noisy readings sinks by chance alone, and
+ * a development re-reported for days then restarts on unchanged news.
+ */
+function usualLevel(levels) {
+  const sorted = [...levels].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+/**
  * Replay both rules over a stored series, oldest first.
  *
  * Computed here rather than in the page: a second implementation in admin.html
@@ -309,14 +321,14 @@ function replay(ascending, {
         // on an escalation; this never moves, so a list of developments can
         // place and date each one where it broke.
         opened: known?.t ?? point.t,
-        // The lowest level this development has shown since it was last
-        // anchored, which is what a later rise is measured against.
-        low: opening,
+        // The levels this development has shown since it was last anchored;
+        // their median is what a later rise is measured against.
+        levels: [opening],
         story,
       };
       developments.set(root, development);
     } else if (levelBasis !== 'shock') {
-      // A development whose level climbs two clear of its own recent low is
+      // A development whose level climbs two clear of its usual level is
       // news again, and its clock restarts there. This is the safety net under
       // the judge: without it, a story the judge keeps calling one development
       // sits at the floor however far it escalates. Replayed over the stored
@@ -325,12 +337,18 @@ function replay(ascending, {
       // day the rater said 7. It also catches an escalation the judge misses,
       // and a ramp too gradual for any single reading to look like a break.
       //
-      // Two points, against the development's own recent low, because that is
+      // Two points, against the development's usual level, because that is
       // the same margin the shock rule uses and for the same reason: the
       // rater's disagreement with itself is about 0.6, so anything smaller is
-      // inside the error bar. Measured against the low rather than against the
-      // anchor, because a single early peak would otherwise lock the
-      // development at the floor for as long as it ran. Measured against the
+      // inside the error bar. Measured against the median of its levels since
+      // it was last anchored, not against the anchor, because a single early
+      // peak would otherwise lock the development at the floor for as long as
+      // it ran; and not against the lowest of those levels, which is what it
+      // was until 2026-09-28: over sixty hourly re-reports of one event the
+      // level dipped to 4 and touched 6, and the page jumped from 2 to 6 on
+      // unchanged news. Replayed over the whole series, the median dropped
+      // four such restarts, each a judged re-report, and kept the others,
+      // the 1 and 3 September Iran escalations among them. Measured against the
       // level rather than against the decayed value, because a rise the news
       // did not make is a sawtooth: the number would fall for half a day and
       // spring back on unchanged readings, which is worse than not ageing at
@@ -342,7 +360,7 @@ function replay(ascending, {
       // a page bouncing as much as the readings it was smoothing. The cost is
       // about an hour of lag on a sharp escalation, until the median confirms
       // it. A sharp escalation is the judge's case, not this one's.
-      if (level - development.low >= SHOCK_MARGIN) {
+      if (level - usualLevel(development.levels) >= SHOCK_MARGIN) {
         // An escalation is weighed against the story the same way an opening
         // is: two clear of what the story routinely does is a breakthrough at
         // full value, anything less is the story's daily churn, discounted.
@@ -355,9 +373,9 @@ function replay(ascending, {
         development.routine = worth.routine;
         development.breakthrough = worth.breakthrough;
         development.since = point.t;
-        development.low = level;
+        development.levels = [level];
       } else {
-        development.low = Math.min(development.low, level);
+        development.levels.push(level);
       }
     }
 
