@@ -868,7 +868,7 @@ The [record](docs/prompt-evaluations/v19.md) holds the test runs.
 reading in ten days: callers filed AI news as company news and never searched
 it. Sources now name the month's market themes from market wraps and the
 biggest companies' moves and search each, naming no topic, so a fading theme
-drops out. A frontier AI release replaced the Hormuz example at 5. See the
+drops out. An AI release replaced the Hormuz example at 5; see the
 [record](docs/prompt-evaluations/v20.md).
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
