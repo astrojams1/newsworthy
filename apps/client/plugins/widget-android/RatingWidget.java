@@ -199,8 +199,8 @@ public class RatingWidget extends AppWidgetProvider {
     }
 
     /**
-     * The muted age that leads the sentence once "New:" is off: "5h ago ·", then
-     * "1d ago ·" from a day; empty under an hour or without explanation_at.
+     * The muted age that leads the sentence once "New:" is off: "5h ago:", then
+     * "1d ago:" from a day; empty under an hour or without explanation_at.
      */
     static String sentenceAge(JSONObject reading, long now) {
         if (isNew(reading, now) || !(reading.opt("explanation_text") instanceof String)
@@ -209,7 +209,7 @@ public class RatingWidget extends AppWidgetProvider {
         if (at == null) return "";
         long hours = (now - at.getTime()) / 3_600_000L;
         if (hours < 1) return "";
-        return (hours < 24 ? hours + "h" : (hours / 24) + "d") + "\u00A0ago\u00A0·";
+        return (hours < 24 ? hours + "h" : (hours / 24) + "d") + "\u00A0ago:";
     }
 
     /**

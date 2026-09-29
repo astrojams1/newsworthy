@@ -34,20 +34,20 @@ test('once "New:" is off, the sentence leads with how long ago it was first repo
   // Reported 2026-09-27: a development can hold the page for a day with the
   // same sentence, and past two hours nothing said how old it was.
   const rereport = { ...fresh, explanation_new: false, explanation_at: start };
-  for (const [minutes, age] of [[0,''],[59,''],[60,'1h\u00A0ago\u00A0·'],[5 * 60 + 59,'5h\u00A0ago\u00A0·'],[23 * 60 + 59,'23h\u00A0ago\u00A0·'],[24 * 60,'1d\u00A0ago\u00A0·'],[74 * 60,'3d\u00A0ago\u00A0·']]) {
+  for (const [minutes, age] of [[0,''],[59,''],[60,'1h\u00A0ago:'],[5 * 60 + 59,'5h\u00A0ago:'],[23 * 60 + 59,'23h\u00A0ago:'],[24 * 60,'1d\u00A0ago:'],[74 * 60,'3d\u00A0ago:']]) {
     assert.equal(sentenceAge(rereport, origin + minutes * 60000), age, `${minutes} minutes`);
   }
-  assert.equal(displayExplanation(rereport, origin + 26 * hour), `1d\u00A0ago\u00A0· ${text}`);
+  assert.equal(displayExplanation(rereport, origin + 26 * hour), `1d\u00A0ago: ${text}`);
   const opened = { ...fresh, explanation_at: start };
   assert.deepEqual(explanationParts(opened, origin + 119 * 60000), { label: 'New:', age: '', body: text }, 'New: wins while it is on');
-  assert.deepEqual(explanationParts(opened, origin + 2 * hour), { label: '', age: '2h\u00A0ago\u00A0·', body: text }, 'then the age takes its place');
+  assert.deepEqual(explanationParts(opened, origin + 2 * hour), { label: '', age: '2h\u00A0ago:', body: text }, 'then the age takes its place');
   assert.equal(sentenceAge({ ...rereport, explanation_at: undefined }, origin + 5 * hour), '', 'an older server sends no time');
   assert.equal(sentenceAge({ ...rereport, explanation_at: 'nonsense' }, origin + 5 * hour), '');
   assert.equal(sentenceAge({ score: 7, explanation: text, explanation_at: start, created_at: start }, origin + 5 * hour), '',
     'an old cache without the unlabelled body keeps its stored sentence');
   const long = 'a'.repeat(135);
   const fitted = displayExplanation({ ...rereport, explanation_text: long }, origin + 12 * hour);
-  assert.ok(fitted.startsWith('12h\u00A0ago\u00A0· ') && Array.from(fitted).length <= 140 && fitted.endsWith('…'), 'the age counts toward 140');
+  assert.ok(fitted.startsWith('12h\u00A0ago: ') && Array.from(fitted).length <= 140 && fitted.endsWith('…'), 'the age counts toward 140');
 });
 
 test('the 140-character display budget includes the label and counts Unicode code points', () => {
@@ -139,8 +139,8 @@ test('both widgets format the age as the app does', () => {
   // themselves, and the Swift test cannot run without a Swift toolchain.
   const swift = readFileSync(new URL('../apps/client/targets/widget/WidgetReadingStore.swift', import.meta.url), 'utf8');
   const java = readFileSync(new URL('../apps/client/plugins/widget-android/RatingWidget.java', import.meta.url), 'utf8');
-  assert.ok(swift.includes('"\\(hours)h\\u{00A0}ago\\u{00A0}·" : "\\(hours / 24)d\\u{00A0}ago\\u{00A0}·"'), 'iOS widget');
-  assert.ok(java.includes('(hours / 24) + "d") + "\\u00A0ago\\u00A0·";'), 'Android widget');
+  assert.ok(swift.includes('"\\(hours)h\\u{00A0}ago:" : "\\(hours / 24)d\\u{00A0}ago:"'), 'iOS widget');
+  assert.ok(java.includes('(hours / 24) + "d") + "\\u00A0ago:";'), 'Android widget');
 });
 
 test('the story and its age sit below the sentence and Checked moves to Settings, prototype', async () => {

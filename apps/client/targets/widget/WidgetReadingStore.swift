@@ -27,13 +27,13 @@ struct Reading: Codable, Equatable, Sendable {
     /// When the shown sentence was first reported; absent from older servers and caches.
     var sentenceAt: Date? { explanation_text == nil ? nil : explanation_at.flatMap(Reading.date) }
 
-    /// The muted age that leads the sentence once "New:" is off: "5h ago ·", then "1d ago ·"
+    /// The muted age that leads the sentence once "New:" is off: "5h ago:", then "1d ago:"
     /// from a day; empty under an hour or without `explanation_at`.
     func sentenceAge(at now: Date) -> String {
         guard newLabelExpiry.map({ now < $0 }) != true, let at = sentenceAt else { return "" }
         let hours = Int((now.timeIntervalSince(at) / 3600).rounded(.down))
         if hours < 1 { return "" }
-        return hours < 24 ? "\(hours)h\u{00A0}ago\u{00A0}·" : "\(hours / 24)d\u{00A0}ago\u{00A0}·"
+        return hours < 24 ? "\(hours)h\u{00A0}ago:" : "\(hours / 24)d\u{00A0}ago:"
     }
 
     /// The label ("New:" or empty), the age ("5h ·" or empty) and the body, fitted together within 140 characters.
