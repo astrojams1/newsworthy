@@ -84,9 +84,11 @@ export function storyLine(reading, now = Date.now()) {
 }
 
 /**
- * When the news was last checked, as every surface writes it: "Checked at
- * 10:21". The clock time in the device's own 12- or 24-hour cycle, without
- * AM/PM, as the iOS status bar writes it, and never a date (owner, 2026-09-29).
+ * When the news was last checked, as the widgets write it: "Checked at 10:21".
+ * A clock time rather than an age, so a widget needs no redraw between
+ * updates; the device's own 12- or 24-hour cycle, without AM/PM, as the iOS
+ * status bar writes it, and never a date (owner, 2026-09-29). The app itself,
+ * which is redrawn while open, says how long ago instead ("18m ago").
  */
 export function checkedAt(reading) {
   const saved = new Date(reading?.created_at ?? NaN);

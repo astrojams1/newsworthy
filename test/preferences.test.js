@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { DEFAULT_PREFERENCES, STORAGE_KEY, THEME_CHOICES, THRESHOLD_CHOICES, clampThreshold, parsePreferences, resolveDark } from '../apps/client/lib/preferences.js';
 import { nodes, renderSettings, renderToggle } from './helpers/render-settings.js';
 import { createSubscriptionController } from '../apps/client/lib/subscription.js';
-import { checkedAt } from '../apps/client/lib/story-age.js';
 
 test('system appearance, no notifications and no timeline are the defaults, and a damaged store falls back field by field', () => {
   assert.deepEqual(THEME_CHOICES.map(c => [c.value, c.label]), [['system', 'Follow device'], ['light', 'Light'], ['dark', 'Dark']]);
@@ -381,11 +380,9 @@ test('when the news was last checked is a row in Settings, prototype, on every p
   for (const platform of ['web', 'ios', 'android']) {
     const overview = nodes(renderSettings({ platform, reading }).tree);
     const shown = text(overview);
-    const expected = checkedAt(reading);
-    assert.match(expected, /^Checked at \d{1,2}:\d{2}$/, 'no AM/PM and no date');
-    assert.deepEqual(shown.slice(shown.indexOf('News'), shown.indexOf('News') + 2), ['News', expected]);
+    assert.deepEqual(shown.slice(shown.indexOf('News'), shown.indexOf('News') + 3), ['News', 'Last checked', '18m ago']);
     assert.ok(shown.indexOf('News') < shown.indexOf('About'), 'before About');
-    assert.equal(overview.find(n => n.props?.testID === 'checked-row').props.accessibilityLabel, expected);
+    assert.equal(overview.find(n => n.props?.testID === 'checked-row').props.accessibilityLabel, 'Last checked, 18m ago');
     assert.equal(text(nodes(renderSettings({ platform }).tree)).includes('News'), false, 'no reading, no row');
   }
 });
