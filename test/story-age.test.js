@@ -166,3 +166,13 @@ test('the story and its age sit below the sentence and Checked moves to Settings
     assert.deepEqual(order, ['rating-score','rating-explanation','rating-story-line']);
   }
 });
+
+test('the checked time reads "Checked at 10:21": no AM/PM, no date', async () => {
+  const { checkedAt } = await import('../apps/client/lib/story-age.js');
+  const at = new Date(2026, 8, 29, 10, 21);
+  assert.equal(checkedAt({ created_at: at.toISOString() }), 'Checked at 10:21');
+  const afternoon = checkedAt({ created_at: new Date(2026, 8, 29, 14, 5).toISOString() });
+  assert.ok(['Checked at 2:05', 'Checked at 14:05'].includes(afternoon), `${afternoon}: the device's own hour cycle`);
+  assert.equal(checkedAt({ created_at: new Date(2026, 8, 1, 10, 21).toISOString() }), 'Checked at 10:21', 'another day: still no date');
+  assert.equal(checkedAt({}), '');
+});

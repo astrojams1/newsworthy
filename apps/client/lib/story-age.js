@@ -83,7 +83,21 @@ export function storyLine(reading, now = Date.now()) {
   return [storyLabel(reading.explanation_story), at].filter(Boolean).join('  ·  ');
 }
 
-/** When the news was last checked, for Settings: "18m ago". */
+/**
+ * When the news was last checked, as every surface writes it: "Checked at
+ * 10:21". The clock time in the device's own 12- or 24-hour cycle, without
+ * AM/PM, as the iOS status bar writes it, and never a date (owner, 2026-09-29).
+ */
+export function checkedAt(reading) {
+  const saved = new Date(reading?.created_at ?? NaN);
+  if (!Number.isFinite(saved.getTime())) return '';
+  const hour12 = new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).resolvedOptions().hour12 !== false;
+  const hours = saved.getHours();
+  const minutes = String(saved.getMinutes()).padStart(2, '0');
+  return `Checked at ${hour12 ? hours % 12 || 12 : String(hours).padStart(2, '0')}:${minutes}`;
+}
+
+/** How long ago the news was checked: "18m ago". */
 export function checkedAgo(reading, now = Date.now()) {
   return Number.isFinite(Date.parse(reading?.created_at)) ? shortAge(reading.created_at, now) : '';
 }

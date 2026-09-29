@@ -9,7 +9,7 @@ import ts from 'typescript';
 import * as preferences from '../../apps/client/lib/preferences.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
 import { glyphModule } from './widget-contract.js';
-import { checkedAgo } from '../../apps/client/lib/story-age.js';
+import { checkedAt } from '../../apps/client/lib/story-age.js';
 
 const require = createRequire(import.meta.url);
 const react = require('react');
@@ -56,7 +56,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
       Linking: { openSettings: async () => { calls.openSettings += 1; } }, useWindowDimensions: () => ({ width, height, fontScale: 1 }) },
     '@/components/toggle': { Toggle: 'Toggle' },
     '@/components/reading-provider': { useCurrentReading: () => ({ reading }) },
-    '@/lib/story-age': { checkedAgo },
+    '@/lib/story-age': { checkedAt },
     '@/components/glyph': glyphModule,
     'expo-router/head': { __esModule: true, default: 'Head' },
     'expo-router': { Stack: { Screen: 'Screen' }, Link: 'Link', Redirect: 'Redirect', useRouter: () => ({ canGoBack: () => canGoBack, back: () => { calls.back += 1; }, replace: href => calls.replace.push(href), dismissTo: href => calls.dismissTo.push(href) }) },

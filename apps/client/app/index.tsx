@@ -11,7 +11,7 @@ import { useTheme } from '@/lib/theme';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { displayExplanation, explanationParts, storyLine } from '@/lib/story-age';
+import { checkedAt, displayExplanation, explanationParts, storyLine } from '@/lib/story-age';
 import { website, privacyUrl, supportUrl } from '@/lib/config';
 import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
@@ -121,7 +121,7 @@ export default function Home() {
   const showTimeline = () => scrollTo(snap);
   const shareReading = async () => {
     if (!reading) return;
-    const message = `${reading.score}/10 · ${displayExplanation(reading)}\nChecked ${new Date(reading.created_at).toLocaleString()}\n${website}`;
+    const message = `${reading.score}/10 · ${displayExplanation(reading)}\n${checkedAt(reading)}\n${website}`;
     try {
       if (process.env.EXPO_OS === 'web') {
         if (navigator.share) await navigator.share({ title: 'Newsworthy', text: message });

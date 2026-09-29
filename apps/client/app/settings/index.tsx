@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import Head from 'expo-router/head';
 import { Link, Stack, useRouter } from 'expo-router';
@@ -11,7 +10,7 @@ import { Glyph, HEADER_ICON_SIZE, type GlyphName } from '@/components/glyph';
 import { RowContent, Section, SettingsPage, Trailing, rowStyle } from '@/components/settings-list';
 import { Toggle } from '@/components/toggle';
 import { useCurrentReading } from '@/components/reading-provider';
-import { checkedAgo } from '@/lib/story-age';
+import { checkedAt } from '@/lib/story-age';
 
 const ABOUT_LINKS = [['Privacy', privacyUrl, 'privacy'], ['Support', supportUrl, 'support']] as const;
 // Opens over Settings; closing it returns here. The phone apps only: the
@@ -26,9 +25,7 @@ export default function Settings() {
   const appearance = THEME_CHOICES.find(choice => choice.value === preferences.theme)?.label ?? 'Follow device';
   // Prototype: when the news was last checked, moved here from under the reading.
   const { reading } = useCurrentReading();
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
-  const checked = reading ? checkedAgo(reading, now) : '';
+  const checked = reading ? checkedAt(reading) : '';
   const notifications = enabled ? `${threshold} or higher` : 'Off';
   // Closing returns to the reading in one step, however Settings was reached.
   // A back action was not enough: a web link to an alerts page redirects here
@@ -63,8 +60,8 @@ export default function Settings() {
         </Pressable>
       </Section>
       {checked !== '' && <Section title="News" testID="news-status">
-        <View testID="checked-row" accessible accessibilityLabel={`Last checked, ${checked}`} style={rowStyle()}>
-          <RowContent index={0} icon="checked" label="Last checked" trailing={<Trailing value={checked} />} />
+        <View testID="checked-row" accessible accessibilityLabel={checked} style={rowStyle()}>
+          <RowContent index={0} icon="checked" label={checked} />
         </View>
       </Section>}
       <Section title="About" testID="about-links">

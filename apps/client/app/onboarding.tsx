@@ -10,6 +10,7 @@ import { usePreferences } from '@/components/preferences-provider';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
+import { checkedAt } from '@/lib/story-age';
 
 type Theme = ReturnType<typeof useTheme>;
 const platform = process.env.EXPO_OS === 'ios' ? 'ios' : 'android';
@@ -121,17 +122,6 @@ function Diagonal({ colors, radius, children, style, testID }: { colors: Palette
   </View>;
 }
 
-// The widgets' own timestamp: "Checked at 10:21" for a reading saved today,
-// the date before "at" otherwise; iOS writes "Sep 28", Android its short date.
-function widgetTime(saved: string | undefined) {
-  const date = saved ? new Date(saved) : new Date();
-  const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-  if (date.toDateString() === new Date().toDateString()) return `Checked at ${time}`;
-  const day = platform === 'android' ? date.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })
-    : date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  return `Checked ${day} at ${time}`;
-}
-
 // An SVG as an image source; Android's expo-image decodes data URLs as base64.
 function svgUri(svg: string) {
   return process.env.EXPO_OS === 'android'
@@ -172,7 +162,7 @@ function SmallWidget({ score, saved, dark }: { score?: number; saved?: string; d
       <Text style={{ color: colors.ink, fontSize: 69, lineHeight: 76, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -69 * 0.04 }}>{score ?? '–'}</Text>
       <Text style={{ color: colors.gradientMuted, fontSize: 12, fontFamily: scoreFont, marginLeft: platform === 'android' ? 2 : 1 }}>∕10</Text>
     </View>
-    <Text numberOfLines={1} style={{ color: colors.gradientMuted, fontSize: 11 }}>{widgetTime(saved)}</Text>
+    <Text numberOfLines={1} style={{ color: colors.gradientMuted, fontSize: 11 }}>{saved ? checkedAt({ created_at: saved }) : ''}</Text>
   </Diagonal>;
 }
 // The app's launcher mark: the brand's accent dash on its diagonal,

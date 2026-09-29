@@ -23,10 +23,8 @@ import androidx.work.PeriodicWorkRequest;
 import java.util.concurrent.TimeUnit;
 import androidx.work.WorkManager;
 import org.json.JSONObject;
-import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -176,16 +174,13 @@ public class RatingWidget extends AppWidgetProvider {
         return null;
     }
 
-    /** "at 10:21" for a reading saved today; "9/28/26 at 10:21" otherwise, after "Checked ". */
-    static String updatedTime(Date saved, long now) {
-        Calendar day = Calendar.getInstance();
-        day.setTimeInMillis(now);
-        Calendar then = Calendar.getInstance();
-        then.setTime(saved);
-        boolean today = day.get(Calendar.YEAR) == then.get(Calendar.YEAR)
-            && day.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR);
-        String time = DateFormat.getTimeInstance(DateFormat.SHORT).format(saved);
-        return today ? "at " + time : DateFormat.getDateInstance(DateFormat.SHORT).format(saved) + " at " + time;
+    /**
+     * "10:21": the clock time in the device's 12- or 24-hour cycle, without
+     * AM/PM, and never a date; the widget writes "Checked at " before it.
+     */
+    static String updatedTime(Context context, Date saved) {
+        boolean clock24 = android.text.format.DateFormat.is24HourFormat(context);
+        return new SimpleDateFormat(clock24 ? "HH:mm" : "h:mm", Locale.getDefault()).format(saved);
     }
 
     static final String NEW_LABEL = "New:";
@@ -343,8 +338,7 @@ public class RatingWidget extends AppWidgetProvider {
                 CharSequence sentence = displayedExplanation(reading, now);
                 views.setTextViewText(R.id.widget_explanation, sentence);
                 views.setTextViewText(R.id.widget_explanation_age, ageLayer(sentence, reading, now));
-                String date = updatedTime(readingDate(reading), System.currentTimeMillis());
-                views.setTextViewText(R.id.widget_updated, "Checked " + date);
+                views.setTextViewText(R.id.widget_updated, "Checked at " + updatedTime(context, readingDate(reading)));
             }
             views.setViewVisibility(R.id.widget_explanation, compact ? View.GONE : View.VISIBLE);
             views.setViewVisibility(R.id.widget_explanation_age, compact ? View.GONE : View.VISIBLE);
