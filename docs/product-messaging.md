@@ -63,7 +63,8 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
   coverage of the development, for two hours after it was saved. It is not a
   verified event date or a claim that the broader story is new. Below the
   sentence, a fainter line names its story and says how long ago it was first
-  reported (“US Iran War · 5h ago”); Settings says when Newsworthy last checked
+  reported (“US Iran War · 5h ago”). On opening, and when tapped, that line
+  first says when Newsworthy last checked (“Checked 23m ago”), as Settings does
   (“Last checked 18m ago”). The widgets lead the sentence with the age (“5h
   ago:”) and give the clock time of the check (“Checked at 10:21”). The
   140-character display budget includes either prefix.

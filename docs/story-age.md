@@ -4,8 +4,11 @@
 A muted line below the sentence, where “Checked” was, names its story and how
 long ago it was first reported: “US Iran War · 5h ago” (`storyLine()` in
 `apps/client/lib/story-age.js`, from the new `explanation_story` and
-`explanation_at`; either half alone when the other is missing). “Last checked
-18m ago” moved to Settings. Every age in the app, timeline tags included, reads
+`explanation_at`; either half alone when the other is missing). On opening,
+on returning to the app, and for two seconds after a tap, that line says
+“Checked 23m ago” instead (`checkedLine()`), then crossfades to the story; with
+no story line it keeps the checked time. Settings also says “Last checked 18m
+ago”. Every age in the app, timeline tags included, reads
 “just now”, “5m ago”, “5h ago”, “1d ago”. The widgets keep their design with
 the age before the sentence as “5h ago:” (a colon like “New:”, only “New:” is
 bold) and a clock time, “Checked at 10:21” (the device's 12- or 24-hour cycle,

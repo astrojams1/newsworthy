@@ -72,8 +72,8 @@ export function displayExplanation(reading, now = Date.now()) {
 
 /**
  * Prototype: the story the shown sentence belongs to and how long ago its
- * development was first reported, on one muted line below the sentence, where
- * "Checked" was: "US Iran War · 5h ago". The sentence then carries no age prefix.
+ * development was first reported, on one muted line below the sentence, which
+ * opens on `checkedLine()`: "US Iran War · 5h ago". The sentence then carries no age prefix.
  * Either half may be missing: an unjudged reading has no story, and an older
  * server sends no `explanation_at`.
  */
@@ -103,4 +103,13 @@ export function checkedAt(reading) {
 /** How long ago the news was checked: "18m ago". */
 export function checkedAgo(reading, now = Date.now()) {
   return Number.isFinite(Date.parse(reading?.created_at)) ? shortAge(reading.created_at, now) : '';
+}
+
+/**
+ * The same, as the reading screen's small line says it on opening and when
+ * tapped, before it gives way to the story line: "Checked 23m ago".
+ */
+export function checkedLine(reading, now = Date.now()) {
+  const ago = checkedAgo(reading, now);
+  return ago ? `Checked ${ago}` : '';
 }
