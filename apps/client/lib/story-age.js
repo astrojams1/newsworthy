@@ -1,5 +1,5 @@
 // Shared by the API and Expo. Native widget equivalents use the same fixtures.
-import { timelineAge } from './timeline.js';
+import { shortAge, storyLabel } from './timeline.js';
 export const DISPLAY_CHARACTER_LIMIT = 140;
 /** Shown, bold, before a sentence that opened its own development. */
 export const NEW_LABEL = 'New:';
@@ -70,21 +70,20 @@ export function displayExplanation(reading, now = Date.now()) {
 }
 
 /**
- * Prototype: how long ago the shown sentence's development was first reported,
- * on its own muted line below the sentence, where "Checked" was ("5 hr ago",
- * "Yesterday"). The sentence then carries no age prefix. Empty without
- * `explanation_at` (an older server), and the sentence keeps its prefix.
+ * Prototype: the story the shown sentence belongs to and how long ago its
+ * development was first reported, on one muted line below the sentence, where
+ * "Checked" was: "US Iran War · 5h". The sentence then carries no age prefix.
+ * Either half may be missing: an unjudged reading has no story, and an older
+ * server sends no `explanation_at`.
  */
-export function ageLine(reading, now = Date.now()) {
-  if (!reading || typeof reading.explanation_text !== 'string' || typeof reading.explanation_at !== 'string'
-    || !Number.isFinite(Date.parse(reading.explanation_at))) return '';
-  return timelineAge(reading.explanation_at, now);
+export function storyLine(reading, now = Date.now()) {
+  if (!reading || typeof reading.explanation_text !== 'string') return '';
+  const at = typeof reading.explanation_at === 'string' && Number.isFinite(Date.parse(reading.explanation_at))
+    ? shortAge(reading.explanation_at, now) : null;
+  return [storyLabel(reading.explanation_story), at].filter(Boolean).join('  ·  ');
 }
 
-/** When the news was last checked, for Settings: "18 min ago". */
+/** When the news was last checked, for Settings: "18m". */
 export function checkedAgo(reading, now = Date.now()) {
-  const at = Date.parse(reading?.created_at);
-  if (!Number.isFinite(at)) return '';
-  const minutes = Math.max(0, Math.floor((now - at) / 60000));
-  return minutes < 1 ? 'Just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
+  return Number.isFinite(Date.parse(reading?.created_at)) ? shortAge(reading.created_at, now) : '';
 }

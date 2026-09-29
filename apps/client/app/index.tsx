@@ -11,7 +11,7 @@ import { useTheme } from '@/lib/theme';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { displayExplanation, explanationParts, ageLine } from '@/lib/story-age';
+import { displayExplanation, explanationParts, storyLine } from '@/lib/story-age';
 import { website, privacyUrl, supportUrl } from '@/lib/config';
 import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
@@ -73,9 +73,9 @@ export default function Home() {
   const [shareNotice, setShareNotice] = useState('');
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
   // A new development's sentence leads with a bold "New:" for two hours.
-  // Prototype: the sentence's age on its own line below it, where "Checked"
-  // was (now in Settings); the sentence drops its age prefix. "New:" stays.
-  const line = reading ? ageLine(reading, now) : '';
+  // Prototype: the story and its age on one line below the sentence, where
+  // "Checked" was (now in Settings); the sentence drops its age prefix. "New:" stays.
+  const line = reading ? storyLine(reading, now) : '';
   const parts = reading ? explanationParts(reading, now) : null;
   const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</>
     : parts.body) : null;
@@ -199,7 +199,7 @@ export default function Home() {
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
         <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
-        {line !== '' && <Animated.Text selectable testID="rating-age-line" style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>{line}</Animated.Text>}
+        {line !== '' && <Animated.Text selectable testID="rating-story-line" style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>{line}</Animated.Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
         {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: Animated.multiply(cueIn, cueFade) }}>

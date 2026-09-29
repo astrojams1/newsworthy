@@ -113,7 +113,7 @@ test('turned to landscape, the timeline fades out under the header rather than r
       const timeline = await opened.getByTestId('timeline').boundingBox();
       assert.ok(timeline.width <= 360, `landscape timeline keeps the same column (${Math.round(timeline.width)}pt)`);
       const score = await opened.getByTestId('rating-score').boundingBox();
-      const checked = await opened.getByTestId('rating-age-line').boundingBox();
+      const checked = await opened.getByTestId('rating-story-line').boundingBox();
       const cue = await opened.getByLabel('Earlier developments').first().boundingBox();
       assert.ok(cue.y + cue.height <= landscape.height, 'the timeline cue is on the first screen');
       // Room between the parts: the first cut had 12pt, 10pt and the cue's

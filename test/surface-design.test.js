@@ -32,7 +32,7 @@ function assertApprovedReadingCopy(tree) {
   // nothing sits below the sentence's age.
   assert.ok(text.length === 3 || text.length === 4, 'only approved reading and age text');
   assert.deepEqual(text.slice(0, 3), ['3', contract.denominatorText, 'A quiet day for the world.']);
-  if (text.length === 4) assert.match(text[3], /^(?:Just now|\d+ (?:min ago|hr ago|days ago)|Yesterday)$/);
+  if (text.length === 4) assert.match(text[3], /^(?:now|\d+[mhd])$/);
 }
 
 for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · ']) {
@@ -581,7 +581,7 @@ test('the first reading arrives in reading order, number then sentence then time
       return {
         number: list.find(n => n.props?.testID === 'rating-score').parent.props.style.opacity,
         sentence: list.find(n => n.props?.testID === 'rating-explanation').props.style.opacity,
-        checked: list.find(n => n.props?.testID === 'rating-age-line')?.props.style.opacity,
+        checked: list.find(n => n.props?.testID === 'rating-story-line')?.props.style.opacity,
         gradient: list.find(n => n.type === 'ReadingGradient').parent.props.style.opacity,
         list,
       };
