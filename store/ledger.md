@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-29T03:22:21+00:00
+Updated: 2026-09-29T08:41:50+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -73,7 +73,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 | apple.review-state | done | agent | observed | Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical. | — |
-| story-age.native | todo | agent | observed | Since 2026-09-29 the app shows a muted "story · age" line below the sentence ("US Iran War · 5h ago"), "Last checked 18m ago" moved to Settings, and every app age reads "5m ago", "5h ago", "1d ago". Widgets keep their design with "5h ago:" before the sentence and "Checked at 10:21" (device hour cycle, no AM/PM, no date). Web export checked in Chromium, light and dark; widgets only as an HTML mock. Android compiles; Swift not compiled here. | On iOS and Android, both widget sizes, light and dark, enlarged text: "5h ago:" muted and aligned at the start of the sentence, "Checked at 10:21" fits the small widget in 12- and 24-hour settings; in the apps, the story line below the sentence and the Settings "Last checked" row. |
+| story-age.native | todo | agent | observed | The app's small line below the sentence now opens on "Checked 23m ago" (on load, on returning to the app, and for four seconds after a tap), then crossfades to the story line ("US Iran War · 5h ago"); with no story line it keeps the checked time. Web export verified in Chromium: Checked at load, story after ~5s, Checked again on tap and on visibilitychange. Native apps not built or run here; widgets unchanged. | On iOS and Android: the line opens on "Checked …" at launch and on foregrounding, crossfades to the story after four seconds, a tap brings Checked back, and the enlarged touch target does not move the line. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
 | apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
@@ -3357,3 +3357,13 @@ Since 2026-09-29 the app shows a muted "story · age" line below the sentence ("
 
 
 Next: On iOS and Android, both widget sizes, light and dark, enlarged text: "5h ago:" muted and aligned at the start of the sentence, "Checked at 10:21" fits the small widget in 12- and 24-hour settings; in the apps, the story line below the sentence and the Settings "Last checked" row.
+
+### 341. story-age.native — todo
+
+2026-09-29T08:41:50+00:00 · observed · agent
+
+The app's small line below the sentence now opens on "Checked 23m ago" (on load, on returning to the app, and for four seconds after a tap), then crossfades to the story line ("US Iran War · 5h ago"); with no story line it keeps the checked time. Web export verified in Chromium: Checked at load, story after ~5s, Checked again on tap and on visibilitychange. Native apps not built or run here; widgets unchanged.
+
+- Branch claude/last-checked-time-display-h5nl72; test/story-age.test.js; npm test 370 passed; npm run test:design 105 passed
+
+Next: On iOS and Android: the line opens on "Checked …" at launch and on foregrounding, crossfades to the story after four seconds, a tap brings Checked back, and the enlarged touch target does not move the line.

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, Text, View, Share } from 'react-native';
+import { Animated, AppState, Pressable, Text, View, Share } from 'react-native';
 import { useWindowSize } from '@/lib/window-size';
 import { Stack, useRouter } from 'expo-router';
 import Head from 'expo-router/head';
@@ -11,7 +11,7 @@ import { useTheme } from '@/lib/theme';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { displayExplanation, explanationParts, storyLine } from '@/lib/story-age';
+import { checkedLine, displayExplanation, explanationParts, storyLine } from '@/lib/story-age';
 import { website, privacyUrl, supportUrl } from '@/lib/config';
 import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
@@ -28,6 +28,9 @@ import { usePreferences } from '@/components/preferences-provider';
 const COLUMN = 320;
 const LANDSCAPE_COLUMN = 360;
 const WIDE_COLUMN = 414;
+// How long the small line says when the news was checked, on opening, on
+// returning to the app and after a tap, before it gives way to the story.
+const CHECKED_MS = 4000;
 
 export default function Home() {
   const theme = useTheme();
@@ -73,9 +76,50 @@ export default function Home() {
   const [shareNotice, setShareNotice] = useState('');
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
   // A new development's sentence leads with a bold "New:" for two hours.
-  // Prototype: the story and its age on one line below the sentence, where
-  // "Checked" was (now in Settings); the sentence drops its age prefix. "New:" stays.
-  const line = reading ? storyLine(reading, now) : '';
+  // Prototype: the story and its age on one line below the sentence; the
+  // sentence drops its age prefix. "New:" stays.
+  const story = reading ? storyLine(reading, now) : '';
+  // On opening and on returning to the app the line first says when the news
+  // was checked, "Checked 23m ago", then crossfades to the story and its age.
+  // A tap brings the checked time back for a moment. Without a story line
+  // there is nothing to give way to, so it stays.
+  const checked = reading ? checkedLine(reading, now) : '';
+  const [showChecked, setShowChecked] = useState(true);
+  const line = (showChecked || !story) && checked ? checked : story;
+  const lineSwap = useRef(new Animated.Value(1)).current;
+  const lineTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const swapLine = (toChecked: boolean) => {
+    const native = process.env.EXPO_OS !== 'web';
+    Animated.timing(lineSwap, { toValue: 0, duration: 200, useNativeDriver: native }).start(({ finished }) => {
+      // Interrupted by a return to the app, which has set the line itself.
+      if (!finished) return;
+      setShowChecked(toChecked);
+      Animated.timing(lineSwap, { toValue: 1, duration: 250, useNativeDriver: native }).start();
+    });
+  };
+  const holdChecked = (ms: number) => {
+    clearTimeout(lineTimer.current);
+    lineTimer.current = setTimeout(() => swapLine(false), ms);
+  };
+  const tapLine = () => {
+    if (showChecked) { clearTimeout(lineTimer.current); swapLine(false); return; }
+    swapLine(true);
+    holdChecked(CHECKED_MS);
+  };
+  // First shown, the line fades in last, about a second after the number.
+  useEffect(() => { if (ready) holdChecked(CHECKED_MS + 1000); }, [ready]);
+  useEffect(() => {
+    // The screen was out of sight, so the checked time is simply back. The
+    // clock did not tick in the background, so "ago" is measured afresh.
+    const foreground = () => { lineSwap.stopAnimation(); lineSwap.setValue(1); setNow(Date.now()); setShowChecked(true); holdChecked(CHECKED_MS); };
+    const subscription = AppState.addEventListener('change', (state) => { if (state === 'active' && process.env.EXPO_OS !== 'web') foreground(); });
+    const visible = () => { if (!document.hidden) foreground(); };
+    if (process.env.EXPO_OS === 'web') document.addEventListener('visibilitychange', visible);
+    return () => {
+      subscription.remove(); clearTimeout(lineTimer.current);
+      if (process.env.EXPO_OS === 'web') document.removeEventListener('visibilitychange', visible);
+    };
+  }, []);
   // The age is on that line, so the sentence spends no budget on it.
   const parts = reading ? explanationParts(reading, now, { age: false }) : null;
   const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</>
@@ -200,7 +244,14 @@ export default function Home() {
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
         <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
-        {line !== '' && <Animated.Text selectable testID="rating-story-line" style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>{line}</Animated.Text>}
+        {/* Padded for a touch target and pulled back by as much, so the line
+            sits where it did before it could be tapped. */}
+        {line !== '' && <Pressable disabled={!story || !checked} onPress={tapLine}
+          accessibilityRole={story && checked ? 'button' : undefined} accessibilityLabel={[story, checked].filter(Boolean).join('. ')}
+          accessibilityHint={story && checked ? 'Shows when the news was last checked' : undefined}
+          style={{ paddingVertical: 16, paddingHorizontal: 24, marginTop: (landscape ? 16 : 18) - 16, marginBottom: -16 }}>
+          <Animated.Text testID="rating-story-line" style={{ opacity: Animated.multiply(checkedIn, lineSwap), color: theme.muted, fontSize: 12, textAlign: 'center' }}>{line}</Animated.Text>
+        </Pressable>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
         {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: Animated.multiply(cueIn, cueFade) }}>

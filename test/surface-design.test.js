@@ -14,7 +14,8 @@ test('reading refreshes never add loading, saved or retry text to an existing me
       const text = JSON.stringify(tree.filter(n => n.type === 'Text').map(n => n.props.children));
       assert.doesNotMatch(text, /Checking|Loading|Sav(?:ed|ing)|Waiting|Refreshing|Syncing|Try again|unavailable/i);
       assert.match(text, /A quiet day for the world/);
-      assert.doesNotMatch(text, /Checked/, 'Checked is in Settings now');
+      // With no story line to give way to, the small line keeps the checked time.
+      assert.match(text, /"Checked (?:just now|\d+[mhd] ago)"/);
       assertApprovedReadingCopy(tree);
     }
     const empty = nodes(renderReading({ platform, width: 390, height: 844, score: null, loading: true, failed: true }));
@@ -28,11 +29,11 @@ test('reading refreshes never add loading, saved or retry text to an existing me
 function assertApprovedReadingCopy(tree) {
   const text = tree.filter(n => n.type === 'Text')
     .map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
-  // Privacy, Support and when the news was checked are in Settings, so
-  // nothing sits below the sentence's age.
+  // Privacy and Support are in Settings, so nothing sits below the small line,
+  // which says when the news was checked or the story and its age.
   assert.ok(text.length === 3 || text.length === 4, 'only approved reading and age text');
   assert.deepEqual(text.slice(0, 3), ['3', contract.denominatorText, 'A quiet day for the world.']);
-  if (text.length === 4) assert.match(text[3], /^(?:just now|\d+[mhd] ago)$/);
+  if (text.length === 4) assert.match(text[3], /^(?:Checked )?(?:just now|\d+[mhd] ago)$/);
 }
 
 for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · ']) {
@@ -513,7 +514,7 @@ test('story timeline snaps on the web with CSS scroll snap, not a script that sc
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
   // A timer that waited for the scroll to go quiet and then scrolled fought iOS
   // momentum scrolling: the page drifted, turned round and jumped.
-  assert.doesNotMatch(source, /setTimeout/, 'no deferred scroll on the home screen');
+  assert.doesNotMatch(source, /setTimeout\([^\n]*scroll/i, 'no deferred scroll on the home screen');
   assert.doesNotMatch(source, /listener:/, 'the scroll handler only tracks position');
   assert.match(source, /scrollSnapType: 'y mandatory'/);
   // Two snap areas: the reading, and the timeline below the header's clearance.
@@ -594,7 +595,8 @@ test('the first reading arrives in reading order, number then sentence then time
     const shown = parts(renderReading({ platform, width: 402, height: 874, readingOverride: { score: 3, explanation: 'A quiet day for the world.',
       explanation_text: 'A quiet day for the world.', explanation_new: false, explanation_at: '2026-09-16T04:00:00Z', created_at: '2026-09-16T09:00:00Z' } }));
     assert.ok(shown.checked, 'the age line is rendered where Checked was');
-    const values = [shown.number, shown.sentence, shown.checked];
+    assert.equal(shown.checked.multiply[1].value, 1, 'the line is not mid-swap between Checked and the story');
+    const values = [shown.number, shown.sentence, shown.checked.multiply[0]];
     assert.equal(new Set(values).size, 3, 'number, sentence and time each fade on their own value');
     for (const value of values) assert.equal(value.value, 1, 'a reading already at hand is shown at once');
     assert.equal(shown.gradient, shown.number, 'the gradient arrives with the number');

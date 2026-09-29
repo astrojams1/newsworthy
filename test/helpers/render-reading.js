@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
-import { displayExplanation, explanationParts, storyLine } from '../../apps/client/lib/story-age.js';
+import { checkedLine, displayExplanation, explanationParts, storyLine } from '../../apps/client/lib/story-age.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
 import { glyphModule } from './widget-contract.js';
 
@@ -26,11 +26,13 @@ export function renderShareIcon({ platform, color, sourceOverride }) {
   return exports.AppIcon({ color });
 }
 
-export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, failed = false, loading = false, sourceOverride, readingOverride, timeline = [], timelineOn = timeline.length > 0, now = Date.now() }) {
+// `showChecked` stands in for the one boolean state, the small line's: true as the screen opens ("Checked
+// 23m ago"), false once it has given way to the story line.
+export function renderReading({ platform, width, height, fontScale = 1, score = 3, dark = false, saved = false, failed = false, loading = false, sourceOverride, readingOverride, timeline = [], timelineOn = timeline.length > 0, now = Date.now(), showChecked = false }) {
   const reading = readingOverride ?? (score == null ? null : { score, explanation: 'A quiet day for the world.', created_at: '2026-09-16T09:00:00Z' });
   const mocks = {
-    react: { ...react, useEffect() {}, useState: value => [value, () => {}], useRef: value => ({ current: value }) },
-    'react-native': { View: 'View', Text: 'Text', Pressable: 'Pressable', Share: {}, useWindowDimensions: () => ({ width, height, fontScale }),
+    react: { ...react, useEffect() {}, useState: value => [value === true ? showChecked : value, () => {}], useRef: value => ({ current: value }) },
+    'react-native': { View: 'View', Text: 'Text', Pressable: 'Pressable', Share: {}, AppState: { addEventListener: () => ({ remove() {} }) }, useWindowDimensions: () => ({ width, height, fontScale }),
       AccessibilityInfo: { isReduceMotionEnabled: async () => false },
       Animated: { ScrollView: 'ScrollView', View: 'AnimatedView', Text: 'Text', event: () => () => {}, timing: () => ({ start() {} }), stagger: () => ({ start() {} }),
         multiply: (a, b) => ({ multiply: [a, b] }),
@@ -45,7 +47,7 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     '@/components/reading-provider': { useCurrentReading: () => ({ reading, saved, failed, loading }) },
     '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
     'expo-router/react-navigation': { useHeaderHeight: () => 44 },
-    '@/lib/story-age': { displayExplanation, explanationParts, storyLine },
+    '@/lib/story-age': { checkedLine, displayExplanation, explanationParts, storyLine },
     '@/components/timeline': { Timeline: 'Timeline' },
     // The hook fetches nothing when the setting is off; the mock mirrors that.
     '@/lib/use-timeline': { useTimeline: (enabled) => (enabled ? timeline : []) },

@@ -168,9 +168,45 @@ test('the story and its age sit below the sentence and Checked moves to Settings
     assert.equal(line.props.style.color, themeForLevel(fresh.score, false).muted, 'muted, as Checked was');
     assert.equal(nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + 5 * 60000 }))
       .find(n=>n.props.testID === 'rating-story-line').props.children, 'US Iran War  ·  5m ago', 'under an hour too');
-    assert.equal(rendered.some(n=>n.type === 'Text' && String([n.props.children].flat().join('')).startsWith('Checked')), false);
+    assert.equal(rendered.some(n=>n.type === 'Text' && String([n.props.children].flat().join('')).startsWith('Checked')), false, 'once it has given way to the story');
     const order = rendered.map(n=>n.props.testID).filter(id=>['rating-score','rating-explanation','rating-story-line'].includes(id));
     assert.deepEqual(order, ['rating-score','rating-explanation','rating-story-line']);
+  }
+});
+
+// Owner, 2026-09-29: on load or foreground the small line says when the news
+// was checked, "Checked 23m ago", then gives way to the story and its age; a
+// tap brings the checked time back for a moment.
+test('the small line opens on "Checked 23m ago", then the story; a tap brings Checked back', async () => {
+  const { checkedLine } = await import('../apps/client/lib/story-age.js');
+  const now = Date.parse('2026-09-29T12:00:00Z');
+  const reading = { score: 4, explanation: 'x.', explanation_text: 'x.', explanation_new: false,
+    created_at: '2026-09-29T11:37:00Z', explanation_at: '2026-09-29T07:00:00Z', explanation_story: 'us-iran-war' };
+  assert.equal(checkedLine(reading, now), 'Checked 23m ago');
+  assert.equal(checkedLine({ ...reading, created_at: '2026-09-29T11:59:40Z' }, now), 'Checked just now');
+  assert.equal(checkedLine({}, now), '');
+  const src = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
+  assert.match(src, /useState\(true\)/, 'the screen opens on the checked time');
+  assert.match(src, /AppState\.addEventListener\('change'[^\n]*'active'[^\n]*foreground\(\)/, 'and returns to it in the foreground');
+  assert.match(src, /visibilitychange', visible/, 'on the web too');
+  for (const platform of ['web','ios','android']) {
+    const line = showChecked => nodes(renderReading({ platform, width:390, height:844, readingOverride:reading, now, showChecked }))
+      .find(n=>n.props.testID === 'rating-story-line');
+    const opening = line(true);
+    assert.equal(opening.props.children, 'Checked 23m ago');
+    assert.equal(line(false).props.children, 'US Iran War  ·  5h ago');
+    const button = opening.parent;
+    assert.equal(button.type, 'Pressable', 'tappable');
+    assert.equal(button.props.disabled, false);
+    assert.equal(button.props.accessibilityLabel, 'US Iran War  ·  5h ago. Checked 23m ago', 'a screen reader hears both');
+    // Padded to a touch target without moving the line from where it sat.
+    assert.equal(button.props.style.paddingVertical + button.props.style.marginTop, 18);
+    assert.equal(button.props.style.marginBottom, -button.props.style.paddingVertical);
+    // Nothing to give way to: the checked time stays, and a tap does nothing.
+    const alone = nodes(renderReading({ platform, width:390, height:844, now, readingOverride: { ...reading, explanation_story: undefined, explanation_at: undefined } }))
+      .find(n=>n.props.testID === 'rating-story-line');
+    assert.equal(alone.props.children, 'Checked 23m ago');
+    assert.equal(alone.parent.props.disabled, true);
   }
 });
 
