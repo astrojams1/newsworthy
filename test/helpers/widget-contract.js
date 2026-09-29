@@ -131,11 +131,11 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(java, /if \(dark != null\) applyChosenAppearance\(views, reading == null \? 0 : reading\.optInt\("score"\), dark\);/, 'only a chosen widget appearance overrides theme resources');
   const transparent = /new ForegroundColorSpan\(Color\.TRANSPARENT\)/g;
   assert.doesNotMatch(java.replace(chosen, '').replace(transparent, '').replace('import android.text.style.ForegroundColorSpan;', ''), /\b(?:ForegroundColorSpan|BackgroundColorSpan|RelativeSizeSpan|AbsoluteSizeSpan|setTextColor)\b|"setTextColor"/, 'widget text must retain XML theme/size bindings');
-  // The spans allowed are the bold "New:" label, weight only, and transparent
-  // spans that hide each stacked layer's other part: the same in every theme,
-  // so colour and size still come from XML and follow a host theme change.
+  // The one span allowed is the bold "New:" label, weight only, so colour and
+  // size still come from XML and follow a host theme change. (The transparent
+  // spans of the stacked age layer went with the age, to the footnote.)
   const spans = java.match(/new \w+Span\([^)]*\)/g) ?? [];
-  assert.deepEqual(spans, ['new StyleSpan(Typeface.BOLD)', 'new ForegroundColorSpan(Color.TRANSPARENT)', 'new ForegroundColorSpan(Color.TRANSPARENT)'],
+  assert.deepEqual(spans, ['new StyleSpan(Typeface.BOLD)'],
     'widget text must retain XML theme/size bindings');
   assert.deepEqual(extract(java, /boolean compact\s*=\s*width\s*<\s*(\d+)\s*\|\|\s*height\s*<\s*(\d+)\s*;/, 'compact selection'), [c.expandedMinWidth, c.expandedMinHeight]);
   assert.deepEqual(extract(java, /float scoreSize\s*=\s*(\d+)\s*;/, 'Android runtime score'), [c.compactScore]);

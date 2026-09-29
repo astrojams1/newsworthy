@@ -35,16 +35,24 @@ struct StoreTests {
         var rereport = fresh
         rereport.explanation_new = false
         precondition(rereport.displayedExplanation(at: origin) == "The Fed raised rates a quarter point." && rereport.newLabelExpiry == nil)
-        // The sentence's age leads it, muted, once "New:" is off: hours, then days; nothing under an hour.
+        // The sentence carries no age; the footnote below it names the story and the age.
         rereport.explanation_at = "2026-09-16T18:05:00.000Z"
-        precondition(rereport.sentenceAge(at: origin.addingTimeInterval(59 * 60)) == "")
-        precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(5 * 3600 + 59 * 60)) == "5h\u{00A0}· The Fed raised rates a quarter point.")
-        precondition(rereport.explanationParts(at: origin.addingTimeInterval(23 * 3600)).age == "23h\u{00A0}·")
-        precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(26 * 3600)) == "1d\u{00A0}· The Fed raised rates a quarter point.")
+        rereport.explanation_story = "us-iran-war"
+        precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(5 * 3600)) == "The Fed raised rates a quarter point.")
+        precondition(rereport.footnote(at: origin.addingTimeInterval(30)) == "US Iran War  ·  just now")
+        precondition(rereport.footnote(at: origin.addingTimeInterval(59 * 60)) == "US Iran War  ·  59m ago")
+        precondition(rereport.footnote(at: origin.addingTimeInterval(5 * 3600 + 59 * 60)) == "US Iran War  ·  5h ago")
+        precondition(rereport.footnote(at: origin.addingTimeInterval(26 * 3600)) == "US Iran War  ·  1d ago")
+        precondition(rereport.footnoteChanges(after: origin.addingTimeInterval(59 * 60 + 30), limit: 3)
+                     == [60, 120, 180].map { origin.addingTimeInterval(Double($0) * 60) }, "minutes, then hours")
+        var unjudged = rereport
+        unjudged.explanation_story = nil
+        precondition(unjudged.footnote(at: origin.addingTimeInterval(2 * 3600)) == "2h ago")
+        precondition(Reading(score: 1, explanation: "x", created_at: "2026-09-16T18:05:00Z").footnote(at: origin.addingTimeInterval(18 * 60))
+                     == "Checked 18m ago", "an older server: when it was checked")
         var aging = fresh
         aging.explanation_at = "2026-09-16T18:05:00.000Z"
-        precondition(aging.explanationParts(at: origin.addingTimeInterval(119 * 60)).age == "", "New: wins while it is on")
-        precondition(aging.displayedExplanation(at: origin.addingTimeInterval(2 * 3600)) == "2h\u{00A0}· The Fed raised rates a quarter point.")
+        precondition(aging.displayedExplanation(at: origin.addingTimeInterval(2 * 3600)) == "The Fed raised rates a quarter point.")
         fresh.explanation_text = String(repeating: "😀 ", count: 200)
         let fitted = fresh.displayedExplanation(at: origin)
         precondition(fitted.hasPrefix("New: ") && fitted.unicodeScalars.count <= 140 && fitted.hasSuffix("…"))

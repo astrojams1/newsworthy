@@ -83,6 +83,18 @@ export function storyLine(reading, now = Date.now()) {
   return [storyLabel(reading.explanation_story), at].filter(Boolean).join('  ·  ');
 }
 
+/**
+ * The widgets' line below the sentence, as WidgetReadingStore.swift and
+ * RatingWidget.java write it: the story line, or with neither story nor age
+ * (an older server) when the news was checked ("Checked 18m ago").
+ */
+export function widgetFootnote(reading, now = Date.now()) {
+  const line = storyLine(reading, now);
+  if (line) return line;
+  const checked = checkedAgo(reading, now);
+  return checked ? `Checked ${checked}` : '';
+}
+
 /** When the news was last checked, for Settings: "18m ago". */
 export function checkedAgo(reading, now = Date.now()) {
   return Number.isFinite(Date.parse(reading?.created_at)) ? shortAge(reading.created_at, now) : '';

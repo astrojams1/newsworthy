@@ -49,29 +49,26 @@ for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · 
   });
 }
 
-test('widgets show only the time for a reading saved today', () => {
+test('widgets show the story and the sentence\'s age below it, in the app\'s one time format, prototype', () => {
   const { swift, java } = widgetSources();
-  assert.match(swift, /Calendar.current.isDate\(date, inSameDayAs: now\) \{ return time \}/);
-  assert.match(swift, /startOfDay\(for: now\)/, 'iOS schedules a midnight entry so the date returns');
-  assert.match(java, /String date = updatedTime\(readingDate\(reading\), System.currentTimeMillis\(\)\);/);
-  assert.match(java, /today\s*\? DateFormat.getTimeInstance\(DateFormat.SHORT\)\s*: DateFormat.getDateTimeInstance\(DateFormat.SHORT, DateFormat.SHORT\)/);
+  const store = readFileSync(new URL('../apps/client/targets/widget/WidgetReadingStore.swift', import.meta.url), 'utf8');
+  for (const literal of ['"\\(minutes)m ago"', '"\\(minutes / 60)h ago"', '"\\(minutes / 1440)d ago"', '"just now"']) {
+    assert.ok(store.includes(literal), `iOS formats ${literal}`);
+  }
+  assert.match(java, /return \(minutes \/ 60\) \+ "h ago";/);
+  assert.match(store, /"Checked " \+ Reading.shortAge/);
+  assert.match(java, /"Checked " \+ shortAge/);
+  assert.match(swift, /Text\(reading.footnote\(at: entry.date\)\)/);
+  assert.match(java, /setTextViewText\(R.id.widget_updated, footnote\(reading, now\)\)/);
+  assert.match(swift, /footnoteChanges\(after: now\)/, 'iOS schedules an entry at each change of the age');
 });
 
 test('widgets keep cached timestamps and empty states free of status copy', () => {
   const { swift, java, compact, expanded, light } = widgetSources();
-  assert.match(java, /setTextViewText\(R.id.widget_updated, "Checked " \+ date\)/);
-  assert.match(swift, /Text\(timestampText\(date, at: entry.date\)\)/);
-  assert.match(swift, /accessibilityLabel\("Checked /);
   assert.match(swift, /explanationText\(entry.reading, at: entry.date\)/);
   assert.match(swift, /Text\(verbatim: parts.label\).bold\(\) \+ Text\(verbatim: " " \+ parts.body\)/, 'the iOS label is bold and nothing else');
-  // Reported 2026-09-27: past two hours nothing said how old the sentence was.
-  // Its age leads it in the widget's own muted colour, and only the age is tinted.
-  assert.match(swift, /Text\(verbatim: parts.age\).foregroundColor\(Color\("NewsworthyGradientMuted"\)\) \+ Text\(verbatim: " " \+ parts.body\)/);
-  // Android stacks a muted layer on the sentence rather than tint a span, which
-  // would keep the old theme's colour after a host theme switch.
-  assert.match(java, /new ForegroundColorSpan\(Color.TRANSPARENT\), 0, age.length\(\)/, 'the ink layer leaves a gap for the age');
-  assert.match(java, /new ForegroundColorSpan\(Color.TRANSPARENT\), age.length\(\), text.length\(\)/, 'the muted layer shows the age alone');
-  assert.match(java, /views.setTextViewText\(R.id.widget_explanation_age, ageLayer\(sentence, reading, now\)\)/);
+  assert.doesNotMatch(swift, /parts.age/, 'the age is on the footnote, not before the sentence');
+  assert.match(java, /views.setTextViewText\(R.id.widget_explanation_age, ""\)/);
   for (const source of [swift, java, compact, expanded, light]) {
     assert.doesNotMatch(source, /"[^"\n]*(?:Saved ·|Saved reading|Saving reading|Waiting for a reading|Checking|Loading|latest rating will appear)[^"\n]*"/i);
     assert.doesNotMatch(source, /@string\/widget_waiting/);

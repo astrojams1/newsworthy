@@ -46,6 +46,7 @@ public class RatingWidgetWorker extends Worker {
                 display.put("explanation_text", data.getString("explanation_text"))
                     .put("explanation_new", data.optBoolean("explanation_new", false));
                 if (data.opt("explanation_at") instanceof String) display.put("explanation_at", data.getString("explanation_at"));
+                if (data.opt("explanation_story") instanceof String) display.put("explanation_story", data.getString("explanation_story"));
             }
 
         } catch (Exception ignored) {

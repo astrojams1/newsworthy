@@ -133,14 +133,23 @@ test('the label follows the judgement the reading arrived with', async () => {
   });
 });
 
-test('both widgets format the age as the app does', () => {
-  // "5h ·": a middle dot, its space non-breaking so a line never ends on "5h"
-  // with the dot leading the next (owner, 2026-09-28). The widgets format it
-  // themselves, and the Swift test cannot run without a Swift toolchain.
+test('both widgets format the footnote as the app does, prototype', () => {
+  // The widgets format it themselves, and the Swift test cannot run without a
+  // Swift toolchain; the story's separator and the time format are the app's.
   const swift = readFileSync(new URL('../apps/client/targets/widget/WidgetReadingStore.swift', import.meta.url), 'utf8');
   const java = readFileSync(new URL('../apps/client/plugins/widget-android/RatingWidget.java', import.meta.url), 'utf8');
-  assert.ok(swift.includes('"\\(hours)h\\u{00A0}·" : "\\(hours / 24)d\\u{00A0}·"'), 'iOS widget');
-  assert.ok(java.includes('(hours / 24) + "d") + "\\u00A0·";'), 'Android widget');
+  assert.ok(swift.includes('parts.joined(separator: "  ·  ")'), 'iOS widget');
+  assert.ok(java.includes('story + "  ·  " + shortAge(at, now)'), 'Android widget');
+  for (const source of [swift, java]) assert.doesNotMatch(source, /u\{?00A0\}?·/, 'no age before the sentence');
+});
+
+test('the widget footnote falls back to when the news was checked, prototype', async () => {
+  const { widgetFootnote } = await import('../apps/client/lib/story-age.js');
+  const now = Date.parse('2026-09-29T12:00:00Z');
+  const reading = { score: 4, explanation: 'x.', created_at: '2026-09-29T11:42:00Z' };
+  assert.equal(widgetFootnote(reading, now), 'Checked 18m ago', 'an older server');
+  assert.equal(widgetFootnote({ ...reading, explanation_text: 'x.', explanation_at: '2026-09-29T07:00:00Z', explanation_story: 'us-iran-war' }, now),
+    'US Iran War  ·  5h ago');
 });
 
 test('the story and its age sit below the sentence and Checked moves to Settings, prototype', async () => {
