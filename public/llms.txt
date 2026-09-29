@@ -42,6 +42,7 @@ When a sentence is the first coverage of a new development, it starts with a
 bold "New:" for two hours after that reading was saved. Below the sentence, the
 app names its story and how long ago Newsworthy first reported it ("US Iran War
 · 5h ago"); widgets lead the sentence with that age ("5h ago:"). "New" means new
-to Newsworthy, not a verified event date. The time of the last check ("Last
-checked 18m ago" in Settings, "Checked at 10:21" on widgets) identifies the
-saved reading; the displayed score can change afterward.
+to Newsworthy, not a verified event date. The time of the last check ("Checked
+23m ago" on that line when the app opens or it is tapped, "Last checked 18m
+ago" in Settings, "Checked at 10:21" on widgets) identifies the saved reading;
+the displayed score can change afterward.

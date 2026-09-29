@@ -907,11 +907,12 @@ entry per development ordered by `opened`, one week long. See
 
 **The “New:” label.** It marks the first coverage of the sentence’s development,
 for two hours from the reading’s `created_at`, not the score’s decay anchor or a
-verified event date. It is bold and otherwise styled as the sentence, on the web,
-in the apps and in both widgets. Below it the app shows story and age, muted,
-from `explanation_story` and `explanation_at` (not `since`); Settings has "Last
-checked 18m ago". Widgets lead with "5h ago:" (Android stacks a muted layer;
-colour spans go stale on a theme switch) and "Checked at 10:21", a clock time
-needing no redraw. The 140 budget includes either prefix;
-prompts v16 and later reserve 5 characters for "New: " and ask for a body of at most 135.
-See `docs/story-age.md` for the caller sequence, compatibility and verification limits.
+verified event date. It is bold, otherwise styled as the sentence, on every
+surface. Below it the app shows story and age, muted, from `explanation_story`
+and `explanation_at` (not `since`), after "Checked 23m ago" on opening,
+foregrounding or a tap; Settings has "Last checked 18m ago". Widgets lead with
+"5h ago:" (Android stacks a muted layer; colour spans go stale on a theme
+switch) and "Checked at 10:21", a clock time needing no redraw. The 140 budget
+includes either prefix; prompts v16 and later reserve 5 for "New: " and ask for
+a body of at most 135. See `docs/story-age.md` for the caller sequence,
+compatibility and verification limits.
