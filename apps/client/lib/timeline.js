@@ -36,20 +36,20 @@ export function storyLabel(slug) {
 }
 
 // One convention for every time the app prints: the home screen's age, the
-// timeline's tags and Settings' "Last checked" all read 2m, 2h, 2d; under a
-// minute is "now".
+// timeline's tags and Settings' "Last checked" all read 2m ago, 2h ago,
+// 2d ago; under a minute is "just now".
 export function shortAge(at, now = Date.now()) {
   const minutes = Math.max(0, Math.floor((now - Date.parse(at)) / 60_000));
-  if (minutes < 1) return 'now';
-  if (minutes < 60) return `${minutes}m`;
-  if (minutes < 1440) return `${Math.floor(minutes / 60)}h`;
-  return `${Math.floor(minutes / 1440)}d`;
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1440) return `${Math.floor(minutes / 60)}h ago`;
+  return `${Math.floor(minutes / 1440)}d ago`;
 }
 
 export const timelineAge = shortAge;
 
 // Each entry's tag line says only what changed from the entry above: a run of
-// one story is tagged once, and "1d" is said once however many
+// one story is tagged once, and "1d ago" is said once however many
 // developments broke yesterday. An entry with nothing new gets no tag line.
 export function timelineLabels(developments, now = Date.now()) {
   let story = null;

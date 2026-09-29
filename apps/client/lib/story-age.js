@@ -72,7 +72,7 @@ export function displayExplanation(reading, now = Date.now()) {
 /**
  * Prototype: the story the shown sentence belongs to and how long ago its
  * development was first reported, on one muted line below the sentence, where
- * "Checked" was: "US Iran War · 5h". The sentence then carries no age prefix.
+ * "Checked" was: "US Iran War · 5h ago". The sentence then carries no age prefix.
  * Either half may be missing: an unjudged reading has no story, and an older
  * server sends no `explanation_at`.
  */
@@ -83,7 +83,7 @@ export function storyLine(reading, now = Date.now()) {
   return [storyLabel(reading.explanation_story), at].filter(Boolean).join('  ·  ');
 }
 
-/** When the news was last checked, for Settings: "18m". */
+/** When the news was last checked, for Settings: "18m ago". */
 export function checkedAgo(reading, now = Date.now()) {
   return Number.isFinite(Date.parse(reading?.created_at)) ? shortAge(reading.created_at, now) : '';
 }

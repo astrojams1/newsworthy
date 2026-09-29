@@ -32,7 +32,7 @@ function assertApprovedReadingCopy(tree) {
   // nothing sits below the sentence's age.
   assert.ok(text.length === 3 || text.length === 4, 'only approved reading and age text');
   assert.deepEqual(text.slice(0, 3), ['3', contract.denominatorText, 'A quiet day for the world.']);
-  if (text.length === 4) assert.match(text[3], /^(?:now|\d+[mhd])$/);
+  if (text.length === 4) assert.match(text[3], /^(?:just now|\d+[mhd] ago)$/);
 }
 
 for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · ']) {

@@ -819,9 +819,9 @@ test('tag lines say only what changed from the entry above', () => {
     entry('nepal-glacier-flood', '2026-09-23T06:00:00Z'),
     entry('eu-ai-act', '2026-09-22T20:00:00Z'),
   ], now), [
-    { story: 'Fed Rates', age: '5h' },
-    { story: 'US Iran War', age: '11h' },
-    { story: null, age: '1d' },
+    { story: 'Fed Rates', age: '5h ago' },
+    { story: 'US Iran War', age: '11h ago' },
+    { story: null, age: '1d ago' },
     { story: 'Nepal Glacier Flood', age: null },
     { story: 'EU AI Act', age: null },
   ]);
@@ -832,11 +832,11 @@ test('story slugs read as tags, and timeline ages are coarse', () => {
   assert.equal(storyLabel('eu-ai-act'), 'EU AI Act');
   assert.equal(storyLabel(null), null);
   const now = Date.parse('2026-09-24T12:00:00Z');
-  assert.equal(timelineAge('2026-09-24T11:59:30Z', now), 'now');
-  assert.equal(timelineAge('2026-09-24T11:10:00Z', now), '50m');
-  assert.equal(timelineAge('2026-09-24T07:00:00Z', now), '5h');
-  assert.equal(timelineAge('2026-09-23T06:00:00Z', now), '1d');
-  assert.equal(timelineAge('2026-09-21T12:00:00Z', now), '3d');
+  assert.equal(timelineAge('2026-09-24T11:59:30Z', now), 'just now');
+  assert.equal(timelineAge('2026-09-24T11:10:00Z', now), '50m ago');
+  assert.equal(timelineAge('2026-09-24T07:00:00Z', now), '5h ago');
+  assert.equal(timelineAge('2026-09-23T06:00:00Z', now), '1d ago');
+  assert.equal(timelineAge('2026-09-21T12:00:00Z', now), '3d ago');
 });
 
 test('the admin Gantt chart gives every hour to the one story on the front page', () => {

@@ -148,19 +148,19 @@ test('the story and its age sit below the sentence and Checked moves to Settings
   const now = Date.parse('2026-09-29T12:00:00Z');
   const reading = { score: 4, explanation: 'x.', explanation_text: 'x.', explanation_new: false,
     created_at: '2026-09-29T11:42:00Z', explanation_at: '2026-09-29T07:00:00Z', explanation_story: 'us-iran-war' };
-  assert.equal(storyLine(reading, now), 'US Iran War  ·  5h');
-  assert.equal(storyLine({ ...reading, explanation_story: undefined }, now), '5h', 'unjudged: the age alone');
+  assert.equal(storyLine(reading, now), 'US Iran War  ·  5h ago');
+  assert.equal(storyLine({ ...reading, explanation_story: undefined }, now), '5h ago', 'unjudged: the age alone');
   assert.equal(storyLine({ ...reading, explanation_at: undefined }, now), 'US Iran War', 'an older server: the story alone');
-  assert.equal(storyLine({ ...reading, explanation_at: '2026-09-27T07:00:00Z' }, now), 'US Iran War  ·  2d');
-  assert.equal(checkedAgo(reading, now), '18m');
+  assert.equal(storyLine({ ...reading, explanation_at: '2026-09-27T07:00:00Z' }, now), 'US Iran War  ·  2d ago');
+  assert.equal(checkedAgo(reading, now), '18m ago');
   const aged = { ...fresh, explanation_new: false, explanation_at: start, explanation_story: 'us-iran-war' };
   for (const platform of ['web','ios','android']) {
     const rendered = nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + (5 * 60 + 10) * 60000 }));
     const line = rendered.find(n=>n.props.testID === 'rating-story-line');
-    assert.equal(line.props.children, 'US Iran War  ·  5h');
+    assert.equal(line.props.children, 'US Iran War  ·  5h ago');
     assert.equal(line.props.style.color, themeForLevel(fresh.score, false).muted, 'muted, as Checked was');
     assert.equal(nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + 5 * 60000 }))
-      .find(n=>n.props.testID === 'rating-story-line').props.children, 'US Iran War  ·  5m', 'under an hour too');
+      .find(n=>n.props.testID === 'rating-story-line').props.children, 'US Iran War  ·  5m ago', 'under an hour too');
     assert.equal(rendered.some(n=>n.type === 'Text' && String([n.props.children].flat().join('')).startsWith('Checked')), false);
     const order = rendered.map(n=>n.props.testID).filter(id=>['rating-score','rating-explanation','rating-story-line'].includes(id));
     assert.deepEqual(order, ['rating-score','rating-explanation','rating-story-line']);
