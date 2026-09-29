@@ -189,9 +189,10 @@ test('prompt v4 adds Hacker News without disturbing the scale or the contract', 
 
 test('the search budget grew to pay for the Hacker News check', async () => {
   // v4 adds a source to a budget that was already saturated at 8, so without
-  // this the check would come out of news coverage.
+  // this the check would come out of news coverage. v20 raised it to 11: its
+  // theme searches took test runs to 7-11 searches.
   const src = await import('node:fs/promises').then((fs) => fs.readFile('src/rate.js', 'utf8'));
-  assert.match(src, /max_uses: 9/);
+  assert.match(src, /max_uses: 11/);
 });
 
 test('prompt v5 is four sections and leaves the author’s scale alone', async () => {

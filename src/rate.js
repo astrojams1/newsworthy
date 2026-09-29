@@ -123,8 +123,10 @@ async function callClaude({ model, prompt }) {
     // saturated, so without this it would come out of news coverage. Measured
     // on this deployment's own runs, one more search is ~19k input tokens and
     // ~$0.12 — the search fee is a cent of that, the rest is results landing in
-    // the context window.
-    tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 9 }],
+    // the context window. 11 since prompt v20, which searches each of the
+    // month's market themes: its test runs used 7 to 11 searches, and a run
+    // that hits the cap stops researching before it has covered them.
+    tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 11 }],
     messages: [{ role: 'user', content: prompt }],
   };
 
