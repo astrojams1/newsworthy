@@ -374,3 +374,15 @@ test('the introduction replays from Settings in the phone apps, last in About, a
     assert.equal(text(all).at(-1), 'Introduction', 'after Privacy and Support');
   }
 });
+
+test('when the news was last checked is a row in Settings, prototype, on every platform', () => {
+  const reading = { score: 3, explanation: 'A quiet day.', created_at: new Date(Date.now() - 18 * 60000).toISOString() };
+  for (const platform of ['web', 'ios', 'android']) {
+    const overview = nodes(renderSettings({ platform, reading }).tree);
+    const shown = text(overview);
+    assert.deepEqual(shown.slice(shown.indexOf('News'), shown.indexOf('News') + 3), ['News', 'Last checked', '18m ago']);
+    assert.ok(shown.indexOf('News') < shown.indexOf('About'), 'before About');
+    assert.equal(overview.find(n => n.props?.testID === 'checked-row').props.accessibilityLabel, 'Last checked, 18m ago');
+    assert.equal(text(nodes(renderSettings({ platform }).tree)).includes('News'), false, 'no reading, no row');
+  }
+});

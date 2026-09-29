@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { displayExplanation, explanationParts, isNew, sentenceAge, EXPLANATION_CHARACTER_LIMIT } from '../apps/client/lib/story-age.js';
 import { opensDevelopment } from '../src/story.js';
+import { themeForLevel } from '../apps/client/lib/palette.js';
 import { withServer, PORTS, CALLER_TOKEN, caller } from './with-server.js';
 import { renderReading, nodes } from './helpers/render-reading.js';
 
@@ -33,20 +34,20 @@ test('once "New:" is off, the sentence leads with how long ago it was first repo
   // Reported 2026-09-27: a development can hold the page for a day with the
   // same sentence, and past two hours nothing said how old it was.
   const rereport = { ...fresh, explanation_new: false, explanation_at: start };
-  for (const [minutes, age] of [[0,''],[59,''],[60,'1h\u00A0·'],[5 * 60 + 59,'5h\u00A0·'],[23 * 60 + 59,'23h\u00A0·'],[24 * 60,'1d\u00A0·'],[74 * 60,'3d\u00A0·']]) {
+  for (const [minutes, age] of [[0,''],[59,''],[60,'1h\u00A0ago:'],[5 * 60 + 59,'5h\u00A0ago:'],[23 * 60 + 59,'23h\u00A0ago:'],[24 * 60,'1d\u00A0ago:'],[74 * 60,'3d\u00A0ago:']]) {
     assert.equal(sentenceAge(rereport, origin + minutes * 60000), age, `${minutes} minutes`);
   }
-  assert.equal(displayExplanation(rereport, origin + 26 * hour), `1d\u00A0· ${text}`);
+  assert.equal(displayExplanation(rereport, origin + 26 * hour), `1d\u00A0ago: ${text}`);
   const opened = { ...fresh, explanation_at: start };
   assert.deepEqual(explanationParts(opened, origin + 119 * 60000), { label: 'New:', age: '', body: text }, 'New: wins while it is on');
-  assert.deepEqual(explanationParts(opened, origin + 2 * hour), { label: '', age: '2h\u00A0·', body: text }, 'then the age takes its place');
+  assert.deepEqual(explanationParts(opened, origin + 2 * hour), { label: '', age: '2h\u00A0ago:', body: text }, 'then the age takes its place');
   assert.equal(sentenceAge({ ...rereport, explanation_at: undefined }, origin + 5 * hour), '', 'an older server sends no time');
   assert.equal(sentenceAge({ ...rereport, explanation_at: 'nonsense' }, origin + 5 * hour), '');
   assert.equal(sentenceAge({ score: 7, explanation: text, explanation_at: start, created_at: start }, origin + 5 * hour), '',
     'an old cache without the unlabelled body keeps its stored sentence');
   const long = 'a'.repeat(135);
   const fitted = displayExplanation({ ...rereport, explanation_text: long }, origin + 12 * hour);
-  assert.ok(fitted.startsWith('12h\u00A0· ') && Array.from(fitted).length <= 140 && fitted.endsWith('…'), 'the age counts toward 140');
+  assert.ok(fitted.startsWith('12h\u00A0ago: ') && Array.from(fitted).length <= 140 && fitted.endsWith('…'), 'the age counts toward 140');
 });
 
 test('the 140-character display budget includes the label and counts Unicode code points', () => {
@@ -79,25 +80,6 @@ test('all app surfaces show "New:" in bold, as its own text, and drop it at two 
     const later = at(120);
     assert.equal(later.find(n=>n.props.testID === 'rating-new-label'), undefined);
     assert.equal(later.find(n=>n.props.testID === 'rating-explanation').props.children, text);
-  }
-});
-
-test('all app surfaces lead an older sentence with its age, muted and inside the sentence', () => {
-  const aged = { ...fresh, explanation_new: false, explanation_at: start };
-  for (const platform of ['web','ios','android']) {
-    const at = minutes => nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + minutes * 60000 }));
-    const five = at(5 * 60 + 10);
-    const age = five.find(n=>n.props.testID === 'rating-age');
-    assert.equal(age.props.children, '5h\u00A0·');
-    assert.equal(age.props.style.fontWeight, undefined, 'colour only: the age keeps the sentence weight');
-    const sentence = five.find(n=>n.props.testID === 'rating-explanation');
-    const [inner, rest] = sentence.props.children.props.children;
-    assert.equal(inner.props.testID, 'rating-age', 'it starts the sentence rather than sitting on its own line');
-    assert.equal(rest, ` ${text}`);
-    const timestamp = five.filter(n=>n.type === 'Text').map(n=>[n.props.children].flat().join('')).at(-1);
-    assert.equal(age.props.style.color, five.find(n=>n.type === 'Text' && String([n.props.children].flat().join('')).startsWith('Checked')).props.style.color,
-      `the age is the same muted colour as "${timestamp}"`);
-    assert.equal(at(30).find(n=>n.props.testID === 'rating-age'), undefined, 'nothing under an hour');
   }
 });
 
@@ -148,6 +130,13 @@ test('the label follows the judgement the reading arrived with', async () => {
     assert.equal(Date.parse(after.explanation_at),Date.parse(opening.body.created_at),
       'explanation_at dates the sentence shown, its first report, not the re-report that confirmed it');
     assert.equal(after.created_at,again.body.created_at,'created_at stays the newest reading');
+    assert.equal(after.explanation_story,'hormuz');
+    // A re-report can arrive under another slug; the story shown is the sentence's own.
+    const renamed=await submit(2,'Hormuz tanker hit again',{answer:'same',story:'shipping'});
+    assert.equal(renamed.body.development,'same');
+    const later=await current();
+    assert.equal(later.explanation,'hormuz tanker strike alpha.');
+    assert.equal(later.explanation_story,'hormuz','the story of the sentence shown, not of the re-report');
   });
 });
 
@@ -157,6 +146,51 @@ test('both widgets format the age as the app does', () => {
   // themselves, and the Swift test cannot run without a Swift toolchain.
   const swift = readFileSync(new URL('../apps/client/targets/widget/WidgetReadingStore.swift', import.meta.url), 'utf8');
   const java = readFileSync(new URL('../apps/client/plugins/widget-android/RatingWidget.java', import.meta.url), 'utf8');
-  assert.ok(swift.includes('"\\(hours)h\\u{00A0}·" : "\\(hours / 24)d\\u{00A0}·"'), 'iOS widget');
-  assert.ok(java.includes('(hours / 24) + "d") + "\\u00A0·";'), 'Android widget');
+  assert.ok(swift.includes('"\\(hours)h\\u{00A0}ago:" : "\\(hours / 24)d\\u{00A0}ago:"'), 'iOS widget');
+  assert.ok(java.includes('(hours / 24) + "d") + "\\u00A0ago:";'), 'Android widget');
+});
+
+test('the story and its age sit below the sentence and Checked moves to Settings, prototype', async () => {
+  const { storyLine, checkedAgo } = await import('../apps/client/lib/story-age.js');
+  const now = Date.parse('2026-09-29T12:00:00Z');
+  const reading = { score: 4, explanation: 'x.', explanation_text: 'x.', explanation_new: false,
+    created_at: '2026-09-29T11:42:00Z', explanation_at: '2026-09-29T07:00:00Z', explanation_story: 'us-iran-war' };
+  assert.equal(storyLine(reading, now), 'US Iran War  ·  5h ago');
+  assert.equal(storyLine({ ...reading, explanation_story: undefined }, now), '5h ago', 'unjudged: the age alone');
+  assert.equal(storyLine({ ...reading, explanation_at: undefined }, now), 'US Iran War', 'an older server: the story alone');
+  assert.equal(storyLine({ ...reading, explanation_at: '2026-09-27T07:00:00Z' }, now), 'US Iran War  ·  2d ago');
+  assert.equal(checkedAgo(reading, now), '18m ago');
+  const aged = { ...fresh, explanation_new: false, explanation_at: start, explanation_story: 'us-iran-war' };
+  for (const platform of ['web','ios','android']) {
+    const rendered = nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + (5 * 60 + 10) * 60000 }));
+    const line = rendered.find(n=>n.props.testID === 'rating-story-line');
+    assert.equal(line.props.children, 'US Iran War  ·  5h ago');
+    assert.equal(line.props.style.color, themeForLevel(fresh.score, false).muted, 'muted, as Checked was');
+    assert.equal(nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + 5 * 60000 }))
+      .find(n=>n.props.testID === 'rating-story-line').props.children, 'US Iran War  ·  5m ago', 'under an hour too');
+    assert.equal(rendered.some(n=>n.type === 'Text' && String([n.props.children].flat().join('')).startsWith('Checked')), false);
+    const order = rendered.map(n=>n.props.testID).filter(id=>['rating-score','rating-explanation','rating-story-line'].includes(id));
+    assert.deepEqual(order, ['rating-score','rating-explanation','rating-story-line']);
+  }
+});
+
+test('the checked time reads "Checked at 10:21": no AM/PM, no date', async () => {
+  const { checkedAt } = await import('../apps/client/lib/story-age.js');
+  const at = new Date(2026, 8, 29, 10, 21);
+  assert.equal(checkedAt({ created_at: at.toISOString() }), 'Checked at 10:21');
+  const afternoon = checkedAt({ created_at: new Date(2026, 8, 29, 14, 5).toISOString() });
+  assert.ok(['Checked at 2:05', 'Checked at 14:05'].includes(afternoon), `${afternoon}: the device's own hour cycle`);
+  assert.equal(checkedAt({ created_at: new Date(2026, 8, 1, 10, 21).toISOString() }), 'Checked at 10:21', 'another day: still no date');
+  assert.equal(checkedAt({}), '');
+});
+
+test('the app sentence spends no budget on an age it shows on its own line', () => {
+  const body = 'a'.repeat(134) + '.';
+  const reading = { ...fresh, explanation: body, explanation_text: body, explanation_new: false, explanation_at: start, explanation_story: 'us-iran-war' };
+  for (const platform of ['web','ios','android']) {
+    const sentence = nodes(renderReading({ platform, width:390, height:844, readingOverride:reading, now:origin + 5 * hour }))
+      .find(n=>n.props.testID === 'rating-explanation');
+    assert.equal([sentence.props.children].flat().join(''), body, `${platform}: a 135-character body is shown whole`);
+  }
+  assert.ok(explanationParts(reading, origin + 5 * hour).body.endsWith('…'), 'the widgets and share text still fit the age in');
 });

@@ -112,14 +112,12 @@ struct Provider: TimelineProvider {
             let now = Date()
             // A second entry takes "New:" off at its two-hour mark even when the OS delays a refresh.
             let expiry = result.reading?.newLabelExpiry
-            // Another at midnight brings the date back once the reading is no longer today's.
-            let midnight = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: now))
-            // And one at each of the next twelve hours of the sentence's age, so "5h ·" becomes "6h ·" on time.
+            // And one at each of the next twelve hours of the sentence's age, so "5h ago:" becomes "6h ago:" on time.
             let hours: [Date] = result.reading?.sentenceAt.map { at in
                 let next = (now.timeIntervalSince(at) / 3600).rounded(.down) + 1
                 return (0..<12).map { at.addingTimeInterval((next + Double($0)) * 3600) }
             } ?? []
-            let dates = ([now] + ([expiry, midnight].compactMap { $0 } + hours).filter { $0 > now }).sorted()
+            let dates = ([now] + ([expiry].compactMap { $0 } + hours).filter { $0 > now }).sorted()
             let entries = dates.map { ReadingEntry(date: $0, reading: result.reading, saved: result.saved) }
             completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(30 * 60))))
         }
@@ -127,11 +125,10 @@ struct Provider: TimelineProvider {
 }
 
 /// A new development's sentence leads with a bold "New:"; an older one with its age in the muted colour.
-/// The time alone for a reading saved on the entry's own day; month and day before it otherwise.
+/// "Checked at 10:21": the clock time in the device's 12- or 24-hour cycle, without AM/PM
+/// (as the status bar writes it), and never a date. The same on every surface.
 func timestampText(_ date: Date, at now: Date) -> String {
-    let time = date.formatted(date: .omitted, time: .shortened)
-    if Calendar.current.isDate(date, inSameDayAs: now) { return time }
-    return "\(date.formatted(.dateTime.month(.abbreviated).day())) · \(time)"
+    "Checked at \(date.formatted(.dateTime.hour(.defaultDigits(amPM: .omitted)).minute(.twoDigits)))"
 }
 
 func explanationText(_ reading: Reading?, at date: Date) -> Text {

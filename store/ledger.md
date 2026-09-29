@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-09-28T08:29:00+00:00
+Updated: 2026-09-29T03:22:21+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -73,7 +73,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 | apple.review-state | done | agent | observed | Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical. | — |
-| story-age.native | todo | agent | observed | The sentence now leads with a muted age once "New:" is off ("5h —", then "1d —", from the new explanation_at field), and the timestamp reads "Checked" instead of "Updated", in the app and both widgets. iOS: muted Text in NewsworthyGradientMuted plus hourly timeline entries; Swift not compiled here (no toolchain). Android: a second TextView stacked on the sentence with transparent spans, so colours stay theme resources; resources link and Java compiles against android-35, but no device has shown it. Web export verified in Chromium, light and dark. | On both widget sizes, light and dark, score 10 and enlarged text: muted age aligned exactly at the start of the sentence on Android (stacked layer), the age advancing hourly on iOS, "New:" still bold for two hours, and "Checked" in the timestamp. Compile the Swift native test with xcrun. |
+| story-age.native | todo | agent | observed | Since 2026-09-29 the app shows a muted "story · age" line below the sentence ("US Iran War · 5h ago"), "Last checked 18m ago" moved to Settings, and every app age reads "5m ago", "5h ago", "1d ago". Widgets keep their design with "5h ago:" before the sentence and "Checked at 10:21" (device hour cycle, no AM/PM, no date). Web export checked in Chromium, light and dark; widgets only as an HTML mock. Android compiles; Swift not compiled here. | On iOS and Android, both widget sizes, light and dark, enlarged text: "5h ago:" muted and aligned at the start of the sentence, "Checked at 10:21" fits the small widget in 12- and 24-hour settings; in the apps, the story line below the sentence and the Settings "Last checked" row. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
 | apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
@@ -3348,3 +3348,12 @@ Owner follow-ups 2026-09-28 after production 93e2c3f (#180): the sentence and th
 - surface-design pins 320/360/414 for the sentence and the timeline on iOS, Android and web, and no text-wrap; web-landscape: 874x360 sentence and timeline within 360pt with the spacing checks, 743x340 chevron on the first screen and every sentence and timeline node on the browser's own wrapping; story-age pins '5h\u00A0·' in both widget formatters; mutations (pretty on the timeline, an ordinary space in the Android widget, a 320pt desktop column) each fail a test; npm test and npm run test:design pass
 
 Next: Owner: check iPhone landscape and portrait and desktop after merge. Native apps untested in landscape.
+
+### 340. story-age.native — todo
+
+2026-09-29T03:22:21+00:00 · observed · agent
+
+Since 2026-09-29 the app shows a muted "story · age" line below the sentence ("US Iran War · 5h ago"), "Last checked 18m ago" moved to Settings, and every app age reads "5m ago", "5h ago", "1d ago". Widgets keep their design with "5h ago:" before the sentence and "Checked at 10:21" (device hour cycle, no AM/PM, no date). Web export checked in Chromium, light and dark; widgets only as an HTML mock. Android compiles; Swift not compiled here.
+
+
+Next: On iOS and Android, both widget sizes, light and dark, enlarged text: "5h ago:" muted and aligned at the start of the sentence, "Checked at 10:21" fits the small widget in 12- and 24-hour settings; in the apps, the story line below the sentence and the Settings "Last checked" row.

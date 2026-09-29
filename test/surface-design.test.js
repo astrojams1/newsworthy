@@ -14,7 +14,7 @@ test('reading refreshes never add loading, saved or retry text to an existing me
       const text = JSON.stringify(tree.filter(n => n.type === 'Text').map(n => n.props.children));
       assert.doesNotMatch(text, /Checking|Loading|Sav(?:ed|ing)|Waiting|Refreshing|Syncing|Try again|unavailable/i);
       assert.match(text, /A quiet day for the world/);
-      assert.match(text, /Checked/);
+      assert.doesNotMatch(text, /Checked/, 'Checked is in Settings now');
       assertApprovedReadingCopy(tree);
     }
     const empty = nodes(renderReading({ platform, width: 390, height: 844, score: null, loading: true, failed: true }));
@@ -28,34 +28,37 @@ test('reading refreshes never add loading, saved or retry text to an existing me
 function assertApprovedReadingCopy(tree) {
   const text = tree.filter(n => n.type === 'Text')
     .map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
-  // Privacy and Support are reached from Settings, so nothing sits below the timestamp.
-  assert.equal(text.length, 4, 'only approved reading and timestamp text');
+  // Privacy, Support and when the news was checked are in Settings, so
+  // nothing sits below the sentence's age.
+  assert.ok(text.length === 3 || text.length === 4, 'only approved reading and age text');
   assert.deepEqual(text.slice(0, 3), ['3', contract.denominatorText, 'A quiet day for the world.']);
-  assert.match(text[3], /^Checked (?:just now|\d+ (?:min ago|hr ago|days ago))$/);
+  if (text.length === 4) assert.match(text[3], /^(?:just now|\d+[mhd] ago)$/);
 }
 
 for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · ']) {
   test(`reading gate rejects unsolicited status: ${status}`, () => {
     const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-    const sourceOverride = source.replace('>Checked {relative}', `>${status}Checked {relative}`);
-    assert.notEqual(sourceOverride, source, 'regression fixture must change the rendered timestamp');
+    const sourceOverride = source.replace('>{line}</Animated.Text>', `>${status}{line}</Animated.Text>`);
+    assert.notEqual(sourceOverride, source, 'regression fixture must change the rendered age');
+    const readingOverride = { score: 3, explanation: 'A quiet day for the world.', explanation_text: 'A quiet day for the world.',
+      explanation_new: false, explanation_at: '2026-09-16T04:00:00Z', created_at: '2026-09-16T09:00:00Z' };
+    assertApprovedReadingCopy(nodes(renderReading({ platform: 'ios', width: 390, height: 844, saved: true, loading: true, readingOverride })));
     assert.throws(() => assertApprovedReadingCopy(nodes(renderReading({
-      platform: 'ios', width: 390, height: 844, saved: true, loading: true, sourceOverride,
+      platform: 'ios', width: 390, height: 844, saved: true, loading: true, sourceOverride, readingOverride,
     }))));
   });
 }
 
-test('widgets show only the time for a reading saved today', () => {
+test('widgets say "Checked at 10:21": no AM/PM and never a date (owner, 2026-09-29)', () => {
   const { swift, java } = widgetSources();
-  assert.match(swift, /Calendar.current.isDate\(date, inSameDayAs: now\) \{ return time \}/);
-  assert.match(swift, /startOfDay\(for: now\)/, 'iOS schedules a midnight entry so the date returns');
-  assert.match(java, /String date = updatedTime\(readingDate\(reading\), System.currentTimeMillis\(\)\);/);
-  assert.match(java, /today\s*\? DateFormat.getTimeInstance\(DateFormat.SHORT\)\s*: DateFormat.getDateTimeInstance\(DateFormat.SHORT, DateFormat.SHORT\)/);
+  assert.match(swift, /"Checked at \\\(date.formatted\(.dateTime.hour\(.defaultDigits\(amPM: .omitted\)\).minute\(.twoDigits\)\)\)"/);
+  assert.doesNotMatch(swift, /startOfDay\(for: now\)/, 'no midnight entry: there is no date to bring back');
+  assert.match(java, /views.setTextViewText\(R.id.widget_updated, "Checked at " \+ updatedTime\(context, readingDate\(reading\)\)\);/);
+  assert.match(java, /new SimpleDateFormat\(clock24 \? "HH:mm" : "h:mm", Locale.getDefault\(\)\)/);
 });
 
 test('widgets keep cached timestamps and empty states free of status copy', () => {
   const { swift, java, compact, expanded, light } = widgetSources();
-  assert.match(java, /setTextViewText\(R.id.widget_updated, "Checked " \+ date\)/);
   assert.match(swift, /Text\(timestampText\(date, at: entry.date\)\)/);
   assert.match(swift, /accessibilityLabel\("Checked /);
   assert.match(swift, /explanationText\(entry.reading, at: entry.date\)/);
@@ -565,7 +568,7 @@ test('settings gate rejects the undersized link arrow returning', () => {
 // a line higher, then the gradient and Share, then a shift as the timeline cue
 // arrived. Until there is a reading or a failure to report, nothing is drawn.
 // Then the owner asked for it to arrive in reading order: the number (with its
-// gradient and Share), then the sentence, then the Checked time, each fading in
+// gradient and Share), then the sentence, then the age line (where Checked was), each fading in
 // place on its own value so nothing moves.
 test('the first reading arrives in reading order, number then sentence then time, instead of replacing a placeholder', () => {
   const src = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
@@ -577,7 +580,7 @@ test('the first reading arrives in reading order, number then sentence then time
       return {
         number: list.find(n => n.props?.testID === 'rating-score').parent.props.style.opacity,
         sentence: list.find(n => n.props?.testID === 'rating-explanation').props.style.opacity,
-        checked: list.find(n => n.type === 'Text' && Array.isArray(n.props.children) && n.props.children[0] === 'Checked ')?.props.style.opacity,
+        checked: list.find(n => n.props?.testID === 'rating-story-line')?.props.style.opacity,
         gradient: list.find(n => n.type === 'ReadingGradient').parent.props.style.opacity,
         list,
       };
@@ -588,8 +591,9 @@ test('the first reading arrives in reading order, number then sentence then time
     const failed = parts(renderReading({ platform, width: 402, height: 874, score: null, failed: true }));
     assert.equal(failed.number.value, 1, 'a failure is reported at once');
     assert.equal(failed.sentence.value, 1);
-    const shown = parts(renderReading({ platform, width: 402, height: 874, score: 3 }));
-    assert.ok(shown.checked, 'the Checked line is rendered');
+    const shown = parts(renderReading({ platform, width: 402, height: 874, readingOverride: { score: 3, explanation: 'A quiet day for the world.',
+      explanation_text: 'A quiet day for the world.', explanation_new: false, explanation_at: '2026-09-16T04:00:00Z', created_at: '2026-09-16T09:00:00Z' } }));
+    assert.ok(shown.checked, 'the age line is rendered where Checked was');
     const values = [shown.number, shown.sentence, shown.checked];
     assert.equal(new Set(values).size, 3, 'number, sentence and time each fade on their own value');
     for (const value of values) assert.equal(value.value, 1, 'a reading already at hand is shown at once');

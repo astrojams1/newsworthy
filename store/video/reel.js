@@ -39,7 +39,7 @@ export const COPY = {
   s4: { text: 'Optional notifications', source: 'apps/client/lib/onboarding.js', quote: "title: 'Optional notifications'", on: CUES.s4 },
   s4b: { text: 'At the score you choose.', source: 'apps/client/lib/onboarding.js', quote: "at the score you choose.'", on: [CUES.s4[0] + 0.2, CUES.s4[1]] },
   wordmark: { text: 'NEWSWORTHY', source: 'apps/client/components/brand-mark.tsx', quote: '>NEWSWORTHY<', on: [CUES.chrome[0], CUES.widgetsOut[1]] },
-  checked: { text: 'Checked 4 min ago', source: 'apps/client/app/index.tsx', quote: '>Checked {relative}<', on: [CUES.checked[0], CUES.morph[0] + 0.4] },
+  checked: { text: 'Checked at 9:37', source: 'apps/client/targets/widget/NewsworthyWidget.swift', quote: '"Checked at \\(', on: [CUES.checked[0], CUES.morph[0] + 0.4] },
   alerts: { text: 'High-score alerts', source: 'apps/client/app/settings/notifications.tsx', quote: 'label="High-score alerts"', on: card },
   threshold: { text: 'Threshold', source: 'apps/client/app/settings/notifications.tsx', quote: 'label="Threshold"', on: card },
   thresholdValue: { text: '8 or higher', source: 'apps/client/app/settings/notifications.tsx', quote: '`${threshold} or higher`', on: card },

@@ -16,7 +16,8 @@ const BROWSERS = [process.env.CHROME_PATH, '/opt/pw-browsers/chromium',
 const executablePath = BROWSERS.find(path => existsSync(path));
 
 const hoursAgo = hours => new Date(Date.now() - hours * 3_600_000).toISOString();
-const current = { score: 1, explanation: 'Trump rejected Iran\'s plan to reopen the Strait of Hormuz, a key oil route, within a week.',
+const sentence = 'Trump rejected Iran\'s plan to reopen the Strait of Hormuz, a key oil route, within a week.';
+const current = { score: 1, explanation: sentence, explanation_text: sentence,
   explanation_new: false, explanation_at: hoursAgo(30), created_at: hoursAgo(0.5), source: 'external', basis: 'aged', level: 4, story: 'iran-war', since: hoursAgo(25) };
 const developments = [
   ['iran-war', 50, 'Iran said the Strait of Hormuz oil route could reopen in 7 days if the US lifts its naval blockade. Oil prices fell.'],
@@ -112,13 +113,13 @@ test('turned to landscape, the timeline fades out under the header rather than r
       const timeline = await opened.getByTestId('timeline').boundingBox();
       assert.ok(timeline.width <= 360, `landscape timeline keeps the same column (${Math.round(timeline.width)}pt)`);
       const score = await opened.getByTestId('rating-score').boundingBox();
-      const checked = await opened.getByText(/^Checked /).boundingBox();
+      const checked = await opened.getByTestId('rating-story-line').boundingBox();
       const cue = await opened.getByLabel('Earlier developments').first().boundingBox();
       assert.ok(cue.y + cue.height <= landscape.height, 'the timeline cue is on the first screen');
       // Room between the parts: the first cut had 12pt, 10pt and the cue's
       // chevron almost touching the Checked line.
       assert.ok(sentence.y - (score.y + score.height) >= 16, `space above the sentence (${Math.round(sentence.y - score.y - score.height)}pt)`);
-      assert.ok(checked.y - (sentence.y + sentence.height) >= 14, `space above Checked (${Math.round(checked.y - sentence.y - sentence.height)}pt)`);
+      assert.ok(checked.y - (sentence.y + sentence.height) >= 14, `space above the age (${Math.round(checked.y - sentence.y - sentence.height)}pt)`);
       assert.ok(cue.y + cue.height / 2 - (checked.y + checked.height) >= 28, `space above the cue's chevron (${Math.round(cue.y + cue.height / 2 - checked.y - checked.height)}pt)`);
       await scrollIntoTimeline(opened, landscape);
       assert.deepEqual(await linesUnderHeader(opened), [], 'no timeline line at strength under the header');

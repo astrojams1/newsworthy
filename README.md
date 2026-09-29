@@ -15,8 +15,9 @@ A model checks the current top headlines every four hours by default, rates how
 worthwhile it is to look at the news right now on a deliberately harsh 1–10 scale,
 and writes one sentence explaining why. Higher scores mean more consequential
 news; the displayed score fades as developments age. A sentence that is Newsworthy’s first coverage of a development starts with a bold “New:”
-for two hours; after that it starts with how long ago it was first reported, in
-a fainter colour (“5h ·”, then “1d ·”). Ratings are AI judgments,
+for two hours. Below it, in a fainter colour, the app names the story and how
+long ago the sentence was first reported (“US Iran War · 5h ago”); the widgets
+lead the sentence with the age instead (“5h ago:”). Ratings are AI judgments,
 updated periodically, and can be wrong.
 
 ```
@@ -25,7 +26,7 @@ updated periodically, and can be wrong.
            New: The Fed raised rates a quarter
            point, which makes loans cost more.
 
-                    Checked 3 minutes ago
+                     Fed Rates · 3m ago
 ```
 
 Before opening a PR, use the repository’s
@@ -114,7 +115,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/support` | Help and contact: astrojams1@gmail.com |
 | `/llms.txt` | Public product facts and links for AI readers; rating instructions remain at `/api/instructions` |
 | `/admin` | Web-only timeseries of the score, a Gantt chart of which story held the front page, run log, prompt versions, "rate now" |
-| `/api/current` | `{ score, explanation, explanation_text, explanation_new, explanation_at, created_at, source, basis, level, story, since, fatigue, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about, at full value), `routine` (it did, but its story has been doing this for weeks and the score was discounted), `aged` (a decayed level) or `stale` (nothing recent). `explanation_text` is the sentence (for a re-report, the sentence its development already has, word for word, rather than the rewording) and `explanation_new` is true when its reading opened a development of its own, independently of the score; clients show a bold “New:” before it for two hours from `created_at`. `explanation_at` is when that sentence was first reported (for a re-report, its development’s first report); once “New:” is off, clients lead the sentence with its age, muted (“5h ·”, then “1d ·”, nothing under an hour). `explanation` is the same sentence, unlabelled, for older clients. `story` and `since` name the score’s development and when it broke; `fatigue` is the fraction of its score a routine development in that story keeps. No countdown: an external caller can post at any moment, so the next update is not predictable |
+| `/api/current` | `{ score, explanation, explanation_text, explanation_new, explanation_at, explanation_story, created_at, source, basis, level, story, since, fatigue, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about, at full value), `routine` (it did, but its story has been doing this for weeks and the score was discounted), `aged` (a decayed level) or `stale` (nothing recent). `explanation_text` is the sentence (for a re-report, the sentence its development already has, word for word, rather than the rewording) and `explanation_new` is true when its reading opened a development of its own, independently of the score; clients show a bold “New:” before it for two hours from `created_at`. `explanation_at` is when that sentence was first reported (for a re-report, its development’s first report); the app shows that age with `explanation_story`, the story of the sentence shown, on a muted line below it (“US Iran War · 5h ago”), and once “New:” is off the widgets lead the sentence with the age (“5h ago:”, then “1d ago:”, nothing under an hour). `explanation` is the same sentence, unlabelled, for older clients. `story` and `since` name the score’s development and when it broke; `fatigue` is the fraction of its score a routine development in that story keeps. No countdown: an external caller can post at any moment, so the next update is not predictable |
 | `/api/timeline` | `{ developments: [{ root, story, since, score, displayed, leading, explanation }] }` — prototype. Every development first covered in the last week, from the same replay as `/api/current`, newest first by first coverage, one entry per development (never per reading) with the sentence it broke with. The development the newest reading reports is left out, since the page already shows it. Reaches back one week by first coverage and ends there |
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions, and `stories` — every story still live with the developments inside it, when each was first covered (`opened`, which an escalation does not move, unlike `since`), what each broke at, what that has decayed to, and which one the front page is about. Each story also says where it stands now: `age_days`, `routine` (the median its developments have scored), `fatigue` (the weight its next development would open at) and `breakthrough_at` (the score that would open whole). `stories` describes now, not the charted range. `front_page` lists, over the charted range, one row per story with the stretches the front page showed it (`from`, `to`) and its total `hours`: each reading counts until the next, for the story of the development it reported, most recently shown first |
 | `/api/admin/prompts` | Every prompt version, full text |

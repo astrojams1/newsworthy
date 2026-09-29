@@ -309,10 +309,16 @@ const server = createServer(async (req, res) => {
         explanation_new: opensDevelopment(newest),
         explanation_at: new Date(sentence.t ?? sentence.created_at).toISOString(),
       };
+      // The story the shown sentence belongs to, from the row that sentence is
+      // — for a re-report, its development's first report, whatever slug the
+      // re-report itself arrived with — not `story`, which is the development
+      // the number is about.
+      const explanationStory = sentence.story ?? newest.story ?? undefined;
       return json(res, 200, {
         score: current.score,
         explanation: explanationFields.explanation_text,
         ...explanationFields,
+        explanation_story: explanationStory,
         created_at: newest.created_at,
         source: newest.source ?? 'cron',
         // None of the rest is displayed; it is what makes a surprising number

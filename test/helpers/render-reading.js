@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
-import { displayExplanation, explanationParts } from '../../apps/client/lib/story-age.js';
+import { displayExplanation, explanationParts, storyLine } from '../../apps/client/lib/story-age.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
 import { glyphModule } from './widget-contract.js';
 
@@ -45,7 +45,7 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     '@/components/reading-provider': { useCurrentReading: () => ({ reading, saved, failed, loading }) },
     '@/components/reading-gradient': { ReadingGradient: 'ReadingGradient' },
     'expo-router/react-navigation': { useHeaderHeight: () => 44 },
-    '@/lib/story-age': { displayExplanation, explanationParts },
+    '@/lib/story-age': { displayExplanation, explanationParts, storyLine },
     '@/components/timeline': { Timeline: 'Timeline' },
     // The hook fetches nothing when the setting is off; the mock mirrors that.
     '@/lib/use-timeline': { useTimeline: (enabled) => (enabled ? timeline : []) },
