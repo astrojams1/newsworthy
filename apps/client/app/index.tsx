@@ -30,7 +30,7 @@ const LANDSCAPE_COLUMN = 360;
 const WIDE_COLUMN = 414;
 // How long the small line says when the news was checked, on opening, on
 // returning to the app and after a tap, before it gives way to the story.
-const CHECKED_MS = 4000;
+const CHECKED_MS = 2000;
 
 export default function Home() {
   const theme = useTheme();

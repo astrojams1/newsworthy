@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-29T08:41:50+00:00",
+  "updated_at": "2026-09-29T08:53:41+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -709,12 +709,12 @@
       "state": "todo",
       "owner": "agent",
       "basis": "observed",
-      "summary": "The app's small line below the sentence now opens on \"Checked 23m ago\" (on load, on returning to the app, and for four seconds after a tap), then crossfades to the story line (\"US Iran War · 5h ago\"); with no story line it keeps the checked time. Web export verified in Chromium: Checked at load, story after ~5s, Checked again on tap and on visibilitychange. Native apps not built or run here; widgets unchanged.",
+      "summary": "Owner found four seconds too long: \"Checked 23m ago\" now holds for two seconds (on load, on returning to the app, after a tap) before crossfading to the story line. Web export verified in Chromium: story line at ~3.6s after navigation, Checked for ~2s after a tap. Native apps not built or run here.",
       "evidence": [
-        "Branch claude/last-checked-time-display-h5nl72; test/story-age.test.js; npm test 370 passed; npm run test:design 105 passed"
+        "Branch claude/last-checked-time-display-h5nl72; npm test 370 passed; npm run test:design 105 passed"
       ],
-      "next_action": "On iOS and Android: the line opens on \"Checked …\" at launch and on foregrounding, crossfades to the story after four seconds, a tap brings Checked back, and the enlarged touch target does not move the line.",
-      "updated_at": "2026-09-29T08:41:50+00:00"
+      "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
+      "updated_at": "2026-09-29T08:53:41+00:00"
     },
     "apple.testflight-15": {
       "state": "done",
@@ -6500,6 +6500,22 @@
         ],
         "next_action": "On iOS and Android: the line opens on \"Checked …\" at launch and on foregrounding, crossfades to the story after four seconds, a tap brings Checked back, and the enlarged touch target does not move the line.",
         "updated_at": "2026-09-29T08:41:50+00:00"
+      }
+    },
+    {
+      "sequence": 342,
+      "at": "2026-09-29T08:53:41+00:00",
+      "gate": "story-age.native",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner found four seconds too long: \"Checked 23m ago\" now holds for two seconds (on load, on returning to the app, after a tap) before crossfading to the story line. Web export verified in Chromium: story line at ~3.6s after navigation, Checked for ~2s after a tap. Native apps not built or run here.",
+        "evidence": [
+          "Branch claude/last-checked-time-display-h5nl72; npm test 370 passed; npm run test:design 105 passed"
+        ],
+        "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
+        "updated_at": "2026-09-29T08:53:41+00:00"
       }
     }
   ],

@@ -5,7 +5,7 @@ A muted line below the sentence, where “Checked” was, names its story and ho
 long ago it was first reported: “US Iran War · 5h ago” (`storyLine()` in
 `apps/client/lib/story-age.js`, from the new `explanation_story` and
 `explanation_at`; either half alone when the other is missing). On opening,
-on returning to the app, and for four seconds after a tap, that line says
+on returning to the app, and for two seconds after a tap, that line says
 “Checked 23m ago” instead (`checkedLine()`), then crossfades to the story; with
 no story line it keeps the checked time. Settings also says “Last checked 18m
 ago”. Every age in the app, timeline tags included, reads
