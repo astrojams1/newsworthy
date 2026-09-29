@@ -87,6 +87,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [17, '4bff3590dcbcc883'],
     [18, 'e134aa373968ebed'],
     [19, '66043069a1277b7e'],
+    [20, '24e0951932807570'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -397,4 +398,29 @@ test('v19 is v18 with outlet names ruled out of the sentence', async () => {
   assert.equal(v19.text, v18.text.replace('Claims: said.', 'Claims: said or reportedly. Never name news outlets.'));
   const evaluation = await readFile('docs/prompt-evaluations/v19.md', 'utf8');
   assert.ok(evaluation.includes(v19.hash), 'the evaluation record names the shipped text');
+});
+
+test('v20 searches the themes markets are trading on, naming none', async () => {
+  // Under v19 no AI story reached a reading in ten days: callers weighed AI
+  // news, filed it as company news and never searched it. v20 has the rater
+  // name the month's market themes and search each. It names no topic, so a
+  // theme that stops moving markets drops out without a prompt change.
+  const [v19, v20] = [19, 20].map(renderPrompt);
+  const sources = v20.text.split('\nSources\n')[1].split('\nScale\n')[0];
+  assert.match(sources, /Name this month's market themes, whatever they are, from market wraps and the biggest companies' moves; search each\./);
+  assert.doesNotMatch(sources, /\b(AI|artificial intelligence|chips?|tech)\b/i, 'no topic is named');
+  assert.match(sources, /not a fixed list of sites/);
+  assert.match(sources, /silence is not evidence against an event/, 'the v6 lag guard survives');
+  // The scale is the owner's v18 wording; one example is swapped at the same score.
+  assert.deepEqual(rungsOf(v20.text), rungsOf(v19.text));
+  assert.deepEqual(examplesOf(v20.text), examplesOf(v19.text)
+    .map((e) => (e === '5 — Tankers struck in Hormuz; oil climbs.' ? '5 — OpenAI releases GPT-6 Astra, possibly AGI.' : e)));
+  // Output asks for what v19's did, in fewer characters.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.match(output(v20.text), /single JSON object and nothing else/, 'the parser contract');
+  assert.match(output(v20.text), /at most 135 characters/);
+  assert.equal(output(v20.text).split('Submit no label.')[1], output(v19.text).split('Submit no label.')[1],
+    'writing guidance and style are v19\'s verbatim');
+  const evaluation = await readFile('docs/prompt-evaluations/v20.md', 'utf8');
+  assert.ok(evaluation.includes(v20.hash), 'the evaluation record names the shipped text');
 });

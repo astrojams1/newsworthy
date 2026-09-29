@@ -742,18 +742,12 @@ caller asked for the digest itself to be published as a field instead; that
 would make the check vacuous, since echoing a published value proves nothing
 about what was read. Publishing the bytes is safe, publishing the answer is not.
 
-The instructions' first wording of that definition opened with "the bytes to
-hash come from `/api/prompt`", with the `text`-field qualifier trailing behind a
-dash — readable as "hash the response body", and read that way: a caller
-reported doing exactly that, storing a reading flagged `prompt_verified: false`
-on an otherwise correct-looking 201 before hashing the field value and
-resubmitting. The check worked — a wrong-input digest recorded as unverified is
-the check working — but the page taught the wrong input, and a false flag from a
-doc-following caller looked like a delivery failure rather than a docs bug. The
-definition now leads with the field's decoded value, names the two wrong inputs
-(the response body, the field's escaped form), and says what a false flag means
-for a caller that followed it. A test pins all of that, including that the old
-opening phrase stays gone.
+The first wording ("the bytes to hash come from `/api/prompt`", qualifier
+trailing) read as "hash the response body", and a caller did, storing a reading
+flagged `prompt_verified: false`. The check worked, but a false flag from a
+doc-following caller looked like a delivery failure. The definition now leads
+with the field's decoded value, names both wrong inputs (the body, the escaped
+form) and what a false flag means; a test pins it and keeps the old opening out.
 
 The 16-character hash printed in the instructions is deliberately a *prefix* of
 the 64-character digest. A caller that echoes the printed value, or any prefix,
@@ -869,6 +863,13 @@ External copy stays "news by significance" by the owner's decision; see
 readings in a day with "the Wall Street Journal said". v19 is v18 but for that
 Style entry: a report is attributed with "reportedly" or the people it cites.
 The [record](docs/prompt-evaluations/v19.md) holds the test runs.
+
+**v20 searches what markets are trading on.** Under v19 no AI story reached a
+reading in ten days: callers filed AI news as company news and never searched
+it. Sources now name the month's market themes from market wraps and the
+biggest companies' moves and search each, naming no topic, so a fading theme
+drops out. An AI release replaced the Hormuz example at 5; see the
+[record](docs/prompt-evaluations/v20.md).
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
