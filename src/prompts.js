@@ -418,6 +418,42 @@ const V18_OUTPUT_CONTRACT = V17_OUTPUT_CONTRACT
 const V19_OUTPUT_CONTRACT = V18_OUTPUT_CONTRACT
   .replace('Claims: said.', 'Claims: said or reportedly. Never name news outlets.');
 
+// v20 searches whatever markets are trading on, not only the macro tape. Under
+// v19 no AI story reached a reading in ten days: callers weighed AI news, filed
+// it as "stock-specific" and chose oil or yields, and none of their searches
+// named AI. Sources now name the month's market themes from market wraps and
+// the biggest companies' moves and search each, naming no topic, so a theme
+// that stops moving markets drops out on its own. The owner swapped the Hormuz
+// tanker example for reading 259, a frontier AI release, at the same 5. The
+// rest of Sources and Output is v19's, tightened to fit rule 7 without changing
+// what it asks. See docs/prompt-evaluations/v20.md.
+const V20_EXAMPLES = V18_EXAMPLES
+  .replace('5 — Tankers struck in Hormuz; oil climbs.', '5 — OpenAI releases GPT-6 Astra, possibly AGI.');
+
+const V20_INSTRUCTIONS = `Summary
+
+Rate the current risk of a sharp market move, up or down, 1-10, and name the development most likely to cause one.
+
+Sources
+
+What broke in the last few hours, searched by time and topic, not a fixed list of sites. Name this month's market themes, whatever they are, from market wraps and the biggest companies' moves; search each. Latest moves in futures, yields, oil, the dollar, volatility and bitcoin; an unexplained sharp move is a lead. Prices from dated quote pages, not search snippets. Prediction markets for one-day moves only; two searches at most. Skip anything unavailable.
+
+Markets, shut two thirds of the time, confirm late; silence is not evidence against an event.
+
+Scale
+
+${V18_SCALE}
+
+Examples
+
+${V20_EXAMPLES}`;
+
+const V20_OUTPUT_CONTRACT = V19_OUTPUT_CONTRACT
+  .replace('nothing else — no prose, no markdown fences:', 'nothing else, no prose or fences:')
+  .replace('<one sentence, at most 135 characters including spaces and punctuation>', '<one sentence, at most 135 characters>')
+  .replace('Full display: at most 140 characters including spaces and punctuation, reserving 5 for the label "New: " that the app adds to a new development.',
+    'Display: at most 140 characters including spaces and punctuation, 5 of them for the app\'s "New: " label on new developments.');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -551,6 +587,13 @@ const REGISTRY = {
     added: '2026-09-27',
     instructions: V18_INSTRUCTIONS,
     outputContract: V19_OUTPUT_CONTRACT,
+  },
+  20: {
+    version: 20,
+    label: 'market-themes-v20',
+    added: '2026-09-29',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V20_OUTPUT_CONTRACT,
   },
 };
 
