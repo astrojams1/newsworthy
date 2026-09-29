@@ -34,9 +34,7 @@ export async function fetchReading(apiBaseUrl, fetcher = fetch) {
       ...(typeof data.explanation_text === 'string' && data.explanation_text.length <= 2000
         ? { explanation_text: data.explanation_text, explanation_new: data.explanation_new === true,
           ...(typeof data.explanation_at === 'string' && Number.isFinite(Date.parse(data.explanation_at))
-            ? { explanation_at: data.explanation_at } : {}),
-          ...(typeof data.explanation_story === 'string' && data.explanation_story.length <= 200
-            ? { explanation_story: data.explanation_story } : {}) } : {}),
+            ? { explanation_at: data.explanation_at } : {}) } : {}),
     };
   } finally {
     clearTimeout(timeout);

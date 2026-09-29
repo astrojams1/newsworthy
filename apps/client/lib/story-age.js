@@ -1,5 +1,5 @@
 // Shared by the API and Expo. Native widget equivalents use the same fixtures.
-import { storyLabel, timelineAge } from './timeline.js';
+import { timelineAge } from './timeline.js';
 export const DISPLAY_CHARACTER_LIMIT = 140;
 /** Shown, bold, before a sentence that opened its own development. */
 export const NEW_LABEL = 'New:';
@@ -70,16 +70,21 @@ export function displayExplanation(reading, now = Date.now()) {
 }
 
 /**
- * Prototype: the story the sentence belongs to and how long ago it was first
- * reported, as one quiet line between the number and the sentence, in the
- * timeline's own words ("US Iran War · 5 hr ago"). Empty without a story — an
- * older server or an unjudged reading — and the sentence keeps its age prefix.
+ * Prototype: how long ago the shown sentence's development was first reported,
+ * on its own muted line below the sentence, where "Checked" was ("5 hr ago",
+ * "Yesterday"). The sentence then carries no age prefix. Empty without
+ * `explanation_at` (an older server), and the sentence keeps its prefix.
  */
-export function storyLine(reading, now = Date.now()) {
-  if (!reading || typeof reading.explanation_text !== 'string') return '';
-  const story = storyLabel(reading.explanation_story);
-  if (!story) return '';
-  const at = typeof reading.explanation_at === 'string' && Number.isFinite(Date.parse(reading.explanation_at))
-    ? timelineAge(reading.explanation_at, now) : null;
-  return [story, at].filter(Boolean).join('  ·  ');
+export function ageLine(reading, now = Date.now()) {
+  if (!reading || typeof reading.explanation_text !== 'string' || typeof reading.explanation_at !== 'string'
+    || !Number.isFinite(Date.parse(reading.explanation_at))) return '';
+  return timelineAge(reading.explanation_at, now);
+}
+
+/** When the news was last checked, for Settings: "18 min ago". */
+export function checkedAgo(reading, now = Date.now()) {
+  const at = Date.parse(reading?.created_at);
+  if (!Number.isFinite(at)) return '';
+  const minutes = Math.max(0, Math.floor((now - at) / 60000));
+  return minutes < 1 ? 'Just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
 }

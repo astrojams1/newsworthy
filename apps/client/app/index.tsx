@@ -11,7 +11,7 @@ import { useTheme } from '@/lib/theme';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { displayExplanation, explanationParts, storyLine } from '@/lib/story-age';
+import { displayExplanation, explanationParts, ageLine } from '@/lib/story-age';
 import { website, privacyUrl, supportUrl } from '@/lib/config';
 import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
@@ -72,16 +72,13 @@ export default function Home() {
   const [now, setNow] = useState(Date.now());
   const [shareNotice, setShareNotice] = useState('');
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(timer); }, []);
-  const minutes = reading ? Math.max(0, Math.floor((now - Date.parse(reading.created_at)) / 60000)) : 0;
-  const relative = minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : minutes < 1440 ? `${Math.floor(minutes / 60)} hr ago` : `${Math.floor(minutes / 1440)} days ago`;
-  // A new development's sentence leads with a bold "New:" for two hours, then
-  // with its age in the muted colour ("5h ·"); both are part of the sentence.
-  // Prototype: the story and its age on their own line above the sentence,
-  // which then drops its age prefix; "New:" stays on the sentence.
-  const line = reading ? storyLine(reading, now) : '';
+  // A new development's sentence leads with a bold "New:" for two hours.
+  // Prototype: the sentence's age on its own line below it, where "Checked"
+  // was (now in Settings); the sentence drops its age prefix. "New:" stays.
+  const line = reading ? ageLine(reading, now) : '';
   const parts = reading ? explanationParts(reading, now) : null;
   const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</>
-    : parts.age && !line ? <><Text testID="rating-age" style={{ color: theme.muted }}>{parts.age}</Text>{` ${parts.body}`}</> : parts.body) : null;
+    : parts.body) : null;
   // Off unless chosen in Settings; off, the screen is the reading alone. The
   // server leaves out the development this reading reports, so nothing here repeats it.
   const { preferences } = usePreferences();
@@ -201,9 +198,8 @@ export default function Home() {
           </Text>
           <Text accessible={false} numberOfLines={1} maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: landscape ? 17 : 20, fontWeight: '300', fontFamily: scoreFont, marginLeft: 3 }}>∕10</Text>
         </Animated.View>
-        {line !== '' && <Animated.Text selectable testID="rating-story" maxFontSizeMultiplier={1.5} style={{ opacity: sentenceIn, color: theme.muted, fontSize: landscape ? 13 : 14, lineHeight: 20, textAlign: 'center', maxWidth: column, marginTop: landscape ? 16 : 20 }}>{line}</Animated.Text>}
-        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: line ? (landscape ? 8 : 10) : (landscape ? 20 : 24) }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
-        {reading && <Animated.Text selectable style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>Checked {relative}</Animated.Text>}
+        <Animated.Text selectable testID="rating-explanation" style={{ opacity: sentenceIn, color: theme.ink, fontSize: sentenceSize, lineHeight: sentenceSize * 1.5, textAlign: 'center', maxWidth: column, marginTop: landscape ? 20 : 24 }}>{explanation ?? (failed && !loading ? 'The latest rating is unavailable.' : '')}</Animated.Text>
+        {line !== '' && <Animated.Text selectable testID="rating-age-line" style={{ opacity: checkedIn, color: theme.muted, fontSize: 12, textAlign: 'center', marginTop: landscape ? 16 : 18 }}>{line}</Animated.Text>}
         {shareNotice !== '' && <Text accessibilityLiveRegion="polite" style={{ color: theme.muted, fontSize: 14, textAlign: 'center', marginTop: 12 }}>{shareNotice}</Text>}
         {!reading && failed && !loading && <Pressable accessibilityRole="button" onPress={refresh} style={{ padding: 12, minWidth: 48, minHeight: 48 }}><Text style={{ color: theme.accent }}>Try again</Text></Pressable>}
         {hasTimeline && <Animated.View style={{ position: 'absolute', bottom: insets.bottom + 8, opacity: Animated.multiply(cueIn, cueFade) }}>

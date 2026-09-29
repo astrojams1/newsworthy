@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { displayExplanation, explanationParts, isNew, sentenceAge, EXPLANATION_CHARACTER_LIMIT } from '../apps/client/lib/story-age.js';
 import { opensDevelopment } from '../src/story.js';
+import { themeForLevel } from '../apps/client/lib/palette.js';
 import { withServer, PORTS, CALLER_TOKEN, caller } from './with-server.js';
 import { renderReading, nodes } from './helpers/render-reading.js';
 
@@ -82,25 +83,6 @@ test('all app surfaces show "New:" in bold, as its own text, and drop it at two 
   }
 });
 
-test('all app surfaces lead an older sentence with its age, muted and inside the sentence', () => {
-  const aged = { ...fresh, explanation_new: false, explanation_at: start };
-  for (const platform of ['web','ios','android']) {
-    const at = minutes => nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + minutes * 60000 }));
-    const five = at(5 * 60 + 10);
-    const age = five.find(n=>n.props.testID === 'rating-age');
-    assert.equal(age.props.children, '5h\u00A0·');
-    assert.equal(age.props.style.fontWeight, undefined, 'colour only: the age keeps the sentence weight');
-    const sentence = five.find(n=>n.props.testID === 'rating-explanation');
-    const [inner, rest] = sentence.props.children.props.children;
-    assert.equal(inner.props.testID, 'rating-age', 'it starts the sentence rather than sitting on its own line');
-    assert.equal(rest, ` ${text}`);
-    const timestamp = five.filter(n=>n.type === 'Text').map(n=>[n.props.children].flat().join('')).at(-1);
-    assert.equal(age.props.style.color, five.find(n=>n.type === 'Text' && String([n.props.children].flat().join('')).startsWith('Checked')).props.style.color,
-      `the age is the same muted colour as "${timestamp}"`);
-    assert.equal(at(30).find(n=>n.props.testID === 'rating-age'), undefined, 'nothing under an hour');
-  }
-});
-
 test('only a judged reading that opened its own development is new', () => {
   assert.equal(opensDevelopment({ judge_version:2, development_of:null }), true);
   assert.equal(opensDevelopment({ judge_version:2, development_of:17 }), false, 'a re-report');
@@ -161,25 +143,25 @@ test('both widgets format the age as the app does', () => {
   assert.ok(java.includes('(hours / 24) + "d") + "\\u00A0·";'), 'Android widget');
 });
 
-test('the story line names the sentence\'s story and its age, prototype', async () => {
-  const { storyLine } = await import('../apps/client/lib/story-age.js');
+test('the age sits below the sentence and Checked moves to Settings, prototype', async () => {
+  const { ageLine, checkedAgo } = await import('../apps/client/lib/story-age.js');
   const now = Date.parse('2026-09-29T12:00:00Z');
   const reading = { score: 4, explanation: 'x.', explanation_text: 'x.', explanation_new: false,
-    created_at: '2026-09-29T11:50:00Z', explanation_at: '2026-09-29T07:00:00Z', explanation_story: 'us-iran-war' };
-  assert.equal(storyLine(reading, now), 'US Iran War  ·  5 hr ago');
-  assert.equal(storyLine({ ...reading, explanation_story: undefined }, now), '', 'no story: the age stays on the sentence');
-  assert.equal(storyLine({ ...reading, explanation_at: undefined }, now), 'US Iran War');
-  assert.equal(storyLine({ ...reading, explanation_text: undefined }, now), '');
-});
-
-test('with a story, every app surface shows story and age between the number and the sentence, prototype', () => {
-  const aged = { ...fresh, explanation_new: false, explanation_at: start, explanation_story: 'us-iran-war' };
+    created_at: '2026-09-29T11:42:00Z', explanation_at: '2026-09-29T07:00:00Z' };
+  assert.equal(ageLine(reading, now), '5 hr ago');
+  assert.equal(ageLine({ ...reading, explanation_at: undefined }, now), '', 'an older server: the age stays on the sentence');
+  assert.equal(checkedAgo(reading, now), '18 min ago');
+  const aged = { ...fresh, explanation_new: false, explanation_at: start };
   for (const platform of ['web','ios','android']) {
     const rendered = nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + (5 * 60 + 10) * 60000 }));
-    const line = rendered.find(n=>n.props.testID === 'rating-story');
-    assert.equal(line.props.children, 'US Iran War  ·  5 hr ago');
+    const line = rendered.find(n=>n.props.testID === 'rating-age-line');
+    assert.equal(line.props.children, '5 hr ago');
+    assert.equal(line.props.style.color, themeForLevel(fresh.score, false).muted, 'muted, as Checked was');
+    assert.equal(nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + 5 * 60000 }))
+      .find(n=>n.props.testID === 'rating-age-line').props.children, '5 min ago', 'under an hour too');
     assert.equal(rendered.find(n=>n.props.testID === 'rating-age'), undefined, 'the age is not said twice');
-    const order = rendered.map(n=>n.props.testID).filter(id=>['rating-score','rating-story','rating-explanation'].includes(id));
-    assert.deepEqual(order, ['rating-score','rating-story','rating-explanation']);
+    assert.equal(rendered.some(n=>n.type === 'Text' && String([n.props.children].flat().join('')).startsWith('Checked')), false);
+    const order = rendered.map(n=>n.props.testID).filter(id=>['rating-score','rating-explanation','rating-age-line'].includes(id));
+    assert.deepEqual(order, ['rating-score','rating-explanation','rating-age-line']);
   }
 });
