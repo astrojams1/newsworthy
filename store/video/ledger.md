@@ -207,3 +207,24 @@ upload and listening. The review page plays these files. Since this render,
 in, number then sentence then time, where the film lifts the splash's dash into
 it. `--stale` lists `apps/client/app/index.tsx` and `design/surfaces.json`,
 whose change is web-only. The next remake starts there.
+
+## 2026-09-29 (decision, no cut)
+
+**Why.** #188 moved "Checked" off the reading screen: the app now shows a
+muted "story · age" line below the sentence ("US Iran War · 5h ago") and
+"Last checked 18m ago" in Settings, and the widgets read "Checked at 10:21",
+a clock time. The film draws "Checked 4 min ago" under the reading and morphs
+it into the widget's time, so its quote no longer matched.
+
+**Decision (owner).** No re-render now: the film is regenerated once, before
+the next store submission. Until then `COPY.checked` quotes the widget's
+"Checked at" line, where that line ends in the film, as "Checked at 9:37"
+(the clocks agree: 9:41, four minutes earlier). The published cuts still
+show "Checked 4 min ago".
+
+**Open for that cut.** The reading's line before the morph: the app shows
+the sentence's story and age there, and the film draws no real reading, so
+either an age alone ("4m ago") that becomes "Checked at 9:37" on the widget,
+or no line on the reading and the time on the widget only. Plus everything
+still open from 2026-09-28.
+
