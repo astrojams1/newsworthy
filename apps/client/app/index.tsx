@@ -106,8 +106,10 @@ export default function Home() {
     swapLine(true);
     holdChecked(CHECKED_MS);
   };
-  // First shown, the line fades in last, about a second after the number.
-  useEffect(() => { if (ready) holdChecked(CHECKED_MS + 1000); }, [ready]);
+  // Arriving with the first reading, the line fades in last, about a second
+  // after the number; a reading already at hand shows it at once.
+  const shownAtOnce = useRef(ready).current;
+  useEffect(() => { if (ready) holdChecked(CHECKED_MS + (shownAtOnce ? 0 : 1000)); }, [ready]);
   useEffect(() => {
     // The screen was out of sight, so the checked time is simply back. The
     // clock did not tick in the background, so "ago" is measured afresh.
@@ -248,7 +250,7 @@ export default function Home() {
             sits where it did before it could be tapped. */}
         {line !== '' && <Pressable disabled={!story || !checked} onPress={tapLine}
           accessibilityRole={story && checked ? 'button' : undefined} accessibilityLabel={[story, checked].filter(Boolean).join('. ')}
-          accessibilityHint={story && checked ? 'Shows when the news was last checked' : undefined}
+          accessibilityHint={story && checked ? (showChecked ? 'Shows the story' : 'Shows when the news was last checked') : undefined}
           style={{ paddingVertical: 16, paddingHorizontal: 24, marginTop: (landscape ? 16 : 18) - 16, marginBottom: -16 }}>
           <Animated.Text testID="rating-story-line" style={{ opacity: Animated.multiply(checkedIn, lineSwap), color: theme.muted, fontSize: 12, textAlign: 'center' }}>{line}</Animated.Text>
         </Pressable>}

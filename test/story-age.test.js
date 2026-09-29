@@ -187,6 +187,7 @@ test('the small line opens on "Checked 23m ago", then the story; a tap brings Ch
   assert.equal(checkedLine({}, now), '');
   const src = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
   assert.match(src, /useState\(true\)/, 'the screen opens on the checked time');
+  assert.match(src, /CHECKED_MS \+ \(shownAtOnce \? 0 : 1000\)/, 'no fade-in allowance when the line is shown at once');
   assert.match(src, /AppState\.addEventListener\('change'[^\n]*'active'[^\n]*foreground\(\)/, 'and returns to it in the foreground');
   assert.match(src, /visibilitychange', visible/, 'on the web too');
   for (const platform of ['web','ios','android']) {
@@ -199,6 +200,8 @@ test('the small line opens on "Checked 23m ago", then the story; a tap brings Ch
     assert.equal(button.type, 'Pressable', 'tappable');
     assert.equal(button.props.disabled, false);
     assert.equal(button.props.accessibilityLabel, 'US Iran War  ·  5h ago. Checked 23m ago', 'a screen reader hears both');
+    assert.equal(button.props.accessibilityHint, 'Shows the story', 'the hint names what a tap reveals');
+    assert.equal(line(false).parent.props.accessibilityHint, 'Shows when the news was last checked');
     // Padded to a touch target without moving the line from where it sat.
     assert.equal(button.props.style.paddingVertical + button.props.style.marginTop, 18);
     assert.equal(button.props.style.marginBottom, -button.props.style.paddingVertical);
