@@ -50,12 +50,13 @@ export function fitExplanation(text, limit) {
 
 /**
  * The bold label (empty when not new), the muted age (empty when new or under
- * an hour) and the body, fitted together within 140 characters.
+ * an hour) and the body, fitted together within 140 characters. `age: false`
+ * leaves the age out, and its room with it, for a surface that shows it apart.
  */
-export function explanationParts(reading, now = Date.now()) {
+export function explanationParts(reading, now = Date.now(), { age: withAge = true } = {}) {
   if (!reading) return { label: '', age: '', body: '' };
   const label = isNew(reading, now) ? NEW_LABEL : '';
-  const age = label ? '' : sentenceAge(reading, now);
+  const age = label || !withAge ? '' : sentenceAge(reading, now);
   const prefix = label || age;
   // Missing metadata means an old client/cache: its explanation is shown as stored.
   const body = typeof reading.explanation_text === 'string' ? reading.explanation_text : reading.explanation;

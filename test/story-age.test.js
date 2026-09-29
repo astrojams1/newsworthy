@@ -130,6 +130,13 @@ test('the label follows the judgement the reading arrived with', async () => {
     assert.equal(Date.parse(after.explanation_at),Date.parse(opening.body.created_at),
       'explanation_at dates the sentence shown, its first report, not the re-report that confirmed it');
     assert.equal(after.created_at,again.body.created_at,'created_at stays the newest reading');
+    assert.equal(after.explanation_story,'hormuz');
+    // A re-report can arrive under another slug; the story shown is the sentence's own.
+    const renamed=await submit(2,'Hormuz tanker hit again',{answer:'same',story:'shipping'});
+    assert.equal(renamed.body.development,'same');
+    const later=await current();
+    assert.equal(later.explanation,'hormuz tanker strike alpha.');
+    assert.equal(later.explanation_story,'hormuz','the story of the sentence shown, not of the re-report');
   });
 });
 
@@ -175,4 +182,15 @@ test('the checked time reads "Checked at 10:21": no AM/PM, no date', async () =>
   assert.ok(['Checked at 2:05', 'Checked at 14:05'].includes(afternoon), `${afternoon}: the device's own hour cycle`);
   assert.equal(checkedAt({ created_at: new Date(2026, 8, 1, 10, 21).toISOString() }), 'Checked at 10:21', 'another day: still no date');
   assert.equal(checkedAt({}), '');
+});
+
+test('the app sentence spends no budget on an age it shows on its own line', () => {
+  const body = 'a'.repeat(134) + '.';
+  const reading = { ...fresh, explanation: body, explanation_text: body, explanation_new: false, explanation_at: start, explanation_story: 'us-iran-war' };
+  for (const platform of ['web','ios','android']) {
+    const sentence = nodes(renderReading({ platform, width:390, height:844, readingOverride:reading, now:origin + 5 * hour }))
+      .find(n=>n.props.testID === 'rating-explanation');
+    assert.equal([sentence.props.children].flat().join(''), body, `${platform}: a 135-character body is shown whole`);
+  }
+  assert.ok(explanationParts(reading, origin + 5 * hour).body.endsWith('…'), 'the widgets and share text still fit the age in');
 });

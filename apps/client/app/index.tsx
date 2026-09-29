@@ -76,7 +76,8 @@ export default function Home() {
   // Prototype: the story and its age on one line below the sentence, where
   // "Checked" was (now in Settings); the sentence drops its age prefix. "New:" stays.
   const line = reading ? storyLine(reading, now) : '';
-  const parts = reading ? explanationParts(reading, now) : null;
+  // The age is on that line, so the sentence spends no budget on it.
+  const parts = reading ? explanationParts(reading, now, { age: false }) : null;
   const explanation = parts ? (parts.label ? <><Text testID="rating-new-label" style={{ fontWeight: '700' }}>{parts.label}</Text>{` ${parts.body}`}</>
     : parts.body) : null;
   // Off unless chosen in Settings; off, the screen is the reading alone. The
