@@ -21,7 +21,8 @@ the filter instead dropped the wrong development when the newest reading
 re-reported one older than the window. The timeline is at least a screen tall
 below the header, so one short entry can still reach the snap offset. Tag
 lines show story and age only where they change from the entry above, so
-"Yesterday" is said once. It is one column on every screen, sharing the
+"1d ago" is said once. Ages read as everywhere else in the app: "just now",
+"5m ago", "5h ago", "1d ago". It is one column on every screen, sharing the
 sentence's; a grid of columns on wide screens was tried and dropped (owner,
 2026-09-28). It reaches back one week (`TIMELINE_DAYS`) by first
 coverage and ends there, because a timeline that scrolls forever is a feed.

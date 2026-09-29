@@ -1,5 +1,18 @@
 # The “New:” label
 
+**Since 2026-09-29 (owner).** The app no longer leads a sentence with its age.
+A muted line below the sentence, where “Checked” was, names its story and how
+long ago it was first reported: “US Iran War · 5h ago” (`storyLine()` in
+`apps/client/lib/story-age.js`, from the new `explanation_story` and
+`explanation_at`; either half alone when the other is missing). “Last checked
+18m ago” moved to Settings. Every age in the app, timeline tags included, reads
+“just now”, “5m ago”, “5h ago”, “1d ago”. The widgets keep their design with
+the age before the sentence as “5h ago:” (a colon like “New:”, only “New:” is
+bold) and a clock time, “Checked at 10:21” (the device's 12- or 24-hour cycle,
+no AM/PM, no date), so they need no redraw between updates. Share text leads
+with “5h ago:”. The sections below describe the earlier prefix where they
+differ.
+
 A reading can say **New:** The Fed raised rates a quarter point. The label, in
 bold, means this reading is Newsworthy’s first coverage of that development. It
 stays for two hours after the reading was saved and then comes off. It is not a
@@ -92,9 +105,9 @@ Only the label’s weight changes: it keeps the sentence’s colour and size, so
 reads as part of the sentence rather than a badge. The age changes only colour,
 to the muted text colour the timestamp uses. Share text carries either as plain
 text. Overlong legacy sentences are shortened with an ellipsis only for display,
-within 140 characters including the prefix; storage is unchanged. “23h · ” is six
-characters, one over the five prompts reserve, so a 135-character body loses its
-last word to an ellipsis for those hours.
+within 140 characters including the prefix; storage is unchanged. On the widgets
+and in share text “23h ago: ” is nine characters, four over the five prompts
+reserve, so a body over 131 characters loses its last word to an ellipsis there.
 
 Android cannot tint part of a widget sentence with a colour span: the span keeps
 the old theme's colour after a theme switch. It stacks a second TextView,
