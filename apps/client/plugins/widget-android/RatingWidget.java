@@ -2,8 +2,10 @@ package com.example.newsworthy;
 
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.app.PendingIntent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -21,8 +23,10 @@ import androidx.work.PeriodicWorkRequest;
 import java.util.concurrent.TimeUnit;
 import androidx.work.WorkManager;
 import org.json.JSONObject;
+import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -172,49 +176,16 @@ public class RatingWidget extends AppWidgetProvider {
         return null;
     }
 
-    /**
-     * One convention for every time the app prints, as in apps/client/lib/timeline.js:
-     * "2m ago", "2h ago", "2d ago"; under a minute, "just now".
-     */
-    static String shortAge(Date at, long now) {
-        long minutes = Math.max(0, (now - at.getTime()) / 60_000L);
-        if (minutes < 1) return "just now";
-        if (minutes < 60) return minutes + "m ago";
-        if (minutes < 1440) return (minutes / 60) + "h ago";
-        return (minutes / 1440) + "d ago";
-    }
-
-    static final java.util.Set<String> INITIALISMS = new java.util.HashSet<>(java.util.Arrays.asList(
-        "us", "uk", "eu", "un", "ai", "nato", "imf", "ecb", "opec", "who", "gdp", "drc"));
-
-    /** The judge's kebab-case story name as a tag ("us-iran-war" → "US Iran War"), as storyLabel() in the app. */
-    static String storyLabel(String slug) {
-        if (slug == null) return null;
-        StringBuilder label = new StringBuilder();
-        for (String word : slug.trim().toLowerCase(Locale.ROOT).split("[-_\\s]+")) {
-            if (word.isEmpty()) continue;
-            if (label.length() > 0) label.append(' ');
-            label.append(INITIALISMS.contains(word) ? word.toUpperCase(Locale.ROOT) : Character.toUpperCase(word.charAt(0)) + word.substring(1));
-        }
-        return label.length() == 0 ? null : label.toString();
-    }
-
-    /**
-     * Prototype: the line below the sentence, as the app shows it: the sentence's
-     * story and how long ago it was first reported ("US Iran War · 5h ago").
-     * Either half may be missing; with neither (an older server) it says when
-     * the news was checked ("Checked 18m ago").
-     */
-    static String footnote(JSONObject reading, long now) {
-        boolean hasBody = reading.opt("explanation_text") instanceof String;
-        String story = hasBody && reading.opt("explanation_story") instanceof String ? storyLabel(reading.optString("explanation_story")) : null;
-        Date at = hasBody && reading.opt("explanation_at") instanceof String ? parseDate(reading.optString("explanation_at")) : null;
-        if (story == null && at == null) {
-            Date saved = readingDate(reading);
-            return saved == null ? "" : "Checked " + shortAge(saved, now);
-        }
-        if (story == null) return shortAge(at, now);
-        return at == null ? story : story + "  ·  " + shortAge(at, now);
+    /** "at 10:21" for a reading saved today; "9/28/26 at 10:21" otherwise, after "Checked ". */
+    static String updatedTime(Date saved, long now) {
+        Calendar day = Calendar.getInstance();
+        day.setTimeInMillis(now);
+        Calendar then = Calendar.getInstance();
+        then.setTime(saved);
+        boolean today = day.get(Calendar.YEAR) == then.get(Calendar.YEAR)
+            && day.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR);
+        String time = DateFormat.getTimeInstance(DateFormat.SHORT).format(saved);
+        return today ? "at " + time : DateFormat.getDateInstance(DateFormat.SHORT).format(saved) + " at " + time;
     }
 
     static final String NEW_LABEL = "New:";
@@ -227,21 +198,59 @@ public class RatingWidget extends AppWidgetProvider {
         return saved != null && now - saved.getTime() < NEW_LABEL_MS;
     }
 
-    /** "New:" in bold before the sentence; the body fitted so both stay within 140 characters. */
+    /**
+     * The muted age that leads the sentence once "New:" is off: "5h ago ·", then
+     * "1d ago ·" from a day; empty under an hour or without explanation_at.
+     */
+    static String sentenceAge(JSONObject reading, long now) {
+        if (isNew(reading, now) || !(reading.opt("explanation_text") instanceof String)
+            || !(reading.opt("explanation_at") instanceof String)) return "";
+        Date at = parseDate(reading.optString("explanation_at"));
+        if (at == null) return "";
+        long hours = (now - at.getTime()) / 3_600_000L;
+        if (hours < 1) return "";
+        return (hours < 24 ? hours + "h" : (hours / 24) + "d") + "\u00A0ago\u00A0·";
+    }
+
+    /**
+     * "New:" in bold, or the age, before the sentence; the body fitted so both
+     * stay within 140 characters. The age is drawn muted by a second TextView
+     * stacked on this one (see ageLayer), so here it is hidden rather than tinted.
+     */
     static CharSequence displayedExplanation(JSONObject reading, long now) {
         boolean hasBody = reading.opt("explanation_text") instanceof String;
         String label = isNew(reading, now) ? NEW_LABEL : "";
+        String age = label.isEmpty() ? sentenceAge(reading, now) : "";
+        String prefix = label.isEmpty() ? age : label;
         String body = reading.optString(hasBody ? "explanation_text" : "explanation", "");
-        int limit = 140 - (label.isEmpty() ? 0 : label.length() + 1);
+        int limit = 140 - (prefix.isEmpty() ? 0 : prefix.length() + 1);
         if (body.codePointCount(0, body.length()) > limit) {
             String cut = body.substring(0, body.offsetByCodePoints(0, limit - 1));
             int space = cut.lastIndexOf(' ');
             if (space >= 0 && cut.codePointCount(0, space) > limit / 2) cut = cut.substring(0, space);
             body = cut.trim() + "…";
         }
-        if (label.isEmpty()) return body;
-        SpannableString text = new SpannableString(label + " " + body);
-        text.setSpan(new StyleSpan(Typeface.BOLD), 0, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (prefix.isEmpty()) return body;
+        SpannableString text = new SpannableString(prefix + " " + body);
+        // Weight only for "New:": a color span kept the old theme's color after a theme switch.
+        if (!label.isEmpty()) text.setSpan(new StyleSpan(Typeface.BOLD), 0, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        else text.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, age.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return text;
+    }
+
+    /**
+     * The same text for the muted layer stacked on the sentence, with everything
+     * but the age transparent. Identical text in identical views wraps
+     * identically, so the age lands exactly where the ink layer left its gap.
+     * A colour span would keep the old theme's colour after a host theme
+     * switch; transparent is the same in every theme, and both layers take
+     * their colours from XML theme resources, so both follow the switch.
+     */
+    static CharSequence ageLayer(CharSequence sentence, JSONObject reading, long now) {
+        String age = sentenceAge(reading, now);
+        if (age.isEmpty()) return "";
+        SpannableString text = new SpannableString(sentence);
+        text.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), age.length(), text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return text;
     }
 
@@ -333,10 +342,9 @@ public class RatingWidget extends AppWidgetProvider {
                 long now = System.currentTimeMillis();
                 CharSequence sentence = displayedExplanation(reading, now);
                 views.setTextViewText(R.id.widget_explanation, sentence);
-                // Prototype: the age moved to the footnote, so the muted layer stacked
-                // on the sentence is left empty.
-                views.setTextViewText(R.id.widget_explanation_age, "");
-                views.setTextViewText(R.id.widget_updated, footnote(reading, now));
+                views.setTextViewText(R.id.widget_explanation_age, ageLayer(sentence, reading, now));
+                String date = updatedTime(readingDate(reading), System.currentTimeMillis());
+                views.setTextViewText(R.id.widget_updated, "Checked " + date);
             }
             views.setViewVisibility(R.id.widget_explanation, compact ? View.GONE : View.VISIBLE);
             views.setViewVisibility(R.id.widget_explanation_age, compact ? View.GONE : View.VISIBLE);

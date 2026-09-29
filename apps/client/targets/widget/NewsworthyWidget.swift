@@ -112,19 +112,34 @@ struct Provider: TimelineProvider {
             let now = Date()
             // A second entry takes "New:" off at its two-hour mark even when the OS delays a refresh.
             let expiry = result.reading?.newLabelExpiry
-            // And one at each change of the footnote's age, so "5h ago" becomes "6h ago" on time.
-            let ages = result.reading?.footnoteChanges(after: now) ?? []
-            let dates = Array(Set([now] + ([expiry].compactMap { $0 } + ages).filter { $0 > now })).sorted()
+            // Another at midnight brings the date back once the reading is no longer today's.
+            let midnight = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: now))
+            // And one at each of the next twelve hours of the sentence's age, so "5h ago ·" becomes "6h ago ·" on time.
+            let hours: [Date] = result.reading?.sentenceAt.map { at in
+                let next = (now.timeIntervalSince(at) / 3600).rounded(.down) + 1
+                return (0..<12).map { at.addingTimeInterval((next + Double($0)) * 3600) }
+            } ?? []
+            let dates = ([now] + ([expiry, midnight].compactMap { $0 } + hours).filter { $0 > now }).sorted()
             let entries = dates.map { ReadingEntry(date: $0, reading: result.reading, saved: result.saved) }
             completion(Timeline(entries: entries, policy: .after(now.addingTimeInterval(30 * 60))))
         }
     }
 }
 
-/// A new development's sentence leads with a bold "New:"; its story and age are on the footnote.
+/// A new development's sentence leads with a bold "New:"; an older one with its age in the muted colour.
+/// "Checked at 10:21" for a reading saved on the entry's own day; "Checked Sep 28 at 10:21" otherwise.
+func timestampText(_ date: Date, at now: Date) -> String {
+    let time = date.formatted(date: .omitted, time: .shortened)
+    if Calendar.current.isDate(date, inSameDayAs: now) { return "Checked at \(time)" }
+    return "Checked \(date.formatted(.dateTime.month(.abbreviated).day())) at \(time)"
+}
+
 func explanationText(_ reading: Reading?, at date: Date) -> Text {
     guard let parts = reading?.explanationParts(at: date) else { return Text(verbatim: "") }
     if !parts.label.isEmpty { return Text(verbatim: parts.label).bold() + Text(verbatim: " " + parts.body) }
+    if !parts.age.isEmpty {
+        return Text(verbatim: parts.age).foregroundColor(Color("NewsworthyGradientMuted")) + Text(verbatim: " " + parts.body)
+    }
     return Text(verbatim: parts.body)
 }
 
@@ -267,9 +282,10 @@ struct ReadingContent: View {
                 .clipped()
             }
             Group {
-                if let reading = entry.reading, reading.updatedAt != nil {
-                    // The sentence's story and age, as the app shows them below the sentence.
-                    Text(reading.footnote(at: entry.date))
+                if let date = entry.reading?.updatedAt {
+                    // Preserve the saved reading's absolute timestamp.
+                    Text(timestampText(date, at: entry.date))
+                        .accessibilityLabel("Checked \(date.formatted(date: .abbreviated, time: .shortened))")
                 } else {
                     Text("")
                 }

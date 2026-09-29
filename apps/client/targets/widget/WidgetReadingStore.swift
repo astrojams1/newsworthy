@@ -7,7 +7,6 @@ struct Reading: Codable, Equatable, Sendable {
     var explanation_text: String? = nil
     var explanation_new: Bool? = nil
     var explanation_at: String? = nil
-    var explanation_story: String? = nil
 
     private static func date(_ raw: String) -> Date? {
         let formatter = ISO8601DateFormatter()
@@ -28,68 +27,34 @@ struct Reading: Codable, Equatable, Sendable {
     /// When the shown sentence was first reported; absent from older servers and caches.
     var sentenceAt: Date? { explanation_text == nil ? nil : explanation_at.flatMap(Reading.date) }
 
-    /// One convention for every time the app prints, as in apps/client/lib/timeline.js:
-    /// "2m ago", "2h ago", "2d ago"; under a minute, "just now".
-    static func shortAge(_ at: Date, now: Date) -> String {
-        let minutes = max(0, Int((now.timeIntervalSince(at) / 60).rounded(.down)))
-        if minutes < 1 { return "just now" }
-        if minutes < 60 { return "\(minutes)m ago" }
-        if minutes < 1440 { return "\(minutes / 60)h ago" }
-        return "\(minutes / 1440)d ago"
+    /// The muted age that leads the sentence once "New:" is off: "5h ago ·", then "1d ago ·"
+    /// from a day; empty under an hour or without `explanation_at`.
+    func sentenceAge(at now: Date) -> String {
+        guard newLabelExpiry.map({ now < $0 }) != true, let at = sentenceAt else { return "" }
+        let hours = Int((now.timeIntervalSince(at) / 3600).rounded(.down))
+        if hours < 1 { return "" }
+        return hours < 24 ? "\(hours)h\u{00A0}ago\u{00A0}·" : "\(hours / 24)d\u{00A0}ago\u{00A0}·"
     }
 
-    /// The judge's kebab-case story name as a tag ("us-iran-war" → "US Iran War"), as storyLabel() in the app.
-    static func storyLabel(_ slug: String?) -> String? {
-        let initialisms: Set<String> = ["us", "uk", "eu", "un", "ai", "nato", "imf", "ecb", "opec", "who", "gdp", "drc"]
-        let words = (slug ?? "").lowercased().split(whereSeparator: { $0 == "-" || $0 == "_" || $0.isWhitespace })
-        if words.isEmpty { return nil }
-        return words.map { initialisms.contains(String($0)) ? $0.uppercased() : $0.prefix(1).uppercased() + $0.dropFirst() }
-            .joined(separator: " ")
-    }
-
-    /// Prototype: the line below the sentence, as the app shows it: the sentence's story and
-    /// how long ago it was first reported ("US Iran War · 5h ago"). Either half may be missing;
-    /// with neither (an older server) it says when the news was checked ("Checked 18m ago").
-    func footnote(at now: Date) -> String {
-        var parts: [String] = []
-        if explanation_text != nil, let story = Reading.storyLabel(explanation_story) { parts.append(story) }
-        if let at = sentenceAt { parts.append(Reading.shortAge(at, now: now)) }
-        if parts.isEmpty, let saved = updatedAt { return "Checked " + Reading.shortAge(saved, now: now) }
-        return parts.joined(separator: "  ·  ")
-    }
-
-    /// The moments the footnote's age next changes: each minute of its first hour, each hour
-    /// of its first day, then each day.
-    func footnoteChanges(after now: Date, limit: Int = 60) -> [Date] {
-        guard let at = sentenceAt ?? updatedAt else { return [] }
-        var dates: [Date] = []
-        var time = now
-        while dates.count < limit {
-            let age = time.timeIntervalSince(at)
-            let step: TimeInterval = age < 3600 ? 60 : age < 86400 ? 3600 : 86400
-            time = at.addingTimeInterval(((age / step).rounded(.down) + 1) * step)
-            dates.append(time)
-        }
-        return dates
-    }
-
-    /// The label ("New:" or empty) and the body, fitted together within 140 characters.
-    /// The sentence's age is on the footnote, not before the sentence.
-    func explanationParts(at now: Date) -> (label: String, body: String) {
+    /// The label ("New:" or empty), the age ("5h ·" or empty) and the body, fitted together within 140 characters.
+    func explanationParts(at now: Date) -> (label: String, age: String, body: String) {
         let label = newLabelExpiry.map { now < $0 } == true ? "New:" : ""
+        let age = label.isEmpty ? sentenceAge(at: now) : ""
+        let prefix = label.isEmpty ? age : label
         let body = explanation_text ?? explanation
-        let limit = 140 - (label.isEmpty ? 0 : label.unicodeScalars.count + 1)
-        if body.unicodeScalars.count <= limit { return (label, body) }
+        let limit = 140 - (prefix.isEmpty ? 0 : prefix.unicodeScalars.count + 1)
+        if body.unicodeScalars.count <= limit { return (label, age, body) }
         var cut = String(String.UnicodeScalarView(body.unicodeScalars.prefix(limit - 1)))
         if let space = cut.lastIndex(of: " "), cut[..<space].unicodeScalars.count > limit / 2 {
             cut = String(cut[..<space])
         }
-        return (label, cut.trimmingCharacters(in: .whitespacesAndNewlines) + "…")
+        return (label, age, cut.trimmingCharacters(in: .whitespacesAndNewlines) + "…")
     }
 
     func displayedExplanation(at now: Date) -> String {
         let parts = explanationParts(at: now)
-        return parts.label.isEmpty ? parts.body : "\(parts.label) \(parts.body)"
+        let prefix = parts.label.isEmpty ? parts.age : parts.label
+        return prefix.isEmpty ? parts.body : "\(prefix) \(parts.body)"
     }
 
     var isValid: Bool {

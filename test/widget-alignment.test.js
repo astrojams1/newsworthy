@@ -27,10 +27,6 @@ test('native pixel evidence retains its source provenance and reviewed layout sc
   ];
   let geometry=source.slice(source.indexOf('// One three-line numeral size'))
     .replace('explanationText(entry.reading, at: entry.date)','Text(entry.reading?.explanation ?? "")')
-    // Prototype, 2026-09-29: the footnote's text becomes the story and the sentence's
-    // age; its font, frame and line limit are unchanged.
-    .replace('if let reading = entry.reading, reading.updatedAt != nil {\n                    // The sentence\'s story and age, as the app shows them below the sentence.\n                    Text(reading.footnote(at: entry.date))\n',
-      'if let date = entry.reading?.updatedAt {\n                    // Preserve the saved reading\'s absolute timestamp.\n                    Text(timestampText(date, at: entry.date))\n                        .accessibilityLabel("Checked \\(date.formatted(date: .abbreviated, time: .shortened))")\n')
     // Same-day readings drop the month and day; the timestamp's font and frame are unchanged.
     .replace('Text(timestampText(date, at: entry.date))','Text("\\(date.formatted(.dateTime.month(.abbreviated).day())) · \\(date.formatted(date: .omitted, time: .shortened))")')
     .replace(/\.description\("[^"]*"\)/g,'.description("")')

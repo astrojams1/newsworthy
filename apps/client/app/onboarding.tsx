@@ -10,7 +10,6 @@ import { usePreferences } from '@/components/preferences-provider';
 import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { onboardingSlides, type SlideArt } from '@/lib/onboarding';
-import { widgetFootnote } from '@/lib/story-age';
 
 type Theme = ReturnType<typeof useTheme>;
 const platform = process.env.EXPO_OS === 'ios' ? 'ios' : 'android';
@@ -74,7 +73,7 @@ function Introduction() {
         importantForAccessibility={position === index ? 'auto' : 'no-hide-descendants'}
         style={{ width, flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 24 }}>
         <View style={{ height: ART_HEIGHT, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', marginBottom: 36 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Art art={slide.art} theme={theme} score={reading?.score} footnote={reading ? widgetFootnote(reading) : ''} />
+          <Art art={slide.art} theme={theme} score={reading?.score} saved={reading?.created_at} />
         </View>
         <View style={{ width: column, height: TEXT_BLOCK, alignItems: 'center' }}>
           <Text testID="onboarding-title" accessibilityRole="header" style={{ color: theme.ink, fontSize: 26, lineHeight: TITLE_LINE, minHeight: TITLE_LINE, fontWeight: '600', textAlign: 'center' }}>{slide.title}</Text>
@@ -122,6 +121,17 @@ function Diagonal({ colors, radius, children, style, testID }: { colors: Palette
   </View>;
 }
 
+// The widgets' own timestamp: "Checked at 10:21" for a reading saved today,
+// the date before "at" otherwise; iOS writes "Sep 28", Android its short date.
+function widgetTime(saved: string | undefined) {
+  const date = saved ? new Date(saved) : new Date();
+  const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  if (date.toDateString() === new Date().toDateString()) return `Checked at ${time}`;
+  const day = platform === 'android' ? date.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })
+    : date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return `Checked ${day} at ${time}`;
+}
+
 // An SVG as an image source; Android's expo-image decodes data URLs as base64.
 function svgUri(svg: string) {
   return process.env.EXPO_OS === 'android'
@@ -132,7 +142,7 @@ function svgUri(svg: string) {
 // widget's own colors. The shadow sits on a wrapper: a clipped view cannot cast one.
 const lifted = { borderRadius: 24, boxShadow: '0 10px 30px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08)' } as const;
 
-function Art({ art, theme, score, footnote }: { art: SlideArt; theme: Theme; score?: number; footnote: string }) {
+function Art({ art, theme, score, saved }: { art: SlideArt; theme: Theme; score?: number; saved?: string }) {
   // The top of the reading screen: the score, and under it the sentence drawn
   // as abstract lines. The picture shows where the sentence sits, not what one
   // says, so it never reads as today's news; the notification draws it alike.
@@ -145,7 +155,7 @@ function Art({ art, theme, score, footnote }: { art: SlideArt; theme: Theme; sco
       {[250, 270, 170].map((w, i) => <View key={i} style={{ width: w, height: 9, borderRadius: 5, backgroundColor: theme.ink, opacity: 0.16 }} />)}
     </View>
   </View>;
-  if (art === 'widget') return <View style={lifted}><SmallWidget score={score} footnote={footnote} dark={theme.dark} /></View>;
+  if (art === 'widget') return <View style={lifted}><SmallWidget score={score} saved={saved} dark={theme.dark} /></View>;
   return <View style={lifted}><Notification theme={theme} /></View>;
 }
 
@@ -153,7 +163,7 @@ function Art({ art, theme, score, footnote }: { art: SlideArt; theme: Theme; sco
 // RatingWidget.java): the wordmark, the score and its denominator, then the
 // update time, over the level's diagonal. Corners: iOS's system widget radius,
 // Android's 20dp.
-function SmallWidget({ score, footnote, dark }: { score?: number; footnote: string; dark: boolean }) {
+function SmallWidget({ score, saved, dark }: { score?: number; saved?: string; dark: boolean }) {
   const colors = palette(score, dark);
   return <Diagonal testID="onboarding-widget" colors={colors} radius={platform === 'android' ? 20 : 24}
     style={{ width: 176, height: 176, padding: 16, justifyContent: 'space-between' }}>
@@ -162,7 +172,7 @@ function SmallWidget({ score, footnote, dark }: { score?: number; footnote: stri
       <Text style={{ color: colors.ink, fontSize: 69, lineHeight: 76, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -69 * 0.04 }}>{score ?? '–'}</Text>
       <Text style={{ color: colors.gradientMuted, fontSize: 12, fontFamily: scoreFont, marginLeft: platform === 'android' ? 2 : 1 }}>∕10</Text>
     </View>
-    <Text numberOfLines={1} style={{ color: colors.gradientMuted, fontSize: 11 }}>{footnote}</Text>
+    <Text numberOfLines={1} style={{ color: colors.gradientMuted, fontSize: 11 }}>{widgetTime(saved)}</Text>
   </Diagonal>;
 }
 // The app's launcher mark: the brand's accent dash on its diagonal,

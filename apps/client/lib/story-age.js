@@ -22,7 +22,7 @@ export function isNew(reading, now = Date.now()) {
 
 /**
  * How long ago the shown sentence's development was first reported, as the
- * muted prefix that leads it once "New:" has come off: "5h ·", then "1d ·"
+ * muted prefix that leads it once "New:" has come off: "5h ago ·", then "1d ago ·"
  * from a day. Nothing under an hour, where "Checked" beside it says as much,
  * and nothing without `explanation_at`, which an older server or cache lacks.
  * A middle dot, as the timeline's tag lines separate story from age (owner
@@ -36,7 +36,7 @@ export function sentenceAge(reading, now = Date.now()) {
   if (!Number.isFinite(at) || !Number.isFinite(now)) return '';
   const hours = Math.floor((now - at) / 3600_000);
   if (hours < 1) return '';
-  return `${hours < 24 ? `${hours}h` : `${Math.floor(hours / 24)}d`}\u00A0·`;
+  return `${hours < 24 ? `${hours}h` : `${Math.floor(hours / 24)}d`}\u00A0ago\u00A0·`;
 }
 
 /** A display guard for legacy/overlong readings; stored prose is never changed. */
@@ -81,18 +81,6 @@ export function storyLine(reading, now = Date.now()) {
   const at = typeof reading.explanation_at === 'string' && Number.isFinite(Date.parse(reading.explanation_at))
     ? shortAge(reading.explanation_at, now) : null;
   return [storyLabel(reading.explanation_story), at].filter(Boolean).join('  ·  ');
-}
-
-/**
- * The widgets' line below the sentence, as WidgetReadingStore.swift and
- * RatingWidget.java write it: the story line, or with neither story nor age
- * (an older server) when the news was checked ("Checked 18m ago").
- */
-export function widgetFootnote(reading, now = Date.now()) {
-  const line = storyLine(reading, now);
-  if (line) return line;
-  const checked = checkedAgo(reading, now);
-  return checked ? `Checked ${checked}` : '';
 }
 
 /** When the news was last checked, for Settings: "18m ago". */
