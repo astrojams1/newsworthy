@@ -160,3 +160,26 @@ test('both widgets format the age as the app does', () => {
   assert.ok(swift.includes('"\\(hours)h\\u{00A0}·" : "\\(hours / 24)d\\u{00A0}·"'), 'iOS widget');
   assert.ok(java.includes('(hours / 24) + "d") + "\\u00A0·";'), 'Android widget');
 });
+
+test('the story line names the sentence\'s story and its age, prototype', async () => {
+  const { storyLine } = await import('../apps/client/lib/story-age.js');
+  const now = Date.parse('2026-09-29T12:00:00Z');
+  const reading = { score: 4, explanation: 'x.', explanation_text: 'x.', explanation_new: false,
+    created_at: '2026-09-29T11:50:00Z', explanation_at: '2026-09-29T07:00:00Z', explanation_story: 'us-iran-war' };
+  assert.equal(storyLine(reading, now), 'US Iran War  ·  5 hr ago');
+  assert.equal(storyLine({ ...reading, explanation_story: undefined }, now), '', 'no story: the age stays on the sentence');
+  assert.equal(storyLine({ ...reading, explanation_at: undefined }, now), 'US Iran War');
+  assert.equal(storyLine({ ...reading, explanation_text: undefined }, now), '');
+});
+
+test('with a story, every app surface shows story and age between the number and the sentence, prototype', () => {
+  const aged = { ...fresh, explanation_new: false, explanation_at: start, explanation_story: 'us-iran-war' };
+  for (const platform of ['web','ios','android']) {
+    const rendered = nodes(renderReading({ platform, width:390, height:844, readingOverride:aged, now:origin + (5 * 60 + 10) * 60000 }));
+    const line = rendered.find(n=>n.props.testID === 'rating-story');
+    assert.equal(line.props.children, 'US Iran War  ·  5 hr ago');
+    assert.equal(rendered.find(n=>n.props.testID === 'rating-age'), undefined, 'the age is not said twice');
+    const order = rendered.map(n=>n.props.testID).filter(id=>['rating-score','rating-story','rating-explanation'].includes(id));
+    assert.deepEqual(order, ['rating-score','rating-story','rating-explanation']);
+  }
+});
