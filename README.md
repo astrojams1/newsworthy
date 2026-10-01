@@ -46,6 +46,10 @@ To check the hourly caller's runs against what the server recorded, use the
 `scripts/caller-review.mjs`; findings are appended to the
 [caller review ledger](docs/caller-reviews/ledger.md).
 
+Before any EAS build, store submission or EAS sandbox, use the
+[app release skill](.agents/skills/newsworthy-app-release/SKILL.md): the Expo
+account's free plan caps builds and sandbox minutes each month.
+
 ### iOS, Android and web
 
 `apps/client` is the shared **Expo / React Native** interface. Mobile screens

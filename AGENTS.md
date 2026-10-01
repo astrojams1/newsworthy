@@ -67,6 +67,8 @@ release status. Calm presentation must not change the rating calibration.
 - To remake the store preview videos, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
+- Before any EAS build, store submission or EAS sandbox, use
+  `.agents/skills/newsworthy-app-release/SKILL.md`: free-plan monthly caps.
 - A push to `main` deploys to production. `main` is both the GitHub default
   branch and Vercel's production branch. Preview builds are skipped by
   `vercel.json`’s `ignoreCommand`; verify production after merge.
@@ -169,8 +171,7 @@ removed from both caller-facing endpoints. The full history stays at
 cannot be confused with rating against one.
 
 Note the two effects compound: external readings suppress the cron by being
-recent, so a prompt change reaches nothing until a caller picks it up. No cron
-run has executed v4.
+recent, so a prompt change reaches nothing until a caller picks it up.
 
 **The front page shows a development's level, aged.** Two rules, in order.
 
@@ -524,11 +525,10 @@ was misread as data loss.
 
 **The external caller runs hourly, not on this app's cadence.** A scheduled
 Cowork task fires at `2 * * * *` — 48 of the last 48 readings are external, one
-per hour, clustered at :03–:05. Each is an independent session with no memory of
-the others. That is why no cron run has executed anything since v4: the rolling
-staleness window is suppressed continuously, so this app's own cadence setting
-is inert while the caller keeps running, and its model spend is near zero
-because the caller is paying instead.
+per hour, clustered at :03–:05, each an independent session with no memory of
+the others. No cron run has executed since v4: the caller keeps the staleness
+window suppressed, so this app's cadence setting is inert and its model spend
+near zero.
 
 **The cron only fires if nothing arrived within the interval.** A rolling
 window from the newest reading, not the slot boundary — an external reading at

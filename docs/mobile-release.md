@@ -80,6 +80,8 @@ Build profiles in `apps/client/eas.json`:
 After setup, `.github/workflows/mobile.yml` starts EAS builds manually. Configure
 GitHub secret `EXPO_TOKEN`, repository variable `EXPO_PROJECT_ID` and, for iOS,
 `APPLE_TEAM_ID`. Building does not automatically submit or publish to a store.
+Cloud builds and EAS sandboxes draw on the Expo account's monthly free-plan
+caps; follow `.agents/skills/newsworthy-app-release/SKILL.md` before starting one.
 
 ```sh
 npx eas-cli@latest build --platform all --profile production
