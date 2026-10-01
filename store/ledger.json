@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T06:15:31+00:00",
+  "updated_at": "2026-10-01T07:57:53+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -178,15 +178,15 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC.",
+      "summary": "Apple rejected 1.0.0 (21) again under Guideline 4.2 (Minimum Functionality), after the September 24 resubmission with notifications and the physical-device video (owner report, 2026-10-01). API readback 2026-10-01: version REJECTED, submission 4f28761f UNRESOLVED_ISSUES, build 21 selected. This is the third 4.2 finding: build 7 on September 21 (reconsideration upheld September 23) and build 21 now, despite notifications and widgets added in between. Build 26 (TestFlight, owner-checked) adds per-widget settings and native header buttons; the story timeline exists but is off by default. Not resubmitted.",
       "evidence": [
-        "store/apple-review-resubmission-2026-09-24-video.json; store/apple-review-response-2026-09-24.md"
+        "App Store Connect API: appStoreVersion 267c6f52 REJECTED; reviewSubmission 4f28761f UNRESOLVED_ISSUES; owner message 'rejected by guideline 4.2'"
       ],
-      "next_action": "Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate.",
-      "updated_at": "2026-09-24T06:20:53+00:00"
+      "next_action": "Owner chooses how to answer 4.2 before any resubmission: an App Review appointment, more visible functionality, or an App Review Board appeal.",
+      "updated_at": "2026-10-01T07:57:53+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -6646,6 +6646,22 @@
         ],
         "next_action": "Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app.",
         "updated_at": "2026-10-01T06:15:31+00:00"
+      }
+    },
+    {
+      "sequence": 351,
+      "at": "2026-10-01T07:57:53+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Apple rejected 1.0.0 (21) again under Guideline 4.2 (Minimum Functionality), after the September 24 resubmission with notifications and the physical-device video (owner report, 2026-10-01). API readback 2026-10-01: version REJECTED, submission 4f28761f UNRESOLVED_ISSUES, build 21 selected. This is the third 4.2 finding: build 7 on September 21 (reconsideration upheld September 23) and build 21 now, despite notifications and widgets added in between. Build 26 (TestFlight, owner-checked) adds per-widget settings and native header buttons; the story timeline exists but is off by default. Not resubmitted.",
+        "evidence": [
+          "App Store Connect API: appStoreVersion 267c6f52 REJECTED; reviewSubmission 4f28761f UNRESOLVED_ISSUES; owner message 'rejected by guideline 4.2'"
+        ],
+        "next_action": "Owner chooses how to answer 4.2 before any resubmission: an App Review appointment, more visible functionality, or an App Review Board appeal.",
+        "updated_at": "2026-10-01T07:57:53+00:00"
       }
     }
   ],

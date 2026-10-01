@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-01T06:15:31+00:00
+Updated: 2026-10-01T07:57:53+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,7 +25,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC. | Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate. |
+| apple.review | waiting_user | user | observed | Apple rejected 1.0.0 (21) again under Guideline 4.2 (Minimum Functionality), after the September 24 resubmission with notifications and the physical-device video (owner report, 2026-10-01). API readback 2026-10-01: version REJECTED, submission 4f28761f UNRESOLVED_ISSUES, build 21 selected. This is the third 4.2 finding: build 7 on September 21 (reconsideration upheld September 23) and build 21 now, despite notifications and widgets added in between. Build 26 (TestFlight, owner-checked) adds per-widget settings and native header buttons; the story timeline exists but is off by default. Not resubmitted. | Owner chooses how to answer 4.2 before any resubmission: an App Review appointment, more visible functionality, or an App Review Board appeal. |
 | apple.release | waiting_provider | provider | observed | Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, verify paid-sale account readiness, and verify public paid availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
@@ -3459,3 +3459,13 @@ TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar bu
 - EAS build 6df1f5b0 (FINISHED); EAS submission 949246a0; App Store Connect build e95d5777 VALID, added to Release QA
 
 Next: Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app.
+
+### 351. apple.review — waiting_user
+
+2026-10-01T07:57:53+00:00 · observed · user
+
+Apple rejected 1.0.0 (21) again under Guideline 4.2 (Minimum Functionality), after the September 24 resubmission with notifications and the physical-device video (owner report, 2026-10-01). API readback 2026-10-01: version REJECTED, submission 4f28761f UNRESOLVED_ISSUES, build 21 selected. This is the third 4.2 finding: build 7 on September 21 (reconsideration upheld September 23) and build 21 now, despite notifications and widgets added in between. Build 26 (TestFlight, owner-checked) adds per-widget settings and native header buttons; the story timeline exists but is off by default. Not resubmitted.
+
+- App Store Connect API: appStoreVersion 267c6f52 REJECTED; reviewSubmission 4f28761f UNRESOLVED_ISSUES; owner message 'rejected by guideline 4.2'
+
+Next: Owner chooses how to answer 4.2 before any resubmission: an App Review appointment, more visible functionality, or an App Review Board appeal.
