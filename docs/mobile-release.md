@@ -27,10 +27,31 @@ Run Web starts a live Expo browser preview; its development middleware forwards
 only `GET /api/current` to the public production API. Native apps fetch that API
 directly. Web previews are not native simulator verification.
 
-The installed Xcode 16.2 can manage the existing simulators. Expo SDK 57 custom
-builds need a newer supported toolchain; use EAS cloud builds rather than
-upgrading Xcode locally. Expo Go runs a precompiled host in the simulator.
-Widgets require custom builds and cannot be tested in Expo Go.
+On 1 October the owner's Mac was updated to Xcode 26.6 for local custom builds
+and native captures, avoiding additional Expo credits and sandbox minutes. The
+matching iOS 26.5 runtime is still downloading; older installed runtimes alone
+cannot compile this SDK's asset catalogs. Check the actual host and runtime
+inventory rather than assuming a cloud environment. Expo Go runs a precompiled
+host in the simulator; widgets require custom builds and cannot be tested in it.
+
+PR #155 is merged. Production **1.0.0 (26)** is selected and **Waiting for
+Review**, confirmed through Apple's API on 1 October at 11:37 UTC. Listing and
+six-part Notes are saved. Eight current gallery images are COMPLETE, ordered
+and checksum-verified; timeline leads iPhone/iPad, and the iPhone Notifications
+image shows the root page rather than the threshold selector. The widget image
+preserves real Small Light/Medium Dark native surfaces on a neutral canvas.
+
+Six app images came from the authorized iOS 26.5 Expo sandbox; Notifications and
+widgets came from EAS simulator build `78c0ccc8` on local iOS 18.3.1. Both report
+actual bundle 1.0.0 (1), with application files matching production source
+`51826ed`. The Mac unlock is resolved; the slow runtime download does not block
+this completed submission. The sandbox is stopped. Original EAS widget rendering
+worked despite empty extension entitlements, so the earlier signing hypothesis
+is not established. Physical build-26 QA and widget name-hiding rechecks remain
+separate from these captures. No public App Store preview video is planned;
+Notes identify the existing build-21 physical recording as historical. See
+`store/apple-review-resubmission-2026-10-01-build26.json`,
+`store/source/ios-gallery-v26-provenance.json` and the release ledger.
 
 The EAS project is [@astrojams1/newsworthy](https://expo.dev/accounts/astrojams1/projects/newsworthy).
 The local CLI was connected through Expo browser sign-in on September 16, 2026.
@@ -152,9 +173,10 @@ access. Internal testing alone does not meet this requirement. See
   App Store Connect recognizes the active membership after refreshing.
   Both `com.astrojams.newsworthy` and its `.widget` identifier are registered.
   [Newsworthy: Calm News](https://appstoreconnect.apple.com/apps/6812519450/distribution)
-  has build21 Waiting for Review after the updated physical demonstration,
-  six-part response and matching Notes were submitted September24 at06:19UTC.
-  See `store/apple-review-build21-followup.md`.
+  had build 21 Waiting for Review after the updated physical demonstration,
+  six-part response and matching Notes were submitted September 24 at 06:19 UTC.
+  That historical state was superseded by a rejection. Build 26 is now selected
+  in Prepare for Submission, as recorded above and in the release ledger.
   The shorter name was already taken.
   Listing copy, subtitle, privacy-policy URL, News category, review contact
   (including phone), and review notes are saved.
@@ -173,11 +195,12 @@ access. Internal testing alone does not meet this requirement. See
   [34e8a094-c122-4770-9bf6-611f70f671ab](https://expo.dev/accounts/astrojams1/projects/newsworthy/builds/34e8a094-c122-4770-9bf6-611f70f671ab).
   The stalled [EAS submission](https://expo.dev/accounts/astrojams1/projects/newsworthy/submissions/4a6398aa-658c-49c0-a909-c09209dd5021)
   was canceled and replaced with a successful direct Apple `altool` upload.
-  Apple build `805f70f3-09a4-4111-afd2-bf04bb99e30d` is `VALID` and selected for
-  version 1.0.0. Three iPhone and two iPad listing screenshots are `COMPLETE`.
+  At that time Apple build `805f70f3-09a4-4111-afd2-bf04bb99e30d` was `VALID`
+  and selected for version 1.0.0. Three iPhone and two iPad historical listing
+  screenshots remain `COMPLETE` while the current gallery is prepared.
   Version 1.0.0 build 5 was submitted at 2026-09-16 04:53 UTC. Both the version
   and review submission then reported WAITING_FOR_REVIEW (historical; see the
-  current build 21 follow-up above). All 175 territories are
+  current build 26 selection above). All 175 territories are
   enabled, with automatic release after approval. It is not publicly released;
   commercial-account and final device checks remain separate.
 - Google Play developer registration and its fee are complete. Play Console

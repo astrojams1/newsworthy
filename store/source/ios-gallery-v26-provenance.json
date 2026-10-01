@@ -1,0 +1,145 @@
+{
+  "status": "verified",
+  "scope": "Current app screens and Small/Medium native widgets, captured on simulators.",
+  "capturedAt": "2026-10-01",
+  "applicationSourceCommit": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521",
+  "releaseBuild": "26",
+  "actualSimulatorVersion": "1.0.0",
+  "actualSimulatorBundleBuild": "1",
+  "xcode": "26.6 (17F113)",
+  "sandboxId": "01a0f6f5-659d-7261-b085-5c7aa6723f1d",
+  "captureMethod": "AXe native simulator interaction; simctl native full-resolution PNGs. Binary transfer byte count and SHA256 checked after arrival.",
+  "limits": [
+    "Simulator evidence, not physical-device QA or production binary certification.",
+    "Final artwork: six app screens on iOS 26.5, Notifications and widgets on iOS 18.3.1. Source application files match production build 26. The earlier threshold-selector capture remains historical preparation evidence and is omitted from final artwork.",
+    "Unsigned sandbox widgets failed on iOS 26.5; service logs reported insufficient privileges and empty entitlements. A signing retry was not observed. The original EAS artifact works on iOS 18.3, so signing is not established as the only cause.",
+    "Small Light and Medium Dark are directly verified; both names are visible. Name-hiding taps through local CUA did not change the switch, so this run does not independently verify that control. Earlier same-widget source simulator checks remain separately recorded."
+  ],
+  "captures": [
+    {
+      "file": "source/iphone-6.9/01-timeline-v26.png",
+      "sha256": "68b3f08cf6d685a7b8ccdb99b8717ae78628b5dd057bb9bb4b0588cc04961918",
+      "device": "iPhone 17 Pro Max",
+      "runtime": "iOS 26.5 (23F77)",
+      "dimensions": [
+        1320,
+        2868
+      ]
+    },
+    {
+      "file": "source/iphone-6.9/02-reading-light-v26.png",
+      "sha256": "eef9102617d91fed175f7e635d924e23557d737172c78820ab1ba815d6cd810f",
+      "device": "iPhone 17 Pro Max",
+      "runtime": "iOS 26.5 (23F77)",
+      "dimensions": [
+        1320,
+        2868
+      ]
+    },
+    {
+      "file": "source/iphone-6.9/03-reading-dark-v26.png",
+      "sha256": "d1e231561178a5d041a54e10cccb114404ef0eda6d4fbee998c8083dd2c7b367",
+      "device": "iPhone 17 Pro Max",
+      "runtime": "iOS 26.5 (23F77)",
+      "dimensions": [
+        1320,
+        2868
+      ]
+    },
+    {
+      "file": "source/iphone-6.9/04-notifications-v26.png",
+      "sha256": "d63dfc8a6e8fc5901140e2f8362e2e5e4e5c7f61d5fbf442a7c802f05d3c2a73",
+      "device": "iPhone 17 Pro Max",
+      "runtime": "iOS 26.5 (23F77)",
+      "dimensions": [
+        1320,
+        2868
+      ]
+    },
+    {
+      "file": "source/ipad-13/01-timeline-v26.png",
+      "sha256": "8df5e28ae3a122230eed594790986876801b66318d12d499d74735112eacbbd5",
+      "device": "iPad Pro 13-inch (M5)",
+      "runtime": "iOS 26.5 (23F77)",
+      "dimensions": [
+        2064,
+        2752
+      ]
+    },
+    {
+      "file": "source/ipad-13/02-reading-light-v26.png",
+      "sha256": "3e3a26c57fcb3b9a0220716c9e51a5464bf3e31557cb67cb8f98d4031425db22",
+      "device": "iPad Pro 13-inch (M5)",
+      "runtime": "iOS 26.5 (23F77)",
+      "dimensions": [
+        2064,
+        2752
+      ]
+    },
+    {
+      "file": "source/ipad-13/03-reading-dark-v26.png",
+      "sha256": "d31aa8435968b8332c3844657c7ba3d7bb101483a12ffa4abd0631382a7e9391",
+      "device": "iPad Pro 13-inch (M5)",
+      "runtime": "iOS 26.5 (23F77)",
+      "dimensions": [
+        2064,
+        2752
+      ]
+    },
+    {
+      "file": "source/iphone-6.9/05-small-widget-v26.png",
+      "sha256": "0ec5abaf29c73c8228e448fefed09af13e5d469c2862cf47625d1328d9a4e611",
+      "device": "iPhone 16 Pro Max",
+      "runtime": "iOS 18.3.1 (22D8075)",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "easBuildId": "78c0ccc8-d1ac-4e04-a789-b33d4bf0c570",
+      "actualSimulatorBundleBuild": "1",
+      "applicationSourcesMatch": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521"
+    },
+    {
+      "file": "source/iphone-6.9/06-medium-widget-v26.png",
+      "sha256": "de42562b47c4f01ac3cfd8ff216fd12d2ed2445f2962e28f085d5dfc5f72f54e",
+      "device": "iPhone 16 Pro Max",
+      "runtime": "iOS 18.3.1 (22D8075)",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "easBuildId": "78c0ccc8-d1ac-4e04-a789-b33d4bf0c570",
+      "actualSimulatorBundleBuild": "1",
+      "applicationSourcesMatch": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521"
+    },
+    {
+      "file": "source/iphone-6.9/07-notifications-page-v26.png",
+      "sha256": "2251ec612283cc8e7150cb6c10d35aaeabd569f51b26ba741306f113d1593ae6",
+      "device": "iPhone 16 Pro Max",
+      "runtime": "iOS 18.3.1 (22D8075)",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "easBuildId": "78c0ccc8-d1ac-4e04-a789-b33d4bf0c570",
+      "actualSimulatorBundleBuild": "1",
+      "captureMethod": "Simulator File → Save Screen… through CUA, without device mask",
+      "verified": "Actual Notifications page with High-score alerts off, Threshold 8 or higher, and once-per-development explanation. Owner requested this page instead of the threshold selector."
+    }
+  ],
+  "widgetArtifact": {
+    "id": "78c0ccc8-d1ac-4e04-a789-b33d4bf0c570",
+    "status": "FINISHED",
+    "sourceCommit": "e9d16c083cdb901ab56ec8b9eb515aeb3a12e431",
+    "completedAt": "2026-10-01T11:01:30.695Z",
+    "bytes": 26971268,
+    "sha256": "a527cf6d78432328dc7f2e257648fb5deebcb96dd7d5ffc6f9eba8be2320c34a",
+    "applicationSourcesMatch": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521",
+    "actualBundleVersion": "1.0.0",
+    "actualBundleBuild": "1",
+    "runtime": "iOS 18.3.1 (22D8075)",
+    "device": "iPhone 16 Pro Max",
+    "captureMethod": "Simulator File → Save Screen… through CUA; full native PNGs retained without device mask.",
+    "signing": "Original EAS simulator artifact, ad-hoc signature with empty extension entitlements; widget AppIntent configuration and rendering worked on iOS 18.3. No re-signing was needed."
+  }
+}

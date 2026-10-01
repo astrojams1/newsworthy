@@ -1,0 +1,60 @@
+{
+  "observedAt": "2026-10-01T11:35:58.297Z",
+  "releaseBuild": "26",
+  "sets": [
+    {
+      "id": "d3a7afa4-c07e-4803-ba38-47ecead34f01",
+      "type": "APP_IPAD_PRO_3GEN_129",
+      "uploaded": [
+        {
+          "id": "da8dfda0-0874-4d60-ab42-36b1f96f937f",
+          "fileName": "01-timeline-v26.png",
+          "checksum": "666039b149e2aa4d946bad8539e492db"
+        },
+        {
+          "id": "1f7999e8-03a2-45fc-9de1-c6b143b3342d",
+          "fileName": "02-reading-v26.png",
+          "checksum": "1f64f2a8d40d6e0fdf1ed50a7a90ee6e"
+        },
+        {
+          "id": "91af9571-6ebe-48e9-881d-7b4c0d7aae10",
+          "fileName": "03-appearance-v26.png",
+          "checksum": "0383fc239983082ee17b4959d457d784"
+        }
+      ],
+      "previous": []
+    },
+    {
+      "id": "7e5eeec0-cde4-48b9-9cd4-d8cf96e42162",
+      "type": "APP_IPHONE_67",
+      "uploaded": [
+        {
+          "id": "90ab39db-3d99-48dc-befe-463a41367503",
+          "fileName": "01-timeline-v26.png",
+          "checksum": "db54229f7e18851d992fa0ec1399f16a"
+        },
+        {
+          "id": "a748a371-40c8-44af-8761-d2e66e1dc1ae",
+          "fileName": "02-widget-sizes-v26.png",
+          "checksum": "393fdf3aee241996622889f2e7a2d786"
+        },
+        {
+          "id": "3d16c355-9212-4501-9e84-c9bcd1b3760f",
+          "fileName": "03-reading-v26.png",
+          "checksum": "f5063d8010807013b517aa71a862ea50"
+        },
+        {
+          "id": "22bccfcb-0bd5-4053-bd88-33c6cd834516",
+          "fileName": "04-notifications-v26.png",
+          "checksum": "7ed36f30e63837df39303cad3afe2b0a"
+        },
+        {
+          "id": "1bfc2657-afb3-4344-a547-2052046c85d6",
+          "fileName": "05-appearance-v26.png",
+          "checksum": "b0ef3a95a00d710bfa3f4c2d6d0a65c5"
+        }
+      ],
+      "previous": []
+    }
+  ]
+}

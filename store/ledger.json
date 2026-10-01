@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T09:34:19+00:00",
+  "updated_at": "2026-10-01T11:40:49+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -125,12 +125,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "EnglishUS description, subtitle, promotional text, keywords and URLs saved and read back. Review Notes describe optional notifications, setup, widgets, services, regions and historical build7 video; contact phone retained privately.",
+      "summary": "Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording.",
       "evidence": [
-        "store/listing.json; store/scripts/apple.mjs metadata and review-notes readback"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T00:02:17+00:00"
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "apple.build": {
       "state": "done",
@@ -178,26 +178,26 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "Owner decision 2026-10-01: resubmit 1.0.0 with build 26 (TestFlight, owner-checked) rather than change the app further, since the timeline is new since build 21's review; update the App Store description and screenshots; do not include the preview video (never uploaded to App Store Connect, so nothing to remove). Description, promotional text and keywords are drafted in store/listing.json (commit b42d6eb): timeline, New: label and story line, per-widget settings, no mention of AI. Nothing has been pushed to App Store Connect; version 1.0.0 is still REJECTED with build 21 selected.",
+      "summary": "Build 26 is WAITING_FOR_REVIEW after accepted resubmission on October 1; current timeline, Notifications root and native widget gallery are saved. Six-part Notes accurately identify the existing build-21 physical video.",
       "evidence": [
-        "store/listing.json at b42d6eb; App Store Connect API 2026-10-01: appStoreVersion 267c6f52 REJECTED, reviewSubmission 4f28761f UNRESOLVED_ISSUES"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
-      "next_action": "Handed to another agent. 1) Capture build 26 screenshots: owner's iPhone (6.9in or 6.5in only) or an EAS macOS sandbox simulator (about 38 CI minutes left in October; large images corrupted when copied out of a sandbox as text, so plan the transfer); iPad screenshots are required while supportsTablet is true, or make the app iPhone-only (one build credit). Compose with store/scripts/render.mjs and update store/assets/manifest.json. 2) Push description, promotional text and keywords from store/listing.json to the en-US version localization. 3) Rewrite review notes in listing.json and App Store Connect for build 26: the switch is now High-score alerts with a Threshold row; mention the timeline (Settings, Show timeline), per-widget Show app name and Appearance, and the Sep 24 video as build 21. 4) Select build 26 (App Store Connect build e95d5777) on version 267c6f52, resubmit through reviewSubmission 4f28761f, and read back WAITING_FOR_REVIEW.",
-      "updated_at": "2026-10-01T08:04:23+00:00"
+      "next_action": "Await Apple response; approval and public paid-sale readiness remain separate.",
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates.",
+      "summary": "Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates.",
       "evidence": [
-        "store/apple-review-build21.json; store/user-actions.md"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
-      "next_action": "Obtain review approval, verify paid-sale account readiness, and verify public paid availability.",
-      "updated_at": "2026-09-24T00:06:23+00:00"
+      "next_action": "Await approval, then verify paid-sale readiness and public availability.",
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -423,12 +423,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed.",
+      "summary": "Both Apple screenshot families lead with the actual finite-week timeline. Exact final order, count, COMPLETE states and checksums read back.",
       "evidence": [
-        "store/apple-gallery-verification.json"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T07:48:41+00:00"
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "apple.widget-gallery-revision": {
       "state": "done",
@@ -478,12 +478,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Final six-part Notes include the physical build7 demonstration filename and accurate product/setup/services/regions/rights information; API save and exact-value readback passed.",
+      "summary": "Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo.",
       "evidence": [
-        "store/listing.json reviewNotes matches posted reply;3485 characters; existing private review contact phone preserved in memory."
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-17T04:34:59+00:00"
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "apple.physical-recording": {
       "state": "done",
@@ -500,12 +500,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 21 is VALID and IN_BETA_TESTING in Release QA. Updated notes document configured push credentials, provider acceptance and physical app/registration checks, with visual notification/tap unobserved. No new invitation is required.",
+      "summary": "Production build26 is VALID and IN_BETA_TESTING in ReleaseQA; selected for AppReview. Historical build21 physical tests are retained separately. No new invite required.",
       "evidence": [
-        "store/testflight-21.json"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T00:06:23+00:00"
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "google.large-text-build": {
       "state": "done",
@@ -698,12 +698,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical.",
+      "summary": "Fresh API readback confirms selected VALID build 26, version WAITING_FOR_REVIEW and review submission WAITING_FOR_REVIEW.",
       "evidence": [
-        "store/apple-review-resubmission-2026-09-24-video.json"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T06:20:53+00:00"
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "story-age.native": {
       "state": "todo",
@@ -871,15 +871,15 @@
       "updated_at": "2026-09-24T05:27:50+00:00"
     },
     "apple.gallery-current": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures.",
+      "summary": "Eight native gallery images now current to production application source51826ed; actual simulator bundles1.0.0(1). Six app captures iOS26.5, Notifications/widgets iOS18.3.1. Physical QA separate.",
       "evidence": [
-        "store/design/current-gallery-brief.md"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
-      "next_action": "Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets.",
-      "updated_at": "2026-09-24T05:41:58+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "apple.physical-recording-current": {
       "state": "done",
@@ -1027,15 +1027,15 @@
       "updated_at": "2026-10-01T06:15:31+00:00"
     },
     "apple.resubmit-26": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 26 remains VALID and IN_BETA_TESTING; App Review still has rejected build 21. Current copy and complete Review Notes were saved/read back. Prepared current Stone gallery renderer and capture plan; local native capture is waiting on the matching iOS 26.5 runtime download.",
+      "summary": "Production 1.0.0 (26) resubmitted; Apple independently confirms version and review submission WAITING_FOR_REVIEW at 11:37:37 UTC. Eight gallery images COMPLETE, ordered and checksum-verified.",
       "evidence": [
-        "store/apple-resubmission-26-metadata.json; store/apple-gallery-26.json; store/builds/ledger.md; PR #155"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
-      "next_action": "Finish runtime download, compile/capture actual current native screens and both widgets, render/inspect/upload and verify new images, select build 26 and resubmit; read back review state.",
-      "updated_at": "2026-10-01T09:34:19+00:00"
+      "next_action": "Await Apple review; save final evidence in PR #192.",
+      "updated_at": "2026-10-01T11:40:49+00:00"
     },
     "apple.metadata-26": {
       "state": "done",
@@ -1049,15 +1049,114 @@
       "updated_at": "2026-10-01T08:58:20+00:00"
     },
     "apple.local-capture-26": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner unlocked Mac and accepted Xcode setup; Xcode 26.6 installed. Local capture is waiting for Apple iOS 26.5 platform support/runtime (8.52 GB download progressing slowly). No additional EAS build or sandbox started.",
+      "summary": "Mac unlock resolved. Capture completed using the Expo simulator artifact on installed iOS18.3.1; local Xcode26 runtime compilation/download was bypassed. This does not claim that optional Xcode26 runtime setup completed.",
       "evidence": [
-        "/tmp/newsworthy-ios-runtime-download.log; /tmp/newsworthy-pr155-native-build.log"
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
       ],
-      "next_action": "Complete local platform install, build the unchanged build-26 application source and capture current Apple screenshots.",
-      "updated_at": "2026-10-01T09:18:32+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-01T11:40:49+00:00"
+    },
+    "apple.source-155": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments.",
+      "evidence": [
+        "https://github.com/astrojams1/newsworthy/pull/155; store/builds/ledger.md"
+      ],
+      "next_action": "Capture current native Apple gallery and complete build-26 resubmission.",
+      "updated_at": "2026-10-01T09:50:44+00:00"
+    },
+    "apple.build-selection-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Selected Apple build 26 and verified VALID, IN_BETA_TESTING and PREPARE_FOR_SUBMISSION. Previous review submission remains UNRESOLVED_ISSUES; no resubmission was sent.",
+      "evidence": [
+        "store/apple-build26-selection.json; store/release.json"
+      ],
+      "next_action": "Finish current screenshot capture/upload and then resolve the review item and submit; verify review state.",
+      "updated_at": "2026-10-01T09:50:44+00:00"
+    },
+    "apple.cloud-capture-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Expo sandbox supplied seven app captures, then stopped at 10:50:03 UTC after 35m13s. Widget placeholder excluded; EAS artifact fallback supplied actual local widgets and Notifications root. Tool cap500/500; no second sandbox.",
+      "evidence": [
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-01T11:40:49+00:00"
+    },
+    "apple.simulator-artifact-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "EAS simulator-release78c0ccc8 finished; artifact downloaded/hash-verified. Actual1.0.0(1), app source matches51826ed. Original empty-entitlement extension rendered actual widgets/settings on iOS18.3.1; signing alone is not an established sandbox failure cause.",
+      "evidence": [
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-01T11:40:49+00:00"
+    },
+    "apple.gallery-artwork-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Eight final Apple images rendered and visually inspected. Timeline first both families; real Small Light/Medium Dark surfaces at one scale on neutral canvas; root Notifications page replaces threshold selector. Symmetric native corner masks preserve full text.",
+      "evidence": [
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-01T11:40:49+00:00"
+    },
+    "apple.gallery-upload-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Five iPhone and three iPad images read back COMPLETE with exact MD5 and intended order; all previous draft/historical images retired before build26 resubmission.",
+      "evidence": [
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-01T11:40:49+00:00"
+    },
+    "apple.gallery-timeline-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Actual finite-week timeline is first in both Apple screenshot sets. Current iPhone and iPad timeline images are COMPLETE; exact uploaded checksums and ordering were independently read back.",
+      "evidence": [
+        "store/apple-gallery26-verification.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-01T11:05:50+00:00"
+    },
+    "apple.gallery-capture-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate.",
+      "evidence": [
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-01T11:40:49+00:00"
+    },
+    "apple.gallery-notifications-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified.",
+      "evidence": [
+        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-01T11:40:49+00:00"
     }
   },
   "events": [
@@ -6791,6 +6890,499 @@
         ],
         "next_action": "Finish runtime download, compile/capture actual current native screens and both widgets, render/inspect/upload and verify new images, select build 26 and resubmit; read back review state.",
         "updated_at": "2026-10-01T09:34:19+00:00"
+      }
+    },
+    {
+      "sequence": 358,
+      "at": "2026-10-01T09:50:44+00:00",
+      "gate": "apple.source-155",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments.",
+        "evidence": [
+          "https://github.com/astrojams1/newsworthy/pull/155; store/builds/ledger.md"
+        ],
+        "next_action": "Capture current native Apple gallery and complete build-26 resubmission.",
+        "updated_at": "2026-10-01T09:50:44+00:00"
+      }
+    },
+    {
+      "sequence": 359,
+      "at": "2026-10-01T09:50:44+00:00",
+      "gate": "apple.build-selection-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Selected Apple build 26 and verified VALID, IN_BETA_TESTING and PREPARE_FOR_SUBMISSION. Previous review submission remains UNRESOLVED_ISSUES; no resubmission was sent.",
+        "evidence": [
+          "store/apple-build26-selection.json; store/release.json"
+        ],
+        "next_action": "Finish current screenshot capture/upload and then resolve the review item and submit; verify review state.",
+        "updated_at": "2026-10-01T09:50:44+00:00"
+      }
+    },
+    {
+      "sequence": 360,
+      "at": "2026-10-01T09:50:44+00:00",
+      "gate": "apple.local-capture-26",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Xcode 26.6 owner setup and local dependencies/prebuild/Pods are complete. Matching iOS 26.5 arm64 runtime download is still progressing slowly. Alternate official Apple CDN routes and IPv6 did not remove the bandwidth limit; older installed runtimes cannot compile this SDK asset catalog. Mac has also relocked, so native UI capture needs an unlocked host once the download completes.",
+        "evidence": [
+          "store/builds/ledger.md; /tmp/newsworthy-ios-runtime-download.log; /tmp/newsworthy-pr155-target-build.log"
+        ],
+        "next_action": "Let runtime download finish, unlock Mac for native capture, rebuild the unchanged build-26 app source, capture/inspect full current iPhone/iPad and both widgets, render and upload gallery.",
+        "updated_at": "2026-10-01T09:50:44+00:00"
+      }
+    },
+    {
+      "sequence": 361,
+      "at": "2026-10-01T09:50:44+00:00",
+      "gate": "apple.resubmit-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR #155 is merged, current metadata/Notes are saved, and build 26 is selected with PREPARE_FOR_SUBMISSION. Current screenshot refresh is still pending local runtime download; App Review has not been resubmitted.",
+        "evidence": [
+          "store/apple-resubmission-26-metadata.json; store/apple-build26-selection.json; store/apple-gallery-26.json"
+        ],
+        "next_action": "Complete the verified native gallery, upload/read back/order replacements, then resolve and submit the review item and verify WAITING_FOR_REVIEW.",
+        "updated_at": "2026-10-01T09:50:44+00:00"
+      }
+    },
+    {
+      "sequence": 362,
+      "at": "2026-10-01T09:55:17+00:00",
+      "gate": "apple.resubmit-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR #155 is merged. Build 26 is selected with PREPARE_FOR_SUBMISSION and current metadata/Notes are saved. Draft PR #192 retains the selection receipt, updated identifiers and remaining capture gate. Native screenshots and review resubmission are pending; local runtime download continues.",
+        "evidence": [
+          "https://github.com/astrojams1/newsworthy/pull/192; store/apple-build26-selection.json; store/apple-resubmission-26-metadata.json"
+        ],
+        "next_action": "Finish runtime download and actual native gallery capture, upload/verify/order screenshots, then resolve and resubmit the review item and verify WAITING_FOR_REVIEW. Complete PR #192 with final gallery/submission evidence.",
+        "updated_at": "2026-10-01T09:55:17+00:00"
+      }
+    },
+    {
+      "sequence": 363,
+      "at": "2026-10-01T10:14:52+00:00",
+      "gate": "apple.cloud-capture-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner explicitly authorized Expo capture and submission. Token-authenticated Expo MCP lists four October builds and one stopped 22-minute sandbox, no current-source simulator artifact. Started one MEDIUM macOS capture sandbox 01a0f6f5-659d-7261-b085-5c7aa6723f1d; reuse App Store build26, no new production build.",
+        "evidence": [
+          "Expo MCP build_list and sandbox_list; owner request; store/builds/ledger.md"
+        ],
+        "next_action": "Build source51826ed in one sandbox, capture current iPhone/iPad/widgets, transfer original images with checksum validation, stop sandbox promptly, then upload and resubmit.",
+        "updated_at": "2026-10-01T10:14:52+00:00"
+      }
+    },
+    {
+      "sequence": 364,
+      "at": "2026-10-01T10:53:12+00:00",
+      "gate": "apple.cloud-capture-26",
+      "result": {
+        "state": "waiting_user",
+        "owner": "Astro",
+        "basis": "observed",
+        "summary": "Seven full native iPhone/iPad app captures preserved with checked SHA256 from build-26 application source 51826ed, simulator bundle 1.0.0 (1), iOS 26.5. Widget captures remain unusable skeletons: AppIntent service rejected the unsigned extension for empty entitlements. Expo MCP reports 500/500 monthly requests. Sandbox stop confirmed through official Expo GraphQL at 10:50:03Z; 35m13s running. Local CUA confirms Mac locked.",
+        "evidence": [
+          "store/source/iphone-6.9/01-timeline-v26.png"
+        ],
+        "next_action": "Unlock Mac; retrieve authorized single simulator-release artifact, verify normal simulator signing, capture actual Small/Medium widgets, render gallery and submit build 26.",
+        "updated_at": "2026-10-01T10:53:12+00:00"
+      }
+    },
+    {
+      "sequence": 365,
+      "at": "2026-10-01T10:55:12+00:00",
+      "gate": "apple.simulator-artifact-26",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Single simulator-release EAS build 78c0ccc8-d1ac-4e04-a789-b33d4bf0c570 started via CLI for current widget capture; fifth October build. Application source matches production source 51826ed byte-for-byte; production build 26 will be reused.",
+        "evidence": [],
+        "next_action": "Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures.",
+        "updated_at": "2026-10-01T10:55:12+00:00"
+      }
+    },
+    {
+      "sequence": 366,
+      "at": "2026-10-01T10:57:28+00:00",
+      "gate": "apple.gallery-artwork-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Seven current native app screenshots rendered from verified iPhone/iPad originals using generated Stone palette. Uploads in progress; historical gallery retained until replacement delivery is COMPLETE. Widget composition awaits actual Small/Medium capture; failed placeholder excluded. EAS remote Simulator alternative reports unavailable for this account.",
+        "evidence": [
+          "store/preview.png"
+        ],
+        "next_action": "Complete screenshot uploads and read checksums; unlock Mac for widget capture; do not relabel old widget images current.",
+        "updated_at": "2026-10-01T10:57:28+00:00"
+      }
+    },
+    {
+      "sequence": 367,
+      "at": "2026-10-01T11:00:06+00:00",
+      "gate": "apple.gallery-upload-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Seven current app artwork replacements report COMPLETE with exact MD5 readback. Historical reading images retired and current app images ordered; historical widget image deliberately retained until fresh widget capture is verified. Gallery remains a draft; build 26 has not been resubmitted.",
+        "evidence": [
+          "store/apple-gallery26-verification.json"
+        ],
+        "next_action": "Capture and replace actual widget artwork, verify final 5-iPhone/3-iPad gallery, resolve rejected review item and submit; read back WAITING_FOR_REVIEW.",
+        "updated_at": "2026-10-01T11:00:06+00:00"
+      }
+    },
+    {
+      "sequence": 368,
+      "at": "2026-10-01T11:03:31+00:00",
+      "gate": "apple.cloud-capture-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Mac is accessible through CUA again. Simulator-release EAS artifact 78c0ccc8 finished at 11:01:30Z. Continuing actual local widget capture using Expo-built artifact; existing seven app screenshots are COMPLETE and timeline leads both families.",
+        "evidence": [],
+        "next_action": "Install artifact, inspect bundle/signature, verify small/medium appearance, save real full captures and finish gallery.",
+        "updated_at": "2026-10-01T11:03:31+00:00"
+      }
+    },
+    {
+      "sequence": 369,
+      "at": "2026-10-01T11:05:50+00:00",
+      "gate": "apple.gallery-timeline-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Actual finite-week timeline is first in both Apple screenshot sets. Current iPhone and iPad timeline images are COMPLETE; exact uploaded checksums and ordering were independently read back.",
+        "evidence": [
+          "store/apple-gallery26-verification.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:05:50+00:00"
+      }
+    },
+    {
+      "sequence": 370,
+      "at": "2026-10-01T11:25:03+00:00",
+      "gate": "apple.gallery-capture-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Current application source 51826ed captured as native iPhone/iPad app screens on iOS 26.5 and actual Small Light/Medium Dark widgets on iPhone 16 Pro Max iOS 18.3.1 using Expo simulator-release artifact 78c0ccc8. Actual simulator bundle is 1.0.0 (1). Full PNGs and SHA256 retained; neutral composition uses measured native viewports at one scale. No apps or wallpaper in final widget artwork.",
+        "evidence": [
+          "store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "Verify final widget upload and screenshot ordering; submit production build 26.",
+        "updated_at": "2026-10-01T11:25:03+00:00"
+      }
+    },
+    {
+      "sequence": 371,
+      "at": "2026-10-01T11:25:03+00:00",
+      "gate": "apple.simulator-artifact-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EAS simulator-release 78c0ccc8 finished; downloaded 26,971,268 bytes, SHA256 and gzip integrity verified. Source e9d16c0 app files match production 51826ed. Installed and configured on iPhone 16 Pro Max iOS 18.3.1; both widget sizes render actual data with independent Light/Dark choices.",
+        "evidence": [
+          "store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures.",
+        "updated_at": "2026-10-01T11:25:03+00:00"
+      }
+    },
+    {
+      "sequence": 372,
+      "at": "2026-10-01T11:36:16+00:00",
+      "gate": "apple.gallery-notifications-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Replaced the threshold selector with the actual Notifications root page requested by the owner; inspected the alert switch, threshold row and explanatory text in final artwork.",
+        "evidence": [
+          "store/source/iphone-6.9/07-notifications-page-v26.png",
+          "store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "Verify the complete eight-image App Store gallery and resubmit selected build 26.",
+        "updated_at": "2026-10-01T11:36:16+00:00"
+      }
+    },
+    {
+      "sequence": 373,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.resubmit-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Production 1.0.0 (26) resubmitted; Apple independently confirms version and review submission WAITING_FOR_REVIEW at 11:37:37 UTC. Eight gallery images COMPLETE, ordered and checksum-verified.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "Await Apple review; save final evidence in PR #192.",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 374,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build 26 is WAITING_FOR_REVIEW after accepted resubmission on October 1; current timeline, Notifications root and native widget gallery are saved. Six-part Notes accurately identify the existing build-21 physical video.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "Await Apple response; approval and public paid-sale readiness remain separate.",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 375,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.review-state",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Fresh API readback confirms selected VALID build 26, version WAITING_FOR_REVIEW and review submission WAITING_FOR_REVIEW.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 376,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "Await approval, then verify paid-sale readiness and public availability.",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 377,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.local-capture-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Mac unlock resolved. Capture completed using the Expo simulator artifact on installed iOS18.3.1; local Xcode26 runtime compilation/download was bypassed. This does not claim that optional Xcode26 runtime setup completed.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 378,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.cloud-capture-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Expo sandbox supplied seven app captures, then stopped at 10:50:03 UTC after 35m13s. Widget placeholder excluded; EAS artifact fallback supplied actual local widgets and Notifications root. Tool cap500/500; no second sandbox.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 379,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.gallery-artwork-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Eight final Apple images rendered and visually inspected. Timeline first both families; real Small Light/Medium Dark surfaces at one scale on neutral canvas; root Notifications page replaces threshold selector. Symmetric native corner masks preserve full text.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 380,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.gallery-upload-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Five iPhone and three iPad images read back COMPLETE with exact MD5 and intended order; all previous draft/historical images retired before build26 resubmission.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 381,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.gallery-current",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Eight native gallery images now current to production application source51826ed; actual simulator bundles1.0.0(1). Six app captures iOS26.5, Notifications/widgets iOS18.3.1. Physical QA separate.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 382,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.gallery-order",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Both Apple screenshot families lead with the actual finite-week timeline. Exact final order, count, COMPLETE states and checksums read back.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 383,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.gallery-notifications-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 384,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.simulator-artifact-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "EAS simulator-release78c0ccc8 finished; artifact downloaded/hash-verified. Actual1.0.0(1), app source matches51826ed. Original empty-entitlement extension rendered actual widgets/settings on iOS18.3.1; signing alone is not an established sandbox failure cause.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 385,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.gallery-capture-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 386,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.listing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 387,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.review-notes",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 388,
+      "at": "2026-10-01T11:40:49+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Production build26 is VALID and IN_BETA_TESTING in ReleaseQA; selected for AppReview. Historical build21 physical tests are retained separately. No new invite required.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T11:40:49+00:00"
       }
     }
   ],

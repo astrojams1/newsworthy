@@ -80,6 +80,9 @@ performed and remaining device/assistive-technology release checks. EAS and iOS
 signing are configured; store review and account requirements remain. This
 repository is not an App Store or Google Play release.
 
+iOS 1.0.0 (26) is Waiting for Review, confirmed on 1 October; the refreshed
+gallery includes the finite-week timeline, notifications and both widget sizes.
+
 The planned store release is a one-time US$1 download, with local store
 equivalents, to help offset running costs. The [store release hub](store/README.md)
 keeps listing copy, screenshots, editable sources, upload scripts, verified status,

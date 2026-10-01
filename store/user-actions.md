@@ -1,12 +1,33 @@
 # Account-owner actions
 
-Apple review, notification setup and privacy were checked on **September 24,
-2026**. Google account and Apple Business were also rechecked September 24. The list below
+Apple's version, build, metadata and Review Notes were checked through the API
+on **1 October 2026**. Notification setup, privacy, Google account and Apple
+Business were last checked September 24. The list below
 separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current iOS resubmission: Waiting for Review
+## Current iOS resubmission — 1 October
+
+PR #155 is merged. Build **1.0.0 (26)** is **Waiting for Review**, confirmed
+through Apple's API on 1 October at 11:37 UTC. The updated listing, six-part
+Review Notes and eight screenshots are saved and verified. Both device
+families lead with the timeline; the iPhone gallery includes the actual
+Notifications page and clean small/medium widget comparison.
+
+**No owner action is needed for this resubmission.** Mac access is restored,
+the simulator artifact is complete, widget capture/upload is finished and
+the review request was accepted. No 1Password browser action or new sign-in
+is required. Await Apple's next review response before assigning a new recording.
+The historical build-21 physical recording remains explicitly identified; this
+batch does not establish physical build-26 certification.
+
+See [the submission receipt](apple-review-resubmission-2026-10-01-build26.json),
+[gallery readback](apple-gallery26-verification.json) and [ledger](ledger.md).
+Apple banking/address and Google owner-only gates below were last checked
+September 24; they are separate from this confirmed review submission.
+
+## Historical iOS resubmission — 24 September
 
 **Build21 is Waiting for Review, confirmed September24 at06:19UTC.** The updated
 recording was inspected, attached to a posted six-part response, and referenced

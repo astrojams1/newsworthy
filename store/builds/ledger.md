@@ -14,7 +14,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 4 so far (iOS 22, 24, 25, 26) | about 22 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155 |
+| [2026-10](#2026-10) | 5 so far (iOS 22, 24, 25, 26; simulator-release 78c0ccc8 running) | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155 |
 
 ## Lessons
 
@@ -127,3 +127,71 @@ cloud-container assumptions. A usable Mac avoids Expo credits/minutes, but an
 Xcode update may require owner license/admin setup and a large matching runtime
 download before asset catalogs compile. Do not spend a cloud build merely to
 refresh screenshots, or call an old simulator capture current release evidence.
+
+**Expo capture batch, 1 October (owner authorized).** macOS MEDIUM
+`01a0f6f5-659d-7261-b085-5c7aa6723f1d` ran from 10:14:50 to
+10:50:03 UTC (35m13s). Compiled release source `51826ed` with Xcode 26.6
+and captured seven native iPhone 17 Pro Max/iPad Pro 13-inch app screens on
+iOS 26.5. Actual simulator bundle: 1.0.0 (1). Full originals transferred
+with byte counts and SHA256 checked; provenance is in
+`store/source/ios-gallery-v26-provenance.json`. Widget rendering failed as
+a skeleton: Siri AppIntent service rejected the unsigned extension with
+empty entitlements. Ad-hoc incremental rebuild was started but its result
+was not observed. MCP reached its 500/500 tool request limit during transfers.
+The official Expo GraphQL stop mutation succeeded; STOPPED and finish time
+were read back. No second sandbox was started. About 2.7 of 60 CI/CD minutes
+remain, assuming the earlier 22-minute run. A current simulator-release cloud
+build `78c0ccc8-d1ac-4e04-a789-b33d4bf0c570` was started through EAS CLI
+for the local widget capture fallback; it uses one build credit and no sandbox
+minutes. Current worktree application sources match `51826ed` byte-for-byte.
+Local computer control reports the Mac locked; owner unlock requested.
+
+**Capture lessons (2026-10-01).** Full originals through many small MCP output
+chunks can exhaust the separate tool cap even before CI/CD minutes run out.
+Budget transfer requests and keep an independent cleanup route. Preserve
+normal simulator signing for AppIntent widgets; a successful unsigned app
+launch does not verify the extension. The ad-hoc-signing hypothesis is still
+unverified. Never publish skeleton widgets as actual gallery captures.
+
+**Remote Simulator alternative, 1 October.** EAS CLI 24.8.0
+`simulator:availability --non-interactive --json` reports `available: false`
+for `astrojams1`; remote device sessions are not enabled for this account.
+No remote session, paid upgrade or account switch was started.
+
+**Simulator fallback result, 1 October.** Build `78c0ccc8` finished at
+11:01:30 UTC, about 7m12s after creation. Full source commit `e9d16c0`;
+application sources match production `51826ed`. At 11:02 UTC, CUA could access
+Simulator again: the local lock blocker is cleared. Artifact download and
+current widget capture now continue.
+
+**Gallery and review completed, 1 October.** EAS simulator artifact `78c0ccc8`
+was downloaded (26,971,268 bytes; SHA256
+`a527cf6d78432328dc7f2e257648fb5deebcb96dd7d5ffc6f9eba8be2320c34a`)
+and its original signature preserved. Actual bundle is 1.0.0 (1), with app files
+matching production `51826ed`. Both real widgets and their independent appearance
+settings worked on iPhone 16 Pro Max / iOS 18.3.1. Small Light and Medium Dark
+full Home Screen captures are retained; only their measured container silhouettes
+are placed on the neutral artwork at one common scale. App-name hiding was not
+reverified in this batch. The owner's requested Notifications root page was
+captured from this same artifact and replaces the threshold-selector screenshot.
+
+**Signing hypothesis correction.** The original EAS extension also has empty
+entitlements, yet worked on iOS 18.3.1. The sandbox iOS 26.5 AppIntent privilege
+errors remain observations; signing alone is not an established root cause or
+fix. Runtime/artifact combinations need actual verification. Preserve the failed
+placeholder separately and never include it in the listing. When masking native
+widget corners, mirror the measured left silhouette across the symmetric
+container; independent right-edge brightness thresholds can cut off text because
+light/dark gradients converge. Inspect the entire widget after composing it.
+
+**Provider result.** All five iPhone and three iPad images are COMPLETE, ordered
+and checksum-verified; timeline leads both families. Historical gallery images
+are retired. Build 26's rejected review item was resolved and the submission
+accepted. Apple independently reports WAITING_FOR_REVIEW for the version and
+review submission at 11:37:37 UTC. Evidence:
+`store/apple-gallery26-verification.json` and
+`store/apple-review-resubmission-2026-10-01-build26.json`.
+The existing physical recording remains labeled historical build 21. Simulator
+captures do not claim physical build-26 certification or public availability.
+October usage is five cloud builds, about 57.3/60 sandbox minutes and MCP
+500/500 requests. No second capture sandbox or paid upgrade was started.

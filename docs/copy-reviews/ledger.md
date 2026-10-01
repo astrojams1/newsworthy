@@ -40,3 +40,60 @@ Claims that were wrong once. Check for them again; date each item.
   local iOS runtime download. The full Mac test run has two unchanged web
   Settings failures; design and type checks pass. Android still requires its
   separate device/release gates.
+
+## Build 26 selection follow-up — 1 October 2026
+
+| PR | Date | Surfaces reviewed | Corrected | Open limits |
+|---|---|---|---|---|
+| Build-26 release follow-up (`codex/app-store-resubmit-155`) | 2026-10-01 | Store release identifiers, README, owner actions, mobile release, product messaging, provider receipts, release ledger | Current selected build is 26 with Prepare for Submission; old builds, physical QA and September review states remain historical. Local Mac/Xcode verification is supported, with current runtime prerequisite explicit | Gallery capture/upload and resubmission pending runtime download/unlocked Mac. Physical build-26 and Android checks remain separate. Mac web test failures remain recorded |
+
+The build-26 selection follow-up above is [PR #192](https://github.com/astrojams1/newsworthy/pull/192), opened as a draft while native capture and resubmission remain pending.
+
+## Expo capture follow-up — 1 October 2026, PR #192
+
+Reviewed current app captures, generated Stone artwork/captions, metadata,
+store README, owner actions, mobile release, release receipts and skill guidance.
+Seven actual app images are uploaded with provider COMPLETE/checksum readback;
+old reading screenshots are replaced. Claims distinguish source 51826ed, actual
+simulator bundle 1.0.0 (1), production build 26, and historical widget/physical
+recording evidence. Public screenshots omit About and retain factual finite-week
+list, reading, appearance and threshold claims. Caller/rating contract and
+product behavior are unchanged. No public App Store preview video is planned.
+The default renderer still requires both verified native widget frames; its
+explicit --app-only mode prepares the seven app assets while that gate waits.
+Open limits: actual current widget image, local unlock, final resubmission and
+physical build-26 QA. Design checks pass 111/111; full Mac tests retain the two
+unchanged web Settings failures (386 pass, 2 fail, 1 skip).
+
+## Completed gallery and resubmission — 1 October 2026, PR #192
+
+Reviewed final native artwork, source hashes/runtime provenance, listing and
+six-part Notes, root/store READMEs, owner actions, mobile release, release JSON,
+canonical ledger and repository release skill. The five iPhone/three iPad images
+are COMPLETE with checksum/order readback. Both families lead with the actual
+finite-week timeline; iPhone includes the owner-requested Notifications root
+page and actual Small Light/Medium Dark widgets without other apps/wallpaper.
+All previous gallery images are retired. The selected VALID production build26
+and review submission independently report WAITING_FOR_REVIEW at11:37:37UTC.
+Mac-unlock, pending-widget/build and unsubmitted claims were corrected.
+
+Claims distinguish source51826ed, simulator bundles1.0.0(1), cloud iOS26.5 app
+screens, local iOS18.3.1 Notifications/widgets, production build26 and historical
+build21 physical video. No public App Store preview is included. Public product
+copy, caller/rating contracts and application behavior are unchanged. Previous
+widget settings evidence remains separate; name-hiding and physical build26
+certification were not reverified. Banking/address and Android owner-only gates
+remain dated September24 observations, not fresh account checks.
+
+**Lesson:** an AppIntent privilege log suggests an investigation; it does not
+prove signing is the sole failure cause. The original EAS extension also had
+empty entitlements and worked on iOS18.3.1. Final masking must preserve all native
+text; brightness thresholds can misidentify a gradient edge, so measure and
+mirror a symmetric container silhouette and inspect the result.
+
+Validation: all13 manifest image formats/sizes and listing lengths pass; design
+111/111 passes; canonical ledger and whitespace checks pass. Full Mac tests:
+386 pass,2 unchanged web Settings failures,1 skip. An initial concurrent run also
+hit a transient local-server connection refusal; the standalone rerun passed
+that landscape test and retained only the same two Settings failures. No test
+was weakened. Linux CI is checked separately before merge.
