@@ -47,6 +47,10 @@ resulting rules; this is the evidence behind them.
   plain `eas submit --non-interactive`, the `EXPO_ASC_*` variables and the Expo
   MCP's `build_submit` all failed; naming the vault key in a temporary copy of
   the submit profile worked.
+- **Submitted is not available to testers** (2026-10-01). Build 24 processed
+  (`VALID`, `READY_FOR_BETA_TESTING`) but showed no update on the owner's
+  iPhone: the internal group "Release QA" does not get every build, and builds
+  6 to 21 had each been added to it by hand. Add the build to the group.
 
 ## 2026-09
 
@@ -80,7 +84,9 @@ Wasted: one credit. Its `--auto-submit` had also failed to set up.
 **Build 24** (`3221b8a2`, iOS `production`, same commit). Finished in six
 minutes. A first `eas build` call failed before creating a build but used
 build number 23. Submitted to App Store Connect with the vault API key
-(submission `320a4482`); for the owner's iPhone check of #155.
+(submission `320a4482`); for the owner's iPhone check of #155. Processed
+by Apple, but not in the "Release QA" group, so not offered to testers; see
+Lessons.
 
 **Remaining this month** after 1 October: about 38 sandbox minutes. Android
 builds are paused until the owner has a device.

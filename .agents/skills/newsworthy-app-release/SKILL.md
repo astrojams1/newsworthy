@@ -97,6 +97,14 @@ write the key to a temporary file (header and footer added, `umask 077`), add
 restore `eas.json` and delete the key. Never commit either. Build without
 `--auto-submit` and submit once the build has finished.
 
+**An uploaded build reaches no tester on its own.** The internal group
+"Release QA" does not get every build automatically, so a processed build
+(`READY_FOR_BETA_TESTING`) stays invisible until it is added to that group.
+Ask the owner to add it in App Store Connect (TestFlight → Release QA →
+Builds), or get their go-ahead to add it through the API
+(`POST /v1/betaGroups/{id}/relationships/builds`). Tell testers it is
+available only once it shows `IN_BETA_TESTING`.
+
 ## Spending them well
 
 - **Batch.** One build per platform per verification round, carrying every
