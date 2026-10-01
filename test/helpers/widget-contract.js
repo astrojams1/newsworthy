@@ -175,10 +175,10 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(swift, /\.modifier\(WidgetSurface\(score: entry.reading\?\.score, scheme: entry.appearance.colorScheme\)\)\s*\.id\("\\\(entry.reading\?\.score \?\? 0\)-\\\(entry.appearance.rawValue\)"\)/, 'iOS score and extracted background change identity together');
   // The appearance is the widget's own setting, beside Show app name, not the app's.
   // A String from fixed options: iOS 26.5 hands a widget an AppEnum or AppEntity parameter as nil.
-  assert.match(swift, /@Parameter\(title: "Appearance", optionsProvider: AppearanceOptions\(\)\)\s*var appearance: String\?/, 'iOS widget appearance is a widget setting');
+  assert.match(swift, /@Parameter\(title: "Appearance", default: "Follow device", optionsProvider: AppearanceOptions\(\)\)\s*var appearance: String\n/, 'iOS widget appearance is a widget setting');
   assert.match(swift, /\.system: "Follow device", \.light: "Light", \.dark: "Dark"/, 'iOS widget appearance choices');
   for (const indent of ['                ', '                    ']) {
-    assert.ok(swift.includes(`${indent}entry.showAppName = configuration.showAppName\n${indent}entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system\n`), 'iOS widget settings reach snapshot and timeline');
+    assert.ok(swift.includes(`${indent}entry.showAppName = configuration.showAppName\n${indent}entry.appearance = WidgetAppearance(label: configuration.appearance) ?? .system\n`), 'iOS widget settings reach snapshot and timeline');
   }
   assert.match(swift, /\.modifier\(ForcedColorScheme\(scheme: entry.appearance.colorScheme\)\)\s*\.modifier\(WidgetSurface/, 'iOS widget content follows the chosen appearance');
   assert.match(swift, /\.modifier\(ForcedColorScheme\(scheme: scheme\)\)\s*\}/, 'iOS extracted background follows the chosen appearance');
@@ -203,4 +203,11 @@ export function checkWidgetDesign(sources = widgetSources()) {
 }
 
 // The glyph registry's header size, for render helpers that mock the module.
-export const glyphModule = { Glyph: 'Glyph', HEADER_ICON_SIZE: Number(/HEADER_ICON_SIZE = (\d+)/.exec(read('apps/client/components/glyph.tsx'))[1]) };
+// Its SF Symbol names are read from the source, and iOS bar buttons are built
+// as the module builds them, so a test sees the items the app hands iOS.
+const glyphSource = read('apps/client/components/glyph.tsx');
+export const glyphModule = {
+  Glyph: 'Glyph', HEADER_ICON_SIZE: Number(/HEADER_ICON_SIZE = (\d+)/.exec(glyphSource)[1]),
+  GLYPHS: Object.fromEntries([...glyphSource.matchAll(/^  (\w+): \{ sf: '([\w.]+)'/gm)].map(([, name, sf]) => [name, { sf }])),
+  barButton: (label, accessibilityLabel, symbol, tintColor, onPress) => ({ type: 'button', label, accessibilityLabel, icon: { type: 'sfSymbol', name: symbol }, tintColor, onPress }),
+};

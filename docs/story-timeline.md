@@ -53,6 +53,9 @@ wordmark's button stretches across the bar up to Share and Settings, because an
 overlay cannot work: on iOS the native bar takes touches in its own area rather
 than passing them to the screen beneath. It is a button only when there is a
 timeline, so it is never a control that does nothing; iOS still keeps glass off
-it. The native width subtracts an estimated 40pt of bar insets, unmeasured. A
+it. Android's width subtracts an estimated 40pt of bar insets, unmeasured. iOS
+keeps the wordmark's own width, since the stretched one pushed Share and
+Settings into iOS 26's overflow menu; a status-bar tap returns to the reading
+there. A
 scroll the app starts itself runs to its target without the web settle turning
 it round mid-way.

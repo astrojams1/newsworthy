@@ -7,7 +7,7 @@ import { usePreferences } from '@/components/preferences-provider';
 import { THEME_CHOICES } from '@/lib/preferences';
 import { pushSupported } from '@/lib/push';
 import { privacyUrl, supportUrl } from '@/lib/config';
-import { Glyph, HEADER_ICON_SIZE, type GlyphName } from '@/components/glyph';
+import { GLYPHS, Glyph, HEADER_ICON_SIZE, barButton, type GlyphName } from '@/components/glyph';
 import { RowContent, Section, SettingsPage, Trailing, rowStyle } from '@/components/settings-list';
 import { Toggle } from '@/components/toggle';
 import { useCurrentReading } from '@/components/reading-provider';
@@ -45,9 +45,10 @@ export default function Settings() {
   ];
   return <>
     {process.env.EXPO_OS === 'web' && <Head><title>Settings · Newsworthy</title></Head>}
-    {/* iOS 26+ draws the close button in glass, like the header's other controls. */}
+    {/* iOS 26+ draws the close button in glass, like the header's other controls:
+        the system's own bar button, a circle. An app view in that glass was an oval. */}
     <Stack.Screen options={{ headerRight: () => closeButton,
-      unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => [{ type: 'custom', element: closeButton, hidesSharedBackground: false }] : undefined }} />
+      unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => [barButton('Close', 'Close settings', GLYPHS.close.sf, theme.ink, close)] : undefined }} />
     <SettingsPage>
       <Section title="Preferences" testID="preference-links">
         {pages.map(({ href, icon, label, value, testID }, index) => <Link key={href} href={href} asChild>

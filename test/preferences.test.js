@@ -300,9 +300,11 @@ test('Settings closes with an X and no title, back to the reading from wherever 
       // test/web-settings.test.js checks the real navigation in a browser.
       assert.deepEqual([opened.calls.dismissTo, opened.calls.back, opened.calls.replace], [['/'], 0, []]);
       if (platform === 'ios') {
+        // The system's own bar button, a glass circle: an app view in that glass was an oval (iPhone, 2026-10-01).
         const items = options.unstable_headerRightItems();
-        assert.equal(items.length, 1);
-        assert.equal(items[0].hidesSharedBackground, false, 'the close button sits in iOS glass');
+        assert.deepEqual(JSON.parse(JSON.stringify(items.map(item => [item.type, item.icon?.name, item.accessibilityLabel]))), [['button', 'xmark', 'Close settings']], 'the close button is a native iOS bar button');
+        items[0].onPress();
+        assert.deepEqual(opened.calls.dismissTo, ['/', '/']);
       } else assert.equal(options.unstable_headerRightItems, undefined);
     }
   }

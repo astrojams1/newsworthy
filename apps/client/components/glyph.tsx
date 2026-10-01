@@ -43,3 +43,11 @@ export function Glyph({ name, color, size = 22 }: { name: GlyphName; color: stri
       : `data:image/svg+xml,${encodeURIComponent(svg)}` };
   return <Image source={source} tintColor={color} accessibilityElementsHidden importantForAccessibility="no" style={{ width: size, height: size }} />;
 }
+
+// An iOS navigation-bar button drawn by the system: on iOS 26 the bar sizes the
+// symbol, rounds its glass into a circle (or a capsule shared with its
+// neighbours) and gives it a working entry in the overflow menu, as Apple's own
+// apps do. App-drawn views placed in that glass got none of it.
+export function barButton(label: string, accessibilityLabel: string, symbol: string, tintColor: string, onPress: () => void) {
+  return { type: 'button' as const, label, accessibilityLabel, icon: { type: 'sfSymbol' as const, name: symbol as never }, tintColor, onPress };
+}
