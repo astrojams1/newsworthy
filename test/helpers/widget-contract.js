@@ -174,11 +174,11 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.doesNotMatch(swift, /monospacedDigitSystemFont/, 'measurement must use the full monospace face');
   assert.match(swift, /\.modifier\(WidgetSurface\(score: entry.reading\?\.score, scheme: entry.appearance.colorScheme\)\)\s*\.id\("\\\(entry.reading\?\.score \?\? 0\)-\\\(entry.appearance.rawValue\)"\)/, 'iOS score and extracted background change identity together');
   // The appearance is the widget's own setting, beside Show app name, not the app's.
-  // An entity rather than an AppEnum: iOS 26.5 hands a widget an AppEnum parameter as nil.
-  assert.match(swift, /@Parameter\(title: "Appearance"\)\s*var appearance: AppearanceOption\?/, 'iOS widget appearance is a widget setting');
+  // A String from fixed options: iOS 26.5 hands a widget an AppEnum or AppEntity parameter as nil.
+  assert.match(swift, /@Parameter\(title: "Appearance", optionsProvider: AppearanceOptions\(\)\)\s*var appearance: String\?/, 'iOS widget appearance is a widget setting');
   assert.match(swift, /\.system: "Follow device", \.light: "Light", \.dark: "Dark"/, 'iOS widget appearance choices');
   for (const indent of ['                ', '                    ']) {
-    assert.ok(swift.includes(`${indent}entry.showAppName = configuration.showAppName\n${indent}entry.appearance = configuration.appearance?.value ?? .system\n`), 'iOS widget settings reach snapshot and timeline');
+    assert.ok(swift.includes(`${indent}entry.showAppName = configuration.showAppName\n${indent}entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system\n`), 'iOS widget settings reach snapshot and timeline');
   }
   assert.match(swift, /\.modifier\(ForcedColorScheme\(scheme: entry.appearance.colorScheme\)\)\s*\.modifier\(WidgetSurface/, 'iOS widget content follows the chosen appearance');
   assert.match(swift, /\.modifier\(ForcedColorScheme\(scheme: scheme\)\)\s*\}/, 'iOS extracted background follows the chosen appearance');

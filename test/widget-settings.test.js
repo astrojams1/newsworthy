@@ -25,11 +25,11 @@ const sources = () => ({
 function checkWidgetSettings(s) {
   // iOS: one configuration parameter per setting, and nothing else.
   assert.match(s.swift, new RegExp(`static var title: LocalizedStringResource = "${escape(spec.title)}"`), 'iOS settings title');
-  const parameters = [...s.swift.matchAll(/@Parameter\(title: "([^"]+)"(?:, default: ([^)]+))?\)\s*var (\w+): (\w+)\??/g)]
-    .map(([, label, value, key, type]) => ({ label, value, key, type }));
+  const parameters = [...s.swift.matchAll(/@Parameter\(title: "([^"]+)"(?:, default: ([^,)]+))?(?:, optionsProvider: (\w+)\(\))?\)\s*var (\w+): (\w+)\??/g)]
+    .map(([, label, value, options, key, type]) => ({ label, value, options, key, type }));
   assert.deepEqual(parameters.map(p => p.key), spec.settings.map(setting => setting.key), 'iOS offers exactly the shared settings, in order');
-  // iOS 26.5 hands a widget an AppEnum parameter as nil (FB22848510), so a choice is an entity.
-  assert.doesNotMatch(s.swift, /^\s*(?:enum|struct) \w+:[^{\n]*\bAppEnum\b/m, 'iOS choices are entities, not an AppEnum');
+  // iOS 26.5 hands a widget an AppEnum or AppEntity parameter as nil, so a choice is a String.
+  assert.doesNotMatch(s.swift, /^\s*(?:enum|struct) \w+:[^{\n]*\b(?:AppEnum|AppEntity)\b/m, 'iOS choices are Strings, not an AppEnum or AppEntity');
   for (const setting of spec.settings) {
     const parameter = parameters.find(p => p.key === setting.key);
     assert.equal(parameter.label, setting.label, `iOS label for ${setting.key}`);
@@ -40,15 +40,15 @@ function checkWidgetSettings(s) {
       }
       continue;
     }
-    const type = parameter.type;
-    const values = s.swift.match(new RegExp(`struct ${type}: AppEntity \\{[^}]*let value: (\\w+)`))?.[1];
-    assert.ok(values, `iOS ${setting.key} is an entity over its choices`);
+    assert.equal(parameter.type, 'String', `iOS ${setting.key} is a String`);
+    const values = parameter.options && s.swift.match(new RegExp(`struct ${parameter.options}: DynamicOptionsProvider \\{\\s*func results\\(\\) async throws -> \\[String\\] \\{ (\\w+)\\.allCases`))?.[1];
+    assert.ok(values, `iOS ${setting.key} offers its choices`);
     const cases = s.swift.match(new RegExp(`enum ${values}: String[^{]*\\{\\s*case ([\\w, ]+)`))?.[1].split(/,\s*/);
     assert.deepEqual(cases, setting.choices.map(choice => choice.value), `iOS choices for ${setting.key}`);
     assert.ok(s.swift.includes(setting.choices.map(choice => `.${choice.value}: "${choice.label}"`).join(', ')), `iOS choice labels for ${setting.key}`);
-    assert.ok(s.swift.includes(`func defaultResult() async -> ${type}? { ${type}(value: .${setting.default}) }`), `iOS default for ${setting.key}`);
+    assert.ok(s.swift.includes(`func defaultResult() async -> String? { ${values}.labels[.${setting.default}] }`), `iOS default for ${setting.key}`);
     for (const indent of ['                ', '                    ']) {
-      assert.ok(s.swift.includes(`${indent}entry.${setting.key} = configuration.${setting.key}?.value ?? .${setting.default}\n`), `iOS applies ${setting.key} to snapshot and timeline`);
+      assert.ok(s.swift.includes(`${indent}entry.${setting.key} = configuration.${setting.key}.flatMap(${values}.init(label:)) ?? .${setting.default}\n`), `iOS applies ${setting.key} to snapshot and timeline`);
     }
   }
 
@@ -99,10 +99,11 @@ const regressions = [
   ['an iOS default drifting', s => { s.swift = s.swift.replace('@Parameter(title: "Show app name", default: true)', '@Parameter(title: "Show app name", default: false)'); }, /iOS default for showAppName/],
   ['an Android default drifting', s => { s.widget = s.widget.replace('getBoolean(settingKey(id, SHOW_APP_NAME), true)', 'getBoolean(settingKey(id, SHOW_APP_NAME), false)'); }, /Android default for showAppName/],
   ['an Android choice missing', s => { s.configure = s.configure.replace('{"system", "light", "dark"}', '{"system", "dark"}'); }, /Android choices for appearance/],
-  ['an iOS setting not applied', s => { s.swift = s.swift.replace('                    entry.appearance = configuration.appearance?.value ?? .system\n', ''); }, /iOS applies appearance/],
-  ['an iOS choice defaulting elsewhere', s => { s.swift = s.swift.replace('AppearanceOption(value: .system) }', 'AppearanceOption(value: .dark) }'); }, /iOS default for appearance/],
-  ['an iOS choice falling back elsewhere', s => { s.swift = s.swift.replaceAll('configuration.appearance?.value ?? .system', 'configuration.appearance?.value ?? .light'); }, /iOS applies appearance/],
-  ['an iOS choice as an AppEnum (nil on iOS 26.5)', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance")\n    var appearance: AppearanceOption?', '@Parameter(title: "Appearance", default: .system)\n    var appearance: WidgetAppearance').replace('enum WidgetAppearance: String, CaseIterable, Sendable', 'enum WidgetAppearance: String, AppEnum, Sendable'); }, /entities, not an AppEnum/],
+  ['an iOS setting not applied', s => { s.swift = s.swift.replace('                    entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system\n', ''); }, /iOS applies appearance/],
+  ['an iOS choice defaulting elsewhere', s => { s.swift = s.swift.replace('WidgetAppearance.labels[.system] }', 'WidgetAppearance.labels[.dark] }'); }, /iOS default for appearance/],
+  ['an iOS choice falling back elsewhere', s => { s.swift = s.swift.replaceAll('WidgetAppearance.init(label:)) ?? .system', 'WidgetAppearance.init(label:)) ?? .light'); }, /iOS applies appearance/],
+  ['an iOS choice as an AppEnum (nil on iOS 26.5)', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", optionsProvider: AppearanceOptions())\n    var appearance: String?', '@Parameter(title: "Appearance", default: .system)\n    var appearance: WidgetAppearance').replace('enum WidgetAppearance: String, CaseIterable, Sendable', 'enum WidgetAppearance: String, AppEnum, Sendable'); }, /not an AppEnum or AppEntity/],
+  ['an iOS choice as an AppEntity (nil on iOS 26.5)', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", optionsProvider: AppearanceOptions())\n    var appearance: String?', '@Parameter(title: "Appearance")\n    var appearance: AppearanceOption?\n}\n\nstruct AppearanceOption: AppEntity {\n    let value: WidgetAppearance'); }, /not an AppEnum or AppEntity/],
   ['Android settings unreachable after adding', s => { s.provider = s.provider.replace('reconfigurable|', ''); }, /reachable after adding/],
   ['Android app name always shown', s => { s.widget = s.widget.replace('showAppName(cache, id) ? View.VISIBLE : View.GONE', 'View.VISIBLE'); }, /hides the app name/],
 ];
