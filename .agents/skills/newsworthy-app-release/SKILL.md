@@ -80,6 +80,22 @@ repository inside a sandbox.
   Linux environment with the Android SDK, but this container's Maven downloads
   are rate-limited (HTTP 429). iOS needs macOS, which means sandbox minutes.
 
+## Submitting to TestFlight
+
+The App Store Connect API key is the vault item `op://API Tokens/App Store
+Connect`: `credential` is the `.p8` body without its PEM header and footer,
+with `key id` and `issuer id` beside it. `--auto-submit` and a plain
+`eas submit --non-interactive` both stop at "App Store Connect API Keys cannot
+be set up in --non-interactive mode", the `EXPO_ASC_*` environment variables
+did not help, and the Expo MCP's `build_submit` fails with "a conflict between
+exclusive peers [appleAppSpecificPassword, ascApiKey, ascApiKeyId]". What works:
+write the key to a temporary file (header and footer added, `umask 077`), add
+`ascApiKeyPath`, `ascApiKeyId` and `ascApiKeyIssuerId` to
+`submit.production.ios` in a copy of `apps/client/eas.json`, run
+`eas submit -p ios --id <build> --profile production --non-interactive`, then
+restore `eas.json` and delete the key. Never commit either. Build without
+`--auto-submit` and submit once the build has finished.
+
 ## Spending them well
 
 - **Batch.** One build per platform per verification round, carrying every
@@ -91,6 +107,13 @@ repository inside a sandbox.
   prebuild, build, runtime downloads, helpers) before `sandbox_create`, then run
   the slow steps in parallel in the background. Install the old build and add
   widgets while the new one compiles.
+- **Watch a build's log, not just its status.** On 1 October build 22 compiled in
+  six minutes, then sat in "Uploading application archive" until the free
+  plan's 45-minute limit cancelled it, with no Expo incident posted; the
+  rebuild uploaded normally. `build_info` gives a signed log URL (read it with
+  `curl --compressed`). A build stuck in that phase for 15 minutes will not
+  finish; ask the owner before rebuilding, since the stuck one already used
+  its credit.
 - **Copy evidence out as you go and stop the sandbox the moment you are done.**
   A sandbox can stop without warning and its disk goes with it. Text survives
   the trip through `sandbox_exec` output reliably; a large image may not, so

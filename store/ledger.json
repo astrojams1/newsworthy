@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T00:58:59+00:00",
+  "updated_at": "2026-10-01T02:28:58+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -930,12 +930,12 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "iOS verified on simulators 2026-10-01 (Release, Xcode 26.6, EAS macOS sandbox). The AppEntity fix failed on iOS 26.5 as the AppEnum had: the widget received Appearance as nil (log 'Prepared appearance to AppearanceOption(nil)'). Appearance is now an optional String from fixed options (Follow device, Light, Dark); the log shows the String arriving. iOS 26.5 and 18.6, both sizes: Dark held under a light system and Light under a dark one, Follow device switched with the system, Show app name off removed the heading and on restored it; upgrading over build 21 kept both widgets with the name shown and Follow device. iOS 16.4: the widget shows, with no Edit Widget. Not verified: a physical device; any Android check.",
+      "summary": "TestFlight: iOS 1.0.0 build 24 (EAS 3221b8a2, commit 3a4a67a, the String Appearance fix) built in 6 minutes and was uploaded to App Store Connect on 2026-10-01 (EAS submission 320a4482-962e-47de-bc53-d758dffd6e52); Apple processing pending. Build 22 (EAS 3270d610, same commit) compiled but stalled uploading its archive until the free plan's 45-minute limit cancelled it; its credit was spent. Two build credits used this October. Not yet seen on a physical device.",
       "evidence": [
-        "store/source/widget-settings/ios-simulator-2026-10-01.md (method, widget log lines, per-state luminance and recognised text); test/widget-settings.test.js rejects an AppEnum or AppEntity choice"
+        "EAS builds 3270d610 (CANCELED, log ends at 'Uploading application archive...' 01:32) and 3221b8a2 (FINISHED); EAS submission 320a4482"
       ],
-      "next_action": "TestFlight build on a real iOS 26 device (owner approval). Android: every check on a device or KVM emulator via a preview APK (owner approval), including the settings-screen look, Android 11 close-without-Done and TalkBack. Minor: an upgraded widget's Edit Widget row shows the placeholder 'Appearance' until opened.",
-      "updated_at": "2026-10-01T00:58:59+00:00"
+      "next_action": "Owner installs build 24 from TestFlight on an iOS 26 iPhone and checks both widget sizes: Light under system Dark, Dark under Light, Follow device switching, Show app name off/on, existing widgets after the update. Android paused until the owner has a device (about a week).",
+      "updated_at": "2026-10-01T02:28:58+00:00"
     },
     "widget.same-day-timestamp": {
       "state": "waiting_verification",
@@ -6564,6 +6564,22 @@
         ],
         "next_action": "TestFlight build on a real iOS 26 device (owner approval). Android: every check on a device or KVM emulator via a preview APK (owner approval), including the settings-screen look, Android 11 close-without-Done and TalkBack. Minor: an upgraded widget's Edit Widget row shows the placeholder 'Appearance' until opened.",
         "updated_at": "2026-10-01T00:58:59+00:00"
+      }
+    },
+    {
+      "sequence": 346,
+      "at": "2026-10-01T02:28:58+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "TestFlight: iOS 1.0.0 build 24 (EAS 3221b8a2, commit 3a4a67a, the String Appearance fix) built in 6 minutes and was uploaded to App Store Connect on 2026-10-01 (EAS submission 320a4482-962e-47de-bc53-d758dffd6e52); Apple processing pending. Build 22 (EAS 3270d610, same commit) compiled but stalled uploading its archive until the free plan's 45-minute limit cancelled it; its credit was spent. Two build credits used this October. Not yet seen on a physical device.",
+        "evidence": [
+          "EAS builds 3270d610 (CANCELED, log ends at 'Uploading application archive...' 01:32) and 3221b8a2 (FINISHED); EAS submission 320a4482"
+        ],
+        "next_action": "Owner installs build 24 from TestFlight on an iOS 26 iPhone and checks both widget sizes: Light under system Dark, Dark under Light, Follow device switching, Show app name off/on, existing widgets after the update. Android paused until the owner has a device (about a week).",
+        "updated_at": "2026-10-01T02:28:58+00:00"
       }
     }
   ],
