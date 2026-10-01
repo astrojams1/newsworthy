@@ -103,3 +103,8 @@ builds are paused until the owner has a device.
 UTC: `XCODE_BUILD_ERROR`, "init(title:description:default:requestValueDialog:
 inputConnectionBehavior:optionsProvider:) is only available in iOS 26.0 or
 newer". Wasted: one credit. The widget parameter went back to build 24's form.
+
+**Build 26** (`6df1f5b0`, iOS `production`, commit 51826ed). Finished in about
+seven minutes; submitted with the vault key (submission `949246a0`), processed
+by Apple by 06:15 UTC and added to "Release QA" through the API (204). Carries
+the native header buttons for the owner's iPhone check.

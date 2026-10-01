@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T06:04:12+00:00",
+  "updated_at": "2026-10-01T06:15:31+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1016,16 +1016,15 @@
       "updated_at": "2026-09-28T08:29:00+00:00"
     },
     "ui.header-icon-size": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_verification",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Owner's iPhone, TestFlight build 24 (iOS 26), 2026-10-01: after returning to the reading, Share and Settings folded into a \"…\" glass button that did nothing; the Settings X sat in an oval rather than a circle; and the glass icons did not look like Apple's own (compared with the Health app's back and + buttons). Cause: app-drawn views placed in iOS 26 glass, beside a wordmark stretched to an estimated width. Fixed on PR #155 with native bar buttons (SF Symbols square.and.arrow.up, gearshape, xmark) and the iOS wordmark at its own width; not yet compiled or seen on a device.",
+      "summary": "TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device.",
       "evidence": [
-        "store/source/widget-settings/iphone-2026-10-01/reading-header-overflow.jpg",
-        "store/source/widget-settings/iphone-2026-10-01/settings-close-oval.jpg"
+        "EAS build 6df1f5b0 (FINISHED); EAS submission 949246a0; App Store Connect build e95d5777 VALID, added to Release QA"
       ],
-      "next_action": "Ship the native bar buttons to TestFlight; the owner checks the header after Settings and after foregrounding, the X's circle, and the icons against a system app.",
-      "updated_at": "2026-10-01T05:34:54+00:00"
+      "next_action": "Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app.",
+      "updated_at": "2026-10-01T06:15:31+00:00"
     }
   },
   "events": [
@@ -6631,6 +6630,22 @@
         ],
         "next_action": "Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too.",
         "updated_at": "2026-10-01T06:04:12+00:00"
+      }
+    },
+    {
+      "sequence": 350,
+      "at": "2026-10-01T06:15:31+00:00",
+      "gate": "ui.header-icon-size",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device.",
+        "evidence": [
+          "EAS build 6df1f5b0 (FINISHED); EAS submission 949246a0; App Store Connect build e95d5777 VALID, added to Release QA"
+        ],
+        "next_action": "Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app.",
+        "updated_at": "2026-10-01T06:15:31+00:00"
       }
     }
   ],
