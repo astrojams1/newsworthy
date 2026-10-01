@@ -106,8 +106,8 @@ const regressions = [
   ['Android chosen appearance misses a text', s => { s.java = s.java.replace('views.setTextColor(R.id.widget_updated, muted);', ''); }, /colours every text/],
   ['Android chosen appearance keeps adaptive gradient', s => { s.java = s.java.replace('LevelPalette.background(score, dark)', 'LevelPalette.background(score)'); }, /fixed gradient/],
   ['Android text colour set outside the chosen appearance', s => { s.java = s.java.replace('views.setTextViewText(R.id.widget_score, number);', 'views.setTextViewText(R.id.widget_score, number); views.setTextColor(R.id.widget_score, 0);'); }, /XML theme\/size bindings/],
-  ['iOS widget appearance missing from widget settings', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", default: .system)', ''); }, /appearance is a widget setting/],
-  ['iOS widget appearance not applied to timeline', s => { s.swift = s.swift.replace('                    entry.appearance = configuration.appearance\n', ''); }, /settings reach snapshot and timeline/],
+  ['iOS widget appearance missing from widget settings', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", optionsProvider: AppearanceOptions())', ''); }, /appearance is a widget setting/],
+  ['iOS widget appearance not applied to timeline', s => { s.swift = s.swift.replace('                    entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system\n', ''); }, /settings reach snapshot and timeline/],
   ['wrong Android level', s => { s.java = s.java.replace('LevelPalette.background(reading == null ? 0 : reading.optInt("score"))', 'LevelPalette.background(1)'); }, /palette follows displayed score/],
   ['expanded body top aligned', s => { s.expanded = s.expanded.replace('android:gravity="center_vertical"', 'android:gravity="top"'); }, /expanded content centered vertically/],
   ['expanded text fills centered body', s => { s.expanded = s.expanded.replace('android:layout_weight="1" android:layout_height="wrap_content"', 'android:layout_weight="1" android:layout_height="match_parent"'); }, /expanded text fits centered row/],
@@ -211,7 +211,9 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride, timeline =
     assert.equal(typeof left.props.onPress, 'function');
     assert.ok(left.props.style({ pressed: false }).minHeight >= contract.header.minimumTouchTarget);
     // It reaches across the header to Share and Settings, not just the word.
-    assert.equal(left.props.style({ pressed: false }).width, 390 - 96 - (platform === 'web' ? 12 : 40));
+    // Not on iOS: stretched to an estimate there, it crowded Share and Settings
+    // into iOS 26's "…" overflow (iPhone, 2026-10-01); a status-bar tap scrolls back.
+    assert.equal(left.props.style({ pressed: false }).width, platform === 'ios' ? undefined : 390 - 96 - (platform === 'web' ? 12 : 40), 'iOS wordmark keeps its own width');
     assert.equal(left.props.children.type, 'BrandMark');
   } else assert.equal(left.type, 'BrandMark', 'with nowhere to return from, the wordmark is not a button');
   // The right side is share (when there is a reading) then settings, always.
@@ -227,10 +229,18 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride, timeline =
     assert.equal(leftItems.length, 1);
     assert.equal(leftItems[0].hidesSharedBackground, true, 'brand must not acquire iOS glass');
     assert.equal(leftItems[0].element, left);
-    assert.equal(rightItems.length, score == null ? 1 : 2);
-    for (const item of rightItems) assert.equal(item.hidesSharedBackground, false, 'share and settings sit in the iOS glass capsule');
-    assert.equal(rightItems.at(-1).element, settings);
-    if (share) assert.equal(rightItems[0].element, share);
+    // Share and Settings are the system's own bar buttons, sharing one glass
+    // capsule: app views in that glass sat in an oval at the wrong size and
+    // folded into a "…" whose entries did nothing (iPhone, 2026-10-01).
+    assert.deepEqual(JSON.parse(JSON.stringify(rightItems.map(item => [item.type, item.icon?.type, item.icon?.name, item.accessibilityLabel]))),
+      [...(score == null ? [] : [['button', 'sfSymbol', 'square.and.arrow.up', 'Share this reading']]), ['button', 'sfSymbol', 'gearshape', 'Settings']],
+      'share and settings are native iOS bar buttons');
+    for (const item of rightItems) {
+      assert.ok(item.label, 'a native bar button has a label for the overflow menu and VoiceOver');
+      assert.equal(typeof item.onPress, 'function');
+      assert.notEqual(item.hidesSharedBackground, true, 'share and settings sit in the iOS glass capsule');
+      assert.equal(item.tintColor, themeForLevel(score ?? 0, false).accent);
+    }
   } else {
     assert.equal(options.unstable_headerLeftItems, undefined);
     assert.equal(options.unstable_headerRightItems, undefined);
@@ -278,17 +288,25 @@ test('header gate rejects missing optical correction on iOS and a lift on the ba
   }
 });
 
-test('header gate rejects iOS glass moving: onto the wordmark, or off the controls', () => {
+test('header gate rejects iOS glass moving onto the wordmark, app views in the glass, and a stretched iOS wordmark', () => {
   const source = readFileSync(new URL('../apps/client/app/index.tsx', import.meta.url), 'utf8');
-  const brandGlass = source.replace('element: brand, hidesSharedBackground: true', 'element: brand, hidesSharedBackground: false');
-  assert.notEqual(brandGlass, source);
-  assert.throws(() => inspectHeader({ sourceOverride: brandGlass }), /must not acquire iOS glass/);
-  for (const element of ['shareButton', 'settingsButton']) {
-    const sourceOverride = source.replace(`element: ${element}, hidesSharedBackground: false`,
-      `element: ${element}, hidesSharedBackground: true`);
+  const timeline = [{ root: 1, story: 'fed-rates', since: '2026-09-16T08:00:00Z', score: 4, displayed: 3, leading: false, explanation: 'The Fed held.' }];
+  const cases = [
+    [source.replace('element: brand, hidesSharedBackground: true', 'element: brand, hidesSharedBackground: false'), /must not acquire iOS glass/],
+    // The defect on build 24: custom views in the capsule, an oval "…" that did nothing.
+    [source.replace("barButton('Settings', 'Settings', GLYPHS.settings.sf, theme.accent, () => router.push('/settings')),", "{ type: 'custom' as const, element: settingsButton, hidesSharedBackground: false },"), /native iOS bar buttons/],
+    [source.replace("...(reading ? [barButton('Share', 'Share this reading', 'square.and.arrow.up', theme.accent, shareReading)] : []),", "...(shareButton ? [{ type: 'custom' as const, element: shareButton, hidesSharedBackground: false }] : []),"), /native iOS bar buttons/],
+    [source.replace("const headerTapWidth = process.env.EXPO_OS === 'ios' ? undefined\n    : Math.max", 'const headerTapWidth = Math.max'), /keeps its own width/],
+  ];
+  for (const [sourceOverride, error] of cases) {
     assert.notEqual(sourceOverride, source);
-    assert.throws(() => inspectHeader({ sourceOverride }), /sit in the iOS glass capsule/);
+    assert.throws(() => inspectHeader({ sourceOverride, timeline }), error);
   }
+});
+
+test('iOS bar buttons are built as the system expects', () => {
+  const source = readFileSync(new URL('../apps/client/components/glyph.tsx', import.meta.url), 'utf8');
+  assert.ok(source.includes("return { type: 'button' as const, label, accessibilityLabel, icon: { type: 'sfSymbol' as const, name: symbol as never }, tintColor, onPress };"), 'barButton matches the test double');
 });
 
 

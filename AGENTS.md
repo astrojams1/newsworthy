@@ -67,6 +67,10 @@ release status. Calm presentation must not change the rating calibration.
 - To remake the store preview videos, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
+- Before any EAS build, store submission or EAS sandbox, use
+  `.agents/skills/newsworthy-app-release/SKILL.md`: free-plan monthly caps.
+- Every skill in `.agents/skills/` keeps an append-only ledger, linked from its
+  SKILL.md, read before a run and updated after (`test/skill-ledgers.test.js`).
 - A push to `main` deploys to production. `main` is both the GitHub default
   branch and Vercel's production branch. Preview builds are skipped by
   `vercel.json`’s `ignoreCommand`; verify production after merge.
@@ -169,8 +173,7 @@ removed from both caller-facing endpoints. The full history stays at
 cannot be confused with rating against one.
 
 Note the two effects compound: external readings suppress the cron by being
-recent, so a prompt change reaches nothing until a caller picks it up. No cron
-run has executed v4.
+recent, so a prompt change reaches nothing until a caller picks it up.
 
 **The front page shows a development's level, aged.** Two rules, in order.
 
@@ -524,11 +527,10 @@ was misread as data loss.
 
 **The external caller runs hourly, not on this app's cadence.** A scheduled
 Cowork task fires at `2 * * * *` — 48 of the last 48 readings are external, one
-per hour, clustered at :03–:05. Each is an independent session with no memory of
-the others. That is why no cron run has executed anything since v4: the rolling
-staleness window is suppressed continuously, so this app's own cadence setting
-is inert while the caller keeps running, and its model spend is near zero
-because the caller is paying instead.
+per hour, clustered at :03–:05, each an independent session with no memory of
+the others. No cron run has executed since v4: the caller keeps the staleness
+window suppressed, so this app's cadence setting is inert and its model spend
+near zero.
 
 **The cron only fires if nothing arrived within the interval.** A rolling
 window from the newest reading, not the slot boundary — an external reading at
@@ -561,13 +563,11 @@ false`, so a `"//"` key fails the deploy outright — `should NOT have additiona
 property //` — before any build runs. Rationale for anything in that file
 belongs here instead.
 
-**Preview builds are skipped** via `ignoreCommand`. Every branch push produced a
-preview that failed in about a second with `BUILD_FAILED` / "Resource
-provisioning failed" and no build logs, while production built fine from the
-same commit; each one emailed. Exit 0 skips and exit 1 builds, and the test
-matches `preview` rather than negating `production` so an unset `VERCEL_ENV`
-still builds. Nothing here reads a preview URL — work is verified against
-production after merge.
+**Preview builds are skipped** via `ignoreCommand`: every branch preview failed
+in a second (`BUILD_FAILED`, "Resource provisioning failed", no logs) and
+emailed, while production built. Exit 0 skips, exit 1 builds; the test matches
+`preview` rather than negating `production`, so an unset `VERCEL_ENV` still
+builds.
 
 **Settings are a sheet, and the theme is one of them.** `/settings` (the gear in
 the header, beside share) rises over the reading as a sheet in the apps and is a

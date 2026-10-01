@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-09-29T08:53:41+00:00",
+  "updated_at": "2026-10-01T09:34:19+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -178,15 +178,15 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Build21 resubmitted after updated physical video and six-part response. Matching Notes saved/read back; Apple API confirms version and submission WAITING_FOR_REVIEW at06:19UTC.",
+      "summary": "Owner decision 2026-10-01: resubmit 1.0.0 with build 26 (TestFlight, owner-checked) rather than change the app further, since the timeline is new since build 21's review; update the App Store description and screenshots; do not include the preview video (never uploaded to App Store Connect, so nothing to remove). Description, promotional text and keywords are drafted in store/listing.json (commit b42d6eb): timeline, New: label and story line, per-widget settings, no mention of AI. Nothing has been pushed to App Store Connect; version 1.0.0 is still REJECTED with build 21 selected.",
       "evidence": [
-        "store/apple-review-resubmission-2026-09-24-video.json; store/apple-review-response-2026-09-24.md"
+        "store/listing.json at b42d6eb; App Store Connect API 2026-10-01: appStoreVersion 267c6f52 REJECTED, reviewSubmission 4f28761f UNRESOLVED_ISSUES"
       ],
-      "next_action": "Await Apple review outcome; inspect its actual next message before assigning further owner actions. Paid agreement and Google device gates remain separate.",
-      "updated_at": "2026-09-24T06:20:53+00:00"
+      "next_action": "Handed to another agent. 1) Capture build 26 screenshots: owner's iPhone (6.9in or 6.5in only) or an EAS macOS sandbox simulator (about 38 CI minutes left in October; large images corrupted when copied out of a sandbox as text, so plan the transfer); iPad screenshots are required while supportsTablet is true, or make the app iPhone-only (one build credit). Compose with store/scripts/render.mjs and update store/assets/manifest.json. 2) Push description, promotional text and keywords from store/listing.json to the en-US version localization. 3) Rewrite review notes in listing.json and App Store Connect for build 26: the switch is now High-score alerts with a Threshold row; mention the timeline (Settings, Show timeline), per-widget Show app name and Appearance, and the Sep 24 video as build 21. 4) Select build 26 (App Store Connect build e95d5777) on version 267c6f52, resubmit through reviewSubmission 4f28761f, and read back WAITING_FOR_REVIEW.",
+      "updated_at": "2026-10-01T08:04:23+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -927,15 +927,15 @@
       "updated_at": "2026-09-25T08:25:21+00:00"
     },
     "widget.appearance-choice": {
-      "state": "waiting_verification",
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Widget settings are now one definition (design/widget-settings.json: Show app name, Appearance) offered on both platforms per widget: iOS 17+ Edit Widget, and a new Android settings screen (RatingWidgetConfigure) opened by the launcher on add (optional) and on reconfigure (Android 12+), styled like the app's Settings. Android hides the heading per widget and, only for a chosen Light or Dark, uses literal-colour gradients and text. Android resources linked with aapt2 (minSdk 24, android-35) and all four widget Java classes compiled with javac against android-35 and WorkManager 2.11.2; expo prebuild produced the manifest activity and provider configure entry with the real package. Swift not compiled (no toolchain); no emulator (no KVM); nothing seen on a device.",
+      "summary": "Build 25 (EAS ac89a682, commit bf78444) failed to compile: a String parameter with a declared default and an options provider is iOS 26-only, and the widget runs from iOS 17. The declared-default fix is withdrawn; the parameter is build 24's again, so an unset Appearance row can still read \"Appearance\" in Edit Widget while the widget follows the device. A test now rejects the iOS 26-only initializer.",
       "evidence": [
-        "test/widget-settings.test.js with nine rejection cases; design gate 85 passed; aapt2 link and javac in the session scratchpad; expo prebuild -p android"
+        "EAS build ac89a682 (ERRORED, XCODE_BUILD_ERROR)"
       ],
-      "next_action": "On a device: iOS Edit Widget and Android widget settings for both sizes; Show app name off/on; Light held with system Dark and Dark with system Light; Follow device switching; Android 11 add flow keeps the widget when the screen is closed without Done; TalkBack reads switch and radio states.",
-      "updated_at": "2026-09-26T04:09:44+00:00"
+      "next_action": "Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too.",
+      "updated_at": "2026-10-01T06:04:12+00:00"
     },
     "widget.same-day-timestamp": {
       "state": "waiting_verification",
@@ -960,15 +960,15 @@
       "updated_at": "2026-09-27T04:34:38+00:00"
     },
     "copy.no-ai-listing": {
-      "state": "todo",
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing.",
+      "summary": "store/listing.json description no longer mentions AI (\"Ratings can be wrong.\" replaces \"AI assessments can be wrong.\"); promotional text and keywords updated for the timeline and widget settings. The live App Store listing still says \"Newsworthy uses AI\"; not pushed yet. Google Play listing not created.",
       "evidence": [
-        "test/copy.test.js 'user-facing copy does not mention AI'; store/assets images inspected 2026-09-27"
+        "store/listing.json at b42d6eb"
       ],
-      "next_action": "Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI.",
-      "updated_at": "2026-09-27T05:03:02+00:00"
+      "next_action": "Push the description, promotional text and keywords to App Store Connect with the resubmission, then read back that no public field mentions AI.",
+      "updated_at": "2026-10-01T08:04:24+00:00"
     },
     "design.temperature-palette": {
       "state": "waiting_verification",
@@ -1017,14 +1017,47 @@
     },
     "ui.header-icon-size": {
       "state": "waiting_verification",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device.",
+      "evidence": [
+        "EAS build 6df1f5b0 (FINISHED); EAS submission 949246a0; App Store Connect build e95d5777 VALID, added to Release QA"
+      ],
+      "next_action": "Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app.",
+      "updated_at": "2026-10-01T06:15:31+00:00"
+    },
+    "apple.resubmit-26": {
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner report 2026-09-28: the Settings X was 20pt beside the 24pt gear. Every nav-bar icon (share, gear, Settings X, web back arrow) now uses header.iconSize 24; npm test and test:design pass on rendered props. Not yet seen on a device or in a browser.",
+      "summary": "Build 26 remains VALID and IN_BETA_TESTING; App Review still has rejected build 21. Current copy and complete Review Notes were saved/read back. Prepared current Stone gallery renderer and capture plan; local native capture is waiting on the matching iOS 26.5 runtime download.",
       "evidence": [
-        "test/surface-design.test.js 'every navigation-bar icon is drawn at one size'"
+        "store/apple-resubmission-26-metadata.json; store/apple-gallery-26.json; store/builds/ledger.md; PR #155"
       ],
-      "next_action": "Check the X against the gear on iOS (SF Symbol xmark), Android and web; iOS 26 glass capsule untested.",
-      "updated_at": "2026-09-28T05:00:39+00:00"
+      "next_action": "Finish runtime download, compile/capture actual current native screens and both widgets, render/inspect/upload and verify new images, select build 26 and resubmit; read back review state.",
+      "updated_at": "2026-10-01T09:34:19+00:00"
+    },
+    "apple.metadata-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Build26 listing copy saved and read back through App Store Connect: updated description, promotional text, keywords and URLs; public fields do not mention AI. Six-part Review Notes now describe current timeline, High-score alerts/Threshold and independent widget settings, while labeling the September24 recording as historical build21. Existing private phone preserved in memory. App Preview sets are empty.",
+      "evidence": [
+        "store/apple-resubmission-26-metadata.json; store/listing.json"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-01T08:58:20+00:00"
+    },
+    "apple.local-capture-26": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner unlocked Mac and accepted Xcode setup; Xcode 26.6 installed. Local capture is waiting for Apple iOS 26.5 platform support/runtime (8.52 GB download progressing slowly). No additional EAS build or sandbox started.",
+      "evidence": [
+        "/tmp/newsworthy-ios-runtime-download.log; /tmp/newsworthy-pr155-native-build.log"
+      ],
+      "next_action": "Complete local platform install, build the unchanged build-26 application source and capture current Apple screenshots.",
+      "updated_at": "2026-10-01T09:18:32+00:00"
     }
   },
   "events": [
@@ -6516,6 +6549,248 @@
         ],
         "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
         "updated_at": "2026-09-29T08:53:41+00:00"
+      }
+    },
+    {
+      "sequence": 343,
+      "at": "2026-09-30T16:15:58+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "failed",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-09-26, iOS simulators, #152 code (fae4cc6, Release simulator build in an EAS macOS sandbox with Xcode 26.6; Swift compiled cleanly, x86_64 and arm64). iOS 18.6 (iPhone 16), both sizes: Edit Widget offers Show app name (on) and Appearance (Follow device) on a new widget; name off removes the heading and moves rating and sentence up about 11 pt at the same 69-pt numeral, name on restores it; Light held with the system in Dark, Dark held with the system in Light, Follow device switched with the system; settings are per widget and persist. iOS 26.5 (iPhone 17): Show app name works the same, but Appearance has no effect: the widget log shows the saved choice arriving (serializedParameters appearance = dark), then 'Programming error: a caseDisplayRepresentations entry for AppEnum case \"to-0.0\" was not found' and 'Prepared appearance to WidgetAppearance(nil)', so it falls back to Follow device. Matches a reported iOS 26.5 AppEnum parameter regression (FB22848510). Not changed by -Onone, static var representations, explicit allCases, or renaming the type or cases (renaming dropped an existing widget from the home screen). Judged from background luminance and Vision text recognition of simulator screenshots; the sandbox stopped before images could be copied out.",
+        "evidence": [
+          "Simulator measurements (luminance 0-255): iOS 18.6 medium Follow device 227 light / 51 dark system; small Dark 41 under Light; medium Light 227 under Dark; iOS 26.5 medium Light 59 under Dark, small Dark 237 under Light"
+        ],
+        "next_action": "Fix the Appearance parameter for iOS 26.5.",
+        "updated_at": "2026-09-30T16:15:58+00:00"
+      }
+    },
+    {
+      "sequence": 344,
+      "at": "2026-09-30T16:15:59+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Appearance is now an AppEntity (AppearanceOption, three fixed options, Follow device as the query default and when unset); the intent name and Show app name are unchanged so existing widgets keep their configuration. Rebased on main 2026-09-30 (widget sentence-age and timestamp changes). The entity code has not been compiled or run: EAS build credits and sandbox minutes were exhausted until 1 Oct 2026 UTC.",
+        "evidence": [
+          "test/widget-settings.test.js rejects an AppEnum choice, a drifted default and a drifted fallback; design gate 108 passed"
+        ],
+        "next_action": "Compile the widget; on iOS 26.5 and 18.6 simulators, both sizes: Appearance Light under system Dark, Dark under Light, Follow device switching, Show app name off/on; upgrade from build 21 (existing widgets default to Follow device with the name shown); iOS 16.4 shows the widget with no settings; screenshots under store/source/. Then TestFlight on a real iOS 26 device. Android: every check on a device or KVM emulator.",
+        "updated_at": "2026-09-30T16:15:59+00:00"
+      }
+    },
+    {
+      "sequence": 345,
+      "at": "2026-10-01T00:58:59+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "iOS verified on simulators 2026-10-01 (Release, Xcode 26.6, EAS macOS sandbox). The AppEntity fix failed on iOS 26.5 as the AppEnum had: the widget received Appearance as nil (log 'Prepared appearance to AppearanceOption(nil)'). Appearance is now an optional String from fixed options (Follow device, Light, Dark); the log shows the String arriving. iOS 26.5 and 18.6, both sizes: Dark held under a light system and Light under a dark one, Follow device switched with the system, Show app name off removed the heading and on restored it; upgrading over build 21 kept both widgets with the name shown and Follow device. iOS 16.4: the widget shows, with no Edit Widget. Not verified: a physical device; any Android check.",
+        "evidence": [
+          "store/source/widget-settings/ios-simulator-2026-10-01.md (method, widget log lines, per-state luminance and recognised text); test/widget-settings.test.js rejects an AppEnum or AppEntity choice"
+        ],
+        "next_action": "TestFlight build on a real iOS 26 device (owner approval). Android: every check on a device or KVM emulator via a preview APK (owner approval), including the settings-screen look, Android 11 close-without-Done and TalkBack. Minor: an upgraded widget's Edit Widget row shows the placeholder 'Appearance' until opened.",
+        "updated_at": "2026-10-01T00:58:59+00:00"
+      }
+    },
+    {
+      "sequence": 346,
+      "at": "2026-10-01T02:28:58+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "TestFlight: iOS 1.0.0 build 24 (EAS 3221b8a2, commit 3a4a67a, the String Appearance fix) built in 6 minutes and was uploaded to App Store Connect on 2026-10-01 (EAS submission 320a4482-962e-47de-bc53-d758dffd6e52); Apple processing pending. Build 22 (EAS 3270d610, same commit) compiled but stalled uploading its archive until the free plan's 45-minute limit cancelled it; its credit was spent. Two build credits used this October. Not yet seen on a physical device.",
+        "evidence": [
+          "EAS builds 3270d610 (CANCELED, log ends at 'Uploading application archive...' 01:32) and 3221b8a2 (FINISHED); EAS submission 320a4482"
+        ],
+        "next_action": "Owner installs build 24 from TestFlight on an iOS 26 iPhone and checks both widget sizes: Light under system Dark, Dark under Light, Follow device switching, Show app name off/on, existing widgets after the update. Android paused until the owner has a device (about a week).",
+        "updated_at": "2026-10-01T02:28:58+00:00"
+      }
+    },
+    {
+      "sequence": 347,
+      "at": "2026-10-01T05:34:54+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner's iPhone, TestFlight build 24 (iOS 26), 2026-10-01: Edit Widget offers Show app name and Appearance, and its menu lists Follow device, Light and Dark with Follow device checked, but the Appearance row shows the placeholder \"Appearance\" until edited, and the menu opens upward with an odd animation. Fixed on PR #155 by declaring \"Follow device\" as the String parameter's default (not yet compiled or seen on a device). The upward menu is the system's own presentation of a dynamic options list; nothing in the parameter sets its direction. Forced Light and Dark on the device were not reported yet.",
+        "evidence": [
+          "store/source/widget-settings/iphone-2026-10-01/edit-widget-placeholder.jpg",
+          "store/source/widget-settings/iphone-2026-10-01/edit-widget-menu-upward.jpg"
+        ],
+        "next_action": "Compile the default fix (macOS sandbox or a cloud build, owner's go-ahead), ship it to TestFlight, then the owner checks the row reads Follow device and runs Light/Dark/Follow device on both sizes.",
+        "updated_at": "2026-10-01T05:34:54+00:00"
+      }
+    },
+    {
+      "sequence": 348,
+      "at": "2026-10-01T05:34:54+00:00",
+      "gate": "ui.header-icon-size",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner's iPhone, TestFlight build 24 (iOS 26), 2026-10-01: after returning to the reading, Share and Settings folded into a \"…\" glass button that did nothing; the Settings X sat in an oval rather than a circle; and the glass icons did not look like Apple's own (compared with the Health app's back and + buttons). Cause: app-drawn views placed in iOS 26 glass, beside a wordmark stretched to an estimated width. Fixed on PR #155 with native bar buttons (SF Symbols square.and.arrow.up, gearshape, xmark) and the iOS wordmark at its own width; not yet compiled or seen on a device.",
+        "evidence": [
+          "store/source/widget-settings/iphone-2026-10-01/reading-header-overflow.jpg",
+          "store/source/widget-settings/iphone-2026-10-01/settings-close-oval.jpg"
+        ],
+        "next_action": "Ship the native bar buttons to TestFlight; the owner checks the header after Settings and after foregrounding, the X's circle, and the icons against a system app.",
+        "updated_at": "2026-10-01T05:34:54+00:00"
+      }
+    },
+    {
+      "sequence": 349,
+      "at": "2026-10-01T06:04:12+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 25 (EAS ac89a682, commit bf78444) failed to compile: a String parameter with a declared default and an options provider is iOS 26-only, and the widget runs from iOS 17. The declared-default fix is withdrawn; the parameter is build 24's again, so an unset Appearance row can still read \"Appearance\" in Edit Widget while the widget follows the device. A test now rejects the iOS 26-only initializer.",
+        "evidence": [
+          "EAS build ac89a682 (ERRORED, XCODE_BUILD_ERROR)"
+        ],
+        "next_action": "Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too.",
+        "updated_at": "2026-10-01T06:04:12+00:00"
+      }
+    },
+    {
+      "sequence": 350,
+      "at": "2026-10-01T06:15:31+00:00",
+      "gate": "ui.header-icon-size",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device.",
+        "evidence": [
+          "EAS build 6df1f5b0 (FINISHED); EAS submission 949246a0; App Store Connect build e95d5777 VALID, added to Release QA"
+        ],
+        "next_action": "Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app.",
+        "updated_at": "2026-10-01T06:15:31+00:00"
+      }
+    },
+    {
+      "sequence": 351,
+      "at": "2026-10-01T07:57:53+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Apple rejected 1.0.0 (21) again under Guideline 4.2 (Minimum Functionality), after the September 24 resubmission with notifications and the physical-device video (owner report, 2026-10-01). API readback 2026-10-01: version REJECTED, submission 4f28761f UNRESOLVED_ISSUES, build 21 selected. This is the third 4.2 finding: build 7 on September 21 (reconsideration upheld September 23) and build 21 now, despite notifications and widgets added in between. Build 26 (TestFlight, owner-checked) adds per-widget settings and native header buttons; the story timeline exists but is off by default. Not resubmitted.",
+        "evidence": [
+          "App Store Connect API: appStoreVersion 267c6f52 REJECTED; reviewSubmission 4f28761f UNRESOLVED_ISSUES; owner message 'rejected by guideline 4.2'"
+        ],
+        "next_action": "Owner chooses how to answer 4.2 before any resubmission: an App Review appointment, more visible functionality, or an App Review Board appeal.",
+        "updated_at": "2026-10-01T07:57:53+00:00"
+      }
+    },
+    {
+      "sequence": 352,
+      "at": "2026-10-01T08:04:23+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner decision 2026-10-01: resubmit 1.0.0 with build 26 (TestFlight, owner-checked) rather than change the app further, since the timeline is new since build 21's review; update the App Store description and screenshots; do not include the preview video (never uploaded to App Store Connect, so nothing to remove). Description, promotional text and keywords are drafted in store/listing.json (commit b42d6eb): timeline, New: label and story line, per-widget settings, no mention of AI. Nothing has been pushed to App Store Connect; version 1.0.0 is still REJECTED with build 21 selected.",
+        "evidence": [
+          "store/listing.json at b42d6eb; App Store Connect API 2026-10-01: appStoreVersion 267c6f52 REJECTED, reviewSubmission 4f28761f UNRESOLVED_ISSUES"
+        ],
+        "next_action": "Handed to another agent. 1) Capture build 26 screenshots: owner's iPhone (6.9in or 6.5in only) or an EAS macOS sandbox simulator (about 38 CI minutes left in October; large images corrupted when copied out of a sandbox as text, so plan the transfer); iPad screenshots are required while supportsTablet is true, or make the app iPhone-only (one build credit). Compose with store/scripts/render.mjs and update store/assets/manifest.json. 2) Push description, promotional text and keywords from store/listing.json to the en-US version localization. 3) Rewrite review notes in listing.json and App Store Connect for build 26: the switch is now High-score alerts with a Threshold row; mention the timeline (Settings, Show timeline), per-widget Show app name and Appearance, and the Sep 24 video as build 21. 4) Select build 26 (App Store Connect build e95d5777) on version 267c6f52, resubmit through reviewSubmission 4f28761f, and read back WAITING_FOR_REVIEW.",
+        "updated_at": "2026-10-01T08:04:23+00:00"
+      }
+    },
+    {
+      "sequence": 353,
+      "at": "2026-10-01T08:04:24+00:00",
+      "gate": "copy.no-ai-listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "store/listing.json description no longer mentions AI (\"Ratings can be wrong.\" replaces \"AI assessments can be wrong.\"); promotional text and keywords updated for the timeline and widget settings. The live App Store listing still says \"Newsworthy uses AI\"; not pushed yet. Google Play listing not created.",
+        "evidence": [
+          "store/listing.json at b42d6eb"
+        ],
+        "next_action": "Push the description, promotional text and keywords to App Store Connect with the resubmission, then read back that no public field mentions AI.",
+        "updated_at": "2026-10-01T08:04:24+00:00"
+      }
+    },
+    {
+      "sequence": 354,
+      "at": "2026-10-01T08:48:39+00:00",
+      "gate": "apple.resubmit-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Resuming PR155 on the owner Mac. Apple API confirms build26 VALID and IN_BETA_TESTING, while version1.0.0 remains REJECTED with build21 selected. All application changes after the finished build26 source51826ed are release documentation/listing only. Local Xcode16.2 is obsolete; App Store accepted a download of the last compatible Xcode version for macOS26.3. No Expo build or sandbox started.",
+        "evidence": [
+          "EAS build6df1f5b0-9091-445e-a51b-56479b6677f4; Apple builde95d5777-40c0-4b15-83fc-a35ce9607ddc; PR155 head61b8bcf"
+        ],
+        "next_action": "Finish local native build and current iPhone/iPad/widget/timeline screenshots, update metadata and Notes, select build26, resubmit and verify Waiting for Review.",
+        "updated_at": "2026-10-01T08:48:39+00:00"
+      }
+    },
+    {
+      "sequence": 355,
+      "at": "2026-10-01T08:58:20+00:00",
+      "gate": "apple.metadata-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build26 listing copy saved and read back through App Store Connect: updated description, promotional text, keywords and URLs; public fields do not mention AI. Six-part Review Notes now describe current timeline, High-score alerts/Threshold and independent widget settings, while labeling the September24 recording as historical build21. Existing private phone preserved in memory. App Preview sets are empty.",
+        "evidence": [
+          "store/apple-resubmission-26-metadata.json; store/listing.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-01T08:58:20+00:00"
+      }
+    },
+    {
+      "sequence": 356,
+      "at": "2026-10-01T09:18:32+00:00",
+      "gate": "apple.local-capture-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner unlocked Mac and accepted Xcode setup; Xcode 26.6 installed. Local capture is waiting for Apple iOS 26.5 platform support/runtime (8.52 GB download progressing slowly). No additional EAS build or sandbox started.",
+        "evidence": [
+          "/tmp/newsworthy-ios-runtime-download.log; /tmp/newsworthy-pr155-native-build.log"
+        ],
+        "next_action": "Complete local platform install, build the unchanged build-26 application source and capture current Apple screenshots.",
+        "updated_at": "2026-10-01T09:18:32+00:00"
+      }
+    },
+    {
+      "sequence": 357,
+      "at": "2026-10-01T09:34:19+00:00",
+      "gate": "apple.resubmit-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 26 remains VALID and IN_BETA_TESTING; App Review still has rejected build 21. Current copy and complete Review Notes were saved/read back. Prepared current Stone gallery renderer and capture plan; local native capture is waiting on the matching iOS 26.5 runtime download.",
+        "evidence": [
+          "store/apple-resubmission-26-metadata.json; store/apple-gallery-26.json; store/builds/ledger.md; PR #155"
+        ],
+        "next_action": "Finish runtime download, compile/capture actual current native screens and both widgets, render/inspect/upload and verify new images, select build 26 and resubmit; read back review state.",
+        "updated_at": "2026-10-01T09:34:19+00:00"
       }
     }
   ],

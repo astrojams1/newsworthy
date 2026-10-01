@@ -90,6 +90,14 @@ records these values, and the rendered-icon regression cases reject a missing
 correction on iOS or a lift applied to the balanced glyphs. This is an optical
 adjustment, not a change to the navigation-bar slots or the title's horizontal
 position.
+On iOS 26 Share and Settings are the system's own bar buttons (SF Symbols
+`square.and.arrow.up` and `gearshape`, `barButton()` in `glyph.tsx`), sharing
+one glass capsule, and the Settings X is one too (`xmark`, a glass circle).
+App-drawn views placed in that glass sat at the wrong size in an oval and,
+crowded by a wordmark stretched to an estimated width, folded into a "…" whose
+entries did nothing (iPhone, TestFlight build 24, 2026-10-01). The iOS wordmark
+keeps its own width; the optical lift above applies to web and Android and to
+the older iOS header views.
 
 `design/surfaces.json` records the approved typography and widget size rules.
 The full reading deliberately uses larger digits than widgets. Compact and expanded widgets use the same 69-point base numeral and a
@@ -266,7 +274,7 @@ reading header stays transparent over its gradient.
 
 Settings rises over the reading as a sheet on iOS and Android (`presentation:
 'modal'`) and is an ordinary page on the web. It has its own stack: an overview
-with no visible title and a single close control (an X, in glass on iOS 26), and
+with no visible title and a single close control (an X, a native glass circle on iOS 26), and
 Appearance and Notifications as pages inside the sheet. Close goes straight back to the reading
 (`router.dismissTo('/')`) whatever is stacked behind the overview: a back action
 left a second overview in place after a web link to an alerts page redirected to

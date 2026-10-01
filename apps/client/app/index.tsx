@@ -4,7 +4,7 @@ import { useWindowSize } from '@/lib/window-size';
 import { Stack, useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { AppIcon } from '@/components/app-icon';
-import { Glyph, HEADER_ICON_SIZE } from '@/components/glyph';
+import { GLYPHS, Glyph, HEADER_ICON_SIZE, barButton } from '@/components/glyph';
 import { BrandMark } from '@/components/brand-mark';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
@@ -187,8 +187,12 @@ export default function Home() {
   // so it stays plain text rather than a button that does nothing.
   const toReading = () => scrollTo(0);
   // Up to Share and Settings, 48pt each. Web lays the bar out itself, with a
-  // 12pt end margin; native bars add their own item insets, estimated at 40.
-  const headerTapWidth = Math.max(120, width - (reading ? 96 : 48) - (process.env.EXPO_OS === 'web' ? 12 : 40));
+  // 12pt end margin; Android's bar adds its own item insets, estimated at 40.
+  // iOS keeps the wordmark's own width: stretched to that estimate, it left
+  // iOS 26 too little room for Share and Settings, and the bar folded them into
+  // a "…" that did nothing. A status-bar tap already scrolls back on iOS.
+  const headerTapWidth = process.env.EXPO_OS === 'ios' ? undefined
+    : Math.max(120, width - (reading ? 96 : 48) - (process.env.EXPO_OS === 'web' ? 12 : 40));
   const brand = hasTimeline ? <Pressable accessibilityRole="button" accessibilityLabel="Newsworthy, back to the reading" onPress={toReading}
     style={({ pressed }) => ({ width: headerTapWidth, minHeight: 48, justifyContent: 'center', alignItems: 'flex-start', opacity: pressed ? 0.6 : 1 })}>
     <BrandMark />
@@ -211,13 +215,16 @@ export default function Home() {
       headerLeft: () => brand, headerRight: () => headerRight,
       // iOS 26+ draws glass around header items. The wordmark stays out of it —
       // a text mark in a capsule reads as a button — while share and settings
-      // share one capsule, which is what the glass is for.
+      // share one capsule, which is what the glass is for. They are the
+      // system's own bar buttons, so iOS draws the symbols, the capsule and any
+      // overflow menu itself: app views inside the glass sat off-size, in an
+      // oval, and folded into a "…" whose entries did nothing.
       unstable_headerLeftItems: process.env.EXPO_OS === 'ios' ? () => [
         { type: 'custom', element: brand, hidesSharedBackground: true },
       ] : undefined,
       unstable_headerRightItems: process.env.EXPO_OS === 'ios' ? () => [
-        ...(shareButton ? [{ type: 'custom' as const, element: shareButton, hidesSharedBackground: false }] : []),
-        { type: 'custom' as const, element: settingsButton, hidesSharedBackground: false },
+        ...(reading ? [barButton('Share', 'Share this reading', 'square.and.arrow.up', theme.accent, shareReading)] : []),
+        barButton('Settings', 'Settings', GLYPHS.settings.sf, theme.accent, () => router.push('/settings')),
       ] : undefined }} />
     <View style={{ flex: 1, backgroundColor: theme.surface }}>
     <Animated.View pointerEvents="none" style={{ position: 'absolute', inset: 0, opacity: reveal }}><ReadingGradient score={reading?.score} dark={theme.dark} /></Animated.View>

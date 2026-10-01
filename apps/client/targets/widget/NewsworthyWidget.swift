@@ -15,13 +15,17 @@ struct ReadingEntry: TimelineEntry {
 
 /// The widget's own appearance, set beside "Show app name" when editing the
 /// widget. Follow device leaves the colour scheme to the system, as before.
-enum WidgetAppearance: String, AppEnum, Sendable {
+enum WidgetAppearance: String, CaseIterable, Sendable {
     case system, light, dark
 
-    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Appearance"
-    static let caseDisplayRepresentations: [WidgetAppearance: DisplayRepresentation] = [
+    static let labels: [WidgetAppearance: String] = [
         .system: "Follow device", .light: "Light", .dark: "Dark",
     ]
+
+    init?(label: String) {
+        guard let match = WidgetAppearance.labels.first(where: { $0.value == label })?.key else { return nil }
+        self = match
+    }
 
     var colorScheme: ColorScheme? {
         switch self {
@@ -52,8 +56,25 @@ struct ReadingWidgetConfiguration: WidgetConfigurationIntent {
     @Parameter(title: "Show app name", default: true)
     var showAppName: Bool
 
-    @Parameter(title: "Appearance", default: .system)
-    var appearance: WidgetAppearance
+    // Optional, with no declared default: a String parameter with both a
+    // default and an options provider needs iOS 26 (build 25 failed to compile,
+    // 2026-10-01), and this widget runs from iOS 17. AppearanceOptions supplies
+    // Follow device as the default result instead; a widget whose value is
+    // unset can show the placeholder "Appearance" in Edit Widget and follows
+    // the device.
+    @Parameter(title: "Appearance", optionsProvider: AppearanceOptions())
+    var appearance: String?
+}
+
+/// Appearance is a String chosen from fixed options, not an AppEnum or an
+/// AppEntity: on iOS 26.5 the widget received both as nil, so a chosen Light
+/// or Dark followed the device, while the Bool beside it and a String arrive
+/// intact (simulators, 2026-09-26 and 2026-10-01; iOS 18.6 decoded the AppEnum too).
+/// An unset value is Follow device, which is also the options' default.
+@available(iOS 17.0, *)
+struct AppearanceOptions: DynamicOptionsProvider {
+    func results() async throws -> [String] { WidgetAppearance.allCases.map { WidgetAppearance.labels[$0]! } }
+    func defaultResult() async -> String? { WidgetAppearance.labels[.system] }
 }
 
 @available(iOS 17.0, *)
@@ -67,7 +88,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
             Provider().getSnapshot(in: context) { entry in
                 var entry = entry
                 entry.showAppName = configuration.showAppName
-                entry.appearance = configuration.appearance
+                entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system
                 continuation.resume(returning: entry)
             }
         }
@@ -79,7 +100,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
                 let entries = timeline.entries.map { entry in
                     var entry = entry
                     entry.showAppName = configuration.showAppName
-                    entry.appearance = configuration.appearance
+                    entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system
                     return entry
                 }
                 continuation.resume(returning: Timeline(entries: entries, policy: timeline.policy))

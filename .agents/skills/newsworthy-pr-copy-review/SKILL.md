@@ -49,3 +49,8 @@ Include a short “Copy accuracy” note in the PR description naming the surfac
 reviewed, corrections made, and material remaining limits. An internal change
 may say no copy changes were needed, with a concrete reason. This note records
 an actual review; a checked box alone is not evidence.
+
+Read the [copy review ledger](../../../docs/copy-reviews/ledger.md) before
+reviewing: its Lessons are claims that were wrong before, and its open limits
+are checks still owed. Add the PR's row in the same PR, and a dated Lesson when
+the review corrects a claim that could recur.
