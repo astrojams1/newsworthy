@@ -24,15 +24,25 @@ five iPhone images and three iPad images, led by the finite week timeline,
 with a neutral small/medium widget comparison, the reading, notifications and
 appearance. The [new renderer](scripts/render-apple-gallery.mjs) uses the
 generated Stone brand palette and refuses missing or changed native captures.
-It preserves Android's separate historical manifest entries. The new images
-are **not captured, rendered or uploaded yet**.
+It preserves Android's separate historical manifest entries. Seven app-screen images are captured, rendered and uploaded; Apple reports
+`COMPLETE` and matching checksums. Historical reading images are replaced.
+The current small/medium widget image remains pending; the historical widget
+composition is retained in the draft gallery until its replacement is verified.
+See [capture provenance](source/ios-gallery-v26-provenance.json),
+[upload receipt](apple-gallery26-upload.json), and
+[gallery readback](apple-gallery26-verification.json).
 
 Local preparation is in `.worktrees/app-store-resubmit-155`: dependencies,
 prebuild and CocoaPods installation are complete. Xcode 26.6 is installed and
 its owner setup is complete. Apple's 8.52 GB iOS 26.5 runtime download is
 progressing slowly; Xcode's asset compiler rejects the older installed runtimes
-for this SDK. The release ledger records that prerequisite and the exact next
-steps. No additional Expo build credit or sandbox minute was used.
+for this SDK. At the owner’s request, an Expo macOS sandbox supplied the seven app captures
+in 35m13s and was stopped. Its unsigned widget extension was rejected by the
+AppIntent service; a signing retry was not observed before the MCP 500-request
+cap blocked control. One simulator-release EAS build (`78c0ccc8`) is running
+for the local fallback, consuming one build credit. The local Mac is locked
+and EAS remote Simulator is unavailable for this account. The release ledger
+records these limits; widget capture and resubmission remain pending.
 
 ## Historical September release records
 

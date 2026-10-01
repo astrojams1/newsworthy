@@ -14,7 +14,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 4 so far (iOS 22, 24, 25, 26) | about 22 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155 |
+| [2026-10](#2026-10) | 5 so far (iOS 22, 24, 25, 26; simulator-release 78c0ccc8 running) | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155 |
 
 ## Lessons
 
@@ -127,3 +127,33 @@ cloud-container assumptions. A usable Mac avoids Expo credits/minutes, but an
 Xcode update may require owner license/admin setup and a large matching runtime
 download before asset catalogs compile. Do not spend a cloud build merely to
 refresh screenshots, or call an old simulator capture current release evidence.
+
+**Expo capture batch, 1 October (owner authorized).** macOS MEDIUM
+`01a0f6f5-659d-7261-b085-5c7aa6723f1d` ran from 10:14:50 to
+10:50:03 UTC (35m13s). Compiled release source `51826ed` with Xcode 26.6
+and captured seven native iPhone 17 Pro Max/iPad Pro 13-inch app screens on
+iOS 26.5. Actual simulator bundle: 1.0.0 (1). Full originals transferred
+with byte counts and SHA256 checked; provenance is in
+`store/source/ios-gallery-v26-provenance.json`. Widget rendering failed as
+a skeleton: Siri AppIntent service rejected the unsigned extension with
+empty entitlements. Ad-hoc incremental rebuild was started but its result
+was not observed. MCP reached its 500/500 tool request limit during transfers.
+The official Expo GraphQL stop mutation succeeded; STOPPED and finish time
+were read back. No second sandbox was started. About 2.7 of 60 CI/CD minutes
+remain, assuming the earlier 22-minute run. A current simulator-release cloud
+build `78c0ccc8-d1ac-4e04-a789-b33d4bf0c570` was started through EAS CLI
+for the local widget capture fallback; it uses one build credit and no sandbox
+minutes. Current worktree application sources match `51826ed` byte-for-byte.
+Local computer control reports the Mac locked; owner unlock requested.
+
+**Capture lessons (2026-10-01).** Full originals through many small MCP output
+chunks can exhaust the separate tool cap even before CI/CD minutes run out.
+Budget transfer requests and keep an independent cleanup route. Preserve
+normal simulator signing for AppIntent widgets; a successful unsigned app
+launch does not verify the extension. The ad-hoc-signing hypothesis is still
+unverified. Never publish skeleton widgets as actual gallery captures.
+
+**Remote Simulator alternative, 1 October.** EAS CLI 24.8.0
+`simulator:availability --non-interactive --json` reports `available: false`
+for `astrojams1`; remote device sessions are not enabled for this account.
+No remote session, paid upgrade or account switch was started.

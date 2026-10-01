@@ -8,7 +8,7 @@ description: Build, verify and submit the Newsworthy iOS and Android apps with E
 The release flow itself (profiles, signing, submission targets, store setup) is
 in `docs/mobile-release.md`; gates and their evidence go in the release ledger
 (`npm run ledger -- record …`). This skill adds one constraint to that flow: the
-Expo account `astrojams1` is on the **free plan**, and two monthly caps decide
+Expo account `astrojams1` is on the **free plan**, and monthly caps decide
 what can run at all.
 
 ## The caps
@@ -16,9 +16,11 @@ what can run at all.
 | Cap | What uses it | When it is gone |
 |---|---|---|
 | Build credits | Every cloud `eas build` that starts; assume one cancelled or errored part-way has used its credit too | `eas build` fails with "You've reached your included build credits"; nothing builds until the 1st |
+| MCP tool requests (500 observed for this account) | Expo MCP tool calls, including command polling and image-transfer chunks | All MCP calls fail; use supported CLI/API for cleanup, without upgrading or switching accounts |
 | CI/CD minutes (60 a month) | EAS sandboxes (`sandbox_create`) and EAS workflows, per minute of runtime, each sandbox counted separately | `sandbox_create` fails with "Free plan CI/CD 60 minute limit reached" |
 
-Both reset on the 1st of the month at 00:00 UTC. `LARGE` sandboxes need a paid
+Build credits and CI/CD minutes reset on the 1st of the month at 00:00 UTC.
+The MCP error names its billing period; its reset time was not established. `LARGE` sandboxes need a paid
 plan; use `MEDIUM`. Upgrading the plan is a purchase: never do it, and never
 work around a cap by switching accounts. Say what is blocked and until when.
 
@@ -44,6 +46,11 @@ says what is left, and its Lessons are what earlier runs cost to learn.
    and profile you need, use its artifact (`build_list` gives the URL; artifacts
    expire after 14 days for internal builds, 30 for store builds). A pre-change
    build is also the "before" side of an upgrade test.
+   Also check the MCP request allowance before a sandbox. Avoid moving full
+   original PNGs in many small command-output chunks; that exhausted 500
+   calls before widget capture finished. Prefer a supported binary artifact
+   transfer. If command output is the only route, budget requests, batch reads
+   and poll sparsely; check byte counts and SHA256 on arrival.
 4. **Prove the change compiles first, for free.** Run `npm test`,
    `npm run test:design`, `npm run check:android-widget` (Android widget
    resources and Java) and `npx expo prebuild --no-install` in the cloud
@@ -62,8 +69,13 @@ require downloading a matching simulator runtime before asset catalogs compile;
 the presence of an older bootable simulator is not enough. Record that download
 as a local prerequisite, not an app compile defect.
 
-Use a Release simulator build with `ARCHS=arm64 ONLY_ACTIVE_ARCH=YES` and
-`CODE_SIGNING_ALLOWED=NO`, including the widget extension. Capture through the
+Use a Release simulator build with `ARCHS=arm64 ONLY_ACTIVE_ARCH=YES`,
+including the widget extension. Preserve normal simulator ad-hoc signing and
+Xcode-generated entitlements when verifying AppIntent widgets. An unsigned
+bundle can display app screens while its widget remains a placeholder: on
+1 October, `siriactionsd` rejected the extension for empty entitlements. The
+ad-hoc rebuild was not observed before the tool cap; signing is the next
+verification step, not a confirmed fix. Capture through the
 available computer-control interface and Simulator's Save Screen command.
 Keep full original captures, source commit, actual bundle version/build, runtime,
 device and hashes. A locally generated simulator bundle may have a different
@@ -152,6 +164,12 @@ success). Tell testers it is available only once its `buildBetaDetail` shows
   the trip through `sandbox_exec` output reliably; a large image may not, so
   record measurements (luminance, recognised text, log lines) as text and keep
   any image small, with a checksum checked on arrival.
+- **Keep a cleanup route.** MCP exhaustion can also block `sandbox_stop`. The
+  official EAS CLI GraphQL schema exposes `sandbox.stopSandbox(sandboxId:)` and
+  `sandboxes.byId(sandboxId:)`; these stopped and verified the 1 October
+  sandbox using the same Expo credential. This is cleanup through the same
+  account, not a way to continue executing commands past the tool cap. An
+  existing job can expose an SSH session, but this sandbox had none.
 - **Free disk early.** The macOS image ships an 11 GB CocoaPods cache
   (`~/Library/Caches/CocoaPods`); delete it after `pod install` if you need room
   for simulator runtimes.

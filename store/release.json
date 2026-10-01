@@ -51,14 +51,14 @@
         "status": "FINISHED"
       }
     ],
-    "widgetArtworkStatus": "BUILD_26_NATIVE_CAPTURES_PENDING_HISTORICAL_GALLERY_ON_APPLE",
+    "widgetArtworkStatus": "CURRENT_APP_IMAGES_COMPLETE_WIDGET_REFRESH_PENDING",
     "replacementUpload": {
       "build": "6",
       "deliveryId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
       "status": "VALID",
       "sha256": "032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5"
     },
-    "replacementNativeVerification": "BUILD_26_CAPTURE_AND_INTERACTION_CHECKS_PENDING",
+    "replacementNativeVerification": "SEVEN_APP_SCREENS_CAPTURED_ON_IOS_26_5_SIMULATOR_WIDGET_SIGNING_AND_PHYSICAL_QA_SEPARATE",
     "previousReview": {
       "submissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
       "state": "COMPLETE",
@@ -249,7 +249,15 @@
     ],
     "previousSubmission": "4a6398aa-658c-49c0-a909-c09209dd5021",
     "buildSelectionEvidence": "store/apple-build26-selection.json",
-    "screenshotTargetBuild": "26"
+    "screenshotTargetBuild": "26",
+    "currentGalleryVerification": "apple-gallery26-verification.json",
+    "currentCaptureProvenance": "source/ios-gallery-v26-provenance.json",
+    "simulatorCaptureBuild": {
+      "id": "78c0ccc8-d1ac-4e04-a789-b33d4bf0c570",
+      "status": "IN_PROGRESS",
+      "sourceCommit": "e9d16c083cdb901ab56ec8b9eb515aeb3a12e431",
+      "applicationSourcesMatch": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521"
+    }
   },
   "google": {
     "productionBuild": "4dc57992-b1e5-4517-8197-215b66789963",

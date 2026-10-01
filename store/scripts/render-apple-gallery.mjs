@@ -9,12 +9,15 @@ import tokens from '../../public/tokens.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const plan = JSON.parse(await readFile(resolve(root, 'apple-gallery-26.json')));
+// Prepare app artwork while actual widget capture is pending. The default
+// complete gallery still requires both measured, verified native widget frames.
+const appOnly = process.argv.includes('--app-only');
 const evidence = JSON.parse(await readFile(resolve(root, plan.captureEvidence)));
 if (evidence.status !== 'verified' || evidence.applicationSourceCommit !== plan.applicationSourceCommit) {
   throw new Error('Native capture verification or application source does not match the gallery plan.');
 }
-const frames = JSON.parse(await readFile(resolve(root, plan.widgetFrames)));
-if (frames.releaseBuild !== plan.releaseBuild || frames.frames.length !== 2 || frames.frames.map(x => x.label).join() !== 'SMALL,MEDIUM') {
+const frames = appOnly ? { frames: [] } : JSON.parse(await readFile(resolve(root, plan.widgetFrames)));
+if (!appOnly && (frames.releaseBuild !== plan.releaseBuild || frames.frames.length !== 2 || frames.frames.map(x => x.label).join() !== 'SMALL,MEDIUM')) {
   throw new Error('Expected measured current small and medium widget frames.');
 }
 const originals = new Map();
@@ -78,6 +81,7 @@ for (const capture of plan.captures) {
   await save(`assets/apple/${capture.family}/${capture.output}`, svg, [source], { width, height, displayType: tablet ? 'APP_IPAD_PRO_3GEN_129' : 'APP_IPHONE_67' });
 }
 
+if (!appOnly) {
 const scale = Math.min(1092 / Math.max(...frames.frames.map(f => f.width)), 510 / Math.max(...frames.frames.map(f => f.height)));
 const widget = (frame, index) => {
   const { metadata } = originals.get(frame.file);
@@ -101,6 +105,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="2868">
   ${text(108, 2758, 27, 'World news, rated by significance.', tokens.brand.light.muted)}
 </svg>`;
 await save('assets/apple/iphone-6.9/02-widget-sizes-v26.png', svg, frames.frames.map(f => f.file), { width: 1320, height: 2868, displayType: 'APP_IPHONE_67', composition: 'Actual native widget viewports at one scale on a neutral canvas; original Home Screens retained.' });
+}
 assets.sort((a, b) => a.file.localeCompare(b.file));
 const previous = JSON.parse(await readFile(resolve(root, 'assets/manifest.json')));
 await writeFile(resolve(root, 'assets/manifest.json'), JSON.stringify([...assets, ...previous.filter(a => a.platform !== 'ios')], null, 2) + '\n');
@@ -108,4 +113,4 @@ const iphone = assets.filter(a => a.width === 1320);
 await sharp({ create: { width: iphone.length * 330, height: 717, channels: 3, background: tokens.brand.light.center } })
   .composite(await Promise.all(iphone.map(async (a, i) => ({ input: await sharp(resolve(root, a.file)).resize(330).toBuffer(), left: i * 330, top: 0 }))))
   .png().toFile(resolve(root, 'preview.png'));
-console.log(`Rendered ${assets.length} current Apple screenshots; Android manifest entries preserved.`);
+console.log(`Rendered ${assets.length} current Apple screenshots${appOnly ? ' (widget artwork pending)' : ''}; Android manifest entries preserved.`);

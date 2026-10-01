@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-01T09:55:17+00:00
+Updated: 2026-10-01T11:00:06+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -107,6 +107,10 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.local-capture-26 | waiting_provider | provider | observed | Xcode 26.6 owner setup and local dependencies/prebuild/Pods are complete. Matching iOS 26.5 arm64 runtime download is still progressing slowly. Alternate official Apple CDN routes and IPv6 did not remove the bandwidth limit; older installed runtimes cannot compile this SDK asset catalog. Mac has also relocked, so native UI capture needs an unlocked host once the download completes. | Let runtime download finish, unlock Mac for native capture, rebuild the unchanged build-26 app source, capture/inspect full current iPhone/iPad and both widgets, render and upload gallery. |
 | apple.source-155 | done | agent | observed | PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments. | Capture current native Apple gallery and complete build-26 resubmission. |
 | apple.build-selection-26 | done | agent | observed | Selected Apple build 26 and verified VALID, IN_BETA_TESTING and PREPARE_FOR_SUBMISSION. Previous review submission remains UNRESOLVED_ISSUES; no resubmission was sent. | Finish current screenshot capture/upload and then resolve the review item and submit; verify review state. |
+| apple.cloud-capture-26 | waiting_user | Astro | observed | Seven full native iPhone/iPad app captures preserved with checked SHA256 from build-26 application source 51826ed, simulator bundle 1.0.0 (1), iOS 26.5. Widget captures remain unusable skeletons: AppIntent service rejected the unsigned extension for empty entitlements. Expo MCP reports 500/500 monthly requests. Sandbox stop confirmed through official Expo GraphQL at 10:50:03Z; 35m13s running. Local CUA confirms Mac locked. | Unlock Mac; retrieve authorized single simulator-release artifact, verify normal simulator signing, capture actual Small/Medium widgets, render gallery and submit build 26. |
+| apple.simulator-artifact-26 | waiting_provider | agent | observed | Single simulator-release EAS build 78c0ccc8-d1ac-4e04-a789-b33d4bf0c570 started via CLI for current widget capture; fifth October build. Application source matches production source 51826ed byte-for-byte; production build 26 will be reused. | Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures. |
+| apple.gallery-artwork-26 | in_progress | agent | observed | Seven current native app screenshots rendered from verified iPhone/iPad originals using generated Stone palette. Uploads in progress; historical gallery retained until replacement delivery is COMPLETE. Widget composition awaits actual Small/Medium capture; failed placeholder excluded. EAS remote Simulator alternative reports unavailable for this account. | Complete screenshot uploads and read checksums; unlock Mac for widget capture; do not relabel old widget images current. |
+| apple.gallery-upload-26 | in_progress | agent | observed | Seven current app artwork replacements report COMPLETE with exact MD5 readback. Historical reading images retired and current app images ordered; historical widget image deliberately retained until fresh widget capture is verified. Gallery remains a draft; build 26 has not been resubmitted. | Capture and replace actual widget artwork, verify final 5-iPhone/3-iPad gallery, resolve rejected review item and submit; read back WAITING_FOR_REVIEW. |
 
 ## Evidence and history
 
@@ -3582,3 +3586,52 @@ PR #155 is merged. Build 26 is selected with PREPARE_FOR_SUBMISSION and current 
 - https://github.com/astrojams1/newsworthy/pull/192; store/apple-build26-selection.json; store/apple-resubmission-26-metadata.json
 
 Next: Finish runtime download and actual native gallery capture, upload/verify/order screenshots, then resolve and resubmit the review item and verify WAITING_FOR_REVIEW. Complete PR #192 with final gallery/submission evidence.
+
+### 363. apple.cloud-capture-26 — in_progress
+
+2026-10-01T10:14:52+00:00 · observed · agent
+
+Owner explicitly authorized Expo capture and submission. Token-authenticated Expo MCP lists four October builds and one stopped 22-minute sandbox, no current-source simulator artifact. Started one MEDIUM macOS capture sandbox 01a0f6f5-659d-7261-b085-5c7aa6723f1d; reuse App Store build26, no new production build.
+
+- Expo MCP build_list and sandbox_list; owner request; store/builds/ledger.md
+
+Next: Build source51826ed in one sandbox, capture current iPhone/iPad/widgets, transfer original images with checksum validation, stop sandbox promptly, then upload and resubmit.
+
+### 364. apple.cloud-capture-26 — waiting_user
+
+2026-10-01T10:53:12+00:00 · observed · Astro
+
+Seven full native iPhone/iPad app captures preserved with checked SHA256 from build-26 application source 51826ed, simulator bundle 1.0.0 (1), iOS 26.5. Widget captures remain unusable skeletons: AppIntent service rejected the unsigned extension for empty entitlements. Expo MCP reports 500/500 monthly requests. Sandbox stop confirmed through official Expo GraphQL at 10:50:03Z; 35m13s running. Local CUA confirms Mac locked.
+
+- store/source/iphone-6.9/01-timeline-v26.png
+
+Next: Unlock Mac; retrieve authorized single simulator-release artifact, verify normal simulator signing, capture actual Small/Medium widgets, render gallery and submit build 26.
+
+### 365. apple.simulator-artifact-26 — waiting_provider
+
+2026-10-01T10:55:12+00:00 · observed · agent
+
+Single simulator-release EAS build 78c0ccc8-d1ac-4e04-a789-b33d4bf0c570 started via CLI for current widget capture; fifth October build. Application source matches production source 51826ed byte-for-byte; production build 26 will be reused.
+
+
+Next: Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures.
+
+### 366. apple.gallery-artwork-26 — in_progress
+
+2026-10-01T10:57:28+00:00 · observed · agent
+
+Seven current native app screenshots rendered from verified iPhone/iPad originals using generated Stone palette. Uploads in progress; historical gallery retained until replacement delivery is COMPLETE. Widget composition awaits actual Small/Medium capture; failed placeholder excluded. EAS remote Simulator alternative reports unavailable for this account.
+
+- store/preview.png
+
+Next: Complete screenshot uploads and read checksums; unlock Mac for widget capture; do not relabel old widget images current.
+
+### 367. apple.gallery-upload-26 — in_progress
+
+2026-10-01T11:00:06+00:00 · observed · agent
+
+Seven current app artwork replacements report COMPLETE with exact MD5 readback. Historical reading images retired and current app images ordered; historical widget image deliberately retained until fresh widget capture is verified. Gallery remains a draft; build 26 has not been resubmitted.
+
+- store/apple-gallery26-verification.json
+
+Next: Capture and replace actual widget artwork, verify final 5-iPhone/3-iPad gallery, resolve rejected review item and submit; read back WAITING_FOR_REVIEW.

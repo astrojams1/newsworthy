@@ -1,0 +1,75 @@
+{
+  "observedAt": "2026-10-01T10:59:09.776Z",
+  "releaseBuild": "26",
+  "stage": "CURRENT_APP_GALLERY_SAVED_HISTORICAL_WIDGET_PENDING_REPLACEMENT",
+  "sets": [
+    {
+      "id": "d3a7afa4-c07e-4803-ba38-47ecead34f01",
+      "type": "APP_IPAD_PRO_3GEN_129",
+      "images": [
+        {
+          "id": "da8dfda0-0874-4d60-ab42-36b1f96f937f",
+          "fileName": "01-timeline-v26.png",
+          "state": "COMPLETE",
+          "checksum": "666039b149e2aa4d946bad8539e492db",
+          "historical": false
+        },
+        {
+          "id": "1f7999e8-03a2-45fc-9de1-c6b143b3342d",
+          "fileName": "02-reading-v26.png",
+          "state": "COMPLETE",
+          "checksum": "1f64f2a8d40d6e0fdf1ed50a7a90ee6e",
+          "historical": false
+        },
+        {
+          "id": "91af9571-6ebe-48e9-881d-7b4c0d7aae10",
+          "fileName": "03-appearance-v26.png",
+          "state": "COMPLETE",
+          "checksum": "0383fc239983082ee17b4959d457d784",
+          "historical": false
+        }
+      ]
+    },
+    {
+      "id": "7e5eeec0-cde4-48b9-9cd4-d8cf96e42162",
+      "type": "APP_IPHONE_67",
+      "images": [
+        {
+          "id": "90ab39db-3d99-48dc-befe-463a41367503",
+          "fileName": "01-timeline-v26.png",
+          "state": "COMPLETE",
+          "checksum": "db54229f7e18851d992fa0ec1399f16a",
+          "historical": false
+        },
+        {
+          "id": "da87b8b7-9bb8-479e-aa16-17812131f8db",
+          "fileName": "02-widget-sizes-v2.png",
+          "state": "COMPLETE",
+          "checksum": "cb3313b3a3582c0a49bc15ca06e41a7e",
+          "historical": true
+        },
+        {
+          "id": "3d16c355-9212-4501-9e84-c9bcd1b3760f",
+          "fileName": "03-reading-v26.png",
+          "state": "COMPLETE",
+          "checksum": "f5063d8010807013b517aa71a862ea50",
+          "historical": false
+        },
+        {
+          "id": "9db054b6-4cb6-477d-a5fc-870ce62499ea",
+          "fileName": "04-notifications-v26.png",
+          "state": "COMPLETE",
+          "checksum": "1a30a4794c5412458461b5bef25d4ec2",
+          "historical": false
+        },
+        {
+          "id": "1bfc2657-afb3-4344-a547-2052046c85d6",
+          "fileName": "05-appearance-v26.png",
+          "state": "COMPLETE",
+          "checksum": "b0ef3a95a00d710bfa3f4c2d6d0a65c5",
+          "historical": false
+        }
+      ]
+    }
+  ]
+}

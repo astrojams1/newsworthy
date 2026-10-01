@@ -1,44 +1,80 @@
 [
   {
-    "file": "assets/apple/iphone-6.9/02-widget-sizes-v2.png",
-    "source": "source/iphone-6.9/04-widget-sizes-native.png",
-    "width": 1320,
-    "height": 2868,
+    "file": "assets/apple/ipad-13/01-timeline-v26.png",
+    "sources": [
+      "source/ipad-13/01-timeline-v26.png"
+    ],
     "platform": "ios",
-    "displayType": "APP_IPHONE_67",
-    "composition": "Unchanged native widget viewports on a neutral vector canvas; not a full Home Screen screenshot."
-  },
-  {
-    "file": "assets/apple/iphone-6.9/01-at-a-glance-v6.png",
-    "source": "source/iphone-6.9/01-reading-light.png",
-    "width": 1320,
-    "height": 2868,
-    "platform": "ios",
-    "displayType": "APP_IPHONE_67"
-  },
-  {
-    "file": "assets/apple/iphone-6.9/03-dark-mode-v6.png",
-    "source": "source/iphone-6.9/02-reading-dark.png",
-    "width": 1320,
-    "height": 2868,
-    "platform": "ios",
-    "displayType": "APP_IPHONE_67"
-  },
-  {
-    "file": "assets/apple/ipad-13/01-at-a-glance-v6.png",
-    "source": "source/ipad-13/01-reading-light.png",
+    "releaseBuild": "26",
     "width": 2064,
     "height": 2752,
-    "platform": "ios",
     "displayType": "APP_IPAD_PRO_3GEN_129"
   },
   {
-    "file": "assets/apple/ipad-13/02-dark-mode-v6.png",
-    "source": "source/ipad-13/02-reading-dark.png",
+    "file": "assets/apple/ipad-13/02-reading-v26.png",
+    "sources": [
+      "source/ipad-13/02-reading-light-v26.png"
+    ],
+    "platform": "ios",
+    "releaseBuild": "26",
     "width": 2064,
     "height": 2752,
-    "platform": "ios",
     "displayType": "APP_IPAD_PRO_3GEN_129"
+  },
+  {
+    "file": "assets/apple/ipad-13/03-appearance-v26.png",
+    "sources": [
+      "source/ipad-13/03-reading-dark-v26.png"
+    ],
+    "platform": "ios",
+    "releaseBuild": "26",
+    "width": 2064,
+    "height": 2752,
+    "displayType": "APP_IPAD_PRO_3GEN_129"
+  },
+  {
+    "file": "assets/apple/iphone-6.9/01-timeline-v26.png",
+    "sources": [
+      "source/iphone-6.9/01-timeline-v26.png"
+    ],
+    "platform": "ios",
+    "releaseBuild": "26",
+    "width": 1320,
+    "height": 2868,
+    "displayType": "APP_IPHONE_67"
+  },
+  {
+    "file": "assets/apple/iphone-6.9/03-reading-v26.png",
+    "sources": [
+      "source/iphone-6.9/02-reading-light-v26.png"
+    ],
+    "platform": "ios",
+    "releaseBuild": "26",
+    "width": 1320,
+    "height": 2868,
+    "displayType": "APP_IPHONE_67"
+  },
+  {
+    "file": "assets/apple/iphone-6.9/04-notifications-v26.png",
+    "sources": [
+      "source/iphone-6.9/04-notifications-v26.png"
+    ],
+    "platform": "ios",
+    "releaseBuild": "26",
+    "width": 1320,
+    "height": 2868,
+    "displayType": "APP_IPHONE_67"
+  },
+  {
+    "file": "assets/apple/iphone-6.9/05-appearance-v26.png",
+    "sources": [
+      "source/iphone-6.9/03-reading-dark-v26.png"
+    ],
+    "platform": "ios",
+    "releaseBuild": "26",
+    "width": 1320,
+    "height": 2868,
+    "displayType": "APP_IPHONE_67"
   },
   {
     "file": "assets/google-play/phone/03-widget-sizes-v9.png",

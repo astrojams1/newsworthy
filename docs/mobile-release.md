@@ -37,8 +37,12 @@ host in the simulator; widgets require custom builds and cannot be tested in it.
 PR #155 is merged. Its production build **1.0.0 (26)** is selected in App Store
 Connect and Apple reports **Prepare for Submission**, with the prior review
 still `UNRESOLVED_ISSUES`. Metadata and six-part Review Notes are saved. Current
-native screenshots and resubmission remain pending; no public App Store preview
-video is planned. See `store/apple-build26-selection.json` and the release ledger.
+app-screen screenshots are captured and uploaded through an authorized Expo
+batch. Apple reports seven images COMPLETE with matching checksums; historical
+reading images are replaced. Widget artwork and resubmission remain pending:
+MCP reached its tool cap, its sandbox is stopped, and the local Mac is locked.
+A single simulator-release EAS build is preparing the local fallback. No public
+App Store preview video is planned. See `store/apple-build26-selection.json` and the release ledger.
 
 The EAS project is [@astrojams1/newsworthy](https://expo.dev/accounts/astrojams1/projects/newsworthy).
 The local CLI was connected through Expo browser sign-in on September 16, 2026.

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T09:55:17+00:00",
+  "updated_at": "2026-10-01T11:00:06+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1080,6 +1080,48 @@
       ],
       "next_action": "Finish current screenshot capture/upload and then resolve the review item and submit; verify review state.",
       "updated_at": "2026-10-01T09:50:44+00:00"
+    },
+    "apple.cloud-capture-26": {
+      "state": "waiting_user",
+      "owner": "Astro",
+      "basis": "observed",
+      "summary": "Seven full native iPhone/iPad app captures preserved with checked SHA256 from build-26 application source 51826ed, simulator bundle 1.0.0 (1), iOS 26.5. Widget captures remain unusable skeletons: AppIntent service rejected the unsigned extension for empty entitlements. Expo MCP reports 500/500 monthly requests. Sandbox stop confirmed through official Expo GraphQL at 10:50:03Z; 35m13s running. Local CUA confirms Mac locked.",
+      "evidence": [
+        "store/source/iphone-6.9/01-timeline-v26.png"
+      ],
+      "next_action": "Unlock Mac; retrieve authorized single simulator-release artifact, verify normal simulator signing, capture actual Small/Medium widgets, render gallery and submit build 26.",
+      "updated_at": "2026-10-01T10:53:12+00:00"
+    },
+    "apple.simulator-artifact-26": {
+      "state": "waiting_provider",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Single simulator-release EAS build 78c0ccc8-d1ac-4e04-a789-b33d4bf0c570 started via CLI for current widget capture; fifth October build. Application source matches production source 51826ed byte-for-byte; production build 26 will be reused.",
+      "evidence": [],
+      "next_action": "Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures.",
+      "updated_at": "2026-10-01T10:55:12+00:00"
+    },
+    "apple.gallery-artwork-26": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Seven current native app screenshots rendered from verified iPhone/iPad originals using generated Stone palette. Uploads in progress; historical gallery retained until replacement delivery is COMPLETE. Widget composition awaits actual Small/Medium capture; failed placeholder excluded. EAS remote Simulator alternative reports unavailable for this account.",
+      "evidence": [
+        "store/preview.png"
+      ],
+      "next_action": "Complete screenshot uploads and read checksums; unlock Mac for widget capture; do not relabel old widget images current.",
+      "updated_at": "2026-10-01T10:57:28+00:00"
+    },
+    "apple.gallery-upload-26": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Seven current app artwork replacements report COMPLETE with exact MD5 readback. Historical reading images retired and current app images ordered; historical widget image deliberately retained until fresh widget capture is verified. Gallery remains a draft; build 26 has not been resubmitted.",
+      "evidence": [
+        "store/apple-gallery26-verification.json"
+      ],
+      "next_action": "Capture and replace actual widget artwork, verify final 5-iPhone/3-iPad gallery, resolve rejected review item and submit; read back WAITING_FOR_REVIEW.",
+      "updated_at": "2026-10-01T11:00:06+00:00"
     }
   },
   "events": [
@@ -6893,6 +6935,84 @@
         ],
         "next_action": "Finish runtime download and actual native gallery capture, upload/verify/order screenshots, then resolve and resubmit the review item and verify WAITING_FOR_REVIEW. Complete PR #192 with final gallery/submission evidence.",
         "updated_at": "2026-10-01T09:55:17+00:00"
+      }
+    },
+    {
+      "sequence": 363,
+      "at": "2026-10-01T10:14:52+00:00",
+      "gate": "apple.cloud-capture-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner explicitly authorized Expo capture and submission. Token-authenticated Expo MCP lists four October builds and one stopped 22-minute sandbox, no current-source simulator artifact. Started one MEDIUM macOS capture sandbox 01a0f6f5-659d-7261-b085-5c7aa6723f1d; reuse App Store build26, no new production build.",
+        "evidence": [
+          "Expo MCP build_list and sandbox_list; owner request; store/builds/ledger.md"
+        ],
+        "next_action": "Build source51826ed in one sandbox, capture current iPhone/iPad/widgets, transfer original images with checksum validation, stop sandbox promptly, then upload and resubmit.",
+        "updated_at": "2026-10-01T10:14:52+00:00"
+      }
+    },
+    {
+      "sequence": 364,
+      "at": "2026-10-01T10:53:12+00:00",
+      "gate": "apple.cloud-capture-26",
+      "result": {
+        "state": "waiting_user",
+        "owner": "Astro",
+        "basis": "observed",
+        "summary": "Seven full native iPhone/iPad app captures preserved with checked SHA256 from build-26 application source 51826ed, simulator bundle 1.0.0 (1), iOS 26.5. Widget captures remain unusable skeletons: AppIntent service rejected the unsigned extension for empty entitlements. Expo MCP reports 500/500 monthly requests. Sandbox stop confirmed through official Expo GraphQL at 10:50:03Z; 35m13s running. Local CUA confirms Mac locked.",
+        "evidence": [
+          "store/source/iphone-6.9/01-timeline-v26.png"
+        ],
+        "next_action": "Unlock Mac; retrieve authorized single simulator-release artifact, verify normal simulator signing, capture actual Small/Medium widgets, render gallery and submit build 26.",
+        "updated_at": "2026-10-01T10:53:12+00:00"
+      }
+    },
+    {
+      "sequence": 365,
+      "at": "2026-10-01T10:55:12+00:00",
+      "gate": "apple.simulator-artifact-26",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Single simulator-release EAS build 78c0ccc8-d1ac-4e04-a789-b33d4bf0c570 started via CLI for current widget capture; fifth October build. Application source matches production source 51826ed byte-for-byte; production build 26 will be reused.",
+        "evidence": [],
+        "next_action": "Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures.",
+        "updated_at": "2026-10-01T10:55:12+00:00"
+      }
+    },
+    {
+      "sequence": 366,
+      "at": "2026-10-01T10:57:28+00:00",
+      "gate": "apple.gallery-artwork-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Seven current native app screenshots rendered from verified iPhone/iPad originals using generated Stone palette. Uploads in progress; historical gallery retained until replacement delivery is COMPLETE. Widget composition awaits actual Small/Medium capture; failed placeholder excluded. EAS remote Simulator alternative reports unavailable for this account.",
+        "evidence": [
+          "store/preview.png"
+        ],
+        "next_action": "Complete screenshot uploads and read checksums; unlock Mac for widget capture; do not relabel old widget images current.",
+        "updated_at": "2026-10-01T10:57:28+00:00"
+      }
+    },
+    {
+      "sequence": 367,
+      "at": "2026-10-01T11:00:06+00:00",
+      "gate": "apple.gallery-upload-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Seven current app artwork replacements report COMPLETE with exact MD5 readback. Historical reading images retired and current app images ordered; historical widget image deliberately retained until fresh widget capture is verified. Gallery remains a draft; build 26 has not been resubmitted.",
+        "evidence": [
+          "store/apple-gallery26-verification.json"
+        ],
+        "next_action": "Capture and replace actual widget artwork, verify final 5-iPhone/3-iPad gallery, resolve rejected review item and submit; read back WAITING_FOR_REVIEW.",
+        "updated_at": "2026-10-01T11:00:06+00:00"
       }
     }
   ],

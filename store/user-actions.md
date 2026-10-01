@@ -13,15 +13,19 @@ PR #155 is merged and build **1.0.0 (26)** is selected in App Store Connect.
 Apple reports **Prepare for Submission**; the app has not been resubmitted.
 The updated listing and six-part Review Notes are saved.
 
-The agent is preparing current native screenshots on the Mac. Xcode 26.6 setup
-is complete, but Apple's matching 8.52 GB simulator runtime is downloading
-slowly. A faster connection can help; once the download completes, the Mac must
-be unlocked for capture. No additional Expo credit or sandbox minute was used.
-No 1Password browser action or additional sign-in is needed for the API work.
+**Unlock the Mac for the remaining widget capture.** The agent confirmed that
+computer control is blocked by the lock screen. Seven current iPhone/iPad app
+images are already uploaded and checksum-verified. Expo’s cloud tool reached
+its 500-request limit; its sandbox is stopped and has no alternate SSH session.
+The remote Simulator service is not enabled for this Expo account. One current
+simulator-release artifact is being built through EAS CLI for the local capture
+fallback; this does not need the slow local runtime download to compile.
 
-After capture, the agent must render/inspect the gallery, upload and verify each
-image, replace the historical gallery, resubmit and read back the review state.
-See [the selection receipt](apple-build26-selection.json) and [ledger](ledger.md).
+No 1Password browser action or additional API sign-in is needed. The agent will
+capture real small/medium widgets, complete the gallery and resubmit build 26
+after the Mac unlock. The historical widget image is still in the draft gallery
+and is explicitly recorded as historical. See
+[gallery readback](apple-gallery26-verification.json) and [ledger](ledger.md).
 
 ## Historical iOS resubmission — 24 September
 
