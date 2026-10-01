@@ -6,13 +6,13 @@
     "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
     "versionLocalizationId": "56ba180c-30af-4b0a-a65e-3fa27e7e2360",
     "infoLocalizationId": "5e5c29c3-82d8-43e3-88a6-46199d1c5d55",
-    "productionBuild": "150a6415-299a-4af3-995d-cb501703073a",
-    "submission": "4a6398aa-658c-49c0-a909-c09209dd5021",
-    "submissionStatus": "CANCELED_QUEUE_REPLACED_BY_DIRECT_UPLOAD",
-    "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+    "productionBuild": "6df1f5b0-9091-445e-a51b-56479b6677f4",
+    "submission": null,
+    "submissionStatus": "EXISTING_APPLE_VALID_BUILD_REUSED",
+    "appleBuildId": "e95d5777-40c0-4b15-83fc-a35ce9607ddc",
     "appleBuildProcessingState": "VALID",
     "screenshotBuild": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
-    "reviewSubmitted": true,
+    "reviewSubmitted": false,
     "reviewDetailsSaved": true,
     "privacyPublication": "PUBLISHED",
     "addressCorrectionRequest": "SUBMITTED_AWAITING_APPLE_REVIEW",
@@ -20,7 +20,7 @@
     "dsaCompliance": "ACTIVE",
     "w9Status": "ACTIVE",
     "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
-    "reviewState": "REJECTED",
+    "reviewState": "PREPARE_FOR_SUBMISSION",
     "reviewSubmittedDate": "2026-09-17T04:33:40.475Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,
@@ -51,14 +51,14 @@
         "status": "FINISHED"
       }
     ],
-    "widgetArtworkStatus": "NEUTRAL_SMALL_MEDIUM_ARTWORK_COMPLETE_ON_APPLE",
+    "widgetArtworkStatus": "BUILD_26_NATIVE_CAPTURES_PENDING_HISTORICAL_GALLERY_ON_APPLE",
     "replacementUpload": {
       "build": "6",
       "deliveryId": "b62a9dc5-1b0c-4200-8830-68db021bb0cd",
       "status": "VALID",
       "sha256": "032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5"
     },
-    "replacementNativeVerification": "IPHONE_IPAD_LIGHT_DARK_AND_IPHONE_WIDGETS_VERIFIED_SIMULATOR_SCOPE",
+    "replacementNativeVerification": "BUILD_26_CAPTURE_AND_INTERACTION_CHECKS_PENDING",
     "previousReview": {
       "submissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
       "state": "COMPLETE",
@@ -119,31 +119,25 @@
       "replacementBuild": "7"
     },
     "nativeReplacementBuild": {
-      "id": "150a6415-299a-4af3-995d-cb501703073a",
+      "id": "6df1f5b0-9091-445e-a51b-56479b6677f4",
       "profile": "production",
       "version": "1.0.0",
-      "build": "21",
-      "sourceCommit": "2d7f56dfc04862bd02c9c951d93910bf4849991e",
-      "sourceDirty": false,
-      "mergedCommit": "3a2f0e0959543fcacc878391b6dba761ef2879cd",
-      "appSourceMatchesMergedCommit": true,
+      "build": "26",
+      "sourceCommit": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521",
       "status": "FINISHED",
-      "bytes": 19597648,
-      "sha256": "638128d39a720a140bfab99ea84dc83f0f31ddc9c4c130021841b4cda565fe7f",
-      "archiveValidation": "APPLE_VERIFY_SUCCEEDED",
-      "uploadStatus": "UPLOAD_SUCCEEDED",
-      "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+      "appleBuildId": "e95d5777-40c0-4b15-83fc-a35ce9607ddc",
       "processingState": "VALID",
+      "archiveValidation": "APPLE_PROCESSING_VALID; LOCAL_IPA_ARCHIVE_NOT_VERIFIED",
       "testFlightState": "IN_BETA_TESTING",
-      "testFlightGroupAttached": true
+      "evidence": "store/apple-build26-selection.json"
     },
-    "previousSelectedAppleBuildId": "eff31b5d-6c18-492d-874c-d7a0e4392bf6",
-    "previousProductionBuild": "461def41-d59d-4c9e-9f91-d8f2c9bdc95c",
-    "buildSelectionStatus": "SELECTED_VERIFIED",
+    "previousSelectedAppleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+    "previousProductionBuild": "150a6415-299a-4af3-995d-cb501703073a",
+    "buildSelectionStatus": "BUILD_26_SELECTED_VERIFIED",
     "reviewResubmittedAt": "2026-09-23T23:59:45.868Z",
     "reviewResubmissionEvidence": "store/apple-review-build21.json",
     "firstReviewSubmittedDate": "2026-09-16T07:50:46.874Z",
-    "reviewStatusObservedAt": "2026-09-24T05:12:31.742Z",
+    "reviewStatusObservedAt": "2026-10-01T09:48:53.794Z",
     "latestReviewReport": {
       "date": "2026-09-24",
       "basis": "observed",
@@ -157,14 +151,13 @@
     "previousReviewStatusObservedAt": "2026-09-17T04:33:43.363Z",
     "latestTestFlight": {
       "version": "1.0.0",
-      "build": "21",
-      "easBuildId": "150a6415-299a-4af3-995d-cb501703073a",
-      "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+      "build": "26",
+      "easBuildId": "6df1f5b0-9091-445e-a51b-56479b6677f4",
+      "appleBuildId": "e95d5777-40c0-4b15-83fc-a35ce9607ddc",
       "state": "IN_BETA_TESTING",
-      "observedAt": "2026-09-24T00:00:49.454115+00:00",
-      "evidence": "store/testflight-21.json",
-      "physicalDeviceVerification": "INSTALL_LAUNCH_SETTINGS_REGISTRATION_VERIFIED; VISUAL_NOTIFICATION_TAP_UNOBSERVED",
-      "notificationDelivery": "EXPO_AND_APNS_RECEIPT_OK"
+      "observedAt": "2026-10-01T09:48:53.794Z",
+      "evidence": "store/apple-build26-selection.json",
+      "physicalDeviceVerification": "NOT_VERIFIED_FOR_BUILD_26"
     },
     "notificationPushKey": {
       "id": "M46ZV25ZUP",
@@ -211,7 +204,52 @@
       "note": "September24 browser readback confirms owner reply and Apple response. Finish notification delivery and resubmit changed build; do not repeat appeal.",
       "responseDate": "2026-09-23",
       "responseOutcome": "GUIDELINE_4_2_UPHELD"
-    }
+    },
+    "nativeBuildHistory": [
+      {
+        "id": "150a6415-299a-4af3-995d-cb501703073a",
+        "profile": "production",
+        "version": "1.0.0",
+        "build": "21",
+        "sourceCommit": "2d7f56dfc04862bd02c9c951d93910bf4849991e",
+        "sourceDirty": false,
+        "mergedCommit": "3a2f0e0959543fcacc878391b6dba761ef2879cd",
+        "appSourceMatchesMergedCommit": true,
+        "status": "FINISHED",
+        "bytes": 19597648,
+        "sha256": "638128d39a720a140bfab99ea84dc83f0f31ddc9c4c130021841b4cda565fe7f",
+        "archiveValidation": "APPLE_VERIFY_SUCCEEDED",
+        "uploadStatus": "UPLOAD_SUCCEEDED",
+        "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+        "processingState": "VALID",
+        "testFlightState": "IN_BETA_TESTING",
+        "testFlightGroupAttached": true
+      }
+    ],
+    "testFlightHistory": [
+      {
+        "version": "1.0.0",
+        "build": "21",
+        "easBuildId": "150a6415-299a-4af3-995d-cb501703073a",
+        "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+        "state": "IN_BETA_TESTING",
+        "observedAt": "2026-09-24T00:00:49.454115+00:00",
+        "evidence": "store/testflight-21.json",
+        "physicalDeviceVerification": "INSTALL_LAUNCH_SETTINGS_REGISTRATION_VERIFIED; VISUAL_NOTIFICATION_TAP_UNOBSERVED",
+        "notificationDelivery": "EXPO_AND_APNS_RECEIPT_OK"
+      }
+    ],
+    "reviewStateHistory": [
+      {
+        "reviewState": "REJECTED",
+        "reviewSubmissionState": "UNRESOLVED_ISSUES",
+        "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
+        "observedAt": "2026-09-24T05:12:31.742Z"
+      }
+    ],
+    "previousSubmission": "4a6398aa-658c-49c0-a909-c09209dd5021",
+    "buildSelectionEvidence": "store/apple-build26-selection.json",
+    "screenshotTargetBuild": "26"
   },
   "google": {
     "productionBuild": "4dc57992-b1e5-4517-8197-215b66789963",

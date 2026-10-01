@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T09:34:19+00:00",
+  "updated_at": "2026-10-01T09:50:44+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1030,12 +1030,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 26 remains VALID and IN_BETA_TESTING; App Review still has rejected build 21. Current copy and complete Review Notes were saved/read back. Prepared current Stone gallery renderer and capture plan; local native capture is waiting on the matching iOS 26.5 runtime download.",
+      "summary": "PR #155 is merged, current metadata/Notes are saved, and build 26 is selected with PREPARE_FOR_SUBMISSION. Current screenshot refresh is still pending local runtime download; App Review has not been resubmitted.",
       "evidence": [
-        "store/apple-resubmission-26-metadata.json; store/apple-gallery-26.json; store/builds/ledger.md; PR #155"
+        "store/apple-resubmission-26-metadata.json; store/apple-build26-selection.json; store/apple-gallery-26.json"
       ],
-      "next_action": "Finish runtime download, compile/capture actual current native screens and both widgets, render/inspect/upload and verify new images, select build 26 and resubmit; read back review state.",
-      "updated_at": "2026-10-01T09:34:19+00:00"
+      "next_action": "Complete the verified native gallery, upload/read back/order replacements, then resolve and submit the review item and verify WAITING_FOR_REVIEW.",
+      "updated_at": "2026-10-01T09:50:44+00:00"
     },
     "apple.metadata-26": {
       "state": "done",
@@ -1049,15 +1049,37 @@
       "updated_at": "2026-10-01T08:58:20+00:00"
     },
     "apple.local-capture-26": {
-      "state": "in_progress",
+      "state": "waiting_provider",
+      "owner": "provider",
+      "basis": "observed",
+      "summary": "Xcode 26.6 owner setup and local dependencies/prebuild/Pods are complete. Matching iOS 26.5 arm64 runtime download is still progressing slowly. Alternate official Apple CDN routes and IPv6 did not remove the bandwidth limit; older installed runtimes cannot compile this SDK asset catalog. Mac has also relocked, so native UI capture needs an unlocked host once the download completes.",
+      "evidence": [
+        "store/builds/ledger.md; /tmp/newsworthy-ios-runtime-download.log; /tmp/newsworthy-pr155-target-build.log"
+      ],
+      "next_action": "Let runtime download finish, unlock Mac for native capture, rebuild the unchanged build-26 app source, capture/inspect full current iPhone/iPad and both widgets, render and upload gallery.",
+      "updated_at": "2026-10-01T09:50:44+00:00"
+    },
+    "apple.source-155": {
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner unlocked Mac and accepted Xcode setup; Xcode 26.6 installed. Local capture is waiting for Apple iOS 26.5 platform support/runtime (8.52 GB download progressing slowly). No additional EAS build or sandbox started.",
+      "summary": "PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments.",
       "evidence": [
-        "/tmp/newsworthy-ios-runtime-download.log; /tmp/newsworthy-pr155-native-build.log"
+        "https://github.com/astrojams1/newsworthy/pull/155; store/builds/ledger.md"
       ],
-      "next_action": "Complete local platform install, build the unchanged build-26 application source and capture current Apple screenshots.",
-      "updated_at": "2026-10-01T09:18:32+00:00"
+      "next_action": "Capture current native Apple gallery and complete build-26 resubmission.",
+      "updated_at": "2026-10-01T09:50:44+00:00"
+    },
+    "apple.build-selection-26": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Selected Apple build 26 and verified VALID, IN_BETA_TESTING and PREPARE_FOR_SUBMISSION. Previous review submission remains UNRESOLVED_ISSUES; no resubmission was sent.",
+      "evidence": [
+        "store/apple-build26-selection.json; store/release.json"
+      ],
+      "next_action": "Finish current screenshot capture/upload and then resolve the review item and submit; verify review state.",
+      "updated_at": "2026-10-01T09:50:44+00:00"
     }
   },
   "events": [
@@ -6791,6 +6813,70 @@
         ],
         "next_action": "Finish runtime download, compile/capture actual current native screens and both widgets, render/inspect/upload and verify new images, select build 26 and resubmit; read back review state.",
         "updated_at": "2026-10-01T09:34:19+00:00"
+      }
+    },
+    {
+      "sequence": 358,
+      "at": "2026-10-01T09:50:44+00:00",
+      "gate": "apple.source-155",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments.",
+        "evidence": [
+          "https://github.com/astrojams1/newsworthy/pull/155; store/builds/ledger.md"
+        ],
+        "next_action": "Capture current native Apple gallery and complete build-26 resubmission.",
+        "updated_at": "2026-10-01T09:50:44+00:00"
+      }
+    },
+    {
+      "sequence": 359,
+      "at": "2026-10-01T09:50:44+00:00",
+      "gate": "apple.build-selection-26",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Selected Apple build 26 and verified VALID, IN_BETA_TESTING and PREPARE_FOR_SUBMISSION. Previous review submission remains UNRESOLVED_ISSUES; no resubmission was sent.",
+        "evidence": [
+          "store/apple-build26-selection.json; store/release.json"
+        ],
+        "next_action": "Finish current screenshot capture/upload and then resolve the review item and submit; verify review state.",
+        "updated_at": "2026-10-01T09:50:44+00:00"
+      }
+    },
+    {
+      "sequence": 360,
+      "at": "2026-10-01T09:50:44+00:00",
+      "gate": "apple.local-capture-26",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Xcode 26.6 owner setup and local dependencies/prebuild/Pods are complete. Matching iOS 26.5 arm64 runtime download is still progressing slowly. Alternate official Apple CDN routes and IPv6 did not remove the bandwidth limit; older installed runtimes cannot compile this SDK asset catalog. Mac has also relocked, so native UI capture needs an unlocked host once the download completes.",
+        "evidence": [
+          "store/builds/ledger.md; /tmp/newsworthy-ios-runtime-download.log; /tmp/newsworthy-pr155-target-build.log"
+        ],
+        "next_action": "Let runtime download finish, unlock Mac for native capture, rebuild the unchanged build-26 app source, capture/inspect full current iPhone/iPad and both widgets, render and upload gallery.",
+        "updated_at": "2026-10-01T09:50:44+00:00"
+      }
+    },
+    {
+      "sequence": 361,
+      "at": "2026-10-01T09:50:44+00:00",
+      "gate": "apple.resubmit-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR #155 is merged, current metadata/Notes are saved, and build 26 is selected with PREPARE_FOR_SUBMISSION. Current screenshot refresh is still pending local runtime download; App Review has not been resubmitted.",
+        "evidence": [
+          "store/apple-resubmission-26-metadata.json; store/apple-build26-selection.json; store/apple-gallery-26.json"
+        ],
+        "next_action": "Complete the verified native gallery, upload/read back/order replacements, then resolve and submit the review item and verify WAITING_FOR_REVIEW.",
+        "updated_at": "2026-10-01T09:50:44+00:00"
       }
     }
   ],

@@ -40,3 +40,9 @@ Claims that were wrong once. Check for them again; date each item.
   local iOS runtime download. The full Mac test run has two unchanged web
   Settings failures; design and type checks pass. Android still requires its
   separate device/release gates.
+
+## Build 26 selection follow-up — 1 October 2026
+
+| PR | Date | Surfaces reviewed | Corrected | Open limits |
+|---|---|---|---|---|
+| Build-26 release follow-up (`codex/app-store-resubmit-155`) | 2026-10-01 | Store release identifiers, README, owner actions, mobile release, product messaging, provider receipts, release ledger | Current selected build is 26 with Prepare for Submission; old builds, physical QA and September review states remain historical. Local Mac/Xcode verification is supported, with current runtime prerequisite explicit | Gallery capture/upload and resubmission pending runtime download/unlocked Mac. Physical build-26 and Android checks remain separate. Mac web test failures remain recorded |

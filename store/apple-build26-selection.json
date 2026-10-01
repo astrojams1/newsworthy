@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-10-01T09:48:53.794Z",
+  "appId": "6812519450",
+  "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
+  "version": "1.0.0",
+  "selectedBuild": "26",
+  "appleBuildId": "e95d5777-40c0-4b15-83fc-a35ce9607ddc",
+  "processingState": "VALID",
+  "internalBuildState": "IN_BETA_TESTING",
+  "appStoreState": "PREPARE_FOR_SUBMISSION",
+  "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
+  "reviewSubmissionState": "UNRESOLVED_ISSUES",
+  "resubmitted": false,
+  "applicationSourceCommit": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521",
+  "easBuildId": "6df1f5b0-9091-445e-a51b-56479b6677f4",
+  "currentGalleryStatus": "Historical images still on Apple; current native captures pending local runtime download."
+}

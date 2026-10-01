@@ -105,9 +105,10 @@ remains web-only. Native widgets are integrated through Expo prebuild; they need
 custom-build verification. EAS account setup, signing and store setup are release
 gates. Do not claim store availability before release.
 
-The Codex browser panel shows the web renderer. The installed iPhone simulator
-can run the native UI through Expo Go. Custom EAS builds are needed to verify
-widgets and the complete app package without updating local Xcode.
+The Codex browser panel shows the web renderer. An installed iPhone simulator
+can run the native UI through Expo Go. Widgets and the complete package require
+a custom native build, either on a Mac with a supported Xcode/runtime or through
+EAS. Native and physical-device verification scopes must be recorded separately.
 
 ## Where copy lives
 

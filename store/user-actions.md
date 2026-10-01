@@ -1,12 +1,29 @@
 # Account-owner actions
 
-Apple review, notification setup and privacy were checked on **September 24,
-2026**. Google account and Apple Business were also rechecked September 24. The list below
+Apple's version, build, metadata and Review Notes were checked through the API
+on **1 October 2026**. Notification setup, privacy, Google account and Apple
+Business were last checked September 24. The list below
 separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current iOS resubmission: Waiting for Review
+## Current iOS resubmission — 1 October
+
+PR #155 is merged and build **1.0.0 (26)** is selected in App Store Connect.
+Apple reports **Prepare for Submission**; the app has not been resubmitted.
+The updated listing and six-part Review Notes are saved.
+
+The agent is preparing current native screenshots on the Mac. Xcode 26.6 setup
+is complete, but Apple's matching 8.52 GB simulator runtime is downloading
+slowly. A faster connection can help; once the download completes, the Mac must
+be unlocked for capture. No additional Expo credit or sandbox minute was used.
+No 1Password browser action or additional sign-in is needed for the API work.
+
+After capture, the agent must render/inspect the gallery, upload and verify each
+image, replace the historical gallery, resubmit and read back the review state.
+See [the selection receipt](apple-build26-selection.json) and [ledger](ledger.md).
+
+## Historical iOS resubmission — 24 September
 
 **Build21 is Waiting for Review, confirmed September24 at06:19UTC.** The updated
 recording was inspected, attached to a posted six-part response, and referenced

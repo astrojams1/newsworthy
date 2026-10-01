@@ -8,8 +8,10 @@ Resume from [the release ledger](ledger.md) with the reusable
 
 PR #155's final iOS **1.0.0 (26)** is `VALID` and `IN_BETA_TESTING` in
 Release QA. Its application source is `51826ed`; the later PR commits change
-listing copy and records. App Review still has **rejected build 21** selected.
-Build 26 has not been resubmitted.
+listing copy and records. PR #155 is merged. Build 26 is now selected for version
+1.0.0, and Apple reports **Prepare for Submission**. The previous review remains
+`UNRESOLVED_ISSUES`. Build 26 has not been resubmitted. See
+[the selection receipt](apple-build26-selection.json).
 
 The current description, promotional text, keywords, URLs and six-part Review
 Notes have been saved and read back from App Store Connect. See
