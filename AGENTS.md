@@ -13,6 +13,9 @@ release status. Calm presentation must not change the rating calibration.
 
 ## Workflow
 
+- Keep coding-agent guidance in `AGENTS.md`. Do not create `CLAUDE.md` in
+  repository source, in any case; `test/agents-md.test.js` checks tracked
+  and untracked files.
 - Before starting any new feature, run `git fetch origin` and inspect the latest
   target branch. Start from the fetched `origin/main`, preserving existing local
   work; never assume the local `main` is current.
@@ -87,10 +90,9 @@ release status. Calm presentation must not change the rating calibration.
   `x-admin-token` header, never in a file, commit, log or PR.
 
 - This file is capped at 58,500 characters, enforced by
-  `test/agents-md.test.js`. An addition that does not fit is written tersely
-  and makes room by tightening or removing stale text here. Propose a raise to
-  the owner only when that cannot make room, stating what the addition says and
-  the new length and limit, and change this number only after approval.
+  `test/agents-md.test.js`. Tighten or remove stale text to fit additions.
+  If that cannot make room, ask the owner to approve a raise, stating the
+  addition, new length and limit. Change the limit only after approval.
 
 ## Layout
 
@@ -899,8 +901,7 @@ npm test        # every test/*.test.js; database tests run against PGlite,
 npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 ```
 
-No count of files or tests is kept here: it is wrong again after the next PR,
-and a stale number read as authoritative is worse than none.
+Do not record test counts; they go stale.
 
 **The story timeline** is off by default (`timeline` in `preferences.js`), one
 entry per development ordered by `opened`, one week long. See
