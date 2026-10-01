@@ -50,12 +50,15 @@ for (const status of ['Saved reading · ', 'Saving reading · ', 'Refreshing · 
   });
 }
 
-test('widgets say "Checked at 10:21": no AM/PM and never a date (owner, 2026-09-29)', () => {
+test('widgets say "Checked at 7:04": unpadded hours, no AM/PM and never a date (owner, 2026-10-01)', () => {
   const { swift, java } = widgetSources();
-  assert.match(swift, /"Checked at \\\(date.formatted\(.dateTime.hour\(.defaultDigits\(amPM: .omitted\)\).minute\(.twoDigits\)\)\)"/);
+  assert.match(swift, /let time = date.formatted\(.dateTime.hour\(.defaultDigits\(amPM: .omitted\)\).minute\(.twoDigits\)\)/);
+  assert.match(swift, /if time.first\?\.wholeNumberValue == 0, time.dropFirst\(\).first\?\.wholeNumberValue != nil/);
+  assert.match(swift, /return "Checked at \\\(time.dropFirst\(\)\)"/);
+  assert.match(swift, /return "Checked at \\\(time\)"/);
   assert.doesNotMatch(swift, /startOfDay\(for: now\)/, 'no midnight entry: there is no date to bring back');
   assert.match(java, /views.setTextViewText\(R.id.widget_updated, "Checked at " \+ updatedTime\(context, readingDate\(reading\)\)\);/);
-  assert.match(java, /new SimpleDateFormat\(clock24 \? "HH:mm" : "h:mm", Locale.getDefault\(\)\)/);
+  assert.match(java, /new SimpleDateFormat\(clock24 \? "H:mm" : "h:mm", Locale.getDefault\(\)\)/);
 });
 
 test('widgets keep cached timestamps and empty states free of status copy', () => {

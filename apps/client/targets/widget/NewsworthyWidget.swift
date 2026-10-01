@@ -147,9 +147,14 @@ struct Provider: TimelineProvider {
 
 /// A new development's sentence leads with a bold "New:"; an older one with its age in the muted colour.
 /// "Checked at 10:21": the clock time in the device's 12- or 24-hour cycle, without AM/PM
-/// (as the status bar writes it), and never a date. The same on every surface.
+/// with an unpadded hour and two-digit minutes, and never a date. The same on every surface.
 func timestampText(_ date: Date, at now: Date) -> String {
-    "Checked at \(date.formatted(.dateTime.hour(.defaultDigits(amPM: .omitted)).minute(.twoDigits)))"
+    let time = date.formatted(.dateTime.hour(.defaultDigits(amPM: .omitted)).minute(.twoDigits))
+    // Some 24-hour locales pad the hour. Keep their hour cycle and localized digits.
+    if time.first?.wholeNumberValue == 0, time.dropFirst().first?.wholeNumberValue != nil {
+        return "Checked at \(time.dropFirst())"
+    }
+    return "Checked at \(time)"
 }
 
 func explanationText(_ reading: Reading?, at date: Date) -> Text {

@@ -176,11 +176,12 @@ public class RatingWidget extends AppWidgetProvider {
 
     /**
      * "10:21": the clock time in the device's 12- or 24-hour cycle, without
-     * AM/PM, and never a date; the widget writes "Checked at " before it.
+     * AM/PM, with an unpadded hour and two-digit minutes, and never a date;
+     * the widget writes "Checked at " before it.
      */
     static String updatedTime(Context context, Date saved) {
         boolean clock24 = android.text.format.DateFormat.is24HourFormat(context);
-        return new SimpleDateFormat(clock24 ? "HH:mm" : "h:mm", Locale.getDefault()).format(saved);
+        return new SimpleDateFormat(clock24 ? "H:mm" : "h:mm", Locale.getDefault()).format(saved);
     }
 
     static final String NEW_LABEL = "New:";

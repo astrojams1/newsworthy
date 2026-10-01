@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-01T11:40:49+00:00
+Updated: 2026-10-01T12:08:40+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -114,6 +114,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.gallery-timeline-26 | done | agent | observed | Actual finite-week timeline is first in both Apple screenshot sets. Current iPhone and iPad timeline images are COMPLETE; exact uploaded checksums and ordering were independently read back. | — |
 | apple.gallery-capture-26 | done | agent | observed | Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate. | — |
 | apple.gallery-notifications-26 | done | agent | observed | Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified. | — |
+| widget.unpadded-hour | waiting_verification | agent | observed | Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged. | Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build. |
 
 ## Evidence and history
 
@@ -3820,3 +3821,13 @@ Six-part Notes describe build26 purpose/setup/services/regions/rights and refere
 Production build26 is VALID and IN_BETA_TESTING in ReleaseQA; selected for AppReview. Historical build21 physical tests are retained separately. No new invite required.
 
 - store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 389. widget.unpadded-hour — waiting_verification
+
+2026-10-01T12:08:40+00:00 · observed · agent
+
+Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged.
+
+- apps/client/targets/widget/NewsworthyWidget.swift; apps/client/plugins/widget-android/RatingWidget.java; apps/client/lib/story-age.js
+
+Next: Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.

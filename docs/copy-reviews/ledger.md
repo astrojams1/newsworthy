@@ -97,3 +97,20 @@ Validation: all13 manifest image formats/sizes and listing lengths pass; design
 hit a transient local-server connection refusal; the standalone rerun passed
 that landscape test and retained only the same two Settings failures. No test
 was weakened. Linux CI is checked separately before merge.
+
+## Unpadded widget hours — 1 October 2026, fix/widget-hour-format
+
+Reviewed README, product messaging, story-age documentation, widget picker and
+checked-time copy, Support, llms.txt, store listing, release claims, existing
+native captures and the preview video's stale-input report. Updated story-age
+documentation to specify “Checked at 7:04”, an unpadded hour and two-digit
+minutes in either device hour cycle. Existing “Checked at 10:21” examples remain
+accurate; no caller, rating, API or availability contract changes.
+
+Open limits: native compilation and visual verification of this formatting
+change were not performed here. Build 26 and historical screenshots retain their
+original behavior; a replacement native build is needed. The preview video is
+out of date (the checked line and widget scene report changed Swift input); it
+was not re-rendered, and no public App Store preview is included in the current
+submission. Existing source/geometry evidence was reviewed without changing
+captures or claiming new native verification.
