@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T07:57:53+00:00",
+  "updated_at": "2026-10-01T08:04:24+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -181,12 +181,12 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Apple rejected 1.0.0 (21) again under Guideline 4.2 (Minimum Functionality), after the September 24 resubmission with notifications and the physical-device video (owner report, 2026-10-01). API readback 2026-10-01: version REJECTED, submission 4f28761f UNRESOLVED_ISSUES, build 21 selected. This is the third 4.2 finding: build 7 on September 21 (reconsideration upheld September 23) and build 21 now, despite notifications and widgets added in between. Build 26 (TestFlight, owner-checked) adds per-widget settings and native header buttons; the story timeline exists but is off by default. Not resubmitted.",
+      "summary": "Owner decision 2026-10-01: resubmit 1.0.0 with build 26 (TestFlight, owner-checked) rather than change the app further, since the timeline is new since build 21's review; update the App Store description and screenshots; do not include the preview video (never uploaded to App Store Connect, so nothing to remove). Description, promotional text and keywords are drafted in store/listing.json (commit b42d6eb): timeline, New: label and story line, per-widget settings, no mention of AI. Nothing has been pushed to App Store Connect; version 1.0.0 is still REJECTED with build 21 selected.",
       "evidence": [
-        "App Store Connect API: appStoreVersion 267c6f52 REJECTED; reviewSubmission 4f28761f UNRESOLVED_ISSUES; owner message 'rejected by guideline 4.2'"
+        "store/listing.json at b42d6eb; App Store Connect API 2026-10-01: appStoreVersion 267c6f52 REJECTED, reviewSubmission 4f28761f UNRESOLVED_ISSUES"
       ],
-      "next_action": "Owner chooses how to answer 4.2 before any resubmission: an App Review appointment, more visible functionality, or an App Review Board appeal.",
-      "updated_at": "2026-10-01T07:57:53+00:00"
+      "next_action": "Handed to another agent. 1) Capture build 26 screenshots: owner's iPhone (6.9in or 6.5in only) or an EAS macOS sandbox simulator (about 38 CI minutes left in October; large images corrupted when copied out of a sandbox as text, so plan the transfer); iPad screenshots are required while supportsTablet is true, or make the app iPhone-only (one build credit). Compose with store/scripts/render.mjs and update store/assets/manifest.json. 2) Push description, promotional text and keywords from store/listing.json to the en-US version localization. 3) Rewrite review notes in listing.json and App Store Connect for build 26: the switch is now High-score alerts with a Threshold row; mention the timeline (Settings, Show timeline), per-widget Show app name and Appearance, and the Sep 24 video as build 21. 4) Select build 26 (App Store Connect build e95d5777) on version 267c6f52, resubmit through reviewSubmission 4f28761f, and read back WAITING_FOR_REVIEW.",
+      "updated_at": "2026-10-01T08:04:23+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -960,15 +960,15 @@
       "updated_at": "2026-09-27T04:34:38+00:00"
     },
     "copy.no-ai-listing": {
-      "state": "todo",
+      "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner decision 2026-09-27: user-facing copy never mentions AI. Web support, privacy and llms.txt are scrubbed and deploy on merge. store/listing.json description is updated in the repository only; the live App Store and Google Play listings still say 'uses AI'. Build 21 is Waiting for Review, so live metadata was left unchanged. Current store screenshots and the feature graphic were inspected and contain no AI mention. App Review notes stay accurate and are not user-facing.",
+      "summary": "store/listing.json description no longer mentions AI (\"Ratings can be wrong.\" replaces \"AI assessments can be wrong.\"); promotional text and keywords updated for the timeline and widget settings. The live App Store listing still says \"Newsworthy uses AI\"; not pushed yet. Google Play listing not created.",
       "evidence": [
-        "test/copy.test.js 'user-facing copy does not mention AI'; store/assets images inspected 2026-09-27"
+        "store/listing.json at b42d6eb"
       ],
-      "next_action": "Before the next store update, push the listing.json description (and any new promotional text or screenshots) to App Store Connect and Google Play, and confirm no public field mentions AI.",
-      "updated_at": "2026-09-27T05:03:02+00:00"
+      "next_action": "Push the description, promotional text and keywords to App Store Connect with the resubmission, then read back that no public field mentions AI.",
+      "updated_at": "2026-10-01T08:04:24+00:00"
     },
     "design.temperature-palette": {
       "state": "waiting_verification",
@@ -6662,6 +6662,38 @@
         ],
         "next_action": "Owner chooses how to answer 4.2 before any resubmission: an App Review appointment, more visible functionality, or an App Review Board appeal.",
         "updated_at": "2026-10-01T07:57:53+00:00"
+      }
+    },
+    {
+      "sequence": 352,
+      "at": "2026-10-01T08:04:23+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner decision 2026-10-01: resubmit 1.0.0 with build 26 (TestFlight, owner-checked) rather than change the app further, since the timeline is new since build 21's review; update the App Store description and screenshots; do not include the preview video (never uploaded to App Store Connect, so nothing to remove). Description, promotional text and keywords are drafted in store/listing.json (commit b42d6eb): timeline, New: label and story line, per-widget settings, no mention of AI. Nothing has been pushed to App Store Connect; version 1.0.0 is still REJECTED with build 21 selected.",
+        "evidence": [
+          "store/listing.json at b42d6eb; App Store Connect API 2026-10-01: appStoreVersion 267c6f52 REJECTED, reviewSubmission 4f28761f UNRESOLVED_ISSUES"
+        ],
+        "next_action": "Handed to another agent. 1) Capture build 26 screenshots: owner's iPhone (6.9in or 6.5in only) or an EAS macOS sandbox simulator (about 38 CI minutes left in October; large images corrupted when copied out of a sandbox as text, so plan the transfer); iPad screenshots are required while supportsTablet is true, or make the app iPhone-only (one build credit). Compose with store/scripts/render.mjs and update store/assets/manifest.json. 2) Push description, promotional text and keywords from store/listing.json to the en-US version localization. 3) Rewrite review notes in listing.json and App Store Connect for build 26: the switch is now High-score alerts with a Threshold row; mention the timeline (Settings, Show timeline), per-widget Show app name and Appearance, and the Sep 24 video as build 21. 4) Select build 26 (App Store Connect build e95d5777) on version 267c6f52, resubmit through reviewSubmission 4f28761f, and read back WAITING_FOR_REVIEW.",
+        "updated_at": "2026-10-01T08:04:23+00:00"
+      }
+    },
+    {
+      "sequence": 353,
+      "at": "2026-10-01T08:04:24+00:00",
+      "gate": "copy.no-ai-listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "store/listing.json description no longer mentions AI (\"Ratings can be wrong.\" replaces \"AI assessments can be wrong.\"); promotional text and keywords updated for the timeline and widget settings. The live App Store listing still says \"Newsworthy uses AI\"; not pushed yet. Google Play listing not created.",
+        "evidence": [
+          "store/listing.json at b42d6eb"
+        ],
+        "next_action": "Push the description, promotional text and keywords to App Store Connect with the resubmission, then read back that no public field mentions AI.",
+        "updated_at": "2026-10-01T08:04:24+00:00"
       }
     }
   ],
