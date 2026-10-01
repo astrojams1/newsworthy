@@ -77,6 +77,10 @@ wording requirements or calibration examples.
 6. Record the change and evidence in repository documentation. Describe what was
    tested accurately; do not turn a substitute-model writing test into a claim
    about the production rater, score calibration, or native UI parity.
+   The record is `docs/prompt-evaluations/v<N>.md`; add its row to
+   [the prompt update ledger](../../../docs/prompt-evaluations/ledger.md), and a
+   dated Lesson when the version teaches something. Read the ledger's newest
+   rows and Lessons before drafting.
 
 ## Validate and release
 
