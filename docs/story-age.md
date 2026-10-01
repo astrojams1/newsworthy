@@ -12,7 +12,8 @@ ago”. Every age in the app, timeline tags included, reads
 “just now”, “5m ago”, “5h ago”, “1d ago”. The widgets keep their design with
 the age before the sentence as “5h ago:” (a colon like “New:”, only “New:” is
 bold) and a clock time, “Checked at 10:21” (the device's 12- or 24-hour cycle,
-no AM/PM, no date), so they need no redraw between updates. Share text leads
+no AM/PM, no date; since 2026-10-01, an unpadded hour and two-digit minutes,
+such as “Checked at 7:04”), so they need no redraw between updates. Share text leads
 with “5h ago:”. The sections below describe the earlier prefix where they
 differ.
 

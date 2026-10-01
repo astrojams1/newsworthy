@@ -87,8 +87,8 @@ export function storyLine(reading, now = Date.now()) {
 /**
  * When the news was last checked, as the widgets write it: "Checked at 10:21".
  * A clock time rather than an age, so a widget needs no redraw between
- * updates; the device's own 12- or 24-hour cycle, without AM/PM, as the iOS
- * status bar writes it, and never a date (owner, 2026-09-29). The app itself,
+ * updates; the device's own 12- or 24-hour cycle, without AM/PM, an unpadded
+ * hour and two-digit minutes, and never a date (owner, 2026-10-01). The app itself,
  * which is redrawn while open, says how long ago instead ("18m ago").
  */
 export function checkedAt(reading) {
@@ -97,7 +97,7 @@ export function checkedAt(reading) {
   const hour12 = new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).resolvedOptions().hour12 !== false;
   const hours = saved.getHours();
   const minutes = String(saved.getMinutes()).padStart(2, '0');
-  return `Checked at ${hour12 ? hours % 12 || 12 : String(hours).padStart(2, '0')}:${minutes}`;
+  return `Checked at ${hour12 ? hours % 12 || 12 : hours}:${minutes}`;
 }
 
 /** How long ago the news was checked: "18m ago". */

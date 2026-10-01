@@ -223,6 +223,17 @@ test('the checked time reads "Checked at 10:21": no AM/PM, no date', async () =>
   assert.equal(checkedAt({}), '');
 });
 
+for (const hour12 of [true, false]) {
+  test(`checked time leaves hours unpadded in ${hour12 ? 12 : 24}-hour mode`, async t => {
+    const { checkedAt } = await import('../apps/client/lib/story-age.js');
+    t.mock.method(Intl, 'DateTimeFormat', function () { return { resolvedOptions: () => ({ hour12 }) }; });
+    for (const [hour, expected] of [[0, hour12 ? 12 : 0], [7, 7], [14, hour12 ? 2 : 14]]) {
+      const created_at = new Date(2026, 9, 1, hour, 4).toISOString();
+      assert.equal(checkedAt({ created_at }), `Checked at ${expected}:04`);
+    }
+  });
+}
+
 test('the app sentence spends no budget on an age it shows on its own line', () => {
   const body = 'a'.repeat(134) + '.';
   const reading = { ...fresh, explanation: body, explanation_text: body, explanation_new: false, explanation_at: start, explanation_story: 'us-iran-war' };

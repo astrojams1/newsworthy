@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T11:40:49+00:00",
+  "updated_at": "2026-10-01T12:08:40+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1157,6 +1157,17 @@
       ],
       "next_action": "",
       "updated_at": "2026-10-01T11:40:49+00:00"
+    },
+    "widget.unpadded-hour": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged.",
+      "evidence": [
+        "apps/client/targets/widget/NewsworthyWidget.swift; apps/client/plugins/widget-android/RatingWidget.java; apps/client/lib/story-age.js"
+      ],
+      "next_action": "Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.",
+      "updated_at": "2026-10-01T12:08:40+00:00"
     }
   },
   "events": [
@@ -7383,6 +7394,22 @@
         ],
         "next_action": "",
         "updated_at": "2026-10-01T11:40:49+00:00"
+      }
+    },
+    {
+      "sequence": 389,
+      "at": "2026-10-01T12:08:40+00:00",
+      "gate": "widget.unpadded-hour",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged.",
+        "evidence": [
+          "apps/client/targets/widget/NewsworthyWidget.swift; apps/client/plugins/widget-android/RatingWidget.java; apps/client/lib/story-age.js"
+        ],
+        "next_action": "Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.",
+        "updated_at": "2026-10-01T12:08:40+00:00"
       }
     }
   ],
