@@ -100,10 +100,12 @@ restore `eas.json` and delete the key. Never commit either. Build without
 **An uploaded build reaches no tester on its own.** The internal group
 "Release QA" does not get every build automatically, so a processed build
 (`READY_FOR_BETA_TESTING`) stays invisible until it is added to that group.
-Ask the owner to add it in App Store Connect (TestFlight → Release QA →
-Builds), or get their go-ahead to add it through the API
-(`POST /v1/betaGroups/{id}/relationships/builds`). Tell testers it is
-available only once it shows `IN_BETA_TESTING`.
+Add it through the App Store Connect API with the same vault key, as the
+owner asked on 1 October: find the group with
+`GET /v1/apps/{app}/betaGroups`, then
+`POST /v1/betaGroups/{id}/relationships/builds` with the build's id (204 on
+success). Tell testers it is available only once its `buildBetaDetail` shows
+`IN_BETA_TESTING`.
 
 ## Spending them well
 

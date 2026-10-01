@@ -50,7 +50,8 @@ resulting rules; this is the evidence behind them.
 - **Submitted is not available to testers** (2026-10-01). Build 24 processed
   (`VALID`, `READY_FOR_BETA_TESTING`) but showed no update on the owner's
   iPhone: the internal group "Release QA" does not get every build, and builds
-  6 to 21 had each been added to it by hand. Add the build to the group.
+  6 to 21 had each been added to it by hand. Add the build to the group
+  through the API as part of every submission.
 
 ## 2026-09
 
@@ -86,7 +87,8 @@ minutes. A first `eas build` call failed before creating a build but used
 build number 23. Submitted to App Store Connect with the vault API key
 (submission `320a4482`); for the owner's iPhone check of #155. Processed
 by Apple, but not in the "Release QA" group, so not offered to testers; see
-Lessons.
+Lessons. Added to the group through the API at the owner's request (204);
+`IN_BETA_TESTING` from about 03:30 UTC.
 
 **Remaining this month** after 1 October: about 38 sandbox minutes. Android
 builds are paused until the owner has a device.
