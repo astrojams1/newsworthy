@@ -48,7 +48,8 @@ To check the hourly caller's runs against what the server recorded, use the
 
 Before any EAS build, store submission or EAS sandbox, use the
 [app release skill](.agents/skills/newsworthy-app-release/SKILL.md): the Expo
-account's free plan caps builds and sandbox minutes each month.
+account's free plan caps builds and sandbox minutes each month. Each build,
+sandbox and submission is logged in the [build ledger](store/builds/ledger.md).
 
 ### iOS, Android and web
 

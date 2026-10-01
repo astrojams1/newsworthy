@@ -1,6 +1,6 @@
 ---
 name: newsworthy-app-release
-description: Build, verify and submit the Newsworthy iOS and Android apps with EAS (TestFlight, Play internal testing, simulator and sandbox checks) within the Expo account's monthly free-plan caps. Use before any eas build, eas submit, EAS sandbox or EAS workflow, and when planning native verification.
+description: Build, verify and submit the Newsworthy iOS and Android apps with EAS (TestFlight, Play internal testing, simulator and sandbox checks) within the Expo account's monthly free-plan caps. Use before any eas build, eas submit, EAS sandbox or EAS workflow, and when planning native verification; every spend is logged in store/builds/ledger.md.
 ---
 
 # Newsworthy app release
@@ -22,14 +22,15 @@ Both reset on the 1st of the month at 00:00 UTC. `LARGE` sandboxes need a paid
 plan; use `MEDIUM`. Upgrading the plan is a purchase: never do it, and never
 work around a cap by switching accounts. Say what is blocked and until when.
 
-What September 2026 cost, for scale: 36 cloud builds between 15 and 24
-September (19 iOS, 17 Android) used the build credits; builds were refused
-from the 26th until the 1st. Seven of the 36 were cancelled or errored, and
-three commits were built twice for Android (a `production` AAB and a `preview`
-APK of the same code). A macOS and a Linux sandbox run side by side on 26
-September used the 60 minutes within about 45 minutes. One focused macOS sandbox on 1
-October did compile, simulator checks on iOS 26.5, 18.6 and 16.4, and an
-upgrade test in 22 minutes.
+What the caps have cost so far, and what each run taught, is in
+[the build ledger](../../../store/builds/ledger.md). For scale: 36 cloud builds
+used September's credits in ten days, and one prepared macOS sandbox did a
+full round of iOS simulator checks in 22 minutes.
+
+## Start from the ledger
+
+Read [the build ledger](../../../store/builds/ledger.md) first: this month's row
+says what is left, and its Lessons are what earlier runs cost to learn.
 
 ## Before spending either cap
 
@@ -125,6 +126,11 @@ restore `eas.json` and delete the key. Never commit either. Build without
 
 ## After
 
-Record what was verified, on what (simulator or device, OS version, build), and
-what remains, with `npm run ledger -- record --gate <id> …`. Note any build or
-sandbox that was wasted and why, so the next run avoids it.
+- **Build ledger.** Update this month's row in `store/builds/ledger.md` and add
+  an entry under the month: each build (EAS id, platform, profile, commit,
+  outcome), each sandbox (id, minutes, what it did), each submission, and
+  anything wasted and why. Add a dated Lessons item when a run teaches
+  something new.
+- **Release ledger.** Record what was verified, on what (simulator or device,
+  OS version, build), and what remains, with
+  `npm run ledger -- record --gate <id> …`.
