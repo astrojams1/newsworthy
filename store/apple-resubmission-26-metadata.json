@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-10-01T08:56:40.587Z",
+  "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
+  "localizationId": "56ba180c-30af-4b0a-a65e-3fa27e7e2360",
+  "metadataFields": [
+    "description",
+    "keywords",
+    "promotionalText",
+    "supportUrl",
+    "marketingUrl"
+  ],
+  "metadataReadbackMatches": true,
+  "publicFieldsMentionAI": false,
+  "reviewNotesLength": 3928,
+  "reviewNotesReadbackMatches": true,
+  "contactPhonePreserved": true,
+  "appPreviewSetCount": 0,
+  "submissionState": "Not resubmitted yet; screenshot refresh and selection of build26 pending."
+}

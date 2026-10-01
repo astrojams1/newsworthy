@@ -108,3 +108,22 @@ newer". Wasted: one credit. The widget parameter went back to build 24's form.
 seven minutes; submitted with the vault key (submission `949246a0`), processed
 by Apple by 06:15 UTC and added to "Release QA" through the API (204). Carries
 the native header buttons for the owner's iPhone check.
+
+**Local Mac preparation, 1 October (PR #155 resubmission).** Reused production
+build 26 (`6df1f5b0`, source `51826ed`); Apple freshly reports `VALID` and
+`IN_BETA_TESTING`. No new cloud build, TestFlight upload or sandbox was started;
+October's counts remain four builds and about 22 sandbox minutes. Installed
+Xcode 26.6 over the older 16.2, and the owner completed its license/setup.
+Dependencies, native prebuild and Pods are installed in the local release
+worktree. The matching iOS 26.5 arm64 runtime (8.52 GB) is still downloading.
+The full workspace build cannot find an eligible destination; a target build
+reached the asset compiler, which requires the matching runtime and rejected
+installed iOS 17.5/18.3 runtimes. This is an environment prerequisite, not proof
+of an application compile defect. Native captures and App Review resubmission
+remain pending. Alternate vendor-CDN addresses did not improve the transfer.
+
+**Local-host lesson (2026-10-01).** Check the actual host rather than inheriting
+cloud-container assumptions. A usable Mac avoids Expo credits/minutes, but an
+Xcode update may require owner license/admin setup and a large matching runtime
+download before asset catalogs compile. Do not spend a cloud build merely to
+refresh screenshots, or call an old simulator capture current release evidence.

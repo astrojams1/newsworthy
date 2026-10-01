@@ -53,22 +53,43 @@ says what is left, and its Lessons are what earlier runs cost to learn.
 
 ## Choosing the cheapest route
 
+Check the actual host first. On the owner's Mac, prefer local Xcode builds and
+Simulator captures: they consume neither EAS build credits nor sandbox minutes.
+Check `xcodebuild -version`, `xcodebuild -checkFirstLaunchStatus` and
+`xcrun simctl list runtimes` before starting. An Xcode update can require the
+owner to accept a new license and complete administrator setup. It can also
+require downloading a matching simulator runtime before asset catalogs compile;
+the presence of an older bootable simulator is not enough. Record that download
+as a local prerequisite, not an app compile defect.
+
+Use a Release simulator build with `ARCHS=arm64 ONLY_ACTIVE_ARCH=YES` and
+`CODE_SIGNING_ALLOWED=NO`, including the widget extension. Capture through the
+available computer-control interface and Simulator's Save Screen command.
+Keep full original captures, source commit, actual bundle version/build, runtime,
+device and hashes. A locally generated simulator bundle may have a different
+build number from the production build with the same application source; do
+not relabel it or claim physical-device certification. Reuse a valid production
+build when only listing copy, screenshots or release records change.
+
+The following sandbox guidance applies when no usable Mac is available.
+
 The EAS project has no linked GitHub repository, so the Expo MCP's `build_run`
 and a sandbox's `gitRef` checkout both fail. Run `eas build` from this checkout
 (token: `op read "op://API Tokens/Expo/credential"`) and `git clone` the public
 repository inside a sandbox.
 
 
-- **Swift, widget or iOS layout changes**: one macOS `MEDIUM` sandbox, not a
-  cloud build. It compiles the app, runs the iOS simulator (AXe drives the Home
+- **Swift, widget or iOS layout changes without a local Mac**: one macOS
+  `MEDIUM` sandbox. It compiles the app, runs the iOS simulator (AXe drives the Home
   Screen and Edit Widget), and can download older iOS runtimes
   (`xcodebuild -downloadPlatform iOS -buildVersion 16.4`). Build with
   `ARCHS=arm64 ONLY_ACTIVE_ARCH=YES`; after the first full build, rebuild only
   the widget target (`xcodebuild -project … -target NewsworthyWidget`, about 10
   seconds) and swap the `.appex` into the app.
-- **Android**: no emulator is available anywhere here (the cloud container has
-  no KVM; the EAS sandbox has no hypervisor), so Android visual checks need a
-  device. Build one `preview` APK for the owner to install, and only after the
+- **Android in the cloud container or EAS sandbox**: those environments lack
+  emulator acceleration. Check for a local Android emulator when a Mac is
+  available; record emulator and physical-device checks separately. Build one
+  `preview` APK for the owner to install, and only after the
   change is final. Do not also build `production` for the same commit unless
   it is going to Play.
 - **A real iPhone**: one `production` build with auto-submit to TestFlight, after
@@ -79,7 +100,8 @@ repository inside a sandbox.
   modules, signing, the release bundle).
 - **Local builds** (`eas build --local`) use no credits. Android works in a
   Linux environment with the Android SDK, but this container's Maven downloads
-  are rate-limited (HTTP 429). iOS needs macOS, which means sandbox minutes.
+  are rate-limited (HTTP 429). iOS needs macOS; use the owner's Mac when available,
+  otherwise an authorized sandbox batch consumes sandbox minutes.
 
 ## Submitting to TestFlight
 

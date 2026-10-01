@@ -23,3 +23,20 @@ Claims that were wrong once. Check for them again; date each item.
   fixed 69 pt. `docs/mobile-release.md` had said otherwise.
 - **Simulator is not device** (2026-10-01, #155). A widget verified on iOS
   simulators is described as such; claim a device only once one has shown it.
+
+## Resubmission preparation, 1 October 2026
+
+- **PR #155 follow-up:** reviewed the final source, TestFlight readback,
+  listing, generated palette, renderer, release instructions and PR description.
+  Corrected the PR description's withdrawn declared-default fix and its stale
+  claim that the final header controls had never compiled; build 26 compiled in
+  EAS. Current public listing fields and six-part Notes are saved with Apple.
+  The physical recording is explicitly historical build 21. The new Apple
+  gallery renderer uses the current generated Stone palette, rather than the
+  earlier mint gallery. Store README now leads with rejected build 21 and valid
+  TestFlight build 26, retaining September states as history.
+- **Open limits:** current native screenshots, native header interaction checks,
+  screenshot upload, build-26 selection and resubmission remain pending the
+  local iOS runtime download. The full Mac test run has two unchanged web
+  Settings failures; design and type checks pass. Android still requires its
+  separate device/release gates.

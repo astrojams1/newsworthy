@@ -3,6 +3,40 @@
 One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
+
+## Current resubmission — 1 October 2026
+
+PR #155's final iOS **1.0.0 (26)** is `VALID` and `IN_BETA_TESTING` in
+Release QA. Its application source is `51826ed`; the later PR commits change
+listing copy and records. App Review still has **rejected build 21** selected.
+Build 26 has not been resubmitted.
+
+The current description, promotional text, keywords, URLs and six-part Review
+Notes have been saved and read back from App Store Connect. See
+[the metadata receipt](apple-resubmission-26-metadata.json). No public App Store
+preview video is included. The physical review recording remains historical
+build-21 evidence and is labeled accordingly in the Notes.
+
+The replacement gallery is prepared in [apple-gallery-26.json](apple-gallery-26.json):
+five iPhone images and three iPad images, led by the finite week timeline,
+with a neutral small/medium widget comparison, the reading, notifications and
+appearance. The [new renderer](scripts/render-apple-gallery.mjs) uses the
+generated Stone brand palette and refuses missing or changed native captures.
+It preserves Android's separate historical manifest entries. The new images
+are **not captured, rendered or uploaded yet**.
+
+Local preparation is in `.worktrees/app-store-resubmit-155`: dependencies,
+prebuild and CocoaPods installation are complete. Xcode 26.6 is installed and
+its owner setup is complete. Apple's 8.52 GB iOS 26.5 runtime download is
+progressing slowly; Xcode's asset compiler rejects the older installed runtimes
+for this SDK. The release ledger records that prerequisite and the exact next
+steps. No additional Expo build credit or sandbox minute was used.
+
+## Historical September release records
+
+The following records describe the earlier submissions and assets. Their
+Waiting for Review states are superseded by the current rejection above.
+
 **September 24, 2026 update:** iOS **1.0.0 (21)** is **Waiting for Review**,
 confirmed at06:19UTC after the updated physical-device video and six-part reply
 were posted and matching Review Notes saved. This supersedes the05:12UTC
