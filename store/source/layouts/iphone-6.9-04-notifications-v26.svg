@@ -6,6 +6,6 @@
     <text x="96" y="294" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="104" fill="#16161A" font-weight="500" letter-spacing="-3">Choose when</text><text x="96" y="419" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="104" fill="#16161A" font-weight="500" letter-spacing="-3">to be notified.</text>
     <text x="98" y="505" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="36" fill="#52545D" >High-score alerts at the minimum you choose.</text>
     <rect x="172" y="678" width="976" height="2068.981818181818" rx="98" fill="#101514"/>
-    <image x="194" y="700" width="932" height="2024.9818181818182" href="../iphone-6.9/04-notifications-v26.png" clip-path="url(#screen)"/>
+    <image x="194" y="700" width="932" height="2024.9818181818182" href="../iphone-6.9/07-notifications-page-v26.png" clip-path="url(#screen)"/>
     <text x="660" y="2798" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="29" fill="#52545D" text-anchor="middle">World news, rated by significance.</text>
   </svg>

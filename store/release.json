@@ -1,5 +1,5 @@
 {
-  "verifiedDate": "2026-09-17",
+  "verifiedDate": "2026-10-01",
   "apple": {
     "appId": "6812519450",
     "appInfoId": "09033ad1-a920-419a-9aaa-63a094d5791b",
@@ -11,8 +11,8 @@
     "submissionStatus": "EXISTING_APPLE_VALID_BUILD_REUSED",
     "appleBuildId": "e95d5777-40c0-4b15-83fc-a35ce9607ddc",
     "appleBuildProcessingState": "VALID",
-    "screenshotBuild": "e02851c0-0cae-4f95-b854-2d57e32cc0b2",
-    "reviewSubmitted": false,
+    "screenshotBuild": "78c0ccc8-d1ac-4e04-a789-b33d4bf0c570",
+    "reviewSubmitted": true,
     "reviewDetailsSaved": true,
     "privacyPublication": "PUBLISHED",
     "addressCorrectionRequest": "SUBMITTED_AWAITING_APPLE_REVIEW",
@@ -20,13 +20,13 @@
     "dsaCompliance": "ACTIVE",
     "w9Status": "ACTIVE",
     "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
-    "reviewState": "PREPARE_FOR_SUBMISSION",
-    "reviewSubmittedDate": "2026-09-17T04:33:40.475Z",
+    "reviewState": "WAITING_FOR_REVIEW",
+    "reviewSubmittedDate": "2026-10-01T11:37:37.959Z",
     "releaseType": "AFTER_APPROVAL",
     "availabilityTerritoryCount": 175,
     "availableInNewTerritories": true,
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
-    "reviewSubmissionState": "UNRESOLVED_ISSUES",
+    "reviewSubmissionState": "WAITING_FOR_REVIEW",
     "replacementBuildRequired": false,
     "replacementBuilds": [
       {
@@ -58,7 +58,7 @@
       "status": "VALID",
       "sha256": "032ebc9efaeb1546cd8c96cc83194a45842a57d500f7db802deaac743407ecf5"
     },
-    "replacementNativeVerification": "SEVEN_APP_SCREENS_CAPTURED_ON_IOS_26_5_SIMULATOR_WIDGET_SIGNING_AND_PHYSICAL_QA_SEPARATE",
+    "replacementNativeVerification": "APP_SCREEN_CAPTURE_IOS_26_5; NOTIFICATIONS_SMALL_LIGHT_MEDIUM_DARK_WIDGETS_IOS_18_3_1; PHYSICAL_BUILD26_SEPARATE",
     "previousReview": {
       "submissionId": "54c8b17c-868f-47fe-bb27-c2af1e0b6d48",
       "state": "COMPLETE",
@@ -134,10 +134,10 @@
     "previousSelectedAppleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
     "previousProductionBuild": "150a6415-299a-4af3-995d-cb501703073a",
     "buildSelectionStatus": "BUILD_26_SELECTED_VERIFIED",
-    "reviewResubmittedAt": "2026-09-23T23:59:45.868Z",
-    "reviewResubmissionEvidence": "store/apple-review-build21.json",
+    "reviewResubmittedAt": "2026-10-01T11:37:37.959Z",
+    "reviewResubmissionEvidence": "store/apple-review-resubmission-2026-10-01-build26.json",
     "firstReviewSubmittedDate": "2026-09-16T07:50:46.874Z",
-    "reviewStatusObservedAt": "2026-10-01T09:48:53.794Z",
+    "reviewStatusObservedAt": "2026-10-01T11:37:37.959Z",
     "latestReviewReport": {
       "date": "2026-09-24",
       "basis": "observed",
@@ -245,6 +245,13 @@
         "reviewSubmissionState": "UNRESOLVED_ISSUES",
         "appleBuildId": "6ce55c01-2cbf-4d35-b29f-b010df9502cb",
         "observedAt": "2026-09-24T05:12:31.742Z"
+      },
+      {
+        "appStoreState": "WAITING_FOR_REVIEW",
+        "reviewSubmissionState": "WAITING_FOR_REVIEW",
+        "appleBuildId": "e95d5777-40c0-4b15-83fc-a35ce9607ddc",
+        "observedAt": "2026-10-01T11:37:37.959Z",
+        "evidence": "store/apple-review-resubmission-2026-10-01-build26.json"
       }
     ],
     "previousSubmission": "4a6398aa-658c-49c0-a909-c09209dd5021",
@@ -254,10 +261,17 @@
     "currentCaptureProvenance": "source/ios-gallery-v26-provenance.json",
     "simulatorCaptureBuild": {
       "id": "78c0ccc8-d1ac-4e04-a789-b33d4bf0c570",
-      "status": "IN_PROGRESS",
+      "status": "FINISHED",
       "sourceCommit": "e9d16c083cdb901ab56ec8b9eb515aeb3a12e431",
-      "applicationSourcesMatch": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521"
-    }
+      "applicationSourcesMatch": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521",
+      "completedAt": "2026-10-01T11:01:30.695Z",
+      "bytes": 26971268,
+      "sha256": "a527cf6d78432328dc7f2e257648fb5deebcb96dd7d5ffc6f9eba8be2320c34a",
+      "actualBundleVersion": "1.0.0",
+      "actualBundleBuild": "1",
+      "runtime": "iOS 18.3.1 (22D8075)"
+    },
+    "artworkStatus": "EIGHT_CURRENT_NATIVE_IMAGES_COMPLETE_CHECKSUM_AND_ORDER_VERIFIED"
   },
   "google": {
     "productionBuild": "4dc57992-b1e5-4517-8197-215b66789963",

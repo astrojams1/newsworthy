@@ -9,23 +9,23 @@ keys, or verification codes in GitHub issues or this repository.
 
 ## Current iOS resubmission — 1 October
 
-PR #155 is merged and build **1.0.0 (26)** is selected in App Store Connect.
-Apple reports **Prepare for Submission**; the app has not been resubmitted.
-The updated listing and six-part Review Notes are saved.
+PR #155 is merged. Build **1.0.0 (26)** is **Waiting for Review**, confirmed
+through Apple's API on 1 October at 11:37 UTC. The updated listing, six-part
+Review Notes and eight screenshots are saved and verified. Both device
+families lead with the timeline; the iPhone gallery includes the actual
+Notifications page and clean small/medium widget comparison.
 
-**Unlock the Mac for the remaining widget capture.** The agent confirmed that
-computer control is blocked by the lock screen. Seven current iPhone/iPad app
-images are already uploaded and checksum-verified. Expo’s cloud tool reached
-its 500-request limit; its sandbox is stopped and has no alternate SSH session.
-The remote Simulator service is not enabled for this Expo account. One current
-simulator-release artifact is being built through EAS CLI for the local capture
-fallback; this does not need the slow local runtime download to compile.
+**No owner action is needed for this resubmission.** Mac access is restored,
+the simulator artifact is complete, widget capture/upload is finished and
+the review request was accepted. No 1Password browser action or new sign-in
+is required. Await Apple's next review response before assigning a new recording.
+The historical build-21 physical recording remains explicitly identified; this
+batch does not establish physical build-26 certification.
 
-No 1Password browser action or additional API sign-in is needed. The agent will
-capture real small/medium widgets, complete the gallery and resubmit build 26
-after the Mac unlock. The historical widget image is still in the draft gallery
-and is explicitly recorded as historical. See
+See [the submission receipt](apple-review-resubmission-2026-10-01-build26.json),
 [gallery readback](apple-gallery26-verification.json) and [ledger](ledger.md).
+Apple banking/address and Google owner-only gates below were last checked
+September 24; they are separate from this confirmed review submission.
 
 ## Historical iOS resubmission — 24 September
 

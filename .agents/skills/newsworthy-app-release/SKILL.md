@@ -73,9 +73,16 @@ Use a Release simulator build with `ARCHS=arm64 ONLY_ACTIVE_ARCH=YES`,
 including the widget extension. Preserve normal simulator ad-hoc signing and
 Xcode-generated entitlements when verifying AppIntent widgets. An unsigned
 bundle can display app screens while its widget remains a placeholder: on
-1 October, `siriactionsd` rejected the extension for empty entitlements. The
-ad-hoc rebuild was not observed before the tool cap; signing is the next
-verification step, not a confirmed fix. Capture through the
+1 October, the iOS 26.5 sandbox logged an AppIntent privilege rejection. The
+ad-hoc rebuild was not observed before the tool cap. The original EAS simulator
+artifact, also with empty extension entitlements, subsequently rendered both
+widgets and their settings on local iOS 18.3.1. Signing alone is therefore not
+an established cause or fix; verify the actual runtime and artifact combination.
+For clean widget artwork, retain full Home Screen originals, crop only measured
+native container bounds and mask wallpaper around the corners. Measure one
+corner boundary and mirror the symmetric container rather than thresholding
+both sides of a gradient independently; inspect the full text after masking.
+Capture through the
 available computer-control interface and Simulator's Save Screen command.
 Keep full original captures, source commit, actual bundle version/build, runtime,
 device and hashes. A locally generated simulator bundle may have a different

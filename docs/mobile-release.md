@@ -34,15 +34,24 @@ cannot compile this SDK's asset catalogs. Check the actual host and runtime
 inventory rather than assuming a cloud environment. Expo Go runs a precompiled
 host in the simulator; widgets require custom builds and cannot be tested in it.
 
-PR #155 is merged. Its production build **1.0.0 (26)** is selected in App Store
-Connect and Apple reports **Prepare for Submission**, with the prior review
-still `UNRESOLVED_ISSUES`. Metadata and six-part Review Notes are saved. Current
-app-screen screenshots are captured and uploaded through an authorized Expo
-batch. Apple reports seven images COMPLETE with matching checksums; historical
-reading images are replaced. Widget artwork and resubmission remain pending:
-MCP reached its tool cap, its sandbox is stopped, and the local Mac is locked.
-A single simulator-release EAS build is preparing the local fallback. No public
-App Store preview video is planned. See `store/apple-build26-selection.json` and the release ledger.
+PR #155 is merged. Production **1.0.0 (26)** is selected and **Waiting for
+Review**, confirmed through Apple's API on 1 October at 11:37 UTC. Listing and
+six-part Notes are saved. Eight current gallery images are COMPLETE, ordered
+and checksum-verified; timeline leads iPhone/iPad, and the iPhone Notifications
+image shows the root page rather than the threshold selector. The widget image
+preserves real Small Light/Medium Dark native surfaces on a neutral canvas.
+
+Six app images came from the authorized iOS 26.5 Expo sandbox; Notifications and
+widgets came from EAS simulator build `78c0ccc8` on local iOS 18.3.1. Both report
+actual bundle 1.0.0 (1), with application files matching production source
+`51826ed`. The Mac unlock is resolved; the slow runtime download does not block
+this completed submission. The sandbox is stopped. Original EAS widget rendering
+worked despite empty extension entitlements, so the earlier signing hypothesis
+is not established. Physical build-26 QA and widget name-hiding rechecks remain
+separate from these captures. No public App Store preview video is planned;
+Notes identify the existing build-21 physical recording as historical. See
+`store/apple-review-resubmission-2026-10-01-build26.json`,
+`store/source/ios-gallery-v26-provenance.json` and the release ledger.
 
 The EAS project is [@astrojams1/newsworthy](https://expo.dev/accounts/astrojams1/projects/newsworthy).
 The local CLI was connected through Expo browser sign-in on September 16, 2026.

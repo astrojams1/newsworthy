@@ -6,43 +6,42 @@ Resume from [the release ledger](ledger.md) with the reusable
 
 ## Current resubmission — 1 October 2026
 
-PR #155's final iOS **1.0.0 (26)** is `VALID` and `IN_BETA_TESTING` in
-Release QA. Its application source is `51826ed`; the later PR commits change
-listing copy and records. PR #155 is merged. Build 26 is now selected for version
-1.0.0, and Apple reports **Prepare for Submission**. The previous review remains
-`UNRESOLVED_ISSUES`. Build 26 has not been resubmitted. See
-[the selection receipt](apple-build26-selection.json).
+PR #155 is merged. Its production **1.0.0 (26)** is selected, `VALID` and
+`IN_BETA_TESTING`. Apple confirms **Waiting for Review**, read back on
+1 October at 11:37 UTC. See [the submission receipt](apple-review-resubmission-2026-10-01-build26.json).
+Application source is `51826ed`; later commits change listing copy and records.
 
-The current description, promotional text, keywords, URLs and six-part Review
-Notes have been saved and read back from App Store Connect. See
-[the metadata receipt](apple-resubmission-26-metadata.json). No public App Store
-preview video is included. The physical review recording remains historical
-build-21 evidence and is labeled accordingly in the Notes.
+The description, promotional text, keywords, URLs and six-part Review Notes
+are saved and read back. No public App Store preview video is included. The
+physical review recording remains historical build-21 evidence, labeled in
+Notes; these simulator captures do not certify build 26 on a physical device.
 
-The replacement gallery is prepared in [apple-gallery-26.json](apple-gallery-26.json):
-five iPhone images and three iPad images, led by the finite week timeline,
-with a neutral small/medium widget comparison, the reading, notifications and
-appearance. The [new renderer](scripts/render-apple-gallery.mjs) uses the
-generated Stone brand palette and refuses missing or changed native captures.
-It preserves Android's separate historical manifest entries. Seven app-screen images are captured, rendered and uploaded; Apple reports
-`COMPLETE` and matching checksums. Historical reading images are replaced.
-The current small/medium widget image remains pending; the historical widget
-composition is retained in the draft gallery until its replacement is verified.
-See [capture provenance](source/ios-gallery-v26-provenance.json),
-[upload receipt](apple-gallery26-upload.json), and
-[gallery readback](apple-gallery26-verification.json).
+The final gallery contains **five iPhone and three iPad screenshots**, all read
+back `COMPLETE`, in the intended order, with matching checksums. The finite-week
+timeline leads both device families. iPhone artwork also shows real small/medium
+widgets on a neutral canvas, the reading, the **Notifications page** (alert
+switch and threshold row), and dark appearance. The threshold-selector image
+and all previous gallery images are retired. No About page is featured.
 
-Local preparation is in `.worktrees/app-store-resubmit-155`: dependencies,
-prebuild and CocoaPods installation are complete. Xcode 26.6 is installed and
-its owner setup is complete. Apple's 8.52 GB iOS 26.5 runtime download is
-progressing slowly; Xcode's asset compiler rejects the older installed runtimes
-for this SDK. At the owner’s request, an Expo macOS sandbox supplied the seven app captures
-in 35m13s and was stopped. Its unsigned widget extension was rejected by the
-AppIntent service; a signing retry was not observed before the MCP 500-request
-cap blocked control. One simulator-release EAS build (`78c0ccc8`) is running
-for the local fallback, consuming one build credit. The local Mac is locked
-and EAS remote Simulator is unavailable for this account. The release ledger
-records these limits; widget capture and resubmission remain pending.
+[Gallery plan](apple-gallery-26.json), [capture provenance](source/ios-gallery-v26-provenance.json),
+[upload receipt](apple-gallery26-upload.json), [gallery readback](apple-gallery26-verification.json)
+and editable layouts are retained here. The [renderer](scripts/render-apple-gallery.mjs)
+uses generated Stone colors and verifies original native captures and measured
+widget bounds before composing the artwork. Native text and gradients remain
+unchanged. Android's historical artwork stays separately identified.
+
+Six app-screen images were captured on iOS 26.5 in an authorized Expo macOS
+sandbox. That sandbox was stopped after 35m13s; its tool connection reached the
+500-request cap. One EAS simulator-release build (`78c0ccc8`) then finished and
+was downloaded/hash-verified. Its unchanged original artifact rendered Small
+Light and Medium Dark widgets, widget settings and the Notifications root page
+on the owner's iOS 18.3.1 simulator. Both simulator bundles actually report
+1.0.0 (1), with application sources matching production build 26. The sandbox's
+AppIntent privilege errors are recorded; signing alone is not an established
+cause because the original EAS extension also has empty entitlements and worked
+on iOS 18.3.1. Hiding the widget name was not reverified in this capture batch.
+The local Mac unlock is resolved. The optional iOS 26.5 runtime download is no
+longer a prerequisite for this completed submission.
 
 ## Historical September release records
 
@@ -132,15 +131,14 @@ still blocks app creation. See the ledger for current gates and exact next actio
 ## Verified status
 
 - **Apple listing:** name `Newsworthy: Calm News`, English description,
-  promotional text, subtitle, keywords, URLs, News category, and **five
-  screenshots** saved. Apple reports every image `COMPLETE`: three 6.9-inch
-  iPhone images and two 13-inch iPad images.
+  promotional text, subtitle, keywords, URLs, News category, and **eight screenshots** saved. Apple reports every current image `COMPLETE`: five
+  6.9-inch iPhone images and three 13-inch iPad images, with timeline first.
 - **Apple pricing:** US$1.00 saved with local equivalents. Paid Apps Agreement
   was **Pending User Info** at the last live check after owner acceptance.
   Apple Business now confirms the W-9 is **Active**; banking remains outstanding. The address-correction request
   has been sent and acknowledged by Apple,
   but the obsolete legal address still needs Apple approval/correction.
-- **Apple binary:** production **build 21** passed Apple validation, uploaded,
+- **Apple binary:** production **build 26** passed Apple validation, uploaded,
   processed `VALID`, and is selected for version 1.0.0. Production and Apple build
   IDs plus hashes are in `release.json`. Earlier builds remain historical evidence.
 - **Apple age rating:** declaration saved and verified through the API. It
@@ -163,13 +161,28 @@ still blocks app creation. See the ledger for current gates and exact next actio
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** build21 returned to Waiting for Review at06:19UTC on September24
-  after the updated recording, six-part reply and matching Notes.
-  See the [new request](apple-review-build21-followup.md). The earlier
-  [submission receipt](apple-review-build21.json) and build 7 appeal are historical.
+- **Apple review:** build 26 is Waiting for Review, confirmed 1 October at
+  11:37 UTC. See the [current receipt](apple-review-resubmission-2026-10-01-build26.json).
+  Build-21 and build-7 responses/receipts remain historical.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.
 
-## Reproduce the artwork
+## Reproduce the current Apple artwork
+
+From the repository root after `npm ci`:
+
+```sh
+node store/scripts/measure-apple-widget-corners.mjs
+node store/scripts/render-apple-gallery.mjs
+node store/scripts/validate.mjs
+```
+
+The measurement script uses each native container's symmetric silhouette; inspect
+all widget text and corners after masking. Full Home Screen captures remain
+unchanged. Current original captures, source/runtime scope and SHA-256 values
+are in [provenance](source/ios-gallery-v26-provenance.json). The manifest contains
+the eight Apple images and separately identified historical Android entries.
+
+## Reproduce the historical September artwork
 
 From the repository root after `npm ci`:
 

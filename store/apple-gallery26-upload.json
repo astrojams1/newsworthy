@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-10-01T10:55:48.066Z",
+  "observedAt": "2026-10-01T11:35:58.297Z",
   "releaseBuild": "26",
   "sets": [
     {
@@ -22,16 +22,7 @@
           "checksum": "0383fc239983082ee17b4959d457d784"
         }
       ],
-      "previous": [
-        {
-          "id": "fea597b3-6342-4ac2-8334-22975ca5ac92",
-          "fileName": "01-at-a-glance-v6.png"
-        },
-        {
-          "id": "ce48fde6-0ab8-4e6d-bb2c-c12a0215f81e",
-          "fileName": "02-dark-mode-v6.png"
-        }
-      ]
+      "previous": []
     },
     {
       "id": "7e5eeec0-cde4-48b9-9cd4-d8cf96e42162",
@@ -43,14 +34,19 @@
           "checksum": "db54229f7e18851d992fa0ec1399f16a"
         },
         {
+          "id": "a748a371-40c8-44af-8761-d2e66e1dc1ae",
+          "fileName": "02-widget-sizes-v26.png",
+          "checksum": "393fdf3aee241996622889f2e7a2d786"
+        },
+        {
           "id": "3d16c355-9212-4501-9e84-c9bcd1b3760f",
           "fileName": "03-reading-v26.png",
           "checksum": "f5063d8010807013b517aa71a862ea50"
         },
         {
-          "id": "9db054b6-4cb6-477d-a5fc-870ce62499ea",
+          "id": "22bccfcb-0bd5-4053-bd88-33c6cd834516",
           "fileName": "04-notifications-v26.png",
-          "checksum": "1a30a4794c5412458461b5bef25d4ec2"
+          "checksum": "7ed36f30e63837df39303cad3afe2b0a"
         },
         {
           "id": "1bfc2657-afb3-4344-a547-2052046c85d6",
@@ -58,20 +54,7 @@
           "checksum": "b0ef3a95a00d710bfa3f4c2d6d0a65c5"
         }
       ],
-      "previous": [
-        {
-          "id": "da87b8b7-9bb8-479e-aa16-17812131f8db",
-          "fileName": "02-widget-sizes-v2.png"
-        },
-        {
-          "id": "1cbb0501-0be3-4771-880b-397bdbd83b6f",
-          "fileName": "01-at-a-glance-v6.png"
-        },
-        {
-          "id": "c436cb64-739b-45eb-90a6-011febb38e09",
-          "fileName": "03-dark-mode-v6.png"
-        }
-      ]
+      "previous": []
     }
   ]
 }

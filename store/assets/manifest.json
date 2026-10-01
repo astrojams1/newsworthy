@@ -44,6 +44,19 @@
     "displayType": "APP_IPHONE_67"
   },
   {
+    "file": "assets/apple/iphone-6.9/02-widget-sizes-v26.png",
+    "sources": [
+      "source/iphone-6.9/05-small-widget-v26.png",
+      "source/iphone-6.9/06-medium-widget-v26.png"
+    ],
+    "platform": "ios",
+    "releaseBuild": "26",
+    "width": 1320,
+    "height": 2868,
+    "displayType": "APP_IPHONE_67",
+    "composition": "Actual native widget viewports at one scale on a neutral canvas; original Home Screens retained."
+  },
+  {
     "file": "assets/apple/iphone-6.9/03-reading-v26.png",
     "sources": [
       "source/iphone-6.9/02-reading-light-v26.png"
@@ -57,7 +70,7 @@
   {
     "file": "assets/apple/iphone-6.9/04-notifications-v26.png",
     "sources": [
-      "source/iphone-6.9/04-notifications-v26.png"
+      "source/iphone-6.9/07-notifications-page-v26.png"
     ],
     "platform": "ios",
     "releaseBuild": "26",

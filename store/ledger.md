@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-01T11:00:06+00:00
+Updated: 2026-10-01T11:40:49+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -20,13 +20,13 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | agent | observed | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
-| apple.listing | done | agent | observed | EnglishUS description, subtitle, promotional text, keywords and URLs saved and read back. Review Notes describe optional notifications, setup, widgets, services, regions and historical build7 video; contact phone retained privately. | — |
+| apple.listing | done | agent | observed | Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording. | — |
 | apple.build | done | agent | observed | Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled. | — |
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_user | user | observed | Owner decision 2026-10-01: resubmit 1.0.0 with build 26 (TestFlight, owner-checked) rather than change the app further, since the timeline is new since build 21's review; update the App Store description and screenshots; do not include the preview video (never uploaded to App Store Connect, so nothing to remove). Description, promotional text and keywords are drafted in store/listing.json (commit b42d6eb): timeline, New: label and story line, per-widget settings, no mention of AI. Nothing has been pushed to App Store Connect; version 1.0.0 is still REJECTED with build 21 selected. | Handed to another agent. 1) Capture build 26 screenshots: owner's iPhone (6.9in or 6.5in only) or an EAS macOS sandbox simulator (about 38 CI minutes left in October; large images corrupted when copied out of a sandbox as text, so plan the transfer); iPad screenshots are required while supportsTablet is true, or make the app iPhone-only (one build credit). Compose with store/scripts/render.mjs and update store/assets/manifest.json. 2) Push description, promotional text and keywords from store/listing.json to the en-US version localization. 3) Rewrite review notes in listing.json and App Store Connect for build 26: the switch is now High-score alerts with a Threshold row; mention the timeline (Settings, Show timeline), per-widget Show app name and Appearance, and the Sep 24 video as build 21. 4) Select build 26 (App Store Connect build e95d5777) on version 267c6f52, resubmit through reviewSubmission 4f28761f, and read back WAITING_FOR_REVIEW. |
-| apple.release | waiting_provider | provider | observed | Build 21 is Waiting for Review. No public Apple release yet; paid agreement banking and legal-address correction remain separate gates. | Obtain review approval, verify paid-sale account readiness, and verify public paid availability. |
+| apple.review | waiting_provider | provider | observed | Build 26 is WAITING_FOR_REVIEW after accepted resubmission on October 1; current timeline, Notifications root and native widget gallery are saved. Six-part Notes accurately identify the existing build-21 physical video. | Await Apple response; approval and public paid-sale readiness remain separate. |
+| apple.release | waiting_provider | provider | observed | Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates. | Await approval, then verify paid-sale readiness and public availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
@@ -47,14 +47,14 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | design.widget-gallery | done | agent | observed | Both platform galleries feature actual widget size choices on neutral backgrounds | — |
 | native.ios-widget-sizes | done | agent | observed | Replacement small and medium iOS widgets verified on iPhone 16 Pro Max iOS 18.3; clean neutral artwork rendered from actual widget viewports. | — |
 | native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
-| apple.gallery-order | done | agent | observed | Apple gallery now leads with neutral small/medium actual-widget composition; all five replacement iPhone/iPad images COMPLETE and old gallery images removed. | — |
+| apple.gallery-order | done | agent | observed | Both Apple screenshot families lead with the actual finite-week timeline. Exact final order, count, COMPLETE states and checksums read back. | — |
 | apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
 | google.widget-fix | done | agent | observed | APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained | — |
 | design.regression | done | agent | observed | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
 | apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
-| apple.review-notes | done | agent | observed | Final six-part Notes include the physical build7 demonstration filename and accurate product/setup/services/regions/rights information; API save and exact-value readback passed. | — |
+| apple.review-notes | done | agent | observed | Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo. | — |
 | apple.physical-recording | done | agent | observed | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
-| apple.testflight | done | agent | observed | Build 21 is VALID and IN_BETA_TESTING in Release QA. Updated notes document configured push credentials, provider acceptance and physical app/registration checks, with visual notification/tap unobserved. No new invitation is required. | — |
+| apple.testflight | done | agent | observed | Production build26 is VALID and IN_BETA_TESTING in ReleaseQA; selected for AppReview. Historical build21 physical tests are retained separately. No new invite required. | — |
 | google.large-text-build | done | agent | observed | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
 | google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
 | apple.header-background | done | agent | observed | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
@@ -72,7 +72,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.quiet-reading-build | done | agent | observed | iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy. | — |
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
-| apple.review-state | done | agent | observed | Fresh Apple API confirms selected build21 and both version/submission WAITING_FOR_REVIEW after September24 video response; earlier rejected state is historical. | — |
+| apple.review-state | done | agent | observed | Fresh API readback confirms selected VALID build 26, version WAITING_FOR_REVIEW and review submission WAITING_FOR_REVIEW. | — |
 | story-age.native | todo | agent | observed | Owner found four seconds too long: "Checked 23m ago" now holds for two seconds (on load, on returning to the app, after a tap) before crossfading to the story line. Web export verified in Chromium: story line at ~3.6s after navigation, Checked for ~2s after a tap. Native apps not built or run here. | On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
@@ -88,7 +88,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
 | apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
 | google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
-| apple.gallery-current | in_progress | agent | observed | Current listing still uses historical build6 reading/footer screenshots. Fresh simulator-release build d182c9bd-fea2-4908-bf73-33d9eac5c1f1 is IN_PROGRESS from clean4f519f0 for current reading, Settings/notification and widget captures. | Install finished simulator package, capture actual iPhone/iPad screens, render and verify replacement gallery, then upload and verify Apple assets. |
+| apple.gallery-current | done | agent | observed | Eight native gallery images now current to production application source51826ed; actual simulator bundles1.0.0(1). Six app captures iOS26.5, Notifications/widgets iOS18.3.1. Physical QA separate. | — |
 | apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
 | apple.settings-transition | in_progress | agent | observed | Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off. | Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission. |
 | web.settings-back-arrow | waiting_user | user | observed | Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged. | Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows. |
@@ -102,15 +102,18 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
 | web.landscape-layout | waiting_verification | agent | observed | Owner follow-ups 2026-09-28 after production 93e2c3f (#180): the sentence and the timeline share one column, scaled with text size: 320pt upright, 360pt in landscape, 414pt on larger screens (22pt sentence, three lines rather than four). The timeline grid is removed on every screen, and CSS text-wrap is dropped: in Chrome on iPhone, WebKit's pretty read as balance. Timeline code is back to its pre-#179 form. The landscape score stays 22% of height: measured in headless Chromium at 743x340 with a 21pt bottom inset, today's sentence takes three lines, the chevron is on screen, and the reading is 346pt tall, 6pt over the viewport (353pt at 24%). Verified in headless Chromium only. | Owner: check iPhone landscape and portrait and desktop after merge. Native apps untested in landscape. |
 | ui.header-icon-size | waiting_verification | user | observed | TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device. | Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app. |
-| apple.resubmit-26 | in_progress | agent | observed | PR #155 is merged. Build 26 is selected with PREPARE_FOR_SUBMISSION and current metadata/Notes are saved. Draft PR #192 retains the selection receipt, updated identifiers and remaining capture gate. Native screenshots and review resubmission are pending; local runtime download continues. | Finish runtime download and actual native gallery capture, upload/verify/order screenshots, then resolve and resubmit the review item and verify WAITING_FOR_REVIEW. Complete PR #192 with final gallery/submission evidence. |
+| apple.resubmit-26 | done | agent | observed | Production 1.0.0 (26) resubmitted; Apple independently confirms version and review submission WAITING_FOR_REVIEW at 11:37:37 UTC. Eight gallery images COMPLETE, ordered and checksum-verified. | Await Apple review; save final evidence in PR #192. |
 | apple.metadata-26 | done | agent | observed | Build26 listing copy saved and read back through App Store Connect: updated description, promotional text, keywords and URLs; public fields do not mention AI. Six-part Review Notes now describe current timeline, High-score alerts/Threshold and independent widget settings, while labeling the September24 recording as historical build21. Existing private phone preserved in memory. App Preview sets are empty. | — |
-| apple.local-capture-26 | waiting_provider | provider | observed | Xcode 26.6 owner setup and local dependencies/prebuild/Pods are complete. Matching iOS 26.5 arm64 runtime download is still progressing slowly. Alternate official Apple CDN routes and IPv6 did not remove the bandwidth limit; older installed runtimes cannot compile this SDK asset catalog. Mac has also relocked, so native UI capture needs an unlocked host once the download completes. | Let runtime download finish, unlock Mac for native capture, rebuild the unchanged build-26 app source, capture/inspect full current iPhone/iPad and both widgets, render and upload gallery. |
+| apple.local-capture-26 | done | agent | observed | Mac unlock resolved. Capture completed using the Expo simulator artifact on installed iOS18.3.1; local Xcode26 runtime compilation/download was bypassed. This does not claim that optional Xcode26 runtime setup completed. | — |
 | apple.source-155 | done | agent | observed | PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments. | Capture current native Apple gallery and complete build-26 resubmission. |
 | apple.build-selection-26 | done | agent | observed | Selected Apple build 26 and verified VALID, IN_BETA_TESTING and PREPARE_FOR_SUBMISSION. Previous review submission remains UNRESOLVED_ISSUES; no resubmission was sent. | Finish current screenshot capture/upload and then resolve the review item and submit; verify review state. |
-| apple.cloud-capture-26 | waiting_user | Astro | observed | Seven full native iPhone/iPad app captures preserved with checked SHA256 from build-26 application source 51826ed, simulator bundle 1.0.0 (1), iOS 26.5. Widget captures remain unusable skeletons: AppIntent service rejected the unsigned extension for empty entitlements. Expo MCP reports 500/500 monthly requests. Sandbox stop confirmed through official Expo GraphQL at 10:50:03Z; 35m13s running. Local CUA confirms Mac locked. | Unlock Mac; retrieve authorized single simulator-release artifact, verify normal simulator signing, capture actual Small/Medium widgets, render gallery and submit build 26. |
-| apple.simulator-artifact-26 | waiting_provider | agent | observed | Single simulator-release EAS build 78c0ccc8-d1ac-4e04-a789-b33d4bf0c570 started via CLI for current widget capture; fifth October build. Application source matches production source 51826ed byte-for-byte; production build 26 will be reused. | Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures. |
-| apple.gallery-artwork-26 | in_progress | agent | observed | Seven current native app screenshots rendered from verified iPhone/iPad originals using generated Stone palette. Uploads in progress; historical gallery retained until replacement delivery is COMPLETE. Widget composition awaits actual Small/Medium capture; failed placeholder excluded. EAS remote Simulator alternative reports unavailable for this account. | Complete screenshot uploads and read checksums; unlock Mac for widget capture; do not relabel old widget images current. |
-| apple.gallery-upload-26 | in_progress | agent | observed | Seven current app artwork replacements report COMPLETE with exact MD5 readback. Historical reading images retired and current app images ordered; historical widget image deliberately retained until fresh widget capture is verified. Gallery remains a draft; build 26 has not been resubmitted. | Capture and replace actual widget artwork, verify final 5-iPhone/3-iPad gallery, resolve rejected review item and submit; read back WAITING_FOR_REVIEW. |
+| apple.cloud-capture-26 | done | agent | observed | Expo sandbox supplied seven app captures, then stopped at 10:50:03 UTC after 35m13s. Widget placeholder excluded; EAS artifact fallback supplied actual local widgets and Notifications root. Tool cap500/500; no second sandbox. | — |
+| apple.simulator-artifact-26 | done | agent | observed | EAS simulator-release78c0ccc8 finished; artifact downloaded/hash-verified. Actual1.0.0(1), app source matches51826ed. Original empty-entitlement extension rendered actual widgets/settings on iOS18.3.1; signing alone is not an established sandbox failure cause. | — |
+| apple.gallery-artwork-26 | done | agent | observed | Eight final Apple images rendered and visually inspected. Timeline first both families; real Small Light/Medium Dark surfaces at one scale on neutral canvas; root Notifications page replaces threshold selector. Symmetric native corner masks preserve full text. | — |
+| apple.gallery-upload-26 | done | agent | observed | Five iPhone and three iPad images read back COMPLETE with exact MD5 and intended order; all previous draft/historical images retired before build26 resubmission. | — |
+| apple.gallery-timeline-26 | done | agent | observed | Actual finite-week timeline is first in both Apple screenshot sets. Current iPhone and iPad timeline images are COMPLETE; exact uploaded checksums and ordering were independently read back. | — |
+| apple.gallery-capture-26 | done | agent | observed | Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate. | — |
+| apple.gallery-notifications-26 | done | agent | observed | Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified. | — |
 
 ## Evidence and history
 
@@ -3635,3 +3638,185 @@ Seven current app artwork replacements report COMPLETE with exact MD5 readback. 
 - store/apple-gallery26-verification.json
 
 Next: Capture and replace actual widget artwork, verify final 5-iPhone/3-iPad gallery, resolve rejected review item and submit; read back WAITING_FOR_REVIEW.
+
+### 368. apple.cloud-capture-26 — in_progress
+
+2026-10-01T11:03:31+00:00 · observed · agent
+
+Mac is accessible through CUA again. Simulator-release EAS artifact 78c0ccc8 finished at 11:01:30Z. Continuing actual local widget capture using Expo-built artifact; existing seven app screenshots are COMPLETE and timeline leads both families.
+
+
+Next: Install artifact, inspect bundle/signature, verify small/medium appearance, save real full captures and finish gallery.
+
+### 369. apple.gallery-timeline-26 — done
+
+2026-10-01T11:05:50+00:00 · observed · agent
+
+Actual finite-week timeline is first in both Apple screenshot sets. Current iPhone and iPad timeline images are COMPLETE; exact uploaded checksums and ordering were independently read back.
+
+- store/apple-gallery26-verification.json
+
+### 370. apple.gallery-capture-26 — done
+
+2026-10-01T11:25:03+00:00 · observed · agent
+
+Current application source 51826ed captured as native iPhone/iPad app screens on iOS 26.5 and actual Small Light/Medium Dark widgets on iPhone 16 Pro Max iOS 18.3.1 using Expo simulator-release artifact 78c0ccc8. Actual simulator bundle is 1.0.0 (1). Full PNGs and SHA256 retained; neutral composition uses measured native viewports at one scale. No apps or wallpaper in final widget artwork.
+
+- store/source/ios-gallery-v26-provenance.json
+
+Next: Verify final widget upload and screenshot ordering; submit production build 26.
+
+### 371. apple.simulator-artifact-26 — done
+
+2026-10-01T11:25:03+00:00 · observed · agent
+
+EAS simulator-release 78c0ccc8 finished; downloaded 26,971,268 bytes, SHA256 and gzip integrity verified. Source e9d16c0 app files match production 51826ed. Installed and configured on iPhone 16 Pro Max iOS 18.3.1; both widget sizes render actual data with independent Light/Dark choices.
+
+- store/source/ios-gallery-v26-provenance.json
+
+Next: Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures.
+
+### 372. apple.gallery-notifications-26 — done
+
+2026-10-01T11:36:16+00:00 · observed · agent
+
+Replaced the threshold selector with the actual Notifications root page requested by the owner; inspected the alert switch, threshold row and explanatory text in final artwork.
+
+- store/source/iphone-6.9/07-notifications-page-v26.png
+- store/source/ios-gallery-v26-provenance.json
+
+Next: Verify the complete eight-image App Store gallery and resubmit selected build 26.
+
+### 373. apple.resubmit-26 — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Production 1.0.0 (26) resubmitted; Apple independently confirms version and review submission WAITING_FOR_REVIEW at 11:37:37 UTC. Eight gallery images COMPLETE, ordered and checksum-verified.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+Next: Await Apple review; save final evidence in PR #192.
+
+### 374. apple.review — waiting_provider
+
+2026-10-01T11:40:49+00:00 · observed · provider
+
+Build 26 is WAITING_FOR_REVIEW after accepted resubmission on October 1; current timeline, Notifications root and native widget gallery are saved. Six-part Notes accurately identify the existing build-21 physical video.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+Next: Await Apple response; approval and public paid-sale readiness remain separate.
+
+### 375. apple.review-state — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Fresh API readback confirms selected VALID build 26, version WAITING_FOR_REVIEW and review submission WAITING_FOR_REVIEW.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 376. apple.release — waiting_provider
+
+2026-10-01T11:40:49+00:00 · observed · provider
+
+Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+Next: Await approval, then verify paid-sale readiness and public availability.
+
+### 377. apple.local-capture-26 — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Mac unlock resolved. Capture completed using the Expo simulator artifact on installed iOS18.3.1; local Xcode26 runtime compilation/download was bypassed. This does not claim that optional Xcode26 runtime setup completed.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 378. apple.cloud-capture-26 — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Expo sandbox supplied seven app captures, then stopped at 10:50:03 UTC after 35m13s. Widget placeholder excluded; EAS artifact fallback supplied actual local widgets and Notifications root. Tool cap500/500; no second sandbox.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 379. apple.gallery-artwork-26 — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Eight final Apple images rendered and visually inspected. Timeline first both families; real Small Light/Medium Dark surfaces at one scale on neutral canvas; root Notifications page replaces threshold selector. Symmetric native corner masks preserve full text.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 380. apple.gallery-upload-26 — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Five iPhone and three iPad images read back COMPLETE with exact MD5 and intended order; all previous draft/historical images retired before build26 resubmission.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 381. apple.gallery-current — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Eight native gallery images now current to production application source51826ed; actual simulator bundles1.0.0(1). Six app captures iOS26.5, Notifications/widgets iOS18.3.1. Physical QA separate.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 382. apple.gallery-order — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Both Apple screenshot families lead with the actual finite-week timeline. Exact final order, count, COMPLETE states and checksums read back.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 383. apple.gallery-notifications-26 — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 384. apple.simulator-artifact-26 — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+EAS simulator-release78c0ccc8 finished; artifact downloaded/hash-verified. Actual1.0.0(1), app source matches51826ed. Original empty-entitlement extension rendered actual widgets/settings on iOS18.3.1; signing alone is not an established sandbox failure cause.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 385. apple.gallery-capture-26 — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 386. apple.listing — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 387. apple.review-notes — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json
+
+### 388. apple.testflight — done
+
+2026-10-01T11:40:49+00:00 · observed · agent
+
+Production build26 is VALID and IN_BETA_TESTING in ReleaseQA; selected for AppReview. Historical build21 physical tests are retained separately. No new invite required.
+
+- store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json

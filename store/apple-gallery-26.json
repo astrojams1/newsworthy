@@ -2,13 +2,80 @@
   "releaseBuild": "26",
   "applicationSourceCommit": "51826ed4fe7a12c5d21a749f8c83c2269a6a6521",
   "captures": [
-    {"family":"iphone-6.9","source":"01-timeline-v26.png","output":"01-timeline-v26.png","headline":["The past week's","developments."],"caption":"One entry per development. The list ends at one week.","dark":false},
-    {"family":"iphone-6.9","source":"02-reading-light-v26.png","output":"03-reading-v26.png","headline":["World news.","One reading."],"caption":"A score, a brief explanation, and an update time.","dark":false},
-    {"family":"iphone-6.9","source":"03-reading-dark-v26.png","output":"05-appearance-v26.png","headline":["Your reading.","Light or dark."],"caption":"Follow your device, or choose an appearance.","dark":true},
-    {"family":"iphone-6.9","source":"04-notifications-v26.png","output":"04-notifications-v26.png","headline":["Choose when","to be notified."],"caption":"High-score alerts at the minimum you choose.","dark":false},
-    {"family":"ipad-13","source":"01-timeline-v26.png","output":"01-timeline-v26.png","headline":["The past week, in one list."],"caption":"One entry per development. The list ends at one week.","dark":false},
-    {"family":"ipad-13","source":"02-reading-light-v26.png","output":"02-reading-v26.png","headline":["World news. One reading."],"caption":"A score, a brief explanation, and an update time.","dark":false},
-    {"family":"ipad-13","source":"03-reading-dark-v26.png","output":"03-appearance-v26.png","headline":["Your reading. Light or dark."],"caption":"Follow your device, or choose an appearance.","dark":true}
+    {
+      "family": "iphone-6.9",
+      "source": "01-timeline-v26.png",
+      "output": "01-timeline-v26.png",
+      "headline": [
+        "The past week's",
+        "developments."
+      ],
+      "caption": "One entry per development. The list ends at one week.",
+      "dark": false
+    },
+    {
+      "family": "iphone-6.9",
+      "source": "02-reading-light-v26.png",
+      "output": "03-reading-v26.png",
+      "headline": [
+        "World news.",
+        "One reading."
+      ],
+      "caption": "A score, a brief explanation, and an update time.",
+      "dark": false
+    },
+    {
+      "family": "iphone-6.9",
+      "source": "03-reading-dark-v26.png",
+      "output": "05-appearance-v26.png",
+      "headline": [
+        "Your reading.",
+        "Light or dark."
+      ],
+      "caption": "Follow your device, or choose an appearance.",
+      "dark": true
+    },
+    {
+      "family": "iphone-6.9",
+      "source": "07-notifications-page-v26.png",
+      "output": "04-notifications-v26.png",
+      "headline": [
+        "Choose when",
+        "to be notified."
+      ],
+      "caption": "High-score alerts at the minimum you choose.",
+      "dark": false
+    },
+    {
+      "family": "ipad-13",
+      "source": "01-timeline-v26.png",
+      "output": "01-timeline-v26.png",
+      "headline": [
+        "The past week, in one list."
+      ],
+      "caption": "One entry per development. The list ends at one week.",
+      "dark": false
+    },
+    {
+      "family": "ipad-13",
+      "source": "02-reading-light-v26.png",
+      "output": "02-reading-v26.png",
+      "headline": [
+        "World news. One reading."
+      ],
+      "caption": "A score, a brief explanation, and an update time.",
+      "dark": false
+    },
+    {
+      "family": "ipad-13",
+      "source": "03-reading-dark-v26.png",
+      "output": "03-appearance-v26.png",
+      "headline": [
+        "Your reading. Light or dark."
+      ],
+      "caption": "Follow your device, or choose an appearance.",
+      "dark": true
+    }
   ],
   "widgetFrames": "source/iphone-6.9/widget-frames-v26.json",
   "captureEvidence": "source/ios-gallery-v26-provenance.json"

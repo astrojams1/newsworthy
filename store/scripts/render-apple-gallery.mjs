@@ -42,6 +42,9 @@ for (const frame of frames.frames) {
   if (![frame.x, frame.y, frame.width, frame.height, frame.radius].every(Number.isFinite) || frame.x < 0 || frame.y < 0 || frame.width <= 0 || frame.height <= 0 || frame.x + frame.width > width || frame.y + frame.height > height) {
     throw new Error(`Widget viewport outside original capture: ${frame.file}`);
   }
+  if (frame.clipPolygon?.some(p => p.length !== 2 || !p.every(Number.isFinite) || p[0] < 0 || p[1] < 0 || p[0] > frame.width || p[1] > frame.height)) {
+    throw new Error(`Widget corner mask outside original viewport: ${frame.file}`);
+  }
 }
 const xml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
 const text = (x, y, size, value, fill, extra = '') => `<text x="${x}" y="${y}" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="${size}" fill="${fill}" ${extra}>${xml(value)}</text>`;
@@ -85,7 +88,10 @@ if (!appOnly) {
 const scale = Math.min(1092 / Math.max(...frames.frames.map(f => f.width)), 510 / Math.max(...frames.frames.map(f => f.height)));
 const widget = (frame, index) => {
   const { metadata } = originals.get(frame.file);
-  return `<svg x="108" y="${index ? 1713 : 803}" width="${frame.width * scale}" height="${frame.height * scale}" viewBox="${frame.x} ${frame.y} ${frame.width} ${frame.height}"><defs><clipPath id="widget-${index}"><rect x="${frame.x}" y="${frame.y}" width="${frame.width}" height="${frame.height}" rx="${frame.radius}"/></clipPath></defs><image width="${metadata.width}" height="${metadata.height}" href="${href(frame.file)}" clip-path="url(#widget-${index})"/></svg>`;
+  const outline = frame.clipPolygon
+    ? `<polygon points="${frame.clipPolygon.map(([x, y]) => `${frame.x + x},${frame.y + y}`).join(' ')}"/>`
+    : `<rect x="${frame.x}" y="${frame.y}" width="${frame.width}" height="${frame.height}" rx="${frame.radius}"/>`;
+  return `<svg x="108" y="${index ? 1713 : 803}" width="${frame.width * scale}" height="${frame.height * scale}" viewBox="${frame.x} ${frame.y} ${frame.width} ${frame.height}"><defs><clipPath id="widget-${index}">${outline}</clipPath></defs><image width="${metadata.width}" height="${metadata.height}" href="${href(frame.file)}" clip-path="url(#widget-${index})"/></svg>`;
 };
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="2868">
   <rect width="100%" height="100%" fill="${tokens.brand.light.center}"/>

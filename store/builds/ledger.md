@@ -157,3 +157,41 @@ unverified. Never publish skeleton widgets as actual gallery captures.
 `simulator:availability --non-interactive --json` reports `available: false`
 for `astrojams1`; remote device sessions are not enabled for this account.
 No remote session, paid upgrade or account switch was started.
+
+**Simulator fallback result, 1 October.** Build `78c0ccc8` finished at
+11:01:30 UTC, about 7m12s after creation. Full source commit `e9d16c0`;
+application sources match production `51826ed`. At 11:02 UTC, CUA could access
+Simulator again: the local lock blocker is cleared. Artifact download and
+current widget capture now continue.
+
+**Gallery and review completed, 1 October.** EAS simulator artifact `78c0ccc8`
+was downloaded (26,971,268 bytes; SHA256
+`a527cf6d78432328dc7f2e257648fb5deebcb96dd7d5ffc6f9eba8be2320c34a`)
+and its original signature preserved. Actual bundle is 1.0.0 (1), with app files
+matching production `51826ed`. Both real widgets and their independent appearance
+settings worked on iPhone 16 Pro Max / iOS 18.3.1. Small Light and Medium Dark
+full Home Screen captures are retained; only their measured container silhouettes
+are placed on the neutral artwork at one common scale. App-name hiding was not
+reverified in this batch. The owner's requested Notifications root page was
+captured from this same artifact and replaces the threshold-selector screenshot.
+
+**Signing hypothesis correction.** The original EAS extension also has empty
+entitlements, yet worked on iOS 18.3.1. The sandbox iOS 26.5 AppIntent privilege
+errors remain observations; signing alone is not an established root cause or
+fix. Runtime/artifact combinations need actual verification. Preserve the failed
+placeholder separately and never include it in the listing. When masking native
+widget corners, mirror the measured left silhouette across the symmetric
+container; independent right-edge brightness thresholds can cut off text because
+light/dark gradients converge. Inspect the entire widget after composing it.
+
+**Provider result.** All five iPhone and three iPad images are COMPLETE, ordered
+and checksum-verified; timeline leads both families. Historical gallery images
+are retired. Build 26's rejected review item was resolved and the submission
+accepted. Apple independently reports WAITING_FOR_REVIEW for the version and
+review submission at 11:37:37 UTC. Evidence:
+`store/apple-gallery26-verification.json` and
+`store/apple-review-resubmission-2026-10-01-build26.json`.
+The existing physical recording remains labeled historical build 21. Simulator
+captures do not claim physical build-26 certification or public availability.
+October usage is five cloud builds, about 57.3/60 sandbox minutes and MCP
+500/500 requests. No second capture sandbox or paid upgrade was started.

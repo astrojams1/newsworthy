@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-10-01T11:37:37.959Z",
+  "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
+  "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
+  "reviewItemId": "NGYyODc2MWYtMzA5Ni00ZjBkLWFhMzctZGY4MzMzMmY4MThmfDZ8ODkxNDI4ODYw",
+  "version": "1.0.0",
+  "releaseBuild": "26",
+  "appleBuildId": "e95d5777-40c0-4b15-83fc-a35ce9607ddc",
+  "processingState": "VALID",
+  "appStoreState": "WAITING_FOR_REVIEW",
+  "reviewSubmissionState": "WAITING_FOR_REVIEW",
+  "reviewItems": [
+    {
+      "id": "NGYyODc2MWYtMzA5Ni00ZjBkLWFhMzctZGY4MzMzMmY4MThmfDZ8ODkxNDI4ODYw",
+      "state": "READY_FOR_REVIEW"
+    }
+  ],
+  "galleryEvidence": "store/apple-gallery26-verification.json",
+  "captureEvidence": "store/source/ios-gallery-v26-provenance.json",
+  "reviewNotesScope": "Six-part notes saved; historical build-21 physical recording explicitly identified; build-26 physical certification not claimed.",
+  "publicAvailabilityVerified": false
+}
