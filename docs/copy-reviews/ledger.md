@@ -114,3 +114,33 @@ out of date (the checked line and widget scene report changed Swift input); it
 was not re-rendered, and no public App Store preview is included in the current
 submission. Existing source/geometry evidence was reviewed without changing
 captures or claiming new native verification.
+
+## User research 2026-10-01-01 — 1 October 2026
+
+PR branch: `research/news-needs-2026-10-01`. Reviewed the research/opportunity
+diff against `0a31d00`, README, product messaging, current reading/Settings,
+mobile introduction, Support, llms.txt, caller/submission contract, store listing,
+build-21 notification evidence, Android build-12 verification, build-26 submission
+and the preview-video stale report. Research adds no product capability, changes
+no rating/prompt/API contract and does not alter public positioning.
+
+Corrected current research coverage: age/check labels, optional alerts and the
+finite-week optional timeline are implemented; Support is in Settings; a mobile
+introduction exists; the removed OpenAPI file is no longer a current contract
+link. Preserved dated older findings, reused evidence IDs and uncertainty about
+comprehension. Support no longer promises a widget date on older readings or
+says notification delivery is categorically unavailable in TestFlight; it now
+states the compatible-build/permission requirement without claiming physical
+delivery verification or public availability.
+
+Open limits: no Newsworthy usability session, production-citation audit, fresh
+store-status readback or native rebuild/device verification in this run. Reddit
+and vendor support were inaccessible; the convenience sample is not prevalence
+or willingness-to-pay evidence. The preview video is already out of date under
+its stale-input check; this research does not change its inputs or re-render it.
+No public App Store preview is included in the current submission.
+
+**Lesson:** a help statement saying a capability is unavailable can become stale
+after credentials and receipt checks land. Replace it using the specific evidence
+boundary; provider acceptance still does not establish physical presentation.
+Widget-date wording must follow the current formatter, not historical captures.
