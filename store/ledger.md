@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-01T09:50:44+00:00
+Updated: 2026-10-01T09:55:17+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -102,7 +102,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
 | web.landscape-layout | waiting_verification | agent | observed | Owner follow-ups 2026-09-28 after production 93e2c3f (#180): the sentence and the timeline share one column, scaled with text size: 320pt upright, 360pt in landscape, 414pt on larger screens (22pt sentence, three lines rather than four). The timeline grid is removed on every screen, and CSS text-wrap is dropped: in Chrome on iPhone, WebKit's pretty read as balance. Timeline code is back to its pre-#179 form. The landscape score stays 22% of height: measured in headless Chromium at 743x340 with a 21pt bottom inset, today's sentence takes three lines, the chevron is on screen, and the reading is 346pt tall, 6pt over the viewport (353pt at 24%). Verified in headless Chromium only. | Owner: check iPhone landscape and portrait and desktop after merge. Native apps untested in landscape. |
 | ui.header-icon-size | waiting_verification | user | observed | TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device. | Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app. |
-| apple.resubmit-26 | in_progress | agent | observed | PR #155 is merged, current metadata/Notes are saved, and build 26 is selected with PREPARE_FOR_SUBMISSION. Current screenshot refresh is still pending local runtime download; App Review has not been resubmitted. | Complete the verified native gallery, upload/read back/order replacements, then resolve and submit the review item and verify WAITING_FOR_REVIEW. |
+| apple.resubmit-26 | in_progress | agent | observed | PR #155 is merged. Build 26 is selected with PREPARE_FOR_SUBMISSION and current metadata/Notes are saved. Draft PR #192 retains the selection receipt, updated identifiers and remaining capture gate. Native screenshots and review resubmission are pending; local runtime download continues. | Finish runtime download and actual native gallery capture, upload/verify/order screenshots, then resolve and resubmit the review item and verify WAITING_FOR_REVIEW. Complete PR #192 with final gallery/submission evidence. |
 | apple.metadata-26 | done | agent | observed | Build26 listing copy saved and read back through App Store Connect: updated description, promotional text, keywords and URLs; public fields do not mention AI. Six-part Review Notes now describe current timeline, High-score alerts/Threshold and independent widget settings, while labeling the September24 recording as historical build21. Existing private phone preserved in memory. App Preview sets are empty. | — |
 | apple.local-capture-26 | waiting_provider | provider | observed | Xcode 26.6 owner setup and local dependencies/prebuild/Pods are complete. Matching iOS 26.5 arm64 runtime download is still progressing slowly. Alternate official Apple CDN routes and IPv6 did not remove the bandwidth limit; older installed runtimes cannot compile this SDK asset catalog. Mac has also relocked, so native UI capture needs an unlocked host once the download completes. | Let runtime download finish, unlock Mac for native capture, rebuild the unchanged build-26 app source, capture/inspect full current iPhone/iPad and both widgets, render and upload gallery. |
 | apple.source-155 | done | agent | observed | PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments. | Capture current native Apple gallery and complete build-26 resubmission. |
@@ -3572,3 +3572,13 @@ PR #155 is merged, current metadata/Notes are saved, and build 26 is selected wi
 - store/apple-resubmission-26-metadata.json; store/apple-build26-selection.json; store/apple-gallery-26.json
 
 Next: Complete the verified native gallery, upload/read back/order replacements, then resolve and submit the review item and verify WAITING_FOR_REVIEW.
+
+### 362. apple.resubmit-26 — in_progress
+
+2026-10-01T09:55:17+00:00 · observed · agent
+
+PR #155 is merged. Build 26 is selected with PREPARE_FOR_SUBMISSION and current metadata/Notes are saved. Draft PR #192 retains the selection receipt, updated identifiers and remaining capture gate. Native screenshots and review resubmission are pending; local runtime download continues.
+
+- https://github.com/astrojams1/newsworthy/pull/192; store/apple-build26-selection.json; store/apple-resubmission-26-metadata.json
+
+Next: Finish runtime download and actual native gallery capture, upload/verify/order screenshots, then resolve and resubmit the review item and verify WAITING_FOR_REVIEW. Complete PR #192 with final gallery/submission evidence.

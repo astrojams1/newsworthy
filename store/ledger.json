@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T09:50:44+00:00",
+  "updated_at": "2026-10-01T09:55:17+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1030,12 +1030,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "PR #155 is merged, current metadata/Notes are saved, and build 26 is selected with PREPARE_FOR_SUBMISSION. Current screenshot refresh is still pending local runtime download; App Review has not been resubmitted.",
+      "summary": "PR #155 is merged. Build 26 is selected with PREPARE_FOR_SUBMISSION and current metadata/Notes are saved. Draft PR #192 retains the selection receipt, updated identifiers and remaining capture gate. Native screenshots and review resubmission are pending; local runtime download continues.",
       "evidence": [
-        "store/apple-resubmission-26-metadata.json; store/apple-build26-selection.json; store/apple-gallery-26.json"
+        "https://github.com/astrojams1/newsworthy/pull/192; store/apple-build26-selection.json; store/apple-resubmission-26-metadata.json"
       ],
-      "next_action": "Complete the verified native gallery, upload/read back/order replacements, then resolve and submit the review item and verify WAITING_FOR_REVIEW.",
-      "updated_at": "2026-10-01T09:50:44+00:00"
+      "next_action": "Finish runtime download and actual native gallery capture, upload/verify/order screenshots, then resolve and resubmit the review item and verify WAITING_FOR_REVIEW. Complete PR #192 with final gallery/submission evidence.",
+      "updated_at": "2026-10-01T09:55:17+00:00"
     },
     "apple.metadata-26": {
       "state": "done",
@@ -6877,6 +6877,22 @@
         ],
         "next_action": "Complete the verified native gallery, upload/read back/order replacements, then resolve and submit the review item and verify WAITING_FOR_REVIEW.",
         "updated_at": "2026-10-01T09:50:44+00:00"
+      }
+    },
+    {
+      "sequence": 362,
+      "at": "2026-10-01T09:55:17+00:00",
+      "gate": "apple.resubmit-26",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "PR #155 is merged. Build 26 is selected with PREPARE_FOR_SUBMISSION and current metadata/Notes are saved. Draft PR #192 retains the selection receipt, updated identifiers and remaining capture gate. Native screenshots and review resubmission are pending; local runtime download continues.",
+        "evidence": [
+          "https://github.com/astrojams1/newsworthy/pull/192; store/apple-build26-selection.json; store/apple-resubmission-26-metadata.json"
+        ],
+        "next_action": "Finish runtime download and actual native gallery capture, upload/verify/order screenshots, then resolve and resubmit the review item and verify WAITING_FOR_REVIEW. Complete PR #192 with final gallery/submission evidence.",
+        "updated_at": "2026-10-01T09:55:17+00:00"
       }
     }
   ],
