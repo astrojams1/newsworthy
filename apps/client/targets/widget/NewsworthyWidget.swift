@@ -56,19 +56,21 @@ struct ReadingWidgetConfiguration: WidgetConfigurationIntent {
     @Parameter(title: "Show app name", default: true)
     var showAppName: Bool
 
-    // A declared default, so Edit Widget shows "Follow device" from the start.
-    // Optional with no default, it showed the placeholder "Appearance" until a
-    // choice was made (iPhone, TestFlight build 24, 2026-10-01). A widget saved
-    // before the setting existed reads the same default.
-    @Parameter(title: "Appearance", default: "Follow device", optionsProvider: AppearanceOptions())
-    var appearance: String
+    // Optional, with no declared default: a String parameter with both a
+    // default and an options provider needs iOS 26 (build 25 failed to compile,
+    // 2026-10-01), and this widget runs from iOS 17. AppearanceOptions supplies
+    // Follow device as the default result instead; a widget whose value is
+    // unset can show the placeholder "Appearance" in Edit Widget and follows
+    // the device.
+    @Parameter(title: "Appearance", optionsProvider: AppearanceOptions())
+    var appearance: String?
 }
 
 /// Appearance is a String chosen from fixed options, not an AppEnum or an
 /// AppEntity: on iOS 26.5 the widget received both as nil, so a chosen Light
 /// or Dark followed the device, while the Bool beside it and a String arrive
 /// intact (simulators, 2026-09-26 and 2026-10-01; iOS 18.6 decoded the AppEnum too).
-/// An unrecognised value is Follow device, which is also the parameter's default.
+/// An unset value is Follow device, which is also the options' default.
 @available(iOS 17.0, *)
 struct AppearanceOptions: DynamicOptionsProvider {
     func results() async throws -> [String] { WidgetAppearance.allCases.map { WidgetAppearance.labels[$0]! } }
@@ -86,7 +88,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
             Provider().getSnapshot(in: context) { entry in
                 var entry = entry
                 entry.showAppName = configuration.showAppName
-                entry.appearance = WidgetAppearance(label: configuration.appearance) ?? .system
+                entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system
                 continuation.resume(returning: entry)
             }
         }
@@ -98,7 +100,7 @@ struct ConfigurableProvider: AppIntentTimelineProvider {
                 let entries = timeline.entries.map { entry in
                     var entry = entry
                     entry.showAppName = configuration.showAppName
-                    entry.appearance = WidgetAppearance(label: configuration.appearance) ?? .system
+                    entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system
                     return entry
                 }
                 continuation.resume(returning: Timeline(entries: entries, policy: timeline.policy))

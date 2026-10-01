@@ -47,12 +47,12 @@ function checkWidgetSettings(s) {
     assert.deepEqual(cases, setting.choices.map(choice => choice.value), `iOS choices for ${setting.key}`);
     assert.ok(s.swift.includes(setting.choices.map(choice => `.${choice.value}: "${choice.label}"`).join(', ')), `iOS choice labels for ${setting.key}`);
     assert.ok(s.swift.includes(`func defaultResult() async -> String? { ${values}.labels[.${setting.default}] }`), `iOS default for ${setting.key}`);
-    // Edit Widget shows a choice's value from the start only with a declared
-    // default: optional with none, it read "Appearance" until edited (iPhone, 2026-10-01).
-    const defaultLabel = setting.choices.find(choice => choice.value === setting.default).label;
-    assert.ok(parameter.value === `"${defaultLabel}"` && !parameter.optional, `iOS ${setting.key} declares its default, so Edit Widget shows it`);
+    // A String with both a declared default and an options provider needs
+    // iOS 26; the widget runs from iOS 17, and build 25 failed to compile so.
+    // The choice is optional, its default given by the provider's defaultResult.
+    assert.ok(parameter.value === undefined && parameter.optional, `iOS ${setting.key} declares no default: that initializer needs iOS 26`);
     for (const indent of ['                ', '                    ']) {
-      assert.ok(s.swift.includes(`${indent}entry.${setting.key} = ${values}(label: configuration.${setting.key}) ?? .${setting.default}\n`), `iOS applies ${setting.key} to snapshot and timeline`);
+      assert.ok(s.swift.includes(`${indent}entry.${setting.key} = configuration.${setting.key}.flatMap(${values}.init(label:)) ?? .${setting.default}\n`), `iOS applies ${setting.key} to snapshot and timeline`);
     }
   }
 
@@ -103,13 +103,12 @@ const regressions = [
   ['an iOS default drifting', s => { s.swift = s.swift.replace('@Parameter(title: "Show app name", default: true)', '@Parameter(title: "Show app name", default: false)'); }, /iOS default for showAppName/],
   ['an Android default drifting', s => { s.widget = s.widget.replace('getBoolean(settingKey(id, SHOW_APP_NAME), true)', 'getBoolean(settingKey(id, SHOW_APP_NAME), false)'); }, /Android default for showAppName/],
   ['an Android choice missing', s => { s.configure = s.configure.replace('{"system", "light", "dark"}', '{"system", "dark"}'); }, /Android choices for appearance/],
-  ['an iOS setting not applied', s => { s.swift = s.swift.replace('                    entry.appearance = WidgetAppearance(label: configuration.appearance) ?? .system\n', ''); }, /iOS applies appearance/],
+  ['an iOS setting not applied', s => { s.swift = s.swift.replace('                    entry.appearance = configuration.appearance.flatMap(WidgetAppearance.init(label:)) ?? .system\n', ''); }, /iOS applies appearance/],
   ['an iOS choice defaulting elsewhere', s => { s.swift = s.swift.replace('WidgetAppearance.labels[.system] }', 'WidgetAppearance.labels[.dark] }'); }, /iOS default for appearance/],
-  ['an iOS choice falling back elsewhere', s => { s.swift = s.swift.replaceAll('WidgetAppearance(label: configuration.appearance) ?? .system', 'WidgetAppearance(label: configuration.appearance) ?? .light'); }, /iOS applies appearance/],
-  ['an iOS choice with no declared default (Edit Widget read "Appearance")', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", default: "Follow device", optionsProvider: AppearanceOptions())\n    var appearance: String', '@Parameter(title: "Appearance", optionsProvider: AppearanceOptions())\n    var appearance: String?'); }, /declares its default/],
-  ['an iOS choice declaring another default', s => { s.swift = s.swift.replace('default: "Follow device", optionsProvider', 'default: "Dark", optionsProvider'); }, /declares its default/],
-  ['an iOS choice as an AppEnum (nil on iOS 26.5)', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", default: "Follow device", optionsProvider: AppearanceOptions())\n    var appearance: String', '@Parameter(title: "Appearance", default: .system)\n    var appearance: WidgetAppearance').replace('enum WidgetAppearance: String, CaseIterable, Sendable', 'enum WidgetAppearance: String, AppEnum, Sendable'); }, /not an AppEnum or AppEntity/],
-  ['an iOS choice as an AppEntity (nil on iOS 26.5)', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", default: "Follow device", optionsProvider: AppearanceOptions())\n    var appearance: String', '@Parameter(title: "Appearance")\n    var appearance: AppearanceOption?\n}\n\nstruct AppearanceOption: AppEntity {\n    let value: WidgetAppearance'); }, /not an AppEnum or AppEntity/],
+  ['an iOS choice falling back elsewhere', s => { s.swift = s.swift.replaceAll('WidgetAppearance.init(label:)) ?? .system', 'WidgetAppearance.init(label:)) ?? .light'); }, /iOS applies appearance/],
+  ['an iOS choice declaring a default beside its options (iOS 26 only; build 25 failed)', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", optionsProvider: AppearanceOptions())\n    var appearance: String?', '@Parameter(title: "Appearance", default: "Follow device", optionsProvider: AppearanceOptions())\n    var appearance: String'); }, /needs iOS 26/],
+  ['an iOS choice as an AppEnum (nil on iOS 26.5)', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", optionsProvider: AppearanceOptions())\n    var appearance: String?', '@Parameter(title: "Appearance", default: .system)\n    var appearance: WidgetAppearance').replace('enum WidgetAppearance: String, CaseIterable, Sendable', 'enum WidgetAppearance: String, AppEnum, Sendable'); }, /not an AppEnum or AppEntity/],
+  ['an iOS choice as an AppEntity (nil on iOS 26.5)', s => { s.swift = s.swift.replace('@Parameter(title: "Appearance", optionsProvider: AppearanceOptions())\n    var appearance: String?', '@Parameter(title: "Appearance")\n    var appearance: AppearanceOption?\n}\n\nstruct AppearanceOption: AppEntity {\n    let value: WidgetAppearance'); }, /not an AppEnum or AppEntity/],
   ['Android settings unreachable after adding', s => { s.provider = s.provider.replace('reconfigurable|', ''); }, /reachable after adding/],
   ['Android app name always shown', s => { s.widget = s.widget.replace('showAppName(cache, id) ? View.VISIBLE : View.GONE', 'View.VISIBLE'); }, /hides the app name/],
 ];

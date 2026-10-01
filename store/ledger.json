@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T05:34:54+00:00",
+  "updated_at": "2026-10-01T06:04:12+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -930,13 +930,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner's iPhone, TestFlight build 24 (iOS 26), 2026-10-01: Edit Widget offers Show app name and Appearance, and its menu lists Follow device, Light and Dark with Follow device checked, but the Appearance row shows the placeholder \"Appearance\" until edited, and the menu opens upward with an odd animation. Fixed on PR #155 by declaring \"Follow device\" as the String parameter's default (not yet compiled or seen on a device). The upward menu is the system's own presentation of a dynamic options list; nothing in the parameter sets its direction. Forced Light and Dark on the device were not reported yet.",
+      "summary": "Build 25 (EAS ac89a682, commit bf78444) failed to compile: a String parameter with a declared default and an options provider is iOS 26-only, and the widget runs from iOS 17. The declared-default fix is withdrawn; the parameter is build 24's again, so an unset Appearance row can still read \"Appearance\" in Edit Widget while the widget follows the device. A test now rejects the iOS 26-only initializer.",
       "evidence": [
-        "store/source/widget-settings/iphone-2026-10-01/edit-widget-placeholder.jpg",
-        "store/source/widget-settings/iphone-2026-10-01/edit-widget-menu-upward.jpg"
+        "EAS build ac89a682 (ERRORED, XCODE_BUILD_ERROR)"
       ],
-      "next_action": "Compile the default fix (macOS sandbox or a cloud build, owner's go-ahead), ship it to TestFlight, then the owner checks the row reads Follow device and runs Light/Dark/Follow device on both sizes.",
-      "updated_at": "2026-10-01T05:34:54+00:00"
+      "next_action": "Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too.",
+      "updated_at": "2026-10-01T06:04:12+00:00"
     },
     "widget.same-day-timestamp": {
       "state": "waiting_verification",
@@ -6616,6 +6615,22 @@
         ],
         "next_action": "Ship the native bar buttons to TestFlight; the owner checks the header after Settings and after foregrounding, the X's circle, and the icons against a system app.",
         "updated_at": "2026-10-01T05:34:54+00:00"
+      }
+    },
+    {
+      "sequence": 349,
+      "at": "2026-10-01T06:04:12+00:00",
+      "gate": "widget.appearance-choice",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 25 (EAS ac89a682, commit bf78444) failed to compile: a String parameter with a declared default and an options provider is iOS 26-only, and the widget runs from iOS 17. The declared-default fix is withdrawn; the parameter is build 24's again, so an unset Appearance row can still read \"Appearance\" in Edit Widget while the widget follows the device. A test now rejects the iOS 26-only initializer.",
+        "evidence": [
+          "EAS build ac89a682 (ERRORED, XCODE_BUILD_ERROR)"
+        ],
+        "next_action": "Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too.",
+        "updated_at": "2026-10-01T06:04:12+00:00"
       }
     }
   ],

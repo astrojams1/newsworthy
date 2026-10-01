@@ -250,10 +250,10 @@ access. Internal testing alone does not meet this requirement. See
   On iOS 17 and later, Edit Widget includes **Show app name**, enabled by default
   and saved per widget. Turning it off hides the heading and gives its row to the
   rating and sentence, which keep their size, in either widget size. Edit Widget
-  also offers **Appearance** (Follow device, Light, Dark), a String parameter
-  declaring Follow device as its default: iOS 26.5 passes an AppEnum or
-  AppEntity widget parameter as nil, and without a declared default Edit Widget
-  showed the placeholder "Appearance". iOS 16 keeps the heading
+  also offers **Appearance** (Follow device, Light, Dark), a String parameter:
+  iOS 26.5 passes an AppEnum or AppEntity widget parameter as nil. Declaring
+  its default needs iOS 26, so an unset row can read "Appearance" in Edit
+  Widget; the widget then follows the device. iOS 16 keeps the heading
   visible and has no settings. The footer uses a
   compact, single-line date and time, retaining the saved-reading label when offline.
 - Android: `plugins/with-rating-widget.js` adds the native widget receiver,

@@ -14,7 +14,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 2 so far (iOS 22, iOS 24) | about 22 | Build 22 (stalled upload, 45-minute limit) | TestFlight build 24 of #155 |
+| [2026-10](#2026-10) | 4 so far (iOS 22, 24, 25, 26) | about 22 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155 |
 
 ## Lessons
 
@@ -52,6 +52,12 @@ resulting rules; this is the evidence behind them.
   iPhone: the internal group "Release QA" does not get every build, and builds
   6 to 21 had each been added to it by hand. Add the build to the group
   through the API as part of every submission.
+- **A skipped compile check cost a credit** (2026-10-01). Build 25 errored
+  in four minutes: `@Parameter(title:default:optionsProvider:)` on a String is
+  iOS 26-only and the widget targets iOS 17. The owner chose to build straight
+  rather than spend about 10 sandbox minutes compiling first. Swift API
+  availability is not checked by anything in the cloud container; a test now
+  rejects that initializer.
 
 ## 2026-09
 
@@ -92,3 +98,8 @@ Lessons. Added to the group through the API at the owner's request (204);
 
 **Remaining this month** after 1 October: about 38 sandbox minutes. Android
 builds are paused until the owner has a device.
+
+**Build 25** (`ac89a682`, iOS `production`, commit bf78444). Errored at 06:01
+UTC: `XCODE_BUILD_ERROR`, "init(title:description:default:requestValueDialog:
+inputConnectionBehavior:optionsProvider:) is only available in iOS 26.0 or
+newer". Wasted: one credit. The widget parameter went back to build 24's form.
