@@ -2,8 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   allJudgePrompts, callerJudgement, groupDevelopments, judgeMessage, judgeReading, judgeRecord, judgeVersion,
-  mockJudgement, renderJudgePrompt, similarity,
+  mockJudgement, renderJudgePrompt, similarity, PRIOR_HOURS, priorsBefore,
 } from '../src/story.js';
+import { LOOKBACK_HOURS } from '../src/current.js';
 import { ADMIN_TOKEN, CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
 
 const HOUR = 3600_000;
@@ -382,4 +383,32 @@ test("a caller's answer is checked against the record, and the version stamped i
     assert.equal(out.judge_version, null, why);
     assert.ok(out.judge_note, `${why} says so`);
   }
+});
+
+test('the judge sees every development that can still lead the page', () => {
+  // On 2026-10-05 a Monday reading of Asian stocks rising on Friday's US jobs
+  // report could not name the 67-hour-old jobs development, which had fallen
+  // out of a 48-hour record, so it was filed as new and labelled "New:".
+  assert.equal(PRIOR_HOURS, LOOKBACK_HOURS);
+  const HOUR = 3600_000;
+  const at = (h) => new Date(h * HOUR).toISOString();
+  const rows = [
+    { id: 920, created_at: at(0), explanation: 'The US added far fewer jobs than expected.', judge_version: 4, development_of: null, story: 'bond-selloff' },
+    { id: 1000, created_at: at(67), explanation: 'Weak US hiring led traders to cut Fed hike bets.', judge_version: 4, development_of: null, story: 'bond-selloff' },
+  ];
+  const record = judgeRecord({ priors: priorsBefore(rows, rows[1]) });
+  assert.ok(record.roots.includes(920), 'a 67-hour-old development is on the record');
+});
+
+test('no development an hourly caller opened in the window is left off the record', () => {
+  // One new development every hour for six days, the most an hourly caller can
+  // open: every one stays listed, so a re-report of the oldest can name it.
+  const HOUR = 3600_000;
+  const rows = Array.from({ length: PRIOR_HOURS }, (_, i) => ({
+    id: i + 1, created_at: new Date(i * HOUR).toISOString(), explanation: `event ${i}`,
+    judge_version: 4, development_of: null, story: 'busy',
+  }));
+  const record = judgeRecord({ priors: rows });
+  assert.equal(record.roots.length, PRIOR_HOURS);
+  assert.ok(record.roots.includes(1), 'the oldest development is still listed');
 });

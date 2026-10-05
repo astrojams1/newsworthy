@@ -71,7 +71,7 @@ news was last checked, not when the sentence changed.
    later allow 135 characters for the body and reserve 5 for the label, so the
    budget does not depend on whether the development turns out to be new.
 3. Fetch `/api/developments`: the story names on record and the developments
-   recorded over 48 hours. It is read-only, and it is the only history the
+   recorded over 144 hours, as long as a development can lead the page. It is read-only, and it is the only history the
    caller sees.
 4. Answer the judge prompt, printed in the instructions after the rating prompt,
    about the reading against that record: `development_of` (a listed id, or null for a new

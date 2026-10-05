@@ -90,7 +90,7 @@ test('a caller merges two names, the page and the record read one story, and an 
 });
 
 test('the backfill judges unjudged readings oldest first, against the record as it stood', async () => {
-  await withServer({ port: PORTS.storyMerges, env: { ADMIN_TOKEN, NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
+  await withServer({ port: PORTS.storyBackfill, env: { ADMIN_TOKEN, NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
     const submit = caller(base);
     const admin = (path, init = {}) => fetch(`${base}${path}`, {
       ...init, headers: { 'content-type': 'application/json', 'x-admin-token': ADMIN_TOKEN },

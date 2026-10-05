@@ -32,12 +32,24 @@ import { effectiveConfig } from './config.js';
  * reason, and the display rule falls back to the score-only rule.
  */
 
-/** How far back the judge is shown, and the rule looks for a root. */
-export const PRIOR_HOURS = 48;
+/**
+ * How far back the judge is shown, and the rule looks for a root: as long as a
+ * development competes for the front page (`LOOKBACK_HOURS` in current.js, a
+ * test pins the two together). It was 48 until 2026-10-05, when a Monday
+ * reading of Asian stocks rising on Friday's weak US jobs report could not
+ * name the 67-hour-old jobs development, so it was filed as new: labelled
+ * "New:" and dated that morning. Its judge note said so: "that development is
+ * not listed". Six days of developments is about 20 entries, not 60 readings.
+ */
+export const PRIOR_HOURS = 144;
 
-/** At most this many prior readings in the prompt. Two days of an hourly
- *  caller is ~48; the cap is what keeps a backlog from growing the call. */
-const MAX_PRIORS = 60;
+/** At most this many prior developments in the prompt. An hourly caller opens
+ *  at most one development an hour, so over `PRIOR_HOURS` it can never exceed
+ *  this and no development that can still lead the page is left off; the cap
+ *  only bounds a backlog of extra runs. It was 60, which a six-day window could
+ *  outgrow and silently drop the oldest. Measured: 19 developments on record
+ *  over six days in October 2026, about 300 characters each. */
+const MAX_PRIORS = PRIOR_HOURS + 6;
 
 /** How many story names the judge is shown. Enough to cover a fortnight of a
  *  news cycle without turning the vocabulary into a wall to skim past. */

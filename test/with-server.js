@@ -40,6 +40,9 @@ export const PORTS = {
   webIntroduction: 8861,
   webLandscape: 8863,
   webSettingsReturn: 8865,
+  // Its own port: sharing storyMerges with the test before it, the second
+  // server could start before the first released the port (CI, 2026-10-05).
+  storyBackfill: 8867,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall

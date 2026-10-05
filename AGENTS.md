@@ -231,7 +231,7 @@ but it cannot tell a re-report from a new development inside a running story. It
 chained six days of Iran readings into one, so the resumption of strikes on 31
 August — which the rater scored 4 to 7 — would have displayed as 1. That
 distinction is a judgement about the news, not about the words, so a model makes
-it: `src/story.js` shows the last 48 hours grouped into developments and asks
+it: `src/story.js` shows the last 144 hours grouped into developments and asks
 which one the new sentence reports, or none. The answer lands in `story`,
 `development_of`, `judge_version`, `judge_model`, `judge_note` and
 `judge_cost_usd`, and `src/current.js` replays it. The judgement is never

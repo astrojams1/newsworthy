@@ -541,7 +541,7 @@ const server = createServer(async (req, res) => {
     }
 
     // The record the judge compares against: story names and the developments
-    // recorded over 48 hours. Data only — the judge prompt is in the caller
+    // recorded over PRIOR_HOURS. Data only — the judge prompt is in the caller
     // instructions — fetched after the caller has scored and written, and
     // answered in its submission. Read-only, and gated like the rest of the
     // caller API.
