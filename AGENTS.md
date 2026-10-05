@@ -800,8 +800,7 @@ before Output is byte-identical to v11. Ingestion still truncates only beyond
 400 characters and has the same four rejection rules. The [evaluation](docs/prompt-evaluations/v12.md) contains
 72 actual generations on reconstructed notes with GPT-6 Astra, not production
 Claude or the live search workflow. It supports the writing revision, not a
-claim about production quality or scoring. The reusable update process is in
-[the repository skill](.agents/skills/newsworthy-prompt-update/SKILL.md).
+claim about production quality or scoring.
 
 **v13 sets the widget sentence budget to 140 characters.** The user chose this
 limit after rejecting the unpublished 100-character proposal as too aggressive.
@@ -872,6 +871,11 @@ savings" grew tails like ", which could lift oil prices" to 76% of sentences
 by v20. v21 drops it (rule 9); reviews flag them
 (`scripts/market-forecast.mjs`). See
 the [record](docs/prompt-evaluations/v21.md).
+
+**v22: active voice.** "Tankers were reportedly hit" hid an attacker already
+on record. Output now asks who did what in active voice, or who claims it
+(rule 10); `scripts/passive-voice.mjs` flags agentless passives. See the
+[record](docs/prompt-evaluations/v22.md).
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,

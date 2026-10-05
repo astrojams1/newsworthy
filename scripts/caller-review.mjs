@@ -11,6 +11,7 @@
  */
 import { outletNamed } from './news-outlets.mjs';
 import { marketForecast } from './market-forecast.mjs';
+import { passiveVoice } from './passive-voice.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, arg, i, all) =>
   (arg.startsWith('--') ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs), []));
@@ -47,6 +48,7 @@ for (const r of readings) {
     !reported.has(r.id) && 'no run report linked',
     outletNamed(r.explanation) && `names an outlet (${outletNamed(r.explanation)}, v${r.prompt_version})`,
     marketForecast(r.explanation) && `predicts a market move ("${marketForecast(r.explanation)}", v${r.prompt_version})`,
+    passiveVoice(r.explanation) && `passive with no actor ("${passiveVoice(r.explanation)}", v${r.prompt_version})`,
   ].filter(Boolean);
   const judged = r.judge_version == null ? '-' : `v${r.judge_version} ${r.story} ${r.development_of == null ? 'new' : `← ${r.development_of}`}`;
   console.log(`  ${r.id} ${r.created_at.slice(0, 16)} score ${r.score} | ${judged} | ${flags.length ? `FLAG ${flags.join('; ')}` : 'ok'}`);

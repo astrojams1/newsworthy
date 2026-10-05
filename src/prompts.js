@@ -467,6 +467,18 @@ const V21_OUTPUT_CONTRACT = V20_OUTPUT_CONTRACT
   .replace('one development, who did what and what it could mean for prices or savings.',
     'one development, who did what. Never predict market moves.');
 
+// v22 asks for the active voice. Under v20 the Hormuz tanker attacks came out
+// agentless six times in two days ("Two oil tankers were reportedly hit…")
+// while the same caller wrote "Iran… hit another tanker" in reading 989 and the
+// Revolutionary Guards had claimed the attacks. v19's "reportedly" replaced
+// "X said", and with nothing asking for an actor the rater dropped it. An
+// unconfirmed act now names who claims it. " on new developments" leaves the
+// label sentence to fit rule 7; the rater submits no label either way. The rest
+// is v21's verbatim. See docs/prompt-evaluations/v22.md.
+const V22_OUTPUT_CONTRACT = V21_OUTPUT_CONTRACT
+  .replace('one development, who did what.', 'one development, who did what in active voice, or who claims it.')
+  .replace('5 of them for the app\'s "New: " label on new developments.', '5 of them for the app\'s "New: " label.');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -614,6 +626,13 @@ const REGISTRY = {
     added: '2026-10-05',
     instructions: V20_INSTRUCTIONS,
     outputContract: V21_OUTPUT_CONTRACT,
+  },
+  22: {
+    version: 22,
+    label: 'active-voice-v22',
+    added: '2026-10-05',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V22_OUTPUT_CONTRACT,
   },
 };
 
