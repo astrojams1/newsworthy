@@ -50,6 +50,12 @@ then dated a day-old event “7h —” while the timeline placed the developmen
 before it two days back. An escalation restarts the number, not the sentence. The label still follows the
 newest reading's judgement, so a re-report carries none, as before.
 
+Since 2026-10-05, when a development has been reported under a newer prompt
+version than its first report, the page shows the first reading at the newest
+version instead, still dated from the first report. A version is bumped because
+the old one wrote badly (an outlet name, a market forecast), so the newer
+wording wins, and the event is no newer than it was.
+
 Since 2026-09-27 that age is back, as a quiet prefix. A development can hold the
 page for a day or more with the same sentence, and with nothing after “New:” an
 hour-old sentence and a day-old one looked the same. The owner chose the form

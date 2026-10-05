@@ -300,14 +300,15 @@ const server = createServer(async (req, res) => {
       // for two hours from `created_at`. `explanation` stays unlabelled so an
       // installed build that shows it as-is never keeps a stale "New:".
       // `explanation_at` is when the shown sentence was saved — for a re-report,
-      // its development's first report — and clients lead the sentence with
+      // its development's first report, even when a newer prompt version's
+      // wording is shown (see sentenceFor()) — and clients lead the sentence with
       // its age ("5h ·") once "New:" is off. It is not `since`, which dates the
       // development the number is about, and not the removed
       // `explanation_since`, which old builds still print as "31 hours ago:".
       const explanationFields = {
         explanation_text: completeSentence(sentence.explanation),
         explanation_new: opensDevelopment(newest),
-        explanation_at: new Date(sentence.t ?? sentence.created_at).toISOString(),
+        explanation_at: new Date(current.sentenceAt ?? sentence.t ?? sentence.created_at).toISOString(),
       };
       // The story the shown sentence belongs to, from the row that sentence is
       // — for a re-report, its development's first report, whatever slug the

@@ -386,7 +386,8 @@ judged re-report rewords the same event: the WSJ report of Trump rejecting
 Iran's Hormuz plan came back 29 ways over 27 hours. `sentenceFor()` in
 `src/current.js` shows instead, word for word, its development's first report,
 dated from it as the timeline is — not where it last escalated, which dated a
-day-old event "7h". `created_at` stays the newest reading's. A new development and an
+day-old event "7h". After a version bump it shows the first reading at
+the newest version, dated from the first report. `created_at` stays the newest reading's. A new development and an
 unjudged reading show their own sentence. Push uses the same one.
 
 `basis` is one of `new` (the newest reading opened or escalated the development
@@ -802,8 +803,7 @@ before Output is byte-identical to v11. Ingestion still truncates only beyond
 Claude or the live search workflow. It supports the writing revision, not a
 claim about production quality or scoring.
 
-**v13 sets the widget sentence budget to 140 characters.** The user chose this
-limit after rejecting the unpublished 100-character proposal as too aggressive.
+**v13 sets the widget sentence budget to 140 characters**, the owner's choice.
 Only the character budget changes from v12; writing guidance, rating instructions,
 provenance and ingestion behavior remain.
 The [record](docs/prompt-evaluations/v13.md) separates the initial 100-character

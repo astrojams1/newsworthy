@@ -488,6 +488,22 @@ test('an escalation restarts the number, not the sentence', () => {
   assert.equal(page.sentence.t, series[0].t, 'dated from the first report');
 });
 
+test('after a prompt version bump, a re-report shows the newest version\'s wording, dated from the first report', () => {
+  // The owner's rule from 2026-10-05: a version is bumped because the old one
+  // wrote badly, so the page defers to the newest version's sentence for the
+  // same event, but keeps the event's own age.
+  const series = judged([4, 0], [4, 0], [4, 0], [4, 0])
+    .map((r, i) => ({ ...r, prompt_version: i < 2 ? 21 : 22 }));
+  const page = currentDisplay(series, { now: 3 * HOUR });
+  assert.equal(page.sentence.explanation, 'reading 2', 'the first reading at the newest version');
+  assert.equal(page.sentenceAt, 0, 'dated from the first report');
+
+  const same = judged([4, 0], [4, 0], [4, 0]).map((r) => ({ ...r, prompt_version: 22 }));
+  const unchanged = currentDisplay(same, { now: 2 * HOUR });
+  assert.equal(unchanged.sentence.explanation, 'reading 0', 'no bump: the first report, word for word');
+  assert.equal(unchanged.sentenceAt, 0);
+});
+
 // A story that has been producing developments for `days`, one a day at `score`,
 // then one more at `last` — the shape of a long war as the rater sees it.
 const longStory = (days, score, last, story = 'war') => {
