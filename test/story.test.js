@@ -399,3 +399,16 @@ test('the judge sees every development that can still lead the page', () => {
   const record = judgeRecord({ priors: priorsBefore(rows, rows[1]) });
   assert.ok(record.roots.includes(920), 'a 67-hour-old development is on the record');
 });
+
+test('no development an hourly caller opened in the window is left off the record', () => {
+  // One new development every hour for six days, the most an hourly caller can
+  // open: every one stays listed, so a re-report of the oldest can name it.
+  const HOUR = 3600_000;
+  const rows = Array.from({ length: PRIOR_HOURS }, (_, i) => ({
+    id: i + 1, created_at: new Date(i * HOUR).toISOString(), explanation: `event ${i}`,
+    judge_version: 4, development_of: null, story: 'busy',
+  }));
+  const record = judgeRecord({ priors: rows });
+  assert.equal(record.roots.length, PRIOR_HOURS);
+  assert.ok(record.roots.includes(1), 'the oldest development is still listed');
+});

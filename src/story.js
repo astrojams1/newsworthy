@@ -43,9 +43,13 @@ import { effectiveConfig } from './config.js';
  */
 export const PRIOR_HOURS = 144;
 
-/** At most this many prior developments in the prompt; the cap is what keeps
- *  a backlog from growing the call. */
-const MAX_PRIORS = 60;
+/** At most this many prior developments in the prompt. An hourly caller opens
+ *  at most one development an hour, so over `PRIOR_HOURS` it can never exceed
+ *  this and no development that can still lead the page is left off; the cap
+ *  only bounds a backlog of extra runs. It was 60, which a six-day window could
+ *  outgrow and silently drop the oldest. Measured: 19 developments on record
+ *  over six days in October 2026, about 300 characters each. */
+const MAX_PRIORS = PRIOR_HOURS + 6;
 
 /** How many story names the judge is shown. Enough to cover a fortnight of a
  *  news cycle without turning the vocabulary into a wall to skim past. */
