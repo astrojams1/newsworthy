@@ -557,9 +557,13 @@ function sentenceFor(points, last) {
   if (last.judge_version == null || last.development_of == null) return { row: last, at: last.t };
   const reports = points.filter((p) => p.reports === last.reports);
   const first = points.find((p) => p.id === last.reports) ?? reports[0] ?? last;
+  // Only readings the judge placed in this development can stand in for its
+  // first report: an unjudged one is inherited into it by the replay and may
+  // be about something else entirely.
+  const judged = reports.filter((p) => p.judge_version != null);
   const version = (p) => p.prompt_version ?? 0;
-  const newest = Math.max(...reports.map(version), version(first));
-  const row = version(first) < newest ? reports.find((p) => version(p) === newest) : first;
+  const newest = Math.max(...judged.map(version), version(first));
+  const row = version(first) < newest ? judged.find((p) => version(p) === newest) : first;
   return { row, at: first.t };
 }
 

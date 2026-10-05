@@ -502,6 +502,14 @@ test('after a prompt version bump, a re-report shows the newest version\'s wordi
   const unchanged = currentDisplay(same, { now: 2 * HOUR });
   assert.equal(unchanged.sentence.explanation, 'reading 0', 'no bump: the first report, word for word');
   assert.equal(unchanged.sentenceAt, 0);
+
+  // A judge outage across the bump: the replay inherits the unjudged v22
+  // reading into the development, but it cannot stand in for the event's
+  // sentence. The judged v22 re-report does.
+  const outage = judged([4, 0], [4, 0], [4, 0])
+    .map((r, i) => ({ ...r, prompt_version: i === 0 ? 21 : 22, explanation: ['event A', 'unrelated B', 'event A again'][i] }));
+  outage[1] = { ...outage[1], judge_version: null, development_of: null };
+  assert.equal(currentDisplay(outage, { now: 2 * HOUR }).sentence.explanation, 'event A again');
 });
 
 // A story that has been producing developments for `days`, one a day at `score`,
