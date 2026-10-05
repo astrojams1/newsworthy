@@ -20,6 +20,7 @@ no record file; their history is in `AGENTS.md`.
 | v19 | 2026-09-27 | #166 | The sentence never names a news outlet | [v19](v19.md) |
 | v20 | 2026-09-29 | #190 | Search the themes markets are trading on | [v20](v20.md) |
 | v21 | 2026-10-05 | | The sentence never predicts a market move | [v21](v21.md) |
+| v22 | 2026-10-05 | | The sentence says who acted, in the active voice | [v22](v22.md) |
 
 ## Lessons
 

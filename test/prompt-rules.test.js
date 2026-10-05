@@ -89,6 +89,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [19, '66043069a1277b7e'],
     [20, '24e0951932807570'],
     [21, '3f042c2d18d27cb3'],
+    [22, '8916247a26173fdf'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -137,11 +138,19 @@ test('rule 9 — the sentence never predicts a market move', () => {
   assert.doesNotMatch(text, /could mean for prices/);
 });
 
+test('rule 10 — the sentence says who acted, in the active voice', () => {
+  // The owner's call from 2026-10-05. Under v20 the Hormuz tanker attacks came
+  // out as "Two oil tankers were reportedly hit" while the attacker had claimed
+  // them. An unconfirmed act names who claims it rather than dropping the actor.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.match(output(renderPrompt(latestVersion()).text), /who did what in active voice, or who claims it\./);
+});
+
 test('the rules file lists exactly what is enforced here', async () => {
   // A rule added to the file and not to this suite is decoration.
   const rules = await readFile('PROMPT-RULES.md', 'utf8');
-  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 9,
-    'nine rules; add a test before adding a tenth');
+  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 10,
+    'ten rules; add a test before adding an eleventh');
 });
 
 test('v9 moves the rungs rather than annotating them', () => {
@@ -448,4 +457,15 @@ test('v21 stops predicting market effects in the sentence', async () => {
   assert.doesNotMatch(v21.text, /could mean for prices/);
   const evaluation = await readFile('docs/prompt-evaluations/v21.md', 'utf8');
   assert.ok(evaluation.includes(v21.hash), 'the evaluation record names the shipped text');
+});
+
+test('v22 asks for the active voice and changes nothing else that matters', async () => {
+  // Everything but the actor clause is v21's; " on new developments" was cut
+  // from the label sentence to fit rule 7, and the rater submits no label.
+  const [v21, v22] = [21, 22].map(renderPrompt);
+  assert.equal(v22.text, v21.text
+    .replace('one development, who did what.', 'one development, who did what in active voice, or who claims it.')
+    .replace('"New: " label on new developments.', '"New: " label.'));
+  const evaluation = await readFile('docs/prompt-evaluations/v22.md', 'utf8');
+  assert.ok(evaluation.includes(v22.hash), 'the evaluation record names the shipped text');
 });

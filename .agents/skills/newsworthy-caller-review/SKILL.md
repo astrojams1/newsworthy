@@ -40,7 +40,8 @@ a reading nor a report, and one timeline per hour that also shows each
 authenticated read of the instructions, prompt and record. Reads and
 rejections made with the admin token are marked — those are reviewers, not the
 caller; rejections recorded before the token was kept are marked as such. A sentence
-naming a listed news outlet, or predicting a market move, is flagged. It prints facts
+naming a listed news outlet, predicting a market move or hiding its actor in a
+passive is flagged. It prints facts
 only. Read every run report in full.
 
 ## Check each run
@@ -61,6 +62,10 @@ only. Read every run report in full.
   reported. `scripts/market-forecast.mjs` flags a hedge and a market word in
   one clause; read every sentence anyway. On v21 or later a forecast is a
   contract breach; before v21 it is expected.
+- **Active voice.** From prompt v22 the sentence says who acted, or who claims
+  it when unconfirmed ("Iran's Revolutionary Guards said they hit two
+  tankers", not "two tankers were reportedly hit"). `scripts/passive-voice.mjs`
+  flags a passive with no actor; a state ("is expected", "is due") is fine.
 - **Judgement sound.** `same` or `new` is defensible against the record the
   reading was judged with; a proposed `same_story` joins one story coined twice,
   never related stories. A doubtful merge is raised with the owner, who can undo

@@ -12,6 +12,7 @@ one, so a version that breaks a rule fails rather than ships.
 7. Under the approved character limit: 2,300.
 8. Output forbids naming a news outlet in the sentence.
 9. Output forbids predicting a market move in the sentence.
+10. Output asks for the active voice: who acted, or who claims it.
 
 ## When an improvement does not fit
 
