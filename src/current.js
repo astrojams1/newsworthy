@@ -502,8 +502,12 @@ export function currentDisplay(ascending, {
   // can change while nothing new arrives.
   const loudest = loudestAt(developments, now, halfLifeHours, last.t);
 
+  const shown = sentenceFor(points, last);
   return {
-    sentence: sentenceFor(points, last),
+    sentence: shown.row,
+    // When the shown sentence first reported its event: the development's
+    // first report, even when a newer prompt version's wording is shown.
+    sentenceAt: shown.at,
     score: loudest.displayed,
     level: last.level,
     levelRow: last.level_row,
@@ -539,12 +543,28 @@ export function currentDisplay(ascending, {
  * decay; the judge still says it is the same event, and the sentence is about
  * the event. An unjudged reading cannot be called a repeat and a new
  * development is its own sentence, so both show the newest.
+ *
+ * One exception, the owner's rule from 2026-10-05: when the development has
+ * been reported under a newer prompt version than its first report, the page
+ * shows the first reading at the newest version instead. A version is bumped
+ * because the old one wrote badly: the Hormuz development's v17 first report
+ * named the Wall Street Journal after v19 banned outlet names, and a v20 one
+ * ended in a market forecast after v21 banned those. The wording comes from
+ * the newest version; the date stays the first report's, because the event
+ * is no newer than it was.
  */
 function sentenceFor(points, last) {
-  if (last.judge_version == null || last.development_of == null) return last;
-  return points.find((p) => p.id === last.reports)
-    ?? points.find((p) => p.reports === last.reports)
-    ?? last;
+  if (last.judge_version == null || last.development_of == null) return { row: last, at: last.t };
+  const reports = points.filter((p) => p.reports === last.reports);
+  const first = points.find((p) => p.id === last.reports) ?? reports[0] ?? last;
+  // Only readings the judge placed in this development can stand in for its
+  // first report: an unjudged one is inherited into it by the replay and may
+  // be about something else entirely.
+  const judged = reports.filter((p) => p.judge_version != null);
+  const version = (p) => p.prompt_version ?? 0;
+  const newest = Math.max(...judged.map(version), version(first));
+  const row = version(first) < newest ? judged.find((p) => version(p) === newest) : first;
+  return { row, at: first.t };
 }
 
 /**
