@@ -701,11 +701,10 @@ are never invented — one nobody scored is this app's opinion wearing the
 author's clothes. Calibration is stored there rather than in a separate file, so
 the thing that rates and the evidence it was calibrated against travel together.
 
-**Prompt construction rules live in `PROMPT-RULES.md`**, and every one of the
-seven is enforced by a test in `test/prompt-rules.test.js` against whichever
-version is live, so they cannot go stale as versions accumulate. A rule in prose
-alone is a rule that gets forgotten on the version where it matters. An eighth
-rule needs an eighth test — a count check fails otherwise.
+**Prompt construction rules live in `PROMPT-RULES.md`**, each enforced by a
+test in `test/prompt-rules.test.js` against whichever version is live, so they
+cannot go stale as versions accumulate. A new rule needs a new test — a count
+check fails otherwise.
 
 **A caller can be reading a version you retired hours ago.** On 2026-08-29 the
 hourly caller fetched `/api/instructions` and received v9 while the server
@@ -870,7 +869,8 @@ drops out. An AI release replaced the Hormuz example at 5; see the
 
 **v21: no market forecasts.** v18's "what it could mean for prices or
 savings" grew tails like ", which could lift oil prices" to 76% of sentences
-by v20. v21 drops it; reviews flag them (`scripts/market-forecast.mjs`). See
+by v20. v21 drops it (rule 9); reviews flag them
+(`scripts/market-forecast.mjs`). See
 the [record](docs/prompt-evaluations/v21.md).
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`

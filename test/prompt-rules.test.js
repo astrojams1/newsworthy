@@ -127,11 +127,21 @@ test('rule 8 — the sentence never names a news outlet', () => {
   assert.match(output(renderPrompt(latestVersion()).text), /Never name news outlets\./);
 });
 
+test('rule 9 — the sentence never predicts a market move', () => {
+  // The owner's call from 2026-10-05. v18's "what it could mean for prices or
+  // savings" put a forecast tail on 76% of v20 sentences. The score says how
+  // far news could move markets; the sentence says what happened.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  const text = output(renderPrompt(latestVersion()).text);
+  assert.match(text, /Never predict market moves\./);
+  assert.doesNotMatch(text, /could mean for prices/);
+});
+
 test('the rules file lists exactly what is enforced here', async () => {
   // A rule added to the file and not to this suite is decoration.
   const rules = await readFile('PROMPT-RULES.md', 'utf8');
-  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 8,
-    'eight rules; add a test before adding a ninth');
+  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 9,
+    'nine rules; add a test before adding a tenth');
 });
 
 test('v9 moves the rungs rather than annotating them', () => {
