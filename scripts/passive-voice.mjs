@@ -7,7 +7,8 @@
  * reviewer still reads every sentence.
  */
 const BE = '(?:is|are|was|were|be|been|being|has been|have been|had been|got|gets|get)';
-const ADVERB = '(?:(?:also|now|still|not|reportedly|allegedly|already|briefly|partly|fully)\\s+)*';
+// Any -ly adverb, plus the short ones that do not end in -ly.
+const ADVERB = '(?:(?:[a-z]+ly|also|now|still|not|already|later|then|again|soon|just|once)\\s+)*';
 const PARTICIPLE = '(?:[a-z]+ed|[a-z]+en|hit|struck|shut|cut|seized|shot|sold|held|told|sent|caught|led)';
 const PASSIVE = new RegExp(`\\b${BE}\\s+${ADVERB}(${PARTICIPLE})\\b(?!\\s+by\\b)`, 'gi');
 // Participles that describe a state or a schedule, not an act with a doer.

@@ -8,6 +8,9 @@ test('the caller review flags passives that hide who acted', () => {
     'Two oil tankers were reportedly hit in the Strait of Hormuz, which could push oil and fuel prices higher when markets reopen.',
     'An oil tanker was struck in the Strait of Hormuz on Oct 2, the sixth this week, which could push up fuel and oil prices.',
     "Yemen's Houthis said they hit a Saudi oil site near Riyadh as more tankers were struck near Hormuz, which could lift fuel prices.",
+    // An adverb between the auxiliary and the participle hides nothing.
+    'Two tankers were later struck near the Strait of Hormuz.',
+    'The ship was severely damaged in the Strait of Hormuz.',
   ]) assert.ok(passiveVoice(sentence), sentence);
 });
 
