@@ -337,7 +337,7 @@ export async function ratingsByIds(ids = []) {
 /**
  * The stories already named, newest first, as a vocabulary for the judge.
  *
- * Wider than the 48 hours of developments it is shown beside: a story quiet for
+ * Wider than the six days of developments it is shown beside: a story quiet for
  * two days should keep its name when it returns rather than be renamed on the
  * way back in. One row per name, carrying every sentence filed under it in the
  * window, oldest first.

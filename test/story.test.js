@@ -2,8 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   allJudgePrompts, callerJudgement, groupDevelopments, judgeMessage, judgeReading, judgeRecord, judgeVersion,
-  mockJudgement, renderJudgePrompt, similarity,
+  mockJudgement, renderJudgePrompt, similarity, PRIOR_HOURS, priorsBefore,
 } from '../src/story.js';
+import { LOOKBACK_HOURS } from '../src/current.js';
 import { ADMIN_TOKEN, CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
 
 const HOUR = 3600_000;
@@ -382,4 +383,19 @@ test("a caller's answer is checked against the record, and the version stamped i
     assert.equal(out.judge_version, null, why);
     assert.ok(out.judge_note, `${why} says so`);
   }
+});
+
+test('the judge sees every development that can still lead the page', () => {
+  // On 2026-10-05 a Monday reading of Asian stocks rising on Friday's US jobs
+  // report could not name the 67-hour-old jobs development, which had fallen
+  // out of a 48-hour record, so it was filed as new and labelled "New:".
+  assert.equal(PRIOR_HOURS, LOOKBACK_HOURS);
+  const HOUR = 3600_000;
+  const at = (h) => new Date(h * HOUR).toISOString();
+  const rows = [
+    { id: 920, created_at: at(0), explanation: 'The US added far fewer jobs than expected.', judge_version: 4, development_of: null, story: 'bond-selloff' },
+    { id: 1000, created_at: at(67), explanation: 'Weak US hiring led traders to cut Fed hike bets.', judge_version: 4, development_of: null, story: 'bond-selloff' },
+  ];
+  const record = judgeRecord({ priors: priorsBefore(rows, rows[1]) });
+  assert.ok(record.roots.includes(920), 'a 67-hour-old development is on the record');
 });
