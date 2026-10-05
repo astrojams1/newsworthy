@@ -454,6 +454,19 @@ const V20_OUTPUT_CONTRACT = V19_OUTPUT_CONTRACT
   .replace('Full display: at most 140 characters including spaces and punctuation, reserving 5 for the label "New: " that the app adds to a new development.',
     'Display: at most 140 characters including spaces and punctuation, 5 of them for the app\'s "New: " label on new developments.');
 
+// v21 stops predicting market effects in the sentence. v18 changed Output's
+// "what it means for daily life" to "what it could mean for prices or savings",
+// and the rater did as asked: a speculative tail such as ", which could lift oil
+// and fuel prices" went from 0% of sentences under v11-v16 and 17% under v17 to
+// 76% under v20, with "which could lift/push" in 85 of 126 v20 readings. The
+// owner does not want it. The score already says how far news could move
+// markets; the sentence now says what happened, and a market move only when it
+// happened. Everything before Output, and the rest of Output, is v20's.
+// See docs/prompt-evaluations/v21.md.
+const V21_OUTPUT_CONTRACT = V20_OUTPUT_CONTRACT
+  .replace('one development, who did what and what it could mean for prices or savings.',
+    'one development, who did what. Never predict market moves.');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -594,6 +607,13 @@ const REGISTRY = {
     added: '2026-09-29',
     instructions: V20_INSTRUCTIONS,
     outputContract: V20_OUTPUT_CONTRACT,
+  },
+  21: {
+    version: 21,
+    label: 'no-market-forecasts-v21',
+    added: '2026-10-05',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V21_OUTPUT_CONTRACT,
   },
 };
 

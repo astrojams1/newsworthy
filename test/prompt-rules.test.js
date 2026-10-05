@@ -88,6 +88,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [18, 'e134aa373968ebed'],
     [19, '66043069a1277b7e'],
     [20, '24e0951932807570'],
+    [21, '3f042c2d18d27cb3'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -126,11 +127,21 @@ test('rule 8 — the sentence never names a news outlet', () => {
   assert.match(output(renderPrompt(latestVersion()).text), /Never name news outlets\./);
 });
 
+test('rule 9 — the sentence never predicts a market move', () => {
+  // The owner's call from 2026-10-05. v18's "what it could mean for prices or
+  // savings" put a forecast tail on 76% of v20 sentences. The score says how
+  // far news could move markets; the sentence says what happened.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  const text = output(renderPrompt(latestVersion()).text);
+  assert.match(text, /Never predict market moves\./);
+  assert.doesNotMatch(text, /could mean for prices/);
+});
+
 test('the rules file lists exactly what is enforced here', async () => {
   // A rule added to the file and not to this suite is decoration.
   const rules = await readFile('PROMPT-RULES.md', 'utf8');
-  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 8,
-    'eight rules; add a test before adding a ninth');
+  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 9,
+    'nine rules; add a test before adding a tenth');
 });
 
 test('v9 moves the rungs rather than annotating them', () => {
@@ -423,4 +434,18 @@ test('v20 searches the themes markets are trading on, naming none', async () => 
     'writing guidance and style are v19\'s verbatim');
   const evaluation = await readFile('docs/prompt-evaluations/v20.md', 'utf8');
   assert.ok(evaluation.includes(v20.hash), 'the evaluation record names the shipped text');
+});
+
+test('v21 stops predicting market effects in the sentence', async () => {
+  // v18's "what it could mean for prices or savings" turned a speculative tail
+  // (", which could lift oil and fuel prices") from 0% of sentences under
+  // v11-v16 into 76% under v20. v21 drops it and forbids forecasts; everything
+  // else is v20's verbatim, so readings across the two are comparable.
+  const [v20, v21] = [20, 21].map(renderPrompt);
+  assert.equal(v21.text, v20.text.replace(
+    'one development, who did what and what it could mean for prices or savings.',
+    'one development, who did what. Never predict market moves.'));
+  assert.doesNotMatch(v21.text, /could mean for prices/);
+  const evaluation = await readFile('docs/prompt-evaluations/v21.md', 'utf8');
+  assert.ok(evaluation.includes(v21.hash), 'the evaluation record names the shipped text');
 });

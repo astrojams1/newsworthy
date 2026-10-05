@@ -701,22 +701,17 @@ are never invented — one nobody scored is this app's opinion wearing the
 author's clothes. Calibration is stored there rather than in a separate file, so
 the thing that rates and the evidence it was calibrated against travel together.
 
-**Prompt construction rules live in `PROMPT-RULES.md`**, and every one of the
-seven is enforced by a test in `test/prompt-rules.test.js` against whichever
-version is live, so they cannot go stale as versions accumulate. A rule in prose
-alone is a rule that gets forgotten on the version where it matters. An eighth
-rule needs an eighth test — a count check fails otherwise.
+**Prompt construction rules live in `PROMPT-RULES.md`**, each enforced by a
+test in `test/prompt-rules.test.js` against whichever version is live, so they
+cannot go stale as versions accumulate. A new rule needs a new test — a count
+check fails otherwise.
 
 **A caller can be reading a version you retired hours ago.** On 2026-08-29 the
 hourly caller fetched `/api/instructions` and received v9 while the server
 stamped its submission v11 — three releases apart, six hours stale. It reported
-this as a Vercel edge cache. It is not: eight consecutive fetches of the
-canonical URL from outside return the current version with `cache-control:
-no-store`, `x-vercel-cache: MISS` and `age: 0`, and a cache-busted URL returns
-byte-identical content in the same second. That a novel query string changes
-what a *caller* sees, while the origin says MISS, is positive evidence the cache
-sits on the caller's side — an origin cache would answer HIT with a non-zero
-age.
+this as a Vercel edge cache. It is not: outside fetches got the current
+version with `no-store`, `x-vercel-cache: MISS` and `age: 0`, and a
+cache-busted URL returned the same bytes, so the cache sat on the caller's side.
 
 Callers now read with `curl`, which keeps no copy. A stale-copy explanation is
 still the first thing to check when a prompt change appears to have had no
@@ -801,9 +796,8 @@ change is not evaluable until the readings answering it are verified.
 **v12 changes sentence writing, not calibration.** Output now requests at most
 150 characters including spaces and punctuation, one clear development, familiar
 abbreviations and useful specifics, without em dashes or semicolons. Everything
-before Output is byte-identical to v11. The caller reference and OpenAPI wording
-match; ingestion still truncates only beyond 400 characters and has the same
-four rejection rules. The [evaluation](docs/prompt-evaluations/v12.md) contains
+before Output is byte-identical to v11. Ingestion still truncates only beyond
+400 characters and has the same four rejection rules. The [evaluation](docs/prompt-evaluations/v12.md) contains
 72 actual generations on reconstructed notes with GPT-6 Astra, not production
 Claude or the live search workflow. It supports the writing revision, not a
 claim about production quality or scoring. The reusable update process is in
@@ -812,7 +806,7 @@ claim about production quality or scoring. The reusable update process is in
 **v13 sets the widget sentence budget to 140 characters.** The user chose this
 limit after rejecting the unpublished 100-character proposal as too aggressive.
 Only the character budget changes from v12; writing guidance, rating instructions,
-provenance and ingestion behavior remain. Caller and OpenAPI descriptions agree.
+provenance and ingestion behavior remain.
 The [record](docs/prompt-evaluations/v13.md) separates the initial 100-character
 writing experiment from the selected 140-character limit. Neither a measured
 95% fit rate nor native widget verification is claimed.
@@ -872,6 +866,12 @@ it. Sources now name the month's market themes from market wraps and the
 biggest companies' moves and search each, naming no topic, so a fading theme
 drops out. An AI release replaced the Hormuz example at 5; see the
 [record](docs/prompt-evaluations/v20.md).
+
+**v21: no market forecasts.** v18's "what it could mean for prices or
+savings" grew tails like ", which could lift oil prices" to 76% of sentences
+by v20. v21 drops it (rule 9); reviews flag them
+(`scripts/market-forecast.mjs`). See
+the [record](docs/prompt-evaluations/v21.md).
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,

@@ -40,7 +40,7 @@ a reading nor a report, and one timeline per hour that also shows each
 authenticated read of the instructions, prompt and record. Reads and
 rejections made with the admin token are marked — those are reviewers, not the
 caller; rejections recorded before the token was kept are marked as such. A sentence
-naming a listed news outlet is flagged. It prints facts
+naming a listed news outlet, or predicting a market move, is flagged. It prints facts
 only. Read every run report in full.
 
 ## Check each run
@@ -56,6 +56,11 @@ only. Read every run report in full.
   flags names from `scripts/news-outlets.mjs`, but that list is not every
   outlet, so read every sentence. Record each case with its prompt version: on
   v19 or later it is a contract breach; before v19 it is expected, not a finding.
+- **No market forecast.** From prompt v21 the sentence never predicts a market
+  move ("…, which could lift oil prices"); a move that happened may be
+  reported. `scripts/market-forecast.mjs` flags a hedge and a market word in
+  one clause; read every sentence anyway. On v21 or later a forecast is a
+  contract breach; before v21 it is expected.
 - **Judgement sound.** `same` or `new` is defensible against the record the
   reading was judged with; a proposed `same_story` joins one story coined twice,
   never related stories. A doubtful merge is raised with the owner, who can undo
