@@ -19,6 +19,7 @@ no record file; their history is in `AGENTS.md`.
 | v18 | 2026-09-27 | #161 | The score is market risk: a new instrument | [v18](v18.md) |
 | v19 | 2026-09-27 | #166 | The sentence never names a news outlet | [v19](v19.md) |
 | v20 | 2026-09-29 | #190 | Search the themes markets are trading on | [v20](v20.md) |
+| v21 | 2026-10-05 | | The sentence never predicts a market move | [v21](v21.md) |
 
 ## Lessons
 
@@ -34,3 +35,6 @@ What earlier versions cost to learn; each is told in full in `AGENTS.md`.
 - **v10 and v11 rest on evidence that did not survive** (2026-08). Both
   theories were built on readings produced from v9's text; they are not a
   basis for the next version.
+- **An Output phrase is an instruction, not a hint** (v21, 2026-10-05). v18's
+  "what it could mean for prices or savings" turned a forecast tail from 0% of
+  sentences into 76%; removing it took fixture forecasts from 9 of 16 to 0.

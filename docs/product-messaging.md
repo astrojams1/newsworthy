@@ -39,8 +39,8 @@ External copy stays framed around news by significance, by the owner's
 decision: the tagline, descriptions, store listing, help pages, `llms.txt` and
 metadata do not describe the score as market risk and do not mention markets,
 prices, trading or investing as what the number measures. The reading's own
-sentence may name what a development could mean for prices or savings; that is
-news, not a description of the scale. Internal work that changes the rating
+sentence may report a market move that happened; that is news, not a
+description of the scale. Since prompt v21 (2026-10-05) it never predicts one. Internal work that changes the rating
 does not by itself call for external copy changes.
 
 The sentence never names a news outlet (the owner's convention, 2026-09-27,
