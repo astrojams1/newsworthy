@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-12T05:43:37+00:00
+Updated: 2026-10-12T06:02:58+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,7 +25,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | Build 26 is WAITING_FOR_REVIEW after accepted resubmission on October 1; current timeline, Notifications root and native widget gallery are saved. Six-part Notes accurately identify the existing build-21 physical video. | Await Apple response; approval and public paid-sale readiness remain separate. |
+| apple.review | waiting_provider | provider | observed | Build 27 resubmitted 2026-10-12 06:02 UTC after Apple rejected build 26 under Guideline 4.2; Apple reports version 1.0.0 and review submission WAITING_FOR_REVIEW with build 27 selected. Timeline on by default, whole widget sentences. | Await Apple's response. |
 | apple.release | waiting_provider | provider | observed | Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates. | Await approval, then verify paid-sale readiness and public availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
@@ -115,7 +115,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.gallery-capture-26 | done | agent | observed | Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate. | — |
 | apple.gallery-notifications-26 | done | agent | observed | Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified. | — |
 | widget.unpadded-hour | waiting_verification | agent | observed | Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged. | Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build. |
-| ui.timeline-default | waiting_verification | agent | observed | Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2 finding, with the timeline off by default): the timeline is on by default. Stored as showTimeline; the old timeline key, false in every existing install from its first save, is no longer read, so TestFlight installs see it on after updating. Listing description and Review Notes updated in store/listing.json (not yet pushed to App Store Connect). Unit and render tests only; no native build yet. | Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit. |
+| ui.timeline-default | waiting_verification | agent | observed | On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27. | Check a fresh install and an upgraded TestFlight install of build 27 on a device. |
 | widget.sentence-fit | waiting_verification | agent | observed | Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown. | Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build. |
 
 ## Evidence and history
@@ -3863,3 +3863,23 @@ Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Cau
 - store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/ios27-iphone17e-medium.png
 
 Next: Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.
+
+### 393. apple.review — waiting_provider
+
+2026-10-12T06:02:58+00:00 · observed · provider
+
+Build 27 resubmitted 2026-10-12 06:02 UTC after Apple rejected build 26 under Guideline 4.2; Apple reports version 1.0.0 and review submission WAITING_FOR_REVIEW with build 27 selected. Timeline on by default, whole widget sentences.
+
+- store/apple-review-resubmission-2026-10-12-build27.json
+
+Next: Await Apple's response.
+
+### 394. ui.timeline-default — waiting_verification
+
+2026-10-12T06:02:58+00:00 · observed · agent
+
+On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27.
+
+- store/apple-review-resubmission-2026-10-12-build27.json
+
+Next: Check a fresh install and an upgraded TestFlight install of build 27 on a device.
