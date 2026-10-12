@@ -14,6 +14,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | #155 | 2026-10-01 | README, design README, mobile release, story timeline | Design README and story timeline: iOS header controls are native bar buttons; mobile release: Appearance declares its default | Header and widget default fixes not yet compiled or seen on a device |
 | #155 | 2026-10-01 | store/listing.json, docs/product-messaging.md | Store description: "uses AI" and "AI assessments can be wrong" removed; timeline, New: label and per-widget settings added | Not yet pushed to App Store Connect; screenshots still show the old design |
 | #201 | 2026-10-12 | README, AGENTS.md, product messaging, llms.txt, caller contract, rating skill, privacy and support | README documents `TRIAL_CALLER_TOKEN`, `/api/admin/trials` and caller trials; nothing user-facing changed | Trial cost figures are list-price estimates from one live run until measured session costs replace them |
+| #202 | 2026-10-11 | README, story timeline, AGENTS.md, support page, store listing and Review Notes, product messaging, llms.txt | Every "off by default" / "turn on the timeline" claim now says on by default | Listing and Review Notes not pushed to App Store Connect; build number 27 assumed |
 
 ## Lessons
 
@@ -22,6 +23,9 @@ Claims that were wrong once. Check for them again; date each item.
 - **"Enlarges the rating"** (2026-10-01, #155). Hiding the widget's app name
   gives its row to the rating and sentence at the same size; the numeral is a
   fixed 69 pt. `docs/mobile-release.md` had said otherwise.
+- **A default lives in stored state too** (2026-10-11, #202). Changing a
+  preference's default changes nothing for installs that already saved the
+  old default; say whether upgraded installs see the change.
 - **Simulator is not device** (2026-10-01, #155). A widget verified on iOS
   simulators is described as such; claim a device only once one has shown it.
 
