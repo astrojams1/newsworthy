@@ -121,6 +121,35 @@ export function ensureSchema() {
     // Whose token a refused request carried: 'caller' or 'admin', never its
     // value. Null on rows from before it was recorded.
     await sql`ALTER TABLE rejections ADD COLUMN IF NOT EXISTS token TEXT`;
+    // A candidate caller run beside the live one (docs/caller-trials.md). Its
+    // readings live here rather than in `ratings` with a flag, because some
+    // twenty queries read `ratings` — the page, the chart, push, the judge's
+    // record, the cron's staleness check — and a flag one of them forgot
+    // would put an unreviewed model on the front page. Nothing that builds
+    // what a reader sees selects from these tables. `same_story` is the
+    // merge the trial proposed, kept as data and never applied.
+    await sql`
+      CREATE TABLE IF NOT EXISTS trial_readings (
+        id              BIGSERIAL   PRIMARY KEY,
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+        score           SMALLINT    NOT NULL,
+        explanation     TEXT        NOT NULL,
+        prompt_version  INTEGER     NOT NULL,
+        prompt_hash     TEXT        NOT NULL,
+        prompt_verified BOOLEAN,
+        story           TEXT,
+        development_of  BIGINT,
+        judge_version   INTEGER,
+        judge_note      TEXT,
+        same_story      JSONB
+      )`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS trial_runs (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reading_id  BIGINT,               -- a trial_readings id, if any
+        report      TEXT        NOT NULL
+      )`;
     // Devices that asked to be told about a high reading, and the readings they
     // were told about. One row per Expo push token — the token is the whole
     // identity, so re-registering the same device is an update, not a second
@@ -706,6 +735,56 @@ export async function recentCallerRuns({ hours = 24 * 7, limit = 200 } = {}) {
      WHERE c.created_at >= ${since}
      ORDER BY c.created_at DESC, c.id DESC
      LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
+// ---- trial caller -----------------------------------------------------------
+// A second caller under trial, stored apart from `ratings` so nothing it sends
+// can reach the page. See docs/caller-trials.md.
+
+export async function insertTrialReading(row) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO trial_readings (
+      score, explanation, prompt_version, prompt_hash, prompt_verified,
+      story, development_of, judge_version, judge_note, same_story
+    ) VALUES (
+      ${row.score}, ${row.explanation}, ${row.prompt_version}, ${row.prompt_hash},
+      ${row.prompt_verified ?? null}, ${row.story ?? null}, ${row.development_of ?? null},
+      ${row.judge_version ?? null}, ${row.judge_note ?? null},
+      ${row.same_story === undefined ? null : JSON.stringify(row.same_story)}::jsonb
+    )
+    RETURNING *`;
+  return shape(rows[0]);
+}
+
+export async function logTrialRun({ reading, report }) {
+  await ensureSchema();
+  const id = reading == null ? null : Number(reading);
+  const [known] = Number.isInteger(id)
+    ? await sql`SELECT id FROM trial_readings WHERE id = ${id}`
+    : [];
+  const rows = await sql`
+    INSERT INTO trial_runs (reading_id, report) VALUES (${known ? id : null}, ${report})
+    RETURNING id, created_at, reading_id`;
+  return shape(rows[0]);
+}
+
+export async function trialReadings({ hours = 24 * 7, limit = 1000 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT * FROM trial_readings WHERE created_at >= ${since}
+     ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
+export async function trialRuns({ hours = 24 * 7, limit = 1000 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT id, created_at, reading_id, report FROM trial_runs WHERE created_at >= ${since}
+     ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
 

@@ -67,6 +67,7 @@ release status. Calm presentation must not change the rating calibration.
 - To check the hourly caller's runs, use
   `.agents/skills/newsworthy-caller-review/SKILL.md`; findings go in
   `docs/caller-reviews/ledger.md`, observations kept apart from hypotheses.
+  A trial caller's readings are stored apart, never shown: `docs/caller-trials.md`.
 - To remake the store preview videos, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
@@ -445,9 +446,8 @@ opened, and a story quiet since then has gone on ageing. So the header says how
 long the story has been running, how many developments set its routine level,
 what that level is, the weight a development opening this minute would get, and
 the score that would clear the routine level by the shock margin and open whole.
-It is asked of the same `storyState()` arithmetic that `fatigued()` uses at
-open time, about now — a second implementation in the page would be free to
-drift from the discount it describes. A story's first development is itself on
+It uses the `storyState()` arithmetic `fatigued()` uses at open time, so the
+page cannot drift from the discount it describes. A story's first development is itself on
 record, so a story is never without a routine level; only readings the judge
 could not place have nothing to be weighed against, and the header says so.
 
@@ -742,10 +742,10 @@ about what was read. Publishing the bytes is safe, publishing the answer is not.
 
 The first wording ("the bytes to hash come from `/api/prompt`", qualifier
 trailing) read as "hash the response body", and a caller did, storing a reading
-flagged `prompt_verified: false`. The check worked, but a false flag from a
-doc-following caller looked like a delivery failure. The definition now leads
-with the field's decoded value, names both wrong inputs (the body, the escaped
-form) and what a false flag means; a test pins it and keeps the old opening out.
+flagged `prompt_verified: false`. The check worked, but the false flag looked
+like a delivery failure. The definition now leads with the field's decoded
+value, names both wrong inputs (the body, the escaped form) and what a false
+flag means; a test pins it and keeps the old opening out.
 
 The 16-character hash printed in the instructions is deliberately a *prefix* of
 the 64-character digest. A caller that echoes the printed value, or any prefix,

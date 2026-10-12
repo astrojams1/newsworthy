@@ -13,6 +13,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | #155 | 2026-10-01 | README, product messaging, store listing, mobile release, design README, AGENTS.md | Mobile release: hiding the app name does not enlarge the rating; Appearance is a String parameter | Widget fix not yet seen on a device; Android unverified |
 | #155 | 2026-10-01 | README, design README, mobile release, story timeline | Design README and story timeline: iOS header controls are native bar buttons; mobile release: Appearance declares its default | Header and widget default fixes not yet compiled or seen on a device |
 | #155 | 2026-10-01 | store/listing.json, docs/product-messaging.md | Store description: "uses AI" and "AI assessments can be wrong" removed; timeline, New: label and per-widget settings added | Not yet pushed to App Store Connect; screenshots still show the old design |
+| #201 | 2026-10-12 | README, AGENTS.md, product messaging, llms.txt, caller contract, rating skill, privacy and support | README documents `TRIAL_CALLER_TOKEN`, `/api/admin/trials` and caller trials; nothing user-facing changed | Trial cost figures are list-price estimates from one live run until measured session costs replace them |
 | #199 | 2026-10-11 | README, product messaging, store listing, llms.txt, story age, design README | Design README: the iOS sentence steps down to 12.5 pt before truncating, and the line limit counts line spacing | Not compiled for iOS or seen in WidgetKit |
 
 ## Lessons
