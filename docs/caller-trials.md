@@ -1,24 +1,28 @@
 # Caller trials
 
-A trial runs a candidate caller beside the live one. It uses the same API and
+A trial runs a candidate caller beside the live one, and several can run at
+once. It uses the same API and
 the same instructions, and its readings are never shown. The goal is to compare
 the two on the same news, hour by hour, before replacing the live caller.
 
 ## How a trial reading is kept off the page
 
-The server decides by token, not by anything the caller sends. A request
-carrying `TRIAL_CALLER_TOKEN` reads `/api/instructions`, `/api/prompt` and
-`/api/developments` like the live caller. Its `POST /api/readings` and
-`POST /api/runs` are stored in `trial_readings` and `trial_runs`, not `ratings`
-and `caller_runs`. A trial reading is validated and judged exactly as a live
+The server decides by token, not by anything the caller sends. Each trial has
+its own token, configured in `TRIAL_CALLERS` as comma-separated `name=token`
+pairs (`haiku-5-5=…,sonnet-5-5=…`). A request carrying one reads
+`/api/instructions`, `/api/prompt` and `/api/developments` like the live
+caller. Its `POST /api/readings` and `POST /api/runs` are stored in
+`trial_readings` and `trial_runs`, not `ratings` and `caller_runs`, under the
+trial's name (`cohort`). A run report links only to its own trial's reading. A trial reading is validated and judged exactly as a live
 one, against the live record. It proposes no merge, sends no push, does not
 suppress the cron and is in no history, chart or board. Its proposed
-`same_story` is kept as data. The response says `"trial": true`.
+`same_story` is kept as data. The response says `"trial": true` and names the trial.
 
 Separate tables rather than a flag on `ratings`: some twenty queries read
 `ratings`, and one that forgot the flag would put the candidate on the front
-page. Authenticated reads with the trial token are logged as `trial`, so the
-caller review can tell them from the live caller's.
+page. Authenticated reads with a trial token are logged as `trial:<name>`, so the
+caller review can tell them from the live caller's. Rows stored before trials
+had names all came from the Haiku trial and are filed under `haiku-5-5`.
 
 ## Review
 
@@ -26,8 +30,8 @@ caller review can tell them from the live caller's.
 ADMIN_TOKEN=… node scripts/trial-compare.mjs --hours 72
 ```
 
-It reads `GET /api/admin/trials` and prints the agreement summary and each
-hour side by side, with the caller review's flags (unverified prompt,
+It reads `GET /api/admin/trials` and prints, for each trial (`--cohort` picks
+one), the agreement summary and each hour side by side, with the caller review's flags (unverified prompt,
 unjudged, over 135 characters, outlet named, market forecast, agentless
 passive). Each trial reading is paired with the live reading nearest in time
 within 30 minutes; an hour with no live reading is left unpaired. Judgements
@@ -50,7 +54,7 @@ trigger's `last_run.session_id`) reports `usage.cost_usd` at list prices.
 | Routine | `trig_01LSi4KHmBYFTYYENJB2diXg` "Update newsworthy" | `trig_01JHFRYP3budVuZZKfZb3zVr` "Update newsworthy (Haiku 5.5 trial)" |
 | Model | `claude-opus-5-5` | `claude-haiku-5-5` |
 | Schedule | `2 * * * *` | `2 * * * *` |
-| Token | `CALLER_TOKEN` | `TRIAL_CALLER_TOKEN` |
+| Token | `CALLER_TOKEN` | `haiku-5-5` in `TRIAL_CALLERS` |
 | Connectors | Vercel, Claude Code Remote | none; the workflow uses only curl |
 | Notifications | push | off |
 
@@ -88,11 +92,41 @@ figures are list prices. How a Routine is actually paid for (plan usage or
 dollars) depends on the account. One Opus run is a thin baseline, so the review
 should take `cost_usd` from several sessions of each Routine.
 
-### Decision
+The first Haiku run (2026-10-12 05:15 UTC) measured **$0.031**: its requests
+ran ~69K–92K tokens, under the 100K step, largely because it carries no
+connectors.
 
-If Haiku is good enough: disable `trig_01LSi4KHmBYFTYYENJB2diXg`, then put
-`CALLER_TOKEN` in place of the trial token in the Haiku Routine's prompt and
-re-enable push. From then on its readings are live. Delete
-`TRIAL_CALLER_TOKEN` from Vercel when no trial is running; the tables stay as
-the record of the trial. If Haiku is not good enough, disable the trial
-Routine and leave the live one alone.
+## Trial 2: Sonnet 5.5 (from 2026-10-12)
+
+| | Live | Trial |
+|---|---|---|
+| Routine | `trig_01LSi4KHmBYFTYYENJB2diXg` | `trig_01Xiqc8TrBSALzeRWD8s8Me9` "Update newsworthy (Sonnet 5.5 trial)" |
+| Model | `claude-opus-5-5` | `claude-sonnet-5-5` |
+| Schedule | `2 * * * *` | `2 * * * *` |
+| Token | `CALLER_TOKEN` | `sonnet-5-5` in `TRIAL_CALLERS` |
+| Connectors | Vercel, Claude Code Remote | none |
+| Notifications | push | off |
+
+The prompt is the live one but for the token, as with Haiku. No Routine sets
+an effort level, and none is recorded in the run logs. At the API, Sonnet 5.5
+defaults to `high` where Opus 5.5 and Haiku 5.5 default to `medium`; if the
+harness keeps those defaults, Sonnet thinks harder per turn than either.
+
+### Cost estimate
+
+Sonnet 5.5 is $2 / $10 per MTok input / output at any prompt length, cache
+reads $0.20 and one-hour writes $4. On the measured Opus run's tokens it is
+$0.61 a run; on the Haiku run's, $0.62. That is about **$450 a month against
+Opus's ~$645, roughly 30% less**. The saving is modest because cache reads,
+which dominate these runs, cost the same $0.20 per MTok on Sonnet as on Opus;
+only writes and output are cheaper.
+
+## Decision
+
+Whichever candidate is good enough: disable `trig_01LSi4KHmBYFTYYENJB2diXg`,
+put `CALLER_TOKEN` in place of the trial token in that candidate's Routine
+prompt and re-enable push. From then on its readings are live. Disable the
+other trial Routines and remove their entries from `TRIAL_CALLERS` (the
+variable itself when no trial is running); the tables stay as the record of
+the trials. If no candidate is good enough, disable the trial Routines and
+leave the live one alone.

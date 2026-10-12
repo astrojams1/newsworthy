@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * A trial caller's readings beside the live caller's, hour by hour, with the
+ * Each trial caller's readings beside the live caller's, hour by hour, with the
  * agreement figures and the same sentence-contract flags a caller review
  * uses. Observations only. See docs/caller-trials.md.
  *
- *   ADMIN_TOKEN=… node scripts/trial-compare.mjs [--hours 72] [--base https://…]
+ *   ADMIN_TOKEN=… node scripts/trial-compare.mjs [--hours 72] [--cohort sonnet-5-5] [--base https://…]
  *
  * The token is read from the environment and sent only in the x-admin-token
  * header; it is never printed or written.
@@ -19,9 +19,10 @@ const base = args.base ?? 'https://newsworthy-indol.vercel.app';
 const hours = Number(args.hours ?? 72);
 if (!process.env.ADMIN_TOKEN) throw new Error('ADMIN_TOKEN is not set');
 
-const res = await fetch(`${base}/api/admin/trials?hours=${hours}`, { headers: { 'x-admin-token': process.env.ADMIN_TOKEN } });
+const query = new URLSearchParams({ hours: String(hours), ...(args.cohort ? { cohort: args.cohort } : {}) });
+const res = await fetch(`${base}/api/admin/trials?${query}`, { headers: { 'x-admin-token': process.env.ADMIN_TOKEN } });
 if (!res.ok) throw new Error(`admin trials answered ${res.status}`);
-const { summary, pairs, runs } = await res.json();
+const { cohorts } = await res.json();
 
 const flags = (r) => [
   r.prompt_verified !== true && `prompt_verified ${r.prompt_verified}`,
@@ -38,19 +39,23 @@ const line = (who, r) => {
   console.log(`         ${r.explanation}`);
 };
 
-console.log(`Trial against live, last ${hours}h (${base})\n`);
-for (const [key, value] of Object.entries(summary)) console.log(`  ${key.padEnd(22)} ${value ?? '-'}`);
+console.log(`Trials against live, last ${hours}h (${base})`);
+if (!cohorts.length) console.log('\nNo trial readings in this window.');
+for (const { cohort, summary, pairs, runs } of cohorts) {
+  console.log(`\n== ${cohort} ==\n`);
+  for (const [key, value] of Object.entries(summary)) console.log(`  ${key.padEnd(22)} ${value ?? '-'}`);
 
-const flagged = (side) => pairs.filter((p) => p[side] && flags(p[side]).length).length;
-console.log(`  ${'trial_flagged'.padEnd(22)} ${flagged('trial')} of ${pairs.length}`);
-console.log(`  ${'live_flagged'.padEnd(22)} ${pairs.filter((p) => p.live && flags(p.live).length).length} of ${summary.paired}`);
-const reported = new Set(runs.map((r) => r.reading_id).filter((id) => id != null));
-console.log(`  ${'trial_run_reports'.padEnd(22)} ${runs.length} (${pairs.filter((p) => !reported.has(p.trial.id)).length} readings with none linked)`);
+  const flagged = (side) => pairs.filter((p) => p[side] && flags(p[side]).length).length;
+  console.log(`  ${'trial_flagged'.padEnd(22)} ${flagged('trial')} of ${pairs.length}`);
+  console.log(`  ${'live_flagged'.padEnd(22)} ${pairs.filter((p) => p.live && flags(p.live).length).length} of ${summary.paired}`);
+  const reported = new Set(runs.map((r) => r.reading_id).filter((id) => id != null));
+  console.log(`  ${'trial_run_reports'.padEnd(22)} ${runs.length} (${pairs.filter((p) => !reported.has(p.trial.id)).length} readings with none linked)`);
 
-console.log('\nHour by hour, oldest first:');
-for (const p of [...pairs].reverse()) {
-  const diff = p.live ? ` | diff ${p.score_diff > 0 ? '+' : ''}${p.score_diff}, judgement ${p.judgement_agrees === null ? 'n/a' : p.judgement_agrees ? 'agrees' : 'DIFFERS'}` : ' | no live reading within the window';
-  console.log(`\n  ${p.trial.created_at.slice(0, 16)}${diff}`);
-  line('trial', p.trial);
-  if (p.live) line('live ', p.live);
+  console.log('\nHour by hour, oldest first:');
+  for (const p of [...pairs].reverse()) {
+    const diff = p.live ? ` | diff ${p.score_diff > 0 ? '+' : ''}${p.score_diff}, judgement ${p.judgement_agrees === null ? 'n/a' : p.judgement_agrees ? 'agrees' : 'DIFFERS'}` : ' | no live reading within the window';
+    console.log(`\n  ${p.trial.created_at.slice(0, 16)}${diff}`);
+    line('trial', p.trial);
+    if (p.live) line('live ', p.live);
+  }
 }

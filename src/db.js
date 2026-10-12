@@ -150,6 +150,14 @@ export function ensureSchema() {
         reading_id  BIGINT,               -- a trial_readings id, if any
         report      TEXT        NOT NULL
       )`;
+    // Which trial a row came from, named by the token that sent it
+    // (TRIAL_CALLERS), so trials running side by side stay apart. Every insert
+    // sets it; rows from before it existed all came from the first trial,
+    // Haiku 5.5, so the backfill below only ever touches those.
+    await sql`ALTER TABLE trial_readings ADD COLUMN IF NOT EXISTS cohort TEXT`;
+    await sql`ALTER TABLE trial_runs ADD COLUMN IF NOT EXISTS cohort TEXT`;
+    await sql`UPDATE trial_readings SET cohort = 'haiku-5-5' WHERE cohort IS NULL`;
+    await sql`UPDATE trial_runs SET cohort = 'haiku-5-5' WHERE cohort IS NULL`;
     // Devices that asked to be told about a high reading, and the readings they
     // were told about. One row per Expo push token — the token is the whole
     // identity, so re-registering the same device is an update, not a second
@@ -739,17 +747,17 @@ export async function recentCallerRuns({ hours = 24 * 7, limit = 200 } = {}) {
 }
 
 // ---- trial caller -----------------------------------------------------------
-// A second caller under trial, stored apart from `ratings` so nothing it sends
+// Callers under trial, stored apart from `ratings` so nothing it sends
 // can reach the page. See docs/caller-trials.md.
 
 export async function insertTrialReading(row) {
   await ensureSchema();
   const rows = await sql`
     INSERT INTO trial_readings (
-      score, explanation, prompt_version, prompt_hash, prompt_verified,
+      cohort, score, explanation, prompt_version, prompt_hash, prompt_verified,
       story, development_of, judge_version, judge_note, same_story
     ) VALUES (
-      ${row.score}, ${row.explanation}, ${row.prompt_version}, ${row.prompt_hash},
+      ${row.cohort}, ${row.score}, ${row.explanation}, ${row.prompt_version}, ${row.prompt_hash},
       ${row.prompt_verified ?? null}, ${row.story ?? null}, ${row.development_of ?? null},
       ${row.judge_version ?? null}, ${row.judge_note ?? null},
       ${row.same_story === undefined ? null : JSON.stringify(row.same_story)}::jsonb
@@ -758,32 +766,47 @@ export async function insertTrialReading(row) {
   return shape(rows[0]);
 }
 
-export async function logTrialRun({ reading, report }) {
+export async function logTrialRun({ cohort, reading, report }) {
   await ensureSchema();
   const id = reading == null ? null : Number(reading);
   const [known] = Number.isInteger(id)
-    ? await sql`SELECT id FROM trial_readings WHERE id = ${id}`
+    ? await sql`SELECT id FROM trial_readings WHERE id = ${id} AND cohort = ${cohort}`
     : [];
   const rows = await sql`
-    INSERT INTO trial_runs (reading_id, report) VALUES (${known ? id : null}, ${report})
-    RETURNING id, created_at, reading_id`;
+    INSERT INTO trial_runs (cohort, reading_id, report) VALUES (${cohort}, ${known ? id : null}, ${report})
+    RETURNING id, created_at, cohort, reading_id`;
   return shape(rows[0]);
 }
 
-export async function trialReadings({ hours = 24 * 7, limit = 1000 } = {}) {
+/** The trials with a reading or report in the window, by name. */
+export async function trialCohorts({ hours = 24 * 7 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT * FROM trial_readings WHERE created_at >= ${since}
+    SELECT cohort FROM trial_readings WHERE created_at >= ${since}
+     UNION
+    SELECT cohort FROM trial_runs WHERE created_at >= ${since}
+     ORDER BY cohort`;
+  return rows.map((r) => r.cohort);
+}
+
+// One trial at a time: the limit applies per trial, so a busy trial cannot
+// crowd another's rows out of the window.
+export async function trialReadings({ cohort, hours = 24 * 7, limit = 1000 }) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT * FROM trial_readings WHERE cohort = ${cohort} AND created_at >= ${since}
      ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
 
-export async function trialRuns({ hours = 24 * 7, limit = 1000 } = {}) {
+export async function trialRuns({ cohort, hours = 24 * 7, limit = 1000 }) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, reading_id, report FROM trial_runs WHERE created_at >= ${since}
+    SELECT id, created_at, cohort, reading_id, report FROM trial_runs
+     WHERE cohort = ${cohort} AND created_at >= ${since}
      ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
