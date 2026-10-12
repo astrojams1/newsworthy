@@ -271,6 +271,13 @@ record or multi-year high or low is new the first time no development names it,
 under the story that moved it. v3 had filed reading 827's 2007-high yields as
 detail on a two-day-old event.
 
+**v5: a development is one occurrence.** v4 plus one paragraph: a shared
+subject, party, place or kind of event is not identity, and what happened after
+a development was first seen is a later occurrence, not added detail. Deadlier
+Houthi strikes on Riyadh's airport had been filed under a 6 October one. The
+record also shows a root older than its window by its own first report
+(`priorRoots()`), not its earliest re-report.
+
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
 caller fetches `/api/developments` — story names and developments, data only —
@@ -777,17 +784,10 @@ versions assumed, and it is the first evidence in the series that separates a
 scale that rates wrongly from a scale the rater never received.
 
 **v10 and v11 were written against evidence that has not survived.** Both
-answered the trailing clause — "distant from US readers", "nothing requiring
-personal action" — and each had a theory. v10: adding reach to rung 3 gave the
-rater a criterion to narrate. v11: rung 3 and the Output contract contradict
-each other, because on a day scored 3 the rater has just concluded nothing
-matters and is then asked to name a development and its effect.
-
-Both theories were built on readings the rater produced from **v9's text**,
-while the server stamped them v10 and v11. Neither has verified evidence behind
-it, and the verified readings so far carry no clause at all. They are kept
-because they are published and readings reference them, and because neither is
-disproved — only unsupported. They are not a basis for the next version.
+answered the trailing clause ("distant from US readers") with a theory about
+rung 3, built on readings the rater produced from **v9's text** while the
+server stamped them v10 and v11. Neither is disproved, only unsupported; they
+are kept because readings reference them, not as a basis for the next version.
 
 The reusable part is the method, not the conclusions: five wordings of one
 prohibition were shipped across nine months of versions, each judged by a rate
@@ -907,7 +907,7 @@ npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 
 Do not record test counts; they go stale.
 
-**The story timeline** is off by default (`timeline` in `preferences.js`), one
+**The story timeline** is on by default (`showTimeline` in `preferences.js`), one
 entry per development ordered by `opened`, one week long. See
 `docs/story-timeline.md` before changing it.
 

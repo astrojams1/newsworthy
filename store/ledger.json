@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-12T04:20:04+00:00",
+  "updated_at": "2026-10-12T05:35:01+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1169,16 +1169,27 @@
       "next_action": "Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.",
       "updated_at": "2026-10-01T12:08:40+00:00"
     },
+    "ui.timeline-default": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2 finding, with the timeline off by default): the timeline is on by default. Stored as showTimeline; the old timeline key, false in every existing install from its first save, is no longer read, so TestFlight installs see it on after updating. Listing description and Review Notes updated in store/listing.json (not yet pushed to App Store Connect). Unit and render tests only; no native build yet.",
+      "evidence": [
+        "apps/client/lib/preferences.js; test/preferences.test.js; store/listing.json"
+      ],
+      "next_action": "Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.",
+      "updated_at": "2026-10-12T05:16:25+00:00"
+    },
     "widget.sentence-fit": {
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not compiled for iOS; no WidgetKit or device check.",
+      "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not yet compiled for iOS; no WidgetKit or device check.",
       "evidence": [
         "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/macos-before.png; store/source/widget-sentence-fit/macos-after.png"
       ],
       "next_action": "Compile for iOS and check both medium sizes with and without the app name, a 140-character sentence and larger Dynamic Type, in the next native build.",
-      "updated_at": "2026-10-12T04:20:04+00:00"
+      "updated_at": "2026-10-12T05:35:01+00:00"
     }
   },
   "events": [
@@ -7425,18 +7436,34 @@
     },
     {
       "sequence": 390,
-      "at": "2026-10-12T04:20:04+00:00",
+      "at": "2026-10-12T05:16:25+00:00",
+      "gate": "ui.timeline-default",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2 finding, with the timeline off by default): the timeline is on by default. Stored as showTimeline; the old timeline key, false in every existing install from its first save, is no longer read, so TestFlight installs see it on after updating. Listing description and Review Notes updated in store/listing.json (not yet pushed to App Store Connect). Unit and render tests only; no native build yet.",
+        "evidence": [
+          "apps/client/lib/preferences.js; test/preferences.test.js; store/listing.json"
+        ],
+        "next_action": "Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.",
+        "updated_at": "2026-10-12T05:16:25+00:00"
+      }
+    },
+    {
+      "sequence": 391,
+      "at": "2026-10-12T05:35:01+00:00",
       "gate": "widget.sentence-fit",
       "result": {
         "state": "waiting_verification",
         "owner": "agent",
         "basis": "observed",
-        "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not compiled for iOS; no WidgetKit or device check.",
+        "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not yet compiled for iOS; no WidgetKit or device check.",
         "evidence": [
           "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/macos-before.png; store/source/widget-sentence-fit/macos-after.png"
         ],
         "next_action": "Compile for iOS and check both medium sizes with and without the app name, a 140-character sentence and larger Dynamic Type, in the next native build.",
-        "updated_at": "2026-10-12T04:20:04+00:00"
+        "updated_at": "2026-10-12T05:35:01+00:00"
       }
     }
   ],

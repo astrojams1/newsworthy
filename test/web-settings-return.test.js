@@ -43,7 +43,7 @@ test('closing Settings on the web returns to the reading as it was, gradient inc
     const browser = await chromium.launch({ executablePath });
     try {
       const context = await browser.newContext({ viewport: { width: 390, height: 780 }, colorScheme: 'dark', isMobile: true, hasTouch: true });
-      await context.addInitScript(() => localStorage.setItem('newsworthy.preferences.v1', JSON.stringify({ timeline: true, theme: 'system' })));
+      await context.addInitScript(() => localStorage.setItem('newsworthy.preferences.v1', JSON.stringify({ showTimeline: true, theme: 'system' })));
       await context.route('**/api/current', route => route.fulfill({ json: current }));
       await context.route('**/api/timeline', route => route.fulfill({ json: { developments } }));
       const page = await context.newPage();

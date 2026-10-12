@@ -4,17 +4,27 @@ import { DEFAULT_PREFERENCES, STORAGE_KEY, THEME_CHOICES, THRESHOLD_CHOICES, cla
 import { nodes, renderSettings, renderToggle } from './helpers/render-settings.js';
 import { createSubscriptionController } from '../apps/client/lib/subscription.js';
 
-test('system appearance, no notifications and no timeline are the defaults, and a damaged store falls back field by field', () => {
+test('system appearance, no notifications and the timeline are the defaults, and a damaged store falls back field by field', () => {
   assert.deepEqual(THEME_CHOICES.map(c => [c.value, c.label]), [['system', 'Follow device'], ['light', 'Light'], ['dark', 'Dark']]);
-  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null }, timeline: false, onboarded: false });
+  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null }, showTimeline: true, onboarded: false });
   assert.deepEqual(parsePreferences(null), DEFAULT_PREFERENCES);
   assert.deepEqual(parsePreferences('{not json'), DEFAULT_PREFERENCES);
-  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, timeline: 'yes', onboarded: 'yes' }), DEFAULT_PREFERENCES);
-  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, timeline: true, onboarded: true };
+  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, showTimeline: 'yes', onboarded: 'yes' }), DEFAULT_PREFERENCES);
+  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, showTimeline: false, onboarded: true };
   assert.deepEqual(parsePreferences(JSON.stringify(kept)), kept);
   // An "on" with no device registered is not on: the server has nothing to send to.
   assert.deepEqual(parsePreferences({ notifications: { enabled: true, threshold: 6 } }).notifications, { enabled: false, threshold: 6, token: null });
   assert.equal(STORAGE_KEY, 'newsworthy.preferences.v1');
+});
+
+test('the timeline is on for an install that stored the old default', () => {
+  // Every install written before 2026-10-11 stored timeline: false with its
+  // first save (onboarding sets a flag on first launch), so that key was the
+  // old default, not a choice. Only showTimeline: false turns it off.
+  const before = { theme: 'dark', notifications: { enabled: false, threshold: 8, token: null }, timeline: false, onboarded: true };
+  assert.equal(parsePreferences(JSON.stringify(before)).showTimeline, true);
+  assert.equal(parsePreferences({ ...before, showTimeline: false }).showTimeline, false);
+  assert.equal('timeline' in parsePreferences(before), false, 'and the old key is not written back');
 });
 
 test('the chosen appearance wins and System follows the device', () => {
@@ -342,9 +352,9 @@ test('a rejected notification operation releases progress and the queue', async 
   assert.deepEqual(pending, [true, false, true, false]);
 });
 
-test('the story timeline is a switch on the overview, off by default, on every platform', () => {
+test('the story timeline is a switch on the overview, on by default, on every platform', () => {
   for (const platform of ['web', 'ios', 'android']) for (const on of [false, true]) {
-    const { tree, calls } = renderSettings({ platform, stored: on ? { timeline: true } : {} });
+    const { tree, calls } = renderSettings({ platform, stored: on ? {} : { showTimeline: false } });
     const all = nodes(tree);
     const row = all.find(n => n.props?.testID === 'timeline-row');
     assert.ok(row, `${platform}: the row is there`);
