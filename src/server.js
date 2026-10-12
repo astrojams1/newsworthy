@@ -179,7 +179,7 @@ function callerIdentity(url, req) {
   if (CALLER_TOKEN && secretMatches(supplied, CALLER_TOKEN)) return 'caller';
   if (TRIAL_CALLER_TOKEN && secretMatches(supplied, TRIAL_CALLER_TOKEN)) return 'trial';
   if (ADMIN_TOKEN && secretMatches(supplied, ADMIN_TOKEN)) return 'admin';
-  if (CALLER_TOKEN || ADMIN_TOKEN) return null;
+  if (CALLER_TOKEN || TRIAL_CALLER_TOKEN || ADMIN_TOKEN) return null;
   return ON_VERCEL ? null : 'open'; // open only when self-hosted with nothing configured
 }
 
@@ -736,7 +736,10 @@ const server = createServer(async (req, res) => {
         history({ hours: hours + 1 }),
         trialRuns({ hours }),
       ]);
-      const pairs = pairTrials(trials, live);
+      // Against the live caller only: a cron or "Rate now" reading in the same
+      // half hour is another instrument, and pairing with it would hide an
+      // hour the live caller missed.
+      const pairs = pairTrials(trials, live.filter((r) => r.source === 'external'));
       return json(res, 200, { hours, summary: summarizeTrial(pairs), pairs, runs });
     }
 

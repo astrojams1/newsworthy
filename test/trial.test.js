@@ -20,6 +20,10 @@ test('a trial reading is stored apart and changes nothing the app shows', async 
 
     const live = await caller(base)(4, 'Houthi rebels hit Riyadh airport again.', { story: 'iran-war' });
     assert.equal(live.status, 201);
+    // A "Rate now" reading in the same half hour is not the live caller's and
+    // must not be what the trial is compared with.
+    const manual = await fetch(`${base}/api/cron?force=1`, { method: 'POST', headers: { 'x-admin-token': ADMIN_TOKEN } });
+    assert.equal(manual.status, 200);
     const before = await (await fetch(`${base}/api/current`)).json();
 
     // The trial reads the same instructions and record with its own token.
@@ -47,14 +51,16 @@ test('a trial reading is stored apart and changes nothing the app shows', async 
 
     const history = await admin('/api/admin/history?hours=24');
     assert.ok(history.attempts.every((r) => !/trial sentence/.test(r.explanation ?? '')), 'not in the run log');
-    assert.ok(history.points.every((p) => p.score !== 9), 'not in the chart');
+    // By sentence, not score: the mock "Rate now" reading scores at random.
+    assert.ok(history.points.some((p) => /Riyadh airport/.test(p.explanation ?? '')), 'the chart carries sentences');
+    assert.ok(history.points.every((p) => !/trial sentence/.test(p.explanation ?? '')), 'not in the chart');
     assert.ok(history.caller_runs.every((r) => !/Trial run/.test(r.report)), 'its report is not the live caller\'s');
     assert.equal(history.merges.length, 0, 'its proposed merge is never applied');
 
     const trials = await admin('/api/admin/trials?hours=24');
     assert.equal(trials.pairs.length, 1);
     const [pair] = trials.pairs;
-    assert.equal(pair.live.id, live.body.id, 'paired with the live reading of the same hour');
+    assert.equal(pair.live.id, live.body.id, 'paired with the live caller\'s reading, not the nearer manual run');
     assert.equal(pair.score_diff, 5);
     assert.equal(pair.judgement_agrees, true, 'naming the live reading\'s new development agrees with "new"');
     assert.deepEqual(pair.trial.same_story, ['iran-war', 'fixture'], 'the proposal is kept as data');
