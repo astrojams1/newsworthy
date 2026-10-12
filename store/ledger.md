@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-01T12:08:40+00:00
+Updated: 2026-10-12T04:20:04+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -115,6 +115,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.gallery-capture-26 | done | agent | observed | Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate. | — |
 | apple.gallery-notifications-26 | done | agent | observed | Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified. | — |
 | widget.unpadded-hour | waiting_verification | agent | observed | Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged. | Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build. |
+| widget.sentence-fit | waiting_verification | agent | observed | Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not compiled for iOS; no WidgetKit or device check. | Compile for iOS and check both medium sizes with and without the app name, a 140-character sentence and larger Dynamic Type, in the next native build. |
 
 ## Evidence and history
 
@@ -3831,3 +3832,13 @@ Widget checked times now use an unpadded hour and two-digit minutes: Checked at 
 - apps/client/targets/widget/NewsworthyWidget.swift; apps/client/plugins/widget-android/RatingWidget.java; apps/client/lib/story-age.js
 
 Next: Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.
+
+### 390. widget.sentence-fit — waiting_verification
+
+2026-10-12T04:20:04+00:00 · observed · agent
+
+Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not compiled for iOS; no WidgetKit or device check.
+
+- store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/macos-before.png; store/source/widget-sentence-fit/macos-after.png
+
+Next: Compile for iOS and check both medium sizes with and without the app name, a 140-character sentence and larger Dynamic Type, in the next native build.
