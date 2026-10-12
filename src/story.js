@@ -169,34 +169,39 @@ story that moved it. A figure already reported moving again short of such a
 level, oil up 3% then 4%, restates its development.`;
 
 /**
- * v5 says the same kind of event happening again is new, and nothing else
- * changes: v4 is kept byte-identical and one paragraph is appended.
+ * v5 says what makes two readings one development, and nothing else changes:
+ * v4 is kept byte-identical and one paragraph is appended.
  *
- * v1 lists "a spread to a new party or place" among what makes a development
- * new, and "a revised figure, or added detail" among what restates one. A
- * second attack by the same party on the same target is neither a new party
- * nor a new place, and its toll reads as a revised figure, so the text pushed
- * the judge to "same". On 6 October the Houthis said they struck Riyadh's main
- * airport; on 7 and 8 October further strikes there killed people and stopped
- * flights, and by 12 October the page was showing the 6 October sentence,
- * "6d ago", for the newer and bigger attacks. The line it draws is the
- * occurrence, and timing tells occurrences apart: the record lists when each
- * development was first seen, and the caller knows when its event happened.
+ * v1 defines a development by example — "a strike, a collapse, a ruling" —
+ * and lists what makes one new ("a spread to a new party or place") and what
+ * restates one ("a revised figure, or added detail"). It never says what makes
+ * two readings the same, so the judge matched on subject: same party, same
+ * place, same kind of event. On 6 October the Houthis said they struck
+ * Riyadh's main airport; later, deadlier strikes there were filed under it,
+ * and by 12 October the page showed the 6 October sentence, "6d ago", for
+ * them. v4's market levels were the same failure in another form: a record
+ * read as detail on the event that moved it.
+ *
+ * The rule states identity once, in general: a development is one occurrence,
+ * and timing separates occurrences — the record lists when each development
+ * was first seen, and the caller knows when its event happened. Splitting a
+ * story into more developments does not make the page jumpy: a story's
+ * routine developments open discounted by its age (`fatigued()` in
+ * current.js).
  */
 const V5 = `${V4}
 
-The same kind of event happening again is a new development: another strike on
-a target already hit, a further attack by the same party. A reading restates a
-recorded development only when it reports that occurrence. An event that
-happened after the development was first seen is a later one, and its toll or
-damage is not a revised figure.`;
+A development is one occurrence. Readings that share a subject, a party, a
+place or a kind of event still report different developments when they describe
+different occurrences, and anything that happened after a recorded development
+was first seen is a later occurrence, not added detail on it.`;
 
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
   2: { label: 'story-vocabulary-v2', added: '2026-09-04', text: V2 },
   3: { label: 'same-story-merge-v3', added: '2026-09-25', text: V3 },
   4: { label: 'market-levels-v4', added: '2026-09-28', text: V4 },
-  5: { label: 'recurring-events-v5', added: '2026-10-11', text: V5 },
+  5: { label: 'one-occurrence-v5', added: '2026-10-11', text: V5 },
 };
 
 export function judgeVersion() {

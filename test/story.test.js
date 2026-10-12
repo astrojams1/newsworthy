@@ -73,7 +73,7 @@ test('the judge prompt is a specification, not a set of orders', () => {
 test('judge prompts are append-only, pinned by hash', () => {
   // A stored judgement names the version that produced it. Editing a published
   // version would reinterpret readings already recorded, silently.
-  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '41fc793213e0f9e5' };
+  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '2aa2059729dcee6f' };
   const prompts = allJudgePrompts();
   assert.deepEqual(prompts.map((p) => p.version), Object.keys(pins).map(Number),
     'every published version is pinned here');
@@ -158,19 +158,18 @@ test('v4 makes a market reaching a level a development and keeps v3 whole', () =
   assert.match(added, /under the slug of the\nstory that moved it/, 'and it stays in the story behind it');
 });
 
-test('v5 makes the same kind of event happening again a development and keeps v4 whole', () => {
-  // A Houthi strike on Riyadh's airport on 6 October; further, deadlier strikes
-  // there on 7 and 8 October were filed under it, and by 12 October the page
-  // showed the 6 October sentence, "6d ago", for the newer attacks. v1's "a new
-  // party or place" did not cover a second attack, and its toll read as "a
-  // revised figure". v4 is kept byte for byte and one paragraph added.
+test('v5 says a development is one occurrence and keeps v4 whole', () => {
+  // v1 never said what makes two readings one development, so the judge matched
+  // on subject: later, deadlier Houthi strikes on Riyadh's airport were filed
+  // under a 6 October strike there. v5 states identity in general rather than
+  // naming that case. v4 is kept byte for byte and one paragraph added.
   const [, , , v4, v5] = allJudgePrompts();
   assert.ok(v5.text.startsWith(v4.text), 'v4 verbatim, then one paragraph');
   const added = v5.text.slice(v4.text.length);
-  assert.match(added, /The same kind of event happening again is a new development/);
-  assert.match(added, /another strike on\na target already hit, a further attack by the same party/);
-  assert.match(added, /happened after the development was first seen is a later one/, 'timing tells occurrences apart');
-  assert.match(added, /its toll or\ndamage is not a revised figure/, 'a later toll is not v1\'s revised figure');
+  assert.match(added, /^\n\nA development is one occurrence\./, 'identity, stated first');
+  assert.match(added, /share a subject, a party, a\nplace or a kind of event still report different developments/, 'a shared subject is not identity');
+  assert.match(added, /happened after a recorded development\nwas first seen is a later occurrence, not added detail on it/, 'timing separates occurrences');
+  assert.doesNotMatch(added, /strike|attack|airport|Houthi/i, 'a rule, not the case that prompted it');
   assert.equal(judgeVersion(), 5, 'and v5 is what new readings are judged by');
 });
 

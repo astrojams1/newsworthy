@@ -270,12 +270,12 @@ record or multi-year high or low is new the first time no development names it,
 under the story that moved it. v3 had filed reading 827's 2007-high yields as
 detail on a two-day-old event.
 
-**v5: the same kind of event again is a development.** v4 plus one paragraph:
-another strike on a target already hit is new, and a later attack's toll is not
-a revised figure. Deadlier Houthi strikes on Riyadh's airport on 7 and 8
-October had been filed under the 6 October one. The record also shows a root
-older than its six-day window by its own first report (`priorRoots()`), not
-its earliest re-report.
+**v5: a development is one occurrence.** v4 plus one paragraph: a shared
+subject, party, place or kind of event is not identity, and what happened after
+a development was first seen is a later occurrence, not added detail. Deadlier
+Houthi strikes on Riyadh's airport had been filed under a 6 October one. The
+record also shows a root older than its window by its own first report
+(`priorRoots()`), not its earliest re-report.
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
