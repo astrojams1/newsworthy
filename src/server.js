@@ -5,7 +5,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialCohorts, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { pairTrials, summarizeTrial } from './trial.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries, frontPageSpans } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
@@ -760,23 +760,21 @@ const server = createServer(async (req, res) => {
     // reaches the page: see docs/caller-trials.md.
     if (path === '/api/admin/trials' && req.method === 'GET') {
       const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
-      const [trials, live, runs] = await Promise.all([
-        trialReadings({ hours }),
-        history({ hours: hours + 1 }),
-        trialRuns({ hours }),
-      ]);
       // Against the live caller only: a cron or "Rate now" reading in the same
       // half hour is another instrument, and pairing with it would hide an
-      // hour the live caller missed.
-      // Each trial against the live caller on its own; `?cohort=` narrows to one.
-      const liveCaller = live.filter((r) => r.source === 'external');
+      // hour the live caller missed. Each trial is read and summarized on its
+      // own; `?cohort=` narrows to one.
       const only = url.searchParams.get('cohort');
-      const names = [...new Set([...trials, ...runs].map((r) => r.cohort))]
-        .filter((name) => !only || name === only).sort();
-      const cohorts = names.map((cohort) => {
-        const pairs = pairTrials(trials.filter((r) => r.cohort === cohort), liveCaller);
-        return { cohort, summary: summarizeTrial(pairs), pairs, runs: runs.filter((r) => r.cohort === cohort) };
-      });
+      const [names, live] = await Promise.all([
+        only ? [only] : trialCohorts({ hours }),
+        history({ hours: hours + 1 }),
+      ]);
+      const liveCaller = live.filter((r) => r.source === 'external');
+      const cohorts = await Promise.all(names.map(async (cohort) => {
+        const [trials, runs] = await Promise.all([trialReadings({ cohort, hours }), trialRuns({ cohort, hours })]);
+        const pairs = pairTrials(trials, liveCaller);
+        return { cohort, summary: summarizeTrial(pairs), pairs, runs };
+      }));
       return json(res, 200, { hours, cohorts });
     }
 

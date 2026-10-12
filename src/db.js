@@ -778,20 +778,35 @@ export async function logTrialRun({ cohort, reading, report }) {
   return shape(rows[0]);
 }
 
-export async function trialReadings({ hours = 24 * 7, limit = 1000 } = {}) {
+/** The trials with a reading or report in the window, by name. */
+export async function trialCohorts({ hours = 24 * 7 } = {}) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT * FROM trial_readings WHERE created_at >= ${since}
+    SELECT cohort FROM trial_readings WHERE created_at >= ${since}
+     UNION
+    SELECT cohort FROM trial_runs WHERE created_at >= ${since}
+     ORDER BY cohort`;
+  return rows.map((r) => r.cohort);
+}
+
+// One trial at a time: the limit applies per trial, so a busy trial cannot
+// crowd another's rows out of the window.
+export async function trialReadings({ cohort, hours = 24 * 7, limit = 1000 }) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT * FROM trial_readings WHERE cohort = ${cohort} AND created_at >= ${since}
      ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
 
-export async function trialRuns({ hours = 24 * 7, limit = 1000 } = {}) {
+export async function trialRuns({ cohort, hours = 24 * 7, limit = 1000 }) {
   await ensureSchema();
   const since = new Date(Date.now() - hours * 3600_000);
   const rows = await sql`
-    SELECT id, created_at, cohort, reading_id, report FROM trial_runs WHERE created_at >= ${since}
+    SELECT id, created_at, cohort, reading_id, report FROM trial_runs
+     WHERE cohort = ${cohort} AND created_at >= ${since}
      ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }

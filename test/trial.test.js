@@ -136,12 +136,19 @@ test('trial rows from before cohorts existed are filed under the first trial', a
   await sql`INSERT INTO trial_readings (score, explanation, prompt_version, prompt_hash) VALUES (5, 'Before names.', 22, 'h')`;
   await sql`INSERT INTO trial_runs (reading_id, report) VALUES (1, 'Before names.')`;
 
-  const { ensureSchema, insertTrialReading, trialReadings, trialRuns } = await import('../src/db.js');
+  const { ensureSchema, insertTrialReading, trialCohorts, trialReadings, trialRuns } = await import('../src/db.js');
   await ensureSchema();
   const fresh = await insertTrialReading({ cohort: 'sonnet-5-5', score: 6, explanation: 'After.', prompt_version: 22, prompt_hash: 'h' });
 
-  const byId = Object.fromEntries((await trialReadings()).map((r) => [r.id, r.cohort]));
-  assert.equal(byId[1], 'haiku-5-5');
-  assert.equal(byId[fresh.id], 'sonnet-5-5');
-  assert.equal((await trialRuns())[0].cohort, 'haiku-5-5');
+  assert.deepEqual((await trialReadings({ cohort: 'haiku-5-5' })).map((r) => r.id), [1]);
+  assert.deepEqual((await trialReadings({ cohort: 'sonnet-5-5' })).map((r) => r.id), [fresh.id]);
+  assert.equal((await trialRuns({ cohort: 'haiku-5-5' }))[0].report, 'Before names.');
+  assert.deepEqual(await trialCohorts(), ['haiku-5-5', 'sonnet-5-5']);
+
+  // The limit is per trial: newer rows from a busier trial cannot push
+  // another trial's rows out of its own window.
+  for (let i = 0; i < 3; i += 1) {
+    await insertTrialReading({ cohort: 'sonnet-5-5', score: 6, explanation: 'Busy.', prompt_version: 22, prompt_hash: 'h' });
+  }
+  assert.deepEqual((await trialReadings({ cohort: 'haiku-5-5', limit: 2 })).map((r) => r.id), [1]);
 });
