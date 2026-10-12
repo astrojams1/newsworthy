@@ -175,6 +175,8 @@ private enum WidgetTypography {
     static let explanationLineHeight: CGFloat = 20
     static let denominatorSize: CGFloat = 12
     static let columnGap: CGFloat = 16
+    // 14, 13.5, 13 and 12.5 points: the largest that shows the whole sentence wins.
+    static let explanationSteps: [CGFloat] = [1, 27.0 / 28, 13.0 / 14, 25.0 / 28]
 
     // Cap height excludes curved-digit overshoot and the slash's lower stroke.
     // Use the same native font's actual outlines for visible-edge alignment.
@@ -277,6 +279,14 @@ struct ReadingContent: View {
             .accessibilityLabel(entry.reading.map { "\($0.score) out of 10" } ?? "Rating unavailable")
     }
 
+    // Each size keeps the 20-point rhythm, so line three's baseline stays level with the numeral's.
+    private func sentence(size: CGFloat) -> some View {
+        explanationText(entry.reading, at: entry.date)
+            .font(.system(size: size))
+            .lineSpacing(max(0, explanationLineHeight - UIFont.systemFont(ofSize: size).lineHeight))
+            .multilineTextAlignment(.leading)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if entry.showAppName {
@@ -294,12 +304,20 @@ struct ReadingContent: View {
                                     explanationCapHeight: bodyFont.capHeight) {
                     score(size: size)
                     if family == .systemMedium {
-                        explanationText(entry.reading, at: entry.date)
-                            .font(.system(size: explanationSize))
-                            .lineSpacing(max(0, explanationLineHeight - bodyFont.lineHeight))
-                            .lineLimit(max(1, Int(geometry.size.height / explanationLineHeight)))
-                            .truncationMode(.tail)
-                            .multilineTextAlignment(.leading)
+                        // n lines are n line heights less one line's spacing: dividing by the line
+                        // height alone gave a 155-point widget 3 lines with room for 4.
+                        let spacing = max(0, explanationLineHeight - bodyFont.lineHeight)
+                        let lines = max(1, Int((geometry.size.height + spacing) / explanationLineHeight))
+                        // A 140-character sentence needs a fifth 14-point line on a 338-point widget.
+                        // Step the text down until it fits, on the same line rhythm; truncate only below that.
+                        ViewThatFits(in: .vertical) {
+                            ForEach(WidgetTypography.explanationSteps.dropLast(), id: \.self) { step in
+                                sentence(size: explanationSize * step)
+                            }
+                            sentence(size: explanationSize * WidgetTypography.explanationSteps.last!)
+                                .lineLimit(lines)
+                                .truncationMode(.tail)
+                        }
                     }
                 }
                 .clipped()

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-12T05:16:25+00:00",
+  "updated_at": "2026-10-12T05:43:37+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1179,6 +1179,17 @@
       ],
       "next_action": "Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.",
       "updated_at": "2026-10-12T05:16:25+00:00"
+    },
+    "widget.sentence-fit": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown.",
+      "evidence": [
+        "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/ios27-iphone17e-medium.png"
+      ],
+      "next_action": "Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.",
+      "updated_at": "2026-10-12T05:43:37+00:00"
     }
   },
   "events": [
@@ -7437,6 +7448,38 @@
         ],
         "next_action": "Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.",
         "updated_at": "2026-10-12T05:16:25+00:00"
+      }
+    },
+    {
+      "sequence": 391,
+      "at": "2026-10-12T05:35:01+00:00",
+      "gate": "widget.sentence-fit",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not yet compiled for iOS; no WidgetKit or device check.",
+        "evidence": [
+          "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/macos-before.png; store/source/widget-sentence-fit/macos-after.png"
+        ],
+        "next_action": "Compile for iOS and check both medium sizes with and without the app name, a 140-character sentence and larger Dynamic Type, in the next native build.",
+        "updated_at": "2026-10-12T05:35:01+00:00"
+      }
+    },
+    {
+      "sequence": 392,
+      "at": "2026-10-12T05:43:37+00:00",
+      "gate": "widget.sentence-fit",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown.",
+        "evidence": [
+          "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/ios27-iphone17e-medium.png"
+        ],
+        "next_action": "Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.",
+        "updated_at": "2026-10-12T05:43:37+00:00"
       }
     }
   ],

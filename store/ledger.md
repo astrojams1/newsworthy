@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-12T05:16:25+00:00
+Updated: 2026-10-12T05:43:37+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -116,6 +116,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.gallery-notifications-26 | done | agent | observed | Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified. | — |
 | widget.unpadded-hour | waiting_verification | agent | observed | Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged. | Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build. |
 | ui.timeline-default | waiting_verification | agent | observed | Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2 finding, with the timeline off by default): the timeline is on by default. Stored as showTimeline; the old timeline key, false in every existing install from its first save, is no longer read, so TestFlight installs see it on after updating. Listing description and Review Notes updated in store/listing.json (not yet pushed to App Store Connect). Unit and render tests only; no native build yet. | Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit. |
+| widget.sentence-fit | waiting_verification | agent | observed | Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown. | Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build. |
 
 ## Evidence and history
 
@@ -3842,3 +3843,23 @@ Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2
 - apps/client/lib/preferences.js; test/preferences.test.js; store/listing.json
 
 Next: Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.
+
+### 391. widget.sentence-fit — waiting_verification
+
+2026-10-12T05:35:01+00:00 · observed · agent
+
+Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not yet compiled for iOS; no WidgetKit or device check.
+
+- store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/macos-before.png; store/source/widget-sentence-fit/macos-after.png
+
+Next: Compile for iOS and check both medium sizes with and without the app name, a 140-character sentence and larger Dynamic Type, in the next native build.
+
+### 392. widget.sentence-fit — waiting_verification
+
+2026-10-12T05:43:37+00:00 · observed · agent
+
+Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown.
+
+- store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/ios27-iphone17e-medium.png
+
+Next: Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.

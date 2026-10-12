@@ -58,6 +58,15 @@ resulting rules; this is the evidence behind them.
   rather than spend about 10 sandbox minutes compiling first. Swift API
   availability is not checked by anything in the cloud container; a test now
   rejects that initializer.
+- **An iOS 27 SDK build of this app does not launch on iOS 27** (2026-10-11).
+  A local Xcode 27 Release simulator build crashed at launch in
+  `_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption` (UIScene
+  lifecycle not adopted) and ran on iOS 18.4; its widget extension worked on
+  iOS 27. Build 26 used EAS image `macos-tahoe-26.5-xcode-26.6`, now pinned
+  in `eas.json` so a changed EAS default cannot ship a build that crashes.
+- **Local Xcode verification is free** (2026-10-11). With Xcode 27 installed,
+  prebuild, `pod install` (with `LANG=en_US.UTF-8`) and a Release simulator
+  build took about 15 minutes and no credits or sandbox minutes.
 
 ## 2026-09
 

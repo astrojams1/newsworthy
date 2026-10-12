@@ -196,7 +196,13 @@ export function checkWidgetDesign(sources = widgetSources()) {
   assert.match(swift, /y: bounds.minY \+ top \+ explanationCapHeight/, 'iOS sentence shares centered offset');
   assert.match(swift, /scoreInkHeight - score\[\.firstTextBaseline\]/, 'iOS optical score top');
   assert.match(swift, /explanationCapHeight - text\[\.firstTextBaseline\]/, 'iOS optical sentence top');
-  assert.match(swift, /lineLimit\(max\(1, Int\(geometry\.size\.height \/ explanationLineHeight\)\)\)/, 'iOS bounded context limit');
+  // n lines take n line heights less one spacing; height / line height alone left a line empty.
+  assert.match(swift, /let lines = max\(1, Int\(\(geometry\.size\.height \+ spacing\) \/ explanationLineHeight\)\)/, 'iOS counts every line that fits');
+  assert.match(swift, /\.lineLimit\(lines\)\s*\.truncationMode\(\.tail\)/, 'iOS bounded context limit');
+  // A sentence steps down in size before it truncates, never below 12.5 points, on the same rhythm.
+  assert.match(swift, /ViewThatFits\(in: \.vertical\)/, 'iOS fits the sentence before truncating');
+  assert.match(swift, /static let explanationSteps: \[CGFloat\] = \[1, 27\.0 \/ 28, 13\.0 \/ 14, 25\.0 \/ 28\]/, 'iOS sentence steps');
+  assert.match(swift, /lineSpacing\(max\(0, explanationLineHeight - UIFont\.systemFont\(ofSize: size\)\.lineHeight\)\)/, 'iOS steps keep the line rhythm');
   assert.match(swift, /if entry\.showAppName/, 'title setting retained');
   assert.doesNotMatch(swift, /systemSmall \? (?:52|72)/, 'no smaller compact numeral');
   assert.match(swift, /\.foregroundStyle\(Color\("NewsworthyInk"\)\)/, 'iOS primary text uses adaptive ink');
