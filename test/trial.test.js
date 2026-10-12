@@ -4,14 +4,18 @@ import { ADMIN_TOKEN, CALLER_TOKEN, PORTS, caller, withServer } from './with-ser
 import { judgeVersion } from '../src/story.js';
 import { pairTrials, summarizeTrial } from '../src/trial.js';
 
-const TRIAL_CALLER_TOKEN = 'test-trial-token';
+const HAIKU_TOKEN = 'test-trial-token';
+const SONNET_TOKEN = 'test-sonnet-token';
+// Two trials side by side, and an entry with an invalid name that must
+// authorize nothing.
+const TRIAL_CALLERS = `haiku-5-5=${HAIKU_TOKEN}, sonnet-5-5=${SONNET_TOKEN}, Bad Name=test-bad-token`;
 
 // A candidate caller runs beside the live one and must not reach anything a
 // reader sees: the page, the chart, push, merges, the run log.
 test('a trial reading is stored apart and changes nothing the app shows', async () => {
-  const env = { ADMIN_TOKEN, TRIAL_CALLER_TOKEN, NEWSWORTHY_NO_SCHEDULER: '1' };
+  const env = { ADMIN_TOKEN, TRIAL_CALLERS, NEWSWORTHY_NO_SCHEDULER: '1' };
   await withServer({ port: PORTS.trialCaller, env }, async (base) => {
-    const send = (path, body, token = TRIAL_CALLER_TOKEN) => fetch(`${base}${path}`, {
+    const send = (path, body, token = HAIKU_TOKEN) => fetch(`${base}${path}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-newsworthy-token': token },
       body: JSON.stringify(body),
@@ -27,9 +31,9 @@ test('a trial reading is stored apart and changes nothing the app shows', async 
     const before = await (await fetch(`${base}/api/current`)).json();
 
     // The trial reads the same instructions and record with its own token.
-    const instructions = await fetch(`${base}/api/instructions`, { headers: { 'x-newsworthy-token': TRIAL_CALLER_TOKEN } });
+    const instructions = await fetch(`${base}/api/instructions`, { headers: { 'x-newsworthy-token': HAIKU_TOKEN } });
     assert.equal(instructions.status, 200);
-    const developments = await fetch(`${base}/api/developments`, { headers: { 'x-newsworthy-token': TRIAL_CALLER_TOKEN } });
+    const developments = await fetch(`${base}/api/developments`, { headers: { 'x-newsworthy-token': HAIKU_TOKEN } });
     assert.equal(developments.status, 200);
 
     const trial = await send('/api/readings', {
@@ -39,11 +43,21 @@ test('a trial reading is stored apart and changes nothing the app shows', async 
     });
     assert.equal(trial.status, 201);
     assert.equal(trial.body.trial, true);
+    assert.equal(trial.body.cohort, 'haiku-5-5', 'filed under the trial its token names');
     assert.equal(trial.body.development, 'same', 'judged against the live record like any caller');
     const report = await send('/api/runs', { reading: trial.body.id, report: 'Trial run: searched three sources.' });
     assert.equal(report.status, 201);
     assert.equal(report.body.trial, true);
     assert.equal(report.body.reading, trial.body.id);
+
+    // A second trial in the same hour is filed under its own name, and cannot
+    // link a report to the other trial's reading.
+    const sonnet = await send('/api/readings', { score: 6, explanation: 'A second trial sentence.' }, SONNET_TOKEN);
+    assert.equal(sonnet.body.cohort, 'sonnet-5-5');
+    const crossed = await send('/api/runs', { reading: trial.body.id, report: 'Sonnet run.' }, SONNET_TOKEN);
+    assert.equal(crossed.body.reading, null, 'another trial\'s reading id links nothing');
+    assert.equal((await send('/api/readings', { score: 3, explanation: 'x' }, 'test-bad-token')).status, 401,
+      'a malformed entry authorizes nothing');
 
     const after = await (await fetch(`${base}/api/current`)).json();
     assert.equal(after.score, before.score, 'the front page number is untouched');
@@ -56,16 +70,23 @@ test('a trial reading is stored apart and changes nothing the app shows', async 
     assert.ok(history.points.every((p) => !/trial sentence/.test(p.explanation ?? '')), 'not in the chart');
     assert.ok(history.caller_runs.every((r) => !/Trial run/.test(r.report)), 'its report is not the live caller\'s');
     assert.equal(history.merges.length, 0, 'its proposed merge is never applied');
+    assert.ok(history.caller_fetches.some((f) => f.token === 'trial:haiku-5-5'), 'its reads are logged under its trial');
 
     const trials = await admin('/api/admin/trials?hours=24');
-    assert.equal(trials.pairs.length, 1);
-    const [pair] = trials.pairs;
+    assert.deepEqual(trials.cohorts.map((c) => c.cohort), ['haiku-5-5', 'sonnet-5-5']);
+    const [haiku, sonnetTrial] = trials.cohorts;
+    assert.equal(haiku.pairs.length, 1);
+    assert.equal(sonnetTrial.pairs[0].trial.score, 6);
+    assert.equal(sonnetTrial.runs.length, 1);
+    const [pair] = haiku.pairs;
     assert.equal(pair.live.id, live.body.id, 'paired with the live caller\'s reading, not the nearer manual run');
     assert.equal(pair.score_diff, 5);
     assert.equal(pair.judgement_agrees, true, 'naming the live reading\'s new development agrees with "new"');
     assert.deepEqual(pair.trial.same_story, ['iran-war', 'fixture'], 'the proposal is kept as data');
-    assert.equal(trials.summary.paired, 1);
-    assert.equal(trials.runs[0].reading_id, trial.body.id);
+    assert.equal(haiku.summary.paired, 1);
+    assert.equal(haiku.runs[0].reading_id, trial.body.id);
+    const one = await admin('/api/admin/trials?hours=24&cohort=sonnet-5-5');
+    assert.deepEqual(one.cohorts.map((c) => c.cohort), ['sonnet-5-5'], '?cohort= narrows to one trial');
 
     // The live token still writes where it always did.
     const second = await send('/api/readings', { score: 3, explanation: 'Live sentence.' }, CALLER_TOKEN);
@@ -99,4 +120,28 @@ test('trial pairing takes the nearest live reading in the window and compares ju
   assert.equal(summary.score_mean_diff, 1);
   assert.equal(summary.judgement_agreement, 0.5);
   assert.equal(summary.trial_prompt_verified, 0.33);
+});
+
+// Rows stored before trials had names all came from the first trial, Haiku 5.5;
+// rows written since always carry the name their token gives them.
+test('trial rows from before cohorts existed are filed under the first trial', async () => {
+  const { sql } = await import('../src/sql.js');
+  await sql`CREATE TABLE trial_readings (
+    id BIGSERIAL PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), score SMALLINT NOT NULL,
+    explanation TEXT NOT NULL, prompt_version INTEGER NOT NULL, prompt_hash TEXT NOT NULL,
+    prompt_verified BOOLEAN, story TEXT, development_of BIGINT, judge_version INTEGER,
+    judge_note TEXT, same_story JSONB)`;
+  await sql`CREATE TABLE trial_runs (
+    id BIGSERIAL PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), reading_id BIGINT, report TEXT NOT NULL)`;
+  await sql`INSERT INTO trial_readings (score, explanation, prompt_version, prompt_hash) VALUES (5, 'Before names.', 22, 'h')`;
+  await sql`INSERT INTO trial_runs (reading_id, report) VALUES (1, 'Before names.')`;
+
+  const { ensureSchema, insertTrialReading, trialReadings, trialRuns } = await import('../src/db.js');
+  await ensureSchema();
+  const fresh = await insertTrialReading({ cohort: 'sonnet-5-5', score: 6, explanation: 'After.', prompt_version: 22, prompt_hash: 'h' });
+
+  const byId = Object.fromEntries((await trialReadings()).map((r) => [r.id, r.cohort]));
+  assert.equal(byId[1], 'haiku-5-5');
+  assert.equal(byId[fresh.id], 'sonnet-5-5');
+  assert.equal((await trialRuns())[0].cohort, 'haiku-5-5');
 });

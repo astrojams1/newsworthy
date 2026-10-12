@@ -25,10 +25,27 @@ const MAX_RUN_REPORT = 4000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const CALLER_TOKEN = process.env.CALLER_TOKEN || '';
-// A candidate caller run beside the live one: same API, same instructions, but
-// its readings and run reports are stored apart and never displayed. The token
-// decides it, not anything the caller sends. See docs/caller-trials.md.
-const TRIAL_CALLER_TOKEN = process.env.TRIAL_CALLER_TOKEN || '';
+// Candidate callers run beside the live one: same API, same instructions, but
+// their readings and run reports are stored apart and never displayed. One
+// token per trial, as comma-separated `name=token` pairs
+// (`haiku-5-5=…,sonnet-5-5=…`); the token decides where a request goes and
+// which trial it is filed under, not anything the caller sends. See
+// docs/caller-trials.md.
+const TRIAL_CALLERS = parseTrialCallers(process.env.TRIAL_CALLERS || '');
+
+function parseTrialCallers(text) {
+  return text.split(',').map((entry) => entry.trim()).filter(Boolean).flatMap((entry) => {
+    const at = entry.indexOf('=');
+    const cohort = at > 0 ? entry.slice(0, at).trim() : '';
+    const token = entry.slice(at + 1).trim();
+    if (!/^[a-z0-9][a-z0-9.-]*$/.test(cohort) || !token) {
+      // Never the entry itself: it may carry a token.
+      console.warn(`TRIAL_CALLERS: ignoring a malformed entry${cohort ? ` named ${cohort}` : ''}`);
+      return [];
+    }
+    return [{ cohort, token }];
+  });
+}
 const ON_VERCEL = Boolean(process.env.VERCEL);
 // vercel.json fires /api/cron on this cadence; the configured interval is
 // enforced by the slot on top of it.
@@ -171,16 +188,24 @@ function cronAuthorized(url, req) {
  * External callers get their own token, so an agent can submit readings
  * without being handed the admin token. ADMIN_TOKEN also works.
  */
-/** Whose token authorized a caller-API request — 'caller', 'trial', 'admin',
- *  or 'open' when self-hosted with none configured — or null when none did. */
+/** Whose token authorized a caller-API request — 'caller', 'trial:<name>',
+ *  'admin', or 'open' when self-hosted with none configured — or null when
+ *  none did. */
 function callerIdentity(url, req) {
   // Headers only: curl sets them, and a token in a URL lands in logs.
   const supplied = req.headers['x-newsworthy-token'] || req.headers['x-admin-token'];
   if (CALLER_TOKEN && secretMatches(supplied, CALLER_TOKEN)) return 'caller';
-  if (TRIAL_CALLER_TOKEN && secretMatches(supplied, TRIAL_CALLER_TOKEN)) return 'trial';
+  const trial = TRIAL_CALLERS.find(({ token }) => secretMatches(supplied, token));
+  if (trial) return `trial:${trial.cohort}`;
   if (ADMIN_TOKEN && secretMatches(supplied, ADMIN_TOKEN)) return 'admin';
-  if (CALLER_TOKEN || TRIAL_CALLER_TOKEN || ADMIN_TOKEN) return null;
+  if (CALLER_TOKEN || TRIAL_CALLERS.length || ADMIN_TOKEN) return null;
   return ON_VERCEL ? null : 'open'; // open only when self-hosted with nothing configured
+}
+
+/** The trial a request's token belongs to, or null for any other caller. */
+function trialCohort(url, req) {
+  const identity = callerIdentity(url, req);
+  return identity?.startsWith('trial:') ? identity.slice('trial:'.length) : null;
 }
 
 function callerAuthorized(url, req) {
@@ -496,14 +521,16 @@ const server = createServer(async (req, res) => {
         // A trial reading is checked exactly as a live one and stored apart:
         // no merge, no push, no part in what the page shows or the cron's
         // staleness check. Its proposed merge is kept as data.
-        if (callerIdentity(url, req) === 'trial') {
-          const saved = await insertTrialReading({ ...submission, ...judgement });
-          console.log(`trial reading: ${saved.score}/10 (prompt v${saved.prompt_version})`);
+        const cohort = trialCohort(url, req);
+        if (cohort) {
+          const saved = await insertTrialReading({ ...submission, ...judgement, cohort });
+          console.log(`trial reading (${cohort}): ${saved.score}/10 (prompt v${saved.prompt_version})`);
           return json(res, 201, {
             id: saved.id,
             created_at: saved.created_at,
             score: saved.score,
             trial: true,
+            cohort,
             prompt_version: saved.prompt_version,
             prompt_hash: saved.prompt_hash,
             prompt_verified: saved.prompt_verified ?? null,
@@ -599,9 +626,10 @@ const server = createServer(async (req, res) => {
       }
       const report = typeof body?.report === 'string' ? body.report.trim() : '';
       if (!report) return rejection(res, url, 422, 'run report: report is required', { req, method: req.method });
-      if (callerIdentity(url, req) === 'trial') {
-        const saved = await logTrialRun({ reading: body.reading, report: report.slice(0, MAX_RUN_REPORT) });
-        return json(res, 201, { ok: true, stored: true, trial: true, id: saved.id, reading: saved.reading_id });
+      const cohort = trialCohort(url, req);
+      if (cohort) {
+        const saved = await logTrialRun({ cohort, reading: body.reading, report: report.slice(0, MAX_RUN_REPORT) });
+        return json(res, 201, { ok: true, stored: true, trial: true, cohort, id: saved.id, reading: saved.reading_id });
       }
       // Linked only to a reading that exists; a wrong id never costs the report.
       const id = body.reading == null ? null : Number(body.reading);
@@ -740,8 +768,16 @@ const server = createServer(async (req, res) => {
       // Against the live caller only: a cron or "Rate now" reading in the same
       // half hour is another instrument, and pairing with it would hide an
       // hour the live caller missed.
-      const pairs = pairTrials(trials, live.filter((r) => r.source === 'external'));
-      return json(res, 200, { hours, summary: summarizeTrial(pairs), pairs, runs });
+      // Each trial against the live caller on its own; `?cohort=` narrows to one.
+      const liveCaller = live.filter((r) => r.source === 'external');
+      const only = url.searchParams.get('cohort');
+      const names = [...new Set([...trials, ...runs].map((r) => r.cohort))]
+        .filter((name) => !only || name === only).sort();
+      const cohorts = names.map((cohort) => {
+        const pairs = pairTrials(trials.filter((r) => r.cohort === cohort), liveCaller);
+        return { cohort, summary: summarizeTrial(pairs), pairs, runs: runs.filter((r) => r.cohort === cohort) };
+      });
+      return json(res, 200, { hours, cohorts });
     }
 
     if (path === '/api/admin/settings') {
