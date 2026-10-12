@@ -1,10 +1,14 @@
 # Story timeline
 
-Moved from AGENTS.md, which is size-capped. Prototype behind a Settings switch.
+Moved from AGENTS.md, which is size-capped. On by default, behind a Settings switch.
 
-**One entry per development, never per reading.** Prototype, and **off by default**: `timeline` in `apps/client/lib/preferences.js`
-is `false` unless a stored value is exactly `true`, and the Show timeline switch on the Settings
-overview turns it on. Off, the home screen is the reading alone — `useTimeline`
+**One entry per development, never per reading.** **On by default** since 2026-10-11, when
+the owner turned it on after a third App Review rejection under Guideline 4.2 (minimum
+functionality) with the timeline behind a switch: `showTimeline` in
+`apps/client/lib/preferences.js` is `true` unless a stored value is exactly `false`, and the
+Show timeline switch on the Settings overview turns it off. The key was `timeline` until then,
+and every install had stored `false` with its first save, written with the old default rather
+than chosen, so the old key is not read. Off, the home screen is the reading alone — `useTimeline`
 fetches nothing, there is no chevron, and the wordmark is plain text rather than
 a button — so the product stays one number and one sentence unless a reader
 asks for more. `/api/timeline` flattens `activeStories()` — the same replay as the

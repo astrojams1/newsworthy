@@ -907,7 +907,7 @@ npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 
 Do not record test counts; they go stale.
 
-**The story timeline** is off by default (`timeline` in `preferences.js`), one
+**The story timeline** is on by default (`showTimeline` in `preferences.js`), one
 entry per development ordered by `opened`, one week long. See
 `docs/story-timeline.md` before changing it.
 

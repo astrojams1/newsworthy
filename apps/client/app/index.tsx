@@ -129,7 +129,7 @@ export default function Home() {
   // Off unless chosen in Settings; off, the screen is the reading alone. The
   // server leaves out the development this reading reports, so nothing here repeats it.
   const { preferences } = usePreferences();
-  const developments = useTimeline(preferences.timeline, reading?.created_at);
+  const developments = useTimeline(preferences.showTimeline, reading?.created_at);
   const scrollY = useRef(new Animated.Value(0)).current;
   const scroller = useRef<any>(null);
   // Prototype. Two resting positions: the reading, and the top of the
