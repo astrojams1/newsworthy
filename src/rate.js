@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { history, insertRating, ratingForSlot, recentStories } from './db.js';
+import { history, insertRating, priorRoots, ratingForSlot, recentStories } from './db.js';
 import { notifyReading } from './push.js';
 import { PRIOR_HOURS, judgeReading } from './story.js';
 import { effectiveConfig } from './config.js';
@@ -225,12 +225,14 @@ export async function runRating({
     // Which development this reports, decided once and stored. Display-side
     // only: it cannot change the score, and a judge failure stores the reading
     // unjudged rather than losing it.
+    const priors = await history({ hours: PRIOR_HOURS });
     const judgement = await judgeReading({
       score,
       explanation,
       created_at: new Date().toISOString(),
-      priors: await history({ hours: PRIOR_HOURS }),
+      priors,
       stories: await recentStories(),
+      roots: await priorRoots(priors),
     });
     const saved = await insertRating({
       ...base,

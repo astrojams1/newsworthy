@@ -14,6 +14,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | #155 | 2026-10-01 | README, design README, mobile release, story timeline | Design README and story timeline: iOS header controls are native bar buttons; mobile release: Appearance declares its default | Header and widget default fixes not yet compiled or seen on a device |
 | #155 | 2026-10-01 | store/listing.json, docs/product-messaging.md | Store description: "uses AI" and "AI assessments can be wrong" removed; timeline, New: label and per-widget settings added | Not yet pushed to App Store Connect; screenshots still show the old design |
 | #201 | 2026-10-12 | README, AGENTS.md, product messaging, llms.txt, caller contract, rating skill, privacy and support | README documents `TRIAL_CALLER_TOKEN`, `/api/admin/trials` and caller trials; nothing user-facing changed | Trial cost figures are list-price estimates from one live run until measured session costs replace them |
+| #200 | 2026-10-11 | README, product messaging, llms.txt, caller instructions | None needed: no external copy states the judge's rules; caller instructions embed v5 themselves | Per-reading judgements not read (no admin token on this Mac) |
 | #202 | 2026-10-11 | README, story timeline, AGENTS.md, support page, store listing and Review Notes, product messaging, llms.txt | Every "off by default" / "turn on the timeline" claim now says on by default | Listing and Review Notes not pushed to App Store Connect; build number 27 assumed |
 
 ## Lessons
