@@ -115,8 +115,8 @@ actually wired up. Start there when a deploy misbehaves.
 
 | Route | What's there |
 |---|---|
-| `/` | The rating, explanation and update time, and Share and Settings controls in the header. The number is the loudest development still live — each carries its own level, aged from when it was first reported. With Show timeline turned on in Settings (off by default), a quiet chevron below it leads to a timeline of the other live developments, each tagged with its story; the scroll snaps between the reading and the timeline, and tapping the header returns to the reading (prototype) |
-| `/settings` | Settings overview: Appearance, on native Notifications, the Show timeline switch (off by default), the Privacy and Support links, and in the apps an Introduction row. A sheet in the apps, a page on the web |
+| `/` | The rating, explanation and update time, and Share and Settings controls in the header. The number is the loudest development still live — each carries its own level, aged from when it was first reported. Unless Show timeline is turned off in Settings (it is on by default), a quiet chevron below it leads to a timeline of the other live developments, each tagged with its story; the scroll snaps between the reading and the timeline, and tapping the header returns to the reading (prototype) |
+| `/settings` | Settings overview: Appearance, on native Notifications, the Show timeline switch (on by default), the Privacy and Support links, and in the apps an Introduction row. A sheet in the apps, a page on the web |
 | `/onboarding` | Apps only: the three-slide introduction, with Skip, Next and Done; on the web it redirects to the reading. Every title sits at the same height. Opens once on a phone's first launch (`onboarded` in `preferences.js`); Settings replays it |
 | `/settings/appearance` | Follow device, Light or Dark (the app only; each widget has its own settings, see `design/widget-settings.json`) |
 | `/settings/notifications` | Native only in the apps: optional high-score alerts and the threshold row |

@@ -56,11 +56,11 @@ export default function Settings() {
             <RowContent index={index} icon={icon} label={label} trailing={<Trailing value={value} to="page" />} />
           </Pressable>
         </Link>)}
-        {/* Off by default: the reading alone is the product; the timeline is an addition. */}
+        {/* On by default since 2026-10-11; turning it off leaves the reading alone. */}
         <Pressable testID="timeline-row" accessibilityRole="switch" accessibilityLabel="Show timeline"
-          accessibilityState={{ checked: preferences.timeline }} onPress={() => setTimeline(!preferences.timeline)} style={rowStyle()}>
+          accessibilityState={{ checked: preferences.showTimeline }} onPress={() => setTimeline(!preferences.showTimeline)} style={rowStyle()}>
           <RowContent index={pages.length} icon="timeline" label="Show timeline"
-            trailing={<Toggle testID="timeline-switch" accessibilityLabel="Show timeline" value={preferences.timeline} onValueChange={setTimeline} />} />
+            trailing={<Toggle testID="timeline-switch" accessibilityLabel="Show timeline" value={preferences.showTimeline} onValueChange={setTimeline} />} />
         </Pressable>
       </Section>
       {checked !== '' && <Section title="News" testID="news-status">

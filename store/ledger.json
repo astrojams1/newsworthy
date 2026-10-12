@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T12:08:40+00:00",
+  "updated_at": "2026-10-12T05:16:25+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1168,6 +1168,17 @@
       ],
       "next_action": "Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.",
       "updated_at": "2026-10-01T12:08:40+00:00"
+    },
+    "ui.timeline-default": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2 finding, with the timeline off by default): the timeline is on by default. Stored as showTimeline; the old timeline key, false in every existing install from its first save, is no longer read, so TestFlight installs see it on after updating. Listing description and Review Notes updated in store/listing.json (not yet pushed to App Store Connect). Unit and render tests only; no native build yet.",
+      "evidence": [
+        "apps/client/lib/preferences.js; test/preferences.test.js; store/listing.json"
+      ],
+      "next_action": "Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.",
+      "updated_at": "2026-10-12T05:16:25+00:00"
     }
   },
   "events": [
@@ -7410,6 +7421,22 @@
         ],
         "next_action": "Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.",
         "updated_at": "2026-10-01T12:08:40+00:00"
+      }
+    },
+    {
+      "sequence": 390,
+      "at": "2026-10-12T05:16:25+00:00",
+      "gate": "ui.timeline-default",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2 finding, with the timeline off by default): the timeline is on by default. Stored as showTimeline; the old timeline key, false in every existing install from its first save, is no longer read, so TestFlight installs see it on after updating. Listing description and Review Notes updated in store/listing.json (not yet pushed to App Store Connect). Unit and render tests only; no native build yet.",
+        "evidence": [
+          "apps/client/lib/preferences.js; test/preferences.test.js; store/listing.json"
+        ],
+        "next_action": "Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.",
+        "updated_at": "2026-10-12T05:16:25+00:00"
       }
     }
   ],
