@@ -5,7 +5,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries, frontPageSpans } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
 import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges.js';
@@ -549,7 +549,8 @@ const server = createServer(async (req, res) => {
       if (!callerAuthorized(url, req)) {
         return rejection(res, url, 401, 'unauthorized', { req, method: req.method, record: false });
       }
-      const record = judgeRecord({ priors: await history({ hours: PRIOR_HOURS }), stories: await recentStories() });
+      const priors = await history({ hours: PRIOR_HOURS });
+      const record = judgeRecord({ priors, stories: await recentStories(), roots: await priorRoots(priors) });
       await recordFetch(url, req, path, 'json');
       return json(res, 200, { record: record.text });
     }
@@ -826,7 +827,7 @@ const server = createServer(async (req, res) => {
       if (!reading) return json(res, 200, { reading: null, remaining: 0 });
       const hoursBack = (Date.now() - Date.parse(reading.created_at)) / 3600_000 + PRIOR_HOURS + 1;
       const priors = priorsBefore(await history({ hours: hoursBack, limit: 5000 }), reading);
-      const record = judgeRecord({ priors, stories: await recentStories({ before: reading.created_at }) });
+      const record = judgeRecord({ priors, stories: await recentStories({ before: reading.created_at }), roots: await priorRoots(priors) });
       return json(res, 200, {
         reading, judge_version: judgeVersion(), record: record.text,
         remaining: (await unjudgedRatings({ limit: 1000 })).length,
@@ -867,6 +868,7 @@ const server = createServer(async (req, res) => {
           created_at: row.created_at,
           priors,
           stories: await recentStories({ before: row.created_at }),
+          roots: await priorRoots(priors),
         });
         await setJudgement(row.id, judgement);
         if (judgement.judge_version != null) judged += 1;

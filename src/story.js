@@ -168,11 +168,35 @@ the first time no recorded development names that level, under the slug of the
 story that moved it. A figure already reported moving again short of such a
 level, oil up 3% then 4%, restates its development.`;
 
+/**
+ * v5 says the same kind of event happening again is new, and nothing else
+ * changes: v4 is kept byte-identical and one paragraph is appended.
+ *
+ * v1 lists "a spread to a new party or place" among what makes a development
+ * new, and "a revised figure, or added detail" among what restates one. A
+ * second attack by the same party on the same target is neither a new party
+ * nor a new place, and its toll reads as a revised figure, so the text pushed
+ * the judge to "same". On 6 October the Houthis said they struck Riyadh's main
+ * airport; on 7 and 8 October further strikes there killed people and stopped
+ * flights, and by 12 October the page was showing the 6 October sentence,
+ * "6d ago", for the newer and bigger attacks. The line it draws is the
+ * occurrence, and timing tells occurrences apart: the record lists when each
+ * development was first seen, and the caller knows when its event happened.
+ */
+const V5 = `${V4}
+
+The same kind of event happening again is a new development: another strike on
+a target already hit, a further attack by the same party. A reading restates a
+recorded development only when it reports that occurrence. An event that
+happened after the development was first seen is a later one, and its toll or
+damage is not a revised figure.`;
+
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
   2: { label: 'story-vocabulary-v2', added: '2026-09-04', text: V2 },
   3: { label: 'same-story-merge-v3', added: '2026-09-25', text: V3 },
   4: { label: 'market-levels-v4', added: '2026-09-28', text: V4 },
+  5: { label: 'recurring-events-v5', added: '2026-10-11', text: V5 },
 };
 
 export function judgeVersion() {
@@ -209,9 +233,19 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
  * the sentence that opened it and the latest restatement, which between them
  * say what the development is and how far it has run.
  *
+ * A development can outlive the window its readings are drawn from: re-reports
+ * inside it keep naming a root reported before it. Without that root, the group
+ * read as if its earliest re-report were the event, dated then. On 12 October a
+ * 147-hour-old Houthi strike on Riyadh's airport was offered that way, first
+ * seen days after it happened, and a newer strike was filed under it. `roots`
+ * supplies those roots (`priorRoots()` in db.js), so `first` and `first_at` are
+ * the development's own first report wherever its re-reports fall.
+ *
  * @param {Array<object>} priors ascending, oldest first, judged or not
+ * @param {Map<number, object>} [roots] root rows not among `priors`, by id
  */
-export function groupDevelopments(priors) {
+export function groupDevelopments(priors, roots = new Map()) {
+  const present = new Set(priors.map((row) => row.id));
   const groups = new Map();
   let previousRoot = null;
   for (const row of priors) {
@@ -229,14 +263,15 @@ export function groupDevelopments(priors) {
       existing.readings += 1;
       existing.story ??= row.story ?? null;
     } else {
+      const outside = present.has(root) ? null : roots.get(root);
       groups.set(root, {
         id: root,
-        story: row.story ?? null,
-        first: row.explanation,
-        first_at: iso(row.created_at),
+        story: row.story ?? outside?.story ?? null,
+        first: outside?.explanation ?? row.explanation,
+        first_at: iso(outside?.created_at ?? row.created_at),
         latest: row.explanation,
         latest_at: iso(row.created_at),
-        readings: 1,
+        readings: outside ? 2 : 1,
       });
     }
   }
@@ -288,9 +323,9 @@ function renderStoryReadings(stories = []) {
 }
 
 /** The message the judge is sent, kept out of the call so a test can read it. */
-export function judgeMessage({ score, explanation, created_at, priors = [], stories = [] }) {
+export function judgeMessage({ score, explanation, created_at, priors = [], stories = [], roots }) {
   return [
-    judgeContext({ priors, stories }),
+    judgeContext({ priors, stories, roots }),
     '',
     `New reading (${iso(created_at) ?? 'now'}), scored ${score}:`,
     explanation,
@@ -299,8 +334,8 @@ export function judgeMessage({ score, explanation, created_at, priors = [], stor
 
 /** Everything in the judge message but the new reading: the prompt, then the
  *  record — the story names and the recorded developments. */
-function judgeContext({ priors = [], stories = [] }) {
-  return [renderJudgePrompt().text, '', judgeRecord({ priors, stories }).text].join('\n');
+function judgeContext({ priors = [], stories = [], roots }) {
+  return [renderJudgePrompt().text, '', judgeRecord({ priors, stories, roots }).text].join('\n');
 }
 
 /** The ids the answer is allowed to name. */
@@ -316,8 +351,8 @@ function knownRoots(priors) {
  * steer either. `roots` are the ids the text lists, the only ids an answer may
  * name.
  */
-export function judgeRecord({ priors = [], stories = [] } = {}) {
-  const groups = groupDevelopments(priors).slice(-MAX_PRIORS);
+export function judgeRecord({ priors = [], stories = [], roots } = {}) {
+  const groups = groupDevelopments(priors, roots).slice(-MAX_PRIORS);
   const readings = renderStoryReadings(stories);
   return {
     text: [renderStories(stories), '', renderPriors(groups),
@@ -526,6 +561,7 @@ export async function judgeReading({
   created_at,
   priors = [],
   stories = [],
+  roots,
   model,
   mock = process.env.NEWSWORTHY_MOCK === '1',
 } = {}) {
@@ -542,7 +578,7 @@ export async function judgeReading({
   }
 
   model ??= (await effectiveConfig()).judgeModel;
-  const message = judgeMessage({ score, explanation, created_at, priors, stories });
+  const message = judgeMessage({ score, explanation, created_at, priors, stories, roots });
   let response;
   try {
     response = await callJudge({ model, message });

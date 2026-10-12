@@ -64,14 +64,16 @@ test('the judge prompt is a specification, not a set of orders', () => {
   // prevents is expensive, so the whole prompt surface keeps one voice.
   const { text } = renderJudgePrompt();
   assert.doesNotMatch(text, /\byou (must|should|will|need)\b/i);
-  assert.ok(text.length < 2500, `judge prompt is ${text.length} characters`);
+  // Each version appends one paragraph to the last; v5 took it past the 2,500
+  // this once was. A cap still keeps growth a decision rather than a drift.
+  assert.ok(text.length < 3000, `judge prompt is ${text.length} characters`);
   assert.match(text, /development_of/, 'and it names the field it wants back');
 });
 
 test('judge prompts are append-only, pinned by hash', () => {
   // A stored judgement names the version that produced it. Editing a published
   // version would reinterpret readings already recorded, silently.
-  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52' };
+  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '41fc793213e0f9e5' };
   const prompts = allJudgePrompts();
   assert.deepEqual(prompts.map((p) => p.version), Object.keys(pins).map(Number),
     'every published version is pinned here');
@@ -154,7 +156,44 @@ test('v4 makes a market reaching a level a development and keeps v3 whole', () =
   assert.match(added, /moving again short of such a\nlevel, oil up 3% then 4%, restates its development/,
     'a figure moving again does not, unless it reaches such a level');
   assert.match(added, /under the slug of the\nstory that moved it/, 'and it stays in the story behind it');
-  assert.equal(judgeVersion(), 4, 'and v4 is what new readings are judged by');
+});
+
+test('v5 makes the same kind of event happening again a development and keeps v4 whole', () => {
+  // A Houthi strike on Riyadh's airport on 6 October; further, deadlier strikes
+  // there on 7 and 8 October were filed under it, and by 12 October the page
+  // showed the 6 October sentence, "6d ago", for the newer attacks. v1's "a new
+  // party or place" did not cover a second attack, and its toll read as "a
+  // revised figure". v4 is kept byte for byte and one paragraph added.
+  const [, , , v4, v5] = allJudgePrompts();
+  assert.ok(v5.text.startsWith(v4.text), 'v4 verbatim, then one paragraph');
+  const added = v5.text.slice(v4.text.length);
+  assert.match(added, /The same kind of event happening again is a new development/);
+  assert.match(added, /another strike on\na target already hit, a further attack by the same party/);
+  assert.match(added, /happened after the development was first seen is a later one/, 'timing tells occurrences apart');
+  assert.match(added, /its toll or\ndamage is not a revised figure/, 'a later toll is not v1\'s revised figure');
+  assert.equal(judgeVersion(), 5, 'and v5 is what new readings are judged by');
+});
+
+test('a development whose first report has left the window is shown as first reported', () => {
+  // On 12 October a 147-hour-old root was offered by its re-reports alone:
+  // "first seen" days after the event, with a later attack as its first
+  // sentence, so the next attack matched it. The root comes back by id.
+  const priors = [
+    row(10, 'Houthis strike Riyadh airport again, killing three', { development_of: 1 }),
+    row(11, 'Saudi-led forces hit Houthi targets', { development_of: null, story: 'iran-war' }),
+  ];
+  const roots = new Map([[1, { id: 1, explanation: 'Houthis say they struck Riyadh airport',
+    created_at: '2026-10-06T01:04:30.000Z', story: 'iran-war' }]]);
+  const [old] = groupDevelopments(priors, roots);
+  assert.equal(old.id, 1);
+  assert.equal(old.first, 'Houthis say they struck Riyadh airport', 'the root, not its earliest re-report');
+  assert.equal(old.first_at, '2026-10-06T01:04:30.000Z', 'dated when it was first reported');
+  assert.equal(old.latest, 'Houthis strike Riyadh airport again, killing three');
+  const { text } = judgeRecord({ priors, roots });
+  assert.match(text, /\[1\] iran-war · first seen 2026-10-06T01:04:30\.000Z/);
+  assert.match(text, /first: Houthis say they struck Riyadh airport\n {4}latest \(/, 'both sentences shown');
+  // Without the root, the old shape: the re-report stands in for the event.
+  assert.equal(groupDevelopments(priors)[0].first, 'Houthis strike Riyadh airport again, killing three');
 });
 
 test('a new development still takes an existing story name', () => {

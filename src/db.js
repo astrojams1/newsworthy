@@ -851,6 +851,25 @@ export async function releasePushDeliveries(claims = []) {
 }
 
 /**
+ * The roots the judge's record names but its window no longer holds: the first
+ * report of each development whose re-reports are inside `PRIOR_HOURS` and
+ * whose own reading is older, by id. `groupDevelopments()` uses them so a
+ * development is shown as first reported, not as its earliest re-report.
+ *
+ * @param {Array<object>} priors the window's readings
+ * @returns {Promise<Map<number, object>>}
+ */
+export async function priorRoots(priors) {
+  const present = new Set(priors.map((r) => r.id));
+  const missing = [...new Set(
+    priors
+      .filter((r) => r.judge_version != null && r.development_of != null && !present.has(r.development_of))
+      .map((r) => r.development_of),
+  )];
+  return new Map((await ratingsByIds(missing)).map((r) => [r.id, r]));
+}
+
+/**
  * First-report times for developments whose opening reading is older than the
  * replay window. A story running since Tuesday would otherwise date from the
  * edge of the window and read as younger than it is. Shared by /api/current
