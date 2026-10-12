@@ -44,7 +44,9 @@ adding, removing, changing or preserving functionality.
 To check the hourly caller's runs against what the server recorded, use the
 [caller review skill](.agents/skills/newsworthy-caller-review/SKILL.md) with
 `scripts/caller-review.mjs`; findings are appended to the
-[caller review ledger](docs/caller-reviews/ledger.md).
+[caller review ledger](docs/caller-reviews/ledger.md). A candidate caller can
+run beside the live one without reaching the page; see
+[caller trials](docs/caller-trials.md) and `scripts/trial-compare.mjs`.
 
 Before any EAS build, store submission or EAS sandbox, use the
 [app release skill](.agents/skills/newsworthy-app-release/SKILL.md): the Expo
@@ -127,6 +129,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/timeline` | `{ developments: [{ root, story, since, score, displayed, leading, explanation }] }` — prototype. Every development first covered in the last week, from the same replay as `/api/current`, newest first by first coverage, one entry per development (never per reading) with the sentence it broke with. The development the newest reading reports is left out, since the page already shows it. Reaches back one week by first coverage and ends there |
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions, and `stories` — every story still live with the developments inside it, when each was first covered (`opened`, which an escalation does not move, unlike `since`), what each broke at, what that has decayed to, and which one the front page is about. Each story also says where it stands now: `age_days`, `routine` (the median its developments have scored), `fatigue` (the weight its next development would open at) and `breakthrough_at` (the score that would open whole). `stories` describes now, not the charted range. `front_page` lists, over the charted range, one row per story with the stretches the front page showed it (`from`, `to`) and its total `hours`: each reading counts until the next, for the story of the development it reported, most recently shown first |
 | `/api/admin/prompts` | Every prompt version, full text |
+| `/api/admin/trials?hours=168` | A trial caller's readings, each paired with the live reading nearest in time, with agreement figures and its run reports ([caller trials](docs/caller-trials.md)) |
 | `/api/admin/settings` | `GET` the model, cadence, development half-life, story half-life and judge model with the priced options; `POST` to change them |
 | `/api/admin/merges` | `POST {stories: [a, b]}` records that two story names are one story (the name with more readings is kept); `POST /api/admin/merges/:id/undo` undoes one with a new row. Listed as `merges` in `/api/admin/history` and on `/admin` |
 | `/api/admin/judgements/next` | The oldest unjudged reading and the record as it stood when it arrived; `POST /api/admin/judgements` stores an answer for it, checked like a caller's and stamped `backfill`. Strictly oldest first |
@@ -366,6 +369,7 @@ scheduler runs, and only `ANTHROPIC_API_KEY` and `DATABASE_URL` are required.
 | `NEWSWORTHY_NO_SCHEDULER` | — | `1` to serve without the in-process scheduler (automatic on Vercel) |
 | `CRON_SECRET` | — | Set this secret in Vercel; Vercel Cron sends it as the bearer token for `/api/cron` |
 | `CALLER_TOKEN` | — | Lets an external agent use `/api/instructions`, `/api/prompt` and `/api/readings` without the admin token |
+| `TRIAL_CALLER_TOKEN` | — | The same caller API for a candidate caller under trial; its readings and run reports are stored apart and never displayed ([caller trials](docs/caller-trials.md)) |
 | `NEWSWORTHY_MOCK` | — | `1` to fake readings without calling the API |
 | `ADMIN_TOKEN` | — | Locks `/admin` and `/api/admin/*` |
 | `EXPO_ACCESS_TOKEN` | — | Optional. Sent to Expo's push service so it can enforce that only this server notifies this app's devices |
