@@ -29,6 +29,17 @@ What the caps have cost so far, and what each run taught, is in
 used September's credits in ten days, and one prepared macOS sandbox did a
 full round of iOS simulator checks in 22 minutes.
 
+## Credentials
+
+Every credential is in the owner's 1Password vault, read with the 1Password
+CLI (`op`; on the owner's Mac it is the Homebrew cask `1password-cli`) and a
+service-account token in `OP_KEY`. That variable has held its own name as a
+prefix (`OP_KEY=ops_…`), which `op` rejects as "unrecognized auth type", so
+strip it: `OP_SERVICE_ACCOUNT_TOKEN="${OP_KEY#OP_KEY=}" op read "op://API Tokens/…"`.
+The Expo token is `Expo/credential` (as `EXPO_TOKEN`); the App Store Connect
+key is described under Submitting to TestFlight. Read them per command, never
+into a file in the repository, and check access without printing values.
+
 ## Start from the ledger
 
 Read [the build ledger](../../../store/builds/ledger.md) first: this month's row
@@ -42,6 +53,10 @@ says what is left, and its Lessons are what earlier runs cost to learn.
 2. **Check what is left.** Count this month's builds with `build_list` (Expo
    MCP) or `eas build:list --limit 50`, and this month's sandboxes with
    `sandbox_list`. A cap reached mid-task stops the work with nothing to show.
+   The Expo MCP's request cap can run out while build credits remain; then
+   `eas build:list --json` and `eas build:view <id> --json` (with `EXPO_TOKEN`)
+   read the same state, and the next store build number is the newest
+   production `appBuildVersion` plus one (remote auto-increment).
 3. **Reuse before building.** If a finished build already exists for the commit
    and profile you need, use its artifact (`build_list` gives the URL; artifacts
    expire after 14 days for internal builds, 30 for store builds). A pre-change
@@ -68,6 +83,26 @@ owner to accept a new license and complete administrator setup. It can also
 require downloading a matching simulator runtime before asset catalogs compile;
 the presence of an older bootable simulator is not enough. Record that download
 as a local prerequisite, not an app compile defect.
+
+The local route, measured on 11 October with Xcode 27: `CI=1 npx expo prebuild
+-p ios --no-install` in `apps/client`, `LANG=en_US.UTF-8 pod install` in
+`ios` (without UTF-8 CocoaPods fails on Unicode normalization), then an
+`xcodebuild -workspace Newsworthy.xcworkspace -scheme Newsworthy` Release
+simulator build: about 15 minutes in all, no credits. Do it in a worktree under
+`.worktrees/` and remove it after; `ios/` and `build/` are large.
+
+**An app built with the iOS 27 SDK does not launch on iOS 27**: it has not
+adopted the UIScene lifecycle, and iOS stops it in
+`_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`. Its widget
+extension still runs there. So with Xcode 27, check app screens on an iOS 18.x
+runtime and widgets on either. Store builds are pinned to Xcode 26.6 by
+`ios.image` in `eas.json` (`macos-tahoe-26.5-xcode-26.6`); move the pin only
+once the app adopts UIScene and launches on iOS 27, and confirm the image in each
+build's log ("Using VM template …"; logs are zstd- or brotli-compressed).
+
+The Simulator panel drives only devices the owner has granted ("Let Claude use
+it"); a newly created device waits for that grant. Use a device already granted,
+or read the screen with `xcrun simctl io <device> screenshot`, which needs none.
 
 Use a Release simulator build with `ARCHS=arm64 ONLY_ACTIVE_ARCH=YES`,
 including the widget extension. Preserve normal simulator ad-hoc signing and
@@ -147,6 +182,30 @@ owner asked on 1 October: find the group with
 `POST /v1/betaGroups/{id}/relationships/builds` with the build's id (204 on
 success). Tell testers it is available only once its `buildBetaDetail` shows
 `IN_BETA_TESTING`.
+
+## Resubmitting to App Review
+
+After a rejection, App Store Connect keeps the version (`REJECTED`) and its
+review submission (`UNRESOLVED_ISSUES`, item `REJECTED`); resubmitting reuses
+both through the API, with the same vault key:
+
+1. Once the new build is `VALID`, check `usesNonExemptEncryption` is set
+   (false for this app), add it to Release QA, and select it:
+   `PATCH /v1/appStoreVersions/{version}/relationships/build`.
+2. Change listing copy and Review Notes at their source, `store/listing.json`,
+   first. Before patching, compare the live values
+   (`appStoreVersionLocalizations`, `appStoreReviewDetails`) with the
+   repository's previous copy, so only the intended change goes out; read them
+   back after. Review Notes are limited to 4,000 characters.
+3. `PATCH /v1/reviewSubmissionItems/{item}` with `resolved: true` (it becomes
+   `READY_FOR_REVIEW`), then `PATCH /v1/reviewSubmissions/{id}` with
+   `submitted: true`. Read back `WAITING_FOR_REVIEW` on both the version and
+   the submission before saying it was resubmitted.
+
+The owner's request to resubmit authorizes these steps; nothing earlier does.
+Apple's rejection text is not in the API, so ask the owner for it. Keep a
+receipt (`store/apple-review-resubmission-<date>-build<N>.json`) and record
+the `apple.review` gate.
 
 ## Spending them well
 
