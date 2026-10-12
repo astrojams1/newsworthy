@@ -5,7 +5,8 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { pairTrials, summarizeTrial } from './trial.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries, frontPageSpans } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
 import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges.js';
@@ -24,6 +25,10 @@ const MAX_RUN_REPORT = 4000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const CALLER_TOKEN = process.env.CALLER_TOKEN || '';
+// A candidate caller run beside the live one: same API, same instructions, but
+// its readings and run reports are stored apart and never displayed. The token
+// decides it, not anything the caller sends. See docs/caller-trials.md.
+const TRIAL_CALLER_TOKEN = process.env.TRIAL_CALLER_TOKEN || '';
 const ON_VERCEL = Boolean(process.env.VERCEL);
 // vercel.json fires /api/cron on this cadence; the configured interval is
 // enforced by the slot on top of it.
@@ -166,14 +171,15 @@ function cronAuthorized(url, req) {
  * External callers get their own token, so an agent can submit readings
  * without being handed the admin token. ADMIN_TOKEN also works.
  */
-/** Whose token authorized a caller-API request — 'caller', 'admin', or
- *  'open' when self-hosted with none configured — or null when none did. */
+/** Whose token authorized a caller-API request — 'caller', 'trial', 'admin',
+ *  or 'open' when self-hosted with none configured — or null when none did. */
 function callerIdentity(url, req) {
   // Headers only: curl sets them, and a token in a URL lands in logs.
   const supplied = req.headers['x-newsworthy-token'] || req.headers['x-admin-token'];
   if (CALLER_TOKEN && secretMatches(supplied, CALLER_TOKEN)) return 'caller';
+  if (TRIAL_CALLER_TOKEN && secretMatches(supplied, TRIAL_CALLER_TOKEN)) return 'trial';
   if (ADMIN_TOKEN && secretMatches(supplied, ADMIN_TOKEN)) return 'admin';
-  if (CALLER_TOKEN || ADMIN_TOKEN) return null;
+  if (CALLER_TOKEN || TRIAL_CALLER_TOKEN || ADMIN_TOKEN) return null;
   return ON_VERCEL ? null : 'open'; // open only when self-hosted with nothing configured
 }
 
@@ -487,6 +493,27 @@ const server = createServer(async (req, res) => {
         // answer stores the reading unjudged, carrying the reason — so the
         // four rejection rules stay four.
         const judgement = callerJudgement(body.judgement, judgeRecord({ priors: await history({ hours: PRIOR_HOURS }) }));
+        // A trial reading is checked exactly as a live one and stored apart:
+        // no merge, no push, no part in what the page shows or the cron's
+        // staleness check. Its proposed merge is kept as data.
+        if (callerIdentity(url, req) === 'trial') {
+          const saved = await insertTrialReading({ ...submission, ...judgement });
+          console.log(`trial reading: ${saved.score}/10 (prompt v${saved.prompt_version})`);
+          return json(res, 201, {
+            id: saved.id,
+            created_at: saved.created_at,
+            score: saved.score,
+            trial: true,
+            prompt_version: saved.prompt_version,
+            prompt_hash: saved.prompt_hash,
+            prompt_verified: saved.prompt_verified ?? null,
+            story: saved.story ?? null,
+            development: saved.judge_version == null
+              ? 'unjudged'
+              : (saved.development_of == null ? 'new' : 'same'),
+            ...(saved.judge_version == null ? { judge_note: saved.judge_note } : {}),
+          });
+        }
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
         const { same_story, ...columns } = judgement;
@@ -572,6 +599,10 @@ const server = createServer(async (req, res) => {
       }
       const report = typeof body?.report === 'string' ? body.report.trim() : '';
       if (!report) return rejection(res, url, 422, 'run report: report is required', { req, method: req.method });
+      if (callerIdentity(url, req) === 'trial') {
+        const saved = await logTrialRun({ reading: body.reading, report: report.slice(0, MAX_RUN_REPORT) });
+        return json(res, 201, { ok: true, stored: true, trial: true, id: saved.id, reading: saved.reading_id });
+      }
       // Linked only to a reading that exists; a wrong id never costs the report.
       const id = body.reading == null ? null : Number(body.reading);
       const [reading] = Number.isInteger(id) ? await ratingsByIds([id]) : [];
@@ -695,6 +726,22 @@ const server = createServer(async (req, res) => {
         merges: await mergesForAdmin(),
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });
+    }
+
+    // A trial caller's readings beside the live ones, for review. Nothing here
+    // reaches the page: see docs/caller-trials.md.
+    if (path === '/api/admin/trials' && req.method === 'GET') {
+      const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
+      const [trials, live, runs] = await Promise.all([
+        trialReadings({ hours }),
+        history({ hours: hours + 1 }),
+        trialRuns({ hours }),
+      ]);
+      // Against the live caller only: a cron or "Rate now" reading in the same
+      // half hour is another instrument, and pairing with it would hide an
+      // hour the live caller missed.
+      const pairs = pairTrials(trials, live.filter((r) => r.source === 'external'));
+      return json(res, 200, { hours, summary: summarizeTrial(pairs), pairs, runs });
     }
 
     if (path === '/api/admin/settings') {
