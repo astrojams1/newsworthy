@@ -12,7 +12,13 @@
     "toolchain": "Apple Swift 6.3 (Command Line Tools), macOS SDK, target arm64-apple-macos15",
     "source": "Production NewsworthyWidget.swift and WidgetReadingStore.swift compiled unchanged except: UIKit replaced by an AppKit shim (UIFont = NSFont, lineHeight = ascender - descender + leading), @main removed, and named colours replaced by plain colours because the asset catalog is not compiled on macOS.",
     "host": "store/source/widget-sentence-fit/host.swift",
-    "sizes": ["364x170", "338x158", "329x155", "348x157", "321x148"],
+    "sizes": [
+      "364x170",
+      "338x158",
+      "329x155",
+      "348x157",
+      "321x148"
+    ],
     "captures": {
       "store/source/widget-sentence-fit/macos-before.png": "9236d4e1790749dfec1625665818a12a81010396bf3c516725d0a4874c017349",
       "store/source/widget-sentence-fit/macos-after.png": "c5c3afa51ac2032cfae10ba8632a06570cf10f62911ffb73fb3775c443e2a627"
@@ -21,9 +27,20 @@
     "after": "The whole sentence in 9 of 10 layouts. 321x148 with the app name shown (3 lines) still truncates at 12.5 points."
   },
   "untested": [
-    "iOS compile of the change (no Xcode on this Mac; typechecked against the macOS SDK only)",
-    "WidgetKit Home Screen rendering on any iOS simulator or device",
+    "Widget with Show app name off, and the 321 x 148 size",
     "Dynamic Type sizes above the default",
+    "An EAS production build (Xcode 26.6) on a device",
     "Android, which has its own line count in RatingWidget.java and was not changed"
-  ]
+  ],
+  "native": {
+    "date": "2026-10-11",
+    "build": "Local Release iphonesimulator build (Xcode 27.0, 27A266a; ARCHS=arm64) of fix/widget-sentence-fit at 91cbd3b, from expo prebuild; widget extension NewsworthyWidget.appex. Not an EAS or App Store build.",
+    "device": "iPhone 17e simulator, iOS 27.0 (24A434), 390 x 844 points",
+    "method": "Medium widget added through the Home Screen widget gallery with Show app name on; live production /api/current.",
+    "capture": {
+      "store/source/widget-sentence-fit/ios27-iphone17e-medium.png": "78cffee9eb9f0cdcdc486582cebe4cdcef7078ed1a2ad0e9ada03cea10a33d30"
+    },
+    "observed": "The whole reading, '6d ago:' plus the 132-character sentence (140 characters), in 4 lines beside the 3; the numeral's baseline level with line 3; 'Checked at 10:04' below. The macOS render had predicted a fifth line at this size before the fix.",
+    "appLaunch": "The app itself, built with the iOS 27 SDK, is stopped at launch on iOS 27 (_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption) and ran on iOS 18.4; the widget extension is unaffected. Production builds are pinned to Xcode 26.6 (eas.json)."
+  }
 }

@@ -27,6 +27,14 @@ Run Web starts a live Expo browser preview; its development middleware forwards
 only `GET /api/current` to the public production API. Native apps fetch that API
 directly. Web previews are not native simulator verification.
 
+**The production build is pinned to Xcode 26.6** (`ios.image` in `eas.json`,
+`macos-tahoe-26.5-xcode-26.6`, the image build 26 used). An app linked against
+the iOS 27 SDK that has not adopted the UIScene lifecycle is stopped at launch on
+iOS 27: a local Xcode 27 Release build of this app crashed in
+`_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption` on the iOS 27
+simulator on 11 October, and ran on iOS 18.4. Move the pin only once the app
+adopts UIScene and launches on iOS 27.
+
 On 1 October the owner's Mac was updated to Xcode 26.6 for local custom builds
 and native captures, avoiding additional Expo credits and sandbox minutes. The
 matching iOS 26.5 runtime is still downloading; older installed runtimes alone
