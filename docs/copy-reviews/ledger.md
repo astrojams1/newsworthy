@@ -17,6 +17,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | #200 | 2026-10-11 | README, product messaging, llms.txt, caller instructions | None needed: no external copy states the judge's rules; caller instructions embed v5 themselves | Per-reading judgements not read (no admin token on this Mac) |
 | #202 | 2026-10-11 | README, story timeline, AGENTS.md, support page, store listing and Review Notes, product messaging, llms.txt | Every "off by default" / "turn on the timeline" claim now says on by default | Listing and Review Notes not pushed to App Store Connect; build number 27 assumed |
 | #199 | 2026-10-11 | README, product messaging, store listing, llms.txt, story age, design README | Design README: the iOS sentence steps down to 12.5 pt before truncating, and the line limit counts line spacing | Not compiled for iOS or seen in WidgetKit |
+| #203 | 2026-10-12 | User actions, release and build ledgers, store listing | Listing description and Review Notes now live in App Store Connect, read back identical | No device verification of build 27; public availability not claimed |
 
 ## Lessons
 

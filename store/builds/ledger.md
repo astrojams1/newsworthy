@@ -14,7 +14,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 5 so far (iOS 22, 24, 25, 26; simulator-release 78c0ccc8 running) | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155 |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8) | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review |
 
 ## Lessons
 
@@ -204,3 +204,14 @@ The existing physical recording remains labeled historical build 21. Simulator
 captures do not claim physical build-26 certification or public availability.
 October usage is five cloud builds, about 57.3/60 sandbox minutes and MCP
 500/500 requests. No second capture sandbox or paid upgrade was started.
+
+**Build 27, 12 October.** iOS production `6913b8c7-2074-42ee-a603-1ce7a7dca59a`
+from `f9ffa29` (#199, #200, #202), image `macos-tahoe-26.5-xcode-26.6` (Xcode
+26.6, 17F113) as pinned; finished in about six minutes. Submitted with the
+temporary-profile key method (EAS submission `3881ec36`); Apple processed it
+VALID with `usesNonExemptEncryption` false, it was added to Release QA, selected
+for 1.0.0 and resubmitted: version and review submission WAITING_FOR_REVIEW.
+Before building, the widget was compiled and checked on a local Xcode 27
+simulator build at no cost. No sandbox minutes were used. The Expo MCP stayed
+at 500/500, so build state was read with EAS CLI instead.
+
