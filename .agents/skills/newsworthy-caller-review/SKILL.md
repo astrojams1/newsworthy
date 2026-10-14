@@ -66,6 +66,11 @@ only. Read every run report in full.
   it when unconfirmed ("Iran's Revolutionary Guards said they hit two
   tankers", not "two tankers were reportedly hit"). `scripts/passive-voice.mjs`
   flags a passive with no actor; a state ("is expected", "is due") is fine.
+- **A preview says what it will settle.** From prompt v23 a sentence about a
+  scheduled release not yet out (a data report, a speech, minutes) says what
+  the release will settle ("will show whether…"), not only that it is due.
+  On v23 or later a bare announcement is a contract breach; before v23 it is
+  expected.
 - **Judgement sound.** `same` or `new` is defensible against the record the
   reading was judged with; a proposed `same_story` joins one story coined twice,
   never related stories. A doubtful merge is raised with the owner, who can undo

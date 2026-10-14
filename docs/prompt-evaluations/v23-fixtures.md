@@ -1,0 +1,12 @@
+# Source notes (fixtures). Each item is the top development of one hour, with the score already chosen. Facts only.
+
+S1 (score 5, Oct 14, 01:00 UTC): The US releases September consumer price figures (CPI) at 8:30 a.m. Eastern today. It is the first inflation report since the Fed raised interest rates in September. Economists expect prices rose 3.4% from a year earlier, after 3.3% in August. The Fed next decides on rates Oct 28; futures price about a 40% chance of another rise.
+S2 (score 3, Oct 6, 04:00 UTC): Bank of Japan Governor Kazuo Ueda speaks later today. Traders are watching for hints of a second interest rate rise in 2 months. The yen is near its weakest level against the dollar since July.
+S3 (score 4, Oct 6, 14:00 UTC): The US Treasury sells $119 billion of new government bonds this week, in three auctions starting Tuesday. Long-term government borrowing costs are near their highest since 2002.
+S4 (score 4, Oct 7, 14:00 UTC): The Fed releases the minutes of its September meeting at 2 p.m. Eastern today. The 10-year Treasury yield rose to 5.33% this morning, its highest since 2002.
+S5 (score 5, Oct 1, 22:00 UTC): The US September jobs report comes out Friday Oct 2 at 8:30 a.m. Eastern. Economists expect 120,000 jobs were added. It is the last jobs report before the Fed's Oct 28 rate decision.
+S6 (score 4, Oct 7, 02:00 UTC): The US National Hurricane Center said a storm in the Gulf of Mexico is expected to become the first Atlantic hurricane of the year by Thursday. Its forecast track crosses offshore oil and gas fields; no companies have shut output yet.
+C1 (score 6, Oct 14, 13:00 UTC): US consumer prices rose 3.6% in September from a year earlier, the Labor Department said, above the 3.4% economists expected. Futures now price about a 70% chance the Fed raises rates again on Oct 28, up from 40% before the report.
+C2 (score 5, Oct 13, 23:00 UTC): Yemen's Houthi rebels hit a Saudi Aramco building in Dhahran with a missile, starting a small fire, Saudi officials said. The Houthis claimed the strike.
+C3 (score 5, Oct 13, 06:00 UTC): South Korea's main stock index fell 6% after Chinese memory chipmaker CXMT said it will mass-produce advanced server memory chips this year. Samsung and SK Hynix shares fell up to 10%.
+C4 (score 4, Oct 12, 22:00 UTC): Iran's Revolutionary Guards said they hit a third supertanker in the Strait of Hormuz in 2 days, and warned ships that help the US military.

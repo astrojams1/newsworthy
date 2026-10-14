@@ -90,6 +90,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [20, '24e0951932807570'],
     [21, '3f042c2d18d27cb3'],
     [22, '8916247a26173fdf'],
+    [23, '51dc90c54eed7bad'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -146,11 +147,20 @@ test('rule 10 — the sentence says who acted, in the active voice', () => {
   assert.match(output(renderPrompt(latestVersion()).text), /who did what in active voice, or who claims it\./);
 });
 
+test('rule 11 — before scheduled news, the sentence says what it will settle', () => {
+  // The owner's call from 2026-10-14. Reading 1209 announced "The US releases
+  // September consumer price figures today" eleven hours before the release and
+  // stopped there: v21 had cut the forecast tail that used to carry the stake,
+  // and nothing replaced it. A preview now leads with what the release settles.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.match(output(renderPrompt(latestVersion()).text), /Before scheduled news, lead with what it will settle\./);
+});
+
 test('the rules file lists exactly what is enforced here', async () => {
   // A rule added to the file and not to this suite is decoration.
   const rules = await readFile('PROMPT-RULES.md', 'utf8');
-  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 10,
-    'ten rules; add a test before adding an eleventh');
+  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 11,
+    'eleven rules; add a test before adding a twelfth');
 });
 
 test('v9 moves the rungs rather than annotating them', () => {
@@ -468,4 +478,27 @@ test('v22 asks for the active voice and changes nothing else that matters', asyn
     .replace('"New: " label on new developments.', '"New: " label.'));
   const evaluation = await readFile('docs/prompt-evaluations/v22.md', 'utf8');
   assert.ok(evaluation.includes(v22.hash), 'the evaluation record names the shipped text');
+});
+
+test('v23 says what scheduled news will settle and changes nothing else that matters', async () => {
+  // One clause added. The other edits tighten v22's wording to fit rule 7
+  // without changing what it asks for; everything before Output is v22's.
+  const [v22, v23] = [22, 23].map(renderPrompt);
+  const before = (t) => t.slice(0, t.indexOf('\nOutput\n'));
+  assert.equal(before(v23.text), before(v22.text));
+  assert.equal(v23.text, v22.text
+    .replace('Reply with a single JSON object and nothing else, no prose or fences:',
+      'Return only this JSON, no prose or fences:')
+    .replace('Display: at most 140 characters including spaces and punctuation, 5 of them for',
+      'Display: at most 140 characters including spaces and punctuation, 5 for')
+    .replace('Never predict market moves.',
+      'Never predict market moves. Before scheduled news, lead with what it will settle.')
+    .replace("dates, years and ordinals don't count", "dates, years, ordinals don't count")
+    .replace('Explain or drop jargon, market figures and uncommon acronyms.',
+      'Explain or drop jargon, market figures, rare acronyms.')
+    .replace('(year only if not this one, no weekdays)', '(no year if this one, no weekdays)')
+    .replace('rating justification or advice.', 'rating justification, advice.'));
+  assert.match(v23.text, /at most 135 characters/, 'the body budget is unchanged');
+  const evaluation = await readFile('docs/prompt-evaluations/v23.md', 'utf8');
+  assert.ok(evaluation.includes(v23.hash), 'the evaluation record names the shipped text');
 });

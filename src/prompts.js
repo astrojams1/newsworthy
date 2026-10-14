@@ -479,6 +479,28 @@ const V22_OUTPUT_CONTRACT = V21_OUTPUT_CONTRACT
   .replace('one development, who did what.', 'one development, who did what in active voice, or who claims it.')
   .replace('5 of them for the app\'s "New: " label on new developments.', '5 of them for the app\'s "New: " label.');
 
+// v23 says what a scheduled release will settle. On the morning of a data
+// release the likeliest cause of a sharp move is the release itself, so the
+// rater names it before it is out. Under v20 those previews carried their stake
+// in a forecast tail ("US inflation data due today could decide if the Fed
+// raises rates"); v21 rightly cut the tail and nothing replaced it, so reading
+// 1209 announced "The US releases September consumer price figures today" and
+// stopped. The rater now leads with what the release will settle. The rest of
+// Output is v22's, tightened without changing what it asks for to fit rule 7.
+// See docs/prompt-evaluations/v23.md.
+const V23_OUTPUT_CONTRACT = V22_OUTPUT_CONTRACT
+  .replace('Reply with a single JSON object and nothing else, no prose or fences:',
+    'Return only this JSON, no prose or fences:')
+  .replace('Display: at most 140 characters including spaces and punctuation, 5 of them for',
+    'Display: at most 140 characters including spaces and punctuation, 5 for')
+  .replace('Never predict market moves.',
+    'Never predict market moves. Before scheduled news, lead with what it will settle.')
+  .replace('dates, years and ordinals don\'t count', 'dates, years, ordinals don\'t count')
+  .replace('Explain or drop jargon, market figures and uncommon acronyms.',
+    'Explain or drop jargon, market figures, rare acronyms.')
+  .replace('(year only if not this one, no weekdays)', '(no year if this one, no weekdays)')
+  .replace('rating justification or advice.', 'rating justification, advice.');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -633,6 +655,13 @@ const REGISTRY = {
     added: '2026-10-05',
     instructions: V20_INSTRUCTIONS,
     outputContract: V22_OUTPUT_CONTRACT,
+  },
+  23: {
+    version: 23,
+    label: 'scheduled-news-stakes-v23',
+    added: '2026-10-14',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V23_OUTPUT_CONTRACT,
   },
 };
 

@@ -794,21 +794,14 @@ prohibition were shipped across nine months of versions, each judged by a rate
 measured on readings nobody could attribute to the text being judged. A prompt
 change is not evaluable until the readings answering it are verified.
 
-**v12 changes sentence writing, not calibration.** Output now requests at most
-150 characters including spaces and punctuation, one clear development, familiar
-abbreviations and useful specifics, without em dashes or semicolons. Everything
-before Output is byte-identical to v11. Ingestion still truncates only beyond
-400 characters and has the same four rejection rules. The [evaluation](docs/prompt-evaluations/v12.md) contains
-72 actual generations on reconstructed notes with GPT-6 Astra, not production
-Claude or the live search workflow. It supports the writing revision, not a
-claim about production quality or scoring.
+**v12 changes sentence writing, not calibration.** Output asks for at most 150
+characters, one clear development, familiar abbreviations and useful specifics,
+no em dashes or semicolons; the rest is v11's. The
+[evaluation](docs/prompt-evaluations/v12.md) ran GPT-6 Astra on reconstructed
+notes, not production Claude: evidence for the writing, not for scoring.
 
-**v13 sets the widget sentence budget to 140 characters**, the owner's choice.
-Only the character budget changes from v12; writing guidance, rating instructions,
-provenance and ingestion behavior remain.
-The [record](docs/prompt-evaluations/v13.md) separates the initial 100-character
-writing experiment from the selected 140-character limit. Neither a measured
-95% fit rate nor native widget verification is claimed.
+**v13 sets the widget sentence budget to 140 characters**, the owner's choice;
+nothing else changes from v12. See the [record](docs/prompt-evaluations/v13.md).
 
 **v15 makes the sentence calm and plain for a non-expert.** Live readings read
 as dense and expert-facing: three figures and two terms of art in one sentence.
@@ -876,6 +869,12 @@ the [record](docs/prompt-evaluations/v21.md).
 on record. Output now asks who did what in active voice, or who claims it
 (rule 10); `scripts/passive-voice.mjs` flags agentless passives. See the
 [record](docs/prompt-evaluations/v22.md).
+
+**v23: a preview says what it will settle.** Reading 1209 announced the day's
+inflation report eleven hours early and stopped there: v21 had cut the forecast
+tail that carried a preview's stake. Output now asks scheduled news to lead with
+what it will settle (rule 11), tightened elsewhere to fit rule 7. See the
+[record](docs/prompt-evaluations/v23.md).
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
