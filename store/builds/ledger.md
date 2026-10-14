@@ -15,7 +15,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded) |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th: build 28 in TestFlight, no credit |
 
 ## Lessons
 
@@ -76,6 +76,12 @@ resulting rules; this is the evidence behind them.
   pods already downloaded, `ios-release.mjs archive` (clean prebuild, pods,
   archive, export, checks) finished build 28 in 6m57s. Xcode-managed signing
   with the API key needed no Xcode account sign-in.
+- **The first local upload found two script faults** (2026-10-14). Upload
+  and processing of build 28 succeeded, then adding it to Release QA failed:
+  once on a dropped connection (`fetch failed`), then because
+  `/v1/apps/{id}/betaGroups` refuses `filter[name]` (400). The script now
+  retries dropped connections and matches the group by name itself;
+  `testers 28` then succeeded. Nothing was re-uploaded.
 - **Local Xcode verification is free** (2026-10-11). With Xcode 27 installed,
   prebuild, `pod install` (with `LANG=en_US.UTF-8`) and a Release simulator
   build took about 15 minutes and no credits or sandbox minutes.
@@ -238,3 +244,13 @@ widget, `.ipa` SHA-256
 `9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f`;
 `altool --validate-app` succeeded. Not uploaded: the first upload waits for
 the owner and should come from the merged commit. EAS credits used: none.
+
+**Build 28 to TestFlight, 14 October** (owner's request). Local
+`ios-release.mjs release` from clean `8c8fafb` (#208 merged): Xcode 27
+(27A266a), iphoneos27.0, Apple-managed signing; `.ipa` SHA-256
+`94f55e44f906cbc930371c31a355a5380c55bf62068e6adee1f506635dc2a8fa`. altool
+upload succeeded (delivery and Apple build `2d2662e5-7386-4903-9164-d823ce46fb70`)
+and processed VALID. The testers step failed twice (see Lessons) and, rerun
+with the fix, added it to Release QA: `IN_BETA_TESTING`. The earlier
+dirty-tree build 28 archive was discarded, never uploaded. EAS credits and
+sandbox minutes used: none. Build 27 stays the one selected for App Review.

@@ -43,6 +43,8 @@ test('archive and export let Xcode manage profiles with the App Store Connect ke
   assert.match(script, /'altool', verb, ipa, '--api-key'/);
   assert.match(script, /op:\/\/API Tokens\/App Store Connect/);
   assert.match(script, /mode: 0o600/, 'the key file is private');
+  // Apple refuses filter[name] on an app's betaGroups; build 28's first run stopped there.
+  assert.doesNotMatch(script, /\/betaGroups\?filter\[name\]/);
 });
 
 test('the build number reaches the app and its widget through prebuild', () => {
