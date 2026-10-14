@@ -179,6 +179,12 @@ function altool(key, verb, ipa) {
     ...(verb === '--upload-package' ? ['--wait'] : []), '--output-format', 'normal']);
 }
 
+// The app's own relationship, /v1/apps/{id}/betaGroups, refuses filter[name]
+// with a 400; the top-level collection takes both filters.
+export function betaGroupPath(app, name) {
+  return `/v1/betaGroups?filter[app]=${app}&filter[name]=${encodeURIComponent(name)}`;
+}
+
 // An uploaded build reaches no tester on its own: add it to the internal group.
 async function testers(key, build) {
   let found;
@@ -190,7 +196,7 @@ async function testers(key, build) {
     await new Promise(done => setTimeout(done, 30_000));
   }
   if (found?.attributes.processingState !== 'VALID') throw new Error(`Build ${build} is not VALID after 30 minutes`);
-  const group = (await api(key, `/v1/apps/${APP.ascAppId}/betaGroups?filter[name]=${encodeURIComponent(APP.testers)}`)).data[0];
+  const group = (await api(key, betaGroupPath(APP.ascAppId, APP.testers))).data[0];
   if (!group) throw new Error(`No beta group named ${APP.testers}`);
   await api(key, `/v1/betaGroups/${group.id}/relationships/builds`, 'POST', { data: [{ type: 'builds', id: found.id }] });
   const detail = (await api(key, `/v1/builds/${found.id}/buildBetaDetail`)).data.attributes;

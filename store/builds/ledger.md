@@ -79,6 +79,11 @@ resulting rules; this is the evidence behind them.
 - **Local Xcode verification is free** (2026-10-11). With Xcode 27 installed,
   prebuild, `pod install` (with `LANG=en_US.UTF-8`) and a Release simulator
   build took about 15 minutes and no credits or sandbox minutes.
+- **The group lookup broke without a code change** (2026-10-14).
+  `GET /v1/apps/{app}/betaGroups?filter[name]=` now answers 400
+  `PARAMETER_ERROR.ILLEGAL`, so `ios-release.mjs testers` would have failed
+  after the next upload. `GET /v1/betaGroups?filter[app]=…&filter[name]=…`
+  returns Release QA; the script uses it.
 
 ## 2026-09
 

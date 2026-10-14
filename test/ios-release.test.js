@@ -6,7 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { nextBuildNumber, pem, exportOptions, APP } from '../apps/client/script/ios-release.mjs';
+import { nextBuildNumber, pem, exportOptions, betaGroupPath, APP } from '../apps/client/script/ios-release.mjs';
 
 const require = createRequire(import.meta.url);
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
@@ -33,6 +33,12 @@ test('export uses the App Store method with Apple-managed signing and keeps the 
   assert.match(options, /<key>manageAppVersionAndBuildNumber<\/key><false\/>/);
   assert.equal(APP.team, 'CWQ9AWJF8T');
   assert.equal(APP.ascAppId, '6812519450');
+});
+
+test('the tester group is found through the top-level collection', () => {
+  assert.equal(betaGroupPath(APP.ascAppId, APP.testers), '/v1/betaGroups?filter[app]=6812519450&filter[name]=Release%20QA');
+  assert.doesNotMatch(read('apps/client/script/ios-release.mjs'), /\/v1\/apps\/[^`]*\/betaGroups\?filter\[name\]/,
+    'the app relationship answers filter[name] with a 400');
 });
 
 test('archive and export let Xcode manage profiles with the App Store Connect key', () => {
