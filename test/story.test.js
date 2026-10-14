@@ -355,6 +355,8 @@ test('the half-life is a setting, and the chart replays whichever is set', async
     assert.ok(before.half_lives.some((h) => h.hours === 24));
     assert.equal(before.half_lives.find((h) => h.hours === 48).label, 'two days');
     assert.ok(before.judge_model);
+    assert.equal(before.cron_tick_minutes, 60, 'the tick vercel.json schedules, not the old 15');
+    assert.equal(before.cron_tick_offset_minutes, 8);
 
     assert.equal(before.story_half_life_days, 90, 'stories fade over three months by default');
     assert.ok(before.story_half_lives.some((d) => d.days === 30));

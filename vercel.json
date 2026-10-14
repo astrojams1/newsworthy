@@ -10,7 +10,7 @@
   "crons": [
     {
       "path": "/api/cron",
-      "schedule": "*/15 * * * *"
+      "schedule": "8 * * * *"
     }
   ],
   "buildCommand": "npm run build:web"

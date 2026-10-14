@@ -314,7 +314,7 @@ access. Internal testing alone does not meet this requirement. See
   published categories match the manifest; see `store/disclosures.md`.
 
 - The server persists accepted Expo ticket IDs and checks delivery receipts on the
-  existing 15-minute scheduler, even when a new rating is skipped. Explicit
+  existing hourly scheduler, even when a new rating is skipped. Explicit
   failures can retry on the next reading of the same development; successful
   recipients are not repeated. Missing receipts expire after 24 hours without
   an automatic resend because delivery is unknown. Logs report aggregate
