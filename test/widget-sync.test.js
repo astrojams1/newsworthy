@@ -22,7 +22,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 
 test('fresh app readings reach widgets on launch, foreground and polling, including score decay with the same timestamp', async () => {
   const calls = [], effects = [], state = [];
-  let resume, poll, fail = false, value = reading;
+  let resume, poll, pollMs, fail = false, value = reading;
   const syncWidgets = async (...args) => calls.push(args);
   const { useReading } = load('apps/client/lib/use-reading.ts', {
     react: {
@@ -35,9 +35,12 @@ test('fresh app readings reach widgets on launch, foreground and polling, includ
     './reading': { latestSnapshot, readingSnapshot, fetchReading: async () => { if (fail) throw Error('offline'); return value; } },
     './widget-sync': { syncWidgets, readWidgetSnapshot: () => null },
     './push': { onForegroundNotification: () => () => {} },
-  }, { process: { env: { EXPO_OS: 'ios' } }, setInterval: callback => { poll = callback; }, clearInterval() {} });
+  }, { process: { env: { EXPO_OS: 'ios' } }, setInterval: (callback, ms) => { poll = callback; pollMs = ms; }, clearInterval() {} });
   useReading();
   const cleanup = effects[0]();
+  // Each poll wakes the database for five billed minutes, so a poll at five
+  // minutes or less keeps it awake; readings arrive hourly.
+  assert.ok(pollMs >= 15 * 60_000, `open app polls every ${pollMs}ms`);
   await flush();
   assert.equal(calls.length, 1, 'fresh launch reading synced once; cached app reading not synced');
   assert.equal(calls[0][0], 'https://example.test');
