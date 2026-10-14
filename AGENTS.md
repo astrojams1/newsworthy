@@ -808,8 +808,8 @@ as dense and expert-facing: three figures and two terms of art in one sentence.
 Only Output's writing guidance changes: a reader with no background, what the
 development means for daily life, at most one number, jargon explained or
 dropped. The 120/140-character budget and everything before Output are v14's.
-The [record](docs/prompt-evaluations/v15.md) compares v14 and v15 on eight cards
-with fresh Claude generations, not the production research workflow.
+The [record](docs/prompt-evaluations/v15.md) compares the two on eight cards,
+not in the production workflow.
 
 **v16 gives the age reserve back to the sentence.** The app's only prefix is now a
 bold "New:" on a new development, five characters, so the body budget rises from
@@ -875,6 +875,10 @@ inflation report eleven hours early and stopped there: v21 had cut the forecast
 tail that carried a preview's stake. Output now asks scheduled news to lead with
 what it will settle (rule 11), tightened elsewhere to fit rule 7. See the
 [record](docs/prompt-evaluations/v23.md).
+
+**v24: dates, never relative days.** "10h ago: … due today" was written at
+9 p.m. Pacific the day before and read as overdue. The style line now rules
+out relative days (rule 12). See the [record](docs/prompt-evaluations/v24.md).
 
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,

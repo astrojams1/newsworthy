@@ -501,6 +501,20 @@ const V23_OUTPUT_CONTRACT = V22_OUTPUT_CONTRACT
   .replace('(year only if not this one, no weekdays)', '(no year if this one, no weekdays)')
   .replace('rating justification or advice.', 'rating justification, advice.');
 
+// v24 drops relative day words. A sentence is shown for hours after it is
+// written, under an age ("10h ago:"), to readers in every time zone. Reading
+// 1212 wrote "US inflation figures due today" at 04:03 UTC, 9:03 p.m. Pacific
+// on Oct 13; ten hours later the widget showed "10h ago: … due today", which
+// read as overdue though the release was still hours off. v23 made it common:
+// 7 of its first 8 sentences said "today", against 6 of 213 under v22. Dates
+// were already in the style line; it now rules out relative days. "No prose"
+// and "Submit no label" were shortened to fit rule 7. See
+// docs/prompt-evaluations/v24.md.
+const V24_OUTPUT_CONTRACT = V23_OUTPUT_CONTRACT
+  .replace('Return only this JSON, no prose or fences:', 'Return only this JSON, no fences:')
+  .replace('"New: " label. Submit no label.', '"New: " label. Omit it.')
+  .replace('(no year if this one, no weekdays)', '(no year if this one, no weekdays or relative days)');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -662,6 +676,13 @@ const REGISTRY = {
     added: '2026-10-14',
     instructions: V20_INSTRUCTIONS,
     outputContract: V23_OUTPUT_CONTRACT,
+  },
+  24: {
+    version: 24,
+    label: 'no-relative-days-v24',
+    added: '2026-10-14',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V24_OUTPUT_CONTRACT,
   },
 };
 

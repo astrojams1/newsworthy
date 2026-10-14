@@ -91,6 +91,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [21, '3f042c2d18d27cb3'],
     [22, '8916247a26173fdf'],
     [23, '51dc90c54eed7bad'],
+    [24, 'a9791807609fb232'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -156,11 +157,19 @@ test('rule 11 — before scheduled news, the sentence says what it will settle',
   assert.match(output(renderPrompt(latestVersion()).text), /Before scheduled news, lead with what it will settle\./);
 });
 
+test('rule 12 — dates, never relative days', () => {
+  // The owner's call from 2026-10-14. A sentence is shown for hours under an
+  // age, in every time zone: "10h ago: US inflation figures due today" was
+  // written at 9 p.m. Pacific the day before and read as overdue.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.match(output(renderPrompt(latestVersion()).text), /no weekdays or relative days/);
+});
+
 test('the rules file lists exactly what is enforced here', async () => {
   // A rule added to the file and not to this suite is decoration.
   const rules = await readFile('PROMPT-RULES.md', 'utf8');
-  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 11,
-    'eleven rules; add a test before adding a twelfth');
+  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 12,
+    'twelve rules; add a test before adding a thirteenth');
 });
 
 test('v9 moves the rungs rather than annotating them', () => {
@@ -501,4 +510,16 @@ test('v23 says what scheduled news will settle and changes nothing else that mat
   assert.match(v23.text, /at most 135 characters/, 'the body budget is unchanged');
   const evaluation = await readFile('docs/prompt-evaluations/v23.md', 'utf8');
   assert.ok(evaluation.includes(v23.hash), 'the evaluation record names the shipped text');
+});
+
+test('v24 rules out relative days and changes nothing else that matters', async () => {
+  // One style entry; "no prose" and "Submit no label" were shortened to fit
+  // rule 7. Everything before Output is v23's.
+  const [v23, v24] = [23, 24].map(renderPrompt);
+  assert.equal(v24.text, v23.text
+    .replace('Return only this JSON, no prose or fences:', 'Return only this JSON, no fences:')
+    .replace('"New: " label. Submit no label.', '"New: " label. Omit it.')
+    .replace('(no year if this one, no weekdays)', '(no year if this one, no weekdays or relative days)'));
+  const evaluation = await readFile('docs/prompt-evaluations/v24.md', 'utf8');
+  assert.ok(evaluation.includes(v24.hash), 'the evaluation record names the shipped text');
 });

@@ -14,6 +14,7 @@ one, so a version that breaks a rule fails rather than ships.
 9. Output forbids predicting a market move in the sentence.
 10. Output asks for the active voice: who acted, or who claims it.
 11. Output asks a preview of scheduled news to lead with what it will settle.
+12. Output asks for dates, never relative days such as today.
 
 ## When an improvement does not fit
 

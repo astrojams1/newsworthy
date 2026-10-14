@@ -22,6 +22,7 @@ no record file; their history is in `AGENTS.md`.
 | v21 | 2026-10-05 | | The sentence never predicts a market move | [v21](v21.md) |
 | v22 | 2026-10-05 | | The sentence says who acted, in the active voice | [v22](v22.md) |
 | v23 | 2026-10-14 | | A preview says what the scheduled release will settle | [v23](v23.md) |
+| v24 | 2026-10-14 | | Dates, never relative days | [v24](v24.md) |
 
 ## Lessons
 
@@ -45,3 +46,7 @@ What earlier versions cost to learn; each is told in full in `AGENTS.md`.
   scheduled release the forecast tail was the only part that said why it
   mattered; with it gone, reading 1209 read as a teaser. When cutting a
   pattern, check what each instance of it was carrying.
+- **A fixture with a stated "now" cannot test how the caller dates things**
+  (v24, 2026-10-14). Given an explicit current time, v23 and v24 alike wrote
+  dates; only the live caller, dating its own research, wrote "today". Test
+  time-relative wording live.

@@ -71,6 +71,10 @@ only. Read every run report in full.
   the release will settle ("will show whether…"), not only that it is due.
   On v23 or later a bare announcement is a contract breach; before v23 it is
   expected.
+- **Dates, not relative days.** From prompt v24 the sentence gives a date
+  ("due Oct 14"), never "today", "tonight", "tomorrow" or "yesterday": it is
+  shown for hours, under an age, in every time zone. On v24 or later a
+  relative day is a contract breach.
 - **Judgement sound.** `same` or `new` is defensible against the record the
   reading was judged with; a proposed `same_story` joins one story coined twice,
   never related stories. A doubtful merge is raised with the owner, who can undo

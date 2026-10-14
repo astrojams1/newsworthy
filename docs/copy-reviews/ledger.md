@@ -21,6 +21,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | #203 | 2026-10-12 | User actions, release and build ledgers, store listing | Listing description and Review Notes now live in App Store Connect, read back identical | No device verification of build 27; public availability not claimed |
 | #205 | 2026-10-12 | App release skill | None needed: agent guidance only, claims taken from the build 27 records | None |
 | #206 | 2026-10-14 | README, product messaging, llms.txt, caller instructions, rating skill, caller-review skill, AGENTS.md | Caller-review skill checks that a preview says what it will settle; no external copy states prompt wording | v23 adoption awaits verified readings; the judge still marks a preview "New:" |
+| #207 | 2026-10-14 | README, product messaging, llms.txt, caller instructions, rating skill, caller-review skill, AGENTS.md | Caller-review skill checks for relative days; no external copy states prompt wording | v24 adoption awaits verified readings; pre-v24 sentences keep their "today" until replaced |
 
 ## Lessons
 
