@@ -102,13 +102,13 @@ https://newsworthy-indol.vercel.app/. Contact: astrojams1@gmail.com.
 
 The shared public UI uses Expo / React Native for web, iOS and Android. Admin
 remains web-only. Native widgets are integrated through Expo prebuild; they need
-custom-build verification. EAS account setup, signing and store setup are release
-gates. Do not claim store availability before release.
+custom-build verification. Signing, the local iOS release, Android EAS builds
+and store setup are release gates. Do not claim store availability before release.
 
 The Codex browser panel shows the web renderer. An installed iPhone simulator
 can run the native UI through Expo Go. Widgets and the complete package require
-a custom native build, either on a Mac with a supported Xcode/runtime or through
-EAS. Native and physical-device verification scopes must be recorded separately.
+a custom native build: iOS on a Mac with a supported Xcode/runtime, Android
+locally or through EAS. Native and physical-device verification scopes must be recorded separately.
 
 ## Where copy lives
 

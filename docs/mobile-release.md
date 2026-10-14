@@ -27,19 +27,28 @@ Run Web starts a live Expo browser preview; its development middleware forwards
 only `GET /api/current` to the public production API. Native apps fetch that API
 directly. Web previews are not native simulator verification.
 
-**The production build is pinned to Xcode 26.6** (`ios.image` in `eas.json`,
-`macos-tahoe-26.5-xcode-26.6`, the image build 26 used). An app linked against
-the iOS 27 SDK that has not adopted the UIScene lifecycle is stopped at launch on
-iOS 27: a local Xcode 27 Release build of this app crashed in
-`_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption` on the iOS 27
-simulator on 11 October, and ran on iOS 18.4. Move the pin only once the app
-adopts UIScene and launches on iOS 27.
+**iOS store builds are made on the owner's Mac, not by EAS Build.** EAS's 15
+free build credits a month are shared with Space Worms, so iOS releases use
+local Xcode and spend none; see [Local iOS release](#local-ios-release).
+Android still builds in EAS.
 
-On 1 October the owner's Mac was updated to Xcode 26.6 for local custom builds
-and native captures, avoiding additional Expo credits and sandbox minutes. The
-matching iOS 26.5 runtime is still downloading; older installed runtimes alone
-cannot compile this SDK's asset catalogs. Check the actual host and runtime
-inventory rather than assuming a cloud environment. Expo Go runs a precompiled
+**The app adopts the UIScene life cycle**, which iOS 27 requires of an app
+linked against the iOS 27 SDK. Without it the app was stopped at launch in
+`_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`, first seen on
+11 October and reproduced on 14 October with Xcode 27 (27A266a) on the iOS 27.0
+simulator. `plugins/with-scene-lifecycle.js` names Expo's own
+`ExpoAppSceneDelegate` in `UIApplicationSceneManifest` and stops the app
+delegate creating the window, which the scene delegate now creates. With it the
+Xcode 27 Release build launches on iOS 27.0 and iOS 18.4, a cold-start
+`newsworthy://` link opens its route and the Dark override applies. The Xcode
+26.6 pin (`ios.image` in `eas.json`) is removed; a store build uses the Mac's
+Xcode, recorded in each archive's `DTXcodeBuild`.
+
+On 14 October the owner's Mac had Xcode 27 (27A266a) with iOS 27.0 and 18.4
+simulator runtimes. An Xcode update can need a license acceptance and a
+matching runtime download before asset catalogs compile; older installed
+runtimes alone are not enough. Check the actual host and runtime inventory
+rather than assuming a cloud environment. Expo Go runs a precompiled
 host in the simulator; widgets require custom builds and cannot be tested in it.
 
 PR #155 is merged. Production **1.0.0 (26)** is selected and **Waiting for
@@ -75,54 +84,94 @@ before the first release. The iOS widget uses the `.widget` suffix.
 check the live reading and policy/support URLs. No secrets belong in this file,
 Expo config, or variables prefixed `EXPO_PUBLIC_`.
 
-## Cloud builds and store setup
+## Local iOS release
+
+Run on the owner's Mac from `apps/client`, with Xcode, CocoaPods and the
+1Password CLI (`op`, signed in or with `OP_KEY`) available:
+
+```sh
+node script/ios-release.mjs next-build-number   # App Store Connect's highest + 1
+node script/ios-release.mjs archive             # prebuild, pods, archive, export, verify
+node script/ios-release.mjs validate <N>        # optional: Apple's checks, no upload
+node script/ios-release.mjs upload <N>          # altool upload, waits for processing
+node script/ios-release.mjs testers <N>         # add the VALID build to Release QA
+node script/ios-release.mjs release             # archive, upload and testers in one run
+```
+
+- **Build number.** EAS's remote counter is no longer used. The script reads
+  the highest build App Store Connect holds (any version, expired included) and
+  adds one; `--build-number N` overrides it. The number reaches the app and the
+  widget through `ios.buildNumber` (`NEWSWORTHY_IOS_BUILD_NUMBER` in
+  `app.config.js`), and the archive is refused if either bundle disagrees.
+- **Prebuild.** `expo prebuild -p ios --clean --no-install`, then `pod install`
+  with a UTF-8 locale (CocoaPods fails on Unicode normalization without one).
+  `ios/` stays generated and ignored.
+- **Signing.** Apple-managed: `xcodebuild archive` and `-exportArchive` run with
+  `-allowProvisioningUpdates` and the App Store Connect key
+  (`-authenticationKeyPath/ID/IssuerID`), team `CWQ9AWJF8T`, so Xcode creates or
+  refreshes the distribution certificate and the app and widget profiles
+  without an Xcode account sign-in. Export uses method `app-store-connect`
+  (Xcode's current name for `app-store`) with `manageAppVersionAndBuildNumber`
+  off. Before upload the script checks the signed app and widget carry the
+  team, the widget App Group and, for the app, production `aps-environment`.
+- **Upload.** `xcrun altool --upload-package … --wait` with the same key.
+  Transporter works as well for a manual upload of the exported `.ipa`.
+- **Credentials.** The key is `op://API Tokens/App Store Connect` (`credential`,
+  `key id`, `issuer id`), written for one run to a private temporary file and
+  removed on exit. `ASC_KEY_ID`, `ASC_ISSUER_ID` and `ASC_PRIVATE_KEY_PATH`,
+  as for `store/scripts/apple.mjs`, take precedence.
+- **Output** goes to `build/ios-release/<N>/` (ignored): logs, the archive, the
+  `.ipa` and `summary.json` (commit, dirty flag, Xcode build, SDK and the
+  `.ipa`'s SHA-256) for the build ledger.
+
+An upload is outward-facing: confirm each one with the owner, and record it in
+`store/builds/ledger.md` and the release ledger. Selecting a build for App
+Review and resubmitting stay separate steps (see the app release skill).
+
+## Android cloud builds and store setup
 
 From `apps/client`:
 
 ```sh
 npx eas-cli@latest login
-npx eas-cli@latest init
-npx eas-cli@latest build:configure
-npx eas-cli@latest build --platform ios --profile simulator
 npx eas-cli@latest build --platform android --profile preview
 ```
 
 The EAS project ID is saved in `mobile.release.json`; `EXPO_PROJECT_ID` can
-override it for an explicitly chosen EAS project.
+override it for an explicitly chosen EAS project. The project stays: push
+tokens are issued for it, and Android builds there.
 The renewed James Thompson Apple team (`CWQ9AWJF8T`) is saved in
 `mobile.release.json`; `APPLE_TEAM_ID` can override it for a deliberate team
-change. The production submission profile targets App Store record `6812519450`.
-EAS manages signing credentials interactively during initial setup.
+change. App Store record `6812519450` is the iOS upload target.
 A physical-iPhone development/preview build requires Apple developer membership
-and device registration. Use a production build and TestFlight for beta testing.
+and device registration. Use a store build and TestFlight for beta testing.
 
-Build profiles in `apps/client/eas.json`:
+Build profiles in `apps/client/eas.json`, used for Android:
 
 | Profile | Purpose |
 |---|---|
 | `development` | Native development client, including widgets |
-| `simulator` | iOS simulator development build, no App Store signing |
-| `simulator-release` | iOS simulator release build with bundled JavaScript, no development menu |
-| `preview` | Internal iOS build / Android APK |
-| `production` | Signed App Store / Google Play build, incremented build number |
+| `preview` | Internal Android APK |
+| `production` | Signed Google Play bundle, incremented version code |
 
-After setup, `.github/workflows/mobile.yml` starts EAS builds manually. Configure
-GitHub secret `EXPO_TOKEN`, repository variable `EXPO_PROJECT_ID` and, for iOS,
-`APPLE_TEAM_ID`. Building does not automatically submit or publish to a store.
-Cloud builds and EAS sandboxes draw on the Expo account's monthly free-plan
-caps; follow `.agents/skills/newsworthy-app-release/SKILL.md` before starting one.
+iOS simulator builds are local too: a Release `xcodebuild` for
+`generic/platform=iOS Simulator` (see the app release skill).
+
+`.github/workflows/mobile.yml` starts an Android EAS build manually. Configure
+GitHub secret `EXPO_TOKEN` and repository variable `EXPO_PROJECT_ID`. Building
+does not automatically submit or publish to a store. Cloud builds and EAS
+sandboxes draw on the Expo account's monthly free-plan caps; follow
+`.agents/skills/newsworthy-app-release/SKILL.md` before starting one.
 
 ```sh
-npx eas-cli@latest build --platform all --profile production
-npx eas-cli@latest submit --platform ios --profile production
+npx eas-cli@latest build --platform android --profile production
 npx eas-cli@latest submit --platform android --profile production
 ```
 
 The Android `production` submission profile currently targets **internal testing**.
 Uploading there is not a public release. Complete the required testing and promote
-the verified build in Play Console. An iOS EAS submission uploads to App Store
-Connect/TestFlight; selecting a build and submitting it for App Review are separate
-steps. See [Expo's submission guide](https://docs.expo.dev/deploy/submit-to-app-stores/).
+the verified build in Play Console. See
+[Expo's submission guide](https://docs.expo.dev/deploy/submit-to-app-stores/).
 
 The first Google Play upload and store configuration may require console setup.
 Complete store privacy, age-rating, pricing, screenshots and review information

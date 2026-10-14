@@ -71,8 +71,8 @@ release status. Calm presentation must not change the rating calibration.
 - To remake the store preview videos, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
-- Before any EAS build, store submission or EAS sandbox, use
-  `.agents/skills/newsworthy-app-release/SKILL.md`: free-plan monthly caps.
+- Before any app build, store submission or EAS sandbox, use
+  `.agents/skills/newsworthy-app-release/SKILL.md`: local iOS, EAS caps.
 - Every skill in `.agents/skills/` keeps an append-only ledger, linked from its
   SKILL.md, read before a run and updated after (`test/skill-ledgers.test.js`).
 - A push to `main` deploys to production. `main` is both the GitHub default
@@ -107,7 +107,7 @@ release status. Calm presentation must not change the rating calibration.
 | `src/story.js` | Judges which development a reading reports. Append-only prompts. |
 | `src/db.js`, `src/sql.js` | Postgres access and schema. |
 | `public/` | Web-only admin, privacy/support pages and discovery assets; Expo owns the public rating UI. |
-| `apps/client/` | Shared Expo UI, native widgets and EAS build configuration. |
+| `apps/client/` | Shared Expo UI, native widgets and build configuration. |
 | `docs/product-messaging.md` | Shared positioning and limits on product claims. |
 | `docs/mobile-release.md` | Expo cloud-build preparation and remaining release gates. |
 | `PROMPT-RULES.md` | Constraints on every prompt version. Tests enforce each. |

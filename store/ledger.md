@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-12T06:02:58+00:00
+Updated: 2026-10-14T13:07:09+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -117,6 +117,8 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | widget.unpadded-hour | waiting_verification | agent | observed | Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged. | Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build. |
 | ui.timeline-default | waiting_verification | agent | observed | On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27. | Check a fresh install and an upgraded TestFlight install of build 27 on a device. |
 | widget.sentence-fit | waiting_verification | agent | observed | Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown. | Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build. |
+| apple.uiscene-ios27 | waiting_verification | agent | observed | The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed. | Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build. |
+| apple.local-release | waiting_user | agent | observed | Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used. | Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result. |
 
 ## Evidence and history
 
@@ -3883,3 +3885,23 @@ On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Prod
 - store/apple-review-resubmission-2026-10-12-build27.json
 
 Next: Check a fresh install and an upgraded TestFlight install of build 27 on a device.
+
+### 395. apple.uiscene-ios27 — waiting_verification
+
+2026-10-14T13:07:09+00:00 · observed · agent
+
+The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed.
+
+- Crash report Newsworthy-2026-10-14-054017.ips (pre-fix); simulator screenshots of the fixed build on iOS 27.0 and 18.4
+
+Next: Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build.
+
+### 396. apple.local-release — waiting_user
+
+2026-10-14T13:07:09+00:00 · observed · agent
+
+Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used.
+
+- build/ios-release/28/summary.json: ipa SHA-256 9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f, source 975aff8 plus this change (dirty tree)
+
+Next: Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.

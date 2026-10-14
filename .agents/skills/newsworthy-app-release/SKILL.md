@@ -1,6 +1,6 @@
 ---
 name: newsworthy-app-release
-description: Build, verify and submit the Newsworthy iOS and Android apps with EAS (TestFlight, Play internal testing, simulator and sandbox checks) within the Expo account's monthly free-plan caps. Use before any eas build, eas submit, EAS sandbox or EAS workflow, and when planning native verification; every spend is logged in store/builds/ledger.md.
+description: Build, verify and submit the Newsworthy iOS app locally with Xcode (archive, export, altool upload to TestFlight) and the Android app with EAS (Play internal testing), plus simulator and sandbox checks, within the Expo account's monthly free-plan caps. Use before any iOS store build, eas build, eas submit, EAS sandbox or EAS workflow, and when planning native verification; every build and spend is logged in store/builds/ledger.md.
 ---
 
 # Newsworthy app release
@@ -9,7 +9,10 @@ The release flow itself (profiles, signing, submission targets, store setup) is
 in `docs/mobile-release.md`; gates and their evidence go in the release ledger
 (`npm run ledger -- record …`). This skill adds one constraint to that flow: the
 Expo account `astrojams1` is on the **free plan**, and monthly caps decide
-what can run at all.
+what can run at all. Its 15 build credits are shared with Space Worms, so
+**iOS never uses EAS Build**: store builds are archived on the owner's Mac with
+`apps/client/script/ios-release.mjs` (see Local iOS release in
+`docs/mobile-release.md`) and cost no credits. Android still builds in EAS.
 
 ## The caps
 
@@ -55,8 +58,10 @@ says what is left, and its Lessons are what earlier runs cost to learn.
    `sandbox_list`. A cap reached mid-task stops the work with nothing to show.
    The Expo MCP's request cap can run out while build credits remain; then
    `eas build:list --json` and `eas build:view <id> --json` (with `EXPO_TOKEN`)
-   read the same state, and the next store build number is the newest
-   production `appBuildVersion` plus one (remote auto-increment).
+   read the same state. The next Android version code is the newest
+   production `appVersion` plus one (remote auto-increment); the next iOS build
+   number is App Store Connect's highest plus one
+   (`node script/ios-release.mjs next-build-number`).
 3. **Reuse before building.** If a finished build already exists for the commit
    and profile you need, use its artifact (`build_list` gives the URL; artifacts
    expire after 14 days for internal builds, 30 for store builds). A pre-change
@@ -91,14 +96,15 @@ The local route, measured on 11 October with Xcode 27: `CI=1 npx expo prebuild
 simulator build: about 15 minutes in all, no credits. Do it in a worktree under
 `.worktrees/` and remove it after; `ios/` and `build/` are large.
 
-**An app built with the iOS 27 SDK does not launch on iOS 27**: it has not
-adopted the UIScene lifecycle, and iOS stops it in
-`_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`. Its widget
-extension still runs there. So with Xcode 27, check app screens on an iOS 18.x
-runtime and widgets on either. Store builds are pinned to Xcode 26.6 by
-`ios.image` in `eas.json` (`macos-tahoe-26.5-xcode-26.6`); move the pin only
-once the app adopts UIScene and launches on iOS 27, and confirm the image in each
-build's log ("Using VM template …"; logs are zstd- or brotli-compressed).
+**iOS 27 requires the UIScene life cycle** of an app built with the iOS 27 SDK;
+without it iOS stops the app in
+`_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`.
+`plugins/with-scene-lifecycle.js` adopts it through Expo's
+`ExpoAppSceneDelegate`, and since 14 October the Xcode 27 build launches on
+iOS 27.0 and 18.4. A prebuild that leaves `AppDelegate.swift` creating its own
+window, or an Info.plist without `UIApplicationSceneManifest`, brings the crash
+back: check app screens on iOS 27 after any Expo upgrade. The old Xcode 26.6
+EAS image pin is gone; each archive records its Xcode in `DTXcodeBuild`.
 
 The Simulator panel drives only devices the owner has granted ("Let Claude use
 it"); a newly created device waits for that grant. Use a device already granted,
@@ -146,41 +152,38 @@ repository inside a sandbox.
   `preview` APK for the owner to install, and only after the
   change is final. Do not also build `production` for the same commit unless
   it is going to Play.
-- **A real iPhone**: one `production` build with auto-submit to TestFlight, after
-  simulator verification has passed. Builds have no EAS Update channel, so any
-  change, JavaScript included, reaches testers only in a new build.
+- **A real iPhone**: one local archive uploaded to TestFlight
+  (`node script/ios-release.mjs release`), after simulator verification has
+  passed. Builds have no EAS Update channel, so any change, JavaScript
+  included, reaches testers only in a new build.
 - **JavaScript-only changes**: check them on the web or in Expo Go first, which
   costs nothing; build only for what those cannot show (widgets, native
   modules, signing, the release bundle).
-- **Local builds** (`eas build --local`) use no credits. Android works in a
+- **Local Android builds** (`eas build --local`) use no credits. They work in a
   Linux environment with the Android SDK, but this container's Maven downloads
-  are rate-limited (HTTP 429). iOS needs macOS; use the owner's Mac when available,
-  otherwise an authorized sandbox batch consumes sandbox minutes.
+  are rate-limited (HTTP 429). iOS builds need macOS: the owner's Mac, or an
+  authorized sandbox batch, which consumes sandbox minutes.
 
 ## Submitting to TestFlight
 
 The App Store Connect API key is the vault item `op://API Tokens/App Store
 Connect`: `credential` is the `.p8` body without its PEM header and footer,
-with `key id` and `issuer id` beside it. `--auto-submit` and a plain
-`eas submit --non-interactive` both stop at "App Store Connect API Keys cannot
-be set up in --non-interactive mode", the `EXPO_ASC_*` environment variables
-did not help, and the Expo MCP's `build_submit` fails with "a conflict between
-exclusive peers [appleAppSpecificPassword, ascApiKey, ascApiKeyId]". What works:
-write the key to a temporary file (header and footer added, `umask 077`), add
-`ascApiKeyPath`, `ascApiKeyId` and `ascApiKeyIssuerId` to
-`submit.production.ios` in a copy of `apps/client/eas.json`, run
-`eas submit -p ios --id <build> --profile production --non-interactive`, then
-restore `eas.json` and delete the key. Never commit either. Build without
-`--auto-submit` and submit once the build has finished.
+with `key id` and `issuer id` beside it. `script/ios-release.mjs` reads it per
+run, writes it with its header to a private temporary file and removes it on
+exit; `xcodebuild` uses it for Apple-managed signing
+(`-allowProvisioningUpdates`) and `altool` for the upload. Confirm each upload
+with the owner first. `release` runs archive, upload and testers; run them one
+at a time to stop after the export or validate (`validate <N>`) before
+uploading. EAS submission is no longer used for iOS; its workaround (the key
+in a temporary copy of `eas.json`) is in the build ledger's Lessons.
 
 **An uploaded build reaches no tester on its own.** The internal group
 "Release QA" does not get every build automatically, so a processed build
 (`READY_FOR_BETA_TESTING`) stays invisible until it is added to that group.
-Add it through the App Store Connect API with the same vault key, as the
-owner asked on 1 October: find the group with
-`GET /v1/apps/{app}/betaGroups`, then
-`POST /v1/betaGroups/{id}/relationships/builds` with the build's id (204 on
-success). Tell testers it is available only once its `buildBetaDetail` shows
+`node script/ios-release.mjs testers <N>` adds it, as the owner asked on
+1 October: it waits for `VALID`, finds the group with
+`GET /v1/apps/{app}/betaGroups` and posts the build to
+`/v1/betaGroups/{id}/relationships/builds` (204 on success). Tell testers it is available only once its `buildBetaDetail` shows
 `IN_BETA_TESTING`.
 
 ## Resubmitting to App Review
@@ -244,7 +247,8 @@ the `apple.review` gate.
 
 - **Build ledger.** Update this month's row in `store/builds/ledger.md` and add
   an entry under the month: each build (EAS id, platform, profile, commit,
-  outcome), each sandbox (id, minutes, what it did), each submission, and
+  outcome; for a local iOS archive, build number, commit, Xcode build and the
+  `.ipa` SHA-256 from `summary.json`), each sandbox (id, minutes, what it did), each submission, and
   anything wasted and why. Add a dated Lessons item when a run teaches
   something new.
 - **Release ledger.** Record what was verified, on what (simulator or device,

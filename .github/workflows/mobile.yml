@@ -1,16 +1,13 @@
-name: Build Expo mobile apps
+# Android only. iOS store builds are made locally with Xcode
+# (apps/client/script/ios-release.mjs); see docs/mobile-release.md.
+name: Build the Android app in EAS
 on:
   workflow_dispatch:
     inputs:
-      platform:
-        description: Platform
-        type: choice
-        options: [all, ios, android]
-        default: all
       profile:
         description: EAS build profile
         type: choice
-        options: [preview, development, simulator, production]
+        options: [preview, development, production]
         default: preview
 permissions:
   contents: read
@@ -21,7 +18,6 @@ jobs:
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
-      APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -42,10 +38,5 @@ jobs:
       - name: Build in EAS
         working-directory: apps/client
         env:
-          BUILD_PLATFORM: ${{ inputs.platform }}
           BUILD_PROFILE: ${{ inputs.profile }}
-        run: |
-          if [ "$BUILD_PROFILE" = simulator ] && [ "$BUILD_PLATFORM" != ios ]; then
-            echo 'The simulator profile requires the ios platform.'; exit 1
-          fi
-          eas build --platform "$BUILD_PLATFORM" --profile "$BUILD_PROFILE" --non-interactive
+        run: eas build --platform android --profile "$BUILD_PROFILE" --non-interactive
