@@ -85,11 +85,19 @@ function jwt(key) {
   const payload = `${enc({ alg: 'ES256', kid: key.id, typ: 'JWT' })}.${enc({ iss: key.issuer, iat: now, exp: now + 300, aud: 'appstoreconnect-v1' })}`;
   return `${payload}.${sign('sha256', Buffer.from(payload), { key: readFileSync(key.path), dsaEncoding: 'ieee-p1363' }).toString('base64url')}`;
 }
-async function api(key, path, method = 'GET', body) {
-  const response = await fetch(`https://api.appstoreconnect.apple.com${path}`, {
-    method, headers: { Authorization: `Bearer ${jwt(key)}`, 'Content-Type': 'application/json' },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-  });
+// A dropped connection (fetch throws) is retried; an HTTP error is not.
+async function api(key, path, method = 'GET', body, attempt = 1) {
+  let response;
+  try {
+    response = await fetch(`https://api.appstoreconnect.apple.com${path}`, {
+      method, headers: { Authorization: `Bearer ${jwt(key)}`, 'Content-Type': 'application/json' },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
+  } catch (error) {
+    if (attempt >= 3) throw error;
+    await new Promise(done => setTimeout(done, 5_000 * attempt));
+    return api(key, path, method, body, attempt + 1);
+  }
   const json = response.status === 204 ? null : await response.json();
   if (!response.ok) throw new Error(`${method} ${path}: ${response.status} ${JSON.stringify(json?.errors)}`);
   return json;
@@ -190,7 +198,8 @@ async function testers(key, build) {
     await new Promise(done => setTimeout(done, 30_000));
   }
   if (found?.attributes.processingState !== 'VALID') throw new Error(`Build ${build} is not VALID after 30 minutes`);
-  const group = (await api(key, `/v1/apps/${APP.ascAppId}/betaGroups?filter[name]=${encodeURIComponent(APP.testers)}`)).data[0];
+  // This endpoint takes no filter[name]; match the group by name here.
+  const group = (await api(key, `/v1/apps/${APP.ascAppId}/betaGroups?limit=200`)).data.find(g => g.attributes.name === APP.testers);
   if (!group) throw new Error(`No beta group named ${APP.testers}`);
   await api(key, `/v1/betaGroups/${group.id}/relationships/builds`, 'POST', { data: [{ type: 'builds', id: found.id }] });
   const detail = (await api(key, `/v1/builds/${found.id}/buildBetaDetail`)).data.attributes;
