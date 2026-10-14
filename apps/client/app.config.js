@@ -5,6 +5,9 @@ module.exports = {
   orientation: 'default', userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   ios: { icon: { light: './assets/icon.png', dark: './assets/icon-dark.png' }, supportsTablet: true, bundleIdentifier: release.appId,
+    // script/ios-release.mjs sets the store build number, read from App Store
+    // Connect; prebuild gives it to the app and the widget alike.
+    buildNumber: process.env.NEWSWORTHY_IOS_BUILD_NUMBER || '1',
     entitlements: { 'com.apple.security.application-groups': [`group.${release.appId}.widgets`] },
     appleTeamId: process.env.APPLE_TEAM_ID || release.appleTeamId,
     infoPlist: { ITSAppUsesNonExemptEncryption: false },
@@ -22,7 +25,7 @@ module.exports = {
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: design.brand.light.center } },
   web: { output: 'static', favicon: './assets/favicon.png' },
-  plugins: ['expo-router', 'expo-status-bar', 'expo-image', 'expo-system-ui', '@bacons/apple-targets', './plugins/with-rating-widget', './plugins/with-system-appearance',
+  plugins: ['expo-router', 'expo-status-bar', 'expo-image', 'expo-system-ui', '@bacons/apple-targets', './plugins/with-rating-widget', './plugins/with-system-appearance', './plugins/with-scene-lifecycle',
     ['expo-notifications', { icon: './assets/notification-icon.png', color: design.brand.primary, defaultChannel: 'readings' }],
     ['expo-splash-screen', { backgroundColor: design.brand.light.tinted, image: './assets/splash-light.png', imageWidth: 80, dark: { backgroundColor: design.brand.dark.tinted, image: './assets/splash.png' } }]],
   extra: { apiBaseUrl: release.apiBaseUrl, privacyUrl: release.privacyUrl, supportUrl: release.supportUrl,

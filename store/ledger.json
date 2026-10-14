@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-12T06:02:58+00:00",
+  "updated_at": "2026-10-14T13:07:09+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1190,6 +1190,28 @@
       ],
       "next_action": "Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.",
       "updated_at": "2026-10-12T05:43:37+00:00"
+    },
+    "apple.uiscene-ios27": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed.",
+      "evidence": [
+        "Crash report Newsworthy-2026-10-14-054017.ips (pre-fix); simulator screenshots of the fixed build on iOS 27.0 and 18.4"
+      ],
+      "next_action": "Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build.",
+      "updated_at": "2026-10-14T13:07:09+00:00"
+    },
+    "apple.local-release": {
+      "state": "waiting_user",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used.",
+      "evidence": [
+        "build/ios-release/28/summary.json: ipa SHA-256 9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f, source 975aff8 plus this change (dirty tree)"
+      ],
+      "next_action": "Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.",
+      "updated_at": "2026-10-14T13:07:09+00:00"
     }
   },
   "events": [
@@ -7512,6 +7534,38 @@
         ],
         "next_action": "Check a fresh install and an upgraded TestFlight install of build 27 on a device.",
         "updated_at": "2026-10-12T06:02:58+00:00"
+      }
+    },
+    {
+      "sequence": 395,
+      "at": "2026-10-14T13:07:09+00:00",
+      "gate": "apple.uiscene-ios27",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed.",
+        "evidence": [
+          "Crash report Newsworthy-2026-10-14-054017.ips (pre-fix); simulator screenshots of the fixed build on iOS 27.0 and 18.4"
+        ],
+        "next_action": "Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build.",
+        "updated_at": "2026-10-14T13:07:09+00:00"
+      }
+    },
+    {
+      "sequence": 396,
+      "at": "2026-10-14T13:07:09+00:00",
+      "gate": "apple.local-release",
+      "result": {
+        "state": "waiting_user",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used.",
+        "evidence": [
+          "build/ios-release/28/summary.json: ipa SHA-256 9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f, source 975aff8 plus this change (dirty tree)"
+        ],
+        "next_action": "Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.",
+        "updated_at": "2026-10-14T13:07:09+00:00"
       }
     }
   ],

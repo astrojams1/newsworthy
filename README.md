@@ -48,10 +48,12 @@ To check the hourly caller's runs against what the server recorded, use the
 run beside the live one without reaching the page; see
 [caller trials](docs/caller-trials.md) and `scripts/trial-compare.mjs`.
 
-Before any EAS build, store submission or EAS sandbox, use the
-[app release skill](.agents/skills/newsworthy-app-release/SKILL.md): the Expo
-account's free plan caps builds and sandbox minutes each month. Each build,
-sandbox and submission is logged in the [build ledger](store/builds/ledger.md).
+Before any app build, store submission or EAS sandbox, use the
+[app release skill](.agents/skills/newsworthy-app-release/SKILL.md). iOS store
+builds are archived and uploaded on a Mac with Xcode
+(`apps/client/script/ios-release.mjs`); Android builds in EAS, whose free plan
+caps builds and sandbox minutes each month. Each build, sandbox and submission
+is logged in the [build ledger](store/builds/ledger.md).
 
 ### iOS, Android and web
 
@@ -63,9 +65,10 @@ Run `npm run dev` for Expo Go or `npm run mobile:ios` for the installed iPhone
 simulator. Codex also has Run, Run iOS and Run Web actions. The browser preview
 shows the web renderer; iOS verification uses the actual simulator.
 
-See [Mobile release guide](docs/mobile-release.md) for EAS cloud builds, widget
-extensions, signing and the remaining store setup. Expo Go can verify the core
-native interface; widgets require a custom development build.
+See [Mobile release guide](docs/mobile-release.md) for the local iOS release,
+Android EAS builds, widget extensions, signing and the remaining store setup.
+Expo Go can verify the core native interface; widgets require a custom
+development build.
 
 Settings, the gear in the header, choose the appearance (Follow device, Light
 or Dark) and, in the mobile apps, an optional notification for readings at or above
@@ -78,8 +81,9 @@ push credentials on EAS; see the
 [mobile release guide](docs/mobile-release.md#push-notifications).
 
 See [Accessibility verification](docs/accessibility-verification.md) for checks
-performed and remaining device/assistive-technology release checks. EAS and iOS
-signing are configured; store review and account requirements remain. This
+performed and remaining device/assistive-technology release checks. Android EAS
+and Apple-managed iOS signing are configured; store review and account
+requirements remain. This
 repository is not an App Store or Google Play release.
 
 iOS 1.0.0 (26) is Waiting for Review, confirmed on 1 October; the refreshed

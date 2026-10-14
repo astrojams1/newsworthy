@@ -20,6 +20,7 @@
     "check:android-widget": "bash scripts/check-android-widget.sh",
     "mobile:ios": "npm run ios --workspace @newsworthy/client",
     "mobile:android": "npm run android --workspace @newsworthy/client",
+    "mobile:release:ios": "node apps/client/script/ios-release.mjs",
     "pretest": "npm run build:web",
     "design:generate": "node scripts/generate-design.mjs",
     "design:check": "node scripts/generate-design.mjs --check",

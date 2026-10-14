@@ -1,8 +1,9 @@
 # Build and sandbox ledger
 
-Every EAS cloud build, EAS sandbox and TestFlight or Play submission, what it
-was for, what it cost against the Expo free plan's monthly caps, and what came
-of it. Use the [app release skill](../../.agents/skills/newsworthy-app-release/SKILL.md)
+Every EAS cloud build, local iOS store archive, EAS sandbox and TestFlight or
+Play submission, what it was for, what it cost against the Expo free plan's
+monthly caps, and what came of it. Since 14 October iOS store builds are local
+and cost no credits; the caps now bound Android builds and sandboxes. Use the [app release skill](../../.agents/skills/newsworthy-app-release/SKILL.md)
 before spending either cap. Entries are append-only, oldest first: a later
 entry that corrects an earlier one says so in its own words. Both caps reset on
 the 1st at 00:00 UTC, so the month's rows in the table are what is left to
@@ -14,7 +15,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8) | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded) |
 
 ## Lessons
 
@@ -64,6 +65,17 @@ resulting rules; this is the evidence behind them.
   lifecycle not adopted) and ran on iOS 18.4; its widget extension worked on
   iOS 27. Build 26 used EAS image `macos-tahoe-26.5-xcode-26.6`, now pinned
   in `eas.json` so a changed EAS default cannot ship a build that crashes.
+- **EAS credits are shared** (2026-10-14). The account's 15 monthly build
+  credits also pay for Space Worms; 12 were used by the 14th. iOS store
+  builds moved to the owner's Mac (`apps/client/script/ios-release.mjs`).
+- **UIScene was the fix, not an older Xcode** (2026-10-14). The iOS 27 launch
+  crash reproduced with Xcode 27 (27A266a); adopting UIScene through Expo 57's
+  own `ExpoAppSceneDelegate` (a config plugin, no native code kept in Git)
+  made the same build launch on iOS 27.0 and 18.4, so the Xcode 26.6 pin went.
+- **Local archive and export take about seven minutes** (2026-10-14). With
+  pods already downloaded, `ios-release.mjs archive` (clean prebuild, pods,
+  archive, export, checks) finished build 28 in 6m57s. Xcode-managed signing
+  with the API key needed no Xcode account sign-in.
 - **Local Xcode verification is free** (2026-10-11). With Xcode 27 installed,
   prebuild, `pod install` (with `LANG=en_US.UTF-8`) and a Release simulator
   build took about 15 minutes and no credits or sandbox minutes.
@@ -215,3 +227,14 @@ Before building, the widget was compiled and checked on a local Xcode 27
 simulator build at no cost. No sandbox minutes were used. The Expo MCP stayed
 at 500/500, so build state was read with EAS CLI instead.
 
+**Local iOS release, 14 October.** No EAS build, submission or sandbox. The
+UIScene launch crash reproduced with Xcode 27 (27A266a) on the iOS 27.0
+simulator; `plugins/with-scene-lifecycle.js` fixed it (launch checked on iOS
+27.0 and 18.4), and `ios.image` and every iOS profile and submission left
+`eas.json`. Build number 28 came from App Store Connect (highest 27). Local
+build 28: archived and exported from 975aff8 plus this change (dirty tree),
+Apple Distribution CWQ9AWJF8T with Xcode-managed store profiles for app and
+widget, `.ipa` SHA-256
+`9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f`;
+`altool --validate-app` succeeded. Not uploaded: the first upload waits for
+the owner and should come from the merged commit. EAS credits used: none.

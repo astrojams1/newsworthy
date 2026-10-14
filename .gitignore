@@ -20,3 +20,4 @@ apps/client/ios/
 apps/client/android/
 .env.local
 .env.*.local
+apps/client/build/
