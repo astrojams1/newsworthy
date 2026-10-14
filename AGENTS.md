@@ -536,11 +536,10 @@ rather than "not asked for"; `history()` selects no usage columns, and that null
 was misread as data loss.
 
 **The external caller runs hourly, not on this app's cadence.** A scheduled
-Cowork task fires at `2 * * * *` — 48 of the last 48 readings are external, one
-per hour, clustered at :03–:05, each an independent session with no memory of
-the others. No cron run has executed since v4: the caller keeps the staleness
-window suppressed, so this app's cadence setting is inert and its model spend
-near zero.
+Cowork task fires at `2 * * * *` — every reading is external, one an hour at
+:03–:06, each a session with no memory of the others. No cron run has executed
+since v4: the caller keeps the staleness window suppressed, so this app's
+cadence setting is inert and its model spend near zero.
 
 **The cron only fires if nothing arrived within the interval.** A rolling
 window from the newest reading, not the slot boundary — an external reading at
@@ -549,7 +548,7 @@ is what keeps this cheap: a reading submitted elsewhere is a reading this app
 does not pay for.
 
 **Cadence is enforced by the slot, not the cron schedule.** `vercel.json` ticks
-every 15 minutes. Each reading claims a `slot` floored to the configured
+hourly at :08, while the caller's run still has Neon awake. Each reading claims a `slot` floored to the configured
 interval, guarded by a partial unique index (`ratings (slot) WHERE status =
 'ok'`). Ticks inside an interval find the slot filled and return without calling
 the model. So cadence is changeable from `/admin` with no redeploy — but it

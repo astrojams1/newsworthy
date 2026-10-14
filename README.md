@@ -247,11 +247,13 @@ registry rather than the payload.
 next tick — no redeploy. The picker shows the cost of each pairing before you
 commit to it.
 
-Vercel Cron ticks every 15 minutes (`vercel.json`); the configured interval is
+Vercel Cron ticks hourly at :08 (`vercel.json`); the configured interval is
 enforced by the slot, so ticks inside an interval find the slot already rated
-and return without calling the model. Intervals are therefore multiples of 15
-minutes, from 15 up to a day. To rate *more* often than every 15 minutes,
-change the cron schedule itself.
+and return without calling the model. Intervals are therefore whole hours,
+from one up to a day. To rate *more* often than hourly, change the cron
+schedule itself. Every tick reads the database and so wakes Neon, which bills
+at least five idle minutes per wake; :08 falls just after the hourly caller's
+posts, while the database is still awake.
 
 Only models in `src/pricing.js` are selectable — an allowlist, so a typo in a
 request body cannot point the job at an arbitrary or unpriced model.
@@ -343,7 +345,7 @@ Jobs → View Logs**.
 ### Why the cron endpoint, and not a timer
 
 A serverless function is frozen between requests, so an in-process
-`setInterval` would never fire. `vercel.json` schedules `*/15 * * * *` against
+`setInterval` would never fire. `vercel.json` schedules `8 * * * *` against
 `/api/cron` instead. Per-minute schedules need a Pro plan — Hobby rejects
 anything more frequent than daily *at deploy time*.
 

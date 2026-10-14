@@ -405,7 +405,7 @@ const server = createServer(async (req, res) => {
       });
     }
 
-    // ---- the 15-minute job ----------------------------------------------
+    // ---- the hourly job --------------------------------------------------
     // Vercel Cron issues a GET; the admin button issues a POST.
     if (path === '/api/cron') {
       const credential = cronAuthorized(url, req);

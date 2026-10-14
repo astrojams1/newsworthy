@@ -57,9 +57,9 @@ test('every catalogue model has a rate and a run estimate', () => {
   }
 });
 
-test('interval choices divide evenly into the 15-minute cron tick', () => {
+test('interval choices divide evenly into the hourly cron tick', () => {
   assert.ok(INTERVAL_CHOICES.includes(240), '4 hours is offered');
-  for (const m of INTERVAL_CHOICES) assert.equal(m % 15, 0, `${m} aligns to the tick`);
+  for (const m of INTERVAL_CHOICES) assert.equal(m % 60, 0, `${m} aligns to the tick`);
   assert.equal(intervalLabel(240), '4 hours');
   assert.equal(intervalLabel(60), 'hour');
   assert.equal(intervalLabel(15), '15 minutes');
@@ -122,23 +122,36 @@ test('the next run is the next slot boundary, not one interval after the reading
   ]) {
     assert.equal(nextRunAfter(now, 240), want, `from ${now}`);
   }
-  assert.equal(nextRunAfter('2026-08-24T16:06:00Z', 15), '2026-08-24T16:15:00.000Z');
+  assert.equal(nextRunAfter('2026-08-24T16:06:00Z', 60), '2026-08-24T17:00:00.000Z');
 });
 
-test('an unfilled slot is retried by the next cron tick, not the next interval', () => {
-  // The reported case: last successful reading 12:01, the 16:00 run failed,
-  // observed at 16:06 on a 4-hourly cadence. The 16:00 slot is unfilled, so a
-  // retry is ~9 minutes away — not the 4 hours the old label claimed.
-  const TICK = 15 * 60_000;
-  const nextTick = (nowIso) => new Date(Math.ceil(Date.parse(nowIso) / TICK) * TICK).toISOString();
+test('an unfilled slot is retried by the next cron tick, not the next interval', async () => {
+  const { slotFor } = await import('../src/rate.js');
+  // The reported case: last successful reading 12:01, the 16:08 run failed,
+  // observed at 16:20 on a 4-hourly cadence. The 16:00 slot is unfilled, so a
+  // retry is the 17:08 tick — not the 4 hours the old label claimed.
+  const TICK = 60 * 60_000, OFFSET = 8 * 60_000;
+  const nextTick = (nowIso) =>
+    new Date(Math.ceil((Date.parse(nowIso) - OFFSET) / TICK) * TICK + OFFSET).toISOString();
 
-  assert.equal(nextTick('2026-08-24T16:06:00Z'), '2026-08-24T16:15:00.000Z');
-  assert.equal(nextTick('2026-08-24T16:15:00Z'), '2026-08-24T16:15:00.000Z');
-  assert.equal(nextTick('2026-08-24T16:59:30Z'), '2026-08-24T17:00:00.000Z');
+  assert.equal(nextTick('2026-08-24T16:20:00Z'), '2026-08-24T17:08:00.000Z');
+  assert.equal(nextTick('2026-08-24T17:08:00Z'), '2026-08-24T17:08:00.000Z');
+  assert.equal(nextTick('2026-08-24T16:59:30Z'), '2026-08-24T17:08:00.000Z');
+  assert.equal(slotFor(new Date('2026-08-24T17:08:00Z'), 240), '2026-08-24T16:00:00.000Z',
+    'the tick still lands in the slot it retries');
 
   const minutesAway =
-    (Date.parse(nextTick('2026-08-24T16:06:00Z')) - Date.parse('2026-08-24T16:06:00Z')) / 60_000;
-  assert.equal(minutesAway, 9, 'retry is minutes away, not hours');
+    (Date.parse(nextTick('2026-08-24T16:20:00Z')) - Date.parse('2026-08-24T16:20:00Z')) / 60_000;
+  assert.equal(minutesAway, 48, 'retry is minutes away, not hours');
+});
+
+test('the cron ticks hourly, after the hourly caller has woken the database', async () => {
+  // Every tick reads the database, and Neon bills each wake for at least five
+  // idle minutes. A 15-minute tick that found the caller's reading and skipped
+  // was most of the database bill. :08 falls after the caller's :03-:06 posts.
+  const { readFile } = await import('node:fs/promises');
+  const { crons } = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
+  assert.deepEqual(crons, [{ path: '/api/cron', schedule: '8 * * * *' }]);
 });
 
 test('prompt v3 adds prediction markets without disturbing the scale or the contract', async () => {

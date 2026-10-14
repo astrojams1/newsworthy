@@ -3,9 +3,11 @@ import { effectiveConfig } from './config.js';
 import { runRating, slotFor } from './rate.js';
 import { checkPushReceipts } from './push.js';
 
-// The in-process scheduler ticks at the finest supported cadence; the
-// configured interval is enforced by the slot, exactly as on Vercel Cron.
-const TICK_MS = 15 * 60_000;
+// The in-process scheduler ticks at the finest supported cadence, at the same
+// minute past the hour as Vercel Cron; the configured interval is enforced by
+// the slot, exactly as there.
+const TICK_MS = 60 * 60_000;
+const TICK_OFFSET_MS = 8 * 60_000;
 
 let running = false;
 
@@ -94,7 +96,7 @@ export function start() {
     .catch((err) => console.error('startup tick failed', err));
 
   const schedule = () => {
-    const delay = TICK_MS - (Date.now() % TICK_MS);
+    const delay = TICK_MS - ((Date.now() - TICK_OFFSET_MS) % TICK_MS);
     setTimeout(() => {
       tick().catch((err) => console.error('tick failed', err));
       schedule();
@@ -102,5 +104,5 @@ export function start() {
   };
   schedule();
 
-  console.log('Scheduler ticking every 15 minutes; cadence enforced by the configured interval.');
+  console.log('Scheduler ticking hourly at :08; cadence enforced by the configured interval.');
 }

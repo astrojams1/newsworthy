@@ -6,7 +6,7 @@ import { DEFAULT_HALF_LIFE_HOURS, DEFAULT_STORY_HALF_LIFE_DAYS, HALF_LIFE_CHOICE
  * Effective runtime configuration: database settings win, environment
  * variables are the fallback, and there is a hard-coded floor under both.
  *
- * Vercel Cron fires every 15 minutes (vercel.json). A longer interval is
+ * Vercel Cron fires hourly, at :08 (vercel.json). A longer interval is
  * enforced here rather than there: the slot is floored to the configured
  * interval, so the extra cron calls inside one interval find the slot already
  * filled and skip without spending an API call.
@@ -17,8 +17,8 @@ export const ENV_MODEL = process.env.NEWSWORTHY_MODEL || 'claude-opus-5';
 // the admin page; no redeploy needed.
 export const ENV_INTERVAL = Number(process.env.NEWSWORTHY_INTERVAL_MINUTES) || 240;
 
-// Multiples of the 15-minute cron tick, so slot boundaries line up exactly.
-export const INTERVAL_CHOICES = [15, 30, 60, 120, 240, 360, 720, 1440];
+// Multiples of the hourly cron tick, so slot boundaries line up exactly.
+export const INTERVAL_CHOICES = [60, 120, 240, 360, 720, 1440];
 
 // How fast the front-page number ages, and which model decides whether a
 // reading reports a development already recorded. Both are display-side: they
