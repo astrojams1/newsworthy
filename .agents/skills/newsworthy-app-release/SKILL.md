@@ -182,7 +182,8 @@ in a temporary copy of `eas.json`) is in the build ledger's Lessons.
 (`READY_FOR_BETA_TESTING`) stays invisible until it is added to that group.
 `node script/ios-release.mjs testers <N>` adds it, as the owner asked on
 1 October: it waits for `VALID`, finds the group with
-`GET /v1/apps/{app}/betaGroups` and posts the build to
+`GET /v1/betaGroups?filter[app]=…&filter[name]=…` (the app's own
+`/v1/apps/{app}/betaGroups` refuses `filter[name]` with a 400) and posts the build to
 `/v1/betaGroups/{id}/relationships/builds` (204 on success). Tell testers it is available only once its `buildBetaDetail` shows
 `IN_BETA_TESTING`.
 
