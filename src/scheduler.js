@@ -1,13 +1,13 @@
 import { latestAttempt, latestRating } from './db.js';
-import { effectiveConfig } from './config.js';
+import { CRON_TICK_MINUTES, CRON_TICK_OFFSET_MINUTES, effectiveConfig } from './config.js';
 import { runRating, slotFor } from './rate.js';
 import { checkPushReceipts } from './push.js';
 
 // The in-process scheduler ticks at the finest supported cadence, at the same
 // minute past the hour as Vercel Cron; the configured interval is enforced by
 // the slot, exactly as there.
-const TICK_MS = 60 * 60_000;
-const TICK_OFFSET_MS = 8 * 60_000;
+const TICK_MS = CRON_TICK_MINUTES * 60_000;
+const TICK_OFFSET_MS = CRON_TICK_OFFSET_MINUTES * 60_000;
 
 let running = false;
 

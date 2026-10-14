@@ -66,9 +66,10 @@ export function useReading() {
     const active = () => process.env.EXPO_OS === 'web' ? !document.hidden : AppState.currentState === 'active';
     // Readings arrive hourly, and every poll wakes the database, which then
     // stays billed for five idle minutes; a one-minute poll kept it awake for
-    // as long as anyone had the app open. Opening, foregrounding and a push
-    // still refresh at once.
-    const interval = setInterval(() => { if (active()) void refresh(); }, 5 * 60_000);
+    // as long as anyone had the app open, and a five-minute one would too.
+    // Fifteen leaves it asleep two thirds of the time. Opening, foregrounding
+    // and a push still refresh at once.
+    const interval = setInterval(() => { if (active()) void refresh(); }, 15 * 60_000);
     const subscription = AppState.addEventListener('change', (state) => { if (state === 'active') void refresh(); });
     const online = () => { if (active()) void refresh(); };
     // A notification arriving while the app is open refreshes the reading it

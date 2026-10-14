@@ -13,7 +13,7 @@ import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
-import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
+import { CRON_TICK_MINUTES, CRON_TICK_OFFSET_MINUTES, INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
@@ -47,9 +47,6 @@ function parseTrialCallers(text) {
   });
 }
 const ON_VERCEL = Boolean(process.env.VERCEL);
-// vercel.json fires /api/cron on this cadence; the configured interval is
-// enforced by the slot on top of it.
-const CRON_TICK_MINUTES = 15;
 const ROOT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC_DIR = existsSync(join(ROOT_DIR, 'dist/web/index.html')) ? join(ROOT_DIR, 'dist/web') : join(ROOT_DIR, 'public');
 
@@ -794,7 +791,8 @@ const server = createServer(async (req, res) => {
           usage_basis: baseline,
           models: modelCatalogue(baseline.observed ? baseline : undefined),
           intervals: INTERVAL_CHOICES.map((m) => ({ minutes: m, label: intervalLabel(m) })),
-          cron_tick_minutes: 15,
+          cron_tick_minutes: CRON_TICK_MINUTES,
+          cron_tick_offset_minutes: CRON_TICK_OFFSET_MINUTES,
         });
       }
       if (req.method === 'POST') {

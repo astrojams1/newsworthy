@@ -17,7 +17,12 @@ export const ENV_MODEL = process.env.NEWSWORTHY_MODEL || 'claude-opus-5';
 // the admin page; no redeploy needed.
 export const ENV_INTERVAL = Number(process.env.NEWSWORTHY_INTERVAL_MINUTES) || 240;
 
-// Multiples of the hourly cron tick, so slot boundaries line up exactly.
+// The cron tick, as vercel.json schedules it (a test holds the two together):
+// hourly, at :08, just after the hourly caller has woken the database.
+export const CRON_TICK_MINUTES = 60;
+export const CRON_TICK_OFFSET_MINUTES = 8;
+
+// Multiples of the cron tick, so slot boundaries line up exactly.
 export const INTERVAL_CHOICES = [60, 120, 240, 360, 720, 1440];
 
 // How fast the front-page number ages, and which model decides whether a

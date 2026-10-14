@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { MODELS, estimateCostUsd, isKnownModel, projectMonthlyUsd, modelCatalogue } from '../src/pricing.js';
-import { INTERVAL_CHOICES, intervalLabel } from '../src/config.js';
+import { CRON_TICK_MINUTES, CRON_TICK_OFFSET_MINUTES, INTERVAL_CHOICES, intervalLabel } from '../src/config.js';
 import { readUsage } from '../src/rate.js';
 
 test('prices tokens and web searches together', () => {
@@ -59,7 +59,7 @@ test('every catalogue model has a rate and a run estimate', () => {
 
 test('interval choices divide evenly into the hourly cron tick', () => {
   assert.ok(INTERVAL_CHOICES.includes(240), '4 hours is offered');
-  for (const m of INTERVAL_CHOICES) assert.equal(m % 60, 0, `${m} aligns to the tick`);
+  for (const m of INTERVAL_CHOICES) assert.equal(m % CRON_TICK_MINUTES, 0, `${m} aligns to the tick`);
   assert.equal(intervalLabel(240), '4 hours');
   assert.equal(intervalLabel(60), 'hour');
   assert.equal(intervalLabel(15), '15 minutes');
@@ -152,6 +152,8 @@ test('the cron ticks hourly, after the hourly caller has woken the database', as
   const { readFile } = await import('node:fs/promises');
   const { crons } = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
   assert.deepEqual(crons, [{ path: '/api/cron', schedule: '8 * * * *' }]);
+  assert.equal(CRON_TICK_MINUTES, 60, 'the constant the scheduler and /api/admin/settings report');
+  assert.equal(CRON_TICK_OFFSET_MINUTES, 8);
 });
 
 test('prompt v3 adds prediction markets without disturbing the scale or the contract', async () => {
