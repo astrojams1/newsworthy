@@ -52,7 +52,8 @@ Before any app build, store submission or EAS sandbox, use the
 [app release skill](.agents/skills/newsworthy-app-release/SKILL.md). iOS store
 builds are archived and uploaded on a Mac with Xcode
 (`apps/client/script/ios-release.mjs`) and Android bundles are built there with
-Gradle (`apps/client/script/android-release.mjs`); nothing builds in EAS, whose
+Gradle and uploaded to Play testing tracks through the Play Developer API
+(`apps/client/script/android-release.mjs`); nothing builds in EAS, whose
 free plan still caps sandbox minutes. Each build, sandbox and submission is
 logged in the [build ledger](store/builds/ledger.md).
 

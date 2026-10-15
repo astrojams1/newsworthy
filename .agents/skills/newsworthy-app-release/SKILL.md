@@ -1,6 +1,6 @@
 ---
 name: newsworthy-app-release
-description: Build, verify and submit the Newsworthy apps locally on the owner's Mac, iOS with Xcode (archive, export, altool upload to TestFlight) and Android with Gradle (signed .aab for Play, universal APK for a phone), plus simulator and sandbox checks within the Expo account's free-plan caps. Use before any store build, Play or TestFlight upload, EAS sandbox or EAS workflow, and when planning native verification; every build and spend is logged in store/builds/ledger.md.
+description: Build, verify and submit the Newsworthy apps locally on the owner's Mac, iOS with Xcode (archive, export, altool upload to TestFlight) and Android with Gradle (signed .aab uploaded to a Play testing track through the Play Developer API, universal APK for a phone), plus simulator and sandbox checks within the Expo account's free-plan caps. Use before any store build, Play or TestFlight upload, EAS sandbox or EAS workflow, and when planning native verification; every build and spend is logged in store/builds/ledger.md.
 ---
 
 # Newsworthy app release
@@ -60,10 +60,11 @@ says what is left, and its Lessons are what earlier runs cost to learn.
    The Expo MCP's request cap can run out while build credits remain; then
    `eas build:list --json` and `eas build:view <id> --json` (with `EXPO_TOKEN`)
    read the same state; `eas account:usage astrojams1 --non-interactive` gives
-   this month's credits per platform. The next Android version code is Play
-   Console's highest plus one (13 for the first upload; EAS issued 1 to 12,
-   none of which reached Play); the next iOS build number is App Store
-   Connect's highest plus one (`node script/ios-release.mjs next-build-number`).
+   this month's credits per platform. The next Android version code is Play's
+   highest plus one across tracks and uploaded bundles
+   (`node script/android-release.mjs next-version-code`; 14 was the first
+   upload, by hand); the next iOS build number is App Store Connect's highest
+   plus one (`node script/ios-release.mjs next-build-number`).
 3. **Reuse before building.** If a finished build already exists for the commit
    and profile you need, use its artifact (`build_list` gives the URL; artifacts
    expire after 14 days for internal builds, 30 for store builds). A pre-change
@@ -148,9 +149,10 @@ inside a sandbox (token: `op read "op://API Tokens/Expo/credential"`).
   the widget target (`xcodebuild -project … -target NewsworthyWidget`, about 10
   seconds) and swap the `.appex` into the app.
 - **Android**: build on the Mac with `node script/android-release.mjs release
-  --version-code N` (about the time of a Gradle build, no credits): the `.aab`
-  goes to Play, and the universal APK from the same bundle goes to the owner's
-  phone with `adb install -r`. Record emulator and physical-device checks
+  --track internal` (about the time of a Gradle build, no credits): it takes
+  the next version code from Play, builds and verifies the `.aab`, makes the
+  universal APK for the owner's phone (`adb install -r`) and uploads the
+  bundle to the track. Leave out `--track` to build without uploading. Record emulator and physical-device checks
   separately. The cloud container and EAS sandboxes lack emulator
   acceleration.
 - **A real iPhone**: one local archive uploaded to TestFlight
@@ -187,6 +189,22 @@ in a temporary copy of `eas.json`) is in the build ledger's Lessons.
 `/v1/apps/{app}/betaGroups` refuses `filter[name]` with a 400) and posts the build to
 `/v1/betaGroups/{id}/relationships/builds` (204 on success). Tell testers it is available only once its `buildBetaDetail` shows
 `IN_BETA_TESTING`.
+
+## Uploading to Google Play
+
+The Play Developer API key is the attachment `play-service-account.json` on
+`op://API Tokens/Newsworthy Android`: service account
+`play-release@newsworthy-cad27.iam.gserviceaccount.com`, allowed to release to
+Newsworthy's testing tracks and nothing else (setup under Google Play in
+`docs/mobile-release.md`). `script/android-release.mjs` reads it per run into
+a private temporary directory and removes it on exit. Confirm each upload
+with the owner first. `upload --version-code N --track internal` sends a
+bundle already built and verified: it refuses one that changed since, checks
+Play's SHA-256 of what it received, sets one completed release with en-US
+notes, validates and commits, and deletes the edit if anything fails.
+Production and every console-only declaration (content rating, target
+audience, ads, tester lists, production access) stay with the owner in Play
+Console. A new app's first bundle can only be uploaded in the console.
 
 ## Resubmitting to App Review
 
