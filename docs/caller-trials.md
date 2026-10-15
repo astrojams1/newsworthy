@@ -5,6 +5,9 @@ once. It uses the same API and
 the same instructions, and its readings are never shown. The goal is to compare
 the two on the same news, hour by hour, before replacing the live caller.
 
+No trial is running. Two ran from 2026-10-12 and both were stopped; the live
+caller stays on Opus 5.5 (see [Decision](#decision)).
+
 ## How a trial reading is kept off the page
 
 The server decides by token, not by anything the caller sends. Each trial has
@@ -47,7 +50,32 @@ Cost comes from the Routine sessions themselves, not from this app, which
 records no usage for external readings. `get_session` on a run's session (the
 trigger's `last_run.session_id`) reports `usage.cost_usd` at list prices.
 
-## Trial 1: Haiku 5.5 (from 2026-10-12)
+## The live caller
+
+| | |
+|---|---|
+| Routine | `trig_016SyC1SeVmdenHGg9gPRymC` "Update newsworthy" |
+| Model | `claude-opus-5-5` |
+| Schedule | `2 * * * *` |
+| Token | `CALLER_TOKEN` |
+| Connectors | none; the workflow uses only curl |
+| Notifications | push |
+
+It replaced the scheduled task `trig_01LSi4KHmBYFTYYENJB2diXg` on 2026-10-13,
+which was deleted. The prompt is unchanged. The old task carried the Vercel
+and Claude Code Remote connectors, whose tool definitions rode in every
+request without being used: its runs started at 80K–86K tokens of context and
+cost $0.76–0.96. Without them the Routine starts at about 44K and costs
+$0.60–0.61 a run, roughly $450 a month against ~$650. Add no connector to it.
+
+Most of what remains is the harness's own context, written to cache once and
+read back on every turn: about three quarters of a run's cost, whatever the
+model. That is why splitting a run's steps across cheaper models saves little.
+
+The trial tables below name the old task as the live Routine, as it was when
+each trial started.
+
+## Trial 1: Haiku 5.5 (2026-10-12 to 2026-10-13)
 
 | | Live | Trial |
 |---|---|---|
@@ -94,9 +122,16 @@ should take `cost_usd` from several sessions of each Routine.
 
 The first Haiku run (2026-10-12 05:15 UTC) measured **$0.031**: its requests
 ran ~69K–92K tokens, under the 100K step, largely because it carries no
-connectors.
+connectors. Later runs measured $0.02–0.03.
 
-## Trial 2: Sonnet 5.5 (from 2026-10-12)
+### Outcome
+
+Stopped on 2026-10-13 at 14:03 UTC and the Routine disabled. Haiku often
+missed the hour's lead story (on 13 October it reported the one the live
+caller led with in 1 of 11 hours) and wrote stale or vague sentences.
+Its cost was never the question.
+
+## Trial 2: Sonnet 5.5 (2026-10-12 to 2026-10-15)
 
 | | Live | Trial |
 |---|---|---|
@@ -112,21 +147,38 @@ an effort level, and none is recorded in the run logs. At the API, Sonnet 5.5
 defaults to `high` where Opus 5.5 and Haiku 5.5 default to `medium`; if the
 harness keeps those defaults, Sonnet thinks harder per turn than either.
 
-### Cost estimate
+### Cost
 
-Sonnet 5.5 is $2 / $10 per MTok input / output at any prompt length, cache
-reads $0.20 and one-hour writes $4. On the measured Opus run's tokens it is
-$0.61 a run; on the Haiku run's, $0.62. That is about **$450 a month against
-Opus's ~$645, roughly 30% less**. The saving is modest because cache reads,
-which dominate these runs, cost the same $0.20 per MTok on Sonnet as on Opus;
-only writes and output are cheaper.
+The estimate made at the start was $0.61 a run, about $450 a month. It
+assumed Sonnet's cache reads cost the same $0.20 per MTok as Opus's. They do
+not: the sessions' `cost_usd` bills them at about $0.10. Measured runs cost
+**$0.22–0.23**, about $165 a month, against $0.60–0.61 for the connector-free
+Opus Routine: roughly 60% less.
+
+### Outcome
+
+Stopped on 2026-10-15 at 16:19 UTC and the Routine disabled. Over 81 readings
+from 12 to 15 October, Sonnet's score was within one point of the live
+caller's 90% of the time and the same 37% of the time, averaging 0.46 points
+higher. It named the same story far less consistently: 22 of 24 paired hours
+on 14 October, 7 of 16 on 15 October. On 15 October it missed the 8% fall in
+the Korean stock index that the live caller led with.
 
 ## Decision
 
-Whichever candidate is good enough: disable `trig_01LSi4KHmBYFTYYENJB2diXg`,
-put `CALLER_TOKEN` in place of the trial token in that candidate's Routine
-prompt and re-enable push. From then on its readings are live. Disable the
-other trial Routines and remove their entries from `TRIAL_CALLERS` (the
-variable itself when no trial is running); the tables stay as the record of
-the trials. If no candidate is good enough, disable the trial Routines and
-leave the live one alone.
+Opus 5.5 stays the live caller. Haiku was not good enough at finding the
+lead story; Sonnet scored close to Opus but missed a market shock and agreed
+on the story too unevenly to be trusted with the page. The cheaper lever
+turned out to be the live Routine's own connectors (see
+[The live caller](#the-live-caller)). Both trial Routines are disabled, not
+deleted, and the trial tables stay as the record. `TRIAL_CALLERS` is still
+set on Vercel, so the two trial tokens still authenticate; remove it to retire
+them.
+
+To promote a candidate in a future trial: disable the live Routine, put
+`CALLER_TOKEN` in place of the trial token in the candidate's Routine prompt
+and turn its push notifications on. From then on its readings are live.
+Disable the other trial Routines and remove their entries from
+`TRIAL_CALLERS` (the variable itself when no trial is running). If no
+candidate is good enough, disable the trial Routines and leave the live one
+alone.
