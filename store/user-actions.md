@@ -24,9 +24,15 @@ in order:
 3. **Optional, before Play:** turn on USB debugging on the phone and connect it
    to the Mac, and the agent can install version 13 for physical checks.
 4. **Recruit 12 testers** for the 14-day closed test (section 6).
+5. **Save the Play API key** (asked 15 October). On the Keys tab of service
+   account `play-release@newsworthy-cad27.iam.gserviceaccount.com` in Google
+   Cloud, Add key → Create new key → JSON; attach the download to
+   **Newsworthy Android** as `play-service-account.json`, then delete it.
 
-Once Create app is enabled, the agent creates the app, rebuilds from the merged
-commit and makes the first upload, by hand in Play Console, to internal testing.
+The app was created and version code 14 uploaded by hand in Play Console to
+internal testing on 15 October; Play takes a new app's first bundle only
+there. Later uploads go through the Play Developer API
+(`android-release.mjs upload`), each confirmed with the owner first.
 
 ## Current iOS resubmission — 12 October
 

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Local Android release, with no EAS Build: prebuild, build a release bundle
 // with Gradle, sign it with the Play upload key from the vault, check what it
-// carries and, for a phone, turn it into one installable APK. See
+// carries, turn it into one installable APK for a phone and upload it to a
+// Play testing track through the Play Developer API. See
 // docs/mobile-release.md.
 import { spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import { createHash, sign } from 'node:crypto';
 import { closeSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, openSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -15,9 +16,23 @@ const repo = resolve(client, '../..');
 const release = JSON.parse(readFileSync(join(repo, 'mobile.release.json'), 'utf8'));
 export const APP = { packageName: release.appId, alias: 'upload', minTargetSdk: 35 };
 export const VAULT = 'op://API Tokens/Newsworthy Android';
+const PLAY = 'https://androidpublisher.googleapis.com';
+// The service account may release to testing tracks only; production stays in
+// the console. "alpha" is closed testing and "beta" open testing.
+export const TRACKS = ['internal', 'alpha', 'beta'];
 
 // Version codes only ever rise, and Play holds every one it has accepted, so
 // its highest is the floor. EAS issued 1 to 12, none of which reached Play.
+// A bundle uploaded but never put on a track still holds its code, so the
+// edit's bundles count as well as every track's releases.
+export function nextVersionCode(tracks = [], bundles = []) {
+  const codes = [
+    ...tracks.flatMap(track => (track.releases ?? []).flatMap(release => release.versionCodes ?? [])),
+    ...bundles.map(bundle => bundle.versionCode),
+  ].map(Number).filter(Number.isInteger);
+  return (codes.length ? Math.max(...codes) : 0) + 1;
+}
+
 export function parseVersionCode(value) {
   const code = Number(value);
   if (!Number.isInteger(code) || code < 1 || code > 2_100_000_000) throw new Error('--version-code takes a positive integer');
@@ -34,6 +49,26 @@ export function signingEnv(key) {
   };
 }
 
+export function parseTrack(value) {
+  if (!TRACKS.includes(value)) throw new Error(`--track takes ${TRACKS.join(', ')}; production is released in Play Console`);
+  return value;
+}
+
+// One completed release replaces whatever the track was serving.
+export function trackRelease(track, code, notes) {
+  return { track, releases: [{ versionCodes: [String(code)], status: 'completed', releaseNotes: [{ language: 'en-US', text: notes }] }] };
+}
+
+// A service account trades a signed JWT for an hour's access token.
+export function jwtClaims(account, now = Math.floor(Date.now() / 1000)) {
+  return { iss: account.client_email, scope: 'https://www.googleapis.com/auth/androidpublisher', aud: account.token_uri, iat: now, exp: now + 3600 };
+}
+export function assertion(account, now) {
+  const enc = value => Buffer.from(JSON.stringify(value)).toString('base64url');
+  const payload = `${enc({ alg: 'RS256', typ: 'JWT', kid: account.private_key_id })}.${enc(jwtClaims(account, now))}`;
+  return `${payload}.${sign('sha256', Buffer.from(payload), account.private_key).toString('base64url')}`;
+}
+
 function opRead(field, outFile) {
   const env = { ...process.env };
   if (env.OP_KEY && !env.OP_SERVICE_ACCOUNT_TOKEN) env.OP_SERVICE_ACCOUNT_TOKEN = env.OP_KEY.replace(/^OP_KEY=/, '');
@@ -43,23 +78,104 @@ function opRead(field, outFile) {
   return result.stdout.trim();
 }
 
-// The keystore and Firebase file live in a private temporary directory for
-// one run and are removed on exit. NEWSWORTHY_ANDROID_KEYSTORE,
-// NEWSWORTHY_ANDROID_KEYSTORE_PASSWORD and GOOGLE_SERVICES_JSON (paths, and the
+// The keystore, Firebase file and Play service-account key live in a private
+// temporary directory for one run and are removed on exit.
+// NEWSWORTHY_ANDROID_KEYSTORE, NEWSWORTHY_ANDROID_KEYSTORE_PASSWORD,
+// GOOGLE_SERVICES_JSON and GOOGLE_PLAY_SERVICE_ACCOUNT_JSON (paths, and the
 // password itself) take precedence over the vault.
 let keyDir;
-function credentials() {
-  const { NEWSWORTHY_ANDROID_KEYSTORE: store, NEWSWORTHY_ANDROID_KEYSTORE_PASSWORD: password, GOOGLE_SERVICES_JSON: services } = process.env;
-  if (store && password && services) return { store, password, services };
+function privateDir() {
+  if (keyDir) return keyDir;
   keyDir = mkdtempSync(join(tmpdir(), 'newsworthy-android-'));
   process.on('exit', removeKey);
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { removeKey(); process.exit(130); });
-  const key = { store: join(keyDir, 'upload.jks'), password: opRead('keystore password'), services: join(keyDir, 'google-services.json') };
+  return keyDir;
+}
+function credentials() {
+  const { NEWSWORTHY_ANDROID_KEYSTORE: store, NEWSWORTHY_ANDROID_KEYSTORE_PASSWORD: password, GOOGLE_SERVICES_JSON: services } = process.env;
+  if (store && password && services) return { store, password, services };
+  const dir = privateDir();
+  const key = { store: join(dir, 'upload.jks'), password: opRead('keystore password'), services: join(dir, 'google-services.json') };
   opRead('upload.jks', key.store);
   opRead('google-services.json', key.services);
   return key;
 }
+function playAccount() {
+  let file = process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON;
+  if (!file) opRead('play-service-account.json', file = join(privateDir(), 'play-service-account.json'));
+  const account = JSON.parse(readFileSync(file, 'utf8'));
+  if (account.type !== 'service_account' || !account.private_key || !account.client_email) throw new Error('The Play key is not a service-account JSON key');
+  return { ...account, token_uri: account.token_uri ?? 'https://oauth2.googleapis.com/token' };
+}
 function removeKey() { if (keyDir) rmSync(keyDir, { recursive: true, force: true }); keyDir = undefined; }
+
+// The Play Developer API changes an app only through an edit: open one, make
+// the changes, validate and commit. An edit not committed is deleted.
+async function accessToken(account) {
+  const response = await fetch(account.token_uri, {
+    method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: assertion(account) }),
+  });
+  const json = await response.json();
+  if (!response.ok) throw new Error(`Google token exchange: ${response.status} ${json.error_description ?? json.error}`);
+  return json.access_token;
+}
+function play(token) {
+  return async (path, { method = 'GET', body, upload } = {}) => {
+    const base = upload ? `${PLAY}/upload` : PLAY;
+    const response = await fetch(`${base}/androidpublisher/v3/applications/${APP.packageName}${path}`, {
+      method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': upload ? 'application/octet-stream' : 'application/json' },
+      ...(upload ? { body: upload } : body ? { body: JSON.stringify(body) } : {}),
+    });
+    const text = await response.text();
+    const json = text ? JSON.parse(text) : null;
+    if (!response.ok) throw new Error(`${method} ${path.split('?')[0]}: ${response.status} ${json?.error?.message ?? text}`);
+    return json;
+  };
+}
+async function withEdit(account, work) {
+  const api = play(await accessToken(account));
+  const { id } = await api('/edits', { method: 'POST' });
+  let committed = false;
+  try {
+    const result = await work(api, `/edits/${id}`);
+    committed = result?.committed === true;
+    return result;
+  } finally {
+    if (!committed) await api(`/edits/${id}`, { method: 'DELETE' }).catch(() => {});
+  }
+}
+
+async function playNextVersionCode(account) {
+  return withEdit(account, async (api, edit) => {
+    const [{ tracks }, { bundles }] = await Promise.all([api(`${edit}/tracks`), api(`${edit}/bundles`)]);
+    return nextVersionCode(tracks, bundles);
+  });
+}
+
+// Uploads the verified bundle, puts it on the track as a completed release
+// and commits; Play's own SHA-256 of what it received must match ours.
+async function upload(account, code, track, notes) {
+  const out = join(client, 'build/android-release', String(code));
+  const aab = join(out, 'Newsworthy.aab');
+  if (!existsSync(aab) || !existsSync(join(out, 'summary.json'))) throw new Error(`No verified bundle for versionCode ${code}; run bundle first`);
+  const summary = JSON.parse(readFileSync(join(out, 'summary.json'), 'utf8'));
+  const digest = sha256(aab);
+  if (digest !== summary.sha256) throw new Error(`${aab} has changed since it was verified; run verify again`);
+  notes ??= `Newsworthy ${summary.versionName} (${code}).`;
+  return withEdit(account, async (api, edit) => {
+    console.log(`Uploading ${aab} (sha256 ${digest}) to Play`);
+    const uploaded = await api(`${edit}/bundles?uploadType=media`, { method: 'POST', upload: readFileSync(aab) });
+    if (uploaded.versionCode !== code) throw new Error(`Play read versionCode ${uploaded.versionCode}, expected ${code}`);
+    if (uploaded.sha256 !== digest) throw new Error(`Play received sha256 ${uploaded.sha256}, expected ${digest}`);
+    await api(`${edit}/tracks/${track}`, { method: 'PUT', body: trackRelease(track, code, notes) });
+    await api(`${edit}:validate`, { method: 'POST' });
+    await api(`${edit}:commit`, { method: 'POST' });
+    return { committed: true };
+  });
+  const { releases } = await withEdit(account, (api, edit) => api(`${edit}/tracks/${track}`));
+  console.log(`versionCode ${code} committed to ${track}: ${JSON.stringify(releases)}`);
+}
 
 function run(command, args, { cwd = client, env = {}, log } = {}) {
   console.log(`$ ${[command, ...args].join(' ')}${log ? `  > ${log}` : ''}`);
@@ -163,24 +279,43 @@ function apk(key, code) {
   console.log(`${file}\nsha256 ${sha256(file)}\nInstall with: adb install -r ${file}`);
 }
 
-const usage = `Usage: node script/android-release.mjs <command> --version-code N
-  bundle   prebuild, build and sign a release .aab, and verify it
-  verify   check Gradle's last release .aab again without rebuilding
-  apk      turn that bundle into one signed APK for adb install
-  release  bundle, then apk`;
+const usage = `Usage: node script/android-release.mjs <command> [--version-code N] [--track T] [--notes TEXT]
+  next-version-code  print Play's highest version code plus one
+  bundle             prebuild, build and sign a release .aab, and verify it
+  verify             check Gradle's last release .aab again without rebuilding
+  apk                turn that bundle into one signed APK for adb install
+  upload             upload bundle N to --track (default internal) and commit
+  release            bundle and apk, then upload when --track is given
+--version-code defaults to Play's highest plus one for bundle and release.
+--track is one of ${TRACKS.join(', ')}; --notes are the en-US release notes.`;
 
-function main([command, ...rest]) {
+const option = (args, name) => {
+  const at = args.indexOf(name);
+  if (at < 0) return undefined;
+  if (args[at + 1] === undefined || args[at + 1].startsWith('--')) throw new Error(`${name} needs a value`);
+  return args[at + 1];
+};
+
+async function main([command, ...rest]) {
   if (!command || command === '--help') return console.log(usage);
-  if (!['bundle', 'verify', 'apk', 'release'].includes(command)) throw new Error(usage);
-  const flag = rest.indexOf('--version-code');
-  if (flag < 0) throw new Error(`${usage}\nThe next version code is Play Console's highest plus one.`);
-  const code = parseVersionCode(rest[flag + 1]);
+  if (!['next-version-code', 'bundle', 'verify', 'apk', 'upload', 'release'].includes(command)) throw new Error(usage);
+  const given = option(rest, '--version-code');
+  const trackFlag = option(rest, '--track');
+  const track = trackFlag === undefined ? (command === 'upload' ? 'internal' : undefined) : parseTrack(trackFlag);
+  if (track && !['upload', 'release'].includes(command)) throw new Error(`--track applies to upload and release\n${usage}`);
+  if (given === undefined && ['verify', 'apk', 'upload'].includes(command)) throw new Error(`${usage}\n${command} needs --version-code`);
+  const account = command === 'next-version-code' || track || given === undefined ? playAccount() : undefined;
+  if (command === 'next-version-code') return console.log(await playNextVersionCode(account));
+  const code = given === undefined ? await playNextVersionCode(account) : parseVersionCode(given);
+  const notes = option(rest, '--notes');
+  if (command === 'upload') return upload(account, code, track, notes);
   const key = credentials();
   if (command === 'verify') return bundle(key, code, { build: false });
   if (command !== 'apk') bundle(key, code);
   if (command !== 'bundle') apk(key, code);
+  if (command === 'release' && track) await upload(account, code, track, notes);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  try { main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }
+  main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
 }

@@ -15,7 +15,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (AAB 13 built, not uploaded) |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (AAB 13 built, not uploaded; 14 uploaded by hand to internal testing; Play API uploads set up) |
 
 ## Lessons
 
@@ -288,3 +288,17 @@ created in Play Console (app ID 4974473553901574528, package
 `com.astrojams.newsworthy`, Paid, English US) after device and contact-phone
 verification. No bundle uploaded yet. Android developer verification lists the
 package as not registered; check again after the first upload.
+
+**Play Developer API, 15 October.** Version code 14 went to internal testing
+by hand in Play Console, since Play takes a new app's first bundle only there.
+For later uploads `android-release.mjs` gained `next-version-code` and
+`upload`, and `release --track` uploads after building. In the built-in
+browser, with the owner's approval: the Google Play Android Developer API was
+enabled on Google Cloud project `newsworthy-cad27`; service account
+`play-release@newsworthy-cad27.iam.gserviceaccount.com` was created with no
+project roles; Play Console invited it to Newsworthy only, with Release apps to
+testing tracks and read-only View app information (Active at once). The owner
+created its JSON key and attached it to `op://API Tokens/Newsworthy Android` as
+`play-service-account.json`; it reads back as that service account (values
+not printed). `next-version-code` read Play live in 3.5 s and returned 15. No
+API upload yet. EAS credits used: none.
