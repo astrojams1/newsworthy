@@ -15,7 +15,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (AAB 13 built, not uploaded) |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (AAB 14 from main on Play internal testing) |
 
 ## Lessons
 
@@ -288,3 +288,17 @@ created in Play Console (app ID 4974473553901574528, package
 `com.astrojams.newsworthy`, Paid, English US) after device and contact-phone
 verification. No bundle uploaded yet. Android developer verification lists the
 package as not registered; check again after the first upload.
+
+**Play internal testing, 15 October.** PR #212 merged as 9ad04fb (production
+`/healthz` reported it). Version code 14 built from clean 9ad04fb with the
+vault credentials in 5m55s on a warm Gradle cache: `.aab` SHA-256
+`ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5`, signer
+`EB:1E:5F:25:…:F4:33:E4`, target SDK 36; universal APK SHA-256
+`b1e80c0bce0a0b4e425c38860200d21a2956d368df31971de4393ca2c331ec14`. Uploaded
+by hand in Play Console (the owner dragged the file in: the console page cannot
+fetch a local file, and the first bundle cannot go through the API), release
+"14 (1.0.0)" saved and published to internal testing at 09:36 PDT: "Available
+to internal testers", 26.5 MB for new installs. Two warnings: no testers yet
+(track Inactive) and no deobfuscation file (R8 is off). After the upload,
+Android developer verification shows the package Registered with 3 keys. Version
+code 13 was never uploaded. EAS credits used: none.

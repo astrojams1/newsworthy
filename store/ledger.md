@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-15T16:17:29+00:00
+Updated: 2026-10-15T16:36:57+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -31,8 +31,8 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.device | done | user | observed | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
 | google.phone | done | user | observed | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
 | google.app | done | agent | observed | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
-| google.build | done | agent | observed | Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet. | Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks. |
-| google.native | in_progress | agent | observed | Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet. | Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
+| google.build | done | agent | observed | Version code 14 built locally from clean main 9ad04fb with vault credentials and verified (target SDK 36, release JS, google_app_id, upload-key signer); uploaded to Play and published to internal testing as release 14 (1.0.0) on 2026-10-15, 09:36 PDT. Package registered for Android developer verification. | — |
+| google.native | in_progress | agent | observed | Release 14 is on Play internal testing but reaches nobody: no tester list yet (track Inactive). No physical-device run yet; emulator scope from APK10/APK12 unchanged. | Add the owner as an internal tester, install 14 from Play on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
 | google.listing | in_progress | agent | observed | Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered. | Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
@@ -4006,3 +4006,23 @@ Play dashboard for Newsworthy (2026-10-15): production access requires publishin
 
 
 Next: Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.
+
+### 408. google.build — done
+
+2026-10-15T16:36:57+00:00 · observed · agent
+
+Version code 14 built locally from clean main 9ad04fb with vault credentials and verified (target SDK 36, release JS, google_app_id, upload-key signer); uploaded to Play and published to internal testing as release 14 (1.0.0) on 2026-10-15, 09:36 PDT. Package registered for Android developer verification.
+
+- store/builds/ledger.md#2026-10
+- AAB sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5
+
+Next: —
+
+### 409. google.native — in_progress
+
+2026-10-15T16:36:57+00:00 · observed · agent
+
+Release 14 is on Play internal testing but reaches nobody: no tester list yet (track Inactive). No physical-device run yet; emulator scope from APK10/APK12 unchanged.
+
+
+Next: Add the owner as an internal tester, install 14 from Play on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.
