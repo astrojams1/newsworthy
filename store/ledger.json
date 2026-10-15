@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T21:09:48+00:00",
+  "updated_at": "2026-10-15T21:37:51+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -271,12 +271,13 @@
       "state": "done",
       "owner": "agent",
       "basis": "inferred",
-      "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.",
+      "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md.",
       "evidence": [
-        "store/google-play-app-content.md"
+        "store/google-play-app-content.md",
+        "https://newsworthy-indol.vercel.app/privacy#delete-your-data"
       ],
-      "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
-      "updated_at": "2026-10-15T21:09:48+00:00"
+      "next_action": "Send the saved App content changes for review with the first closed-testing release.",
+      "updated_at": "2026-10-15T21:37:51+00:00"
     },
     "google.closed-test": {
       "state": "waiting_user",
@@ -7809,6 +7810,23 @@
         ],
         "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
         "updated_at": "2026-10-15T21:09:48+00:00"
+      }
+    },
+    {
+      "sequence": 414,
+      "at": "2026-10-15T21:37:51+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md.",
+        "evidence": [
+          "store/google-play-app-content.md",
+          "https://newsworthy-indol.vercel.app/privacy#delete-your-data"
+        ],
+        "next_action": "Send the saved App content changes for review with the first closed-testing release.",
+        "updated_at": "2026-10-15T21:37:51+00:00"
       }
     }
   ],
