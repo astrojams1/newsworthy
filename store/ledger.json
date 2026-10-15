@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T17:12:20+00:00",
+  "updated_at": "2026-10-15T21:28:36+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -262,10 +262,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered.",
-      "evidence": [],
-      "next_action": "Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists.",
-      "updated_at": "2026-10-15T16:17:29+00:00"
+      "summary": "2026-10-15: default en-US listing graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate). Text was already entered.",
+      "evidence": [
+        "store/google-play-artwork-15-upload.json"
+      ],
+      "next_action": "Owner approves the app content declarations (store/google-play-app-content.md) and sets the US$1 price once the payments profile exists; send the listing for review with the first closed-testing release.",
+      "updated_at": "2026-10-15T21:28:36+00:00"
     },
     "google.disclosures": {
       "state": "todo",
@@ -346,12 +348,14 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps",
+      "summary": "2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption.",
       "evidence": [
-        "store/assets/google-play/phone/03-widget-sizes-v9.png; widget-frames.json; image validation and visual inspection"
+        "store/source/android-phone/provenance-v15.json",
+        "store/source/android-phone/widget-frames-v15.json",
+        "store/google-play-gallery-15.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T10:09:19+00:00"
+      "updated_at": "2026-10-15T21:28:35+00:00"
     },
     "design.reading-screen": {
       "state": "in_progress",
@@ -7765,6 +7769,40 @@
         "evidence": [],
         "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
         "updated_at": "2026-10-15T17:12:20+00:00"
+      }
+    },
+    {
+      "sequence": 411,
+      "at": "2026-10-15T21:28:35+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption.",
+        "evidence": [
+          "store/source/android-phone/provenance-v15.json",
+          "store/source/android-phone/widget-frames-v15.json",
+          "store/google-play-gallery-15.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-15T21:28:35+00:00"
+      }
+    },
+    {
+      "sequence": 412,
+      "at": "2026-10-15T21:28:36+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: default en-US listing graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate). Text was already entered.",
+        "evidence": [
+          "store/google-play-artwork-15-upload.json"
+        ],
+        "next_action": "Owner approves the app content declarations (store/google-play-app-content.md) and sets the US$1 price once the payments profile exists; send the listing for review with the first closed-testing release.",
+        "updated_at": "2026-10-15T21:28:36+00:00"
       }
     }
   ],

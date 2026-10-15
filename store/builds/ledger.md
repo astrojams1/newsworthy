@@ -302,3 +302,19 @@ created its JSON key and attached it to `op://API Tokens/Newsworthy Android` as
 `play-service-account.json`; it reads back as that service account (values
 not printed). `next-version-code` read Play live in 3.5 s and returned 15. No
 API upload yet. EAS credits used: none.
+
+**Play listing artwork, 15 October.** No build. The September Play gallery
+(mint palette, reading with Privacy/Support links, no timeline) was replaced
+from versionCode 15's universal APK (`254686f`, SHA-256 `25c6cb8e…`) on a
+new API 35 Pixel 7 emulator under `/Volumes/ssd/toolchains` (emulator and
+`google_apis` arm64 image installed there with `sdkmanager`). Eleven
+original captures and their hashes are in
+`store/source/android-phone/provenance-v15.json`; five screenshots, the
+feature graphic and the 512 px Stone icon were uploaded through the Play API
+by `store/scripts/google-play-images.mjs`. With the owner's approval the
+service account gained Manage store presence and, after two edits failed
+`validate` with 403 and were deleted, Edit and delete draft apps; the third
+edit committed. Receipt: `store/google-play-artwork-15-upload.json`. Another
+local session installed and launched its own app on the shared emulator
+during capture; none of its screens are in the captures. EAS credits used:
+none.

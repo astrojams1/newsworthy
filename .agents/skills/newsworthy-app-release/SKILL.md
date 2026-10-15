@@ -194,9 +194,12 @@ in a temporary copy of `eas.json`) is in the build ledger's Lessons.
 
 The Play Developer API key is the attachment `play-service-account.json` on
 `op://API Tokens/Newsworthy Android`: service account
-`play-release@newsworthy-cad27.iam.gserviceaccount.com`, allowed to release to
-Newsworthy's testing tracks and nothing else (setup under Google Play in
-`docs/mobile-release.md`). `script/android-release.mjs` reads it per run into
+`play-release@newsworthy-cad27.iam.gserviceaccount.com`, allowed on
+Newsworthy only to release to testing tracks, manage store presence and edit
+the draft app, never production (setup under Google Play in
+`docs/mobile-release.md`). Listing graphics go up with
+`node store/scripts/google-play-images.mjs upload` after
+`store/scripts/render-google-play.mjs`; confirm each with the owner. `script/android-release.mjs` reads it per run into
 a private temporary directory and removes it on exit. Confirm each upload
 with the owner first. `upload --version-code N --track internal` sends a
 bundle already built and verified: it refuses one that changed since, checks

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-15T17:12:20+00:00
+Updated: 2026-10-15T21:28:36+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -33,7 +33,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.app | done | agent | observed | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
 | google.build | done | agent | observed | Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet. | Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks. |
 | google.native | in_progress | agent | observed | Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet. | Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
-| google.listing | in_progress | agent | observed | Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered. | Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists. |
+| google.listing | in_progress | agent | observed | 2026-10-15: default en-US listing graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate). Text was already entered. | Owner approves the app content declarations (store/google-play-app-content.md) and sets the US$1 price once the payments profile exists; send the listing for review with the first closed-testing release. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
@@ -41,7 +41,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
 | apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
 | host.ui | done | agent | observed | Native UI access restored after the Mac was unlocked. | — |
-| google.artwork | done | agent | observed | APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps | — |
+| google.artwork | done | agent | observed | 2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption. | — |
 | design.reading-screen | in_progress | agent | observed | Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback. | Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery. |
 | native.ui-access | done | agent | observed | Mac is now unlocked; native Android Emulator and iOS Simulator accessibility/screenshot controls are available. | — |
 | design.widget-gallery | done | agent | observed | Both platform galleries feature actual widget size choices on neutral backgrounds | — |
@@ -4036,3 +4036,23 @@ Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sente
 
 
 Next: On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.
+
+### 411. google.artwork — done
+
+2026-10-15T21:28:35+00:00 · observed · agent
+
+2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption.
+
+- store/source/android-phone/provenance-v15.json
+- store/source/android-phone/widget-frames-v15.json
+- store/google-play-gallery-15.json
+
+### 412. google.listing — in_progress
+
+2026-10-15T21:28:36+00:00 · observed · agent
+
+2026-10-15: default en-US listing graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate). Text was already entered.
+
+- store/google-play-artwork-15-upload.json
+
+Next: Owner approves the app content declarations (store/google-play-app-content.md) and sets the US$1 price once the payments profile exists; send the listing for review with the first closed-testing release.
