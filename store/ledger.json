@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T16:36:57+00:00",
+  "updated_at": "2026-10-15T16:39:52+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -253,10 +253,10 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Release 14 is on Play internal testing but reaches nobody: no tester list yet (track Inactive). No physical-device run yet; emulator scope from APK10/APK12 unchanged.",
+      "summary": "Release 14 is on Play internal testing; the track is Active with tester list 'Owner' (the owner's Google account, 1 user), opt-in https://play.google.com/apps/internaltest/4700283919647153170. No physical-device run yet; emulator scope from APK10/APK12 unchanged.",
       "evidence": [],
-      "next_action": "Add the owner as an internal tester, install 14 from Play on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
-      "updated_at": "2026-10-15T16:36:57+00:00"
+      "next_action": "Owner opts in on the phone, installs 14 from Play; then check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+      "updated_at": "2026-10-15T16:39:52+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -7743,6 +7743,20 @@
         "evidence": [],
         "next_action": "Add the owner as an internal tester, install 14 from Play on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
         "updated_at": "2026-10-15T16:36:57+00:00"
+      }
+    },
+    {
+      "sequence": 410,
+      "at": "2026-10-15T16:39:52+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Release 14 is on Play internal testing; the track is Active with tester list 'Owner' (the owner's Google account, 1 user), opt-in https://play.google.com/apps/internaltest/4700283919647153170. No physical-device run yet; emulator scope from APK10/APK12 unchanged.",
+        "evidence": [],
+        "next_action": "Owner opts in on the phone, installs 14 from Play; then check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+        "updated_at": "2026-10-15T16:39:52+00:00"
       }
     }
   ],

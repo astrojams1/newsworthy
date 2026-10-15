@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-15T16:36:57+00:00
+Updated: 2026-10-15T16:39:52+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -32,7 +32,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.phone | done | user | observed | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
 | google.app | done | agent | observed | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
 | google.build | done | agent | observed | Version code 14 built locally from clean main 9ad04fb with vault credentials and verified (target SDK 36, release JS, google_app_id, upload-key signer); uploaded to Play and published to internal testing as release 14 (1.0.0) on 2026-10-15, 09:36 PDT. Package registered for Android developer verification. | — |
-| google.native | in_progress | agent | observed | Release 14 is on Play internal testing but reaches nobody: no tester list yet (track Inactive). No physical-device run yet; emulator scope from APK10/APK12 unchanged. | Add the owner as an internal tester, install 14 from Play on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
+| google.native | in_progress | agent | observed | Release 14 is on Play internal testing; the track is Active with tester list 'Owner' (the owner's Google account, 1 user), opt-in https://play.google.com/apps/internaltest/4700283919647153170. No physical-device run yet; emulator scope from APK10/APK12 unchanged. | Owner opts in on the phone, installs 14 from Play; then check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
 | google.listing | in_progress | agent | observed | Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered. | Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
@@ -4026,3 +4026,12 @@ Release 14 is on Play internal testing but reaches nobody: no tester list yet (t
 
 
 Next: Add the owner as an internal tester, install 14 from Play on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.
+
+### 410. google.native — in_progress
+
+2026-10-15T16:39:52+00:00 · observed · agent
+
+Release 14 is on Play internal testing; the track is Active with tester list 'Owner' (the owner's Google account, 1 user), opt-in https://play.google.com/apps/internaltest/4700283919647153170. No physical-device run yet; emulator scope from APK10/APK12 unchanged.
+
+
+Next: Owner opts in on the phone, installs 14 from Play; then check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.

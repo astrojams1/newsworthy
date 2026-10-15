@@ -302,3 +302,6 @@ to internal testers", 26.5 MB for new installs. Two warnings: no testers yet
 (track Inactive) and no deobfuscation file (R8 is off). After the upload,
 Android developer verification shows the package Registered with 3 keys. Version
 code 13 was never uploaded. EAS credits used: none.
+Afterwards, at the owner's request, an internal tester list "Owner" (their own
+Google account) was created and selected; the track became Active. Opt-in:
+https://play.google.com/apps/internaltest/4700283919647153170.
