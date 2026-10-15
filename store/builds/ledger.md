@@ -282,3 +282,9 @@ password`). Each matched the generated files byte for byte (compared by
 SHA-256, values not printed). `android-release.mjs verify --version-code 13`
 with no environment overrides read all three from the vault, confirmed the
 bundle's signer (`EB:1E:5F:25:…:F4:33:E4`) and removed its temporary copies.
+
+**Play app created, 15 October.** With the owner's approval, Newsworthy was
+created in Play Console (app ID 4974473553901574528, package
+`com.astrojams.newsworthy`, Paid, English US) after device and contact-phone
+verification. No bundle uploaded yet. Android developer verification lists the
+package as not registered; check again after the first upload.

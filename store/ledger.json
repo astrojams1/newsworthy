@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T16:14:06+00:00",
+  "updated_at": "2026-10-15T16:17:29+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -229,13 +229,13 @@
       "updated_at": "2026-10-15T16:14:06+00:00"
     },
     "google.app": {
-      "state": "todo",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "2026-10-15: Create app is enabled on the AstroJams Play Console home page (built-in browser, signed in as the owner). No app created yet.",
+      "summary": "2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered.",
       "evidence": [],
-      "next_action": "With the owner's go-ahead: create Newsworthy (English US, App, Paid per the US$1 launch decision), accepting the Developer Program Policies and US export-law declarations; then app content, listing and a manual first upload of a bundle rebuilt from the merged commit to internal testing.",
-      "updated_at": "2026-10-15T16:14:06+00:00"
+      "next_action": "—",
+      "updated_at": "2026-10-15T16:17:29+00:00"
     },
     "google.build": {
       "state": "done",
@@ -262,12 +262,10 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload.",
-      "evidence": [
-        "store/assets/manifest.json; source/android-phone/provenance-v9.json and widget-frames.json; store/scripts/validate.mjs passed September17."
-      ],
-      "next_action": "Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets.",
-      "updated_at": "2026-09-17T02:13:53+00:00"
+      "summary": "Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered.",
+      "evidence": [],
+      "next_action": "Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists.",
+      "updated_at": "2026-10-15T16:17:29+00:00"
     },
     "google.disclosures": {
       "state": "todo",
@@ -284,12 +282,10 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "New personal account testing path needs genuine testers and elapsed testing time.",
-      "evidence": [
-        "Google requirements checked September 16, 2026; store/user-actions.md"
-      ],
+      "summary": "Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application.",
+      "evidence": [],
       "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "updated_at": "2026-10-15T16:17:29+00:00"
     },
     "google.production-access": {
       "state": "todo",
@@ -7674,6 +7670,48 @@
         "evidence": [],
         "next_action": "With the owner's go-ahead: create Newsworthy (English US, App, Paid per the US$1 launch decision), accepting the Developer Program Policies and US export-law declarations; then app content, listing and a manual first upload of a bundle rebuilt from the merged commit to internal testing.",
         "updated_at": "2026-10-15T16:14:06+00:00"
+      }
+    },
+    {
+      "sequence": 405,
+      "at": "2026-10-15T16:17:29+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-15T16:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 406,
+      "at": "2026-10-15T16:17:29+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered.",
+        "evidence": [],
+        "next_action": "Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists.",
+        "updated_at": "2026-10-15T16:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 407,
+      "at": "2026-10-15T16:17:29+00:00",
+      "gate": "google.closed-test",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application.",
+        "evidence": [],
+        "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
+        "updated_at": "2026-10-15T16:17:29+00:00"
       }
     }
   ],
