@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920">
+      <rect width="100%" height="100%" fill="#D7D7D1"/>
+      
+  <rect x="72" y="62" width="34" height="5" rx="2.5" fill="#52545D"/>
+  <text x="126" y="75" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" fill="#52545D" letter-spacing="5">NEWSWORTHY</text>
+  <text x="72" y="176" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="74" fill="#16161A" font-weight="500" letter-spacing="-2">A widget for</text><text x="72" y="256" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="74" fill="#16161A" font-weight="500" letter-spacing="-2">your home screen.</text>
+  <text x="75" y="316" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" fill="#52545D" >Resizable. Made larger, it adds the sentence.</text>
+      <text x="138" y="418" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" fill="#52545D" letter-spacing="4">COMPACT · LIGHT OR DARK</text>
+      <svg x="138" y="442" width="384.2" height="499.8" viewBox="67 546 452 588"><defs><clipPath id="compact-light"><rect x="67" y="546" width="452" height="588" rx="52"/></clipPath></defs><image width="1080" height="2400" href="../android-phone/33-widget-compact-light-dark-v15.png" clip-path="url(#compact-light)"/></svg>
+      <svg x="557.9000000000001" y="442" width="384.2" height="499.8" viewBox="561 546 452 588"><defs><clipPath id="compact-dark"><rect x="561" y="546" width="452" height="588" rx="52"/></clipPath></defs><image width="1080" height="2400" href="../android-phone/33-widget-compact-light-dark-v15.png" clip-path="url(#compact-dark)"/></svg>
+      <text x="138" y="1012" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="24" fill="#52545D" letter-spacing="4">LARGER · WITH THE SENTENCE</text>
+      <svg x="138" y="1036" width="804.1" height="767.55" viewBox="67 546 946 903"><defs><clipPath id="expanded"><rect x="67" y="546" width="946" height="903" rx="52"/></clipPath></defs><image width="1080" height="2400" href="../android-phone/35-widget-expanded-light-v15.png" clip-path="url(#expanded)"/></svg>
+      <text x="540" y="1878" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" fill="#52545D" text-anchor="middle">Each widget has its own appearance setting.</text>
+    </svg>
