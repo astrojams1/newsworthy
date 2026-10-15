@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-15T16:57:09+00:00
+Updated: 2026-10-15T17:12:20+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -73,7 +73,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 | apple.review-state | done | agent | observed | Fresh API readback confirms selected VALID build 26, version WAITING_FOR_REVIEW and review submission WAITING_FOR_REVIEW. | — |
-| story-age.native | todo | agent | observed | Owner found four seconds too long: "Checked 23m ago" now holds for two seconds (on load, on returning to the app, after a tap) before crossfading to the story line. Web export verified in Chromium: story line at ~3.6s after navigation, Checked for ~2s after a tap. Native apps not built or run here. | On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds. |
+| story-age.native | todo | agent | observed | Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively. | On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
 | apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
@@ -95,7 +95,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | web.settings-trailing-marks | waiting_user | user | observed | Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device. | Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build. |
 | widget.appearance-choice | in_progress | agent | observed | Build 25 (EAS ac89a682, commit bf78444) failed to compile: a String parameter with a declared default and an options provider is iOS 26-only, and the widget runs from iOS 17. The declared-default fix is withdrawn; the parameter is build 24's again, so an unset Appearance row can still read "Appearance" in Edit Widget while the widget follows the device. A test now rejects the iOS 26-only initializer. | Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too. |
 | widget.same-day-timestamp | waiting_verification | agent | observed | Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval. | On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight. |
-| ui.onboarding | waiting_verification | agent | observed | First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
+| ui.onboarding | waiting_verification | agent | observed | Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device. | In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged. |
 | copy.no-ai-listing | in_progress | agent | observed | store/listing.json description no longer mentions AI ("Ratings can be wrong." replaces "AI assessments can be wrong."); promotional text and keywords updated for the timeline and widget settings. The live App Store listing still says "Newsworthy uses AI"; not pushed yet. Google Play listing not created. | Push the description, promotional text and keywords to App Store Connect with the resubmission, then read back that no public field mentions AI. |
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
 | web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
@@ -4018,3 +4018,21 @@ Play Developer API route added to android-release.mjs (next-version-code, upload
 - docs/mobile-release.md#google-play
 
 Next: With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.
+
+### 409. ui.onboarding — waiting_verification
+
+2026-10-15T17:12:20+00:00 · observed · agent
+
+Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device.
+
+
+Next: In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged.
+
+### 410. story-age.native — todo
+
+2026-10-15T17:12:20+00:00 · observed · agent
+
+Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively.
+
+
+Next: On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.
