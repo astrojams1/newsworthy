@@ -21,7 +21,9 @@ module.exports = {
       })),
       NSPrivacyAccessedAPITypes: [{ NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults', NSPrivacyAccessedAPITypeReasons: ['CA92.1', '1C8F.1'] }] } },
   android: { package: release.appId,
-    // EAS supplies this file for preview/production; keep credentials out of Git.
+    // script/android-release.mjs sets the store version code, Play's highest
+    // plus one, and reads google-services.json from the vault for one run.
+    versionCode: Number(process.env.NEWSWORTHY_ANDROID_VERSION_CODE || 1),
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: design.brand.light.center } },
   web: { output: 'static', favicon: './assets/favicon.png' },

@@ -18,6 +18,7 @@ artifacts/
 .expo/
 apps/client/ios/
 apps/client/android/
+apps/client/modules/*/android/build/
 .env.local
 .env.*.local
 apps/client/build/

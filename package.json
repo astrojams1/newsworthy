@@ -21,6 +21,7 @@
     "mobile:ios": "npm run ios --workspace @newsworthy/client",
     "mobile:android": "npm run android --workspace @newsworthy/client",
     "mobile:release:ios": "node apps/client/script/ios-release.mjs",
+    "mobile:release:android": "node apps/client/script/android-release.mjs",
     "pretest": "npm run build:web",
     "design:generate": "node scripts/generate-design.mjs",
     "design:check": "node scripts/generate-design.mjs --check",

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-14T13:07:09+00:00
+Updated: 2026-10-15T16:17:29+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -28,14 +28,14 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.review | waiting_provider | provider | observed | Build 27 resubmitted 2026-10-12 06:02 UTC after Apple rejected build 26 under Guideline 4.2; Apple reports version 1.0.0 and review submission WAITING_FOR_REVIEW with build 27 selected. Timeline on by default, whole widget sentences. | Await Apple's response. |
 | apple.release | waiting_provider | provider | observed | Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates. | Await approval, then verify paid-sale readiness and public availability. |
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
-| google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
-| google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
-| google.app | waiting_user | user | observed | September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner. | Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled. |
-| google.build | done | agent | observed | Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope. | Upload AAB12 when Google allows app creation; complete physical Android testing separately. |
-| google.native | in_progress | agent | observed | Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified. | Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open. |
-| google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
+| google.device | done | user | observed | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
+| google.phone | done | user | observed | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
+| google.app | done | agent | observed | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
+| google.build | done | agent | observed | Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet. | Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks. |
+| google.native | in_progress | agent | observed | Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet. | Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
+| google.listing | in_progress | agent | observed | Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered. | Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
-| google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
+| google.closed-test | waiting_user | user | observed | Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
 | google.review | todo | agent | observed | No Google release submitted for review. | Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state. |
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
@@ -3905,3 +3905,104 @@ Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build f
 - build/ios-release/28/summary.json: ipa SHA-256 9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f, source 975aff8 plus this change (dirty tree)
 
 Next: Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.
+
+### 397. google.build — done
+
+2026-10-15T15:46:06+00:00 · observed · agent
+
+Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet.
+
+- store/builds/ledger.md#2026-10
+- AAB sha256 4022cc8c5a043ea6b3e700d3fb31f606255617878be9100a49ed94f634a3d25f
+
+Next: Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks.
+
+### 398. google.native — in_progress
+
+2026-10-15T15:46:06+00:00 · observed · agent
+
+Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet.
+
+
+Next: Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.
+
+### 399. google.device — waiting_user
+
+2026-10-15T15:46:07+00:00 · observed · user
+
+Owner reports a physical Android phone on 2026-10-15. Play Console device verification and contact-phone verification not yet confirmed done.
+
+
+Next: Owner opens the Play Console app on the phone, signs into the AstroJams developer account and completes device verification, then contact-phone verification in Account details.
+
+### 400. google.app — waiting_user
+
+2026-10-15T16:06:49+00:00 · observed · user
+
+2026-10-15, built-in browser signed in as the owner: Play Console home for AstroJams (personal account) shows both tasks Action required, 'Verify that you have access to an Android mobile device' and 'Verify your contact phone number'; the Create app button is disabled.
+
+
+Next: Owner completes device verification in the Play Console mobile app on the new phone, then contact-phone verification; agent then creates the paid Newsworthy app.
+
+### 401. google.device — done
+
+2026-10-15T16:12:48+00:00 · observed · user
+
+2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser).
+
+
+Next: —
+
+### 402. google.phone — waiting_user
+
+2026-10-15T16:12:48+00:00 · observed · user
+
+2026-10-15, after device verification: home page still lists 'Verify your contact phone number' as Action required; Account details shows the contact phone without the verified check that both email addresses carry. Create app remains disabled.
+
+
+Next: Owner opens Developer account > Account details > Contact details on the web, selects Verify beside the contact phone, and enters the SMS or voice code there; agent then rechecks Create app.
+
+### 403. google.phone — done
+
+2026-10-15T16:14:06+00:00 · observed · user
+
+2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'.
+
+
+Next: —
+
+### 404. google.app — todo
+
+2026-10-15T16:14:06+00:00 · observed · agent
+
+2026-10-15: Create app is enabled on the AstroJams Play Console home page (built-in browser, signed in as the owner). No app created yet.
+
+
+Next: With the owner's go-ahead: create Newsworthy (English US, App, Paid per the US$1 launch decision), accepting the Developer Program Policies and US export-law declarations; then app content, listing and a manual first upload of a bundle rebuilt from the merged commit to internal testing.
+
+### 405. google.app — done
+
+2026-10-15T16:17:29+00:00 · observed · agent
+
+2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered.
+
+
+Next: —
+
+### 406. google.listing — in_progress
+
+2026-10-15T16:17:29+00:00 · observed · agent
+
+Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered.
+
+
+Next: Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists.
+
+### 407. google.closed-test — waiting_user
+
+2026-10-15T16:17:29+00:00 · observed · user
+
+Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application.
+
+
+Next: Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.
