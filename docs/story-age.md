@@ -142,6 +142,9 @@ The age adds tests for its boundaries, budget, API field and rendered props (a
 muted age nested in the sentence) on all three platforms; the web export was
 checked in Chromium in light and dark (`store/source/story-age/web-sentence-age.png`).
 The Swift formatter cases were updated but not compiled here (no Swift toolchain).
-The Android widget sources compile and link, but the stacked age layer has not
-been seen on a device. Native visual parity and a replacement mobile release are
+The Android widget sources compile and link. On the owner's phone (Play
+internal build 14, 15 October 2026) the age showed in neither layer and the
+first line looked indented: the muted layer was built with
+`new SpannableString(sentence)`, which copies the ink layer's transparent age.
+It is now built from the plain text; the fix has not yet been seen on a device. Native visual parity and a replacement mobile release are
 not established by these checks; see `store/story-age-verification.json`.
