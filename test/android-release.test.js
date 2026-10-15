@@ -1,11 +1,15 @@
 // Android store bundles are built on the owner's Mac with Gradle, not by EAS
-// Build, and signed with the Play upload key from the vault. The release
-// script is checked here; docs/mobile-release.md describes the route.
+// Build, signed with the Play upload key from the vault and uploaded to a Play
+// testing track through the Play Developer API. The release script is checked
+// here; docs/mobile-release.md describes the route.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { generateKeyPairSync, verify } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { APP, VAULT, certificateDigest, parseVersionCode, signingEnv } from '../apps/client/script/android-release.mjs';
+import {
+  APP, VAULT, TRACKS, assertion, certificateDigest, jwtClaims, nextVersionCode, parseTrack, parseVersionCode, signingEnv, trackRelease,
+} from '../apps/client/script/android-release.mjs';
 
 const require = createRequire(import.meta.url);
 const read = file => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
@@ -60,4 +64,52 @@ test('the version code reaches the app through prebuild', () => {
     else process.env.NEWSWORTHY_ANDROID_VERSION_CODE = previous;
     delete require.cache[configPath];
   }
+});
+
+test('the next version code is one above the highest Play holds, on a track or not', () => {
+  const tracks = [
+    { track: 'internal', releases: [{ versionCodes: ['14'], status: 'completed' }] },
+    { track: 'production', releases: [] },
+    { track: 'alpha' },
+    { track: 'beta', releases: [{ versionCodes: ['9', '11'] }] },
+  ];
+  assert.equal(nextVersionCode(tracks, []), 15, 'numeric, not lexical');
+  assert.equal(nextVersionCode(tracks, [{ versionCode: 16 }]), 17, 'an uploaded bundle on no track still holds its code');
+  assert.equal(nextVersionCode(undefined, undefined), 1, 'Play answers with no field when it holds nothing');
+});
+
+test('a release goes to a testing track as one completed release with en-US notes', () => {
+  assert.deepEqual(trackRelease('internal', 15, 'Newsworthy 1.0.0 (15).'), {
+    track: 'internal',
+    releases: [{ versionCodes: ['15'], status: 'completed', releaseNotes: [{ language: 'en-US', text: 'Newsworthy 1.0.0 (15).' }] }],
+  });
+  assert.deepEqual(TRACKS, ['internal', 'alpha', 'beta']);
+  assert.equal(parseTrack('internal'), 'internal');
+  assert.throws(() => parseTrack('production'), /Play Console/, 'the service account releases to testing only');
+});
+
+test('the service account signs its own token request with RS256', () => {
+  const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+  const account = {
+    client_email: 'play-release@newsworthy.iam.gserviceaccount.com', private_key_id: 'abc123',
+    private_key: privateKey.export({ type: 'pkcs8', format: 'pem' }), token_uri: 'https://oauth2.googleapis.com/token',
+  };
+  assert.deepEqual(jwtClaims(account, 1000), {
+    iss: account.client_email, scope: 'https://www.googleapis.com/auth/androidpublisher',
+    aud: 'https://oauth2.googleapis.com/token', iat: 1000, exp: 4600,
+  });
+  const [header, claims, signature] = assertion(account, 1000).split('.');
+  const decode = part => JSON.parse(Buffer.from(part, 'base64url'));
+  assert.deepEqual(decode(header), { alg: 'RS256', typ: 'JWT', kid: 'abc123' });
+  assert.deepEqual(decode(claims), jwtClaims(account, 1000));
+  assert.ok(verify('sha256', Buffer.from(`${header}.${claims}`), publicKey, Buffer.from(signature, 'base64url')));
+});
+
+test('the Play key comes from the vault item and the upload is checked end to end', () => {
+  const script = read('apps/client/script/android-release.mjs');
+  assert.ok(script.includes("'play-service-account.json'"), 'the key is a vault attachment');
+  assert.match(script, /privateDir\(\), 'play-service-account\.json'/, 'it is written to the private temporary directory');
+  assert.match(script, /uploaded\.sha256 !== digest/, "Play's digest of the upload is compared with ours");
+  for (const step of ['/edits', 'bundles?uploadType=media', ':validate', ':commit']) assert.ok(script.includes(step), `${step} is called`);
+  assert.doesNotMatch(script, /from '(?!node:)/, 'no dependencies');
 });

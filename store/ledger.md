@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-15T16:39:52+00:00
+Updated: 2026-10-15T19:04:39+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -31,8 +31,8 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.device | done | user | observed | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
 | google.phone | done | user | observed | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
 | google.app | done | agent | observed | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
-| google.build | done | agent | observed | Version code 14 built locally from clean main 9ad04fb with vault credentials and verified (target SDK 36, release JS, google_app_id, upload-key signer); uploaded to Play and published to internal testing as release 14 (1.0.0) on 2026-10-15, 09:36 PDT. Package registered for Android developer verification. | — |
-| google.native | in_progress | agent | observed | Release 14 is on Play internal testing; the track is Active with tester list 'Owner' (the owner's Google account, 1 user), opt-in https://play.google.com/apps/internaltest/4700283919647153170. No physical-device run yet; emulator scope from APK10/APK12 unchanged. | Owner opts in on the phone, installs 14 from Play; then check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
+| google.build | done | agent | observed | Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification. | — |
+| google.native | in_progress | agent | observed | Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone. | On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
 | google.listing | in_progress | agent | observed | Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered. | Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
 | google.closed-test | waiting_user | user | observed | Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
@@ -73,7 +73,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
 | apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
 | apple.review-state | done | agent | observed | Fresh API readback confirms selected VALID build 26, version WAITING_FOR_REVIEW and review submission WAITING_FOR_REVIEW. | — |
-| story-age.native | todo | agent | observed | Owner found four seconds too long: "Checked 23m ago" now holds for two seconds (on load, on returning to the app, after a tap) before crossfading to the story line. Web export verified in Chromium: story line at ~3.6s after navigation, Checked for ~2s after a tap. Native apps not built or run here. | On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds. |
+| story-age.native | todo | agent | observed | Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively. | On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds. |
 | apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
 | apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
@@ -95,7 +95,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | web.settings-trailing-marks | waiting_user | user | observed | Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device. | Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build. |
 | widget.appearance-choice | in_progress | agent | observed | Build 25 (EAS ac89a682, commit bf78444) failed to compile: a String parameter with a declared default and an options provider is iOS 26-only, and the widget runs from iOS 17. The declared-default fix is withdrawn; the parameter is build 24's again, so an unset Appearance row can still read "Appearance" in Edit Widget while the widget follows the device. A test now rejects the iOS 26-only initializer. | Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too. |
 | widget.same-day-timestamp | waiting_verification | agent | observed | Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval. | On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight. |
-| ui.onboarding | waiting_verification | agent | observed | First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
+| ui.onboarding | waiting_verification | agent | observed | Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device. | In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged. |
 | copy.no-ai-listing | in_progress | agent | observed | store/listing.json description no longer mentions AI ("Ratings can be wrong." replaces "AI assessments can be wrong."); promotional text and keywords updated for the timeline and widget settings. The live App Store listing still says "Newsworthy uses AI"; not pushed yet. Google Play listing not created. | Push the description, promotional text and keywords to App Store Connect with the resubmission, then read back that no public field mentions AI. |
 | design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
 | web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
@@ -119,6 +119,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | widget.sentence-fit | waiting_verification | agent | observed | Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown. | Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build. |
 | apple.uiscene-ios27 | waiting_verification | agent | observed | The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed. | Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build. |
 | apple.local-release | waiting_user | agent | observed | Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used. | Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result. |
+| google.play-api | done | agent | observed | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 
 ## Evidence and history
 
@@ -4007,31 +4008,61 @@ Play dashboard for Newsworthy (2026-10-15): production access requires publishin
 
 Next: Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.
 
-### 408. google.build — done
+### 408. google.play-api — in_progress
 
-2026-10-15T16:36:57+00:00 · observed · agent
+2026-10-15T16:57:09+00:00 · observed · agent
 
-Version code 14 built locally from clean main 9ad04fb with vault credentials and verified (target SDK 36, release JS, google_app_id, upload-key signer); uploaded to Play and published to internal testing as release 14 (1.0.0) on 2026-10-15, 09:36 PDT. Package registered for Android developer verification.
+Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet.
 
 - store/builds/ledger.md#2026-10
-- AAB sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5
+- docs/mobile-release.md#google-play
+
+Next: With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.
+
+### 409. ui.onboarding — waiting_verification
+
+2026-10-15T17:12:20+00:00 · observed · agent
+
+Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device.
+
+
+Next: In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged.
+
+### 410. story-age.native — todo
+
+2026-10-15T17:12:20+00:00 · observed · agent
+
+Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively.
+
+
+Next: On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.
+
+### 411. google.build — done
+
+2026-10-15T19:04:38+00:00 · observed · agent
+
+Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification.
+
+- store/builds/ledger.md#2026-10
+- AAB 14 sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5
+- AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a
 
 Next: —
 
-### 409. google.native — in_progress
+### 412. google.play-api — done
 
-2026-10-15T16:36:57+00:00 · observed · agent
+2026-10-15T19:04:38+00:00 · observed · agent
 
-Release 14 is on Play internal testing but reaches nobody: no tester list yet (track Inactive). No physical-device run yet; emulator scope from APK10/APK12 unchanged.
-
-
-Next: Add the owner as an internal tester, install 14 from Play on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.
-
-### 410. google.native — in_progress
-
-2026-10-15T16:39:52+00:00 · observed · agent
-
-Release 14 is on Play internal testing; the track is Active with tester list 'Owner' (the owner's Google account, 1 user), opt-in https://play.google.com/apps/internaltest/4700283919647153170. No physical-device run yet; emulator scope from APK10/APK12 unchanged.
+First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.
 
 
-Next: Owner opts in on the phone, installs 14 from Play; then check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.
+Next: —
+
+### 413. google.native — in_progress
+
+2026-10-15T19:04:39+00:00 · observed · agent
+
+Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.
+
+
+Next: On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.
