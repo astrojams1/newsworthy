@@ -51,9 +51,10 @@ run beside the live one without reaching the page; see
 Before any app build, store submission or EAS sandbox, use the
 [app release skill](.agents/skills/newsworthy-app-release/SKILL.md). iOS store
 builds are archived and uploaded on a Mac with Xcode
-(`apps/client/script/ios-release.mjs`); Android builds in EAS, whose free plan
-caps builds and sandbox minutes each month. Each build, sandbox and submission
-is logged in the [build ledger](store/builds/ledger.md).
+(`apps/client/script/ios-release.mjs`) and Android bundles are built there with
+Gradle (`apps/client/script/android-release.mjs`); nothing builds in EAS, whose
+free plan still caps sandbox minutes. Each build, sandbox and submission is
+logged in the [build ledger](store/builds/ledger.md).
 
 ### iOS, Android and web
 
@@ -66,7 +67,7 @@ simulator. Codex also has Run, Run iOS and Run Web actions. The browser preview
 shows the web renderer; iOS verification uses the actual simulator.
 
 See [Mobile release guide](docs/mobile-release.md) for the local iOS release,
-Android EAS builds, widget extensions, signing and the remaining store setup.
+the local Android release, widget extensions, signing and the remaining store setup.
 Expo Go can verify the core native interface; widgets require a custom
 development build.
 
@@ -81,7 +82,7 @@ push credentials on EAS; see the
 [mobile release guide](docs/mobile-release.md#push-notifications).
 
 See [Accessibility verification](docs/accessibility-verification.md) for checks
-performed and remaining device/assistive-technology release checks. Android EAS
+performed and remaining device/assistive-technology release checks. Android upload-key
 and Apple-managed iOS signing are configured; store review and account
 requirements remain. This
 repository is not an App Store or Google Play release.

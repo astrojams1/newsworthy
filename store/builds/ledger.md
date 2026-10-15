@@ -15,7 +15,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded) |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (AAB 13 built, not uploaded) |
 
 ## Lessons
 
@@ -84,6 +84,18 @@ resulting rules; this is the evidence behind them.
   `PARAMETER_ERROR.ILLEGAL`, so `ios-release.mjs testers` would have failed
   after the next upload. `GET /v1/betaGroups?filter[app]=…&filter[name]=…`
   returns Release QA; the script uses it.
+- **Credits are counted per platform** (2026-10-15). `eas account:usage
+  astrojams1` reported iOS 13 of 15 and Android 0 of 15 for October: the
+  "15 shared credits" above were iOS's alone. Moot for this app, which now
+  builds both platforms locally.
+- **Android builds locally too** (2026-10-15). The owner stopped EAS builds;
+  `apps/client/script/android-release.mjs` builds and signs the `.aab` with
+  Gradle on the Mac, and `eas.json` and the EAS build workflow were removed.
+  EAS kept the old upload key and `google-services.json` (a secret readable
+  only inside EAS builds), so a new upload key was made (nothing had reached
+  Play) and the Firebase file was downloaded from the Firebase console.
+- **The vault service account is read-only** (2026-10-15). `op item create`
+  answered "You do not have permission"; the owner adds new vault items.
 
 ## 2026-09
 
@@ -243,3 +255,23 @@ widget, `.ipa` SHA-256
 `9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f`;
 `altool --validate-app` succeeded. Not uploaded: the first upload waits for
 the owner and should come from the merged commit. EAS credits used: none.
+
+**Local Android release, 15 October.** No EAS build, submission or sandbox:
+the owner stopped EAS builds, and `account:usage` showed October at iOS 13/15,
+Android 0/15. On the Mac, Homebrew `openjdk@17` (17.0.20.1), `bundletool`
+1.18.3 and `android-commandlinetools`; SDK platform 36, build-tools 36.0.0 and
+NDK 27.1.12297006 under `/Volumes/ssd/toolchains`, with Gradle's and Android's
+user caches there too. A new upload key (PKCS12, alias `upload`, certificate
+SHA-256 `EB:1E:5F:25:…:F4:33:E4`) was made because EAS's could only be
+downloaded from EAS, and `google-services.json` came from the Firebase console;
+both wait in a private folder for the owner to add to the vault (the service
+account cannot write). Version code 13 from 099cd5e plus this change (dirty
+tree): Gradle `bundleRelease` 12m04s on a cold cache, `.aab` SHA-256
+`4022cc8c5a043ea6b3e700d3fb31f606255617878be9100a49ed94f634a3d25f`,
+target SDK 36, release JavaScript, `google_app_id` and the upload signature
+checked; universal APK SHA-256
+`e8e1513a5cf7c265a0f9b5922889b8458eeb3adc0d9796a9e44ada3484f63839`, same
+signer. The first verify used `bundletool dump resources --resource=`, which
+answered nothing for a resource that is present; the script reads the full
+table. Not uploaded: Play Console still has no app, and the first upload should
+come from the merged commit. EAS credits used: none.

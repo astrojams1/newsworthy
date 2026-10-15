@@ -1,24 +1,25 @@
 ---
 name: newsworthy-app-release
-description: Build, verify and submit the Newsworthy iOS app locally with Xcode (archive, export, altool upload to TestFlight) and the Android app with EAS (Play internal testing), plus simulator and sandbox checks, within the Expo account's monthly free-plan caps. Use before any iOS store build, eas build, eas submit, EAS sandbox or EAS workflow, and when planning native verification; every build and spend is logged in store/builds/ledger.md.
+description: Build, verify and submit the Newsworthy apps locally on the owner's Mac, iOS with Xcode (archive, export, altool upload to TestFlight) and Android with Gradle (signed .aab for Play, universal APK for a phone), plus simulator and sandbox checks within the Expo account's free-plan caps. Use before any store build, Play or TestFlight upload, EAS sandbox or EAS workflow, and when planning native verification; every build and spend is logged in store/builds/ledger.md.
 ---
 
 # Newsworthy app release
 
 The release flow itself (profiles, signing, submission targets, store setup) is
 in `docs/mobile-release.md`; gates and their evidence go in the release ledger
-(`npm run ledger -- record …`). This skill adds one constraint to that flow: the
-Expo account `astrojams1` is on the **free plan**, and monthly caps decide
-what can run at all. Its 15 build credits are shared with Space Worms, so
-**iOS never uses EAS Build**: store builds are archived on the owner's Mac with
-`apps/client/script/ios-release.mjs` (see Local iOS release in
-`docs/mobile-release.md`) and cost no credits. Android still builds in EAS.
+(`npm run ledger -- record …`). **Nothing builds in EAS.** iOS store builds
+are archived on the owner's Mac with `apps/client/script/ios-release.mjs` and
+Android bundles are built there with `apps/client/script/android-release.mjs`
+(see Local iOS release and Local Android release in `docs/mobile-release.md`).
+All work, toolchains and caches live on `/Volumes/ssd`, not the home directory.
+The Expo account `astrojams1` is on the **free plan**; its caps still bound
+sandboxes and MCP calls, and, if a cloud build is ever needed again, builds.
 
 ## The caps
 
 | Cap | What uses it | When it is gone |
 |---|---|---|
-| Build credits | Every cloud `eas build` that starts; assume one cancelled or errored part-way has used its credit too | `eas build` fails with "You've reached your included build credits"; nothing builds until the 1st |
+| Build credits (15 iOS and 15 Android, counted separately; iOS shared with Space Worms) | Every cloud `eas build` that starts; not used by this app since 14 October | `eas build` fails with "You've reached your included build credits"; nothing builds until the 1st |
 | MCP tool requests (500 observed for this account) | Expo MCP tool calls, including command polling and image-transfer chunks | All MCP calls fail; use supported CLI/API for cleanup, without upgrading or switching accounts |
 | CI/CD minutes (60 a month) | EAS sandboxes (`sandbox_create`) and EAS workflows, per minute of runtime, each sandbox counted separately | `sandbox_create` fails with "Free plan CI/CD 60 minute limit reached" |
 
@@ -58,10 +59,11 @@ says what is left, and its Lessons are what earlier runs cost to learn.
    `sandbox_list`. A cap reached mid-task stops the work with nothing to show.
    The Expo MCP's request cap can run out while build credits remain; then
    `eas build:list --json` and `eas build:view <id> --json` (with `EXPO_TOKEN`)
-   read the same state. The next Android version code is the newest
-   production `appVersion` plus one (remote auto-increment); the next iOS build
-   number is App Store Connect's highest plus one
-   (`node script/ios-release.mjs next-build-number`).
+   read the same state; `eas account:usage astrojams1 --non-interactive` gives
+   this month's credits per platform. The next Android version code is Play
+   Console's highest plus one (13 for the first upload; EAS issued 1 to 12,
+   none of which reached Play); the next iOS build number is App Store
+   Connect's highest plus one (`node script/ios-release.mjs next-build-number`).
 3. **Reuse before building.** If a finished build already exists for the commit
    and profile you need, use its artifact (`build_list` gives the URL; artifacts
    expire after 14 days for internal builds, 30 for store builds). A pre-change
@@ -134,9 +136,8 @@ build when only listing copy, screenshots or release records change.
 The following sandbox guidance applies when no usable Mac is available.
 
 The EAS project has no linked GitHub repository, so the Expo MCP's `build_run`
-and a sandbox's `gitRef` checkout both fail. Run `eas build` from this checkout
-(token: `op read "op://API Tokens/Expo/credential"`) and `git clone` the public
-repository inside a sandbox.
+and a sandbox's `gitRef` checkout both fail; `git clone` the public repository
+inside a sandbox (token: `op read "op://API Tokens/Expo/credential"`).
 
 
 - **Swift, widget or iOS layout changes without a local Mac**: one macOS
@@ -146,12 +147,12 @@ repository inside a sandbox.
   `ARCHS=arm64 ONLY_ACTIVE_ARCH=YES`; after the first full build, rebuild only
   the widget target (`xcodebuild -project … -target NewsworthyWidget`, about 10
   seconds) and swap the `.appex` into the app.
-- **Android in the cloud container or EAS sandbox**: those environments lack
-  emulator acceleration. Check for a local Android emulator when a Mac is
-  available; record emulator and physical-device checks separately. Build one
-  `preview` APK for the owner to install, and only after the
-  change is final. Do not also build `production` for the same commit unless
-  it is going to Play.
+- **Android**: build on the Mac with `node script/android-release.mjs release
+  --version-code N` (about the time of a Gradle build, no credits): the `.aab`
+  goes to Play, and the universal APK from the same bundle goes to the owner's
+  phone with `adb install -r`. Record emulator and physical-device checks
+  separately. The cloud container and EAS sandboxes lack emulator
+  acceleration.
 - **A real iPhone**: one local archive uploaded to TestFlight
   (`node script/ios-release.mjs release`), after simulator verification has
   passed. Builds have no EAS Update channel, so any change, JavaScript
@@ -159,10 +160,10 @@ repository inside a sandbox.
 - **JavaScript-only changes**: check them on the web or in Expo Go first, which
   costs nothing; build only for what those cannot show (widgets, native
   modules, signing, the release bundle).
-- **Local Android builds** (`eas build --local`) use no credits. They work in a
-  Linux environment with the Android SDK, but this container's Maven downloads
-  are rate-limited (HTTP 429). iOS builds need macOS: the owner's Mac, or an
-  authorized sandbox batch, which consumes sandbox minutes.
+- **No Mac**: an Android bundle can be built in Linux with the Android SDK,
+  but the cloud container's Maven downloads are rate-limited (HTTP 429). iOS
+  builds need macOS: the owner's Mac, or an authorized sandbox batch, which
+  consumes sandbox minutes.
 
 ## Submitting to TestFlight
 
@@ -248,8 +249,8 @@ the `apple.review` gate.
 
 - **Build ledger.** Update this month's row in `store/builds/ledger.md` and add
   an entry under the month: each build (EAS id, platform, profile, commit,
-  outcome; for a local iOS archive, build number, commit, Xcode build and the
-  `.ipa` SHA-256 from `summary.json`), each sandbox (id, minutes, what it did), each submission, and
+  outcome; for a local archive or bundle, build number or version code, commit,
+  Xcode build or JDK, and the `.ipa` or `.aab` SHA-256 from `summary.json`), each sandbox (id, minutes, what it did), each submission, and
   anything wasted and why. Add a dated Lessons item when a run teaches
   something new.
 - **Release ledger.** Record what was verified, on what (simulator or device,

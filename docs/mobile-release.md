@@ -27,10 +27,10 @@ Run Web starts a live Expo browser preview; its development middleware forwards
 only `GET /api/current` to the public production API. Native apps fetch that API
 directly. Web previews are not native simulator verification.
 
-**iOS store builds are made on the owner's Mac, not by EAS Build.** EAS's 15
-free build credits a month are shared with Space Worms, so iOS releases use
-local Xcode and spend none; see [Local iOS release](#local-ios-release).
-Android still builds in EAS.
+**Store builds are made on the owner's Mac, not by EAS Build.** iOS uses local
+Xcode ([Local iOS release](#local-ios-release)) and Android local Gradle
+([Local Android release](#local-android-release)); neither spends EAS credits.
+The EAS project stays only because Expo push tokens are issued for it.
 
 **The app adopts the UIScene life cycle**, which iOS 27 requires of an app
 linked against the iOS 27 SDK. Without it the app was stopped at launch in
@@ -128,50 +128,62 @@ An upload is outward-facing: confirm each one with the owner, and record it in
 `store/builds/ledger.md` and the release ledger. Selecting a build for App
 Review and resubmitting stay separate steps (see the app release skill).
 
-## Android cloud builds and store setup
+## Local Android release
 
-From `apps/client`:
+Android store bundles are built on the owner's Mac with Gradle and signed with
+the Play upload key; nothing builds in EAS, and `eas.json` and the EAS build
+workflow are gone. From `apps/client`:
 
 ```sh
-npx eas-cli@latest login
-npx eas-cli@latest build --platform android --profile preview
+node script/android-release.mjs bundle --version-code 13
+node script/android-release.mjs apk --version-code 13
 ```
 
+`bundle` prebuilds with `--clean`, runs `./gradlew bundleRelease` and checks the
+`.aab` before anything leaves the Mac: package, version code, a target SDK of
+35 or later, the release JavaScript, Firebase's `google_app_id` and a signature
+by the upload key rather than Expo's debug key. It writes
+`build/android-release/<N>/Newsworthy.aab` and a `summary.json` with the
+commit, JDK and SHA-256. `apk` turns that bundle into one universal APK signed
+with the same key, for `adb install -r` on a phone before Play has the app.
+`release` runs both.
+
+The version code is Play Console's highest plus one. EAS issued 1 to 12, none
+of which reached Play, so the first local bundle is 13.
+
+**Credentials** are the vault item `op://API Tokens/Newsworthy Android`:
+attachments `upload.jks` (PKCS12, alias `upload`, made 15 October 2026) and
+`google-services.json` (Firebase project `newsworthy-cad27`), and the field
+`keystore password`. The script reads them into a private temporary directory
+for one run. `NEWSWORTHY_ANDROID_KEYSTORE`, `NEWSWORTHY_ANDROID_KEYSTORE_PASSWORD`
+and `GOOGLE_SERVICES_JSON` override the vault. The keystore is only the upload
+key: Play App Signing holds the key that signs what users install, and a lost
+upload key can be reset in Play Console. The vault's service account is
+read-only, so the owner adds or replaces the item.
+
+**Toolchain**, measured on 15 October with Homebrew: `openjdk@17`,
+`android-commandlinetools` and `bundletool`, and SDK packages `platforms;android-36`,
+`build-tools;36.0.0` and `ndk;27.1.12297006` (React Native 0.86's versions)
+installed with `sdkmanager` under `/Volumes/ssd/toolchains/android-sdk` because
+the system disk is short of room. Set `JAVA_HOME` (`/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home`),
+`ANDROID_HOME`, and keep the rest on the SSD too: all work belongs in
+`/Volumes/ssd`, so set `GRADLE_USER_HOME` (Gradle's cache) and
+`ANDROID_USER_HOME` (otherwise `~/.android`, where `sdkmanager` and the Android
+Gradle plugin write caches and settings) under `/Volumes/ssd/toolchains`.
+
 The EAS project ID is saved in `mobile.release.json`; `EXPO_PROJECT_ID` can
-override it for an explicitly chosen EAS project. The project stays: push
-tokens are issued for it, and Android builds there.
+override it. The project stays because push tokens are issued for it, and the
+FCM V1 sender key Expo relays through is stored there.
 The renewed James Thompson Apple team (`CWQ9AWJF8T`) is saved in
 `mobile.release.json`; `APPLE_TEAM_ID` can override it for a deliberate team
 change. App Store record `6812519450` is the iOS upload target.
-A physical-iPhone development/preview build requires Apple developer membership
-and device registration. Use a store build and TestFlight for beta testing.
 
-Build profiles in `apps/client/eas.json`, used for Android:
+### Google Play
 
-| Profile | Purpose |
-|---|---|
-| `development` | Native development client, including widgets |
-| `preview` | Internal Android APK |
-| `production` | Signed Google Play bundle, incremented version code |
-
-iOS simulator builds are local too: a Release `xcodebuild` for
-`generic/platform=iOS Simulator` (see the app release skill).
-
-`.github/workflows/mobile.yml` starts an Android EAS build manually. Configure
-GitHub secret `EXPO_TOKEN` and repository variable `EXPO_PROJECT_ID`. Building
-does not automatically submit or publish to a store. Cloud builds and EAS
-sandboxes draw on the Expo account's monthly free-plan caps; follow
-`.agents/skills/newsworthy-app-release/SKILL.md` before starting one.
-
-```sh
-npx eas-cli@latest build --platform android --profile production
-npx eas-cli@latest submit --platform android --profile production
-```
-
-The Android `production` submission profile currently targets **internal testing**.
-Uploading there is not a public release. Complete the required testing and promote
-the verified build in Play Console. See
-[Expo's submission guide](https://docs.expo.dev/deploy/submit-to-app-stores/).
+Play does not take an app's first bundle through its API: the first upload is
+made by hand in Play Console, to internal testing. Uploading there is not a
+public release. Later uploads can use the Play Developer API once a service
+account is linked; until then, upload in the console.
 
 The first Google Play upload and store configuration may require console setup.
 Complete store privacy, age-rating, pricing, screenshots and review information
@@ -291,10 +303,10 @@ access. Internal testing alone does not meet this requirement. See
   belongs in this repository. `EXPO_ACCESS_TOKEN` on Vercel is optional and
   only lets Expo enforce that this server is the one sending.
 - Android uses Firebase project `newsworthy-cad27`, registered for the existing
-  package `com.astrojams.newsworthy`. EAS production and preview environments supply
-  the secret file variable `GOOGLE_SERVICES_JSON`; Expo's `android.googleServicesFile`
-  consumes that path. For local Android prebuilds, set the same variable to your
-  secured configuration file. Do not copy the service-account private key into
+  package `com.astrojams.newsworthy`. `script/android-release.mjs` reads
+  `google-services.json` from the vault and passes its path as
+  `GOOGLE_SERVICES_JSON`, which Expo's `android.googleServicesFile` consumes.
+  For other local prebuilds, set the same variable to a secured copy. Do not copy the service-account private key into
   this file or repository: it is a separate FCM V1 credential stored in EAS.
   The dedicated sender has the Firebase Cloud Messaging API Admin role in this
   project. AAB12 replaces historical AAB11; its matching preview APK12 is built

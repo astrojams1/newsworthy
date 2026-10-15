@@ -280,10 +280,13 @@ without it. Keep that value outside the repository.
 
 ## What Expo covers
 
-EAS builds the Android packages and manages their signing. iOS store builds are
-archived, signed (Apple-managed, through the App Store Connect key) and
-uploaded on the owner's Mac with `apps/client/script/ios-release.mjs`; see
-[Local iOS release](../docs/mobile-release.md#local-ios-release).
+Nothing builds in EAS. iOS store builds are archived, signed (Apple-managed,
+through the App Store Connect key) and uploaded on the owner's Mac with
+`apps/client/script/ios-release.mjs`; Android bundles are built there with
+Gradle and signed with the Play upload key by
+`apps/client/script/android-release.mjs`. See
+[Local iOS release](../docs/mobile-release.md#local-ios-release) and
+[Local Android release](../docs/mobile-release.md#local-android-release).
 EAS Metadata can manage supported Apple listing text. Account verification,
 contracts, banking/tax declarations, Google testing eligibility, and final store
 review remain store-controlled. Apple's API can automate screenshots and other

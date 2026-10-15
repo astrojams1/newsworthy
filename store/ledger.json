@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-14T13:07:09+00:00",
+  "updated_at": "2026-10-15T15:46:07+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -214,12 +214,10 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this.",
-      "evidence": [
-        "Live Play Console device-verification page on September 16: owner signs into current Play Console mobile app with developer-owner account and chooses AstroJams."
-      ],
-      "next_action": "Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification.",
-      "updated_at": "2026-09-16T04:55:59+00:00"
+      "summary": "Owner reports a physical Android phone on 2026-10-15. Play Console device verification and contact-phone verification not yet confirmed done.",
+      "evidence": [],
+      "next_action": "Owner opens the Play Console app on the phone, signs into the AstroJams developer account and completes device verification, then contact-phone verification in Account details.",
+      "updated_at": "2026-10-15T15:46:07+00:00"
     },
     "google.phone": {
       "state": "waiting_user",
@@ -247,23 +245,22 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope.",
+      "summary": "Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet.",
       "evidence": [
-        "store/android-notifications-12.json"
+        "store/builds/ledger.md#2026-10",
+        "AAB sha256 4022cc8c5a043ea6b3e700d3fb31f606255617878be9100a49ed94f634a3d25f"
       ],
-      "next_action": "Upload AAB12 when Google allows app creation; complete physical Android testing separately.",
-      "updated_at": "2026-09-24T05:28:12+00:00"
+      "next_action": "Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks.",
+      "updated_at": "2026-10-15T15:46:06+00:00"
     },
     "google.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified.",
-      "evidence": [
-        "store/android-large-text-verification.json and native captures20-24. Original fontScale1.0 restored; no source-only test is counted as native evidence."
-      ],
-      "next_action": "Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open.",
-      "updated_at": "2026-09-17T04:35:03+00:00"
+      "summary": "Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet.",
+      "evidence": [],
+      "next_action": "Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+      "updated_at": "2026-10-15T15:46:06+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -7566,6 +7563,51 @@
         ],
         "next_action": "Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.",
         "updated_at": "2026-10-14T13:07:09+00:00"
+      }
+    },
+    {
+      "sequence": 397,
+      "at": "2026-10-15T15:46:06+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "AAB sha256 4022cc8c5a043ea6b3e700d3fb31f606255617878be9100a49ed94f634a3d25f"
+        ],
+        "next_action": "Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks.",
+        "updated_at": "2026-10-15T15:46:06+00:00"
+      }
+    },
+    {
+      "sequence": 398,
+      "at": "2026-10-15T15:46:06+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet.",
+        "evidence": [],
+        "next_action": "Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+        "updated_at": "2026-10-15T15:46:06+00:00"
+      }
+    },
+    {
+      "sequence": 399,
+      "at": "2026-10-15T15:46:07+00:00",
+      "gate": "google.device",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner reports a physical Android phone on 2026-10-15. Play Console device verification and contact-phone verification not yet confirmed done.",
+        "evidence": [],
+        "next_action": "Owner opens the Play Console app on the phone, signs into the AstroJams developer account and completes device verification, then contact-phone verification in Account details.",
+        "updated_at": "2026-10-15T15:46:07+00:00"
       }
     }
   ],

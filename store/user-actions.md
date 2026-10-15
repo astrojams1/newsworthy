@@ -7,6 +7,27 @@ separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
+## Current Android release — 15 October
+
+Android now builds on the Mac like iOS (no EAS). Version code 13 is built,
+signed with a new Play upload key and verified, but not uploaded. Owner steps,
+in order:
+
+1. **Add the vault item.** In 1Password, vault *API Tokens*, create
+   **Newsworthy Android** with two file attachments, `upload.jks` and
+   `google-services.json`, and a password field named `keystore password`,
+   all from `/Volumes/ssd/toolchains/newsworthy-android-key/` (the password is
+   in `keystore-password.txt`). Then delete that folder. The agent's service
+   account can read the vault but not write it.
+2. **Verify the phone and contact number** in Play Console: sections 1 and 2
+   below. Only the account owner can do this.
+3. **Optional, before Play:** turn on USB debugging on the phone and connect it
+   to the Mac, and the agent can install version 13 for physical checks.
+4. **Recruit 12 testers** for the 14-day closed test (section 6).
+
+Once Create app is enabled, the agent creates the app, rebuilds from the merged
+commit and makes the first upload, by hand in Play Console, to internal testing.
+
 ## Current iOS resubmission — 12 October
 
 Apple rejected build 26 under Guideline 4.2 again. Build **1.0.0 (27)** turns the
