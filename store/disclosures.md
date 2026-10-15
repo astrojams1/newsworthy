@@ -49,6 +49,12 @@ external email client. No advertising or behavioral profiling is implemented.
   The two diagnostic categories remain. All four categories are shown on the
   published privacy page. The device token is retained as an identifier, so no
   pre-collection anonymization or optional-disclosure exemption is claimed.
+- **Deletion page (October 15):** the privacy policy's
+  [Delete your data](https://newsworthy-indol.vercel.app/privacy#delete-your-data)
+  section lists the steps, what is deleted and what is kept, for Google Data
+  safety's optional deletion question. It names no log retention period: the
+  one-day runtime-log figure above does not cover every Vercel log, so the page
+  says logs expire under the provider's retention.
 - Google Data Safety still needs the corresponding device-ID and notification
   preference disclosures when its app record becomes available. Do not copy
   Apple's category names verbatim into Google's questionnaire.
