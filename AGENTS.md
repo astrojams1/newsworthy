@@ -72,7 +72,7 @@ release status. Calm presentation must not change the rating calibration.
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
 - Before any app build, store submission or EAS sandbox, use
-  `.agents/skills/newsworthy-app-release/SKILL.md`: local iOS, EAS caps.
+  `.agents/skills/newsworthy-app-release/SKILL.md`: local iOS and Android builds.
 - Every skill in `.agents/skills/` keeps an append-only ledger, linked from its
   SKILL.md, read before a run and updated after (`test/skill-ledgers.test.js`).
 - A push to `main` deploys to production. `main` is both the GitHub default

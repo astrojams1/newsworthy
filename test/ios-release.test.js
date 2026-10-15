@@ -4,7 +4,7 @@
 // on iOS 27 are checked here; docs/mobile-release.md describes the route.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { nextBuildNumber, pem, exportOptions, betaGroupPath, APP } from '../apps/client/script/ios-release.mjs';
 
@@ -68,15 +68,10 @@ test('the build number reaches the app and its widget through prebuild', () => {
   }
 });
 
-test('EAS keeps no iOS build pin, iOS-only profile or iOS submission', () => {
-  const eas = JSON.parse(read('apps/client/eas.json'));
-  for (const profile of Object.values(eas.build)) {
-    assert.equal(profile.ios, undefined, 'iOS store and simulator builds are local');
-  }
-  assert.equal(eas.submit.production.ios, undefined, 'altool uploads iOS builds');
-  const workflow = read('.github/workflows/mobile.yml');
-  assert.match(workflow, /eas build --platform android /, 'the EAS workflow builds Android only');
-  assert.doesNotMatch(workflow, /options: \[[^\]]*\b(ios|all|simulator)\b/);
+test('nothing builds in EAS: no build profiles and no EAS build workflow', () => {
+  const exists = file => existsSync(new URL(`../${file}`, import.meta.url));
+  assert.ok(!exists('apps/client/eas.json'), 'iOS and Android store builds are local');
+  assert.ok(!exists('.github/workflows/mobile.yml'));
 });
 
 const template = `@main
