@@ -13,7 +13,7 @@ Android now builds on the Mac like iOS (no EAS). Version code 13 is built,
 signed with a new Play upload key and verified, but not uploaded. Owner steps,
 in order:
 
-1. **Add the vault item.** In 1Password, vault *API Tokens*, create
+1. **Add the vault item** (done 15 October, read back by the script). In 1Password, vault *API Tokens*, create
    **Newsworthy Android** with two file attachments, `upload.jks` and
    `google-services.json`, and a password field named `keystore password`,
    all from `/Volumes/ssd/toolchains/newsworthy-android-key/` (the password is

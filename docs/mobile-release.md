@@ -159,7 +159,8 @@ for one run. `NEWSWORTHY_ANDROID_KEYSTORE`, `NEWSWORTHY_ANDROID_KEYSTORE_PASSWOR
 and `GOOGLE_SERVICES_JSON` override the vault. The keystore is only the upload
 key: Play App Signing holds the key that signs what users install, and a lost
 upload key can be reset in Play Console. The vault's service account is
-read-only, so the owner adds or replaces the item.
+read-only, so the owner adds or replaces the item; the owner added it on
+15 October and the script's vault path was checked against bundle 13.
 
 **Toolchain**, measured on 15 October with Homebrew: `openjdk@17`,
 `android-commandlinetools` and `bundletool`, and SDK packages `platforms;android-36`,

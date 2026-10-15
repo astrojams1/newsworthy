@@ -275,3 +275,10 @@ signer. The first verify used `bundletool dump resources --resource=`, which
 answered nothing for a resource that is present; the script reads the full
 table. Not uploaded: Play Console still has no app, and the first upload should
 come from the merged commit. EAS credits used: none.
+
+**Vault item, 15 October.** The owner added `op://API Tokens/Newsworthy Android`
+(attachments `upload.jks` and `google-services.json`, field `keystore
+password`). Each matched the generated files byte for byte (compared by
+SHA-256, values not printed). `android-release.mjs verify --version-code 13`
+with no environment overrides read all three from the vault, confirmed the
+bundle's signer (`EB:1E:5F:25:…:F4:33:E4`) and removed its temporary copies.
