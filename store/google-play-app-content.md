@@ -8,7 +8,53 @@ Evidence is in [disclosures.md](disclosures.md), the
 [privacy policy](https://newsworthy-indol.vercel.app/privacy) and the merged
 manifest of version code 15 (`bundletool dump manifest`, 15 October 2026).
 
-Status: **proposed, 15 October 2026; not yet entered.**
+Status: **approved by the owner and entered in Play Console, 15 October 2026.**
+App content reads back "You're all caught up" with 11 actioned declarations
+(Privacy policy, Sign in details, Ads, Advertising ID, Government apps,
+Financial features, Health apps, Target audience and content, Content ratings,
+News and magazine apps, Data safety), each last edited 15 October. Saved
+changes wait in Publishing overview until they are sent for review.
+
+### Where the entry differed from the proposal
+
+The forms asked things the proposal did not anticipate. Each was answered from
+the proposal's facts, and none adds a claim:
+
+- **Content rating category.** The questionnaire no longer offers "Reference,
+  news or educational"; its own text files news apps under **All Other App
+  Types**, and a later question, "Is the app primarily a news or educational
+  product?", was answered Yes. Ratings-relevant content was declared as online
+  content (the sentences are fetched, not packaged): violence and drugs
+  referred to in text only, never depicted or the app's purpose. IARC returned
+  ESRB Everyone 10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+, lower than
+  Apple's 17+, because news products are treated leniently. Completing the
+  questionnaire accepts IARC's terms; its contact email is astrojams1@gmail.com.
+- **Target audience.** 18 and over only. Play then offered an optional "Restrict
+  users that Google has determined to be minors"; left off, as it was not in
+  the proposal.
+- **News and magazine apps.** On behalf of the account's legal entity,
+  AstroJams; contact page https://newsworthy-indol.vercel.app/support (it
+  lists astrojams1@gmail.com); category Commercial / private; not an aggregator
+  (the app shows its own sentence, not publishers' content); topic News and
+  current events; no YouTube channel; no published editorial guidelines,
+  journalistic standards groups, awards or industry memberships.
+- **Data safety, deletion.** The question is optional and answering Yes
+  requires a public URL that prominently lists deletion steps, what is deleted
+  or kept, and retention. The privacy policy has the facts but not that
+  layout, so the question is left unanswered until the privacy page gains a
+  short "Delete your data" section.
+- **Data safety, diagnostics purposes.** "App functionality (operation,
+  security, troubleshooting)" maps to three of Play's purposes: App
+  functionality, Analytics (Play's definition includes diagnosing bugs and
+  monitoring app health) and Fraud prevention, security, and compliance. All
+  three are ticked. The push token and the minimum score are App
+  functionality only.
+- Accounts: "My app does not allow users to create an account"; no login with
+  accounts created outside the app.
+
+Play's Data safety preview: no data shared with third parties; collects
+Diagnostics, Other actions, and Device or other IDs; data encrypted in
+transit; privacy policy linked.
 
 ## Privacy policy
 

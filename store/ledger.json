@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T19:17:53+00:00",
+  "updated_at": "2026-10-15T21:09:48+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -268,13 +268,15 @@
       "updated_at": "2026-10-15T19:17:52+00:00"
     },
     "google.disclosures": {
-      "state": "waiting_user",
+      "state": "done",
       "owner": "agent",
       "basis": "inferred",
-      "summary": "Proposed Play App content answers written to store/google-play-app-content.md (privacy policy, app access, ads and advertising ID, IARC content rating, target audience 18+, news app, data safety, government, financial, health), each with its evidence; version 15's manifest has no AD_ID permission. Not entered.",
-      "evidence": [],
-      "next_action": "Owner approves or corrects the proposed declarations; agent enters them in Play Console and reads them back.",
-      "updated_at": "2026-10-15T19:17:53+00:00"
+      "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.",
+      "evidence": [
+        "store/google-play-app-content.md"
+      ],
+      "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
+      "updated_at": "2026-10-15T21:09:48+00:00"
     },
     "google.closed-test": {
       "state": "waiting_user",
@@ -7791,6 +7793,22 @@
         "evidence": [],
         "next_action": "Owner approves or corrects the proposed declarations; agent enters them in Play Console and reads them back.",
         "updated_at": "2026-10-15T19:17:53+00:00"
+      }
+    },
+    {
+      "sequence": 413,
+      "at": "2026-10-15T21:09:48+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.",
+        "evidence": [
+          "store/google-play-app-content.md"
+        ],
+        "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
+        "updated_at": "2026-10-15T21:09:48+00:00"
       }
     }
   ],
