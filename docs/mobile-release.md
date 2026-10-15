@@ -135,8 +135,8 @@ the Play upload key; nothing builds in EAS, and `eas.json` and the EAS build
 workflow are gone. From `apps/client`:
 
 ```sh
-node script/android-release.mjs bundle --version-code 13
-node script/android-release.mjs apk --version-code 13
+node script/android-release.mjs next-version-code
+node script/android-release.mjs release --track internal
 ```
 
 `bundle` prebuilds with `--clean`, runs `./gradlew bundleRelease` and checks the
@@ -145,18 +145,25 @@ node script/android-release.mjs apk --version-code 13
 by the upload key rather than Expo's debug key. It writes
 `build/android-release/<N>/Newsworthy.aab` and a `summary.json` with the
 commit, JDK and SHA-256. `apk` turns that bundle into one universal APK signed
-with the same key, for `adb install -r` on a phone before Play has the app.
-`release` runs both.
+with the same key, for `adb install -r` on a phone. `upload --version-code N
+[--track internal]` sends that bundle to a Play testing track (see
+[Google Play](#google-play)). `release` runs bundle and apk, and upload too
+when `--track` is given; each command except `next-version-code` takes
+`--version-code N`, and bundle and release ask Play for it when it is left
+out.
 
-The version code is Play Console's highest plus one. EAS issued 1 to 12, none
-of which reached Play, so the first local bundle is 13.
+The version code is Play's highest plus one, across every track and every
+bundle uploaded: `next-version-code` asks the Play Developer API. EAS issued 1
+to 12, none of which reached Play; 13 was built locally and not uploaded, and
+14 was the first upload, by hand.
 
 **Credentials** are the vault item `op://API Tokens/Newsworthy Android`:
 attachments `upload.jks` (PKCS12, alias `upload`, made 15 October 2026) and
-`google-services.json` (Firebase project `newsworthy-cad27`), and the field
+`google-services.json` (Firebase project `newsworthy-cad27`) and
+`play-service-account.json` (the Play API key, below), and the field
 `keystore password`. The script reads them into a private temporary directory
-for one run. `NEWSWORTHY_ANDROID_KEYSTORE`, `NEWSWORTHY_ANDROID_KEYSTORE_PASSWORD`
-and `GOOGLE_SERVICES_JSON` override the vault. The keystore is only the upload
+for one run. `NEWSWORTHY_ANDROID_KEYSTORE`, `NEWSWORTHY_ANDROID_KEYSTORE_PASSWORD`,
+`GOOGLE_SERVICES_JSON` and `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` override the vault. The keystore is only the upload
 key: Play App Signing holds the key that signs what users install, and a lost
 upload key can be reset in Play Console. The vault's service account is
 read-only, so the owner adds or replaces the item; the owner added it on
@@ -182,9 +189,52 @@ change. App Store record `6812519450` is the iOS upload target.
 ### Google Play
 
 Play does not take an app's first bundle through its API: the first upload is
-made by hand in Play Console, to internal testing. Uploading there is not a
-public release. Later uploads can use the Play Developer API once a service
-account is linked; until then, upload in the console.
+made by hand in Play Console, to internal testing. Version code 14 went that
+way on 15 October and was published to internal testing. Later uploads use the
+Play Developer API (androidpublisher v3):
+
+```sh
+node script/android-release.mjs upload --version-code 15 --track internal
+```
+
+`upload` refuses a bundle that changed since `bundle` verified it, then opens
+an edit, uploads the `.aab` (`edits.bundles.upload`) and checks that Play read
+the same version code and SHA-256. It sets the track to one `completed`
+release of that code with en-US release notes (`--notes`, by default
+"Newsworthy <version> (<code>)."), validates and commits, then reads the track
+back. An edit that fails is deleted, so a failed run changes nothing on Play.
+Tracks are `internal`, `alpha` (closed testing) and `beta` (open testing);
+production stays in the console. An upload is outward-facing: confirm each
+with the owner.
+
+The script signs the service account's token request (an RS256 JWT for the
+`androidpublisher` scope) with `node:crypto`, as `ios-release.mjs` does for
+App Store Connect, and has no dependencies.
+
+**One-time setup**, done on 15 October in the built-in browser:
+
+1. Google Cloud project `newsworthy-cad27` (the Firebase project, signed in as
+   the owner): enable the **Google Play Android Developer API**
+   (`androidpublisher.googleapis.com`).
+2. IAM & Admin → Service accounts: create `play-release`
+   (`play-release@newsworthy-cad27.iam.gserviceaccount.com`) with no project
+   roles; Play's own permissions are what it needs.
+3. Play Console → Users and permissions → Invite new users (developer account
+   8388544157780149515): that email, App permissions for Newsworthy only (app
+   ID 4974473553901574528) with **Release apps to testing tracks** and the
+   read-only **View app information**, which brings View app quality
+   information with it. No account permissions. A service account is Active
+   at once; Play can take some minutes to honour new permissions.
+4. The owner creates a JSON key on the service account's Keys tab and attaches
+   it to `op://API Tokens/Newsworthy Android` as `play-service-account.json`,
+   then deletes the download. The vault's service account is read-only, and
+   the key never goes into the repository or a log.
+
+To revoke API access, delete the key in Google Cloud or remove the user in
+Play Console; a replacement key is a new attachment under the same name.
+
+Content rating, target audience, the ads declaration, tester email lists and
+the application for production access are console-only.
 
 The first Google Play upload and store configuration may require console setup.
 Complete store privacy, age-rating, pricing, screenshots and review information
