@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T16:12:48+00:00",
+  "updated_at": "2026-10-15T16:14:06+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -220,22 +220,22 @@
       "updated_at": "2026-10-15T16:12:48+00:00"
     },
     "google.phone": {
-      "state": "waiting_user",
+      "state": "done",
       "owner": "user",
       "basis": "observed",
-      "summary": "2026-10-15, after device verification: home page still lists 'Verify your contact phone number' as Action required; Account details shows the contact phone without the verified check that both email addresses carry. Create app remains disabled.",
+      "summary": "2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'.",
       "evidence": [],
-      "next_action": "Owner opens Developer account > Account details > Contact details on the web, selects Verify beside the contact phone, and enters the SMS or voice code there; agent then rechecks Create app.",
-      "updated_at": "2026-10-15T16:12:48+00:00"
+      "next_action": "—",
+      "updated_at": "2026-10-15T16:14:06+00:00"
     },
     "google.app": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "todo",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "2026-10-15, built-in browser signed in as the owner: Play Console home for AstroJams (personal account) shows both tasks Action required, 'Verify that you have access to an Android mobile device' and 'Verify your contact phone number'; the Create app button is disabled.",
+      "summary": "2026-10-15: Create app is enabled on the AstroJams Play Console home page (built-in browser, signed in as the owner). No app created yet.",
       "evidence": [],
-      "next_action": "Owner completes device verification in the Play Console mobile app on the new phone, then contact-phone verification; agent then creates the paid Newsworthy app.",
-      "updated_at": "2026-10-15T16:06:49+00:00"
+      "next_action": "With the owner's go-ahead: create Newsworthy (English US, App, Paid per the US$1 launch decision), accepting the Developer Program Policies and US export-law declarations; then app content, listing and a manual first upload of a bundle rebuilt from the merged commit to internal testing.",
+      "updated_at": "2026-10-15T16:14:06+00:00"
     },
     "google.build": {
       "state": "done",
@@ -7646,6 +7646,34 @@
         "evidence": [],
         "next_action": "Owner opens Developer account > Account details > Contact details on the web, selects Verify beside the contact phone, and enters the SMS or voice code there; agent then rechecks Create app.",
         "updated_at": "2026-10-15T16:12:48+00:00"
+      }
+    },
+    {
+      "sequence": 403,
+      "at": "2026-10-15T16:14:06+00:00",
+      "gate": "google.phone",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-15T16:14:06+00:00"
+      }
+    },
+    {
+      "sequence": 404,
+      "at": "2026-10-15T16:14:06+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: Create app is enabled on the AstroJams Play Console home page (built-in browser, signed in as the owner). No app created yet.",
+        "evidence": [],
+        "next_action": "With the owner's go-ahead: create Newsworthy (English US, App, Paid per the US$1 launch decision), accepting the Developer Program Policies and US export-law declarations; then app content, listing and a manual first upload of a bundle rebuilt from the merged commit to internal testing.",
+        "updated_at": "2026-10-15T16:14:06+00:00"
       }
     }
   ],
