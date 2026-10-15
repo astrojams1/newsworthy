@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-15T15:46:07+00:00
+Updated: 2026-10-15T16:06:49+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -30,7 +30,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | waiting_user | user | observed | Owner reports a physical Android phone on 2026-10-15. Play Console device verification and contact-phone verification not yet confirmed done. | Owner opens the Play Console app on the phone, signs into the AstroJams developer account and completes device verification, then contact-phone verification in Account details. |
 | google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
-| google.app | waiting_user | user | observed | September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner. | Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled. |
+| google.app | waiting_user | user | observed | 2026-10-15, built-in browser signed in as the owner: Play Console home for AstroJams (personal account) shows both tasks Action required, 'Verify that you have access to an Android mobile device' and 'Verify your contact phone number'; the Create app button is disabled. | Owner completes device verification in the Play Console mobile app on the new phone, then contact-phone verification; agent then creates the paid Newsworthy app. |
 | google.build | done | agent | observed | Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet. | Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks. |
 | google.native | in_progress | agent | observed | Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet. | Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
 | google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
@@ -3934,3 +3934,12 @@ Owner reports a physical Android phone on 2026-10-15. Play Console device verifi
 
 
 Next: Owner opens the Play Console app on the phone, signs into the AstroJams developer account and completes device verification, then contact-phone verification in Account details.
+
+### 400. google.app — waiting_user
+
+2026-10-15T16:06:49+00:00 · observed · user
+
+2026-10-15, built-in browser signed in as the owner: Play Console home for AstroJams (personal account) shows both tasks Action required, 'Verify that you have access to an Android mobile device' and 'Verify your contact phone number'; the Create app button is disabled.
+
+
+Next: Owner completes device verification in the Play Console mobile app on the new phone, then contact-phone verification; agent then creates the paid Newsworthy app.
