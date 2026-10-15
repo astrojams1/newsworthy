@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T16:17:29+00:00",
+  "updated_at": "2026-10-15T16:57:09+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1201,6 +1201,18 @@
       ],
       "next_action": "Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.",
       "updated_at": "2026-10-14T13:07:09+00:00"
+    },
+    "google.play-api": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet.",
+      "evidence": [
+        "store/builds/ledger.md#2026-10",
+        "docs/mobile-release.md#google-play"
+      ],
+      "next_action": "With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.",
+      "updated_at": "2026-10-15T16:57:09+00:00"
     }
   },
   "events": [
@@ -7712,6 +7724,23 @@
         "evidence": [],
         "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
         "updated_at": "2026-10-15T16:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 408,
+      "at": "2026-10-15T16:57:09+00:00",
+      "gate": "google.play-api",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "docs/mobile-release.md#google-play"
+        ],
+        "next_action": "With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.",
+        "updated_at": "2026-10-15T16:57:09+00:00"
       }
     }
   ],
