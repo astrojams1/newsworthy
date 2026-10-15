@@ -75,6 +75,12 @@ test('widgets keep cached timestamps and empty states free of status copy', () =
   assert.match(java, /new ForegroundColorSpan\(Color.TRANSPARENT\), 0, age.length\(\)/, 'the ink layer leaves a gap for the age');
   assert.match(java, /new ForegroundColorSpan\(Color.TRANSPARENT\), age.length\(\), text.length\(\)/, 'the muted layer shows the age alone');
   assert.match(java, /views.setTextViewText\(R.id.widget_explanation_age, ageLayer\(sentence, reading, now\)\)/);
+  // Reported 2026-10-15 on the owner's phone: the first line looked indented.
+  // SpannableString(CharSequence) copies spans, so a muted layer built from the
+  // ink layer inherited its transparent age and drew nothing in the gap.
+  const ageLayer = java.slice(java.indexOf('static CharSequence ageLayer('), java.indexOf('static boolean valid('));
+  assert.match(ageLayer, /new SpannableString\(sentence\.toString\(\)\)/, 'the muted layer starts from plain text');
+  assert.doesNotMatch(ageLayer, /new SpannableString\(sentence\)/, 'not from the ink layer\'s spans');
   for (const source of [swift, java, compact, expanded, light]) {
     assert.doesNotMatch(source, /"[^"\n]*(?:Saved ·|Saved reading|Saving reading|Waiting for a reading|Checking|Loading|latest rating will appear)[^"\n]*"/i);
     assert.doesNotMatch(source, /@string\/widget_waiting/);

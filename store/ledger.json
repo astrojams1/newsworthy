@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T16:17:29+00:00",
+  "updated_at": "2026-10-15T17:12:20+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -698,12 +698,10 @@
       "state": "todo",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner found four seconds too long: \"Checked 23m ago\" now holds for two seconds (on load, on returning to the app, after a tap) before crossfading to the story line. Web export verified in Chromium: story line at ~3.6s after navigation, Checked for ~2s after a tap. Native apps not built or run here.",
-      "evidence": [
-        "Branch claude/last-checked-time-display-h5nl72; npm test 370 passed; npm run test:design 105 passed"
-      ],
+      "summary": "Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively.",
+      "evidence": [],
       "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
-      "updated_at": "2026-09-29T08:53:41+00:00"
+      "updated_at": "2026-10-15T17:12:20+00:00"
     },
     "apple.testflight-15": {
       "state": "done",
@@ -941,12 +939,10 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
-      "evidence": [
-        "test/onboarding.test.js"
-      ],
-      "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
-      "updated_at": "2026-09-27T04:34:38+00:00"
+      "summary": "Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device.",
+      "evidence": [],
+      "next_action": "In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged.",
+      "updated_at": "2026-10-15T17:12:20+00:00"
     },
     "copy.no-ai-listing": {
       "state": "in_progress",
@@ -1201,6 +1197,18 @@
       ],
       "next_action": "Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.",
       "updated_at": "2026-10-14T13:07:09+00:00"
+    },
+    "google.play-api": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet.",
+      "evidence": [
+        "store/builds/ledger.md#2026-10",
+        "docs/mobile-release.md#google-play"
+      ],
+      "next_action": "With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.",
+      "updated_at": "2026-10-15T16:57:09+00:00"
     }
   },
   "events": [
@@ -7712,6 +7720,51 @@
         "evidence": [],
         "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
         "updated_at": "2026-10-15T16:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 408,
+      "at": "2026-10-15T16:57:09+00:00",
+      "gate": "google.play-api",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "docs/mobile-release.md#google-play"
+        ],
+        "next_action": "With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.",
+        "updated_at": "2026-10-15T16:57:09+00:00"
+      }
+    },
+    {
+      "sequence": 409,
+      "at": "2026-10-15T17:12:20+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device.",
+        "evidence": [],
+        "next_action": "In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged.",
+        "updated_at": "2026-10-15T17:12:20+00:00"
+      }
+    },
+    {
+      "sequence": 410,
+      "at": "2026-10-15T17:12:20+00:00",
+      "gate": "story-age.native",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively.",
+        "evidence": [],
+        "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
+        "updated_at": "2026-10-15T17:12:20+00:00"
       }
     }
   ],
