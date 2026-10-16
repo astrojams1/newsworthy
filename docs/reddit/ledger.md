@@ -13,7 +13,7 @@ after reading each subreddit's rules.
 
 ## Approved copy
 
-Not yet approved. Draft: a plain ask, no tagline.
+Wording approved by the owner on 2026-10-15. Not posted.
 
 ```
 Title: Looking for Android testers for my news app
@@ -33,3 +33,4 @@ saying how the $1 is covered (a promo code or a refund) once that is decided.
 | Date | Subreddit | What | URL | Owed |
 |---|---|---|---|---|
 | 2026-10-15 | — | Testers group and campaign set up; first post drafted, not posted | — | — |
+| 2026-10-15 | — | Owner approved the plain-ask wording; the $1 line is still to add | — | — |
