@@ -209,6 +209,12 @@ Production and every console-only declaration (content rating, target
 audience, ads, tester lists, production access) stay with the owner in Play
 Console. A new app's first bundle can only be uploaded in the console.
 
+**An API commit replaces console drafts.** On 15 October the listing text was
+saved in Play Console with "Save as draft"; the next API edit (the artwork
+upload) committed Play's last saved listing, which had no description, and the
+draft was gone. Save console listing changes with **Save** before any API edit
+commits, and read the listing back after one.
+
 ## Resubmitting to App Review
 
 After a rejection, App Store Connect keeps the version (`REJECTED`) and its

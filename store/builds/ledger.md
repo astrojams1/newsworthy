@@ -15,7 +15,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (13 built, not uploaded; 14 by hand and 15 through the Play API, both on internal testing) |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (13 built, not uploaded; 14 by hand, 15 and 16 through the Play API, all on internal testing) |
 
 ## Lessons
 
@@ -96,6 +96,13 @@ resulting rules; this is the evidence behind them.
   Play) and the Firebase file was downloaded from the Firebase console.
 - **The vault service account is read-only** (2026-10-15). `op item create`
   answered "You do not have permission"; the owner adds new vault items.
+- **A returned edit skipped the readback** (2026-10-15). `upload()` returned
+  its `withEdit(…)`, so the track readback after it never ran: versions 15
+  and 16 committed but logged nothing past "Uploading". It now awaits the
+  edit, and a test pins that.
+- **An API commit replaces console drafts** (2026-10-15). Listing text saved
+  in Play Console as a draft vanished when the artwork upload's API edit
+  committed; it was re-entered and saved with Save. The skill states the rule.
 
 ## 2026-09
 
@@ -352,3 +359,19 @@ edit committed. Receipt: `store/google-play-artwork-15-upload.json`. Another
 local session installed and launched its own app on the shared emulator
 during capture; none of its screens are in the captures. EAS credits used:
 none.
+
+**Version code 16, 15 October.** PR #222 blocks `SYSTEM_ALERT_WINDOW` and
+external storage (Expo template permissions the app never uses) and makes the
+release script refuse a bundle that still requests them. Built from clean
+122463c with the vault credentials and uploaded through the Play API to
+internal testing in 6m56s: `.aab` SHA-256
+`c92582cb884964519744f867f4bce99aeab5a96a37b849a6d4bdc8cb63e6f212`, signer
+`EB:1E:5F:25:…:F4:33:E4`, target SDK 36, no blocked permission in the merged
+manifest; universal APK SHA-256
+`b0c7476813562bd937fa715d106e6565f3bd7dacc3dbcbbfb9aacb88034615ae`. Like 15,
+its log stopped at "Uploading" (the readback bug above); `next-version-code`
+returning 17 confirms the commit. Listing text, found empty after the artwork
+commit, was re-entered from `store/listing.json` (description SHA-256
+matches) and saved; the review step's new AI asset declaration was answered
+"Don't label assets" (captures and rendered artwork, no AI-generated images).
+EAS credits used: none.

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-16T03:47:27+00:00",
+  "updated_at": "2026-10-16T04:05:32+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -241,14 +241,13 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification.",
+      "summary": "Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload. 14 by hand (09:36 PDT), 15 (#216 fixes) and 16 (#222, unused permissions blocked) through the Play Developer API, all on internal testing, 2026-10-15; next-version-code returns 17. Package registered for Android developer verification.",
       "evidence": [
         "store/builds/ledger.md#2026-10",
-        "AAB 14 sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5",
-        "AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a"
+        "AAB 16 sha256 c92582cb884964519744f867f4bce99aeab5a96a37b849a6d4bdc8cb63e6f212"
       ],
       "next_action": "—",
-      "updated_at": "2026-10-16T03:41:49+00:00"
+      "updated_at": "2026-10-16T04:05:31+00:00"
     },
     "google.native": {
       "state": "in_progress",
@@ -263,12 +262,10 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "2026-10-15: default store listing text saved from store/listing.json (googleName, shortDescription, googleDescription; description SHA-256 matches the repo), category News & Magazines, contact details published. Graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate).",
-      "evidence": [
-        "store/google-play-artwork-15-upload.json"
-      ],
-      "next_action": "Answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists; send the listing for review with the first closed-testing release.",
-      "updated_at": "2026-10-16T03:47:27+00:00"
+      "summary": "2026-10-15: default listing complete and saved (not as a draft): Android text from store/listing.json (description SHA-256 matches), the v15 artwork from #219, category News & Magazines, contact details published, AI asset declaration 'Don't label assets'. Not yet sent for review. The text had been lost once: an API edit commit replaced a console draft.",
+      "evidence": [],
+      "next_action": "Send the saved listing and App content changes for review with the first closed-testing release, once the owner's merchant account and price exist.",
+      "updated_at": "2026-10-16T04:05:32+00:00"
     },
     "google.disclosures": {
       "state": "done",
@@ -7909,6 +7906,37 @@
         ],
         "next_action": "Answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists; send the listing for review with the first closed-testing release.",
         "updated_at": "2026-10-16T03:47:27+00:00"
+      }
+    },
+    {
+      "sequence": 420,
+      "at": "2026-10-16T04:05:31+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload. 14 by hand (09:36 PDT), 15 (#216 fixes) and 16 (#222, unused permissions blocked) through the Play Developer API, all on internal testing, 2026-10-15; next-version-code returns 17. Package registered for Android developer verification.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "AAB 16 sha256 c92582cb884964519744f867f4bce99aeab5a96a37b849a6d4bdc8cb63e6f212"
+        ],
+        "next_action": "—",
+        "updated_at": "2026-10-16T04:05:31+00:00"
+      }
+    },
+    {
+      "sequence": 421,
+      "at": "2026-10-16T04:05:32+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: default listing complete and saved (not as a draft): Android text from store/listing.json (description SHA-256 matches), the v15 artwork from #219, category News & Magazines, contact details published, AI asset declaration 'Don't label assets'. Not yet sent for review. The text had been lost once: an API edit commit replaced a console draft.",
+        "evidence": [],
+        "next_action": "Send the saved listing and App content changes for review with the first closed-testing release, once the owner's merchant account and price exist.",
+        "updated_at": "2026-10-16T04:05:32+00:00"
       }
     }
   ],

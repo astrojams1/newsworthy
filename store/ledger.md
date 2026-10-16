@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-16T03:47:27+00:00
+Updated: 2026-10-16T04:05:32+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -31,9 +31,9 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.device | done | user | observed | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
 | google.phone | done | user | observed | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
 | google.app | done | agent | observed | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
-| google.build | done | agent | observed | Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification. | — |
+| google.build | done | agent | observed | Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload. 14 by hand (09:36 PDT), 15 (#216 fixes) and 16 (#222, unused permissions blocked) through the Play Developer API, all on internal testing, 2026-10-15; next-version-code returns 17. Package registered for Android developer verification. | — |
 | google.native | in_progress | agent | observed | Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone. | On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
-| google.listing | in_progress | agent | observed | 2026-10-15: default store listing text saved from store/listing.json (googleName, shortDescription, googleDescription; description SHA-256 matches the repo), category News & Magazines, contact details published. Graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate). | Answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists; send the listing for review with the first closed-testing release. |
+| google.listing | in_progress | agent | observed | 2026-10-15: default listing complete and saved (not as a draft): Android text from store/listing.json (description SHA-256 matches), the v15 artwork from #219, category News & Magazines, contact details published, AI asset declaration 'Don't label assets'. Not yet sent for review. The text had been lost once: an API edit commit replaced a console draft. | Send the saved listing and App content changes for review with the first closed-testing release, once the owner's merchant account and price exist. |
 | google.disclosures | done | agent | inferred | Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md. | Send the saved App content changes for review with the first closed-testing release. |
 | google.closed-test | waiting_user | user | observed | Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
@@ -4125,3 +4125,23 @@ Next: On the owner's phone, update to 15 and check the onboarding widget slide a
 - store/google-play-artwork-15-upload.json
 
 Next: Answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists; send the listing for review with the first closed-testing release.
+
+### 420. google.build — done
+
+2026-10-16T04:05:31+00:00 · observed · agent
+
+Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload. 14 by hand (09:36 PDT), 15 (#216 fixes) and 16 (#222, unused permissions blocked) through the Play Developer API, all on internal testing, 2026-10-15; next-version-code returns 17. Package registered for Android developer verification.
+
+- store/builds/ledger.md#2026-10
+- AAB 16 sha256 c92582cb884964519744f867f4bce99aeab5a96a37b849a6d4bdc8cb63e6f212
+
+Next: —
+
+### 421. google.listing — in_progress
+
+2026-10-16T04:05:32+00:00 · observed · agent
+
+2026-10-15: default listing complete and saved (not as a draft): Android text from store/listing.json (description SHA-256 matches), the v15 artwork from #219, category News & Magazines, contact details published, AI asset declaration 'Don't label assets'. Not yet sent for review. The text had been lost once: an API edit commit replaced a console draft.
+
+
+Next: Send the saved listing and App content changes for review with the first closed-testing release, once the owner's merchant account and price exist.

@@ -168,7 +168,9 @@ async function upload(account, code, track, notes) {
   const digest = sha256(aab);
   if (digest !== summary.sha256) throw new Error(`${aab} has changed since it was verified; run verify again`);
   notes ??= `Newsworthy ${summary.versionName} (${code}).`;
-  return withEdit(account, async (api, edit) => {
+  // Awaited, not returned: the readback below is the run's proof of the
+  // commit, and a returned edit skipped it (versions 15 and 16 logged nothing).
+  await withEdit(account, async (api, edit) => {
     console.log(`Uploading ${aab} (sha256 ${digest}) to Play`);
     const uploaded = await api(`${edit}/bundles?uploadType=media`, { method: 'POST', upload: readFileSync(aab) });
     if (uploaded.versionCode !== code) throw new Error(`Play read versionCode ${uploaded.versionCode}, expected ${code}`);
