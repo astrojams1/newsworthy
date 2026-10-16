@@ -40,9 +40,12 @@ the proposal's facts, and none adds a claim:
   journalistic standards groups, awards or industry memberships.
 - **Data safety, deletion.** The question is optional and answering Yes
   requires a public URL that prominently lists deletion steps, what is deleted
-  or kept, and retention. The privacy policy has the facts but not that
-  layout, so the question is left unanswered until the privacy page gains a
-  short "Delete your data" section.
+  or kept, and retention. It was first left unanswered: the privacy policy had
+  the facts but not that layout. PR #218 added a "Delete your data" section,
+  live at https://newsworthy-indol.vercel.app/privacy#delete-your-data, and
+  with the owner's approval the question was answered **Yes** with that URL
+  and saved on 15 October. Read back after a reload: Yes selected, Delete data
+  URL as above.
 - **Data safety, diagnostics purposes.** "App functionality (operation,
   security, troubleshooting)" maps to three of Play's purposes: App
   functionality, Analytics (Play's definition includes diagnosing bugs and
@@ -54,7 +57,8 @@ the proposal's facts, and none adds a claim:
 
 Play's Data safety preview: no data shared with third parties; collects
 Diagnostics, Other actions, and Device or other IDs; data encrypted in
-transit; privacy policy linked.
+transit; privacy policy linked. Since 15 October it also shows **Data
+deletion**: users can request that data be deleted, linking the deletion URL.
 
 ## Privacy policy
 
@@ -128,7 +132,8 @@ financial info, messages, browsing history, installed apps, crash reports from
 an SDK. Support email is sent by the user from their own mail app outside
 Newsworthy, so it is not collected by the app.
 
-Deletion: answer **yes, users can request deletion**. Turning notifications off
+Deletion: answered **yes, users can request deletion**, with the URL
+https://newsworthy-indol.vercel.app/privacy#delete-your-data (saved 15 October). Turning notifications off
 deletes the token and minimum score at once; hosting logs expire on their own
 (Vercel's retention); anything else can be requested at astrojams1@gmail.com.
 Data is not processed ephemerally (logs are retained briefly), so do not claim
