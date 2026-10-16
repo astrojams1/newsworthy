@@ -27,8 +27,9 @@ I'll test your app back, and pay for it if it's paid.
 
 Format follows recent swap posts in the public google-play-test-users group:
 "[Test for Test] <app> – <what it is> (14 days, I test yours back)". None of
-twenty recent titles there was a paid app, so there is no common practice for
-reimbursing testers.
+the twenty recent titles read there was a paid app, and no example of how
+others reimburse paid-app testers has been found yet. Reddit itself has not
+been read; that is the gap.
 
 Open before posting: the install link works only once the closed-testing
 release passes review. Closed testers must buy the paid app; refunds are made
