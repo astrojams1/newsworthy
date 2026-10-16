@@ -22,7 +22,7 @@ I need 12 testers for Google Play's 14-day closed test.
 Join the group: https://groups.google.com/g/newsworthy-testers
 Then install: https://play.google.com/apps/testing/com.astrojams.newsworthy
 It's a $1 app. I'll refund you after the 14 days.
-Happy to test your app too.
+Happy to test your app too, and pay for it if it's paid.
 ```
 
 Open before posting: the install link works only once the closed-testing
@@ -36,3 +36,4 @@ from Play Console Order management after a tester's 14 days.
 | 2026-10-15 | — | Testers group and campaign set up; first post drafted, not posted | — | — |
 | 2026-10-15 | — | Owner approved the plain-ask wording; the $1 line is still to add | — | — |
 | 2026-10-15 | — | Owner asked the post to say it's a $1 app; refund line added | — | Refund each tester who stays 14 days |
+| 2026-10-15 | — | Owner asked the post to offer paying for testers' paid apps too | — | Buy and keep any paid app we test in return |
