@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-16T04:05:32+00:00",
+  "updated_at": "2026-10-16T13:32:59+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -259,13 +259,13 @@
       "updated_at": "2026-10-16T03:41:49+00:00"
     },
     "google.listing": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "2026-10-15: default listing complete and saved (not as a draft): Android text from store/listing.json (description SHA-256 matches), the v15 artwork from #219, category News & Magazines, contact details published, AI asset declaration 'Don't label assets'. Not yet sent for review. The text had been lost once: an API edit commit replaced a console draft.",
+      "summary": "Default store listing, category and contact details complete (setup task ticked); sent to Google for review with the first closed-testing release on 2026-10-16.",
       "evidence": [],
-      "next_action": "Send the saved listing and App content changes for review with the first closed-testing release, once the owner's merchant account and price exist.",
-      "updated_at": "2026-10-16T04:05:32+00:00"
+      "next_action": "—",
+      "updated_at": "2026-10-16T13:32:26+00:00"
     },
     "google.disclosures": {
       "state": "done",
@@ -280,13 +280,13 @@
       "updated_at": "2026-10-15T21:37:51+00:00"
     },
     "google.closed-test": {
-      "state": "waiting_user",
+      "state": "in_progress",
       "owner": "user",
       "basis": "observed",
-      "summary": "Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application.",
+      "summary": "2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in.",
       "evidence": [],
-      "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
-      "updated_at": "2026-10-15T16:17:29+00:00"
+      "next_action": "After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days.",
+      "updated_at": "2026-10-16T13:32:26+00:00"
     },
     "google.production-access": {
       "state": "todo",
@@ -300,15 +300,13 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "google.review": {
-      "state": "todo",
-      "owner": "agent",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "No Google release submitted for review.",
-      "evidence": [
-        "No app record exists at last live check"
-      ],
-      "next_action": "Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days.",
+      "evidence": [],
+      "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
+      "updated_at": "2026-10-16T13:32:59+00:00"
     },
     "google.release": {
       "state": "todo",
@@ -1209,6 +1207,15 @@
       "evidence": [],
       "next_action": "—",
       "updated_at": "2026-10-16T03:41:49+00:00"
+    },
+    "google.pricing": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00.",
+      "evidence": [],
+      "next_action": "Owner may ask for an exact USD 1.00 US price; otherwise none.",
+      "updated_at": "2026-10-16T13:32:26+00:00"
     }
   },
   "events": [
@@ -7937,6 +7944,76 @@
         "evidence": [],
         "next_action": "Send the saved listing and App content changes for review with the first closed-testing release, once the owner's merchant account and price exist.",
         "updated_at": "2026-10-16T04:05:32+00:00"
+      }
+    },
+    {
+      "sequence": 422,
+      "at": "2026-10-16T13:32:26+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Default store listing, category and contact details complete (setup task ticked); sent to Google for review with the first closed-testing release on 2026-10-16.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 423,
+      "at": "2026-10-16T13:32:26+00:00",
+      "gate": "google.pricing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00.",
+        "evidence": [],
+        "next_action": "Owner may ask for an exact USD 1.00 US price; otherwise none.",
+        "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 424,
+      "at": "2026-10-16T13:32:26+00:00",
+      "gate": "google.closed-test",
+      "result": {
+        "state": "in_progress",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in.",
+        "evidence": [],
+        "next_action": "After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days.",
+        "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 425,
+      "at": "2026-10-16T13:32:26+00:00",
+      "gate": "google.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Status: Changes in review, Play's quick checks running before hand-off; Google says reviews usually finish within 7 days.",
+        "evidence": [],
+        "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
+        "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 426,
+      "at": "2026-10-16T13:32:59+00:00",
+      "gate": "google.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days.",
+        "evidence": [],
+        "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
+        "updated_at": "2026-10-16T13:32:59+00:00"
       }
     }
   ],
