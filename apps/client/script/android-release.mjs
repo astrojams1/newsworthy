@@ -17,8 +17,8 @@ const release = JSON.parse(readFileSync(join(repo, 'mobile.release.json'), 'utf8
 export const APP = { packageName: release.appId, alias: 'upload', minTargetSdk: 35 };
 export const VAULT = 'op://API Tokens/Newsworthy Android';
 const PLAY = 'https://androidpublisher.googleapis.com';
-// The service account may release to testing tracks only; production stays in
-// the console. "alpha" is closed testing and "beta" open testing.
+// The service account may release to testing tracks, not production, which
+// stays in the console. "alpha" is closed testing and "beta" open testing.
 export const TRACKS = ['internal', 'alpha', 'beta'];
 
 // Version codes only ever rise, and Play holds every one it has accepted, so

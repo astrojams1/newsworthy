@@ -1,0 +1,39 @@
+{
+  "versionCode": 15,
+  "method": "Bounds measured where the plain #CBCCC6-rendered wallpaper (203,204,198) gives way to the widget at each edge midpoint (rows and columns just outside read 0 difference); corner radius fitted to the top-left silhouette (51.5-52.5 px). No widget content, scale or text is redrawn.",
+  "frames": [
+    {
+      "label": "COMPACT_LIGHT",
+      "file": "source/android-phone/33-widget-compact-light-dark-v15.png",
+      "x": 67,
+      "y": 546,
+      "width": 452,
+      "height": 588,
+      "radius": 52,
+      "appearance": "Follow device (light)",
+      "cells": "2x2"
+    },
+    {
+      "label": "COMPACT_DARK",
+      "file": "source/android-phone/33-widget-compact-light-dark-v15.png",
+      "x": 561,
+      "y": 546,
+      "width": 452,
+      "height": 588,
+      "radius": 52,
+      "appearance": "Dark",
+      "cells": "2x2"
+    },
+    {
+      "label": "EXPANDED",
+      "file": "source/android-phone/35-widget-expanded-light-v15.png",
+      "x": 67,
+      "y": 546,
+      "width": 946,
+      "height": 903,
+      "radius": 52,
+      "appearance": "Light",
+      "cells": "4x3"
+    }
+  ]
+}

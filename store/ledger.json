@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-16T03:41:49+00:00",
+  "updated_at": "2026-10-16T03:47:27+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -263,10 +263,12 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "2026-10-15, Play Console (built-in browser, owner signed in): default store listing text saved as a draft from store/listing.json (googleName, shortDescription, new googleDescription with Android widget wording; counters 10/30, 56/80, 2085/4000; description SHA-256 matches the repo); category News & Magazines saved (pending in Publishing overview); store contact details published (astrojams1@gmail.com, newsworthy-indol.vercel.app). Graphics not uploaded: the repo's Play icon, feature graphic and phone screenshots date from 2026-09-16 and show the old mint palette and pre-timeline layout.",
-      "evidence": [],
-      "next_action": "Make current Android artwork (512 icon from the Stone app icon, 1024x500 feature graphic, 2 to 8 phone screenshots from version 15) and upload it; then answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists.",
-      "updated_at": "2026-10-15T19:17:52+00:00"
+      "summary": "2026-10-15: default store listing text saved from store/listing.json (googleName, shortDescription, googleDescription; description SHA-256 matches the repo), category News & Magazines, contact details published. Graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate).",
+      "evidence": [
+        "store/google-play-artwork-15-upload.json"
+      ],
+      "next_action": "Answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists; send the listing for review with the first closed-testing release.",
+      "updated_at": "2026-10-16T03:47:27+00:00"
     },
     "google.disclosures": {
       "state": "done",
@@ -348,12 +350,14 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps",
+      "summary": "2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption.",
       "evidence": [
-        "store/assets/google-play/phone/03-widget-sizes-v9.png; widget-frames.json; image validation and visual inspection"
+        "store/source/android-phone/provenance-v15.json",
+        "store/source/android-phone/widget-frames-v15.json",
+        "store/google-play-gallery-15.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T10:09:19+00:00"
+      "updated_at": "2026-10-16T03:47:27+00:00"
     },
     "design.reading-screen": {
       "state": "in_progress",
@@ -7871,6 +7875,40 @@
         "evidence": [],
         "next_action": "On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
         "updated_at": "2026-10-16T03:41:49+00:00"
+      }
+    },
+    {
+      "sequence": 418,
+      "at": "2026-10-16T03:47:27+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption.",
+        "evidence": [
+          "store/source/android-phone/provenance-v15.json",
+          "store/source/android-phone/widget-frames-v15.json",
+          "store/google-play-gallery-15.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-16T03:47:27+00:00"
+      }
+    },
+    {
+      "sequence": 419,
+      "at": "2026-10-16T03:47:27+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: default store listing text saved from store/listing.json (googleName, shortDescription, googleDescription; description SHA-256 matches the repo), category News & Magazines, contact details published. Graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate).",
+        "evidence": [
+          "store/google-play-artwork-15-upload.json"
+        ],
+        "next_action": "Answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists; send the listing for review with the first closed-testing release.",
+        "updated_at": "2026-10-16T03:47:27+00:00"
       }
     }
   ],

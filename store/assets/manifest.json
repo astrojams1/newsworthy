@@ -90,29 +90,55 @@
     "displayType": "APP_IPHONE_67"
   },
   {
-    "file": "assets/google-play/phone/03-widget-sizes-v9.png",
-    "source": "source/android-phone/widget-frames.json",
+    "file": "assets/google-play/phone/01-timeline-v15.png",
     "sources": [
-      "source/android-phone/14-widget-compact-dark-v9.png",
-      "source/android-phone/10-widget-dark-v9.png"
+      "source/android-phone/26-timeline-light-v15.png"
     ],
-    "width": 1080,
-    "height": 1920,
     "platform": "android",
-    "composition": "Actual native widget viewports on a neutral canvas."
+    "versionCode": "15",
+    "width": 1080,
+    "height": 1920
   },
   {
-    "file": "assets/google-play/phone/01-at-a-glance-v9.png",
-    "source": "source/android-phone/12-reading-light-v9.png",
+    "file": "assets/google-play/phone/02-widget-v15.png",
+    "sources": [
+      "source/android-phone/33-widget-compact-light-dark-v15.png",
+      "source/android-phone/35-widget-expanded-light-v15.png"
+    ],
+    "platform": "android",
+    "versionCode": "15",
     "width": 1080,
     "height": 1920,
-    "platform": "android"
+    "composition": "Actual native widget viewports at one scale on a neutral canvas; original home screens retained."
   },
   {
-    "file": "assets/google-play/phone/02-dark-mode-v9.png",
-    "source": "source/android-phone/13-reading-dark-v9.png",
+    "file": "assets/google-play/phone/03-reading-v15.png",
+    "sources": [
+      "source/android-phone/25-reading-light-v15.png"
+    ],
+    "platform": "android",
+    "versionCode": "15",
     "width": 1080,
-    "height": 1920,
-    "platform": "android"
+    "height": 1920
+  },
+  {
+    "file": "assets/google-play/phone/04-appearance-v15.png",
+    "sources": [
+      "source/android-phone/28-reading-dark-v15.png"
+    ],
+    "platform": "android",
+    "versionCode": "15",
+    "width": 1080,
+    "height": 1920
+  },
+  {
+    "file": "assets/google-play/phone/05-settings-v15.png",
+    "sources": [
+      "source/android-phone/29-settings-light-v15.png"
+    ],
+    "platform": "android",
+    "versionCode": "15",
+    "width": 1080,
+    "height": 1920
   }
 ]
