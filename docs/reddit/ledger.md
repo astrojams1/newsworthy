@@ -13,16 +13,15 @@ after reading each subreddit's rules.
 
 ## Approved copy
 
-Not yet approved. Draft, from the listing's short description:
+Not yet approved. Draft: a plain ask, no tagline.
 
 ```
-Title: [Test for test] Newsworthy: world news, rated by significance
+Title: Looking for Android testers for my news app
 
-A number out of 10 and one sentence explaining the news.
-1. Join: https://groups.google.com/g/newsworthy-testers
-2. Install: https://play.google.com/apps/testing/com.astrojams.newsworthy
-3. Keep it 14 days.
-I'll test yours. Drop your links.
+I need 12 testers for Google Play's 14-day closed test.
+Join the group: https://groups.google.com/g/newsworthy-testers
+Then install: https://play.google.com/apps/testing/com.astrojams.newsworthy
+Happy to test your app too.
 ```
 
 Open before posting: the install link works only once the closed-testing
