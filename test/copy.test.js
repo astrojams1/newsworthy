@@ -58,3 +58,16 @@ test('user-facing copy does not mention AI', () => {
   const core = guidance.match(/## Core copy\n\n([\s\S]*?)\n## /)[1];
   assert.doesNotMatch(core, machinery, 'core copy');
 });
+
+// Play's listing is drawn from store/listing.json like Apple's. Android has one
+// resizable widget and writes "home screen" as a common noun.
+test('the Google Play listing fits Play\'s limits and describes the Android widget', () => {
+  const { googleName, shortDescription, googleDescription } = JSON.parse(read('store/listing.json'));
+  assert.ok(googleName.length <= 30, 'Play app name: 30 characters');
+  assert.ok(shortDescription.length <= 80, 'Play short description: 80 characters');
+  assert.ok(googleDescription.length <= 4000, 'Play full description: 4,000 characters');
+  assert.doesNotMatch(googleDescription, /Home Screen|[Ss]mall and medium|iPhone|iPad|App Store|Apple/);
+  assert.match(googleDescription, /HOME SCREEN WIDGET\nA resizable widget/);
+  // The expanded layout, with the sentence, is the one RatingWidget.java uses at larger sizes.
+  assert.match(read('apps/client/plugins/widget-android/RatingWidget.java'), /boolean compact = width < 250 \|\| height < 150;/);
+});
