@@ -113,3 +113,17 @@ test('the Play key comes from the vault item and the upload is checked end to en
   for (const step of ['/edits', 'bundles?uploadType=media', ':validate', ':commit']) assert.ok(script.includes(step), `${step} is called`);
   assert.doesNotMatch(script, /from '(?!node:)/, 'no dependencies');
 });
+
+// Expo's template requests SYSTEM_ALERT_WINDOW and external storage; the app
+// uses neither, so the config blocks them and a release refuses a bundle that
+// still requests them (found in versionCode 15's manifest, 2026-10-15).
+test('unused Android permissions are blocked and checked in the bundle', async () => {
+  const { BLOCKED_PERMISSIONS, blockedPermissionsIn } = await import('../apps/client/script/android-release.mjs');
+  const configPath = require.resolve('../apps/client/app.config.js');
+  delete require.cache[configPath];
+  assert.deepEqual(require(configPath).android.blockedPermissions, BLOCKED_PERMISSIONS);
+  assert.deepEqual(blockedPermissionsIn('<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>'), ['android.permission.SYSTEM_ALERT_WINDOW']);
+  assert.deepEqual(blockedPermissionsIn('<uses-permission android:name="android.permission.INTERNET"/><uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>'), []);
+  assert.deepEqual(blockedPermissionsIn('<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGEX"/>'), [], 'whole names only');
+  assert.match(read('apps/client/script/android-release.mjs'), /Bundle requests blocked permissions/);
+});

@@ -33,6 +33,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | Privacy deletion section | 2026-10-15 | Privacy page, support page, README, product messaging, llms.txt, store disclosures, push deletion code | Privacy page gains Delete your data with the steps; store disclosures record why it names no log retention period | Play Data safety answer not yet saved; Settings path not seen on a device for this change |
 | Play deletion record | 2026-10-15 | Google Play app content record, release ledger, privacy page | App content record: the deletion question is answered Yes with the privacy anchor, no longer left blank | Saved App content changes not yet sent for review |
 | Play internal release 14 | 2026-10-15 | README, product messaging, llms.txt, store listing, user actions | None needed: ledgers only; llms.txt's "in preparation" stays true because internal testing is not public availability | No tester has installed 14; listing not entered in Play |
+| Block unused Android permissions | 2026-10-15 | Mobile release, Play App content record, privacy page, store listing | Mobile release lists the new bundle check; no user-facing copy states permissions | Takes effect from versionCode 16; Play's permissions list updates when 16 reaches a track |
 
 ## Lessons
 
