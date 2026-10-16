@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T17:12:20+00:00",
+  "updated_at": "2026-10-16T03:11:26+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -279,13 +279,16 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "google.closed-test": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "in_progress",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application.",
-      "evidence": [],
-      "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
-      "updated_at": "2026-10-15T16:17:29+00:00"
+      "summary": "2026-10-15: Google Group newsworthy-testers@googlegroups.com created (anyone can join; members, posts and conversations visible to managers only) and saved as the tester list on Closed testing - Alpha with the support email for feedback; not sent for review. No release, countries or price yet. Recruitment via Reddit test-for-test swaps drafted (docs/reddit/ledger.md); agent tools cannot reach Reddit, so the owner posts. Closed testers must buy the paid app; promo codes unverified.",
+      "evidence": [
+        "store/google-play-closed-test.md",
+        "docs/reddit/ledger.md"
+      ],
+      "next_action": "Owner approves app content declarations and sets the price; promote versionCode 15 to closed testing, choose countries and send for review; once the opt-in link works, owner posts the approved Reddit draft and recruits 15-20 testers; count 14 continuous days.",
+      "updated_at": "2026-10-16T03:11:26+00:00"
     },
     "google.production-access": {
       "state": "todo",
@@ -7765,6 +7768,23 @@
         "evidence": [],
         "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
         "updated_at": "2026-10-15T17:12:20+00:00"
+      }
+    },
+    {
+      "sequence": 411,
+      "at": "2026-10-16T03:11:26+00:00",
+      "gate": "google.closed-test",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: Google Group newsworthy-testers@googlegroups.com created (anyone can join; members, posts and conversations visible to managers only) and saved as the tester list on Closed testing - Alpha with the support email for feedback; not sent for review. No release, countries or price yet. Recruitment via Reddit test-for-test swaps drafted (docs/reddit/ledger.md); agent tools cannot reach Reddit, so the owner posts. Closed testers must buy the paid app; promo codes unverified.",
+        "evidence": [
+          "store/google-play-closed-test.md",
+          "docs/reddit/ledger.md"
+        ],
+        "next_action": "Owner approves app content declarations and sets the price; promote versionCode 15 to closed testing, choose countries and send for review; once the opt-in link works, owner posts the approved Reddit draft and recruits 15-20 testers; count 14 continuous days.",
+        "updated_at": "2026-10-16T03:11:26+00:00"
       }
     }
   ],
