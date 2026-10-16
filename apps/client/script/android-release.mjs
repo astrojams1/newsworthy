@@ -15,6 +15,11 @@ const client = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const repo = resolve(client, '../..');
 const release = JSON.parse(readFileSync(join(repo, 'mobile.release.json'), 'utf8'));
 export const APP = { packageName: release.appId, alias: 'upload', minTargetSdk: 35 };
+export const BLOCKED_PERMISSIONS = ['android.permission.SYSTEM_ALERT_WINDOW', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE'];
+// A permission counts when the manifest requests it; a tools:node="remove"
+// entry is how prebuild blocks one, and bundletool's dump drops those.
+export const blockedPermissionsIn = manifest => BLOCKED_PERMISSIONS.filter(name =>
+  new RegExp(`<uses-permission[^>]*android:name="${name.replace(/\./g, '\\.')}"`).test(manifest));
 export const VAULT = 'op://API Tokens/Newsworthy Android';
 const PLAY = 'https://androidpublisher.googleapis.com';
 // The service account may release to testing tracks, not production, which
@@ -217,6 +222,10 @@ function verify(aab, code, key) {
   // `--resource=` answers nothing for this bundle; the full table names it.
   const resources = output('bundletool', ['dump', 'resources', `--bundle=${aab}`]);
   if (!/ - string\/google_app_id$/m.test(resources)) throw new Error('Bundle has no google_app_id; push needs google-services.json');
+  // Permissions app.config.js blocks must stay out of the merged manifest.
+  const manifestText = output('bundletool', ['dump', 'manifest', `--bundle=${aab}`]);
+  const requested = blockedPermissionsIn(manifestText);
+  if (requested.length) throw new Error(`Bundle requests blocked permissions: ${requested.join(', ')}`);
   const signer = certificateDigest(output(keytool(), ['-printcert', '-jarfile', aab]));
   const upload = certificateDigest(output(keytool(), ['-list', '-v', '-keystore', key.store, '-alias', APP.alias, '-storepass:env', 'NEWSWORTHY_STOREPASS'],
     { NEWSWORTHY_STOREPASS: key.password }));

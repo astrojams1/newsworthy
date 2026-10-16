@@ -25,6 +25,9 @@ module.exports = {
     // plus one, and reads google-services.json from the vault for one run.
     versionCode: Number(process.env.NEWSWORTHY_ANDROID_VERSION_CODE || 1),
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+    // Expo's template requests these; the app draws over nothing and writes no
+    // shared files, so Play's listing and review should not see them.
+    blockedPermissions: ['android.permission.SYSTEM_ALERT_WINDOW', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE'],
     adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: design.brand.light.center } },
   web: { output: 'static', favicon: './assets/favicon.png' },
   plugins: ['expo-router', 'expo-status-bar', 'expo-image', 'expo-system-ui', '@bacons/apple-targets', './plugins/with-rating-widget', './plugins/with-system-appearance', './plugins/with-scene-lifecycle',

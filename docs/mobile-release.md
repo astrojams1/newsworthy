@@ -141,8 +141,10 @@ node script/android-release.mjs release --track internal
 
 `bundle` prebuilds with `--clean`, runs `./gradlew bundleRelease` and checks the
 `.aab` before anything leaves the Mac: package, version code, a target SDK of
-35 or later, the release JavaScript, Firebase's `google_app_id` and a signature
-by the upload key rather than Expo's debug key. It writes
+35 or later, the release JavaScript, Firebase's `google_app_id`, none of the
+permissions `app.config.js` blocks (Expo's template asks for
+`SYSTEM_ALERT_WINDOW` and external storage; the app uses neither) and a
+signature by the upload key rather than Expo's debug key. It writes
 `build/android-release/<N>/Newsworthy.aab` and a `summary.json` with the
 commit, JDK and SHA-256. `apk` turns that bundle into one universal APK signed
 with the same key, for `adb install -r` on a phone. `upload --version-code N
