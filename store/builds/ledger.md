@@ -384,5 +384,5 @@ newsworthy-testers@googlegroups.com. The owner created the payments profile;
 the price was set from USD 1.00 for all 177 regions (Play's charm pricing: USD
 0.99 in the US). Publishing overview then listed 14 changes; the owner sent them
 for review (auto mode blocked the agent's click on the final confirmation) and
-Play showed "Changes in review" with its quick checks running. EAS credits
+Play's quick checks passed and it read "Your changes are now in review." EAS credits
 used: none.

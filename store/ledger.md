@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-16T13:32:26+00:00
+Updated: 2026-10-16T13:32:59+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -37,7 +37,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.disclosures | done | agent | inferred | Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md. | Send the saved App content changes for review with the first closed-testing release. |
 | google.closed-test | in_progress | user | observed | 2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in. | After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
-| google.review | waiting_user | user | observed | 2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Status: Changes in review, Play's quick checks running before hand-off; Google says reviews usually finish within 7 days. | Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding. |
+| google.review | waiting_user | user | observed | 2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days. | Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding. |
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
 | apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
 | host.ui | done | agent | observed | Native UI access restored after the Mac was unlocked. | — |
@@ -4179,6 +4179,15 @@ Next: After Google's review approves the release, recruit at least 12 testers (P
 2026-10-16T13:32:26+00:00 · observed · user
 
 2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Status: Changes in review, Play's quick checks running before hand-off; Google says reviews usually finish within 7 days.
+
+
+Next: Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.
+
+### 426. google.review — waiting_user
+
+2026-10-16T13:32:59+00:00 · observed · user
+
+2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days.
 
 
 Next: Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.

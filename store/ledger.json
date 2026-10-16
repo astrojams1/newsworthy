@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-16T13:32:26+00:00",
+  "updated_at": "2026-10-16T13:32:59+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -303,10 +303,10 @@
       "state": "waiting_user",
       "owner": "user",
       "basis": "observed",
-      "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Status: Changes in review, Play's quick checks running before hand-off; Google says reviews usually finish within 7 days.",
+      "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days.",
       "evidence": [],
       "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
-      "updated_at": "2026-10-16T13:32:26+00:00"
+      "updated_at": "2026-10-16T13:32:59+00:00"
     },
     "google.release": {
       "state": "todo",
@@ -8000,6 +8000,20 @@
         "evidence": [],
         "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
         "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 426,
+      "at": "2026-10-16T13:32:59+00:00",
+      "gate": "google.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days.",
+        "evidence": [],
+        "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
+        "updated_at": "2026-10-16T13:32:59+00:00"
       }
     }
   ],
