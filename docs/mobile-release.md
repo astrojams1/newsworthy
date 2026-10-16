@@ -226,7 +226,13 @@ App Store Connect, and has no dependencies.
    ID 4974473553901574528) with **Release apps to testing tracks** and the
    read-only **View app information**, which brings View app quality
    information with it. No account permissions. A service account is Active
-   at once; Play can take some minutes to honour new permissions.
+   at once; Play can take some minutes to honour new permissions. On
+   15 October, with the owner's approval, **Manage store presence** (which
+   brings Manage policy declarations) and **Edit and delete draft apps** were
+   added so `store/scripts/google-play-images.mjs` can replace the listing
+   graphics: with store presence alone, Play accepted the image uploads but
+   refused the edit's `validate` with 403 while the app is a draft. None of
+   these permits production releases.
 4. The owner creates a JSON key on the service account's Keys tab and attaches
    it to `op://API Tokens/Newsworthy Android` as `play-service-account.json`,
    then deletes the download. The vault's service account is read-only, and

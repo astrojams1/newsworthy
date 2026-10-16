@@ -1,0 +1,49 @@
+{
+  "versionCode": 15,
+  "applicationSourceCommit": "254686f77b2fed2600e961ef83b79ea1e354f189",
+  "captureEvidence": "source/android-phone/provenance-v15.json",
+  "widgetFrames": "source/android-phone/widget-frames-v15.json",
+  "footer": "World news, rated by significance.",
+  "captures": [
+    {
+      "source": "26-timeline-light-v15.png",
+      "output": "01-timeline-v15.png",
+      "headline": ["The past week's", "developments."],
+      "caption": "One entry per development. The list ends at one week.",
+      "dark": false
+    },
+    {
+      "widgets": true,
+      "output": "02-widget-v15.png",
+      "headline": ["A widget for", "your home screen."],
+      "caption": "Resizable. Made larger, it adds the sentence.",
+      "dark": false
+    },
+    {
+      "source": "25-reading-light-v15.png",
+      "output": "03-reading-v15.png",
+      "headline": ["World news.", "One reading."],
+      "caption": "A score, a brief explanation and an update time.",
+      "dark": false
+    },
+    {
+      "source": "28-reading-dark-v15.png",
+      "output": "04-appearance-v15.png",
+      "headline": ["Your reading.", "Light or dark."],
+      "caption": "Follow your device, or choose an appearance.",
+      "dark": true
+    },
+    {
+      "source": "29-settings-light-v15.png",
+      "output": "05-settings-v15.png",
+      "headline": ["Optional alerts,", "off by default."],
+      "caption": "Appearance, notifications and the timeline in Settings.",
+      "dark": false
+    }
+  ],
+  "featureGraphic": {
+    "headline": ["World news,", "rated by significance."],
+    "caption": ["A number out of 10 and one", "sentence explaining the news."],
+    "widget": "COMPACT_LIGHT"
+  }
+}
