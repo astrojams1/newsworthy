@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-15T17:12:20+00:00
+Updated: 2026-10-16T03:11:26+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -35,7 +35,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.native | in_progress | agent | observed | Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet. | Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
 | google.listing | in_progress | agent | observed | Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered. | Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists. |
 | google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
-| google.closed-test | waiting_user | user | observed | Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
+| google.closed-test | in_progress | agent | observed | 2026-10-15: Google Group newsworthy-testers@googlegroups.com created (anyone can join; members, posts and conversations visible to managers only) and saved as the tester list on Closed testing - Alpha with the support email for feedback; not sent for review. No release, countries or price yet. Recruitment via Reddit test-for-test swaps drafted (docs/reddit/ledger.md); agent tools cannot reach Reddit, so the owner posts. Closed testers must buy the paid app; promo codes unverified. | Owner approves app content declarations and sets the price; promote versionCode 15 to closed testing, choose countries and send for review; once the opt-in link works, owner posts the approved Reddit draft and recruits 15-20 testers; count 14 continuous days. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
 | google.review | todo | agent | observed | No Google release submitted for review. | Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state. |
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
@@ -4036,3 +4036,14 @@ Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sente
 
 
 Next: On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.
+
+### 411. google.closed-test — in_progress
+
+2026-10-16T03:11:26+00:00 · observed · agent
+
+2026-10-15: Google Group newsworthy-testers@googlegroups.com created (anyone can join; members, posts and conversations visible to managers only) and saved as the tester list on Closed testing - Alpha with the support email for feedback; not sent for review. No release, countries or price yet. Recruitment via Reddit test-for-test swaps drafted (docs/reddit/ledger.md); agent tools cannot reach Reddit, so the owner posts. Closed testers must buy the paid app; promo codes unverified.
+
+- store/google-play-closed-test.md
+- docs/reddit/ledger.md
+
+Next: Owner approves app content declarations and sets the price; promote versionCode 15 to closed testing, choose countries and send for review; once the opt-in link works, owner posts the approved Reddit draft and recruits 15-20 testers; count 14 continuous days.

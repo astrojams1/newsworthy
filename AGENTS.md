@@ -26,12 +26,12 @@ release status. Calm presentation must not change the rating calibration.
 - Branch off `main`, open a PR into `main`, and run `npm test` before pushing.
   Do not push directly to `main`. Vercel preview builds are currently skipped.
 - Keep extra development workspaces inside the primary Newsworthy checkout at
-  `.worktrees/<task-name>/`. Do not create sibling `newsworthy-*` folders in
-  `~/code` or elsewhere in the home directory. When already in a worktree, use
-  the primary checkout's `.worktrees` directory rather than nesting another one.
+  `.worktrees/<task-name>/`, never sibling `newsworthy-*` folders elsewhere.
+  When already in a worktree, use the primary checkout's `.worktrees`
+  directory rather than nesting another one.
 - Exclude `/.worktrees/` through the repository's local `.git/info/exclude`
   before creating workspaces; never commit or upload workspace copies. Use
-  `git worktree add`, `move`, and `remove` to keep Git's records consistent.
+  `git worktree add`, `move` and `remove`.
 - Remove completed workspaces once their changes are safely merged. Before
   cleanup, check for unmerged commits, uncommitted changes, and local-only files
   (including ignored files); preserve unfinished work and useful artifacts first.
@@ -68,6 +68,7 @@ release status. Calm presentation must not change the rating calibration.
   `.agents/skills/newsworthy-caller-review/SKILL.md`; findings go in
   `docs/caller-reviews/ledger.md`, observations kept apart from hypotheses.
   A trial caller's readings are stored apart, never shown: `docs/caller-trials.md`.
+- To post on Reddit, use `.agents/skills/newsworthy-reddit/SKILL.md`.
 - To remake the store preview videos, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
