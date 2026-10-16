@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T21:37:51+00:00",
+  "updated_at": "2026-10-16T03:41:49+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -241,22 +241,23 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet.",
+      "summary": "Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification.",
       "evidence": [
         "store/builds/ledger.md#2026-10",
-        "AAB sha256 4022cc8c5a043ea6b3e700d3fb31f606255617878be9100a49ed94f634a3d25f"
+        "AAB 14 sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5",
+        "AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a"
       ],
-      "next_action": "Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks.",
-      "updated_at": "2026-10-15T15:46:06+00:00"
+      "next_action": "—",
+      "updated_at": "2026-10-16T03:41:49+00:00"
     },
     "google.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet.",
+      "summary": "Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.",
       "evidence": [],
-      "next_action": "Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
-      "updated_at": "2026-10-15T15:46:06+00:00"
+      "next_action": "On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+      "updated_at": "2026-10-16T03:41:49+00:00"
     },
     "google.listing": {
       "state": "in_progress",
@@ -1200,16 +1201,13 @@
       "updated_at": "2026-10-14T13:07:09+00:00"
     },
     "google.play-api": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet.",
-      "evidence": [
-        "store/builds/ledger.md#2026-10",
-        "docs/mobile-release.md#google-play"
-      ],
-      "next_action": "With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.",
-      "updated_at": "2026-10-15T16:57:09+00:00"
+      "summary": "First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.",
+      "evidence": [],
+      "next_action": "—",
+      "updated_at": "2026-10-16T03:41:49+00:00"
     }
   },
   "events": [
@@ -7827,6 +7825,52 @@
         ],
         "next_action": "Send the saved App content changes for review with the first closed-testing release.",
         "updated_at": "2026-10-15T21:37:51+00:00"
+      }
+    },
+    {
+      "sequence": 415,
+      "at": "2026-10-16T03:41:49+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "AAB 14 sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5",
+          "AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a"
+        ],
+        "next_action": "—",
+        "updated_at": "2026-10-16T03:41:49+00:00"
+      }
+    },
+    {
+      "sequence": 416,
+      "at": "2026-10-16T03:41:49+00:00",
+      "gate": "google.play-api",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-16T03:41:49+00:00"
+      }
+    },
+    {
+      "sequence": 417,
+      "at": "2026-10-16T03:41:49+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.",
+        "evidence": [],
+        "next_action": "On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+        "updated_at": "2026-10-16T03:41:49+00:00"
       }
     }
   ],

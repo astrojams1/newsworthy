@@ -32,6 +32,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | Play listing and App content | 2026-10-15 | README, product messaging, store listing, privacy and support pages, llms.txt, disclosures, user actions | store/listing.json gains an Android description (one resizable widget, "home screen" lower case); App content answers recorded with their evidence and differences | Play artwork is out of date (separate session); Data safety deletion URL unanswered until the privacy page has a deletion section; nothing public on Play |
 | Privacy deletion section | 2026-10-15 | Privacy page, support page, README, product messaging, llms.txt, store disclosures, push deletion code | Privacy page gains Delete your data with the steps; store disclosures record why it names no log retention period | Play Data safety answer not yet saved; Settings path not seen on a device for this change |
 | Play deletion record | 2026-10-15 | Google Play app content record, release ledger, privacy page | App content record: the deletion question is answered Yes with the privacy anchor, no longer left blank | Saved App content changes not yet sent for review |
+| Play internal release 14 | 2026-10-15 | README, product messaging, llms.txt, store listing, user actions | None needed: ledgers only; llms.txt's "in preparation" stays true because internal testing is not public availability | No tester has installed 14; listing not entered in Play |
 
 ## Lessons
 

@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-15T21:37:51+00:00
+Updated: 2026-10-16T03:41:49+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -31,8 +31,8 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.device | done | user | observed | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
 | google.phone | done | user | observed | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
 | google.app | done | agent | observed | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
-| google.build | done | agent | observed | Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet. | Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks. |
-| google.native | in_progress | agent | observed | Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet. | Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
+| google.build | done | agent | observed | Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification. | — |
+| google.native | in_progress | agent | observed | Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone. | On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
 | google.listing | in_progress | agent | observed | 2026-10-15, Play Console (built-in browser, owner signed in): default store listing text saved as a draft from store/listing.json (googleName, shortDescription, new googleDescription with Android widget wording; counters 10/30, 56/80, 2085/4000; description SHA-256 matches the repo); category News & Magazines saved (pending in Publishing overview); store contact details published (astrojams1@gmail.com, newsworthy-indol.vercel.app). Graphics not uploaded: the repo's Play icon, feature graphic and phone screenshots date from 2026-09-16 and show the old mint palette and pre-timeline layout. | Make current Android artwork (512 icon from the Stone app icon, 1024x500 feature graphic, 2 to 8 phone screenshots from version 15) and upload it; then answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists. |
 | google.disclosures | done | agent | inferred | Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md. | Send the saved App content changes for review with the first closed-testing release. |
 | google.closed-test | waiting_user | user | observed | Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
@@ -119,7 +119,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | widget.sentence-fit | waiting_verification | agent | observed | Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown. | Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build. |
 | apple.uiscene-ios27 | waiting_verification | agent | observed | The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed. | Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build. |
 | apple.local-release | waiting_user | agent | observed | Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used. | Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result. |
-| google.play-api | in_progress | agent | observed | Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet. | With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back. |
+| google.play-api | done | agent | observed | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 
 ## Evidence and history
 
@@ -4075,3 +4075,33 @@ Owner-approved App content declarations entered in Play Console on 2026-10-15 an
 - https://newsworthy-indol.vercel.app/privacy#delete-your-data
 
 Next: Send the saved App content changes for review with the first closed-testing release.
+
+### 415. google.build — done
+
+2026-10-16T03:41:49+00:00 · observed · agent
+
+Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification.
+
+- store/builds/ledger.md#2026-10
+- AAB 14 sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5
+- AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a
+
+Next: —
+
+### 416. google.play-api — done
+
+2026-10-16T03:41:49+00:00 · observed · agent
+
+First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.
+
+
+Next: —
+
+### 417. google.native — in_progress
+
+2026-10-16T03:41:49+00:00 · observed · agent
+
+Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.
+
+
+Next: On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.

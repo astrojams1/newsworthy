@@ -15,7 +15,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (AAB 13 built, not uploaded; 14 uploaded by hand to internal testing; Play API uploads set up) |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (13 built, not uploaded; 14 by hand and 15 through the Play API, both on internal testing) |
 
 ## Lessons
 
@@ -289,6 +289,23 @@ created in Play Console (app ID 4974473553901574528, package
 verification. No bundle uploaded yet. Android developer verification lists the
 package as not registered; check again after the first upload.
 
+**Play internal testing, 15 October.** PR #212 merged as 9ad04fb (production
+`/healthz` reported it). Version code 14 built from clean 9ad04fb with the
+vault credentials in 5m55s on a warm Gradle cache: `.aab` SHA-256
+`ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5`, signer
+`EB:1E:5F:25:…:F4:33:E4`, target SDK 36; universal APK SHA-256
+`b1e80c0bce0a0b4e425c38860200d21a2956d368df31971de4393ca2c331ec14`. Uploaded
+by hand in Play Console (the owner dragged the file in: the console page cannot
+fetch a local file, and the first bundle cannot go through the API), release
+"14 (1.0.0)" saved and published to internal testing at 09:36 PDT: "Available
+to internal testers", 26.5 MB for new installs. Two warnings: no testers yet
+(track Inactive) and no deobfuscation file (R8 is off). After the upload,
+Android developer verification shows the package Registered with 3 keys. Version
+code 13 was never uploaded. EAS credits used: none.
+Afterwards, at the owner's request, an internal tester list "Owner" (their own
+Google account) was created and selected; the track became Active. Opt-in:
+https://play.google.com/apps/internaltest/4700283919647153170.
+
 **Play Developer API, 15 October.** Version code 14 went to internal testing
 by hand in Play Console, since Play takes a new app's first bundle only there.
 For later uploads `android-release.mjs` gained `next-version-code` and
@@ -302,3 +319,20 @@ created its JSON key and attached it to `op://API Tokens/Newsworthy Android` as
 `play-service-account.json`; it reads back as that service account (values
 not printed). `next-version-code` read Play live in 3.5 s and returned 15. No
 API upload yet. EAS credits used: none.
+
+**Version code 15 through the Play API, 15 October.** At the owner's request
+the Play uploads session stopped its own build of 15 (killed in Gradle, before
+any bundle or upload) so 15 would carry PR #216. #216 merged as 254686f
+(production `/healthz` reported it). `release --version-code 15 --track
+internal` from clean 254686f with the vault credentials took 24m18s in all,
+Gradle on a cache partly shared with the stopped build: `.aab` SHA-256
+`e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a`, signer
+`EB:1E:5F:25:…:F4:33:E4`, target SDK 36; universal APK SHA-256
+`25c6cb8eeb79e2a5a5e648c4b1357d92a8e7a948a4688806541e80325dfb9e4e`. The first
+upload through the API. Its log ends at "Uploading … to Play" without the
+script's "committed to internal" line (the run's output was cut short when the
+session ended), so it was checked afterwards: `next-version-code` returns 16,
+and Play Console shows the internal track Active, latest release 1.0.0,
+"Available to internal testers", 1 version code, released Oct 15 10:45 AM. The
+release takes the API's default name, 1.0.0, not "15 (1.0.0)". EAS credits
+used: none.
