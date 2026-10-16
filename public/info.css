@@ -7,7 +7,7 @@ header { margin-bottom:4rem; }
 .wordmark { font-size:.6875rem; letter-spacing:.18em; text-transform:uppercase; text-decoration:none; color:var(--ink-on-gradient-muted); }
 h1 { font-size:clamp(2rem,7vw,3rem); line-height:1.15; font-weight:400; letter-spacing:-.04em; margin:0 0 1rem; }
 h2 { font-size:1.125rem; font-weight:550; line-height:1.4; margin:2.5rem 0 .6rem; }
-p, ul { margin:.75rem 0; }
+p, ul, ol { margin:.75rem 0; }
 li { padding-left:.15rem; margin:.4rem 0; }
 a { color:var(--accent); text-underline-offset:.2em; overflow-wrap:anywhere; }
 a:hover { text-decoration-thickness:2px; }
