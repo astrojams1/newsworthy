@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T17:12:20+00:00",
+  "updated_at": "2026-10-15T21:09:48+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -262,21 +262,21 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered.",
+      "summary": "2026-10-15, Play Console (built-in browser, owner signed in): default store listing text saved as a draft from store/listing.json (googleName, shortDescription, new googleDescription with Android widget wording; counters 10/30, 56/80, 2085/4000; description SHA-256 matches the repo); category News & Magazines saved (pending in Publishing overview); store contact details published (astrojams1@gmail.com, newsworthy-indol.vercel.app). Graphics not uploaded: the repo's Play icon, feature graphic and phone screenshots date from 2026-09-16 and show the old mint palette and pre-timeline layout.",
       "evidence": [],
-      "next_action": "Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists.",
-      "updated_at": "2026-10-15T16:17:29+00:00"
+      "next_action": "Make current Android artwork (512 icon from the Stone app icon, 1024x500 feature graphic, 2 to 8 phone screenshots from version 15) and upload it; then answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists.",
+      "updated_at": "2026-10-15T19:17:52+00:00"
     },
     "google.disclosures": {
-      "state": "todo",
+      "state": "done",
       "owner": "agent",
       "basis": "inferred",
-      "summary": "Google app-content/privacy/rating questionnaires not yet available without app record.",
+      "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.",
       "evidence": [
-        "store/disclosures.md contains implementation/hosting evidence"
+        "store/google-play-app-content.md"
       ],
-      "next_action": "After app creation, answer current questionnaires using code and actual service logging evidence.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
+      "updated_at": "2026-10-15T21:09:48+00:00"
     },
     "google.closed-test": {
       "state": "waiting_user",
@@ -7765,6 +7765,50 @@
         "evidence": [],
         "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
         "updated_at": "2026-10-15T17:12:20+00:00"
+      }
+    },
+    {
+      "sequence": 411,
+      "at": "2026-10-15T19:17:52+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15, Play Console (built-in browser, owner signed in): default store listing text saved as a draft from store/listing.json (googleName, shortDescription, new googleDescription with Android widget wording; counters 10/30, 56/80, 2085/4000; description SHA-256 matches the repo); category News & Magazines saved (pending in Publishing overview); store contact details published (astrojams1@gmail.com, newsworthy-indol.vercel.app). Graphics not uploaded: the repo's Play icon, feature graphic and phone screenshots date from 2026-09-16 and show the old mint palette and pre-timeline layout.",
+        "evidence": [],
+        "next_action": "Make current Android artwork (512 icon from the Stone app icon, 1024x500 feature graphic, 2 to 8 phone screenshots from version 15) and upload it; then answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists.",
+        "updated_at": "2026-10-15T19:17:52+00:00"
+      }
+    },
+    {
+      "sequence": 412,
+      "at": "2026-10-15T19:17:53+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "waiting_user",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Proposed Play App content answers written to store/google-play-app-content.md (privacy policy, app access, ads and advertising ID, IARC content rating, target audience 18+, news app, data safety, government, financial, health), each with its evidence; version 15's manifest has no AD_ID permission. Not entered.",
+        "evidence": [],
+        "next_action": "Owner approves or corrects the proposed declarations; agent enters them in Play Console and reads them back.",
+        "updated_at": "2026-10-15T19:17:53+00:00"
+      }
+    },
+    {
+      "sequence": 413,
+      "at": "2026-10-15T21:09:48+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.",
+        "evidence": [
+          "store/google-play-app-content.md"
+        ],
+        "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
+        "updated_at": "2026-10-15T21:09:48+00:00"
       }
     }
   ],
