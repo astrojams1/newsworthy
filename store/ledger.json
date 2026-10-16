@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-15T19:04:39+00:00",
+  "updated_at": "2026-10-16T03:36:11+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -248,7 +248,7 @@
         "AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a"
       ],
       "next_action": "—",
-      "updated_at": "2026-10-15T19:04:38+00:00"
+      "updated_at": "2026-10-16T03:36:11+00:00"
     },
     "google.native": {
       "state": "in_progress",
@@ -257,27 +257,27 @@
       "summary": "Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.",
       "evidence": [],
       "next_action": "On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
-      "updated_at": "2026-10-15T19:04:39+00:00"
+      "updated_at": "2026-10-16T03:36:11+00:00"
     },
     "google.listing": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered.",
+      "summary": "2026-10-15, Play Console (built-in browser, owner signed in): default store listing text saved as a draft from store/listing.json (googleName, shortDescription, new googleDescription with Android widget wording; counters 10/30, 56/80, 2085/4000; description SHA-256 matches the repo); category News & Magazines saved (pending in Publishing overview); store contact details published (astrojams1@gmail.com, newsworthy-indol.vercel.app). Graphics not uploaded: the repo's Play icon, feature graphic and phone screenshots date from 2026-09-16 and show the old mint palette and pre-timeline layout.",
       "evidence": [],
-      "next_action": "Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists.",
-      "updated_at": "2026-10-15T16:17:29+00:00"
+      "next_action": "Make current Android artwork (512 icon from the Stone app icon, 1024x500 feature graphic, 2 to 8 phone screenshots from version 15) and upload it; then answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists.",
+      "updated_at": "2026-10-15T19:17:52+00:00"
     },
     "google.disclosures": {
-      "state": "todo",
+      "state": "done",
       "owner": "agent",
       "basis": "inferred",
-      "summary": "Google app-content/privacy/rating questionnaires not yet available without app record.",
+      "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.",
       "evidence": [
-        "store/disclosures.md contains implementation/hosting evidence"
+        "store/google-play-app-content.md"
       ],
-      "next_action": "After app creation, answer current questionnaires using code and actual service logging evidence.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
+      "updated_at": "2026-10-15T21:09:48+00:00"
     },
     "google.closed-test": {
       "state": "waiting_user",
@@ -1206,7 +1206,7 @@
       "summary": "First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.",
       "evidence": [],
       "next_action": "—",
-      "updated_at": "2026-10-15T19:04:38+00:00"
+      "updated_at": "2026-10-16T03:36:11+00:00"
     }
   },
   "events": [
@@ -7767,7 +7767,51 @@
     },
     {
       "sequence": 411,
-      "at": "2026-10-15T19:04:38+00:00",
+      "at": "2026-10-15T19:17:52+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15, Play Console (built-in browser, owner signed in): default store listing text saved as a draft from store/listing.json (googleName, shortDescription, new googleDescription with Android widget wording; counters 10/30, 56/80, 2085/4000; description SHA-256 matches the repo); category News & Magazines saved (pending in Publishing overview); store contact details published (astrojams1@gmail.com, newsworthy-indol.vercel.app). Graphics not uploaded: the repo's Play icon, feature graphic and phone screenshots date from 2026-09-16 and show the old mint palette and pre-timeline layout.",
+        "evidence": [],
+        "next_action": "Make current Android artwork (512 icon from the Stone app icon, 1024x500 feature graphic, 2 to 8 phone screenshots from version 15) and upload it; then answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists.",
+        "updated_at": "2026-10-15T19:17:52+00:00"
+      }
+    },
+    {
+      "sequence": 412,
+      "at": "2026-10-15T19:17:53+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "waiting_user",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Proposed Play App content answers written to store/google-play-app-content.md (privacy policy, app access, ads and advertising ID, IARC content rating, target audience 18+, news app, data safety, government, financial, health), each with its evidence; version 15's manifest has no AD_ID permission. Not entered.",
+        "evidence": [],
+        "next_action": "Owner approves or corrects the proposed declarations; agent enters them in Play Console and reads them back.",
+        "updated_at": "2026-10-15T19:17:53+00:00"
+      }
+    },
+    {
+      "sequence": 413,
+      "at": "2026-10-15T21:09:48+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.",
+        "evidence": [
+          "store/google-play-app-content.md"
+        ],
+        "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
+        "updated_at": "2026-10-15T21:09:48+00:00"
+      }
+    },
+    {
+      "sequence": 414,
+      "at": "2026-10-16T03:36:11+00:00",
       "gate": "google.build",
       "result": {
         "state": "done",
@@ -7780,12 +7824,12 @@
           "AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a"
         ],
         "next_action": "—",
-        "updated_at": "2026-10-15T19:04:38+00:00"
+        "updated_at": "2026-10-16T03:36:11+00:00"
       }
     },
     {
-      "sequence": 412,
-      "at": "2026-10-15T19:04:38+00:00",
+      "sequence": 415,
+      "at": "2026-10-16T03:36:11+00:00",
       "gate": "google.play-api",
       "result": {
         "state": "done",
@@ -7794,12 +7838,12 @@
         "summary": "First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.",
         "evidence": [],
         "next_action": "—",
-        "updated_at": "2026-10-15T19:04:38+00:00"
+        "updated_at": "2026-10-16T03:36:11+00:00"
       }
     },
     {
-      "sequence": 413,
-      "at": "2026-10-15T19:04:39+00:00",
+      "sequence": 416,
+      "at": "2026-10-16T03:36:11+00:00",
       "gate": "google.native",
       "result": {
         "state": "in_progress",
@@ -7808,7 +7852,7 @@
         "summary": "Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.",
         "evidence": [],
         "next_action": "On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
-        "updated_at": "2026-10-15T19:04:39+00:00"
+        "updated_at": "2026-10-16T03:36:11+00:00"
       }
     }
   ],
