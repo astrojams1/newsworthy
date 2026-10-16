@@ -127,3 +127,12 @@ test('unused Android permissions are blocked and checked in the bundle', async (
   assert.deepEqual(blockedPermissionsIn('<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGEX"/>'), [], 'whole names only');
   assert.match(read('apps/client/script/android-release.mjs'), /Bundle requests blocked permissions/);
 });
+
+// Versions 15 and 16 committed but never printed the readback: upload()
+// returned its edit, so the lines after it could not run.
+test('an upload reads its track back after committing', () => {
+  const script = read('apps/client/script/android-release.mjs');
+  const body = script.slice(script.indexOf('async function upload('), script.indexOf('function run('));
+  assert.doesNotMatch(body, /return withEdit\(/, 'the commit edit is awaited, not returned');
+  assert.match(body, /await withEdit\(account, async \(api, edit\) => \{[\s\S]*:commit[\s\S]*committed to \$\{track\}/);
+});
