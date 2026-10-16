@@ -375,3 +375,14 @@ commit, was re-entered from `store/listing.json` (description SHA-256
 matches) and saved; the review step's new AI asset declaration was answered
 "Don't label assets" (captures and rendered artwork, no AI-generated images).
 EAS credits used: none.
+
+**Closed test submitted, 16 October.** No build: version 16 (already on
+internal testing) was promoted to Closed testing - Alpha in Play Console as
+"16 (1.0.0)", for 173 countries / regions (Play disables China, Cuba, Iran,
+Sudan and Rest of World) and the tester group
+newsworthy-testers@googlegroups.com. The owner created the payments profile;
+the price was set from USD 1.00 for all 177 regions (Play's charm pricing: USD
+0.99 in the US). Publishing overview then listed 14 changes; the owner sent them
+for review (auto mode blocked the agent's click on the final confirmation) and
+Play showed "Changes in review" with its quick checks running. EAS credits
+used: none.
