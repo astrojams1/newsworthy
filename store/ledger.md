@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-19T16:27:29+00:00
+Updated: 2026-10-19T16:31:23+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -37,7 +37,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.disclosures | done | agent | inferred | Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md. | Send the saved App content changes for review with the first closed-testing release. |
 | google.closed-test | in_progress | user | observed | 2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in. | After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days. |
 | google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
-| google.review | waiting_user | user | observed | 2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days. | Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding. |
+| google.review | waiting_provider | user | observed | 2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'. | Check Publishing overview and Policy status until Google decides; act on any finding. |
 | google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
 | apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
 | host.ui | done | agent | observed | Native UI access restored after the Mac was unlocked. | — |
@@ -121,7 +121,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.local-release | waiting_user | agent | observed | Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used. | Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result. |
 | google.play-api | done | agent | observed | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 | google.pricing | done | agent | observed | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
-| google.news-policy | waiting_user | agent | observed | 2026-10-19: version 17 (main 2796737, Settings > Publisher) built locally, uploaded to internal testing and promoted to Closed testing - Alpha via the Play API with changes held from review. Alpha reads 1.0.0 (17) 'Not yet sent for review', 173 countries, group newsworthy-testers@googlegroups.com; 16 still shows 'Update rejected'. Not sent for review; no appeal filed. | Owner sends changes for review in Publishing overview and decides whether to appeal citing Settings > Publisher. |
+| google.news-policy | waiting_provider | agent | observed | 2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead. | Check Policy status and Publishing overview until Google approves or rejects version 17. |
 
 ## Evidence and history
 
@@ -4230,3 +4230,22 @@ Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 
 
 
 Next: —
+
+### 431. google.news-policy — waiting_provider
+
+2026-10-19T16:31:23+00:00 · observed · agent
+
+2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead.
+
+- Play Console Publishing overview, read after sending, 2026-10-19
+
+Next: Check Policy status and Publishing overview until Google approves or rejects version 17.
+
+### 432. google.review — waiting_provider
+
+2026-10-19T16:31:23+00:00 · observed · user
+
+2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'.
+
+
+Next: Check Publishing overview and Policy status until Google decides; act on any finding.
