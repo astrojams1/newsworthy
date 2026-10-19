@@ -37,6 +37,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | Block unused Android permissions | 2026-10-15 | Mobile release, Play App content record, privacy page, store listing | Mobile release lists the new bundle check; no user-facing copy states permissions | Takes effect from versionCode 16; Play's permissions list updates when 16 reaches a track |
 | Play upload readback, version 16 | 2026-10-15 | App release skill, build and release ledgers, store listing | Skill: save Play console listing edits with Save before an API commit | No user-facing copy changed; nothing public on Play |
 | Play closed test submitted | 2026-10-16 | Store listing, release notes, product messaging, README, llms.txt | Closed-test release notes kept neutral (an "open it daily" draft was dropped as an engagement prompt) | In Google's review; not available to anyone yet; no store availability claimed |
+| #PR | 2026-10-19 | README, AGENTS.md, caller trials, product messaging, llms.txt | README and AGENTS.md point to the new caller trial skill; caller trials' promotion steps now change the live Routine's model, as the skill does. No external copy names the caller's model | The skill's Routine steps are written from the October trials, not yet run as written |
 
 ## Lessons
 

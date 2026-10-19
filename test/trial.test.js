@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ADMIN_TOKEN, CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
 import { judgeVersion } from '../src/story.js';
-import { pairTrials, summarizeTrial } from '../src/trial.js';
+import { disagreements, pairTrials, summarizeByDay, summarizeTrial } from '../src/trial.js';
 
 const HAIKU_TOKEN = 'test-trial-token';
 const SONNET_TOKEN = 'test-sonnet-token';
@@ -120,6 +120,34 @@ test('trial pairing takes the nearest live reading in the window and compares ju
   assert.equal(summary.score_mean_diff, 1);
   assert.equal(summary.judgement_agreement, 0.5);
   assert.equal(summary.trial_prompt_verified, 0.33);
+});
+
+// The aggregate hid what decided the Sonnet trial: story agreement that held
+// one day and halved the next, and one missed shock in eighty hours.
+test('trial comparison splits by day and surfaces the hours that disagree most', () => {
+  const at = (day, hour) => new Date(Date.UTC(2026, 9, day, hour, 3)).toISOString();
+  const reading = (id, created_at, score, development_of) => ({ id, created_at, score, judge_version: 5, development_of, explanation: 'x', prompt_verified: true });
+  const live = [
+    reading(10, at(14, 4), 4, 7),
+    reading(11, at(15, 4), 8, null),
+    reading(12, at(15, 5), 5, 7),
+  ];
+  const trials = [
+    reading(1, at(14, 4), 4, 7),
+    reading(2, at(15, 4), 5, 7),
+    reading(3, at(15, 5), 3, 7),
+  ];
+  const pairs = pairTrials(trials, live);
+
+  const days = summarizeByDay(pairs);
+  assert.deepEqual(days.map((d) => d.day), ['2026-10-14', '2026-10-15'], 'oldest first');
+  assert.equal(days[0].judgement_agreement, 1);
+  assert.equal(days[1].judgement_agreement, 0.5);
+  assert.equal(days[1].score_mean_diff, -2.5);
+
+  const apart = disagreements(pairs);
+  assert.deepEqual(apart.map((p) => p.trial.id), [2, 3], 'the missed 8 first, then a two-point gap');
+  assert.equal(disagreements(pairTrials([trials[0]], live)).length, 0, 'an hour that agrees is not listed');
 });
 
 // Rows stored before trials had names all came from the first trial, Haiku 5.5;
