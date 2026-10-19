@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-19T16:27:29+00:00",
+  "updated_at": "2026-10-19T16:31:23+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -297,13 +297,13 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "google.review": {
-      "state": "waiting_user",
+      "state": "waiting_provider",
       "owner": "user",
       "basis": "observed",
-      "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days.",
+      "summary": "2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'.",
       "evidence": [],
-      "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
-      "updated_at": "2026-10-16T13:32:59+00:00"
+      "next_action": "Check Publishing overview and Policy status until Google decides; act on any finding.",
+      "updated_at": "2026-10-19T16:31:23+00:00"
     },
     "google.release": {
       "state": "todo",
@@ -1215,15 +1215,15 @@
       "updated_at": "2026-10-16T13:32:26+00:00"
     },
     "google.news-policy": {
-      "state": "waiting_user",
+      "state": "waiting_provider",
       "owner": "agent",
       "basis": "observed",
-      "summary": "2026-10-19: version 17 (main 2796737, Settings > Publisher) built locally, uploaded to internal testing and promoted to Closed testing - Alpha via the Play API with changes held from review. Alpha reads 1.0.0 (17) 'Not yet sent for review', 173 countries, group newsworthy-testers@googlegroups.com; 16 still shows 'Update rejected'. Not sent for review; no appeal filed.",
+      "summary": "2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead.",
       "evidence": [
-        "Play Console closed testing track and Publishing overview, read 2026-10-19"
+        "Play Console Publishing overview, read after sending, 2026-10-19"
       ],
-      "next_action": "Owner sends changes for review in Publishing overview and decides whether to appeal citing Settings > Publisher.",
-      "updated_at": "2026-10-19T16:27:29+00:00"
+      "next_action": "Check Policy status and Publishing overview until Google approves or rejects version 17.",
+      "updated_at": "2026-10-19T16:31:23+00:00"
     }
   },
   "events": [
@@ -8082,6 +8082,36 @@
         "evidence": [],
         "next_action": "—",
         "updated_at": "2026-10-19T16:27:29+00:00"
+      }
+    },
+    {
+      "sequence": 431,
+      "at": "2026-10-19T16:31:23+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead.",
+        "evidence": [
+          "Play Console Publishing overview, read after sending, 2026-10-19"
+        ],
+        "next_action": "Check Policy status and Publishing overview until Google approves or rejects version 17.",
+        "updated_at": "2026-10-19T16:31:23+00:00"
+      }
+    },
+    {
+      "sequence": 432,
+      "at": "2026-10-19T16:31:23+00:00",
+      "gate": "google.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'.",
+        "evidence": [],
+        "next_action": "Check Publishing overview and Policy status until Google decides; act on any finding.",
+        "updated_at": "2026-10-19T16:31:23+00:00"
       }
     }
   ],
