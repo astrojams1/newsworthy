@@ -12,6 +12,7 @@
 import { outletNamed } from './news-outlets.mjs';
 import { marketForecast } from './market-forecast.mjs';
 import { passiveVoice } from './passive-voice.mjs';
+import { disagreements, summarizeByDay } from '../src/trial.js';
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, arg, i, all) =>
   (arg.startsWith('--') ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs), []));
@@ -50,6 +51,18 @@ for (const { cohort, summary, pairs, runs } of cohorts) {
   console.log(`  ${'live_flagged'.padEnd(22)} ${pairs.filter((p) => p.live && flags(p.live).length).length} of ${summary.paired}`);
   const reported = new Set(runs.map((r) => r.reading_id).filter((id) => id != null));
   console.log(`  ${'trial_run_reports'.padEnd(22)} ${runs.length} (${pairs.filter((p) => !reported.has(p.trial.id)).length} readings with none linked)`);
+
+  console.log('\nBy day (UTC): paired, exact, within 1, mean diff, judgements agreeing');
+  for (const d of summarizeByDay(pairs)) {
+    const agreed = d.judgement_agreement == null ? '-' : `${Math.round(d.judgement_agreement * d.judgements_compared)} of ${d.judgements_compared}`;
+    console.log(`  ${d.day}  ${String(d.paired).padStart(3)}  ${d.score_exact ?? '-'}  ${d.score_within_1 ?? '-'}  ${d.score_mean_diff ?? '-'}  ${agreed}`);
+  }
+
+  const apart = disagreements(pairs);
+  console.log(`\nLargest disagreements (score 2+ apart, or another development on a live 6+): ${apart.length}`);
+  for (const p of apart) {
+    console.log(`  ${p.trial.created_at.slice(0, 16)}  live ${p.live.score} vs trial ${p.trial.score}, judgement ${p.judgement_agrees === null ? 'n/a' : p.judgement_agrees ? 'agrees' : 'DIFFERS'}`);
+  }
 
   console.log('\nHour by hour, oldest first:');
   for (const p of [...pairs].reverse()) {

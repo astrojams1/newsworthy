@@ -75,3 +75,31 @@ export function summarizeTrial(pairs) {
     live_mean_chars: round(mean(paired.map((p) => p.live.explanation.length)), 0),
   };
 }
+
+/**
+ * The summary per UTC day, oldest first. An aggregate hid the Sonnet trial's
+ * deciding result: story agreement of 22 of 24 one day and 7 of 16 the next.
+ */
+export function summarizeByDay(pairs) {
+  const days = new Map();
+  for (const p of pairs) {
+    const day = p.trial.created_at.slice(0, 10);
+    days.set(day, [...(days.get(day) ?? []), p]);
+  }
+  return [...days].sort(([a], [b]) => a.localeCompare(b)).map(([day, dayPairs]) => {
+    const { paired, score_exact, score_within_1, score_mean_diff, judgement_agreement, judgements_compared } = summarizeTrial(dayPairs);
+    return { day, paired, score_exact, score_within_1, score_mean_diff, judgement_agreement, judgements_compared };
+  });
+}
+
+/**
+ * Paired hours where the two disagree most, largest first: a score two or
+ * more apart, or a different development on an hour the live caller scored
+ * `minScore` or higher. A missed shock is the disqualifying case, and it is
+ * one hour in eighty.
+ */
+export function disagreements(pairs, { minScore = 6 } = {}) {
+  return pairs
+    .filter((p) => p.live && (Math.abs(p.score_diff) >= 2 || (p.judgement_agrees === false && p.live.score >= minScore)))
+    .sort((a, b) => Math.abs(b.score_diff) - Math.abs(a.score_diff) || b.live.score - a.live.score);
+}

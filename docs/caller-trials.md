@@ -6,7 +6,10 @@ the same instructions, and its readings are never shown. The goal is to compare
 the two on the same news, hour by hour, before replacing the live caller.
 
 No trial is running. Two ran from 2026-10-12 and both were stopped; the live
-caller stays on Opus 5.5 (see [Decision](#decision)).
+caller stays on Opus 5.5 (see [Decision](#decision)). Run a new trial with the
+[caller trial skill](../.agents/skills/newsworthy-caller-trial/SKILL.md); each
+trial from now on is recorded in its [ledger](caller-trials/ledger.md), not
+here.
 
 ## How a trial reading is kept off the page
 
@@ -175,10 +178,10 @@ deleted, and the trial tables stay as the record. `TRIAL_CALLERS` is still
 set on Vercel, so the two trial tokens still authenticate; remove it to retire
 them.
 
-To promote a candidate in a future trial: disable the live Routine, put
-`CALLER_TOKEN` in place of the trial token in the candidate's Routine prompt
-and turn its push notifications on. From then on its readings are live.
-Disable the other trial Routines and remove their entries from
-`TRIAL_CALLERS` (the variable itself when no trial is running). If no
-candidate is good enough, disable the trial Routines and leave the live one
-alone.
+To promote a candidate in a future trial, change the live Routine's model
+rather than switching Routines: it keeps its id, schedule, token and push.
+Then disable the trial Routines and remove their entries from `TRIAL_CALLERS`
+(the variable itself when no trial is running). If no candidate is good
+enough, disable the trial Routines and leave the live one alone. The
+[caller trial skill](../.agents/skills/newsworthy-caller-trial/SKILL.md) has
+each step.

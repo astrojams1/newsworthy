@@ -45,8 +45,11 @@ To check the hourly caller's runs against what the server recorded, use the
 [caller review skill](.agents/skills/newsworthy-caller-review/SKILL.md) with
 `scripts/caller-review.mjs`; findings are appended to the
 [caller review ledger](docs/caller-reviews/ledger.md). Candidate callers can
-run beside the live one without reaching the page; see
-[caller trials](docs/caller-trials.md) and `scripts/trial-compare.mjs`.
+run beside the live one without reaching the page: the
+[caller trial skill](.agents/skills/newsworthy-caller-trial/SKILL.md) runs a
+trial end to end with `scripts/trial-compare.mjs` and records it in the
+[caller trial ledger](docs/caller-trials/ledger.md); see also
+[caller trials](docs/caller-trials.md).
 
 Before any app build, store submission or EAS sandbox, use the
 [app release skill](.agents/skills/newsworthy-app-release/SKILL.md). iOS store

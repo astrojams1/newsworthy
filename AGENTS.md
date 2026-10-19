@@ -67,7 +67,7 @@ release status. Calm presentation must not change the rating calibration.
 - To check the hourly caller's runs, use
   `.agents/skills/newsworthy-caller-review/SKILL.md`; findings go in
   `docs/caller-reviews/ledger.md`, observations kept apart from hypotheses.
-  A trial caller's readings are stored apart, never shown: `docs/caller-trials.md`.
+  Trial a new caller model with `.agents/skills/newsworthy-caller-trial/SKILL.md`.
 - To remake the store preview videos, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
