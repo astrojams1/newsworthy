@@ -155,7 +155,7 @@ listing and the preview video's stale report (no scene shows Settings' About
 list). No date, timestamp or rating-contract change; the owner chose to leave
 dates out. The page says nothing about AI, models or outlets.
 
-Open limits: the owner should confirm the named publisher and editor.
+Open limits: the owner confirmed the named publisher and editor on 19 October.
 Native iOS and Android rendering of the new page and row was not verified; the
 web page was checked in a 390-pixel viewport only. The Google appeal and the
 new Play build are separate gates. The web Settings trailing-mark test fails on

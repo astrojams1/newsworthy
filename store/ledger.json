@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-19T15:42:35+00:00",
+  "updated_at": "2026-10-19T15:43:32+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1221,12 +1221,10 @@
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "2026-10-19: Google rejected closed-test version 16 under the News and Magazines policy (no publisher/author ownership information, no authors/editors page, no full dates); the app reads 'not available on Google Play'. Owner chose to add a Publisher page (Settings > Publisher: publisher and editor, readings are Newsworthy's own, contact email) and not to change dates. Implemented on claude/play-news-publisher-page; web checked at 390px only, native rendering unverified.",
-      "evidence": [
-        "Play Console, Policy status, issue details, read 2026-10-19"
-      ],
-      "next_action": "Merge the PR, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page; confirm the named publisher and editor with the owner.",
-      "updated_at": "2026-10-19T15:42:35+00:00"
+      "summary": "Owner confirmed the publisher and editor wording (James Thompson, operating as AstroJams) on 2026-10-19; PR 225 open, not merged.",
+      "evidence": [],
+      "next_action": "Merge PR 225, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page.",
+      "updated_at": "2026-10-19T15:43:32+00:00"
     }
   },
   "events": [
@@ -8041,6 +8039,20 @@
         ],
         "next_action": "Merge the PR, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page; confirm the named publisher and editor with the owner.",
         "updated_at": "2026-10-19T15:42:35+00:00"
+      }
+    },
+    {
+      "sequence": 428,
+      "at": "2026-10-19T15:43:32+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner confirmed the publisher and editor wording (James Thompson, operating as AstroJams) on 2026-10-19; PR 225 open, not merged.",
+        "evidence": [],
+        "next_action": "Merge PR 225, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page.",
+        "updated_at": "2026-10-19T15:43:32+00:00"
       }
     }
   ],
