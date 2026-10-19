@@ -141,3 +141,23 @@ out of date (the checked line and widget scene report changed Swift input); it
 was not re-rendered, and no public App Store preview is included in the current
 submission. Existing source/geometry evidence was reviewed without changing
 captures or claiming new native verification.
+
+## Settings → Publisher — 19 October 2026, claude/play-news-publisher-page
+
+Google Play rejected closed-test version 16 under its News and Magazines policy
+(publisher and author ownership information). Added Settings → Publisher: who
+publishes and edits (James Thompson, operating as AstroJams, as in the store
+listing's copyright line), that a reading is written by Newsworthy and does not
+republish articles, and a tappable contact email. Reviewed README (settings
+table and route list), product messaging (Settings contents, no-AI and no-outlet
+rules), Support (the Settings sentence now mentions Publisher), llms.txt, store
+listing and the preview video's stale report (no scene shows Settings' About
+list). No date, timestamp or rating-contract change; the owner chose to leave
+dates out. The page says nothing about AI, models or outlets.
+
+Open limits: the owner should confirm the named publisher and editor.
+Native iOS and Android rendering of the new page and row was not verified; the
+web page was checked in a 390-pixel viewport only. The Google appeal and the
+new Play build are separate gates. The web Settings trailing-mark test fails on
+this Mac with and without this change ("Support: trailing ink 10.7pt against
+13.0pt"), as the 1 October entry records for local runs.

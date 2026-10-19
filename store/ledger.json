@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-16T13:32:59+00:00",
+  "updated_at": "2026-10-19T15:42:35+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1216,6 +1216,17 @@
       "evidence": [],
       "next_action": "Owner may ask for an exact USD 1.00 US price; otherwise none.",
       "updated_at": "2026-10-16T13:32:26+00:00"
+    },
+    "google.news-policy": {
+      "state": "in_progress",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "2026-10-19: Google rejected closed-test version 16 under the News and Magazines policy (no publisher/author ownership information, no authors/editors page, no full dates); the app reads 'not available on Google Play'. Owner chose to add a Publisher page (Settings > Publisher: publisher and editor, readings are Newsworthy's own, contact email) and not to change dates. Implemented on claude/play-news-publisher-page; web checked at 390px only, native rendering unverified.",
+      "evidence": [
+        "Play Console, Policy status, issue details, read 2026-10-19"
+      ],
+      "next_action": "Merge the PR, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page; confirm the named publisher and editor with the owner.",
+      "updated_at": "2026-10-19T15:42:35+00:00"
     }
   },
   "events": [
@@ -8014,6 +8025,22 @@
         "evidence": [],
         "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
         "updated_at": "2026-10-16T13:32:59+00:00"
+      }
+    },
+    {
+      "sequence": 427,
+      "at": "2026-10-19T15:42:35+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-19: Google rejected closed-test version 16 under the News and Magazines policy (no publisher/author ownership information, no authors/editors page, no full dates); the app reads 'not available on Google Play'. Owner chose to add a Publisher page (Settings > Publisher: publisher and editor, readings are Newsworthy's own, contact email) and not to change dates. Implemented on claude/play-news-publisher-page; web checked at 390px only, native rendering unverified.",
+        "evidence": [
+          "Play Console, Policy status, issue details, read 2026-10-19"
+        ],
+        "next_action": "Merge the PR, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page; confirm the named publisher and editor with the owner.",
+        "updated_at": "2026-10-19T15:42:35+00:00"
       }
     }
   ],

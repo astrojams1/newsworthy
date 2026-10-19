@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-16T13:32:59+00:00
+Updated: 2026-10-19T15:42:35+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -121,6 +121,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.local-release | waiting_user | agent | observed | Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used. | Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result. |
 | google.play-api | done | agent | observed | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 | google.pricing | done | agent | observed | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
+| google.news-policy | in_progress | agent | observed | 2026-10-19: Google rejected closed-test version 16 under the News and Magazines policy (no publisher/author ownership information, no authors/editors page, no full dates); the app reads 'not available on Google Play'. Owner chose to add a Publisher page (Settings > Publisher: publisher and editor, readings are Newsworthy's own, contact email) and not to change dates. Implemented on claude/play-news-publisher-page; web checked at 390px only, native rendering unverified. | Merge the PR, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page; confirm the named publisher and editor with the owner. |
 
 ## Evidence and history
 
@@ -4191,3 +4192,13 @@ Next: Check Publishing overview and Submission activity until Google approves or
 
 
 Next: Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.
+
+### 427. google.news-policy — in_progress
+
+2026-10-19T15:42:35+00:00 · observed · agent
+
+2026-10-19: Google rejected closed-test version 16 under the News and Magazines policy (no publisher/author ownership information, no authors/editors page, no full dates); the app reads 'not available on Google Play'. Owner chose to add a Publisher page (Settings > Publisher: publisher and editor, readings are Newsworthy's own, contact email) and not to change dates. Implemented on claude/play-news-publisher-page; web checked at 390px only, native rendering unverified.
+
+- Play Console, Policy status, issue details, read 2026-10-19
+
+Next: Merge the PR, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page; confirm the named publisher and editor with the owner.

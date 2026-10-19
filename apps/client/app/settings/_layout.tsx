@@ -34,5 +34,6 @@ export default function SettingsLayout() {
     <Stack.Screen name="appearance" options={{ title: 'Appearance' }} />
     <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
     <Stack.Screen name="threshold" options={{ title: 'Threshold' }} />
+    <Stack.Screen name="publisher" options={{ title: 'Publisher' }} />
   </Stack>;
 }

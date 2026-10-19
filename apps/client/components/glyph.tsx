@@ -19,6 +19,7 @@ export const GLYPHS = {
   checked: { sf: 'clock', svg: () => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
   privacy: { sf: 'hand.raised', svg: () => '<path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>' },
   introduction: { sf: 'info.circle', svg: () => '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.5h.01"/>' },
+  publisher: { sf: 'person.2', svg: () => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>' },
   support: { sf: 'questionmark.circle', svg: () => '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>' },
   // Settings rows: trailing marks.
   chevron: { sf: 'chevron.right', svg: () => '<path d="m9 18 6-6-6-6"/>' },
