@@ -393,3 +393,13 @@ with build 27 selected, read through the vault API key; the built-in browser
 could not sign in to App Store Connect, so the key recipe is now in the
 newsworthy-app-release skill. Google Play rejected the closed test on 19 October
 under the News and Magazines policy (publisher/author ownership information).
+
+**Version 17, 19 October.** Built locally from main 2796737 (clean tree,
+openjdk 17.0.20.1, targetSdk 36, sha256 c1cf39e9…30b8d5) for the Play News
+policy rejection: it adds Settings > Publisher, whose copy was found in the
+Hermes bundle. The first build attempt stopped before starting because
+JAVA_HOME was unset; the documented SSD toolchain fixed it. Uploaded to internal
+testing and promoted to Closed testing - Alpha through the Play Developer API
+with changes held from review (`changesNotSentForReview=true`, after Play
+refused a plain validate and commit); 173 countries and the tester group were
+kept. Not sent for review, no appeal filed. EAS credits used: none.

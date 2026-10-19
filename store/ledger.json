@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-19T15:43:32+00:00",
+  "updated_at": "2026-10-19T16:27:29+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -241,13 +241,10 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload. 14 by hand (09:36 PDT), 15 (#216 fixes) and 16 (#222, unused permissions blocked) through the Play Developer API, all on internal testing, 2026-10-15; next-version-code returns 17. Package registered for Android developer verification.",
-      "evidence": [
-        "store/builds/ledger.md#2026-10",
-        "AAB 16 sha256 c92582cb884964519744f867f4bce99aeab5a96a37b849a6d4bdc8cb63e6f212"
-      ],
+      "summary": "Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 15 and 16 through the Play API on internal testing (2026-10-15); 17 (2796737, Settings > Publisher) on 2026-10-19 to internal and promoted to Closed testing - Alpha, held from review. next-version-code returns 18.",
+      "evidence": [],
       "next_action": "—",
-      "updated_at": "2026-10-16T04:05:31+00:00"
+      "updated_at": "2026-10-19T16:27:29+00:00"
     },
     "google.native": {
       "state": "in_progress",
@@ -1218,13 +1215,15 @@
       "updated_at": "2026-10-16T13:32:26+00:00"
     },
     "google.news-policy": {
-      "state": "in_progress",
+      "state": "waiting_user",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner confirmed the publisher and editor wording (James Thompson, operating as AstroJams) on 2026-10-19; PR 225 open, not merged.",
-      "evidence": [],
-      "next_action": "Merge PR 225, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page.",
-      "updated_at": "2026-10-19T15:43:32+00:00"
+      "summary": "2026-10-19: version 17 (main 2796737, Settings > Publisher) built locally, uploaded to internal testing and promoted to Closed testing - Alpha via the Play API with changes held from review. Alpha reads 1.0.0 (17) 'Not yet sent for review', 173 countries, group newsworthy-testers@googlegroups.com; 16 still shows 'Update rejected'. Not sent for review; no appeal filed.",
+      "evidence": [
+        "Play Console closed testing track and Publishing overview, read 2026-10-19"
+      ],
+      "next_action": "Owner sends changes for review in Publishing overview and decides whether to appeal citing Settings > Publisher.",
+      "updated_at": "2026-10-19T16:27:29+00:00"
     }
   },
   "events": [
@@ -8053,6 +8052,36 @@
         "evidence": [],
         "next_action": "Merge PR 225, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page.",
         "updated_at": "2026-10-19T15:43:32+00:00"
+      }
+    },
+    {
+      "sequence": 429,
+      "at": "2026-10-19T16:27:29+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "waiting_user",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-19: version 17 (main 2796737, Settings > Publisher) built locally, uploaded to internal testing and promoted to Closed testing - Alpha via the Play API with changes held from review. Alpha reads 1.0.0 (17) 'Not yet sent for review', 173 countries, group newsworthy-testers@googlegroups.com; 16 still shows 'Update rejected'. Not sent for review; no appeal filed.",
+        "evidence": [
+          "Play Console closed testing track and Publishing overview, read 2026-10-19"
+        ],
+        "next_action": "Owner sends changes for review in Publishing overview and decides whether to appeal citing Settings > Publisher.",
+        "updated_at": "2026-10-19T16:27:29+00:00"
+      }
+    },
+    {
+      "sequence": 430,
+      "at": "2026-10-19T16:27:29+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 15 and 16 through the Play API on internal testing (2026-10-15); 17 (2796737, Settings > Publisher) on 2026-10-19 to internal and promoted to Closed testing - Alpha, held from review. next-version-code returns 18.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-19T16:27:29+00:00"
       }
     }
   ],

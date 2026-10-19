@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-19T15:43:32+00:00
+Updated: 2026-10-19T16:27:29+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -31,7 +31,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | google.device | done | user | observed | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
 | google.phone | done | user | observed | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
 | google.app | done | agent | observed | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
-| google.build | done | agent | observed | Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload. 14 by hand (09:36 PDT), 15 (#216 fixes) and 16 (#222, unused permissions blocked) through the Play Developer API, all on internal testing, 2026-10-15; next-version-code returns 17. Package registered for Android developer verification. | — |
+| google.build | done | agent | observed | Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 15 and 16 through the Play API on internal testing (2026-10-15); 17 (2796737, Settings > Publisher) on 2026-10-19 to internal and promoted to Closed testing - Alpha, held from review. next-version-code returns 18. | — |
 | google.native | in_progress | agent | observed | Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone. | On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
 | google.listing | done | agent | observed | Default store listing, category and contact details complete (setup task ticked); sent to Google for review with the first closed-testing release on 2026-10-16. | — |
 | google.disclosures | done | agent | inferred | Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md. | Send the saved App content changes for review with the first closed-testing release. |
@@ -121,7 +121,7 @@ Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs
 | apple.local-release | waiting_user | agent | observed | Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used. | Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result. |
 | google.play-api | done | agent | observed | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 | google.pricing | done | agent | observed | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
-| google.news-policy | in_progress | agent | observed | Owner confirmed the publisher and editor wording (James Thompson, operating as AstroJams) on 2026-10-19; PR 225 open, not merged. | Merge PR 225, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page. |
+| google.news-policy | waiting_user | agent | observed | 2026-10-19: version 17 (main 2796737, Settings > Publisher) built locally, uploaded to internal testing and promoted to Closed testing - Alpha via the Play API with changes held from review. Alpha reads 1.0.0 (17) 'Not yet sent for review', 173 countries, group newsworthy-testers@googlegroups.com; 16 still shows 'Update rejected'. Not sent for review; no appeal filed. | Owner sends changes for review in Publishing overview and decides whether to appeal citing Settings > Publisher. |
 
 ## Evidence and history
 
@@ -4211,3 +4211,22 @@ Owner confirmed the publisher and editor wording (James Thompson, operating as A
 
 
 Next: Merge PR 225, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page.
+
+### 429. google.news-policy — waiting_user
+
+2026-10-19T16:27:29+00:00 · observed · agent
+
+2026-10-19: version 17 (main 2796737, Settings > Publisher) built locally, uploaded to internal testing and promoted to Closed testing - Alpha via the Play API with changes held from review. Alpha reads 1.0.0 (17) 'Not yet sent for review', 173 countries, group newsworthy-testers@googlegroups.com; 16 still shows 'Update rejected'. Not sent for review; no appeal filed.
+
+- Play Console closed testing track and Publishing overview, read 2026-10-19
+
+Next: Owner sends changes for review in Publishing overview and decides whether to appeal citing Settings > Publisher.
+
+### 430. google.build — done
+
+2026-10-19T16:27:29+00:00 · observed · agent
+
+Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 15 and 16 through the Play API on internal testing (2026-10-15); 17 (2796737, Settings > Publisher) on 2026-10-19 to internal and promoted to Closed testing - Alpha, held from review. next-version-code returns 18.
+
+
+Next: —
