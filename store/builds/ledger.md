@@ -386,3 +386,10 @@ the price was set from USD 1.00 for all 177 regions (Play's charm pricing: USD
 for review (auto mode blocked the agent's click on the final confirmation) and
 Play's quick checks passed and it read "Your changes are now in review." EAS credits
 used: none.
+
+**Status check, 19 October.** No build, no EAS credits. Apple still reads
+version 1.0.0 and review submission WAITING_FOR_REVIEW (submitted 12 October)
+with build 27 selected, read through the vault API key; the built-in browser
+could not sign in to App Store Connect, so the key recipe is now in the
+newsworthy-app-release skill. Google Play rejected the closed test on 19 October
+under the News and Magazines policy (publisher/author ownership information).

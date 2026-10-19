@@ -37,11 +37,24 @@ test('the chosen appearance wins and System follows the device', () => {
 
 const text = tree => tree.filter(n => n.type === 'Text').map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
 
+test('the Publisher page names the publisher and editor and offers a contact address, without AI or outlet claims', () => {
+  for (const platform of ['web', 'ios', 'android']) {
+    const page = nodes(renderSettings({ platform, screen: 'publisher' }).tree);
+    const copy = text(page).join(' ');
+    assert.match(copy, /published and edited by James Thompson/);
+    assert.match(copy, /does not republish articles/);
+    assert.doesNotMatch(copy, /\b(AI|model|algorithm)\b/i, 'user-facing copy never mentions how ratings are produced');
+    const email = page.find(n => n.props?.testID === 'publisher-email');
+    assert.equal(email.props.accessibilityRole, 'link');
+    assert.ok(page.some(n => n.type === 'Link' && n.props.href.startsWith('mailto:astrojams1@gmail.com')), 'an in-app contact link');
+  }
+});
+
 test('the website shows the appearance choice and no notification setting', () => {
   const overview = nodes(renderSettings({ platform: 'web' }).tree);
   assert.ok(overview.some(n => n.type === 'Head'), 'the page has its own title');
   assert.ok(!overview.some(n => n.props?.testID === 'notifications-link'), 'push notifications are a native feature');
-  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support']);
+  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support', 'Publisher']);
   const all = nodes(renderSettings({ platform: 'web', screen: 'appearance' }).tree);
   assert.ok(all.some(n => n.type === 'Head'), 'the page has its own title');
   const radios = all.filter(n => n.props?.accessibilityRole === 'radio');
@@ -61,7 +74,7 @@ test('the website shows the appearance choice and no notification setting', () =
 test('the overview is a list of pages, each with an icon, its current value and a chevron', () => {
   for (const platform of ['web', 'ios', 'android']) for (const [stored, value] of [[{}, 'Off'], [{ theme: 'dark', notifications: { enabled: true, threshold: 9, token: 'ExponentPushToken[x]' } }, '9 or higher']]) {
     const all = nodes(renderSettings({ platform, stored }).tree);
-    const links = all.filter(n => n.type === 'Link' && n.props.href.startsWith('/settings/'));
+    const links = all.filter(n => n.type === 'Link' && n.props.href.startsWith('/settings/') && !n.props.href.endsWith('/publisher'));
     const expected = platform === 'web' ? ['/settings/appearance'] : ['/settings/appearance', '/settings/notifications'];
     assert.deepEqual(links.map(n => n.props.href), expected);
     const rows = links.map(n => nodes(n).find(c => c.type === 'Pressable'));

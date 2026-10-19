@@ -83,6 +83,7 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
   development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
+  So does Publisher (Settings → Publisher): who publishes and edits, that readings are Newsworthy's own and not republished articles, and a contact email. It never mentions how ratings are produced and never names outlets.
 - The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
   a few plain sentences: a score of consequence. Like all
   user-facing copy it does not mention AI. By the owner's choice it does not

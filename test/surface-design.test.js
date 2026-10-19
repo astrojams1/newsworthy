@@ -436,12 +436,12 @@ test('Settings rises as a sheet on the phone and stays a page on the web', () =>
     assert.equal(settings.headerShown, false, 'the sheet draws its own stack header');
     const stack = renderSettingsLayout({ platform, dark });
     const screens = Object.fromEntries(nodes(stack).filter(n => n.type === 'Screen').map(n => [n.props.name, n.props.options]));
-    assert.deepEqual(Object.keys(screens), ['index', 'appearance', 'notifications', 'threshold']);
+    assert.deepEqual(Object.keys(screens), ['index', 'appearance', 'notifications', 'threshold', 'publisher']);
     assert.equal(screens.index.headerTitle, '', 'the overview shows no title');
     assert.equal(screens.index.headerBackVisible, false, 'the overview closes with its X, not a back arrow');
     assert.equal(screens.index.headerLeft(), null, 'the web header draws no back arrow either');
     assert.equal(screens.index.title, 'Settings', 'but is still named for assistive technology');
-    assert.deepEqual([screens.appearance.title, screens.notifications.title, screens.threshold.title], ['Appearance', 'Notifications', 'Threshold']);
+    assert.deepEqual([screens.appearance.title, screens.notifications.title, screens.threshold.title, screens.publisher.title], ['Appearance', 'Notifications', 'Threshold', 'Publisher']);
     const options = nodes(stack).find(n => n.props.screenOptions).props.screenOptions;
     assert.equal(options.headerBackButtonDisplayMode, 'minimal');
     assert.equal(options.contentStyle.backgroundColor, themeForLevel(3, dark).tinted);
