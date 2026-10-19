@@ -52,7 +52,7 @@ release status. Calm presentation must not change the rating calibration.
   or rendered-prop tests alone do not establish native visual parity; record
   actual native verification and any untested states in the release ledger
   with `npm run ledger -- record --gate <id> --summary … [--state …]
-  [--evidence …] [--next …]` (`store/scripts/ledger.mjs`). It updates
+  [--evidence …] [--next …]` (app-release `ledger.mjs`). It updates
   `store/ledger.json` and regenerates `store/ledger.md`; never edit the
   Markdown by hand.
 - Follow `PROMPT-RULES.md`; never edit a published rating prompt in place or
@@ -72,7 +72,7 @@ release status. Calm presentation must not change the rating calibration.
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
 - Before any app build, store submission or EAS sandbox, use
-  `.agents/skills/newsworthy-app-release/SKILL.md`: local iOS and Android builds.
+  `.agents/skills/newsworthy-app-release/SKILL.md` (on `vendor/skills`).
 - Every skill in `.agents/skills/` keeps an append-only ledger, linked from its
   SKILL.md, read before a run and updated after (`test/skill-ledgers.test.js`).
 - A push to `main` deploys to production. `main` is both the GitHub default

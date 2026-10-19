@@ -403,3 +403,19 @@ testing and promoted to Closed testing - Alpha through the Play Developer API
 with changes held from review (`changesNotSentForReview=true`, after Play
 refused a plain validate and commit); 173 countries and the tester group were
 kept. Not sent for review, no appeal filed. EAS credits used: none.
+
+**Shared release skill, 19 October.** The release scripts moved to the shared
+app-release skill (v2.0.0, the `vendor/skills` submodule), which Space Worms
+runs too, configured by `app-release.config.json`: `ios-release.mjs`,
+`android-release.mjs` (every Play commit still held: `android.holdForReview`),
+`asc.mjs` (replacing `store/scripts/apple.mjs`), `play.mjs` (replacing
+`google-play-images.mjs`) and `ledger.mjs`. `store/listing.json` and
+`store/apple-age-rating.json` became `store/store.json`. Builds now go to
+`/Volumes/ssd/builds/{xcode,android}/newsworthy/` (builds made before this, under
+`apps/client/build/`, are not found by `upload` or `verify`: rebuild), and `ledger.mjs record`
+also appends to the owner's agent activity ledger. Read-only checks through
+the shared scripts: App Store Connect 1.0.0 WAITING_FOR_REVIEW in 4f28761f
+with build 27 selected, builds up to 28, next build 29; Play version code 17
+completed on internal and alpha, next 18; the Play listing text, icon, feature
+graphic and five phone screenshots match the repository byte for byte. No
+builds, uploads, sandboxes or EAS credits used.

@@ -1,7 +1,7 @@
 // Who publishes Newsworthy, shown on Settings > Publisher and read by tests.
 // Google Play's News policy asks news apps to name their publisher and editors
 // and give a way to make contact; the names match the store listing's
-// copyright line (store/listing.json) and the contact address is the support
+// copyright line (store/store.json listing.copyright) and the contact address is the support
 // page's.
 export const PUBLISHER = {
   name: 'James Thompson',

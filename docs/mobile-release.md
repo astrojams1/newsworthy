@@ -86,16 +86,18 @@ Expo config, or variables prefixed `EXPO_PUBLIC_`.
 
 ## Local iOS release
 
-Run on the owner's Mac from `apps/client`, with Xcode, CocoaPods and the
-1Password CLI (`op`, signed in or with `OP_KEY`) available:
+Run on the owner's Mac from the repository root, with Xcode, CocoaPods and the
+1Password CLI (`op`, signed in or with `OP_KEY`) available. The script is the
+shared app-release skill's (the `vendor/skills` submodule), configured by
+`app-release.config.json`:
 
 ```sh
-node script/ios-release.mjs next-build-number   # App Store Connect's highest + 1
-node script/ios-release.mjs archive             # prebuild, pods, archive, export, verify
-node script/ios-release.mjs validate <N>        # optional: Apple's checks, no upload
-node script/ios-release.mjs upload <N>          # altool upload, waits for processing
-node script/ios-release.mjs testers <N>         # add the VALID build to Release QA
-node script/ios-release.mjs release             # archive, upload and testers in one run
+node vendor/skills/skills/app-release/scripts/ios-release.mjs next-build-number   # App Store Connect's highest + 1
+node vendor/skills/skills/app-release/scripts/ios-release.mjs archive             # prebuild, pods, archive, export, verify
+node vendor/skills/skills/app-release/scripts/ios-release.mjs validate <N>        # optional: Apple's checks, no upload
+node vendor/skills/skills/app-release/scripts/ios-release.mjs upload <N>          # altool upload, waits for processing
+node vendor/skills/skills/app-release/scripts/ios-release.mjs testers <N>         # add the VALID build to Release QA
+node vendor/skills/skills/app-release/scripts/ios-release.mjs release             # archive, upload and testers in one run
 ```
 
 - **Build number.** EAS's remote counter is no longer used. The script reads
@@ -114,13 +116,14 @@ node script/ios-release.mjs release             # archive, upload and testers in
   (Xcode's current name for `app-store`) with `manageAppVersionAndBuildNumber`
   off. Before upload the script checks the signed app and widget carry the
   team, the widget App Group and, for the app, production `aps-environment`.
-- **Upload.** `xcrun altool --upload-package … --wait` with the same key.
+- **Upload.** `xcrun altool --upload-package … --wait` with the same key; it
+  refuses an archive made from uncommitted changes or changed since `archive`.
   Transporter works as well for a manual upload of the exported `.ipa`.
 - **Credentials.** The key is `op://API Tokens/App Store Connect` (`credential`,
   `key id`, `issuer id`), written for one run to a private temporary file and
   removed on exit. `ASC_KEY_ID`, `ASC_ISSUER_ID` and `ASC_PRIVATE_KEY_PATH`,
-  as for `store/scripts/apple.mjs`, take precedence.
-- **Output** goes to `build/ios-release/<N>/` (ignored): logs, the archive, the
+  as for the shared skill's `asc.mjs`, take precedence.
+- **Output** goes to `/Volumes/ssd/builds/xcode/newsworthy/release/<N>/`: logs, the archive, the
   `.ipa` and `summary.json` (commit, dirty flag, Xcode build, SDK and the
   `.ipa`'s SHA-256) for the build ledger.
 
@@ -132,20 +135,22 @@ Review and resubmitting stay separate steps (see the app release skill).
 
 Android store bundles are built on the owner's Mac with Gradle and signed with
 the Play upload key; nothing builds in EAS, and `eas.json` and the EAS build
-workflow are gone. From `apps/client`:
+workflow are gone. From the repository root, with the shared app-release
+skill's script (every Play commit is held for the owner to send for review,
+`android.holdForReview` in `app-release.config.json`):
 
 ```sh
-node script/android-release.mjs next-version-code
-node script/android-release.mjs release --track internal
+node vendor/skills/skills/app-release/scripts/android-release.mjs next-version-code
+node vendor/skills/skills/app-release/scripts/android-release.mjs release --track internal
 ```
 
 `bundle` prebuilds with `--clean`, runs `./gradlew bundleRelease` and checks the
 `.aab` before anything leaves the Mac: package, version code, a target SDK of
-35 or later, the release JavaScript, Firebase's `google_app_id`, none of the
+36 or later, the release JavaScript, Firebase's `google_app_id`, none of the
 permissions `app.config.js` blocks (Expo's template asks for
 `SYSTEM_ALERT_WINDOW` and external storage; the app uses neither) and a
 signature by the upload key rather than Expo's debug key. It writes
-`build/android-release/<N>/Newsworthy.aab` and a `summary.json` with the
+`/Volumes/ssd/builds/android/newsworthy/<N>/Newsworthy.aab` and a `summary.json` with the
 commit, JDK and SHA-256. `apk` turns that bundle into one universal APK signed
 with the same key, for `adb install -r` on a phone. `upload --version-code N
 [--track internal]` sends that bundle to a Play testing track (see
@@ -196,7 +201,7 @@ way on 15 October and was published to internal testing. Later uploads use the
 Play Developer API (androidpublisher v3):
 
 ```sh
-node script/android-release.mjs upload --version-code 15 --track internal
+node vendor/skills/skills/app-release/scripts/android-release.mjs upload --version-code 15 --track internal
 ```
 
 `upload` refuses a bundle that changed since `bundle` verified it, then opens
@@ -229,7 +234,7 @@ App Store Connect, and has no dependencies.
    at once; Play can take some minutes to honour new permissions. On
    15 October, with the owner's approval, **Manage store presence** (which
    brings Manage policy declarations) and **Edit and delete draft apps** were
-   added so `store/scripts/google-play-images.mjs` can replace the listing
+   added so the shared skill's `play.mjs images` can replace the listing
    graphics: with store presence alone, Play accepted the image uploads but
    refused the edit's `validate` with 403 while the app is a draft. None of
    these permits production releases.
@@ -362,7 +367,7 @@ access. Internal testing alone does not meet this requirement. See
   belongs in this repository. `EXPO_ACCESS_TOKEN` on Vercel is optional and
   only lets Expo enforce that this server is the one sending.
 - Android uses Firebase project `newsworthy-cad27`, registered for the existing
-  package `com.astrojams.newsworthy`. `script/android-release.mjs` reads
+  package `com.astrojams.newsworthy`. The shared skill's `android-release.mjs` reads
   `google-services.json` from the vault and passes its path as
   `GOOGLE_SERVICES_JSON`, which Expo's `android.googleServicesFile` consumes.
   For other local prebuilds, set the same variable to a secured copy. Do not copy the service-account private key into
