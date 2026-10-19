@@ -110,7 +110,7 @@ test('the Play key comes from the vault item and the upload is checked end to en
   assert.ok(script.includes("'play-service-account.json'"), 'the key is a vault attachment');
   assert.match(script, /privateDir\(\), 'play-service-account\.json'/, 'it is written to the private temporary directory');
   assert.match(script, /uploaded\.sha256 !== digest/, "Play's digest of the upload is compared with ours");
-  for (const step of ['/edits', 'bundles?uploadType=media', ':validate', ':commit']) assert.ok(script.includes(step), `${step} is called`);
+  for (const step of ['/edits', 'bundles?uploadType=media', ':commit']) assert.ok(script.includes(step), `${step} is called`);
   assert.doesNotMatch(script, /from '(?!node:)/, 'no dependencies');
 });
 
@@ -132,7 +132,21 @@ test('unused Android permissions are blocked and checked in the bundle', async (
 // returned its edit, so the lines after it could not run.
 test('an upload reads its track back after committing', () => {
   const script = read('apps/client/script/android-release.mjs');
-  const body = script.slice(script.indexOf('async function upload('), script.indexOf('function run('));
+  const body = script.slice(script.indexOf('async function upload('), script.indexOf('// Every commit holds'));
   assert.doesNotMatch(body, /return withEdit\(/, 'the commit edit is awaited, not returned');
-  assert.match(body, /await withEdit\(account, async \(api, edit\) => \{[\s\S]*:commit[\s\S]*committed to \$\{track\}/);
+  assert.match(body, /await withEdit\(account, async \(api, edit\) => \{[\s\S]*commitHeld\(api, edit\)[\s\S]*committed to \$\{track\}/);
+});
+
+// The owner sends changes for review in Play Console; an API commit must not.
+// On 19 October version 16 stood rejected, and versions 17 and later were to
+// reach testing tracks without a new submission.
+test('every Play commit holds its changes back from review, and promote uploads nothing', async () => {
+  const { COMMIT_QUERY } = await import('../apps/client/script/android-release.mjs');
+  assert.equal(COMMIT_QUERY, 'changesNotSentForReview=true');
+  const script = read('apps/client/script/android-release.mjs');
+  assert.equal((script.match(/:commit\b/g) ?? []).length, 1, 'one commit call, in commitHeld');
+  assert.match(script, /:commit\?\$\{COMMIT_QUERY\}/);
+  const promote = script.slice(script.indexOf('async function promote('), script.indexOf('function run('));
+  assert.doesNotMatch(promote, /uploadType=media/, 'promote puts a held bundle on a track');
+  assert.match(promote, /commitHeld\(api, edit\)/);
 });

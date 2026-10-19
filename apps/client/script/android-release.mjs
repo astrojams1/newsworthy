@@ -176,12 +176,37 @@ async function upload(account, code, track, notes) {
     if (uploaded.versionCode !== code) throw new Error(`Play read versionCode ${uploaded.versionCode}, expected ${code}`);
     if (uploaded.sha256 !== digest) throw new Error(`Play received sha256 ${uploaded.sha256}, expected ${digest}`);
     await api(`${edit}/tracks/${track}`, { method: 'PUT', body: trackRelease(track, code, notes) });
-    await api(`${edit}:validate`, { method: 'POST' });
-    await api(`${edit}:commit`, { method: 'POST' });
+    await commitHeld(api, edit);
     return { committed: true };
   });
   const { releases } = await withEdit(account, (api, edit) => api(`${edit}/tracks/${track}`));
   console.log(`versionCode ${code} committed to ${track}: ${JSON.stringify(releases)}`);
+}
+
+// Every commit holds its changes back from review: they wait in Publishing
+// overview until the owner sends them. Without the flag a commit sends the
+// app's pending changes for review, and Play refuses it outright while an
+// earlier submission stands rejected (version 16, 19 October). There is no
+// separate validate: it refuses the flag as unknown, then refuses the edit for
+// lacking it. Commit validates the edit itself.
+export const COMMIT_QUERY = 'changesNotSentForReview=true';
+async function commitHeld(api, edit) {
+  await api(`${edit}:commit?${COMMIT_QUERY}`, { method: 'POST' });
+}
+
+// Put a version Play already holds on another testing track, as Play Console's
+// "Promote release" does: nothing is uploaded, and the track's countries and
+// testers are left as they are.
+async function promote(account, code, track, notes) {
+  await withEdit(account, async (api, edit) => {
+    const { versionCodes = [] } = await api(`${edit}/bundles`).then(r => ({ versionCodes: (r.bundles ?? []).map(b => b.versionCode) }));
+    if (!versionCodes.includes(code)) throw new Error(`Play holds no bundle with versionCode ${code}; upload it first`);
+    await api(`${edit}/tracks/${track}`, { method: 'PUT', body: trackRelease(track, code, notes ?? `Newsworthy (${code}).`) });
+    await commitHeld(api, edit);
+    return { committed: true };
+  });
+  const { releases } = await withEdit(account, (api, edit) => api(`${edit}/tracks/${track}`));
+  console.log(`versionCode ${code} promoted to ${track}: ${JSON.stringify(releases)}`);
 }
 
 function run(command, args, { cwd = client, env = {}, log } = {}) {
@@ -296,9 +321,11 @@ const usage = `Usage: node script/android-release.mjs <command> [--version-code 
   verify             check Gradle's last release .aab again without rebuilding
   apk                turn that bundle into one signed APK for adb install
   upload             upload bundle N to --track (default internal) and commit
+  promote            put uploaded bundle N on --track (e.g. alpha), uploading nothing
   release            bundle and apk, then upload when --track is given
 --version-code defaults to Play's highest plus one for bundle and release.
---track is one of ${TRACKS.join(', ')}; --notes are the en-US release notes.`;
+--track is one of ${TRACKS.join(', ')}; --notes are the en-US release notes.
+Commits hold changes back from review; the owner sends them in Play Console.`;
 
 const option = (args, name) => {
   const at = args.indexOf(name);
@@ -309,17 +336,19 @@ const option = (args, name) => {
 
 async function main([command, ...rest]) {
   if (!command || command === '--help') return console.log(usage);
-  if (!['next-version-code', 'bundle', 'verify', 'apk', 'upload', 'release'].includes(command)) throw new Error(usage);
+  if (!['next-version-code', 'bundle', 'verify', 'apk', 'upload', 'promote', 'release'].includes(command)) throw new Error(usage);
   const given = option(rest, '--version-code');
   const trackFlag = option(rest, '--track');
   const track = trackFlag === undefined ? (command === 'upload' ? 'internal' : undefined) : parseTrack(trackFlag);
-  if (track && !['upload', 'release'].includes(command)) throw new Error(`--track applies to upload and release\n${usage}`);
+  if (track && !['upload', 'promote', 'release'].includes(command)) throw new Error(`--track applies to upload, promote and release\n${usage}`);
+  if (command === 'promote' && (!track || given === undefined)) throw new Error(`${usage}\npromote needs --version-code and --track`);
   if (given === undefined && ['verify', 'apk', 'upload'].includes(command)) throw new Error(`${usage}\n${command} needs --version-code`);
   const account = command === 'next-version-code' || track || given === undefined ? playAccount() : undefined;
   if (command === 'next-version-code') return console.log(await playNextVersionCode(account));
   const code = given === undefined ? await playNextVersionCode(account) : parseVersionCode(given);
   const notes = option(rest, '--notes');
   if (command === 'upload') return upload(account, code, track, notes);
+  if (command === 'promote') return promote(account, code, track, notes);
   const key = credentials();
   if (command === 'verify') return bundle(key, code, { build: false });
   if (command !== 'apk') bundle(key, code);

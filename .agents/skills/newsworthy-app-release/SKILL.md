@@ -230,6 +230,13 @@ with the owner first. `upload --version-code N --track internal` sends a
 bundle already built and verified: it refuses one that changed since, checks
 Play's SHA-256 of what it received, sets one completed release with en-US
 notes, validates and commits, and deletes the edit if anything fails.
+Every commit passes `changesNotSentForReview=true`: changes wait in Publishing
+overview until the owner sends them, and Play refuses a plain commit while an
+earlier submission stands rejected. There is no separate validate call: it
+rejects that flag as unknown, then rejects the edit for lacking it.
+`promote --version-code N --track alpha` puts a bundle Play already holds on
+another testing track, leaving the track's countries and testers alone (17 went
+to Closed testing - Alpha this way on 19 October).
 Production and every console-only declaration (content rating, target
 audience, ads, tester lists, production access) stay with the owner in Play
 Console. A new app's first bundle can only be uploaded in the console.
