@@ -3,7 +3,7 @@
 The canonical listing now lives in the [store release hub](../store/README.md).
 Keep copy, screenshots, source art, upload tooling and account steps together there.
 
-- [English listing copy and review notes](../store/listing.json)
+- [English listing copy, review notes, age rating and price](../store/store.json)
 - [Upload-ready artwork](../store/assets/) and [original captures](../store/source/)
 - [Verified account-owner instructions](../store/user-actions.md)
 - [Privacy/content disclosure evidence](../store/disclosures.md)

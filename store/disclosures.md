@@ -77,7 +77,7 @@ minimal visual design. It has no chat, user posts, contests, gambling, loot boxe
 ads, unrestricted in-app browser, or parental controls. The system share sheet
 does not create an in-app social network.
 
-Apple's declaration was saved and verified from [apple-age-rating.json](apple-age-rating.json).
+Apple's declaration was saved and verified from `ageRating` in [store.json](store.json).
 Repeated armed-conflict coverage supports frequent mature themes, realistic
 violence references and weapons; occasional references to drugs and frightening
 events are also disclosed. No graphic/prolonged violence, sexual imagery, or

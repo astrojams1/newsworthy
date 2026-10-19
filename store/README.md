@@ -64,8 +64,8 @@ of 15 October.
 ```sh
 node store/scripts/render-google-play.mjs
 node store/scripts/validate.mjs
-node store/scripts/google-play-images.mjs status
-node store/scripts/google-play-images.mjs upload
+node vendor/skills/skills/app-release/scripts/play.mjs status
+node vendor/skills/skills/app-release/scripts/play.mjs images
 ```
 
 The renderer refuses a capture whose hash differs from its provenance record
@@ -145,11 +145,11 @@ still blocks app creation. See the ledger for current gates and exact next actio
 
 | File or folder | Purpose |
 |---|---|
-| [ledger.md](ledger.md) / [ledger.json](ledger.json) | Canonical resumable gates, evidence and event history. Change it only with `npm run ledger -- record …` ([scripts/ledger.mjs](scripts/ledger.mjs)); the Markdown is generated and a test fails if it drifts |
-| [listing.json](listing.json) | Canonical English copy, URLs, review notes, and US$1 paid-download target |
+| [ledger.md](ledger.md) / [ledger.json](ledger.json) | Canonical resumable gates, evidence and event history. Change it only with `npm run ledger -- record …` (the shared app-release skill's `ledger.mjs`); the Markdown is generated (`npm run ledger -- check` compares them) |
+| [store.json](store.json) | Store data for the shared app-release skill: English copy for both stores, URLs, age rating, review notes, the US$1 price, screenshots and Play graphics |
 | [assets/](assets/) | Upload-ready PNGs and dimension/platform manifest; Google Play's in `assets/google-play/` |
 | [source/](source/) | Original native captures and editable SVG layouts |
-| [release.json](release.json) | Public app/build identifiers; no credentials |
+| [release.json](release.json) | Historical app/build identifiers through 1 October; current identity is in `../app-release.config.json` |
 | [user-actions.md](user-actions.md) | Verified account-owner steps with instructions |
 | [apple-review-response.md](apple-review-response.md) | Posted Guideline 2.1 response and recording checklist |
 | [apple-physical-review-video.json](apple-physical-review-video.json) | Recording hashes, preparation, attachment and observed verification scope |
@@ -278,27 +278,24 @@ video has been uploaded. See [the video README](video/README.md).
 
 ## Update Apple through its API
 
-Keep the private `.p8` key in 1Password or a local secret location. Set
-`ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_PRIVATE_KEY_PATH` in the local environment.
-Never paste the private key into this repository or commit environment files.
+App Store Connect is driven by the shared app-release skill's `asc.mjs`, which reads
+the key from 1Password (`op://API Tokens/App Store Connect`) in memory; `ASC_KEY_ID`,
+`ASC_ISSUER_ID` and `ASC_PRIVATE_KEY_PATH` override it. Never paste the private key
+into this repository or commit environment files.
 
 ```sh
-node store/scripts/apple.mjs status
-node store/scripts/apple.mjs metadata
-node store/scripts/apple.mjs screenshots
-node store/scripts/apple.mjs build
-node store/scripts/apple.mjs age-rating
-node store/scripts/apple.mjs status
+node vendor/skills/skills/app-release/scripts/asc.mjs status          # versions, builds, review submissions, screenshots
+node vendor/skills/skills/app-release/scripts/asc.mjs listing         # copy, URLs, category, content rights, release type
+node vendor/skills/skills/app-release/scripts/asc.mjs age-rating
+node vendor/skills/skills/app-release/scripts/asc.mjs screenshots     # makes each set match store/assets/manifest.json
+node vendor/skills/skills/app-release/scripts/asc.mjs review-details  # contact and notes; the phone stays out of the repository
+node vendor/skills/skills/app-release/scripts/asc.mjs attach-build <N>
 ```
 
-`metadata` saves the canonical copy and reads it back. `screenshots` creates
-missing sets/assets and uploads through Apple's returned operations; it refuses
-to overwrite a different remote image with the same name. Check `status` until
-each asset is `COMPLETE`. `build` selects the processed Apple build recorded in
-`release.json`. These commands do not sign agreements or submit App Review.
-The optional `review-notes` command requires an owner-approved contact phone in
-`ASC_REVIEW_PHONE` when creating the review section; Apple rejects creation
-without it. Keep that value outside the repository.
+Every write is read back. `screenshots` removes remote screenshots the manifest no
+longer lists and refuses to overwrite a finished one whose bytes changed. These
+commands do not sign agreements; `submit --confirm` and `release --confirm` need the
+owner's approval. See the shared skill's `references/ios.md`.
 
 ## Account links
 
@@ -313,9 +310,8 @@ without it. Keep that value outside the repository.
 
 Nothing builds in EAS. iOS store builds are archived, signed (Apple-managed,
 through the App Store Connect key) and uploaded on the owner's Mac with
-`apps/client/script/ios-release.mjs`; Android bundles are built there with
-Gradle and signed with the Play upload key by
-`apps/client/script/android-release.mjs`. See
+the shared app-release skill's `ios-release.mjs`; Android bundles are built there
+with Gradle and signed with the Play upload key by its `android-release.mjs`. See
 [Local iOS release](../docs/mobile-release.md#local-ios-release) and
 [Local Android release](../docs/mobile-release.md#local-android-release).
 EAS Metadata can manage supported Apple listing text. Account verification,

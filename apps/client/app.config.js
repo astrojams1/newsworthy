@@ -5,7 +5,7 @@ module.exports = {
   orientation: 'default', userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   ios: { icon: { light: './assets/icon.png', dark: './assets/icon-dark.png' }, supportsTablet: true, bundleIdentifier: release.appId,
-    // script/ios-release.mjs sets the store build number, read from App Store
+    // The shared app-release skill's ios-release.mjs sets the store build number, read from App Store
     // Connect; prebuild gives it to the app and the widget alike.
     buildNumber: process.env.NEWSWORTHY_IOS_BUILD_NUMBER || '1',
     entitlements: { 'com.apple.security.application-groups': [`group.${release.appId}.widgets`] },
@@ -21,7 +21,7 @@ module.exports = {
       })),
       NSPrivacyAccessedAPITypes: [{ NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults', NSPrivacyAccessedAPITypeReasons: ['CA92.1', '1C8F.1'] }] } },
   android: { package: release.appId,
-    // script/android-release.mjs sets the store version code, Play's highest
+    // The shared app-release skill's android-release.mjs sets the store version code, Play's highest
     // plus one, and reads google-services.json from the vault for one run.
     versionCode: Number(process.env.NEWSWORTHY_ANDROID_VERSION_CODE || 1),
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON,

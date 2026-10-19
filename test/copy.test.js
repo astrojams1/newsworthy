@@ -35,7 +35,7 @@ test('shipped copy avoids the emotional framing the guidance rules out', () => {
     ...files('apps/client/targets/widget', /\.swift$/),
     ...files('apps/client/plugins/widget-android/res', /\.xml$/),
     ...files('public', /\.(html|txt)$/),
-    'store/listing.json',
+    'store/store.json',
   ];
   for (const path of surfaces) assert.doesNotMatch(read(path), emotional, path);
 });
@@ -53,16 +53,17 @@ test('user-facing copy does not mention AI', () => {
     ...files('public', /\.(html|txt|webmanifest|svg)$/).filter((path) => !/admin\.html$/.test(path)),
   ];
   for (const path of surfaces) assert.doesNotMatch(read(path), machinery, path);
-  const { reviewNotes, ...listing } = JSON.parse(read('store/listing.json'));
-  assert.doesNotMatch(JSON.stringify(listing), machinery, 'store/listing.json');
+  // App Review notes are for the reviewer, so they are left out.
+  const { review, ...store } = JSON.parse(read('store/store.json'));
+  assert.doesNotMatch(JSON.stringify(store), machinery, 'store/store.json');
   const core = guidance.match(/## Core copy\n\n([\s\S]*?)\n## /)[1];
   assert.doesNotMatch(core, machinery, 'core copy');
 });
 
-// Play's listing is drawn from store/listing.json like Apple's. Android has one
+// Play's listing is drawn from store/store.json like Apple's. Android has one
 // resizable widget and writes "home screen" as a common noun.
 test('the Google Play listing fits Play\'s limits and describes the Android widget', () => {
-  const { googleName, shortDescription, googleDescription } = JSON.parse(read('store/listing.json'));
+  const { title: googleName, shortDescription, fullDescription: googleDescription } = JSON.parse(read('store/store.json')).google;
   assert.ok(googleName.length <= 30, 'Play app name: 30 characters');
   assert.ok(shortDescription.length <= 80, 'Play short description: 80 characters');
   assert.ok(googleDescription.length <= 4000, 'Play full description: 4,000 characters');

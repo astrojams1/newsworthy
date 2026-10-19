@@ -1,27 +1,27 @@
+// store/ledger.json is the release ledger the shared app-release skill's
+// ledger.mjs keeps (npm run ledger -- record …), with store/ledger.md generated
+// from it (npm run ledger -- render; npm run ledger -- check compares them).
+// The tool is tested with the skill; this checks the record itself.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { render, record } from '../store/scripts/ledger.mjs';
 
 const json = () => JSON.parse(readFileSync(new URL('../store/ledger.json', import.meta.url), 'utf8'));
+const STATES = ['todo', 'in_progress', 'waiting_user', 'waiting_provider', 'waiting_verification', 'uncertain', 'failed', 'done', 'not_applicable'];
 
-test('store/ledger.md is generated from store/ledger.json, never edited by hand', () => {
-  assert.equal(readFileSync(new URL('../store/ledger.md', import.meta.url), 'utf8'), render(json()),
-    'run: npm run ledger -- render');
+test('the ledger\'s history is append-only and each gate matches its latest event', () => {
+  const ledger = json();
+  assert.equal(ledger.schema_version, 1);
+  assert.deepEqual(ledger.events.map(e => e.sequence), ledger.events.map((e, i) => i + 1), 'sequences are contiguous');
+  for (const [gate, step] of Object.entries(ledger.steps)) {
+    assert.ok(STATES.includes(step.state), `${gate}: ${step.state}`);
+    const last = ledger.events.filter(e => e.gate === gate).at(-1);
+    assert.deepEqual(last.result, step, `${gate} matches its latest event`);
+  }
 });
 
-test('recording an event updates its gate, appends history and keeps unspecified fields', () => {
-  const ledger = json();
-  const count = ledger.events.length;
-  const gate = Object.keys(ledger.steps)[0];
-  const before = ledger.steps[gate];
-  record(ledger, { gate, summary: 'Checked again.', evidence: ['a note'] }, new Date('2030-01-01T00:00:00Z'));
-  assert.equal(ledger.events.length, count + 1);
-  assert.equal(ledger.events.at(-1).sequence, Math.max(...ledger.events.slice(0, -1).map(e => e.sequence)) + 1);
-  assert.deepEqual(ledger.steps[gate], { state: before.state, owner: before.owner, basis: before.basis,
-    summary: 'Checked again.', evidence: ['a note'], next_action: before.next_action, updated_at: '2030-01-01T00:00:00+00:00' });
-  assert.equal(ledger.updated_at, '2030-01-01T00:00:00+00:00');
-  assert.match(render(ledger), /### \d+\. .+\n\n2030-01-01T00:00:00\+00:00 · /);
-  assert.throws(() => record(ledger, { gate: 'brand-new', summary: 'x', state: 'todo' }), /owner and --basis/);
-  assert.throws(() => record(ledger, { gate, summary: 'x', state: 'finished' }), /state must be one of/);
+test('the generated view names its source and has not been edited into a different ledger', () => {
+  const view = readFileSync(new URL('../store/ledger.md', import.meta.url), 'utf8');
+  assert.match(view, /never edit this view/);
+  for (const gate of Object.keys(json().steps)) assert.ok(view.includes(`| ${gate} |`), `${gate} is in the view`);
 });

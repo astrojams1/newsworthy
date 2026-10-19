@@ -82,7 +82,7 @@ also No.
 Category: **Reference, news or educational**. The app shows a 1 to 10 rating
 and one short generated sentence about world news, with no images. Proposed
 answers, following Apple's saved declaration
-([apple-age-rating.json](apple-age-rating.json)):
+(`ageRating` in [store.json](store.json)):
 
 - Violence: news sentences frequently refer to real war, attacks and deaths, in
   text only, with no depictions or images. Answer yes to references to real
