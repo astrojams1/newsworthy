@@ -180,6 +180,31 @@ at a time to stop after the export or validate (`validate <N>`) before
 uploading. EAS submission is no longer used for iOS; its workaround (the key
 in a temporary copy of `eas.json`) is in the build ledger's Lessons.
 
+**Checking App Store status: use the API key, not the browser.** The built-in
+browser pane is not signed in to App Store Connect (Apple login fails there),
+so do not stop at its login page. Read-only status needs no sign-in: the vault
+key does it. Run from the repo root, with `OP_KEY` set (it is in the
+environment; strip the `OP_KEY=` prefix) and no `op signin`; plain `op whoami`
+fails without the service-account token, which is expected:
+
+```bash
+export OP_SERVICE_ACCOUNT_TOKEN="${OP_KEY#OP_KEY=}"
+D=$(mktemp -d); trap 'rm -rf $D' EXIT; V="op://API Tokens/App Store Connect"
+export ASC_KEY_ID=$(op read "$V/key id") ASC_ISSUER_ID=$(op read "$V/issuer id") ASC_PRIVATE_KEY_PATH=$D/k.p8
+node --input-type=module -e 'import {pem} from "./apps/client/script/ios-release.mjs"; import {writeFileSync} from "node:fs"; writeFileSync(process.env.ASC_PRIVATE_KEY_PATH, pem(process.argv[1]), {mode: 0o600})' "$(op read "$V/credential")"
+node store/scripts/apple.mjs status   # version state, builds, screenshots
+```
+
+`apple.mjs status` does not show the review submission or the selected build.
+With the same JWT (`ios-release.mjs` `api()` shows it), `GET
+/v1/apps/6812519450/reviewSubmissions` gives the submission `state`
+(`WAITING_FOR_REVIEW`, `IN_REVIEW`, `UNRESOLVED_ISSUES`, `COMPLETE`) with
+`submittedDate`, and `GET /v1/appStoreVersions/{id}/build` the selected build.
+`UNRESOLVED_ISSUES` means a rejection: the reasons are in the Resolution
+Center, which only the browser (owner signed in) or an email shows. Never print
+the key; the temp directory is removed on exit. The Play Console pane is signed in; read
+Policy status there (Publishing overview, then Policy status > issue details).
+
 **An uploaded build reaches no tester on its own.** The internal group
 "Release QA" does not get every build automatically, so a processed build
 (`READY_FOR_BETA_TESTING`) stays invisible until it is added to that group.
