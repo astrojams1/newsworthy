@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-20T15:18:25+00:00
+Updated: 2026-10-20T16:44:12+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -95,8 +95,8 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.gallery-timeline-26 | done | agent | observed | 2026-10-01 | Actual finite-week timeline is first in both Apple screenshot sets. Current iPhone and iPad timeline images are COMPLETE; exact uploaded checksums and ordering were independently read back. | — |
 | apple.gallery-capture-26 | done | agent | observed | 2026-10-01 | Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate. | — |
 | apple.gallery-notifications-26 | done | agent | observed | 2026-10-01 | Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified. | — |
-| apple.uiscene-ios27 | waiting_verification | agent | observed | 2026-10-14 | The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed. | Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build. |
-| apple.local-release | waiting_user | agent | observed | 2026-10-14 | Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used. | Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result. |
+| apple.uiscene-ios27 | waiting_verification | agent | observed | 2026-10-20 | UIScene build reached TestFlight as build 28 (IN_BETA_TESTING, 2026-10-14). Simulator checks from 14 October stand: launch on iOS 27.0 and 18.4, cold-start deep link, Dark override. Physical-device, widget-on-iOS-27, notification and share-sheet checks not yet made. | Owner to install TestFlight build 28 on an iPhone: launch, widgets, notifications (permission, registration, tap), share sheet, deep link. |
+| apple.local-release | done | agent | observed | 2026-10-20 | First local iOS release: build 28 from clean 8c8fafb (#208), Xcode 27 27A266a, Apple-managed signing, uploaded with altool on 2026-10-14 (Apple build 2d2662e5-7386-4903-9164-d823ce46fb70), processed VALID and added to Release QA: IN_BETA_TESTING. The testers step needed two fixes (betaGroups lookup, #211; dropped-connection retry, now in the shared app-release skill). Recorded 2026-10-20 from #210. No EAS credits used. | — |
 | google.play-api | done | agent | observed | 2026-10-16 | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 | google.pricing | done | agent | observed | 2026-10-16 | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
 | google.news-policy | waiting_provider | agent | observed | 2026-10-19 | 2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead. | Check Policy status and Publishing overview until Google approves or rejects version 17. |
@@ -4236,3 +4236,19 @@ Next: Check Publishing overview and Policy status until Google decides; act on a
 - store/apple-review-resubmission-2026-10-20-build27.json
 
 Next: Await Apple's response.
+
+### 434. apple.local-release — done
+
+2026-10-20T16:44:11+00:00 · observed · agent
+
+First local iOS release: build 28 from clean 8c8fafb (#208), Xcode 27 27A266a, Apple-managed signing, uploaded with altool on 2026-10-14 (Apple build 2d2662e5-7386-4903-9164-d823ce46fb70), processed VALID and added to Release QA: IN_BETA_TESTING. The testers step needed two fixes (betaGroups lookup, #211; dropped-connection retry, now in the shared app-release skill). Recorded 2026-10-20 from #210. No EAS credits used.
+
+- build/ios-release/28/summary.json: dirty false, ipa SHA-256 94f55e44f906cbc930371c31a355a5380c55bf62068e6adee1f506635dc2a8fa
+
+### 435. apple.uiscene-ios27 — waiting_verification
+
+2026-10-20T16:44:12+00:00 · observed · agent
+
+UIScene build reached TestFlight as build 28 (IN_BETA_TESTING, 2026-10-14). Simulator checks from 14 October stand: launch on iOS 27.0 and 18.4, cold-start deep link, Dark override. Physical-device, widget-on-iOS-27, notification and share-sheet checks not yet made.
+
+Next: Owner to install TestFlight build 28 on an iPhone: launch, widgets, notifications (permission, registration, tap), share sheet, deep link.
