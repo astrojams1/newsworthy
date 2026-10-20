@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-19T16:31:23+00:00
+Updated: 2026-10-20T15:18:25+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -27,7 +27,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | 2026-09-24 | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | 2026-10-12 | Build 27 resubmitted 2026-10-12 06:02 UTC after Apple rejected build 26 under Guideline 4.2; Apple reports version 1.0.0 and review submission WAITING_FOR_REVIEW with build 27 selected. Timeline on by default, whole widget sentences. | Await Apple's response. |
+| apple.review | waiting_provider | provider | observed | 2026-10-20 | 2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27. | Await Apple's response. |
 | apple.release | waiting_provider | provider | observed | 2026-10-01 | Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates. | Await approval, then verify paid-sale readiness and public availability. |
 | google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
@@ -4226,3 +4226,13 @@ Next: Check Policy status and Publishing overview until Google approves or rejec
 2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'.
 
 Next: Check Publishing overview and Policy status until Google decides; act on any finding.
+
+### 433. apple.review — waiting_provider
+
+2026-10-20T15:18:25+00:00 · observed · provider
+
+2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27.
+
+- store/apple-review-resubmission-2026-10-20-build27.json
+
+Next: Await Apple's response.

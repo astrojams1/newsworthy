@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-19T16:31:23+00:00",
+  "updated_at": "2026-10-20T15:18:25+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -181,12 +181,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Build 27 resubmitted 2026-10-12 06:02 UTC after Apple rejected build 26 under Guideline 4.2; Apple reports version 1.0.0 and review submission WAITING_FOR_REVIEW with build 27 selected. Timeline on by default, whole widget sentences.",
+      "summary": "2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27.",
       "evidence": [
-        "store/apple-review-resubmission-2026-10-12-build27.json"
+        "store/apple-review-resubmission-2026-10-20-build27.json"
       ],
       "next_action": "Await Apple's response.",
-      "updated_at": "2026-10-12T06:02:58+00:00"
+      "updated_at": "2026-10-20T15:18:25+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -8112,6 +8112,22 @@
         "evidence": [],
         "next_action": "Check Publishing overview and Policy status until Google decides; act on any finding.",
         "updated_at": "2026-10-19T16:31:23+00:00"
+      }
+    },
+    {
+      "sequence": 433,
+      "at": "2026-10-20T15:18:25+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-20-build27.json"
+        ],
+        "next_action": "Await Apple's response.",
+        "updated_at": "2026-10-20T15:18:25+00:00"
       }
     }
   ],
