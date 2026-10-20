@@ -162,3 +162,20 @@ web page was checked in a 390-pixel viewport only. The Google appeal and the
 new Play build are separate gates. The web Settings trailing-mark test fails on
 this Mac with and without this change ("Support: trailing ink 10.7pt against
 13.0pt"), as the 1 October entry records for local runs.
+
+## Guideline 2.3 "New and Ongoing" — 20 October 2026, claude/apple-metadata-new-ongoing
+
+Apple rejected build 27 under Guideline 2.3: the reviewer (iPad Air 11-inch M3)
+could not find "New and Ongoing". That was the description's "NEW AND ONGOING"
+heading, read as two features. It is now "STORY AND AGE", and the copy says what
+is always on screen: the muted line that first shows "Checked … ago", then the
+story and its age, tap to switch; and that "New:" appears only for a
+development's first two hours. Checked against build 27's source (f9ffa29:
+`storyLine`, `checkedLine`, `NEW_LABEL`). Review Notes lead with the same
+explanation, trimmed to 3,984 of Apple's 4,000 characters. The Google
+description changed in source alike; it is not pushed to Play while version
+17 is in review.
+
+**Lesson:** a description heading reads to App Review as a feature name. Name a
+section after what the reader sees, and qualify anything shown only some of the
+time.
