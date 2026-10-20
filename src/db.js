@@ -121,6 +121,43 @@ export function ensureSchema() {
     // Whose token a refused request carried: 'caller' or 'admin', never its
     // value. Null on rows from before it was recorded.
     await sql`ALTER TABLE rejections ADD COLUMN IF NOT EXISTS token TEXT`;
+    // A candidate caller run beside the live one (docs/caller-trials.md). Its
+    // readings live here rather than in `ratings` with a flag, because some
+    // twenty queries read `ratings` — the page, the chart, push, the judge's
+    // record, the cron's staleness check — and a flag one of them forgot
+    // would put an unreviewed model on the front page. Nothing that builds
+    // what a reader sees selects from these tables. `same_story` is the
+    // merge the trial proposed, kept as data and never applied.
+    await sql`
+      CREATE TABLE IF NOT EXISTS trial_readings (
+        id              BIGSERIAL   PRIMARY KEY,
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+        score           SMALLINT    NOT NULL,
+        explanation     TEXT        NOT NULL,
+        prompt_version  INTEGER     NOT NULL,
+        prompt_hash     TEXT        NOT NULL,
+        prompt_verified BOOLEAN,
+        story           TEXT,
+        development_of  BIGINT,
+        judge_version   INTEGER,
+        judge_note      TEXT,
+        same_story      JSONB
+      )`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS trial_runs (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reading_id  BIGINT,               -- a trial_readings id, if any
+        report      TEXT        NOT NULL
+      )`;
+    // Which trial a row came from, named by the token that sent it
+    // (TRIAL_CALLERS), so trials running side by side stay apart. Every insert
+    // sets it; rows from before it existed all came from the first trial,
+    // Haiku 5.5, so the backfill below only ever touches those.
+    await sql`ALTER TABLE trial_readings ADD COLUMN IF NOT EXISTS cohort TEXT`;
+    await sql`ALTER TABLE trial_runs ADD COLUMN IF NOT EXISTS cohort TEXT`;
+    await sql`UPDATE trial_readings SET cohort = 'haiku-5-5' WHERE cohort IS NULL`;
+    await sql`UPDATE trial_runs SET cohort = 'haiku-5-5' WHERE cohort IS NULL`;
     // Devices that asked to be told about a high reading, and the readings they
     // were told about. One row per Expo push token — the token is the whole
     // identity, so re-registering the same device is an update, not a second
@@ -337,7 +374,7 @@ export async function ratingsByIds(ids = []) {
 /**
  * The stories already named, newest first, as a vocabulary for the judge.
  *
- * Wider than the 48 hours of developments it is shown beside: a story quiet for
+ * Wider than the six days of developments it is shown beside: a story quiet for
  * two days should keep its name when it returns rather than be renamed on the
  * way back in. One row per name, carrying every sentence filed under it in the
  * window, oldest first.
@@ -709,6 +746,71 @@ export async function recentCallerRuns({ hours = 24 * 7, limit = 200 } = {}) {
   return rows.map(shape);
 }
 
+// ---- trial caller -----------------------------------------------------------
+// Callers under trial, stored apart from `ratings` so nothing it sends
+// can reach the page. See docs/caller-trials.md.
+
+export async function insertTrialReading(row) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO trial_readings (
+      cohort, score, explanation, prompt_version, prompt_hash, prompt_verified,
+      story, development_of, judge_version, judge_note, same_story
+    ) VALUES (
+      ${row.cohort}, ${row.score}, ${row.explanation}, ${row.prompt_version}, ${row.prompt_hash},
+      ${row.prompt_verified ?? null}, ${row.story ?? null}, ${row.development_of ?? null},
+      ${row.judge_version ?? null}, ${row.judge_note ?? null},
+      ${row.same_story === undefined ? null : JSON.stringify(row.same_story)}::jsonb
+    )
+    RETURNING *`;
+  return shape(rows[0]);
+}
+
+export async function logTrialRun({ cohort, reading, report }) {
+  await ensureSchema();
+  const id = reading == null ? null : Number(reading);
+  const [known] = Number.isInteger(id)
+    ? await sql`SELECT id FROM trial_readings WHERE id = ${id} AND cohort = ${cohort}`
+    : [];
+  const rows = await sql`
+    INSERT INTO trial_runs (cohort, reading_id, report) VALUES (${cohort}, ${known ? id : null}, ${report})
+    RETURNING id, created_at, cohort, reading_id`;
+  return shape(rows[0]);
+}
+
+/** The trials with a reading or report in the window, by name. */
+export async function trialCohorts({ hours = 24 * 7 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT cohort FROM trial_readings WHERE created_at >= ${since}
+     UNION
+    SELECT cohort FROM trial_runs WHERE created_at >= ${since}
+     ORDER BY cohort`;
+  return rows.map((r) => r.cohort);
+}
+
+// One trial at a time: the limit applies per trial, so a busy trial cannot
+// crowd another's rows out of the window.
+export async function trialReadings({ cohort, hours = 24 * 7, limit = 1000 }) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT * FROM trial_readings WHERE cohort = ${cohort} AND created_at >= ${since}
+     ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
+export async function trialRuns({ cohort, hours = 24 * 7, limit = 1000 }) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT id, created_at, cohort, reading_id, report FROM trial_runs
+     WHERE cohort = ${cohort} AND created_at >= ${since}
+     ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
 // ---- settings -------------------------------------------------------------
 // Runtime configuration the admin page can change without a redeploy.
 
@@ -848,6 +950,25 @@ export async function releasePushDeliveries(claims = []) {
          SET released = true, delivered = array_cat(delivered, ${delivered}::text[])
        WHERE root = ${root} AND threshold = ${threshold} AND sent_at IS NULL`;
   }
+}
+
+/**
+ * The roots the judge's record names but its window no longer holds: the first
+ * report of each development whose re-reports are inside `PRIOR_HOURS` and
+ * whose own reading is older, by id. `groupDevelopments()` uses them so a
+ * development is shown as first reported, not as its earliest re-report.
+ *
+ * @param {Array<object>} priors the window's readings
+ * @returns {Promise<Map<number, object>>}
+ */
+export async function priorRoots(priors) {
+  const present = new Set(priors.map((r) => r.id));
+  const missing = [...new Set(
+    priors
+      .filter((r) => r.judge_version != null && r.development_of != null && !present.has(r.development_of))
+      .map((r) => r.development_of),
+  )];
+  return new Map((await ratingsByIds(missing)).map((r) => [r.id, r]));
 }
 
 /**

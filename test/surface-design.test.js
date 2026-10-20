@@ -75,6 +75,12 @@ test('widgets keep cached timestamps and empty states free of status copy', () =
   assert.match(java, /new ForegroundColorSpan\(Color.TRANSPARENT\), 0, age.length\(\)/, 'the ink layer leaves a gap for the age');
   assert.match(java, /new ForegroundColorSpan\(Color.TRANSPARENT\), age.length\(\), text.length\(\)/, 'the muted layer shows the age alone');
   assert.match(java, /views.setTextViewText\(R.id.widget_explanation_age, ageLayer\(sentence, reading, now\)\)/);
+  // Reported 2026-10-15 on the owner's phone: the first line looked indented.
+  // SpannableString(CharSequence) copies spans, so a muted layer built from the
+  // ink layer inherited its transparent age and drew nothing in the gap.
+  const ageLayer = java.slice(java.indexOf('static CharSequence ageLayer('), java.indexOf('static boolean valid('));
+  assert.match(ageLayer, /new SpannableString\(sentence\.toString\(\)\)/, 'the muted layer starts from plain text');
+  assert.doesNotMatch(ageLayer, /new SpannableString\(sentence\)/, 'not from the ink layer\'s spans');
   for (const source of [swift, java, compact, expanded, light]) {
     assert.doesNotMatch(source, /"[^"\n]*(?:Saved ·|Saved reading|Saving reading|Waiting for a reading|Checking|Loading|latest rating will appear)[^"\n]*"/i);
     assert.doesNotMatch(source, /@string\/widget_waiting/);
@@ -118,6 +124,9 @@ const regressions = [
   ['iOS sentence stays at top', s => { s.swift = s.swift.replace('y: bounds.minY + top + explanationCapHeight', 'y: bounds.minY + explanationCapHeight'); }, /iOS sentence shares centered offset/],
   ['expanded text moved below number', s => { s.expanded = s.expanded.replace('android:orientation="horizontal" android:baselineAligned="false"', 'android:orientation="vertical" android:baselineAligned="false"'); }, /expanded description direction/],
   ['iOS text moved below number', s => { s.swift = s.swift.replace('bounds.minX + score.width + WidgetTypography.columnGap', 'bounds.minX'); }, /iOS explanation beside numeral/],
+  ['iOS sentence loses a line it has room for', s => { s.swift = s.swift.replace('Int((geometry.size.height + spacing) / explanationLineHeight)', 'Int(geometry.size.height / explanationLineHeight)'); }, /iOS counts every line that fits/],
+  ['iOS sentence truncates without stepping down', s => { s.swift = s.swift.replace('ViewThatFits(in: .vertical)', 'VStack'); }, /iOS fits the sentence before truncating/],
+  ['iOS smaller sentence drifts off the rhythm', s => { s.swift = s.swift.replace('explanationLineHeight - UIFont.systemFont(ofSize: size).lineHeight', 'explanationLineHeight - bodyFont.lineHeight'); }, /iOS steps keep the line rhythm/],
   ['iOS lost optical top alignment', s => { s.swift = s.swift.replace('scoreInkHeight - score[.firstTextBaseline]', '0'); }, /iOS optical score top/],
   ['low-hanging Android slash', s => { s.light = s.light.replace('∕10', '/10'); }, /optically aligned division slash/],
   ['low-hanging iOS slash', s => { s.swift = s.swift.replace('+ Text("∕")', '+ Text("/")'); }, /iOS adaptive denominator/],
@@ -427,12 +436,12 @@ test('Settings rises as a sheet on the phone and stays a page on the web', () =>
     assert.equal(settings.headerShown, false, 'the sheet draws its own stack header');
     const stack = renderSettingsLayout({ platform, dark });
     const screens = Object.fromEntries(nodes(stack).filter(n => n.type === 'Screen').map(n => [n.props.name, n.props.options]));
-    assert.deepEqual(Object.keys(screens), ['index', 'appearance', 'notifications', 'threshold']);
+    assert.deepEqual(Object.keys(screens), ['index', 'appearance', 'notifications', 'threshold', 'publisher']);
     assert.equal(screens.index.headerTitle, '', 'the overview shows no title');
     assert.equal(screens.index.headerBackVisible, false, 'the overview closes with its X, not a back arrow');
     assert.equal(screens.index.headerLeft(), null, 'the web header draws no back arrow either');
     assert.equal(screens.index.title, 'Settings', 'but is still named for assistive technology');
-    assert.deepEqual([screens.appearance.title, screens.notifications.title, screens.threshold.title], ['Appearance', 'Notifications', 'Threshold']);
+    assert.deepEqual([screens.appearance.title, screens.notifications.title, screens.threshold.title, screens.publisher.title], ['Appearance', 'Notifications', 'Threshold', 'Publisher']);
     const options = nodes(stack).find(n => n.props.screenOptions).props.screenOptions;
     assert.equal(options.headerBackButtonDisplayMode, 'minimal');
     assert.equal(options.contentStyle.backgroundColor, themeForLevel(3, dark).tinted);

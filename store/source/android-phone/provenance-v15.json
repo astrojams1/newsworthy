@@ -1,0 +1,146 @@
+{
+  "status": "verified",
+  "scope": "Current Android app screens and the resizable home-screen widget, captured on an emulator for the Google Play listing.",
+  "capturedAt": "2026-10-15",
+  "versionCode": 15,
+  "versionName": "1.0.0",
+  "applicationSourceCommit": "254686f77b2fed2600e961ef83b79ea1e354f189",
+  "playTrack": "internal",
+  "apk": {
+    "file": "Newsworthy-universal.apk",
+    "sha256": "25c6cb8eeb79e2a5a5e648c4b1357d92a8e7a948a4688806541e80325dfb9e4e",
+    "madeFrom": "Newsworthy.aab",
+    "aabSha256": "e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a",
+    "signer": "Play upload key (apps/client/script/android-release.mjs)"
+  },
+  "device": {
+    "avd": "Pixel 7 profile (1080x2400, 420 dpi)",
+    "systemImage": "system-images;android-35;google_apis;arm64-v8a revision 9",
+    "build": "google/sdk_gphone64_arm64/emu64a:15/AE3A.240806.043/12960925:userdebug/dev-keys",
+    "android": "15 (API 35)",
+    "emulator": "37.2.12.0",
+    "launcher": "Pixel Launcher (com.google.android.apps.nexuslauncher)",
+    "toolchain": "/Volumes/ssd/toolchains/android-sdk"
+  },
+  "captureMethod": "adb exec-out screencap -p of the installed universal APK; original PNGs unchanged. SystemUI demo mode fixed the status bar (9:41, full battery, Wi-Fi, no notification icons). Wallpaper set to a plain #D7D7D1 image so widget edges are measurable. The reading, timeline and widget content is the live production reading at capture time.",
+  "limits": [
+    "Emulator evidence, not a physical Android device.",
+    "Live content: the sentences are production readings from 2026-10-15 and will not match later readings.",
+    "The timeline was scrolled one entry so its first visible entry is not the newest; the newest entry named an AI company, and the listing never mentions AI.",
+    "Expanded layout needs a minimum height of 150dp; on this launcher 4x2 still reported compact and 4x3 showed the sentence.",
+    "Another local session installed and launched an unrelated app (com.spaceworms.app) on this emulator during the widget captures; it is not in any capture.",
+    "Large text, score 10 and notification delivery were not part of this capture."
+  ],
+  "captures": [
+    {
+      "file": "source/android-phone/25-reading-light-v15.png",
+      "sha256": "ab2f91fd31d5f89ba7f7de46118a9029790165c509ed50d96e7f339b431bcddb",
+      "capturedAt": "2026-10-15T20:54:38Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Reading after skipping the introduction on first launch; app appearance Follow device, device light."
+    },
+    {
+      "file": "source/android-phone/26-timeline-light-v15.png",
+      "sha256": "5f598695ffef3f7c93e8e1885c0bd961ceb784dc6b193477607347a0f8756344",
+      "capturedAt": "2026-10-15T20:55:10Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Timeline below the reading (chevron), scrolled one entry so the list starts at the 18h entry; light."
+    },
+    {
+      "file": "source/android-phone/27-timeline-dark-v15.png",
+      "sha256": "ad7232773111cad6b4712a2f25fbcbd4d49d9d506d23556ac1d2081119ab364b",
+      "capturedAt": "2026-10-15T20:55:15Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Same timeline position after the device switched to dark; app follows the device."
+    },
+    {
+      "file": "source/android-phone/28-reading-dark-v15.png",
+      "sha256": "8b17d6543305b2e1a7f9967a05d1a5842f9e22cb67f8d347b3245873abb221a6",
+      "capturedAt": "2026-10-15T20:55:25Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Reading after tapping the wordmark, device dark."
+    },
+    {
+      "file": "source/android-phone/29-settings-light-v15.png",
+      "sha256": "33121f954694c01dc463eecdd789532a244437c3b86c6ca4f50a6854850b2596",
+      "capturedAt": "2026-10-15T20:55:38Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Settings sheet from the gear: Appearance Follow device, Notifications Off, Show timeline on, Last checked, Privacy, Support, Introduction."
+    },
+    {
+      "file": "source/android-phone/30-notifications-light-v15.png",
+      "sha256": "13337b2e2cc6d3cc2a08386daccd6b36e1806aab9ba7d78f17f6edd0a2ea6130",
+      "capturedAt": "2026-10-15T20:55:52Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Settings > Notifications: High-score alerts off, Threshold 8 or higher."
+    },
+    {
+      "file": "source/android-phone/31-widget-settings-v15.png",
+      "sha256": "076b0e3e183521260e932f1d4d96506f2e6fcbbdede3c1b0e316a3e2abcc2354",
+      "capturedAt": "2026-10-15T21:00:20Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "RatingWidgetConfigure opened from the second widget: Show app name on, Appearance Follow device."
+    },
+    {
+      "file": "source/android-phone/32-widget-compact-light-v15.png",
+      "sha256": "5d9dff6f005982ff47a5b65ab1f76febe5476f7a1dc78c4847c9acb0f98b699d",
+      "capturedAt": "2026-10-15T20:58:48Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Home screen, one widget at its default 2x2, Follow device (light), neutral wallpaper."
+    },
+    {
+      "file": "source/android-phone/33-widget-compact-light-dark-v15.png",
+      "sha256": "d179ac1b150b4bf88fc99c17d9d03e4b9d8bdca345ba8a21579646e7920d8f8d",
+      "capturedAt": "2026-10-15T21:00:36Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Two 2x2 widgets: left Follow device (light), right set to Dark in its own settings."
+    },
+    {
+      "file": "source/android-phone/34-widget-expanded-dark-v15.png",
+      "sha256": "5c4abdb34f63888bb2d91e95a2f5759bf1d9bf8c3e3c5013af057a7df6421b8d",
+      "capturedAt": "2026-10-15T21:03:25Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "Left widget removed; the Dark widget resized to 4 columns x 3 rows; expanded layout with the sentence and age prefix."
+    },
+    {
+      "file": "source/android-phone/35-widget-expanded-light-v15.png",
+      "sha256": "d7c2fb23c43e933deebe36fdb7787dfc7aaf7c385d08bac49e0b532dfaa3f8b7",
+      "capturedAt": "2026-10-15T21:04:29Z",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "description": "The same 4x3 widget set to Light in its own settings."
+    }
+  ]
+}

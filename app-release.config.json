@@ -1,0 +1,35 @@
+{
+  "app": "Newsworthy",
+  "slug": "newsworthy",
+  "type": "news",
+  "repository": "https://github.com/astrojams1/newsworthy",
+  "projectDir": "apps/client",
+  "storeData": "store/store.json",
+  "buildRoot": "/Volumes/ssd/builds",
+  "buildShaEnv": "EXPO_PUBLIC_BUILD_SHA",
+  "ledger": { "gates": "store/ledger.json", "view": "store/ledger.md", "runs": "store/builds/ledger.md" },
+  "activityLog": "~/Library/Application Support/AgentActivityLedger/events.jsonl",
+  "ios": {
+    "ascAppId": "6812519450",
+    "bundleId": "com.astrojams.newsworthy",
+    "teamId": "CWQ9AWJF8T",
+    "scheme": "Newsworthy",
+    "buildNumberEnv": "NEWSWORTHY_IOS_BUILD_NUMBER",
+    "vault": "op://API Tokens/App Store Connect",
+    "testflightGroup": "Release QA",
+    "requiredEntitlements": { "aps-environment": "production" },
+    "appGroup": "group.com.astrojams.newsworthy.widgets"
+  },
+  "android": {
+    "package": "com.astrojams.newsworthy",
+    "vault": "op://API Tokens/Newsworthy Android",
+    "keyAlias": "upload",
+    "versionCodeEnv": "NEWSWORTHY_ANDROID_VERSION_CODE",
+    "artifactName": "Newsworthy",
+    "minTargetSdk": 36,
+    "googleServices": true,
+    "requiredResources": ["string/google_app_id"],
+    "blockedPermissions": ["android.permission.SYSTEM_ALERT_WINDOW", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"],
+    "holdForReview": true
+  }
+}

@@ -102,7 +102,8 @@ the older iOS header views.
 `design/surfaces.json` records the approved typography and widget size rules.
 The full reading deliberately uses larger digits than widgets. Compact and expanded widgets use the same 69-point base numeral and a
 12-point `∕10`. Expanded descriptions use 14-point text on a 20-point line
-rhythm beside the numeral, with truncation at the available height.
+rhythm beside the numeral. When the sentence does not fit at 14 points, iOS steps it
+down to 13.5, 13 or 12.5 points on the same rhythm, and truncates only below that.
 All reading surfaces use U+2215 DIVISION SLASH immediately followed by `10`.
 The monospace glyph side bearings provide the small visible gap;
 the division slash’s stroke sits optically alongside the lining numerals instead of the ordinary
@@ -191,7 +192,8 @@ The iOS widget uses a native SwiftUI Layout to align the numeral and sentence by
 their measured text baselines and capital heights. Small and medium families
 share the same base size. The existing Show app name setting frees its title row
 and gap when disabled. Description text follows Dynamic Type independently of
-the already-large numeral, with an explicit line limit based on available height.
+the already-large numeral, with an explicit line limit based on available height:
+n lines take n line heights less one line's spacing, so the limit counts that spacing in.
 
 Android uses a horizontal RemoteViews body row with separate, baseline-aligned
 score and denominator TextViews. The description fills the remaining column,

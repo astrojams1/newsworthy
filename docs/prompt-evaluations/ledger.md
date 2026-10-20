@@ -19,6 +19,10 @@ no record file; their history is in `AGENTS.md`.
 | v18 | 2026-09-27 | #161 | The score is market risk: a new instrument | [v18](v18.md) |
 | v19 | 2026-09-27 | #166 | The sentence never names a news outlet | [v19](v19.md) |
 | v20 | 2026-09-29 | #190 | Search the themes markets are trading on | [v20](v20.md) |
+| v21 | 2026-10-05 | | The sentence never predicts a market move | [v21](v21.md) |
+| v22 | 2026-10-05 | | The sentence says who acted, in the active voice | [v22](v22.md) |
+| v23 | 2026-10-14 | | A preview says what the scheduled release will settle | [v23](v23.md) |
+| v24 | 2026-10-14 | | Dates, never relative days | [v24](v24.md) |
 
 ## Lessons
 
@@ -34,3 +38,15 @@ What earlier versions cost to learn; each is told in full in `AGENTS.md`.
 - **v10 and v11 rest on evidence that did not survive** (2026-08). Both
   theories were built on readings produced from v9's text; they are not a
   basis for the next version.
+- **An Output phrase is an instruction, not a hint** (v21, 2026-10-05). v18's
+  "what it could mean for prices or savings" turned a forecast tail from 0% of
+  sentences into 76%; removing it took fixture forecasts from 9 of 16 to 0.
+- **A ban needs a replacement when it removes the only part doing a job**
+  (v23, 2026-10-14). v21's forecast ban was right, but for a preview of a
+  scheduled release the forecast tail was the only part that said why it
+  mattered; with it gone, reading 1209 read as a teaser. When cutting a
+  pattern, check what each instance of it was carrying.
+- **A fixture with a stated "now" cannot test how the caller dates things**
+  (v24, 2026-10-14). Given an explicit current time, v23 and v24 alike wrote
+  dates; only the live caller, dating its own research, wrote "today". Test
+  time-relative wording live.

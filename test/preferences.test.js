@@ -4,17 +4,27 @@ import { DEFAULT_PREFERENCES, STORAGE_KEY, THEME_CHOICES, THRESHOLD_CHOICES, cla
 import { nodes, renderSettings, renderToggle } from './helpers/render-settings.js';
 import { createSubscriptionController } from '../apps/client/lib/subscription.js';
 
-test('system appearance, no notifications and no timeline are the defaults, and a damaged store falls back field by field', () => {
+test('system appearance, no notifications and the timeline are the defaults, and a damaged store falls back field by field', () => {
   assert.deepEqual(THEME_CHOICES.map(c => [c.value, c.label]), [['system', 'Follow device'], ['light', 'Light'], ['dark', 'Dark']]);
-  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null }, timeline: false, onboarded: false });
+  assert.deepEqual(DEFAULT_PREFERENCES, { theme: 'system', notifications: { enabled: false, threshold: 8, token: null }, showTimeline: true, onboarded: false });
   assert.deepEqual(parsePreferences(null), DEFAULT_PREFERENCES);
   assert.deepEqual(parsePreferences('{not json'), DEFAULT_PREFERENCES);
-  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, timeline: 'yes', onboarded: 'yes' }), DEFAULT_PREFERENCES);
-  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, timeline: true, onboarded: true };
+  assert.deepEqual(parsePreferences({ theme: 'sepia', notifications: { enabled: 'yes', threshold: 12 }, showTimeline: 'yes', onboarded: 'yes' }), DEFAULT_PREFERENCES);
+  const kept = { theme: 'dark', notifications: { enabled: true, threshold: 6, token: 'ExponentPushToken[abc]' }, showTimeline: false, onboarded: true };
   assert.deepEqual(parsePreferences(JSON.stringify(kept)), kept);
   // An "on" with no device registered is not on: the server has nothing to send to.
   assert.deepEqual(parsePreferences({ notifications: { enabled: true, threshold: 6 } }).notifications, { enabled: false, threshold: 6, token: null });
   assert.equal(STORAGE_KEY, 'newsworthy.preferences.v1');
+});
+
+test('the timeline is on for an install that stored the old default', () => {
+  // Every install written before 2026-10-11 stored timeline: false with its
+  // first save (onboarding sets a flag on first launch), so that key was the
+  // old default, not a choice. Only showTimeline: false turns it off.
+  const before = { theme: 'dark', notifications: { enabled: false, threshold: 8, token: null }, timeline: false, onboarded: true };
+  assert.equal(parsePreferences(JSON.stringify(before)).showTimeline, true);
+  assert.equal(parsePreferences({ ...before, showTimeline: false }).showTimeline, false);
+  assert.equal('timeline' in parsePreferences(before), false, 'and the old key is not written back');
 });
 
 test('the chosen appearance wins and System follows the device', () => {
@@ -27,11 +37,24 @@ test('the chosen appearance wins and System follows the device', () => {
 
 const text = tree => tree.filter(n => n.type === 'Text').map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
 
+test('the Publisher page names the publisher and editor and offers a contact address, without AI or outlet claims', () => {
+  for (const platform of ['web', 'ios', 'android']) {
+    const page = nodes(renderSettings({ platform, screen: 'publisher' }).tree);
+    const copy = text(page).join(' ');
+    assert.match(copy, /published and edited by James Thompson/);
+    assert.match(copy, /does not republish articles/);
+    assert.doesNotMatch(copy, /\b(AI|model|algorithm)\b/i, 'user-facing copy never mentions how ratings are produced');
+    const email = page.find(n => n.props?.testID === 'publisher-email');
+    assert.equal(email.props.accessibilityRole, 'link');
+    assert.ok(page.some(n => n.type === 'Link' && n.props.href.startsWith('mailto:astrojams1@gmail.com')), 'an in-app contact link');
+  }
+});
+
 test('the website shows the appearance choice and no notification setting', () => {
   const overview = nodes(renderSettings({ platform: 'web' }).tree);
   assert.ok(overview.some(n => n.type === 'Head'), 'the page has its own title');
   assert.ok(!overview.some(n => n.props?.testID === 'notifications-link'), 'push notifications are a native feature');
-  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support']);
+  assert.deepEqual(text(overview), ['Preferences', 'Appearance', 'Follow device', 'Show timeline', 'About', 'Privacy', 'Support', 'Publisher']);
   const all = nodes(renderSettings({ platform: 'web', screen: 'appearance' }).tree);
   assert.ok(all.some(n => n.type === 'Head'), 'the page has its own title');
   const radios = all.filter(n => n.props?.accessibilityRole === 'radio');
@@ -51,7 +74,7 @@ test('the website shows the appearance choice and no notification setting', () =
 test('the overview is a list of pages, each with an icon, its current value and a chevron', () => {
   for (const platform of ['web', 'ios', 'android']) for (const [stored, value] of [[{}, 'Off'], [{ theme: 'dark', notifications: { enabled: true, threshold: 9, token: 'ExponentPushToken[x]' } }, '9 or higher']]) {
     const all = nodes(renderSettings({ platform, stored }).tree);
-    const links = all.filter(n => n.type === 'Link' && n.props.href.startsWith('/settings/'));
+    const links = all.filter(n => n.type === 'Link' && n.props.href.startsWith('/settings/') && !n.props.href.endsWith('/publisher'));
     const expected = platform === 'web' ? ['/settings/appearance'] : ['/settings/appearance', '/settings/notifications'];
     assert.deepEqual(links.map(n => n.props.href), expected);
     const rows = links.map(n => nodes(n).find(c => c.type === 'Pressable'));
@@ -342,9 +365,9 @@ test('a rejected notification operation releases progress and the queue', async 
   assert.deepEqual(pending, [true, false, true, false]);
 });
 
-test('the story timeline is a switch on the overview, off by default, on every platform', () => {
+test('the story timeline is a switch on the overview, on by default, on every platform', () => {
   for (const platform of ['web', 'ios', 'android']) for (const on of [false, true]) {
-    const { tree, calls } = renderSettings({ platform, stored: on ? { timeline: true } : {} });
+    const { tree, calls } = renderSettings({ platform, stored: on ? {} : { showTimeline: false } });
     const all = nodes(tree);
     const row = all.find(n => n.props?.testID === 'timeline-row');
     assert.ok(row, `${platform}: the row is there`);

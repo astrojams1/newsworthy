@@ -1,0 +1,14 @@
+{
+ "observedAt": "2026-10-20T15:18:02Z",
+ "versionId": "267c6f52-d22d-4cb0-bb4c-d22f280b4499",
+ "reviewSubmissionId": "4f28761f-3096-4f0d-aa37-df83332f818f",
+ "previous": "Build 27 rejected 2026-10-20 under Guideline 2.3 Accurate Metadata on iPad Air 11-inch (M3): unable to locate 'New and Ongoing' (owner-supplied App Store Connect message).",
+ "version": "1.0.0",
+ "releaseBuild": "27",
+ "changes": "Metadata only: description section 'NEW AND ONGOING' replaced by 'STORY AND AGE' (PR 230); Review Notes lead with the explanation. No new build.",
+ "steps": ["asc.mjs listing: saved and verified", "asc.mjs review-details: saved and verified", "asc.mjs submit --confirm: item resolved, submission WAITING_FOR_REVIEW"],
+ "appStoreState": "WAITING_FOR_REVIEW",
+ "reviewSubmissionState": "WAITING_FOR_REVIEW",
+ "reply": "No Resolution Center reply posted: the API has no endpoint for it; the explanation is in the Review Notes.",
+ "deviceVerification": "None for build 27 on a device or iPad simulator."
+}

@@ -13,6 +13,31 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | #155 | 2026-10-01 | README, product messaging, store listing, mobile release, design README, AGENTS.md | Mobile release: hiding the app name does not enlarge the rating; Appearance is a String parameter | Widget fix not yet seen on a device; Android unverified |
 | #155 | 2026-10-01 | README, design README, mobile release, story timeline | Design README and story timeline: iOS header controls are native bar buttons; mobile release: Appearance declares its default | Header and widget default fixes not yet compiled or seen on a device |
 | #155 | 2026-10-01 | store/listing.json, docs/product-messaging.md | Store description: "uses AI" and "AI assessments can be wrong" removed; timeline, New: label and per-widget settings added | Not yet pushed to App Store Connect; screenshots still show the old design |
+| #201 | 2026-10-12 | README, AGENTS.md, product messaging, llms.txt, caller contract, rating skill, privacy and support | README documents `TRIAL_CALLER_TOKEN`, `/api/admin/trials` and caller trials; nothing user-facing changed | Trial cost figures are list-price estimates from one live run until measured session costs replace them |
+| #204 | 2026-10-12 | README, AGENTS.md, caller trials, product messaging, llms.txt, caller contract, rating skill | README documents `TRIAL_CALLERS` and `&cohort=` in place of `TRIAL_CALLER_TOKEN`; trial doc adds cohorts and the Sonnet trial | Sonnet cost is estimated from other models' runs; its effort default differs at the API and is not observed in runs |
+| #200 | 2026-10-11 | README, product messaging, llms.txt, caller instructions | None needed: no external copy states the judge's rules; caller instructions embed v5 themselves | Per-reading judgements not read (no admin token on this Mac) |
+| #202 | 2026-10-11 | README, story timeline, AGENTS.md, support page, store listing and Review Notes, product messaging, llms.txt | Every "off by default" / "turn on the timeline" claim now says on by default | Listing and Review Notes not pushed to App Store Connect; build number 27 assumed |
+| #199 | 2026-10-11 | README, product messaging, store listing, llms.txt, story age, design README | Design README: the iOS sentence steps down to 12.5 pt before truncating, and the line limit counts line spacing | Not compiled for iOS or seen in WidgetKit |
+| #203 | 2026-10-12 | User actions, release and build ledgers, store listing | Listing description and Review Notes now live in App Store Connect, read back identical | No device verification of build 27; public availability not claimed |
+| #205 | 2026-10-12 | App release skill | None needed: agent guidance only, claims taken from the build 27 records | None |
+| #206 | 2026-10-14 | README, product messaging, llms.txt, caller instructions, rating skill, caller-review skill, AGENTS.md | Caller-review skill checks that a preview says what it will settle; no external copy states prompt wording | v23 adoption awaits verified readings; the judge still marks a preview "New:" |
+| #207 | 2026-10-14 | README, product messaging, llms.txt, caller instructions, rating skill, caller-review skill, AGENTS.md | Caller-review skill checks for relative days; no external copy states prompt wording | v24 adoption awaits verified readings; pre-v24 sentences keep their "today" until replaced |
+| #208 | 2026-10-14 | README, AGENTS.md, product messaging, mobile release, store README, store listing Review Notes, app release skill, preview video | README, product messaging, store README and mobile release: iOS builds locally with Xcode, Android in EAS; the Xcode 26.6 pin and the iOS 27 crash claim are replaced by UIScene adoption | Review Notes still say EAS builds the app, true of build 27 under review; correct at the next resubmission. UIScene build seen on simulators only; preview video already stale, nothing visible changed |
+| #209 | 2026-10-14 | README, AGENTS.md, product messaging, mobile release, store listing and Review Notes, support and privacy, llms.txt, onboarding, story age | README, AGENTS.md and mobile release: the cron ticks hourly at :08 and intervals are whole hours; no external copy states a check frequency | Native apps keep the 60 s poll until their next build; Neon saving estimated, not yet measured |
+| #211 | 2026-10-14 | README, product messaging, mobile release, llms.txt, app release skill, build ledger | App release skill names the top-level `/v1/betaGroups` lookup; mobile release's "add the VALID build to Release QA" stays true | `testers` not yet run end to end after the change; the next upload is its first run |
+| Local Android release | 2026-10-15 | README, AGENTS.md, product messaging, mobile release, store README, user actions, llms.txt, app release skill, build and release ledgers | README, product messaging, store README, mobile release and the skill: Android builds locally with Gradle, not EAS; README's "Android EAS signing" is now the upload key | No Android build seen on a device; nothing uploaded to Play; public availability not claimed (llms.txt still says in preparation) |
+| Play API uploads | 2026-10-15 | README, AGENTS.md, product messaging, llms.txt, mobile release, store README, user actions, app release skill, build and release ledgers | README: Android bundles are uploaded to Play testing tracks through the API; mobile release and the skill: version code 14 was the first upload, by hand, and the next comes from `next-version-code`; user actions: the Play key step | No upload yet made through the API; internal testing is not store availability, and none is claimed |
+| Android onboarding widget and widget age | 2026-10-15 | README, product messaging, story age, onboarding copy, support page, store listing, preview video | Story age: the Android age layer was seen on a device and was broken, now fixed in source | Neither fix seen on a device yet; preview video already out of date and not re-rendered |
+| #213 | 2026-10-15 | README, AGENTS.md, caller trials, product messaging, llms.txt | Caller trials: both trials stopped, Opus kept, live Routine is `trig_016SyC1SeVmdenHGg9gPRymC` without connectors; Sonnet's $0.61 estimate corrected to the measured $0.22–0.23. README's trial pointer and `TRIAL_CALLERS` row stay true: the mechanism remains | Trial costs are `cost_usd` list prices from Routine sessions, not billed amounts |
+| Play listing and App content | 2026-10-15 | README, product messaging, store listing, privacy and support pages, llms.txt, disclosures, user actions | store/listing.json gains an Android description (one resizable widget, "home screen" lower case); App content answers recorded with their evidence and differences | Play artwork is out of date (separate session); Data safety deletion URL unanswered until the privacy page has a deletion section; nothing public on Play |
+| Privacy deletion section | 2026-10-15 | Privacy page, support page, README, product messaging, llms.txt, store disclosures, push deletion code | Privacy page gains Delete your data with the steps; store disclosures record why it names no log retention period | Play Data safety answer not yet saved; Settings path not seen on a device for this change |
+| Play deletion record | 2026-10-15 | Google Play app content record, release ledger, privacy page | App content record: the deletion question is answered Yes with the privacy anchor, no longer left blank | Saved App content changes not yet sent for review |
+| Play internal release 14 | 2026-10-15 | README, product messaging, llms.txt, store listing, user actions | None needed: ledgers only; llms.txt's "in preparation" stays true because internal testing is not public availability | No tester has installed 14; listing not entered in Play |
+| Play artwork v15 | 2026-10-15 | README, product messaging, store listing and googleDescription, store README, user actions, llms.txt, mobile release, app release skill, gallery captions, build and release ledgers | Store README: Play artwork is current from versionCode 15 and the listing is saved, not sent for review; the stale "Create app is disabled" status replaced. Mobile release and the skill: the service account also manages store presence and edits the draft app. Captions use listing wording ("resizable", "home screen") and never mention AI; the timeline frame skips an entry naming an AI company | Emulator captures only; live sentences of 15 October; listing not sent for review, no store availability claimed |
+| Block unused Android permissions | 2026-10-15 | Mobile release, Play App content record, privacy page, store listing | Mobile release lists the new bundle check; no user-facing copy states permissions | Takes effect from versionCode 16; Play's permissions list updates when 16 reaches a track |
+| Play upload readback, version 16 | 2026-10-15 | App release skill, build and release ledgers, store listing | Skill: save Play console listing edits with Save before an API commit | No user-facing copy changed; nothing public on Play |
+| Play closed test submitted | 2026-10-16 | Store listing, release notes, product messaging, README, llms.txt | Closed-test release notes kept neutral (an "open it daily" draft was dropped as an engagement prompt) | In Google's review; not available to anyone yet; no store availability claimed |
+| #226 | 2026-10-19 | README, AGENTS.md, caller trials, product messaging, llms.txt | README and AGENTS.md point to the new caller trial skill; caller trials' promotion steps now change the live Routine's model, as the skill does. No external copy names the caller's model | The skill's Routine steps are written from the October trials, not yet run as written |
 
 ## Lessons
 
@@ -21,6 +46,9 @@ Claims that were wrong once. Check for them again; date each item.
 - **"Enlarges the rating"** (2026-10-01, #155). Hiding the widget's app name
   gives its row to the rating and sentence at the same size; the numeral is a
   fixed 69 pt. `docs/mobile-release.md` had said otherwise.
+- **A default lives in stored state too** (2026-10-11, #202). Changing a
+  preference's default changes nothing for installs that already saved the
+  old default; say whether upgraded installs see the change.
 - **Simulator is not device** (2026-10-01, #155). A widget verified on iOS
   simulators is described as such; claim a device only once one has shown it.
 
@@ -115,6 +143,43 @@ was not re-rendered, and no public App Store preview is included in the current
 submission. Existing source/geometry evidence was reviewed without changing
 captures or claiming new native verification.
 
+## Settings → Publisher — 19 October 2026, claude/play-news-publisher-page
+
+Google Play rejected closed-test version 16 under its News and Magazines policy
+(publisher and author ownership information). Added Settings → Publisher: who
+publishes and edits (James Thompson, operating as AstroJams, as in the store
+listing's copyright line), that a reading is written by Newsworthy and does not
+republish articles, and a tappable contact email. Reviewed README (settings
+table and route list), product messaging (Settings contents, no-AI and no-outlet
+rules), Support (the Settings sentence now mentions Publisher), llms.txt, store
+listing and the preview video's stale report (no scene shows Settings' About
+list). No date, timestamp or rating-contract change; the owner chose to leave
+dates out. The page says nothing about AI, models or outlets.
+
+Open limits: the owner confirmed the named publisher and editor on 19 October.
+Native iOS and Android rendering of the new page and row was not verified; the
+web page was checked in a 390-pixel viewport only. The Google appeal and the
+new Play build are separate gates. The web Settings trailing-mark test fails on
+this Mac with and without this change ("Support: trailing ink 10.7pt against
+13.0pt"), as the 1 October entry records for local runs.
+
+## Guideline 2.3 "New and Ongoing" — 20 October 2026, claude/apple-metadata-new-ongoing
+
+Apple rejected build 27 under Guideline 2.3: the reviewer (iPad Air 11-inch M3)
+could not find "New and Ongoing". That was the description's "NEW AND ONGOING"
+heading, read as two features. It is now "STORY AND AGE", and the copy says what
+is always on screen: the muted line that first shows "Checked … ago", then the
+story and its age, tap to switch; and that "New:" appears only for a
+development's first two hours. Checked against build 27's source (f9ffa29:
+`storyLine`, `checkedLine`, `NEW_LABEL`). Review Notes lead with the same
+explanation, trimmed to 3,984 of Apple's 4,000 characters. The Google
+description changed in source alike; it is not pushed to Play while version
+17 is in review.
+
+**Lesson:** a description heading reads to App Review as a feature name. Name a
+section after what the reader sees, and qualify anything shown only some of the
+time.
+
 ## User research 2026-10-01-01 — 1 October 2026
 
 PR branch: `research/news-needs-2026-10-01`. Reviewed the research/opportunity
@@ -144,3 +209,8 @@ No public App Store preview is included in the current submission.
 after credentials and receipt checks land. Replace it using the specific evidence
 boundary; provider acceptance still does not establish physical presentation.
 Widget-date wording must follow the current formatter, not historical captures.
+
+Merged with main on 20 October 2026. Support keeps main's Settings sentence
+(timeline on by default, Publisher) and takes this entry's notification and
+widget "Checked at" sentences, which still match main's formatters. Nothing on
+main since claims or denies TestFlight delivery.

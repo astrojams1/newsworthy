@@ -44,12 +44,21 @@ adding, removing, changing or preserving functionality.
 To check the hourly caller's runs against what the server recorded, use the
 [caller review skill](.agents/skills/newsworthy-caller-review/SKILL.md) with
 `scripts/caller-review.mjs`; findings are appended to the
-[caller review ledger](docs/caller-reviews/ledger.md).
+[caller review ledger](docs/caller-reviews/ledger.md). Candidate callers can
+run beside the live one without reaching the page: the
+[caller trial skill](.agents/skills/newsworthy-caller-trial/SKILL.md) runs a
+trial end to end with `scripts/trial-compare.mjs` and records it in the
+[caller trial ledger](docs/caller-trials/ledger.md); see also
+[caller trials](docs/caller-trials.md).
 
-Before any EAS build, store submission or EAS sandbox, use the
-[app release skill](.agents/skills/newsworthy-app-release/SKILL.md): the Expo
-account's free plan caps builds and sandbox minutes each month. Each build,
-sandbox and submission is logged in the [build ledger](store/builds/ledger.md).
+Before any app build, store submission or EAS sandbox, use the
+[app release skill](.agents/skills/newsworthy-app-release/SKILL.md). iOS store
+builds are archived and uploaded on a Mac with Xcode and Android bundles are
+built there with Gradle and uploaded to Play testing tracks through the Play
+Developer API, by the shared app-release skill's scripts (`vendor/skills`,
+configured by `app-release.config.json`); nothing builds in EAS, whose
+free plan still caps sandbox minutes. Each build, sandbox and submission is
+logged in the [build ledger](store/builds/ledger.md).
 
 ### iOS, Android and web
 
@@ -61,9 +70,10 @@ Run `npm run dev` for Expo Go or `npm run mobile:ios` for the installed iPhone
 simulator. Codex also has Run, Run iOS and Run Web actions. The browser preview
 shows the web renderer; iOS verification uses the actual simulator.
 
-See [Mobile release guide](docs/mobile-release.md) for EAS cloud builds, widget
-extensions, signing and the remaining store setup. Expo Go can verify the core
-native interface; widgets require a custom development build.
+See [Mobile release guide](docs/mobile-release.md) for the local iOS release,
+the local Android release, widget extensions, signing and the remaining store setup.
+Expo Go can verify the core native interface; widgets require a custom
+development build.
 
 Settings, the gear in the header, choose the appearance (Follow device, Light
 or Dark) and, in the mobile apps, an optional notification for readings at or above
@@ -76,8 +86,9 @@ push credentials on EAS; see the
 [mobile release guide](docs/mobile-release.md#push-notifications).
 
 See [Accessibility verification](docs/accessibility-verification.md) for checks
-performed and remaining device/assistive-technology release checks. EAS and iOS
-signing are configured; store review and account requirements remain. This
+performed and remaining device/assistive-technology release checks. Android upload-key
+and Apple-managed iOS signing are configured; store review and account
+requirements remain. This
 repository is not an App Store or Google Play release.
 
 iOS 1.0.0 (26) is Waiting for Review, confirmed on 1 October; the refreshed
@@ -113,8 +124,9 @@ actually wired up. Start there when a deploy misbehaves.
 
 | Route | What's there |
 |---|---|
-| `/` | The rating, explanation and update time, and Share and Settings controls in the header. The number is the loudest development still live — each carries its own level, aged from when it was first reported. With Show timeline turned on in Settings (off by default), a quiet chevron below it leads to a timeline of the other live developments, each tagged with its story; the scroll snaps between the reading and the timeline, and tapping the header returns to the reading (prototype) |
-| `/settings` | Settings overview: Appearance, on native Notifications, the Show timeline switch (off by default), the Privacy and Support links, and in the apps an Introduction row. A sheet in the apps, a page on the web |
+| `/` | The rating, explanation and update time, and Share and Settings controls in the header. The number is the loudest development still live — each carries its own level, aged from when it was first reported. Unless Show timeline is turned off in Settings (it is on by default), a quiet chevron below it leads to a timeline of the other live developments, each tagged with its story; the scroll snaps between the reading and the timeline, and tapping the header returns to the reading (prototype) |
+| `/settings` | Settings overview: Appearance, on native Notifications, the Show timeline switch (on by default), the Privacy and Support links, a Publisher row, and in the apps an Introduction row. A sheet in the apps, a page on the web |
+| `/settings/publisher` | Who publishes and edits Newsworthy (James Thompson, operating as AstroJams), that a reading is written by Newsworthy and not republished from another outlet, and a contact email. Added for Google Play's News policy review |
 | `/onboarding` | Apps only: the three-slide introduction, with Skip, Next and Done; on the web it redirects to the reading. Every title sits at the same height. Opens once on a phone's first launch (`onboarded` in `preferences.js`); Settings replays it |
 | `/settings/appearance` | Follow device, Light or Dark (the app only; each widget has its own settings, see `design/widget-settings.json`) |
 | `/settings/notifications` | Native only in the apps: optional high-score alerts and the threshold row |
@@ -123,10 +135,11 @@ actually wired up. Start there when a deploy misbehaves.
 | `/support` | Help and contact: astrojams1@gmail.com |
 | `/llms.txt` | Public product facts and links for AI readers; rating instructions remain at `/api/instructions` |
 | `/admin` | Web-only timeseries of the score, a Gantt chart of which story held the front page, run log, prompt versions, "rate now" |
-| `/api/current` | `{ score, explanation, explanation_text, explanation_new, explanation_at, explanation_story, created_at, source, basis, level, story, since, fatigue, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about, at full value), `routine` (it did, but its story has been doing this for weeks and the score was discounted), `aged` (a decayed level) or `stale` (nothing recent). `explanation_text` is the sentence (for a re-report, the sentence its development already has, word for word, rather than the rewording) and `explanation_new` is true when its reading opened a development of its own, independently of the score; clients show a bold “New:” before it for two hours from `created_at`. `explanation_at` is when that sentence was first reported (for a re-report, its development’s first report); the app shows that age with `explanation_story`, the story of the sentence shown, on a muted line below it (“US Iran War · 5h ago”), and once “New:” is off the widgets lead the sentence with the age (“5h ago:”, then “1d ago:”, nothing under an hour). `explanation` is the same sentence, unlabelled, for older clients. `story` and `since` name the score’s development and when it broke; `fatigue` is the fraction of its score a routine development in that story keeps. No countdown: an external caller can post at any moment, so the next update is not predictable |
+| `/api/current` | `{ score, explanation, explanation_text, explanation_new, explanation_at, explanation_story, created_at, source, basis, level, story, since, fatigue, window }`. `basis` is `new` (the newest reading opened or escalated the development the number is about, at full value), `routine` (it did, but its story has been doing this for weeks and the score was discounted), `aged` (a decayed level) or `stale` (nothing recent). `explanation_text` is the sentence (for a re-report, the sentence its development already has, word for word, rather than the rewording) and `explanation_new` is true when its reading opened a development of its own, independently of the score; clients show a bold “New:” before it for two hours from `created_at`. `explanation_at` is when that sentence was first reported (for a re-report, its development’s first report, even when the wording shown is the first reading at a newer prompt version); the app shows that age with `explanation_story`, the story of the sentence shown, on a muted line below it (“US Iran War · 5h ago”), and once “New:” is off the widgets lead the sentence with the age (“5h ago:”, then “1d ago:”, nothing under an hour). `explanation` is the same sentence, unlabelled, for older clients. `story` and `since` name the score’s development and when it broke; `fatigue` is the fraction of its score a routine development in that story keeps. No countdown: an external caller can post at any moment, so the next update is not predictable |
 | `/api/timeline` | `{ developments: [{ root, story, since, score, displayed, leading, explanation }] }` — prototype. Every development first covered in the last week, from the same replay as `/api/current`, newest first by first coverage, one entry per development (never per reading) with the sentence it broke with. The development the newest reading reports is left out, since the page already shows it. Reaches back one week by first coverage and ends there |
 | `/api/admin/history?hours=168` | Points, stats, recent attempts, refused submissions, prompt versions, and `stories` — every story still live with the developments inside it, when each was first covered (`opened`, which an escalation does not move, unlike `since`), what each broke at, what that has decayed to, and which one the front page is about. Each story also says where it stands now: `age_days`, `routine` (the median its developments have scored), `fatigue` (the weight its next development would open at) and `breakthrough_at` (the score that would open whole). `stories` describes now, not the charted range. `front_page` lists, over the charted range, one row per story with the stretches the front page showed it (`from`, `to`) and its total `hours`: each reading counts until the next, for the story of the development it reported, most recently shown first |
 | `/api/admin/prompts` | Every prompt version, full text |
+| `/api/admin/trials?hours=168` | Each trial's readings, paired with the live caller's reading nearest in time, with agreement figures and run reports; `&cohort=` picks one trial ([caller trials](docs/caller-trials.md)) |
 | `/api/admin/settings` | `GET` the model, cadence, development half-life, story half-life and judge model with the priced options; `POST` to change them |
 | `/api/admin/merges` | `POST {stories: [a, b]}` records that two story names are one story (the name with more readings is kept); `POST /api/admin/merges/:id/undo` undoes one with a new row. Listed as `merges` in `/api/admin/history` and on `/admin` |
 | `/api/admin/judgements/next` | The oldest unjudged reading and the record as it stood when it arrived; `POST /api/admin/judgements` stores an answer for it, checked like a caller's and stamped `backfill`. Strictly oldest first |
@@ -240,11 +253,13 @@ registry rather than the payload.
 next tick — no redeploy. The picker shows the cost of each pairing before you
 commit to it.
 
-Vercel Cron ticks every 15 minutes (`vercel.json`); the configured interval is
+Vercel Cron ticks hourly at :08 (`vercel.json`); the configured interval is
 enforced by the slot, so ticks inside an interval find the slot already rated
-and return without calling the model. Intervals are therefore multiples of 15
-minutes, from 15 up to a day. To rate *more* often than every 15 minutes,
-change the cron schedule itself.
+and return without calling the model. Intervals are therefore whole hours,
+from one up to a day. To rate *more* often than hourly, change the cron
+schedule itself. Every tick reads the database and so wakes Neon, which bills
+at least five idle minutes per wake; :08 falls just after the hourly caller's
+posts, while the database is still awake.
 
 Only models in `src/pricing.js` are selectable — an allowlist, so a typo in a
 request body cannot point the job at an arbitrary or unpriced model.
@@ -336,7 +351,7 @@ Jobs → View Logs**.
 ### Why the cron endpoint, and not a timer
 
 A serverless function is frozen between requests, so an in-process
-`setInterval` would never fire. `vercel.json` schedules `*/15 * * * *` against
+`setInterval` would never fire. `vercel.json` schedules `8 * * * *` against
 `/api/cron` instead. Per-minute schedules need a Pro plan — Hobby rejects
 anything more frequent than daily *at deploy time*.
 
@@ -366,6 +381,7 @@ scheduler runs, and only `ANTHROPIC_API_KEY` and `DATABASE_URL` are required.
 | `NEWSWORTHY_NO_SCHEDULER` | — | `1` to serve without the in-process scheduler (automatic on Vercel) |
 | `CRON_SECRET` | — | Set this secret in Vercel; Vercel Cron sends it as the bearer token for `/api/cron` |
 | `CALLER_TOKEN` | — | Lets an external agent use `/api/instructions`, `/api/prompt` and `/api/readings` without the admin token |
+| `TRIAL_CALLERS` | — | Candidate callers under trial, as comma-separated `name=token` pairs (`haiku-5-5=…,sonnet-5-5=…`). Each token uses the same caller API; its readings and run reports are stored apart under the trial's name and never displayed ([caller trials](docs/caller-trials.md)) |
 | `NEWSWORTHY_MOCK` | — | `1` to fake readings without calling the API |
 | `ADMIN_TOKEN` | — | Locks `/admin` and `/api/admin/*` |
 | `EXPO_ACCESS_TOKEN` | — | Optional. Sent to Expo's push service so it can enforce that only this server notifies this app's devices |

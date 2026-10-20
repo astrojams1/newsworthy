@@ -48,7 +48,7 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
   const setTheme = useCallback((theme: ThemePreference) => save({ ...current.current, theme }), [save]);
   const setNotifications = useCallback((update: Partial<Notifications>) =>
     save({ ...current.current, notifications: { ...current.current.notifications, ...update } }), [save]);
-  const setTimeline = useCallback((timeline: boolean) => save({ ...current.current, timeline }), [save]);
+  const setTimeline = useCallback((showTimeline: boolean) => save({ ...current.current, showTimeline }), [save]);
   const setOnboarded = useCallback(() => { if (!current.current.onboarded) save({ ...current.current, onboarded: true }); }, [save]);
   const subscription = useMemo(() => createSubscriptionController({
     read: () => current.current.notifications,

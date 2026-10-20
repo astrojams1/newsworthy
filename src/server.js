@@ -5,14 +5,15 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, rootTimes, setJudgement, stats, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialCohorts, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { pairTrials, summarizeTrial } from './trial.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries, frontPageSpans } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
 import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
-import { INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
+import { CRON_TICK_MINUTES, CRON_TICK_OFFSET_MINUTES, INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
 import { slotFor } from './rate.js';
@@ -24,10 +25,28 @@ const MAX_RUN_REPORT = 4000;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const CALLER_TOKEN = process.env.CALLER_TOKEN || '';
+// Candidate callers run beside the live one: same API, same instructions, but
+// their readings and run reports are stored apart and never displayed. One
+// token per trial, as comma-separated `name=token` pairs
+// (`haiku-5-5=…,sonnet-5-5=…`); the token decides where a request goes and
+// which trial it is filed under, not anything the caller sends. See
+// docs/caller-trials.md.
+const TRIAL_CALLERS = parseTrialCallers(process.env.TRIAL_CALLERS || '');
+
+function parseTrialCallers(text) {
+  return text.split(',').map((entry) => entry.trim()).filter(Boolean).flatMap((entry) => {
+    const at = entry.indexOf('=');
+    const cohort = at > 0 ? entry.slice(0, at).trim() : '';
+    const token = entry.slice(at + 1).trim();
+    if (!/^[a-z0-9][a-z0-9.-]*$/.test(cohort) || !token) {
+      // Never the entry itself: it may carry a token.
+      console.warn(`TRIAL_CALLERS: ignoring a malformed entry${cohort ? ` named ${cohort}` : ''}`);
+      return [];
+    }
+    return [{ cohort, token }];
+  });
+}
 const ON_VERCEL = Boolean(process.env.VERCEL);
-// vercel.json fires /api/cron on this cadence; the configured interval is
-// enforced by the slot on top of it.
-const CRON_TICK_MINUTES = 15;
 const ROOT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC_DIR = existsSync(join(ROOT_DIR, 'dist/web/index.html')) ? join(ROOT_DIR, 'dist/web') : join(ROOT_DIR, 'public');
 
@@ -166,15 +185,24 @@ function cronAuthorized(url, req) {
  * External callers get their own token, so an agent can submit readings
  * without being handed the admin token. ADMIN_TOKEN also works.
  */
-/** Whose token authorized a caller-API request — 'caller', 'admin', or
- *  'open' when self-hosted with none configured — or null when none did. */
+/** Whose token authorized a caller-API request — 'caller', 'trial:<name>',
+ *  'admin', or 'open' when self-hosted with none configured — or null when
+ *  none did. */
 function callerIdentity(url, req) {
   // Headers only: curl sets them, and a token in a URL lands in logs.
   const supplied = req.headers['x-newsworthy-token'] || req.headers['x-admin-token'];
   if (CALLER_TOKEN && secretMatches(supplied, CALLER_TOKEN)) return 'caller';
+  const trial = TRIAL_CALLERS.find(({ token }) => secretMatches(supplied, token));
+  if (trial) return `trial:${trial.cohort}`;
   if (ADMIN_TOKEN && secretMatches(supplied, ADMIN_TOKEN)) return 'admin';
-  if (CALLER_TOKEN || ADMIN_TOKEN) return null;
+  if (CALLER_TOKEN || TRIAL_CALLERS.length || ADMIN_TOKEN) return null;
   return ON_VERCEL ? null : 'open'; // open only when self-hosted with nothing configured
+}
+
+/** The trial a request's token belongs to, or null for any other caller. */
+function trialCohort(url, req) {
+  const identity = callerIdentity(url, req);
+  return identity?.startsWith('trial:') ? identity.slice('trial:'.length) : null;
 }
 
 function callerAuthorized(url, req) {
@@ -300,14 +328,15 @@ const server = createServer(async (req, res) => {
       // for two hours from `created_at`. `explanation` stays unlabelled so an
       // installed build that shows it as-is never keeps a stale "New:".
       // `explanation_at` is when the shown sentence was saved — for a re-report,
-      // its development's first report — and clients lead the sentence with
+      // its development's first report, even when a newer prompt version's
+      // wording is shown (see sentenceFor()) — and clients lead the sentence with
       // its age ("5h ·") once "New:" is off. It is not `since`, which dates the
       // development the number is about, and not the removed
       // `explanation_since`, which old builds still print as "31 hours ago:".
       const explanationFields = {
         explanation_text: completeSentence(sentence.explanation),
         explanation_new: opensDevelopment(newest),
-        explanation_at: new Date(sentence.t ?? sentence.created_at).toISOString(),
+        explanation_at: new Date(current.sentenceAt ?? sentence.t ?? sentence.created_at).toISOString(),
       };
       // The story the shown sentence belongs to, from the row that sentence is
       // — for a re-report, its development's first report, whatever slug the
@@ -373,7 +402,7 @@ const server = createServer(async (req, res) => {
       });
     }
 
-    // ---- the 15-minute job ----------------------------------------------
+    // ---- the hourly job --------------------------------------------------
     // Vercel Cron issues a GET; the admin button issues a POST.
     if (path === '/api/cron') {
       const credential = cronAuthorized(url, req);
@@ -486,6 +515,29 @@ const server = createServer(async (req, res) => {
         // answer stores the reading unjudged, carrying the reason — so the
         // four rejection rules stay four.
         const judgement = callerJudgement(body.judgement, judgeRecord({ priors: await history({ hours: PRIOR_HOURS }) }));
+        // A trial reading is checked exactly as a live one and stored apart:
+        // no merge, no push, no part in what the page shows or the cron's
+        // staleness check. Its proposed merge is kept as data.
+        const cohort = trialCohort(url, req);
+        if (cohort) {
+          const saved = await insertTrialReading({ ...submission, ...judgement, cohort });
+          console.log(`trial reading (${cohort}): ${saved.score}/10 (prompt v${saved.prompt_version})`);
+          return json(res, 201, {
+            id: saved.id,
+            created_at: saved.created_at,
+            score: saved.score,
+            trial: true,
+            cohort,
+            prompt_version: saved.prompt_version,
+            prompt_hash: saved.prompt_hash,
+            prompt_verified: saved.prompt_verified ?? null,
+            story: saved.story ?? null,
+            development: saved.judge_version == null
+              ? 'unjudged'
+              : (saved.development_of == null ? 'new' : 'same'),
+            ...(saved.judge_version == null ? { judge_note: saved.judge_note } : {}),
+          });
+        }
         // slot = NULL: an external reading never competes for a cron slot. It
         // suppresses the next cron run by being recent, not by claiming a slot.
         const { same_story, ...columns } = judgement;
@@ -540,7 +592,7 @@ const server = createServer(async (req, res) => {
     }
 
     // The record the judge compares against: story names and the developments
-    // recorded over 48 hours. Data only — the judge prompt is in the caller
+    // recorded over PRIOR_HOURS. Data only — the judge prompt is in the caller
     // instructions — fetched after the caller has scored and written, and
     // answered in its submission. Read-only, and gated like the rest of the
     // caller API.
@@ -548,7 +600,8 @@ const server = createServer(async (req, res) => {
       if (!callerAuthorized(url, req)) {
         return rejection(res, url, 401, 'unauthorized', { req, method: req.method, record: false });
       }
-      const record = judgeRecord({ priors: await history({ hours: PRIOR_HOURS }), stories: await recentStories() });
+      const priors = await history({ hours: PRIOR_HOURS });
+      const record = judgeRecord({ priors, stories: await recentStories(), roots: await priorRoots(priors) });
       await recordFetch(url, req, path, 'json');
       return json(res, 200, { record: record.text });
     }
@@ -570,6 +623,11 @@ const server = createServer(async (req, res) => {
       }
       const report = typeof body?.report === 'string' ? body.report.trim() : '';
       if (!report) return rejection(res, url, 422, 'run report: report is required', { req, method: req.method });
+      const cohort = trialCohort(url, req);
+      if (cohort) {
+        const saved = await logTrialRun({ cohort, reading: body.reading, report: report.slice(0, MAX_RUN_REPORT) });
+        return json(res, 201, { ok: true, stored: true, trial: true, cohort, id: saved.id, reading: saved.reading_id });
+      }
       // Linked only to a reading that exists; a wrong id never costs the report.
       const id = body.reading == null ? null : Number(body.reading);
       const [reading] = Number.isInteger(id) ? await ratingsByIds([id]) : [];
@@ -695,6 +753,28 @@ const server = createServer(async (req, res) => {
       });
     }
 
+    // A trial caller's readings beside the live ones, for review. Nothing here
+    // reaches the page: see docs/caller-trials.md.
+    if (path === '/api/admin/trials' && req.method === 'GET') {
+      const hours = Math.min(Number(url.searchParams.get('hours')) || 168, 24 * 365);
+      // Against the live caller only: a cron or "Rate now" reading in the same
+      // half hour is another instrument, and pairing with it would hide an
+      // hour the live caller missed. Each trial is read and summarized on its
+      // own; `?cohort=` narrows to one.
+      const only = url.searchParams.get('cohort');
+      const [names, live] = await Promise.all([
+        only ? [only] : trialCohorts({ hours }),
+        history({ hours: hours + 1 }),
+      ]);
+      const liveCaller = live.filter((r) => r.source === 'external');
+      const cohorts = await Promise.all(names.map(async (cohort) => {
+        const [trials, runs] = await Promise.all([trialReadings({ cohort, hours }), trialRuns({ cohort, hours })]);
+        const pairs = pairTrials(trials, liveCaller);
+        return { cohort, summary: summarizeTrial(pairs), pairs, runs };
+      }));
+      return json(res, 200, { hours, cohorts });
+    }
+
     if (path === '/api/admin/settings') {
       if (req.method === 'GET') {
         const [config, baseline] = await Promise.all([effectiveConfig(), usageBaseline()]);
@@ -711,7 +791,8 @@ const server = createServer(async (req, res) => {
           usage_basis: baseline,
           models: modelCatalogue(baseline.observed ? baseline : undefined),
           intervals: INTERVAL_CHOICES.map((m) => ({ minutes: m, label: intervalLabel(m) })),
-          cron_tick_minutes: 15,
+          cron_tick_minutes: CRON_TICK_MINUTES,
+          cron_tick_offset_minutes: CRON_TICK_OFFSET_MINUTES,
         });
       }
       if (req.method === 'POST') {
@@ -825,7 +906,7 @@ const server = createServer(async (req, res) => {
       if (!reading) return json(res, 200, { reading: null, remaining: 0 });
       const hoursBack = (Date.now() - Date.parse(reading.created_at)) / 3600_000 + PRIOR_HOURS + 1;
       const priors = priorsBefore(await history({ hours: hoursBack, limit: 5000 }), reading);
-      const record = judgeRecord({ priors, stories: await recentStories({ before: reading.created_at }) });
+      const record = judgeRecord({ priors, stories: await recentStories({ before: reading.created_at }), roots: await priorRoots(priors) });
       return json(res, 200, {
         reading, judge_version: judgeVersion(), record: record.text,
         remaining: (await unjudgedRatings({ limit: 1000 })).length,
@@ -866,6 +947,7 @@ const server = createServer(async (req, res) => {
           created_at: row.created_at,
           priors,
           stories: await recentStories({ before: row.created_at }),
+          roots: await priorRoots(priors),
         });
         await setJudgement(row.id, judgement);
         if (judgement.judge_version != null) judged += 1;

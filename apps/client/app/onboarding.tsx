@@ -149,20 +149,46 @@ function Art({ art, theme, score, saved }: { art: SlideArt; theme: Theme; score?
   return <View style={lifted}><Notification theme={theme} /></View>;
 }
 
-// The small widget as it is drawn on each platform (NewsworthyWidget.swift,
-// RatingWidget.java): the wordmark, the score and its denominator, then the
-// update time, over the level's diagonal. Corners: iOS's system widget radius,
-// Android's 20dp.
+// The small widget as it is drawn on each platform: the wordmark, the score and
+// its denominator, then the update time, over the level's diagonal.
+// Reported 2026-10-15 on the owner's Android phone: the picture was the iOS
+// widget, so Android draws its own from rating_widget_compact.xml.
 function SmallWidget({ score, saved, dark }: { score?: number; saved?: string; dark: boolean }) {
+  return platform === 'android' ? <AndroidSmallWidget score={score} saved={saved} dark={dark} /> : <IosSmallWidget score={score} saved={saved} dark={dark} />;
+}
+
+// NewsworthyWidget.swift, systemSmall: 16pt padding, the system widget radius,
+// an ink wordmark tracked 2pt, an 11pt time.
+function IosSmallWidget({ score, saved, dark }: { score?: number; saved?: string; dark: boolean }) {
   const colors = palette(score, dark);
-  return <Diagonal testID="onboarding-widget" colors={colors} radius={platform === 'android' ? 20 : 24}
+  return <Diagonal testID="onboarding-widget" colors={colors} radius={24}
     style={{ width: 176, height: 176, padding: 16, justifyContent: 'space-between' }}>
     <Text style={{ color: colors.ink, fontSize: 10, letterSpacing: 2 }}>NEWSWORTHY</Text>
     <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
       <Text style={{ color: colors.ink, fontSize: 69, lineHeight: 76, fontWeight: '300', fontFamily: scoreFont, letterSpacing: -69 * 0.04 }}>{score ?? '–'}</Text>
-      <Text style={{ color: colors.gradientMuted, fontSize: 12, fontFamily: scoreFont, marginLeft: platform === 'android' ? 2 : 1 }}>∕10</Text>
+      <Text style={{ color: colors.gradientMuted, fontSize: 12, fontFamily: scoreFont, marginLeft: 1 }}>∕10</Text>
     </View>
     <Text numberOfLines={1} style={{ color: colors.gradientMuted, fontSize: 11 }}>{saved ? checkedAt({ created_at: saved }) : ''}</Text>
+  </Diagonal>;
+}
+
+// rating_widget_compact.xml and RatingWidget.java, the 2×2 widget: 12dp
+// padding and a 20dp radius; the wordmark muted, 10sp at 0.18em, in an 18dp
+// row; the score centred in the space left; "Checked at" in a 32dp row, 10sp
+// and muted, resting on the bottom edge.
+function AndroidSmallWidget({ score, saved, dark }: { score?: number; saved?: string; dark: boolean }) {
+  const colors = palette(score, dark);
+  return <Diagonal testID="onboarding-widget" colors={colors} radius={20} style={{ width: 176, height: 176, padding: 12 }}>
+    <Text numberOfLines={1} style={{ height: 18, color: colors.gradientMuted, fontSize: 10, letterSpacing: 1.8 }}>NEWSWORTHY</Text>
+    <View style={{ flex: 1, justifyContent: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+        <Text style={{ color: colors.ink, fontSize: 69, lineHeight: 76, fontFamily: scoreFont, letterSpacing: -69 * 0.04, includeFontPadding: false }}>{score ?? '–'}</Text>
+        <Text style={{ color: colors.gradientMuted, fontSize: 12, fontFamily: scoreFont, marginLeft: 2, includeFontPadding: false }}>∕10</Text>
+      </View>
+    </View>
+    <View style={{ height: 32, justifyContent: 'flex-end' }}>
+      <Text numberOfLines={2} style={{ color: colors.gradientMuted, fontSize: 10 }}>{saved ? checkedAt({ created_at: saved }) : ''}</Text>
+    </View>
   </Diagonal>;
 }
 // The app's launcher mark: the brand's accent dash on its diagonal,

@@ -454,6 +454,67 @@ const V20_OUTPUT_CONTRACT = V19_OUTPUT_CONTRACT
   .replace('Full display: at most 140 characters including spaces and punctuation, reserving 5 for the label "New: " that the app adds to a new development.',
     'Display: at most 140 characters including spaces and punctuation, 5 of them for the app\'s "New: " label on new developments.');
 
+// v21 stops predicting market effects in the sentence. v18 changed Output's
+// "what it means for daily life" to "what it could mean for prices or savings",
+// and the rater did as asked: a speculative tail such as ", which could lift oil
+// and fuel prices" went from 0% of sentences under v11-v16 and 17% under v17 to
+// 76% under v20, with "which could lift/push" in 85 of 126 v20 readings. The
+// owner does not want it. The score already says how far news could move
+// markets; the sentence now says what happened, and a market move only when it
+// happened. Everything before Output, and the rest of Output, is v20's.
+// See docs/prompt-evaluations/v21.md.
+const V21_OUTPUT_CONTRACT = V20_OUTPUT_CONTRACT
+  .replace('one development, who did what and what it could mean for prices or savings.',
+    'one development, who did what. Never predict market moves.');
+
+// v22 asks for the active voice. Under v20 the Hormuz tanker attacks came out
+// agentless six times in two days ("Two oil tankers were reportedly hit…")
+// while the same caller wrote "Iran… hit another tanker" in reading 989 and the
+// Revolutionary Guards had claimed the attacks. v19's "reportedly" replaced
+// "X said", and with nothing asking for an actor the rater dropped it. An
+// unconfirmed act now names who claims it. " on new developments" leaves the
+// label sentence to fit rule 7; the rater submits no label either way. The rest
+// is v21's verbatim. See docs/prompt-evaluations/v22.md.
+const V22_OUTPUT_CONTRACT = V21_OUTPUT_CONTRACT
+  .replace('one development, who did what.', 'one development, who did what in active voice, or who claims it.')
+  .replace('5 of them for the app\'s "New: " label on new developments.', '5 of them for the app\'s "New: " label.');
+
+// v23 says what a scheduled release will settle. On the morning of a data
+// release the likeliest cause of a sharp move is the release itself, so the
+// rater names it before it is out. Under v20 those previews carried their stake
+// in a forecast tail ("US inflation data due today could decide if the Fed
+// raises rates"); v21 rightly cut the tail and nothing replaced it, so reading
+// 1209 announced "The US releases September consumer price figures today" and
+// stopped. The rater now leads with what the release will settle. The rest of
+// Output is v22's, tightened without changing what it asks for to fit rule 7.
+// See docs/prompt-evaluations/v23.md.
+const V23_OUTPUT_CONTRACT = V22_OUTPUT_CONTRACT
+  .replace('Reply with a single JSON object and nothing else, no prose or fences:',
+    'Return only this JSON, no prose or fences:')
+  .replace('Display: at most 140 characters including spaces and punctuation, 5 of them for',
+    'Display: at most 140 characters including spaces and punctuation, 5 for')
+  .replace('Never predict market moves.',
+    'Never predict market moves. Before scheduled news, lead with what it will settle.')
+  .replace('dates, years and ordinals don\'t count', 'dates, years, ordinals don\'t count')
+  .replace('Explain or drop jargon, market figures and uncommon acronyms.',
+    'Explain or drop jargon, market figures, rare acronyms.')
+  .replace('(year only if not this one, no weekdays)', '(no year if this one, no weekdays)')
+  .replace('rating justification or advice.', 'rating justification, advice.');
+
+// v24 drops relative day words. A sentence is shown for hours after it is
+// written, under an age ("10h ago:"), to readers in every time zone. Reading
+// 1212 wrote "US inflation figures due today" at 04:03 UTC, 9:03 p.m. Pacific
+// on Oct 13; ten hours later the widget showed "10h ago: … due today", which
+// read as overdue though the release was still hours off. v23 made it common:
+// 7 of its first 8 sentences said "today", against 6 of 213 under v22. Dates
+// were already in the style line; it now rules out relative days. "No prose"
+// and "Submit no label" were shortened to fit rule 7. See
+// docs/prompt-evaluations/v24.md.
+const V24_OUTPUT_CONTRACT = V23_OUTPUT_CONTRACT
+  .replace('Return only this JSON, no prose or fences:', 'Return only this JSON, no fences:')
+  .replace('"New: " label. Submit no label.', '"New: " label. Omit it.')
+  .replace('(no year if this one, no weekdays)', '(no year if this one, no weekdays or relative days)');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -594,6 +655,34 @@ const REGISTRY = {
     added: '2026-09-29',
     instructions: V20_INSTRUCTIONS,
     outputContract: V20_OUTPUT_CONTRACT,
+  },
+  21: {
+    version: 21,
+    label: 'no-market-forecasts-v21',
+    added: '2026-10-05',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V21_OUTPUT_CONTRACT,
+  },
+  22: {
+    version: 22,
+    label: 'active-voice-v22',
+    added: '2026-10-05',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V22_OUTPUT_CONTRACT,
+  },
+  23: {
+    version: 23,
+    label: 'scheduled-news-stakes-v23',
+    added: '2026-10-14',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V23_OUTPUT_CONTRACT,
+  },
+  24: {
+    version: 24,
+    label: 'no-relative-days-v24',
+    added: '2026-10-14',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V24_OUTPUT_CONTRACT,
   },
 };
 

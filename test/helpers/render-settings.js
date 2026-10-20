@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import ts from 'typescript';
 import * as preferences from '../../apps/client/lib/preferences.js';
+import * as publisher from '../../apps/client/lib/publisher.js';
 import { themeForLevel } from '../../apps/client/lib/palette.js';
 import { glyphModule } from './widget-contract.js';
 import { checkedAgo } from '../../apps/client/lib/story-age.js';
@@ -14,7 +15,7 @@ import { checkedAgo } from '../../apps/client/lib/story-age.js';
 const require = createRequire(import.meta.url);
 const react = require('react');
 const read = path => readFileSync(new URL(`../../apps/client/${path}`, import.meta.url), 'utf8');
-export const SETTINGS_SCREENS = { index: 'app/settings/index.tsx', appearance: 'app/settings/appearance.tsx', notifications: 'app/settings/notifications.tsx', threshold: 'app/settings/threshold.tsx' };
+export const SETTINGS_SCREENS = { index: 'app/settings/index.tsx', appearance: 'app/settings/appearance.tsx', notifications: 'app/settings/notifications.tsx', threshold: 'app/settings/threshold.tsx', publisher: 'app/settings/publisher.tsx' };
 const compile = text => ts.transpileModule(text, { compilerOptions: {
   jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
 } }).outputText;
@@ -77,6 +78,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
       },
     }) },
     '@/lib/push': { pushSupported },
+    '@/lib/publisher': publisher,
     '@/lib/config': { privacyUrl: '/privacy', supportUrl: '/support' },
   };
   mocks['@/components/settings-list'] = load(listOverride ?? read('components/settings-list.tsx'), mocks, platform);

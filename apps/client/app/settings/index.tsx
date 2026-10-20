@@ -14,9 +14,10 @@ import { useCurrentReading } from '@/components/reading-provider';
 import { checkedAgo } from '@/lib/story-age';
 
 const ABOUT_LINKS = [['Privacy', privacyUrl, 'privacy'], ['Support', supportUrl, 'support']] as const;
-// Opens over Settings; closing it returns here. The phone apps only: the
-// website has no introduction.
-const INTRODUCTION_INDEX = ABOUT_LINKS.length;
+// The Publisher row follows the two links (the web test measures their arrows at
+// fixed positions); the introduction opens over Settings and closing it returns
+// here. The phone apps only: the website has no introduction.
+const INTRODUCTION_INDEX = ABOUT_LINKS.length + 1;
 
 export default function Settings() {
   const theme = useTheme();
@@ -56,11 +57,11 @@ export default function Settings() {
             <RowContent index={index} icon={icon} label={label} trailing={<Trailing value={value} to="page" />} />
           </Pressable>
         </Link>)}
-        {/* Off by default: the reading alone is the product; the timeline is an addition. */}
+        {/* On by default since 2026-10-11; turning it off leaves the reading alone. */}
         <Pressable testID="timeline-row" accessibilityRole="switch" accessibilityLabel="Show timeline"
-          accessibilityState={{ checked: preferences.timeline }} onPress={() => setTimeline(!preferences.timeline)} style={rowStyle()}>
+          accessibilityState={{ checked: preferences.showTimeline }} onPress={() => setTimeline(!preferences.showTimeline)} style={rowStyle()}>
           <RowContent index={pages.length} icon="timeline" label="Show timeline"
-            trailing={<Toggle testID="timeline-switch" accessibilityLabel="Show timeline" value={preferences.timeline} onValueChange={setTimeline} />} />
+            trailing={<Toggle testID="timeline-switch" accessibilityLabel="Show timeline" value={preferences.showTimeline} onValueChange={setTimeline} />} />
         </Pressable>
       </Section>
       {checked !== '' && <Section title="News" testID="news-status">
@@ -74,6 +75,11 @@ export default function Settings() {
             <RowContent index={index} icon={icon} label={name} trailing={<Trailing to="external" />} />
           </Pressable>
         </Link>)}
+        <Link href="/settings/publisher" asChild>
+          <Pressable testID="publisher-row" accessibilityRole="button" accessibilityLabel="Publisher" style={rowStyle()}>
+            <RowContent index={ABOUT_LINKS.length} icon="publisher" label="Publisher" trailing={<Trailing to="page" />} />
+          </Pressable>
+        </Link>
         {process.env.EXPO_OS !== 'web' && <Link href="/onboarding" asChild>
           <Pressable testID="introduction-row" accessibilityRole="button" accessibilityLabel="Introduction" accessibilityHint="Replays the introduction" style={rowStyle()}>
             <RowContent index={INTRODUCTION_INDEX} icon="introduction" label="Introduction" trailing={<Trailing to="page" />} />

@@ -43,6 +43,36 @@ on iOS 18.3.1. Hiding the widget name was not reverified in this capture batch.
 The local Mac unlock is resolved. The optional iOS 26.5 runtime download is no
 longer a prerequisite for this completed submission.
 
+## Current Google Play artwork — 15 October 2026
+
+The default (en-US) Play listing carries **five phone screenshots, the feature
+graphic and the 512 px Stone icon**, uploaded through the Play API and read
+back with matching SHA-256 values in order, then confirmed in Play Console.
+The listing is saved, not sent for review. See the
+[upload receipt](google-play-artwork-15-upload.json).
+
+Every screen comes from Play internal versionCode **15** (`254686f`), its
+universal APK installed on an API 35 Pixel 7 emulator: the timeline, the
+reading in light and dark, Settings, and the resizable widget at 2×2 (light
+and dark) and 4×3 with the sentence, on a neutral wallpaper. Originals,
+hashes and limits are in [capture provenance](source/android-phone/provenance-v15.json),
+measured widget bounds in [widget frames](source/android-phone/widget-frames-v15.json)
+and copy in the [gallery plan](google-play-gallery-15.json). Emulator
+captures, not a physical-device check; the sentences are the live readings
+of 15 October.
+
+```sh
+node store/scripts/render-google-play.mjs
+node store/scripts/validate.mjs
+node vendor/skills/skills/app-release/scripts/play.mjs status
+node vendor/skills/skills/app-release/scripts/play.mjs images
+```
+
+The renderer refuses a capture whose hash differs from its provenance record
+and retires the September gallery. `upload` replaces the icon, feature graphic
+and phone screenshots in one edit and commits only if Play reads back what was
+sent; confirm each upload with the owner.
+
 ## Historical September release records
 
 The following records describe the earlier submissions and assets. Their
@@ -115,11 +145,11 @@ still blocks app creation. See the ledger for current gates and exact next actio
 
 | File or folder | Purpose |
 |---|---|
-| [ledger.md](ledger.md) / [ledger.json](ledger.json) | Canonical resumable gates, evidence and event history. Change it only with `npm run ledger -- record …` ([scripts/ledger.mjs](scripts/ledger.mjs)); the Markdown is generated and a test fails if it drifts |
-| [listing.json](listing.json) | Canonical English copy, URLs, review notes, and US$1 paid-download target |
-| [assets/](assets/) | Upload-ready PNGs and dimension/platform manifest |
+| [ledger.md](ledger.md) / [ledger.json](ledger.json) | Canonical resumable gates, evidence and event history. Change it only with `npm run ledger -- record …` (the shared app-release skill's `ledger.mjs`); the Markdown is generated (`npm run ledger -- check` compares them) |
+| [store.json](store.json) | Store data for the shared app-release skill: English copy for both stores, URLs, age rating, review notes, the US$1 price, screenshots and Play graphics |
+| [assets/](assets/) | Upload-ready PNGs and dimension/platform manifest; Google Play's in `assets/google-play/` |
 | [source/](source/) | Original native captures and editable SVG layouts |
-| [release.json](release.json) | Public app/build identifiers; no credentials |
+| [release.json](release.json) | Historical app/build identifiers through 1 October; current identity is in `../app-release.config.json` |
 | [user-actions.md](user-actions.md) | Verified account-owner steps with instructions |
 | [apple-review-response.md](apple-review-response.md) | Posted Guideline 2.1 response and recording checklist |
 | [apple-physical-review-video.json](apple-physical-review-video.json) | Recording hashes, preparation, attachment and observed verification scope |
@@ -145,10 +175,11 @@ still blocks app creation. See the ledger for current gates and exact next actio
   accounts for recurring war/weapons and mature news, with no graphic imagery.
   Apple returned `SEVENTEEN_PLUS` in its legacy age-rating field and 18 in
   the France/Brazil fields; final localized ratings are store-calculated.
-- **Google account:** registration paid; Play Console explicitly reported
-  **identity verified successfully**. Real Android device verification remains;
-  phone verification is disabled until that prerequisite is complete. **Create
-  app is disabled**, so no Google app, price, listing, or release has been saved.
+- **Google account:** registration paid; identity, Android device and contact
+  phone verified. Newsworthy exists in Play Console (Draft, Paid, no price
+  set); versionCode 15 is on internal testing. The default listing's text and
+  graphics are saved, not sent for review; app content declarations, price and
+  production access remain. See the release ledger's `google.*` gates.
 - **Android binary (historical):** production AAB11 downloaded and SHA-256/ZIP-validated
   from clean PR94 source `8055d61`; it supersedes AAB10 but now requires replacement
   for Settings, notifications and later native changes. Preview APK8 verified the
@@ -194,7 +225,8 @@ node store/scripts/validate.mjs
 The renderer extends the mint/charcoal vector identity the app had when these
 assets were made. The app now uses the Temperature levels and the Stone brand
 (`design/palette.json`, 2026-09-27); the native captures and this renderer's
-colors predate that and need a fresh capture before the next listing update. Original native
+colors predate that. It no longer writes Google Play artwork, which
+`render-google-play.mjs` renders from versionCode 15. Original native
 screens remain unchanged inside the layouts; resizing and framing are presentation
 only. It never generates a score or news sentence. Keep screenshot claims aligned
 with [product messaging](../docs/product-messaging.md).
@@ -213,17 +245,16 @@ All five replacement images were read back COMPLETE in the correct order; see
 [Apple gallery verification](apple-gallery-verification.json). Native simulator
 checks do not establish physical-device certification.
 
-Android reading assets now use `12-reading-light-v9.png` and
-`13-reading-dark-v9.png`, from preview APK9
+The September Android gallery, retired on 15 October, used
+`12-reading-light-v9.png` and `13-reading-dark-v9.png`, from preview APK9
 `bfb5310e-c8e1-41af-bc01-6037b17701b6` on the API35 ARM64 emulator
 (1080×2400). `provenance-v9.json` records hashes and native verification scope.
 The renderer frames them as 1080×1920 Google Play images. Earlier captures,
 including About and offline evidence, remain historical source files and are
 excluded from the current gallery.
 
-The widget renderer expects `source/android-phone/widget-frames.json` to identify
-actual compact/expanded captures, viewport bounds, and the verified `versionCode`.
-It then creates a versioned widget comparison as the first Android gallery image.
+Its widget comparison came from `source/android-phone/widget-frames.json`
+(compact/expanded APK9 captures, viewport bounds and `versionCode` 9).
 The expanded widget passed light→dark→light contrast checks without a worker run.
 The compact dark capture shows the actual 2×2 state approved by the owner, with
 launcher span/minimum independently read back as 2×2. Compact light was also verified on September 17 after a theme switch. Score 10,
@@ -247,27 +278,24 @@ video has been uploaded. See [the video README](video/README.md).
 
 ## Update Apple through its API
 
-Keep the private `.p8` key in 1Password or a local secret location. Set
-`ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_PRIVATE_KEY_PATH` in the local environment.
-Never paste the private key into this repository or commit environment files.
+App Store Connect is driven by the shared app-release skill's `asc.mjs`, which reads
+the key from 1Password (`op://API Tokens/App Store Connect`) in memory; `ASC_KEY_ID`,
+`ASC_ISSUER_ID` and `ASC_PRIVATE_KEY_PATH` override it. Never paste the private key
+into this repository or commit environment files.
 
 ```sh
-node store/scripts/apple.mjs status
-node store/scripts/apple.mjs metadata
-node store/scripts/apple.mjs screenshots
-node store/scripts/apple.mjs build
-node store/scripts/apple.mjs age-rating
-node store/scripts/apple.mjs status
+node vendor/skills/skills/app-release/scripts/asc.mjs status          # versions, builds, review submissions, screenshots
+node vendor/skills/skills/app-release/scripts/asc.mjs listing         # copy, URLs, category, content rights, release type
+node vendor/skills/skills/app-release/scripts/asc.mjs age-rating
+node vendor/skills/skills/app-release/scripts/asc.mjs screenshots     # makes each set match store/assets/manifest.json
+node vendor/skills/skills/app-release/scripts/asc.mjs review-details  # contact and notes; the phone stays out of the repository
+node vendor/skills/skills/app-release/scripts/asc.mjs attach-build <N>
 ```
 
-`metadata` saves the canonical copy and reads it back. `screenshots` creates
-missing sets/assets and uploads through Apple's returned operations; it refuses
-to overwrite a different remote image with the same name. Check `status` until
-each asset is `COMPLETE`. `build` selects the processed Apple build recorded in
-`release.json`. These commands do not sign agreements or submit App Review.
-The optional `review-notes` command requires an owner-approved contact phone in
-`ASC_REVIEW_PHONE` when creating the review section; Apple rejects creation
-without it. Keep that value outside the repository.
+Every write is read back. `screenshots` removes remote screenshots the manifest no
+longer lists and refuses to overwrite a finished one whose bytes changed. These
+commands do not sign agreements; `submit --confirm` and `release --confirm` need the
+owner's approval. See the shared skill's `references/ios.md`.
 
 ## Account links
 
@@ -280,7 +308,12 @@ without it. Keep that value outside the repository.
 
 ## What Expo covers
 
-EAS builds the native packages, manages signing credentials and uploads binaries.
+Nothing builds in EAS. iOS store builds are archived, signed (Apple-managed,
+through the App Store Connect key) and uploaded on the owner's Mac with
+the shared app-release skill's `ios-release.mjs`; Android bundles are built there
+with Gradle and signed with the Play upload key by its `android-release.mjs`. See
+[Local iOS release](../docs/mobile-release.md#local-ios-release) and
+[Local Android release](../docs/mobile-release.md#local-android-release).
 EAS Metadata can manage supported Apple listing text. Account verification,
 contracts, banking/tax declarations, Google testing eligibility, and final store
 review remain store-controlled. Apple's API can automate screenshots and other

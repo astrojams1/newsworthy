@@ -92,11 +92,19 @@ test('the Settings back arrow follows the theme chosen on Appearance on the web'
         const filters = [...element.querySelectorAll('[style*="filter"]')].map(node => node.style.filter);
         return { stroke, filters };
       });
+      // The page opens light (Follow device), so every choice below changes the
+      // arrow. The document attribute changes a render before the header
+      // redraws, so wait for the arrow itself, up to five seconds: reading it
+      // straight after the attribute failed intermittently, locally and in CI.
+      // An arrow that never changes still fails, as the reported bug did.
       const seen = [];
+      let previous = (await arrow()).stroke;
       for (const choice of ['dark', 'light', 'dark']) {
         await page.getByTestId(`theme-${choice}`).click();
         await page.waitForFunction(value => document.documentElement.dataset.appearance === value, choice);
+        for (const end = Date.now() + 5_000; (await arrow()).stroke === previous && Date.now() < end;) await page.waitForTimeout(50);
         const { stroke, filters } = await arrow();
+        previous = stroke;
         assert.ok(stroke, `the ${choice} back arrow draws its own stroke`);
         assert.ok(!filters.some(filter => /#tint-\d/.test(filter)), `no fixed-id tint filter on the ${choice} back arrow: ${filters}`);
         seen.push(stroke);
@@ -129,8 +137,6 @@ test('Settings trailing marks match the label\'s cap height and baseline on the 
       await page.getByLabel('Privacy').waitFor();
       await page.waitForFunction(() => ['Appearance, Follow device', 'Privacy', 'Support']
         .every(name => [...(document.querySelector(`[aria-label="${name}"]`)?.querySelectorAll('img') ?? [])].at(-1)?.naturalWidth > 0));
-      // The label's first letter is a capital with no descender, so its ink
-      // spans cap height to baseline.
       const rows = await page.evaluate(() => ['Appearance, Follow device', 'Privacy', 'Support'].map(name => {
         const row = document.querySelector(`[aria-label="${name}"]`);
         const label = [...row.querySelectorAll('div[dir="auto"]')][0].getBoundingClientRect();
@@ -150,8 +156,14 @@ test('Settings trailing marks match the label\'s cap height and baseline on the 
         assert.ok(bottom > top, 'visible ink');
         return { top: top / scale, bottom: bottom / scale, height: (bottom - top) / scale };
       };
+      // Cap height and baseline come from Privacy's P, flat at top and bottom,
+      // and apply to every row: the labels share one style. Each label's own
+      // first letter is not a fair ruler: Support's S is round and overshoots
+      // both lines in the Mac's system font (13.0pt against the P's 12.3pt).
+      const ruler = rows.find(row => row.name === 'Privacy').label;
+      const p = ink(ruler.x, ruler.y, 6, ruler.h);
       for (const { name, label, mark } of rows) {
-        const cap = ink(label.x, label.y, 6, label.h);
+        const cap = { top: label.y + (p.top - ruler.y), bottom: label.y + (p.bottom - ruler.y), height: p.height };
         const drawn = ink(mark.x, mark.y, mark.w, mark.h);
         const ratio = drawn.height / cap.height;
         assert.ok(ratio >= settings.trailingInkToCapHeight.min && ratio <= settings.trailingInkToCapHeight.max,

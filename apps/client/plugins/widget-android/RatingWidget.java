@@ -245,7 +245,11 @@ public class RatingWidget extends AppWidgetProvider {
     static CharSequence ageLayer(CharSequence sentence, JSONObject reading, long now) {
         String age = sentenceAge(reading, now);
         if (age.isEmpty()) return "";
-        SpannableString text = new SpannableString(sentence);
+        // From the plain text: SpannableString(CharSequence) copies the ink
+        // layer's spans, and with them the transparent age, so the age showed
+        // in neither layer and the first line looked indented (reported on the
+        // owner's phone, 2026-10-15).
+        SpannableString text = new SpannableString(sentence.toString());
         text.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), age.length(), text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return text;
     }

@@ -7,7 +7,44 @@ separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current iOS resubmission — 1 October
+## Current Android release — 15 October
+
+Android now builds on the Mac like iOS (no EAS). Version code 13 is built,
+signed with a new Play upload key and verified, but not uploaded. Owner steps,
+in order:
+
+1. **Add the vault item** (done 15 October, read back by the script). In 1Password, vault *API Tokens*, create
+   **Newsworthy Android** with two file attachments, `upload.jks` and
+   `google-services.json`, and a password field named `keystore password`,
+   all from `/Volumes/ssd/toolchains/newsworthy-android-key/` (the password is
+   in `keystore-password.txt`). Then delete that folder. The agent's service
+   account can read the vault but not write it.
+2. **Verify the phone and contact number** in Play Console: sections 1 and 2
+   below. Only the account owner can do this.
+3. **Optional, before Play:** turn on USB debugging on the phone and connect it
+   to the Mac, and the agent can install version 13 for physical checks.
+4. **Recruit 12 testers** for the 14-day closed test (section 6).
+5. **Save the Play API key** (asked 15 October). On the Keys tab of service
+   account `play-release@newsworthy-cad27.iam.gserviceaccount.com` in Google
+   Cloud, Add key → Create new key → JSON; attach the download to
+   **Newsworthy Android** as `play-service-account.json`, then delete it.
+
+The app was created and version code 14 uploaded by hand in Play Console to
+internal testing on 15 October; Play takes a new app's first bundle only
+there. Later uploads go through the Play Developer API
+(`android-release.mjs upload`), each confirmed with the owner first.
+
+## Current iOS resubmission — 12 October
+
+Apple rejected build 26 under Guideline 4.2 again. Build **1.0.0 (27)** turns the
+timeline on by default and shows whole sentences in the medium widget. It was
+resubmitted on 12 October; Apple's API reports **Waiting for Review** at 06:02
+UTC. Description and Review Notes were updated and read back; screenshots were
+unchanged. Build 27 is also in TestFlight for Release QA. **No owner action is
+needed** until Apple responds. See
+[the receipt](apple-review-resubmission-2026-10-12-build27.json).
+
+## Historical iOS resubmission — 1 October
 
 PR #155 is merged. Build **1.0.0 (26)** is **Waiting for Review**, confirmed
 through Apple's API on 1 October at 11:37 UTC. The updated listing, six-part

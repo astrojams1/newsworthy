@@ -24,7 +24,10 @@ release status. Calm presentation must not change the rating calibration.
   claims against the change, and record the copy accuracy review in the PR
   description. Repeat affected checks if PR scope changes.
 - Branch off `main`, open a PR into `main`, and run `npm test` before pushing.
-  Do not push directly to `main`. Vercel preview builds are currently skipped.
+  Do not push directly to `main`.
+- Fix bugs and flaky tests as soon as you meet them, even when unrelated to
+  the task, in their own PR. Never merge past a failing check or dismiss a
+  failure as "known" or "flaky" instead of fixing it.
 - Keep extra development workspaces inside the primary Newsworthy checkout at
   `.worktrees/<task-name>/`. Do not create sibling `newsworthy-*` folders in
   `~/code` or elsewhere in the home directory. When already in a worktree, use
@@ -52,7 +55,7 @@ release status. Calm presentation must not change the rating calibration.
   or rendered-prop tests alone do not establish native visual parity; record
   actual native verification and any untested states in the release ledger
   with `npm run ledger -- record --gate <id> --summary … [--state …]
-  [--evidence …] [--next …]` (`store/scripts/ledger.mjs`). It updates
+  [--evidence …] [--next …]` (app-release `ledger.mjs`). It updates
   `store/ledger.json` and regenerates `store/ledger.md`; never edit the
   Markdown by hand.
 - Follow `PROMPT-RULES.md`; never edit a published rating prompt in place or
@@ -67,16 +70,16 @@ release status. Calm presentation must not change the rating calibration.
 - To check the hourly caller's runs, use
   `.agents/skills/newsworthy-caller-review/SKILL.md`; findings go in
   `docs/caller-reviews/ledger.md`, observations kept apart from hypotheses.
+  Trial a new caller model with `.agents/skills/newsworthy-caller-trial/SKILL.md`.
 - To remake the store preview videos, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
-- Before any EAS build, store submission or EAS sandbox, use
-  `.agents/skills/newsworthy-app-release/SKILL.md`: free-plan monthly caps.
+- Before any app build, store submission or EAS sandbox, use
+  `.agents/skills/newsworthy-app-release/SKILL.md` (on `vendor/skills`).
 - Every skill in `.agents/skills/` keeps an append-only ledger, linked from its
   SKILL.md, read before a run and updated after (`test/skill-ledgers.test.js`).
 - A push to `main` deploys to production. `main` is both the GitHub default
-  branch and Vercel's production branch. Preview builds are skipped by
-  `vercel.json`’s `ignoreCommand`; verify production after merge.
+  branch and Vercel's production branch. Verify production after merge.
 - `npm test` needs no cloud database — see Testing. `scripts/cloud-setup.sh`
   prepares cloud sessions; `npm run check:android-widget` compiles the widget.
 - The production admin token (`ADMIN_TOKEN`) is kept in the owner's 1Password
@@ -106,7 +109,7 @@ release status. Calm presentation must not change the rating calibration.
 | `src/story.js` | Judges which development a reading reports. Append-only prompts. |
 | `src/db.js`, `src/sql.js` | Postgres access and schema. |
 | `public/` | Web-only admin, privacy/support pages and discovery assets; Expo owns the public rating UI. |
-| `apps/client/` | Shared Expo UI, native widgets and EAS build configuration. |
+| `apps/client/` | Shared Expo UI, native widgets and build configuration. |
 | `docs/product-messaging.md` | Shared positioning and limits on product claims. |
 | `docs/mobile-release.md` | Expo cloud-build preparation and remaining release gates. |
 | `PROMPT-RULES.md` | Constraints on every prompt version. Tests enforce each. |
@@ -231,7 +234,7 @@ but it cannot tell a re-report from a new development inside a running story. It
 chained six days of Iran readings into one, so the resumption of strikes on 31
 August — which the rater scored 4 to 7 — would have displayed as 1. That
 distinction is a judgement about the news, not about the words, so a model makes
-it: `src/story.js` shows the last 48 hours grouped into developments and asks
+it: `src/story.js` shows the last 144 hours grouped into developments and asks
 which one the new sentence reports, or none. The answer lands in `story`,
 `development_of`, `judge_version`, `judge_model`, `judge_note` and
 `judge_cost_usd`, and `src/current.js` replays it. The judgement is never
@@ -269,6 +272,13 @@ The record ends with every reading of each story (~50k chars, read once, by
 record or multi-year high or low is new the first time no development names it,
 under the story that moved it. v3 had filed reading 827's 2007-high yields as
 detail on a two-day-old event.
+
+**v5: a development is one occurrence.** v4 plus one paragraph: a shared
+subject, party, place or kind of event is not identity, and what happened after
+a development was first seen is a later occurrence, not added detail. Deadlier
+Houthi strikes on Riyadh's airport had been filed under a 6 October one. The
+record also shows a root older than its window by its own first report
+(`priorRoots()`), not its earliest re-report.
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
@@ -386,7 +396,8 @@ judged re-report rewords the same event: the WSJ report of Trump rejecting
 Iran's Hormuz plan came back 29 ways over 27 hours. `sentenceFor()` in
 `src/current.js` shows instead, word for word, its development's first report,
 dated from it as the timeline is — not where it last escalated, which dated a
-day-old event "7h". `created_at` stays the newest reading's. A new development and an
+day-old event "7h". After a version bump it shows the first reading at
+the newest version, dated from the first report. `created_at` stays the newest reading's. A new development and an
 unjudged reading show their own sentence. Push uses the same one.
 
 `basis` is one of `new` (the newest reading opened or escalated the development
@@ -444,9 +455,8 @@ opened, and a story quiet since then has gone on ageing. So the header says how
 long the story has been running, how many developments set its routine level,
 what that level is, the weight a development opening this minute would get, and
 the score that would clear the routine level by the shock margin and open whole.
-It is asked of the same `storyState()` arithmetic that `fatigued()` uses at
-open time, about now — a second implementation in the page would be free to
-drift from the discount it describes. A story's first development is itself on
+It uses the `storyState()` arithmetic `fatigued()` uses at open time, so the
+page cannot drift from the discount it describes. A story's first development is itself on
 record, so a story is never without a routine level; only readings the judge
 could not place have nothing to be weighed against, and the header says so.
 
@@ -528,11 +538,10 @@ rather than "not asked for"; `history()` selects no usage columns, and that null
 was misread as data loss.
 
 **The external caller runs hourly, not on this app's cadence.** A scheduled
-Cowork task fires at `2 * * * *` — 48 of the last 48 readings are external, one
-per hour, clustered at :03–:05, each an independent session with no memory of
-the others. No cron run has executed since v4: the caller keeps the staleness
-window suppressed, so this app's cadence setting is inert and its model spend
-near zero.
+Cowork task fires at `2 * * * *` — every reading is external, one an hour at
+:03–:06, each a session with no memory of the others. No cron run has executed
+since v4: the caller keeps the staleness window suppressed, so this app's
+cadence setting is inert and its model spend near zero.
 
 **The cron only fires if nothing arrived within the interval.** A rolling
 window from the newest reading, not the slot boundary — an external reading at
@@ -541,7 +550,7 @@ is what keeps this cheap: a reading submitted elsewhere is a reading this app
 does not pay for.
 
 **Cadence is enforced by the slot, not the cron schedule.** `vercel.json` ticks
-every 15 minutes. Each reading claims a `slot` floored to the configured
+hourly at :08, while the caller's run still has Neon awake. Each reading claims a `slot` floored to the configured
 interval, guarded by a partial unique index (`ratings (slot) WHERE status =
 'ok'`). Ticks inside an interval find the slot filled and return without calling
 the model. So cadence is changeable from `/admin` with no redeploy — but it
@@ -561,9 +570,8 @@ commit. Check it before debugging anything else.
 Branch Tracking**, not Settings → Git.
 
 **`vercel.json` takes no comments.** The schema sets `additionalProperties:
-false`, so a `"//"` key fails the deploy outright — `should NOT have additional
-property //` — before any build runs. Rationale for anything in that file
-belongs here instead.
+false`, so a `"//"` key fails the deploy before any build runs. Rationale for
+anything in that file belongs here instead.
 
 **Preview builds are skipped** via `ignoreCommand`: every branch preview failed
 in a second (`BUILD_FAILED`, "Resource provisioning failed", no logs) and
@@ -656,9 +664,9 @@ Native delivery needs credentials this repository cannot hold: an APNs key and
 an FCM service account uploaded to EAS. Until they are, the switch registers a
 token and nothing arrives — see `docs/mobile-release.md`.
 
-**Avoid native dependencies.** `better-sqlite3` broke the first deploy: npm
-skipped its install script, so the binding was missing and the import threw at
-cold start. Prefer pure-JS or HTTP-based drivers.
+**Avoid native dependencies.** `better-sqlite3` broke the first deploy (npm
+skipped its install script; the import threw at cold start). Prefer pure-JS or
+HTTP drivers.
 
 **v5 changed what is measured, not just the wording.** v1 through v4 asked
 whether the news was worth the reader's attention across money, career,
@@ -701,22 +709,17 @@ are never invented — one nobody scored is this app's opinion wearing the
 author's clothes. Calibration is stored there rather than in a separate file, so
 the thing that rates and the evidence it was calibrated against travel together.
 
-**Prompt construction rules live in `PROMPT-RULES.md`**, and every one of the
-seven is enforced by a test in `test/prompt-rules.test.js` against whichever
-version is live, so they cannot go stale as versions accumulate. A rule in prose
-alone is a rule that gets forgotten on the version where it matters. An eighth
-rule needs an eighth test — a count check fails otherwise.
+**Prompt construction rules live in `PROMPT-RULES.md`**, each enforced by a
+test in `test/prompt-rules.test.js` against whichever version is live, so they
+cannot go stale as versions accumulate. A new rule needs a new test — a count
+check fails otherwise.
 
 **A caller can be reading a version you retired hours ago.** On 2026-08-29 the
 hourly caller fetched `/api/instructions` and received v9 while the server
 stamped its submission v11 — three releases apart, six hours stale. It reported
-this as a Vercel edge cache. It is not: eight consecutive fetches of the
-canonical URL from outside return the current version with `cache-control:
-no-store`, `x-vercel-cache: MISS` and `age: 0`, and a cache-busted URL returns
-byte-identical content in the same second. That a novel query string changes
-what a *caller* sees, while the origin says MISS, is positive evidence the cache
-sits on the caller's side — an origin cache would answer HIT with a non-zero
-age.
+this as a Vercel edge cache. It is not: outside fetches got the current
+version with `no-store`, `x-vercel-cache: MISS` and `age: 0`, and a
+cache-busted URL returned the same bytes, so the cache sat on the caller's side.
 
 Callers now read with `curl`, which keeps no copy. A stale-copy explanation is
 still the first thing to check when a prompt change appears to have had no
@@ -746,10 +749,10 @@ about what was read. Publishing the bytes is safe, publishing the answer is not.
 
 The first wording ("the bytes to hash come from `/api/prompt`", qualifier
 trailing) read as "hash the response body", and a caller did, storing a reading
-flagged `prompt_verified: false`. The check worked, but a false flag from a
-doc-following caller looked like a delivery failure. The definition now leads
-with the field's decoded value, names both wrong inputs (the body, the escaped
-form) and what a false flag means; a test pins it and keeps the old opening out.
+flagged `prompt_verified: false`. The check worked, but the false flag looked
+like a delivery failure. The definition now leads with the field's decoded
+value, names both wrong inputs (the body, the escaped form) and what a false
+flag means; a test pins it and keeps the old opening out.
 
 The 16-character hash printed in the instructions is deliberately a *prefix* of
 the 64-character digest. A caller that echoes the printed value, or any prefix,
@@ -781,49 +784,32 @@ versions assumed, and it is the first evidence in the series that separates a
 scale that rates wrongly from a scale the rater never received.
 
 **v10 and v11 were written against evidence that has not survived.** Both
-answered the trailing clause — "distant from US readers", "nothing requiring
-personal action" — and each had a theory. v10: adding reach to rung 3 gave the
-rater a criterion to narrate. v11: rung 3 and the Output contract contradict
-each other, because on a day scored 3 the rater has just concluded nothing
-matters and is then asked to name a development and its effect.
-
-Both theories were built on readings the rater produced from **v9's text**,
-while the server stamped them v10 and v11. Neither has verified evidence behind
-it, and the verified readings so far carry no clause at all. They are kept
-because they are published and readings reference them, and because neither is
-disproved — only unsupported. They are not a basis for the next version.
+answered the trailing clause ("distant from US readers") with a theory about
+rung 3, built on readings the rater produced from **v9's text** while the
+server stamped them v10 and v11. Neither is disproved, only unsupported; they
+are kept because readings reference them, not as a basis for the next version.
 
 The reusable part is the method, not the conclusions: five wordings of one
 prohibition were shipped across nine months of versions, each judged by a rate
 measured on readings nobody could attribute to the text being judged. A prompt
 change is not evaluable until the readings answering it are verified.
 
-**v12 changes sentence writing, not calibration.** Output now requests at most
-150 characters including spaces and punctuation, one clear development, familiar
-abbreviations and useful specifics, without em dashes or semicolons. Everything
-before Output is byte-identical to v11. The caller reference and OpenAPI wording
-match; ingestion still truncates only beyond 400 characters and has the same
-four rejection rules. The [evaluation](docs/prompt-evaluations/v12.md) contains
-72 actual generations on reconstructed notes with GPT-6 Astra, not production
-Claude or the live search workflow. It supports the writing revision, not a
-claim about production quality or scoring. The reusable update process is in
-[the repository skill](.agents/skills/newsworthy-prompt-update/SKILL.md).
+**v12 changes sentence writing, not calibration.** Output asks for at most 150
+characters, one clear development, familiar abbreviations and useful specifics,
+no em dashes or semicolons; the rest is v11's. The
+[evaluation](docs/prompt-evaluations/v12.md) ran GPT-6 Astra on reconstructed
+notes, not production Claude: evidence for the writing, not for scoring.
 
-**v13 sets the widget sentence budget to 140 characters.** The user chose this
-limit after rejecting the unpublished 100-character proposal as too aggressive.
-Only the character budget changes from v12; writing guidance, rating instructions,
-provenance and ingestion behavior remain. Caller and OpenAPI descriptions agree.
-The [record](docs/prompt-evaluations/v13.md) separates the initial 100-character
-writing experiment from the selected 140-character limit. Neither a measured
-95% fit rate nor native widget verification is claimed.
+**v13 sets the widget sentence budget to 140 characters**, the owner's choice;
+nothing else changes from v12. See the [record](docs/prompt-evaluations/v13.md).
 
 **v15 makes the sentence calm and plain for a non-expert.** Live readings read
 as dense and expert-facing: three figures and two terms of art in one sentence.
 Only Output's writing guidance changes: a reader with no background, what the
 development means for daily life, at most one number, jargon explained or
 dropped. The 120/140-character budget and everything before Output are v14's.
-The [record](docs/prompt-evaluations/v15.md) compares v14 and v15 on eight cards
-with fresh Claude generations, not the production research workflow.
+The [record](docs/prompt-evaluations/v15.md) compares the two on eight cards,
+not in the production workflow.
 
 **v16 gives the age reserve back to the sentence.** The app's only prefix is now a
 bold "New:" on a new development, five characters, so the body budget rises from
@@ -873,6 +859,27 @@ biggest companies' moves and search each, naming no topic, so a fading theme
 drops out. An AI release replaced the Hormuz example at 5; see the
 [record](docs/prompt-evaluations/v20.md).
 
+**v21: no market forecasts.** v18's "what it could mean for prices or
+savings" grew tails like ", which could lift oil prices" to 76% of sentences
+by v20. v21 drops it (rule 9); reviews flag them
+(`scripts/market-forecast.mjs`). See
+the [record](docs/prompt-evaluations/v21.md).
+
+**v22: active voice.** "Tankers were reportedly hit" hid an attacker already
+on record. Output now asks who did what in active voice, or who claims it
+(rule 10); `scripts/passive-voice.mjs` flags agentless passives. See the
+[record](docs/prompt-evaluations/v22.md).
+
+**v23: a preview says what it will settle.** Reading 1209 announced the day's
+inflation report eleven hours early and stopped there: v21 had cut the forecast
+tail that carried a preview's stake. Output now asks scheduled news to lead with
+what it will settle (rule 11), tightened elsewhere to fit rule 7. See the
+[record](docs/prompt-evaluations/v23.md).
+
+**v24: dates, never relative days.** "10h ago: … due today" was written at
+9 p.m. Pacific the day before and read as overdue. The style line now rules
+out relative days (rule 12). See the [record](docs/prompt-evaluations/v24.md).
+
 **Prompts are append-only.** Never edit a published version in `src/prompts.js`
 — add the next one. Rows store the version, a SHA-256 of the exact text sent,
 and that text, so a reading stays traceable.
@@ -903,7 +910,7 @@ npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 
 Do not record test counts; they go stale.
 
-**The story timeline** is off by default (`timeline` in `preferences.js`), one
+**The story timeline** is on by default (`showTimeline` in `preferences.js`), one
 entry per development ordered by `opened`, one week long. See
 `docs/story-timeline.md` before changing it.
 

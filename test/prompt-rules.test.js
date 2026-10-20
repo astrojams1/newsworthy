@@ -88,6 +88,10 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [18, 'e134aa373968ebed'],
     [19, '66043069a1277b7e'],
     [20, '24e0951932807570'],
+    [21, '3f042c2d18d27cb3'],
+    [22, '8916247a26173fdf'],
+    [23, '51dc90c54eed7bad'],
+    [24, 'a9791807609fb232'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -126,11 +130,46 @@ test('rule 8 — the sentence never names a news outlet', () => {
   assert.match(output(renderPrompt(latestVersion()).text), /Never name news outlets\./);
 });
 
+test('rule 9 — the sentence never predicts a market move', () => {
+  // The owner's call from 2026-10-05. v18's "what it could mean for prices or
+  // savings" put a forecast tail on 76% of v20 sentences. The score says how
+  // far news could move markets; the sentence says what happened.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  const text = output(renderPrompt(latestVersion()).text);
+  assert.match(text, /Never predict market moves\./);
+  assert.doesNotMatch(text, /could mean for prices/);
+});
+
+test('rule 10 — the sentence says who acted, in the active voice', () => {
+  // The owner's call from 2026-10-05. Under v20 the Hormuz tanker attacks came
+  // out as "Two oil tankers were reportedly hit" while the attacker had claimed
+  // them. An unconfirmed act names who claims it rather than dropping the actor.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.match(output(renderPrompt(latestVersion()).text), /who did what in active voice, or who claims it\./);
+});
+
+test('rule 11 — before scheduled news, the sentence says what it will settle', () => {
+  // The owner's call from 2026-10-14. Reading 1209 announced "The US releases
+  // September consumer price figures today" eleven hours before the release and
+  // stopped there: v21 had cut the forecast tail that used to carry the stake,
+  // and nothing replaced it. A preview now leads with what the release settles.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.match(output(renderPrompt(latestVersion()).text), /Before scheduled news, lead with what it will settle\./);
+});
+
+test('rule 12 — dates, never relative days', () => {
+  // The owner's call from 2026-10-14. A sentence is shown for hours under an
+  // age, in every time zone: "10h ago: US inflation figures due today" was
+  // written at 9 p.m. Pacific the day before and read as overdue.
+  const output = (t) => t.slice(t.indexOf('\nOutput\n'));
+  assert.match(output(renderPrompt(latestVersion()).text), /no weekdays or relative days/);
+});
+
 test('the rules file lists exactly what is enforced here', async () => {
   // A rule added to the file and not to this suite is decoration.
   const rules = await readFile('PROMPT-RULES.md', 'utf8');
-  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 8,
-    'eight rules; add a test before adding a ninth');
+  assert.equal(rules.split('\n').filter((l) => /^\d+\. /.test(l)).length, 12,
+    'twelve rules; add a test before adding a thirteenth');
 });
 
 test('v9 moves the rungs rather than annotating them', () => {
@@ -423,4 +462,64 @@ test('v20 searches the themes markets are trading on, naming none', async () => 
     'writing guidance and style are v19\'s verbatim');
   const evaluation = await readFile('docs/prompt-evaluations/v20.md', 'utf8');
   assert.ok(evaluation.includes(v20.hash), 'the evaluation record names the shipped text');
+});
+
+test('v21 stops predicting market effects in the sentence', async () => {
+  // v18's "what it could mean for prices or savings" turned a speculative tail
+  // (", which could lift oil and fuel prices") from 0% of sentences under
+  // v11-v16 into 76% under v20. v21 drops it and forbids forecasts; everything
+  // else is v20's verbatim, so readings across the two are comparable.
+  const [v20, v21] = [20, 21].map(renderPrompt);
+  assert.equal(v21.text, v20.text.replace(
+    'one development, who did what and what it could mean for prices or savings.',
+    'one development, who did what. Never predict market moves.'));
+  assert.doesNotMatch(v21.text, /could mean for prices/);
+  const evaluation = await readFile('docs/prompt-evaluations/v21.md', 'utf8');
+  assert.ok(evaluation.includes(v21.hash), 'the evaluation record names the shipped text');
+});
+
+test('v22 asks for the active voice and changes nothing else that matters', async () => {
+  // Everything but the actor clause is v21's; " on new developments" was cut
+  // from the label sentence to fit rule 7, and the rater submits no label.
+  const [v21, v22] = [21, 22].map(renderPrompt);
+  assert.equal(v22.text, v21.text
+    .replace('one development, who did what.', 'one development, who did what in active voice, or who claims it.')
+    .replace('"New: " label on new developments.', '"New: " label.'));
+  const evaluation = await readFile('docs/prompt-evaluations/v22.md', 'utf8');
+  assert.ok(evaluation.includes(v22.hash), 'the evaluation record names the shipped text');
+});
+
+test('v23 says what scheduled news will settle and changes nothing else that matters', async () => {
+  // One clause added. The other edits tighten v22's wording to fit rule 7
+  // without changing what it asks for; everything before Output is v22's.
+  const [v22, v23] = [22, 23].map(renderPrompt);
+  const before = (t) => t.slice(0, t.indexOf('\nOutput\n'));
+  assert.equal(before(v23.text), before(v22.text));
+  assert.equal(v23.text, v22.text
+    .replace('Reply with a single JSON object and nothing else, no prose or fences:',
+      'Return only this JSON, no prose or fences:')
+    .replace('Display: at most 140 characters including spaces and punctuation, 5 of them for',
+      'Display: at most 140 characters including spaces and punctuation, 5 for')
+    .replace('Never predict market moves.',
+      'Never predict market moves. Before scheduled news, lead with what it will settle.')
+    .replace("dates, years and ordinals don't count", "dates, years, ordinals don't count")
+    .replace('Explain or drop jargon, market figures and uncommon acronyms.',
+      'Explain or drop jargon, market figures, rare acronyms.')
+    .replace('(year only if not this one, no weekdays)', '(no year if this one, no weekdays)')
+    .replace('rating justification or advice.', 'rating justification, advice.'));
+  assert.match(v23.text, /at most 135 characters/, 'the body budget is unchanged');
+  const evaluation = await readFile('docs/prompt-evaluations/v23.md', 'utf8');
+  assert.ok(evaluation.includes(v23.hash), 'the evaluation record names the shipped text');
+});
+
+test('v24 rules out relative days and changes nothing else that matters', async () => {
+  // One style entry; "no prose" and "Submit no label" were shortened to fit
+  // rule 7. Everything before Output is v23's.
+  const [v23, v24] = [23, 24].map(renderPrompt);
+  assert.equal(v24.text, v23.text
+    .replace('Return only this JSON, no prose or fences:', 'Return only this JSON, no fences:')
+    .replace('"New: " label. Submit no label.', '"New: " label. Omit it.')
+    .replace('(no year if this one, no weekdays)', '(no year if this one, no weekdays or relative days)'));
+  const evaluation = await readFile('docs/prompt-evaluations/v24.md', 'utf8');
+  assert.ok(evaluation.includes(v24.hash), 'the evaluation record names the shipped text');
 });

@@ -1,120 +1,134 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-01T12:08:40+00:00
+Updated: 2026-10-20T15:18:25+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
 Objective: Release iOS and Android publicly as a one-time US$1 paid download with local equivalents, preserving the web app.
 
-Generated from the adjacent JSON ledger. Update through store/scripts/ledger.mjs, not this view.
+Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit this view. Its event history is append-only.
 
-| Gate | State | Owner | Evidence basis | Result | Next action |
-|---|---|---|---|---|---|
-| scope | done | agent | observed | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
-| web.deploy | done | agent | observed | PR127 merged as3a2f0e0; both GitHub checks passed. Vercel production alias now serves deploymentdpl_2d1c1kXXV4ej2Vp1r2znLRVW4DAT with receipt/retry fixes and updated privacy text. Home, Settings, current API, health and privacy return200. | — |
-| apple.membership | done | agent | observed | Renewed individual developer membership is recognized by App Store Connect. | — |
-| apple.address | waiting_provider | provider | observed | September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction. | Await address-review response and verify the corrected legal record in Business. |
-| apple.agreement | waiting_user | user | observed | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
-| apple.tax | done | user | observed | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
-| apple.bank | waiting_user | user | observed | September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active. | Owner adds and verifies payout details in Apple Business; agent then reads back Active status. |
-| apple.dsa | done | user | observed | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
-| apple.privacy | done | agent | observed | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
-| apple.review-contact | done | agent | observed | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
-| apple.listing | done | agent | observed | Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording. | — |
-| apple.build | done | agent | observed | Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled. | — |
-| apple.native | done | agent | observed | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
-| apple.upload | done | agent | observed | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
-| apple.availability | done | agent | observed | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | Build 26 is WAITING_FOR_REVIEW after accepted resubmission on October 1; current timeline, Notifications root and native widget gallery are saved. Six-part Notes accurately identify the existing build-21 physical video. | Await Apple response; approval and public paid-sale readiness remain separate. |
-| apple.release | waiting_provider | provider | observed | Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates. | Await approval, then verify paid-sale readiness and public availability. |
-| google.identity | done | user | observed | Registration fee paid and Play Console reports identity successfully verified. | — |
-| google.device | waiting_user | user | observed | Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this. | Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification. |
-| google.phone | waiting_user | user | observed | Phone-verification link disabled while earlier verification task remains. | Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google. |
-| google.app | waiting_user | user | observed | September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner. | Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled. |
-| google.build | done | agent | observed | Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope. | Upload AAB12 when Google allows app creation; complete physical Android testing separately. |
-| google.native | in_progress | agent | observed | Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified. | Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open. |
-| google.listing | in_progress | agent | observed | Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload. | Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets. |
-| google.disclosures | todo | agent | inferred | Google app-content/privacy/rating questionnaires not yet available without app record. | After app creation, answer current questionnaires using code and actual service logging evidence. |
-| google.closed-test | waiting_user | user | observed | New personal account testing path needs genuine testers and elapsed testing time. | Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application. |
-| google.production-access | todo | agent | inferred | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
-| google.review | todo | agent | observed | No Google release submitted for review. | Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state. |
-| google.release | todo | agent | observed | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
-| apple.content-rights | done | agent | observed | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
-| host.ui | done | agent | observed | Native UI access restored after the Mac was unlocked. | — |
-| google.artwork | done | agent | observed | APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps | — |
-| design.reading-screen | in_progress | agent | observed | Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback. | Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery. |
-| native.ui-access | done | agent | observed | Mac is now unlocked; native Android Emulator and iOS Simulator accessibility/screenshot controls are available. | — |
-| design.widget-gallery | done | agent | observed | Both platform galleries feature actual widget size choices on neutral backgrounds | — |
-| native.ios-widget-sizes | done | agent | observed | Replacement small and medium iOS widgets verified on iPhone 16 Pro Max iOS 18.3; clean neutral artwork rendered from actual widget viewports. | — |
-| native.ios-replacement-ui | done | agent | observed | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
-| apple.gallery-order | done | agent | observed | Both Apple screenshot families lead with the actual finite-week timeline. Exact final order, count, COMPLETE states and checksums read back. | — |
-| apple.widget-gallery-revision | done | agent | observed | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
-| google.widget-fix | done | agent | observed | APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained | — |
-| design.regression | done | agent | observed | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
-| apple.review-access | done | agent | observed | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
-| apple.review-notes | done | agent | observed | Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo. | — |
-| apple.physical-recording | done | agent | observed | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
-| apple.testflight | done | agent | observed | Production build26 is VALID and IN_BETA_TESTING in ReleaseQA; selected for AppReview. Historical build21 physical tests are retained separately. No new invite required. | — |
-| google.large-text-build | done | agent | observed | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
-| google.offline | done | agent | observed | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
-| apple.header-background | done | agent | observed | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
-| native.replacement-builds | done | agent | observed | Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified. | Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload. |
-| design.denominator | in_progress | agent | observed | Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction. | Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission. |
-| design.widget-alignment-prototype | done | agent | observed | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
-| design.widget-layout-feature | done | agent | observed | Actual native widget feature merged in PR100, retaining latest share-icon fix. 207 tests and35 design checks passed; iOS and Android native test-host captures recorded with untested real-widget-host states explicit. | — |
-| apple.widget-testflight | done | agent | observed | iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW. | — |
-| apple.widget-refresh | done | agent | observed | Centering and app-to-widget refresh fixes merged in PR103 and released to TestFlight1.0.0 build13. Original App Review build7 remains WAITING_FOR_REVIEW. Native simulator layout checks and signed IPA verification recorded; physical-device widget synchronization and Android launcher checks remain untested. | — |
-| apple.widget-refresh-signing | done | agent | observed | App Group registered and assigned to both targets; EAS regenerated both active provisioning profiles using the existing ASC API key. | — |
-| apple.widget-refresh-build | done | agent | observed | Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary. | — |
-| apple.widget-refresh-upload | done | agent | observed | EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate. | — |
-| apple.widget-refresh-testflight | done | agent | observed | Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing. | — |
-| design.quiet-reading-status | done | agent | observed | Removed remaining unsolicited widget saved/waiting copy. Approved-copy regression gate45 and full suite226 pass in clean CI, as do TypeScript, native exports and prebuild. Production WidgetKit source compiles; actual updated native visuals remain unverified. | — |
-| apple.quiet-reading-build | done | agent | observed | iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy. | — |
-| apple.quiet-reading-upload | done | agent | observed | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
-| apple.quiet-reading-testflight | done | agent | observed | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
-| apple.review-state | done | agent | observed | Fresh API readback confirms selected VALID build 26, version WAITING_FOR_REVIEW and review submission WAITING_FOR_REVIEW. | — |
-| story-age.native | todo | agent | observed | Owner found four seconds too long: "Checked 23m ago" now holds for two seconds (on load, on returning to the app, after a tap) before crossfading to the story line. Web export verified in Chromium: story line at ~3.6s after navigation, Checked for ~2s after a tap. Native apps not built or run here. | On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds. |
-| apple.testflight-15 | done | agent | observed | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
-| apple.testflight-15-build | done | agent | observed | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
-| apple.testflight-15-upload | done | agent | observed | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
-| apple.testflight-16 | failed | agent | observed | EAS build 16 failed: existing app provisioning profile lacks Push Notifications capability and aps-environment entitlement required by the merged expo-notifications feature. | Enable required app capability and refresh existing signing profile, then rebuild and verify the replacement. EAS APNs delivery key is separately absent. |
-| apple.testflight-17 | failed | agent | observed | Canceled retry build 17 because installed EAS skipped Apple authentication in non-interactive mode and reused the same profile. Cancellation confirmed. | Complete explicit credential configuration using the existing ASC key, verify push capability and profile entitlements, then rebuild. |
-| apple.push-signing | done | agent | observed | Direct Apple API enabled PUSH_NOTIFICATIONS after EAS reported a non-persisted capability change. Replacement profile G6W87MV6Y4 includes production aps-environment and the existing widgets App Group; exact profile bytes assigned and read back from EAS. Existing distribution certificate reused. | — |
-| apple.testflight-18 | done | agent | observed | iOS 1.0.0 build 18 is VALID and IN_BETA_TESTING in existing Release QA with one tester. Beta notes saved and verified. APNs delivery key remains absent and physical-device verification is pending. | — |
-| apple.testflight-18-build | done | agent | observed | EAS finished iOS 1.0.0 build 18 successfully after the signing repair. | — |
-| apple.testflight-18-upload | done | agent | observed | Apple direct upload succeeded for verified iOS 1.0.0 build 18. | — |
-| apple.testflight-18-provenance | done | agent | observed | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
-| ui.settings-feedback | waiting_user | user | observed | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
-| apple.testflight-settings | done | agent | observed | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
-| apple.notifications | done | agent | observed | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
-| google.notifications | done | agent | observed | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
-| apple.gallery-current | done | agent | observed | Eight native gallery images now current to production application source51826ed; actual simulator bundles1.0.0(1). Six app captures iOS26.5, Notifications/widgets iOS18.3.1. Physical QA separate. | — |
-| apple.physical-recording-current | done | agent | observed | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
-| apple.settings-transition | in_progress | agent | observed | Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off. | Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission. |
-| web.settings-back-arrow | waiting_user | user | observed | Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged. | Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows. |
-| web.settings-trailing-marks | waiting_user | user | observed | Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device. | Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build. |
-| widget.appearance-choice | in_progress | agent | observed | Build 25 (EAS ac89a682, commit bf78444) failed to compile: a String parameter with a declared default and an options provider is iOS 26-only, and the widget runs from iOS 17. The declared-default fix is withdrawn; the parameter is build 24's again, so an unset Appearance row can still read "Appearance" in Edit Widget while the widget follows the device. A test now rejects the iOS 26-only initializer. | Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too. |
-| widget.same-day-timestamp | waiting_verification | agent | observed | Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval. | On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight. |
-| ui.onboarding | waiting_verification | agent | observed | First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device. | On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text. |
-| copy.no-ai-listing | in_progress | agent | observed | store/listing.json description no longer mentions AI ("Ratings can be wrong." replaces "AI assessments can be wrong."); promotional text and keywords updated for the timeline and widget settings. The live App Store listing still says "Newsworthy uses AI"; not pushed yet. Google Play listing not created. | Push the description, promotional text and keywords to App Store Connect with the resubmission, then read back that no public field mentions AI. |
-| design.temperature-palette | waiting_verification | agent | observed | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
-| web.home-load | waiting_verification | user | observed | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
-| store.preview-video | waiting_user | user | observed | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
-| web.landscape-layout | waiting_verification | agent | observed | Owner follow-ups 2026-09-28 after production 93e2c3f (#180): the sentence and the timeline share one column, scaled with text size: 320pt upright, 360pt in landscape, 414pt on larger screens (22pt sentence, three lines rather than four). The timeline grid is removed on every screen, and CSS text-wrap is dropped: in Chrome on iPhone, WebKit's pretty read as balance. Timeline code is back to its pre-#179 form. The landscape score stays 22% of height: measured in headless Chromium at 743x340 with a 21pt bottom inset, today's sentence takes three lines, the chevron is on screen, and the reading is 346pt tall, 6pt over the viewport (353pt at 24%). Verified in headless Chromium only. | Owner: check iPhone landscape and portrait and desktop after merge. Native apps untested in landscape. |
-| ui.header-icon-size | waiting_verification | user | observed | TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device. | Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app. |
-| apple.resubmit-26 | done | agent | observed | Production 1.0.0 (26) resubmitted; Apple independently confirms version and review submission WAITING_FOR_REVIEW at 11:37:37 UTC. Eight gallery images COMPLETE, ordered and checksum-verified. | Await Apple review; save final evidence in PR #192. |
-| apple.metadata-26 | done | agent | observed | Build26 listing copy saved and read back through App Store Connect: updated description, promotional text, keywords and URLs; public fields do not mention AI. Six-part Review Notes now describe current timeline, High-score alerts/Threshold and independent widget settings, while labeling the September24 recording as historical build21. Existing private phone preserved in memory. App Preview sets are empty. | — |
-| apple.local-capture-26 | done | agent | observed | Mac unlock resolved. Capture completed using the Expo simulator artifact on installed iOS18.3.1; local Xcode26 runtime compilation/download was bypassed. This does not claim that optional Xcode26 runtime setup completed. | — |
-| apple.source-155 | done | agent | observed | PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments. | Capture current native Apple gallery and complete build-26 resubmission. |
-| apple.build-selection-26 | done | agent | observed | Selected Apple build 26 and verified VALID, IN_BETA_TESTING and PREPARE_FOR_SUBMISSION. Previous review submission remains UNRESOLVED_ISSUES; no resubmission was sent. | Finish current screenshot capture/upload and then resolve the review item and submit; verify review state. |
-| apple.cloud-capture-26 | done | agent | observed | Expo sandbox supplied seven app captures, then stopped at 10:50:03 UTC after 35m13s. Widget placeholder excluded; EAS artifact fallback supplied actual local widgets and Notifications root. Tool cap500/500; no second sandbox. | — |
-| apple.simulator-artifact-26 | done | agent | observed | EAS simulator-release78c0ccc8 finished; artifact downloaded/hash-verified. Actual1.0.0(1), app source matches51826ed. Original empty-entitlement extension rendered actual widgets/settings on iOS18.3.1; signing alone is not an established sandbox failure cause. | — |
-| apple.gallery-artwork-26 | done | agent | observed | Eight final Apple images rendered and visually inspected. Timeline first both families; real Small Light/Medium Dark surfaces at one scale on neutral canvas; root Notifications page replaces threshold selector. Symmetric native corner masks preserve full text. | — |
-| apple.gallery-upload-26 | done | agent | observed | Five iPhone and three iPad images read back COMPLETE with exact MD5 and intended order; all previous draft/historical images retired before build26 resubmission. | — |
-| apple.gallery-timeline-26 | done | agent | observed | Actual finite-week timeline is first in both Apple screenshot sets. Current iPhone and iPad timeline images are COMPLETE; exact uploaded checksums and ordering were independently read back. | — |
-| apple.gallery-capture-26 | done | agent | observed | Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate. | — |
-| apple.gallery-notifications-26 | done | agent | observed | Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified. | — |
-| widget.unpadded-hour | waiting_verification | agent | observed | Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged. | Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build. |
+## Release gates
+
+| Gate | State | Owner | Evidence basis | Updated | Result | Next action |
+|---|---|---|---|---|---|---|
+| scope | done | agent | observed | 2026-09-16 | Owner requests autonomous paid iOS/Android submission, public web preservation, all release work saved in repo. | — |
+| web.deploy | done | agent | observed | 2026-09-23 | PR127 merged as3a2f0e0; both GitHub checks passed. Vercel production alias now serves deploymentdpl_2d1c1kXXV4ej2Vp1r2znLRVW4DAT with receipt/retry fixes and updated privacy text. Home, Settings, current API, health and privacy return200. | — |
+| apple.membership | done | agent | observed | 2026-09-16 | Renewed individual developer membership is recognized by App Store Connect. | — |
+| apple.address | waiting_provider | provider | observed | 2026-09-24 | September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction. | Await address-review response and verify the corrected legal record in Business. |
+| apple.agreement | waiting_user | user | observed | 2026-09-16 | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
+| apple.tax | done | user | observed | 2026-09-16 | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
+| apple.bank | waiting_user | user | observed | 2026-09-24 | September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active. | Owner adds and verifies payout details in Apple Business; agent then reads back Active status. |
+| apple.dsa | done | user | observed | 2026-09-16 | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
+| apple.privacy | done | agent | observed | 2026-09-23 | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
+| apple.review-contact | done | agent | observed | 2026-09-16 | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
+| apple.listing | done | agent | observed | 2026-10-01 | Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording. | — |
+| apple.build | done | agent | observed | 2026-09-23 | Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled. | — |
+| apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
+| apple.upload | done | agent | observed | 2026-09-24 | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
+| apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
+| apple.review | waiting_provider | provider | observed | 2026-10-20 | 2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27. | Await Apple's response. |
+| apple.release | waiting_provider | provider | observed | 2026-10-01 | Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates. | Await approval, then verify paid-sale readiness and public availability. |
+| google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
+| google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
+| google.phone | done | user | observed | 2026-10-15 | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
+| google.app | done | agent | observed | 2026-10-15 | 2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered. | — |
+| google.build | done | agent | observed | 2026-10-19 | Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 15 and 16 through the Play API on internal testing (2026-10-15); 17 (2796737, Settings > Publisher) on 2026-10-19 to internal and promoted to Closed testing - Alpha, held from review. next-version-code returns 18. | — |
+| google.native | in_progress | agent | observed | 2026-10-16 | Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone. | On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
+| google.listing | done | agent | observed | 2026-10-16 | Default store listing, category and contact details complete (setup task ticked); sent to Google for review with the first closed-testing release on 2026-10-16. | — |
+| google.disclosures | done | agent | inferred | 2026-10-15 | Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md. | Send the saved App content changes for review with the first closed-testing release. |
+| google.closed-test | in_progress | user | observed | 2026-10-16 | 2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in. | After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days. |
+| google.production-access | todo | agent | inferred | 2026-09-16 | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
+| google.review | waiting_provider | user | observed | 2026-10-19 | 2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'. | Check Publishing overview and Policy status until Google decides; act on any finding. |
+| google.release | todo | agent | observed | 2026-09-16 | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
+| apple.content-rights | done | agent | observed | 2026-09-16 | Saved DOES_NOT_USE_THIRD_PARTY_CONTENT: app presents its generated rating/sentence and original vector artwork, not third-party article/media feeds. | — |
+| google.artwork | done | agent | observed | 2026-10-16 | 2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption. | — |
+| apple.gallery-order | done | agent | observed | 2026-10-01 | Both Apple screenshot families lead with the actual finite-week timeline. Exact final order, count, COMPLETE states and checksums read back. | — |
+| apple.widget-gallery-revision | done | agent | observed | 2026-09-16 | Replaced clashing wallpaper and unrelated icons with actual small/medium widget viewports on a plain neutral artboard; remote gallery read back COMPLETE. | — |
+| google.widget-fix | done | agent | observed | 2026-09-16 | APK9 compact 2x2 verified after owner resized and approved; existing expanded theme and APK8 periodic-refresh evidence retained | — |
+| apple.review-access | done | agent | observed | 2026-09-17 | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
+| apple.review-notes | done | agent | observed | 2026-10-01 | Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo. | — |
+| apple.physical-recording | done | agent | observed | 2026-09-17 | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
+| apple.testflight | done | agent | observed | 2026-10-01 | Production build26 is VALID and IN_BETA_TESTING in ReleaseQA; selected for AppReview. Historical build21 physical tests are retained separately. No new invite required. | — |
+| google.large-text-build | done | agent | observed | 2026-09-17 | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
+| google.offline | done | agent | observed | 2026-09-17 | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
+| apple.header-background | done | agent | observed | 2026-09-17 | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
+| apple.widget-testflight | done | agent | observed | 2026-09-17 | iOS1.0.0(10) is VALID and IN_BETA_TESTING in existing Release QA group. PR100 merged; App Store version1.0.0 still selects build7 and original review remains WAITING_FOR_REVIEW. | — |
+| apple.widget-refresh | done | agent | observed | 2026-09-18 | Centering and app-to-widget refresh fixes merged in PR103 and released to TestFlight1.0.0 build13. Original App Review build7 remains WAITING_FOR_REVIEW. Native simulator layout checks and signed IPA verification recorded; physical-device widget synchronization and Android launcher checks remain untested. | — |
+| apple.widget-refresh-signing | done | agent | observed | 2026-09-18 | App Group registered and assigned to both targets; EAS regenerated both active provisioning profiles using the existing ASC API key. | — |
+| apple.widget-refresh-build | done | agent | observed | 2026-09-18 | Production iOS1.0.0 build13 finished successfully. Signed IPA verified for app and widget identifiers, build number, matching App Group entitlements and embedded profiles. Native bridge and WidgetKit linkage present in app binary. | — |
+| apple.widget-refresh-upload | done | agent | observed | 2026-09-18 | EAS cloud submission of build13 finished successfully with no error. Apple upload complete; TestFlight processing/availability remains a separate gate. | — |
+| apple.widget-refresh-testflight | done | agent | observed | 2026-09-18 | Apple build13 processed VALID and internal state IN_BETA_TESTING. Beta notes saved; existing Release QA group assignment returned204. Physical widget checks remain pending user testing. | — |
+| apple.quiet-reading-build | done | agent | observed | 2026-09-20 | iOS1.0.0 build14 finished. Downloaded IPA verified for both bundle IDs/build14, matching App Group entitlements and profiles. Compiled main app lacks old loading/saved copy; widget lacks old waiting/connection and saved accessibility copy. | — |
+| apple.quiet-reading-upload | done | agent | observed | 2026-09-20 | EAS submission749e28ca-b0f6-47dc-8597-bbf7fb0a781c finished successfully. Apple processed iOS build14 VALID. | — |
+| apple.quiet-reading-testflight | done | agent | observed | 2026-09-20 | iOS1.0.0 build14 is IN_BETA_TESTING. Existing Release QA group assignment accepted; test notes saved and read back. Build7 remains WAITING_FOR_REVIEW. Device installation and actual updated native UI still require verification. | — |
+| apple.review-state | done | agent | observed | 2026-10-01 | Fresh API readback confirms selected VALID build 26, version WAITING_FOR_REVIEW and review submission WAITING_FOR_REVIEW. | — |
+| apple.testflight-15 | done | agent | observed | 2026-09-22 | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
+| apple.testflight-15-build | done | agent | observed | 2026-09-22 | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
+| apple.testflight-15-upload | done | agent | observed | 2026-09-22 | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
+| apple.testflight-16 | failed | agent | observed | 2026-09-22 | EAS build 16 failed: existing app provisioning profile lacks Push Notifications capability and aps-environment entitlement required by the merged expo-notifications feature. | Enable required app capability and refresh existing signing profile, then rebuild and verify the replacement. EAS APNs delivery key is separately absent. |
+| apple.testflight-17 | failed | agent | observed | 2026-09-22 | Canceled retry build 17 because installed EAS skipped Apple authentication in non-interactive mode and reused the same profile. Cancellation confirmed. | Complete explicit credential configuration using the existing ASC key, verify push capability and profile entitlements, then rebuild. |
+| apple.push-signing | done | agent | observed | 2026-09-22 | Direct Apple API enabled PUSH_NOTIFICATIONS after EAS reported a non-persisted capability change. Replacement profile G6W87MV6Y4 includes production aps-environment and the existing widgets App Group; exact profile bytes assigned and read back from EAS. Existing distribution certificate reused. | — |
+| apple.testflight-18 | done | agent | observed | 2026-09-22 | iOS 1.0.0 build 18 is VALID and IN_BETA_TESTING in existing Release QA with one tester. Beta notes saved and verified. APNs delivery key remains absent and physical-device verification is pending. | — |
+| apple.testflight-18-build | done | agent | observed | 2026-09-22 | EAS finished iOS 1.0.0 build 18 successfully after the signing repair. | — |
+| apple.testflight-18-upload | done | agent | observed | 2026-09-22 | Apple direct upload succeeded for verified iOS 1.0.0 build 18. | — |
+| apple.testflight-18-provenance | done | agent | observed | 2026-09-22 | Application source remains main 8bfea2d. Archive dirty-tree inventory also included an EAS-generated empty root app.json in addition to release records; nested apps/client app config was unchanged. The empty root scaffolding was removed after inspection. | — |
+| apple.testflight-settings | done | agent | observed | 2026-09-22 | iOS1.0.0(19) is VALID and IN_BETA_TESTING in Release QA with Settings fixes. Beta notes were saved and read back. Signed IPA and bundled feedback marker verified; App Review remains selected build7 and REJECTED. | — |
+| apple.notifications | done | agent | observed | 2026-09-24 | Production-only Newsworthy topic APNs key configured in Expo with owner confirmation. Test ticket and APNs receipt both OK. Physical build21 installation, launch, Settings and registration removal/restoration verified; visual notification presentation/tap unobserved because Mac notification mirroring is disabled. Original enabled threshold5 setting restored. | — |
+| google.notifications | done | agent | observed | 2026-09-24 | Dedicated FCM sender configured in EAS. APK12 on API35 emulator passed permission/default8, server registration, Expo/FCM receipts, visible notification and cold-start tap to reading. Notifications turned off and test registration removed. Physical Android verification remains separate. | Repeat delivery and normal use on a physical Android device before Play testing; Google account device verification still requires the owner. |
+| apple.gallery-current | done | agent | observed | 2026-10-01 | Eight native gallery images now current to production application source51826ed; actual simulator bundles1.0.0(1). Six app captures iOS26.5, Notifications/widgets iOS18.3.1. Physical QA separate. | — |
+| apple.physical-recording-current | done | agent | observed | 2026-09-24 | Updated physical iPhone recording inspected; continuous launch, reading, widgets, notification threshold change and appearance flow prepared and posted with six-part reply. OS and build number are not shown in footage; no fresh verification of those is claimed. | — |
+| apple.settings-transition | in_progress | agent | observed | 2026-09-24 | Owner review of PR134 at 9790b65 found Close needed two clicks after a redirected web deep link (/settings/threshold). Fixed with router.dismissTo('/'); a Chromium test against the real server covers gear/close, page/back/close and direct links to /settings, /settings/notifications and /settings/threshold, and fails on the old handler. Owner verified on iPhone 16 Pro Max iOS 18.3 in Expo Go at 9790b65: sheet close/reopen, nested navigation, appearance switching and threshold selection while alerts are off. | Verify on an iOS 26 build (glass X, swipe-down dismissal, Close via dismissTo), Android, enlarged text and real alert delivery. Update App Review notes' "Notify me about high readings" wording for the next submission. |
+| web.settings-back-arrow | waiting_user | user | observed | 2026-09-24 | Owner report: on the web, choosing a theme on Settings > Appearance did not recolour the header back arrow. Cause: react-native-web tints the navigator's arrow with an SVG filter under one fixed id (#tint-0), which a browser can keep painting in its first colour. Fix: on the web the Settings stack draws the app's BackIcon in the theme accent, colour carried in the image. Native headers unchanged. | Owner: in the browser where it was seen, open Settings > Appearance, switch Light/Dark and confirm the back arrow follows. |
+| web.settings-trailing-marks | waiting_user | user | observed | 2026-09-25 | Owner report: on the web, the Settings link arrow (Privacy, Support) looked too small and too high. Measured in Chromium: 8.7pt of ink beside 11.7pt capitals, ending above the baseline. Fix: every trailing mark (chevron, link arrow, check) sits in one 22pt slot, chevron drawn at 20 and arrow at 22, so each draws about 11pt of ink resting on the baseline. Icons consolidated into one glyph registry; sizes recorded in design/surfaces.json. iOS SF Symbol and Android rendering not measured on a device. | Owner: open Settings on the web after deploy and confirm the arrows sit level with the labels; check iOS and Android in the next native build. |
+| web.home-load | waiting_verification | user | observed | 2026-09-28 | Owner reversed the scroll request 2026-09-28: the staggered fade (number, sentence, Checked time) is on initial load only. Scrolling to the timeline fades the reading as one block, as before. Observed in headless Chromium; iOS Safari and native still unverified. | Owner checks production in iOS Safari after merge; check native load in the next TestFlight build and APK |
+| web.landscape-layout | waiting_verification | agent | observed | 2026-09-28 | Owner follow-ups 2026-09-28 after production 93e2c3f (#180): the sentence and the timeline share one column, scaled with text size: 320pt upright, 360pt in landscape, 414pt on larger screens (22pt sentence, three lines rather than four). The timeline grid is removed on every screen, and CSS text-wrap is dropped: in Chrome on iPhone, WebKit's pretty read as balance. Timeline code is back to its pre-#179 form. The landscape score stays 22% of height: measured in headless Chromium at 743x340 with a 21pt bottom inset, today's sentence takes three lines, the chevron is on screen, and the reading is 346pt tall, 6pt over the viewport (353pt at 24%). Verified in headless Chromium only. | Owner: check iPhone landscape and portrait and desktop after merge. Native apps untested in landscape. |
+| apple.resubmit-26 | done | agent | observed | 2026-10-01 | Production 1.0.0 (26) resubmitted; Apple independently confirms version and review submission WAITING_FOR_REVIEW at 11:37:37 UTC. Eight gallery images COMPLETE, ordered and checksum-verified. | Await Apple review; save final evidence in PR #192. |
+| apple.metadata-26 | done | agent | observed | 2026-10-01 | Build26 listing copy saved and read back through App Store Connect: updated description, promotional text, keywords and URLs; public fields do not mention AI. Six-part Review Notes now describe current timeline, High-score alerts/Threshold and independent widget settings, while labeling the September24 recording as historical build21. Existing private phone preserved in memory. App Preview sets are empty. | — |
+| apple.local-capture-26 | done | agent | observed | 2026-10-01 | Mac unlock resolved. Capture completed using the Expo simulator artifact on installed iOS18.3.1; local Xcode26 runtime compilation/download was bypassed. This does not claim that optional Xcode26 runtime setup completed. | — |
+| apple.source-155 | done | agent | observed | 2026-10-01 | PR #155 merged as 778a7f9 after both GitHub check jobs passed for 499f3f0. Production API health/current/timeline returned HTTP 200 after merge; public timeline returned seven developments. | Capture current native Apple gallery and complete build-26 resubmission. |
+| apple.build-selection-26 | done | agent | observed | 2026-10-01 | Selected Apple build 26 and verified VALID, IN_BETA_TESTING and PREPARE_FOR_SUBMISSION. Previous review submission remains UNRESOLVED_ISSUES; no resubmission was sent. | Finish current screenshot capture/upload and then resolve the review item and submit; verify review state. |
+| apple.cloud-capture-26 | done | agent | observed | 2026-10-01 | Expo sandbox supplied seven app captures, then stopped at 10:50:03 UTC after 35m13s. Widget placeholder excluded; EAS artifact fallback supplied actual local widgets and Notifications root. Tool cap500/500; no second sandbox. | — |
+| apple.simulator-artifact-26 | done | agent | observed | 2026-10-01 | EAS simulator-release78c0ccc8 finished; artifact downloaded/hash-verified. Actual1.0.0(1), app source matches51826ed. Original empty-entitlement extension rendered actual widgets/settings on iOS18.3.1; signing alone is not an established sandbox failure cause. | — |
+| apple.gallery-artwork-26 | done | agent | observed | 2026-10-01 | Eight final Apple images rendered and visually inspected. Timeline first both families; real Small Light/Medium Dark surfaces at one scale on neutral canvas; root Notifications page replaces threshold selector. Symmetric native corner masks preserve full text. | — |
+| apple.gallery-upload-26 | done | agent | observed | 2026-10-01 | Five iPhone and three iPad images read back COMPLETE with exact MD5 and intended order; all previous draft/historical images retired before build26 resubmission. | — |
+| apple.gallery-timeline-26 | done | agent | observed | 2026-10-01 | Actual finite-week timeline is first in both Apple screenshot sets. Current iPhone and iPad timeline images are COMPLETE; exact uploaded checksums and ordering were independently read back. | — |
+| apple.gallery-capture-26 | done | agent | observed | 2026-10-01 | Native originals/hashes retained for timeline/readings on iPhone/iPad iOS26.5 and Notifications plus Small Light/Medium Dark widgets on iOS18.3.1. Actual bundles1.0.0(1), app source51826ed. Name-hiding not reverified; physical build26 separate. | — |
+| apple.gallery-notifications-26 | done | agent | observed | 2026-10-01 | Owner-requested actual Notifications root page replaces the threshold-selector image. Final provider image COMPLETE and exact checksum verified. | — |
+| apple.uiscene-ios27 | waiting_verification | agent | observed | 2026-10-14 | The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed. | Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build. |
+| apple.local-release | waiting_user | agent | observed | 2026-10-14 | Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used. | Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result. |
+| google.play-api | done | agent | observed | 2026-10-16 | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
+| google.pricing | done | agent | observed | 2026-10-16 | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
+| google.news-policy | waiting_provider | agent | observed | 2026-10-19 | 2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead. | Check Policy status and Publishing overview until Google approves or rejects version 17. |
+
+## Product verification gates
+
+| Gate | State | Owner | Evidence basis | Updated | Result | Next action |
+|---|---|---|---|---|---|---|
+| host.ui | done | agent | observed | 2026-09-16 | Native UI access restored after the Mac was unlocked. | — |
+| design.reading-screen | in_progress | agent | observed | 2026-09-16 | Removed About route; refined score hierarchy, baseline alignment, sentence spacing, and compact Privacy / Support footer after owner feedback. | Verify the revised screen in replacement native builds, capture native listing images, and feature widgets in the gallery. |
+| native.ui-access | done | agent | observed | 2026-09-16 | Mac is now unlocked; native Android Emulator and iOS Simulator accessibility/screenshot controls are available. | — |
+| design.widget-gallery | done | agent | observed | 2026-09-16 | Both platform galleries feature actual widget size choices on neutral backgrounds | — |
+| native.ios-widget-sizes | done | agent | observed | 2026-09-16 | Replacement small and medium iOS widgets verified on iPhone 16 Pro Max iOS 18.3; clean neutral artwork rendered from actual widget viewports. | — |
+| native.ios-replacement-ui | done | agent | observed | 2026-09-16 | Replacement iPhone/iPad light and dark screens captured, About absent, iPhone Privacy/Support links load correct pages, iPad share popover opens. | — |
+| design.regression | done | agent | observed | 2026-09-16 | CI passed the named cross-surface design gate and all 189 repository tests on f613a87; known regressions fail the gate | For future UI changes, extend regression cases and perform the separate native capture matrix; these tests do not execute native layout engines. |
+| native.replacement-builds | done | agent | observed | 2026-09-17 | Both replacement builds completed. iOS7 uploaded, VALID and available in Release QA; production Android11 AAB downloaded and verified. | Owner confirms iOS7 header on physical device and supplies latest-OS review recording. Google owner device verification still blocks app creation and AAB upload. |
+| design.denominator | in_progress | agent | observed | 2026-09-17 | Approved denominator is U+2215 DIVISION SLASH followed by a regular U+0020 space and 10, across Expo web/iOS/Android and both native widgets. Source updated for the next native release; the current iOS build 7 review remains untouched by explicit owner instruction. | Deploy the web change after PR checks. Include this source in the next iOS/Android builds, then verify actual compact/expanded widgets in light/dark, score 10, enlarged text, resizing and theme changes. Do not cancel or replace the current iOS submission. |
+| design.widget-alignment-prototype | done | agent | observed | 2026-09-17 | Fixed-size iOS browser prototype now uses identical numeral metrics in small and medium widgets. App title toggle reclaims22pt in both (92→114pt body height) while preserving selected three-line size. Denominator remains baseline-aligned beside score. Native layouts unchanged. | Review the matching numerals and title toggle. Native implementation and full native verification remain separate if adopted. |
+| design.widget-layout-feature | done | agent | observed | 2026-09-17 | Actual native widget feature merged in PR100, retaining latest share-icon fix. 207 tests and35 design checks passed; iOS and Android native test-host captures recorded with untested real-widget-host states explicit. | — |
+| design.quiet-reading-status | done | agent | observed | 2026-09-20 | Removed remaining unsolicited widget saved/waiting copy. Approved-copy regression gate45 and full suite226 pass in clean CI, as do TypeScript, native exports and prebuild. Production WidgetKit source compiles; actual updated native visuals remain unverified. | — |
+| story-age.native | todo | agent | observed | 2026-10-15 | Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively. | On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds. |
+| ui.settings-feedback | waiting_user | user | observed | 2026-09-22 | Settings fixes are available in TestFlight1.0.0(19). Automated and native iOS18.3.1 Expo Go checks passed. iOS26 Liquid Glass and physical-device notification setting saves remain unverified; APNs delivery key remains absent. | Update to TestFlight1.0.0(19) and check Settings entry/exit, appearance changes and switch/threshold save feedback on iOS26; record observed results. |
+| widget.appearance-choice | in_progress | agent | observed | 2026-10-01 | Build 25 (EAS ac89a682, commit bf78444) failed to compile: a String parameter with a declared default and an options provider is iOS 26-only, and the widget runs from iOS 17. The declared-default fix is withdrawn; the parameter is build 24's again, so an unset Appearance row can still read "Appearance" in Edit Widget while the widget follows the device. A test now rejects the iOS 26-only initializer. | Owner checks Light, Dark and Follow device on both sizes with the next TestFlight build; a fresh widget's Appearance row is worth noting too. |
+| widget.same-day-timestamp | waiting_verification | agent | observed | 2026-09-26 | Widget timestamps drop the date for a reading saved today: iOS shows the time alone when the reading shares the timeline entry's day and adds a midnight entry so the date returns; Android uses DateFormat.getTimeInstance(SHORT) for today's reading and the date and time otherwise. Android widget Java compiled and resources linked (npm run check:android-widget). Swift not compiled (no toolchain); nothing seen on a device. Android redraws every 30 minutes, so after midnight the date can be missing for up to that interval. | On a device: iOS small and medium widgets and both Android widgets show time only for today's reading and date plus time for an earlier one, including across midnight. |
+| ui.onboarding | waiting_verification | agent | observed | 2026-10-15 | Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device. | In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged. |
+| copy.no-ai-listing | in_progress | agent | observed | 2026-10-01 | store/listing.json description no longer mentions AI ("Ratings can be wrong." replaces "AI assessments can be wrong."); promotional text and keywords updated for the timeline and widget settings. The live App Store listing still says "Newsworthy uses AI"; not pushed yet. Google Play listing not created. | Push the description, promotional text and keywords to App Store Connect with the resubmission, then read back that no public field mentions AI. |
+| design.temperature-palette | waiting_verification | agent | observed | 2026-09-27 | Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette. | Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update. |
+| store.preview-video | waiting_user | user | observed | 2026-09-28 | 15-second preview video rendered from store/video for both stores: iPhone 886×1920 and Google Play 1080×1920, H.264 High at level 4.0, 30 fps, 15.1 s, stereo AAC 256 kbps. A reconstruction from the production tokens, not a screen capture; placeholder sentence bars and approved copy only. Not uploaded to either store. | Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists. |
+| ui.header-icon-size | waiting_verification | user | observed | 2026-10-01 | TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device. | Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app. |
+| widget.unpadded-hour | waiting_verification | agent | observed | 2026-10-01 | Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged. | Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build. |
+| ui.timeline-default | waiting_verification | agent | observed | 2026-10-12 | On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27. | Check a fresh install and an upgraded TestFlight install of build 27 on a device. |
+| widget.sentence-fit | waiting_verification | agent | observed | 2026-10-12 | Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown. | Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build. |
 
 ## Evidence and history
 
@@ -1887,7 +1901,6 @@ Next: Sign in to Apple Developer in the prepared Codex browser. Agent then assig
 
 Owner reported Apple sign-in complete; authenticated Developer account for team CWQ9AWJF8T verified in browser. Registering widget App Group and updating profiles.
 
-
 Next: Assign group to main app and widget, refresh provisioning, then build.
 
 ### 187. apple.widget-refresh-signing — in_progress
@@ -3203,7 +3216,6 @@ Next: Check reading screen, splash and both widgets at scores 1, 5, 10 in light 
 
 Palette source is now OKLCH scale anchors plus brand.level in design/palette.json; generated tokens unchanged. design:generate warns on AA failures, the gradient pixel fixture is palette-independent, the share image cache key is a digest, npm run design:preview renders the result. Store native captures and gallery renderer still show the old mint palette.
 
-
 Next: Check reading screen, splash, icon and both widgets at scores 1, 5, 10 in light and dark on iOS and Android builds; refresh store captures before the next listing update.
 
 ### 325. web.home-load — waiting_verification
@@ -3367,7 +3379,6 @@ Next: Owner: check iPhone landscape and portrait and desktop after merge. Native
 2026-09-29T03:22:21+00:00 · observed · agent
 
 Since 2026-09-29 the app shows a muted "story · age" line below the sentence ("US Iran War · 5h ago"), "Last checked 18m ago" moved to Settings, and every app age reads "5m ago", "5h ago", "1d ago". Widgets keep their design with "5h ago:" before the sentence and "Checked at 10:21" (device hour cycle, no AM/PM, no date). Web export checked in Chromium, light and dark; widgets only as an HTML mock. Android compiles; Swift not compiled here.
-
 
 Next: On iOS and Android, both widget sizes, light and dark, enlarged text: "5h ago:" muted and aligned at the start of the sentence, "Checked at 10:21" fits the small widget in 12- and 24-hour settings; in the apps, the story line below the sentence and the Settings "Last checked" row.
 
@@ -3617,7 +3628,6 @@ Next: Unlock Mac; retrieve authorized single simulator-release artifact, verify 
 
 Single simulator-release EAS build 78c0ccc8-d1ac-4e04-a789-b33d4bf0c570 started via CLI for current widget capture; fifth October build. Application source matches production source 51826ed byte-for-byte; production build 26 will be reused.
 
-
 Next: Read build result; download native simulator artifact; verify actual bundle version and signing before widget captures.
 
 ### 366. apple.gallery-artwork-26 — in_progress
@@ -3645,7 +3655,6 @@ Next: Capture and replace actual widget artwork, verify final 5-iPhone/3-iPad ga
 2026-10-01T11:03:31+00:00 · observed · agent
 
 Mac is accessible through CUA again. Simulator-release EAS artifact 78c0ccc8 finished at 11:01:30Z. Continuing actual local widget capture using Expo-built artifact; existing seven app screenshots are COMPLETE and timeline leads both families.
-
 
 Next: Install artifact, inspect bundle/signature, verify small/medium appearance, save real full captures and finish gallery.
 
@@ -3831,3 +3840,399 @@ Widget checked times now use an unpadded hour and two-digit minutes: Checked at 
 - apps/client/targets/widget/NewsworthyWidget.swift; apps/client/plugins/widget-android/RatingWidget.java; apps/client/lib/story-age.js
 
 Next: Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.
+
+### 390. ui.timeline-default — waiting_verification
+
+2026-10-12T05:16:25+00:00 · observed · agent
+
+Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2 finding, with the timeline off by default): the timeline is on by default. Stored as showTimeline; the old timeline key, false in every existing install from its first save, is no longer read, so TestFlight installs see it on after updating. Listing description and Review Notes updated in store/listing.json (not yet pushed to App Store Connect). Unit and render tests only; no native build yet.
+
+- apps/client/lib/preferences.js; test/preferences.test.js; store/listing.json
+
+Next: Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.
+
+### 391. widget.sentence-fit — waiting_verification
+
+2026-10-12T05:35:01+00:00 · observed · agent
+
+Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not yet compiled for iOS; no WidgetKit or device check.
+
+- store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/macos-before.png; store/source/widget-sentence-fit/macos-after.png
+
+Next: Compile for iOS and check both medium sizes with and without the app name, a 140-character sentence and larger Dynamic Type, in the next native build.
+
+### 392. widget.sentence-fit — waiting_verification
+
+2026-10-12T05:43:37+00:00 · observed · agent
+
+Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown.
+
+- store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/ios27-iphone17e-medium.png
+
+Next: Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.
+
+### 393. apple.review — waiting_provider
+
+2026-10-12T06:02:58+00:00 · observed · provider
+
+Build 27 resubmitted 2026-10-12 06:02 UTC after Apple rejected build 26 under Guideline 4.2; Apple reports version 1.0.0 and review submission WAITING_FOR_REVIEW with build 27 selected. Timeline on by default, whole widget sentences.
+
+- store/apple-review-resubmission-2026-10-12-build27.json
+
+Next: Await Apple's response.
+
+### 394. ui.timeline-default — waiting_verification
+
+2026-10-12T06:02:58+00:00 · observed · agent
+
+On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27.
+
+- store/apple-review-resubmission-2026-10-12-build27.json
+
+Next: Check a fresh install and an upgraded TestFlight install of build 27 on a device.
+
+### 395. apple.uiscene-ios27 — waiting_verification
+
+2026-10-14T13:07:09+00:00 · observed · agent
+
+The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed.
+
+- Crash report Newsworthy-2026-10-14-054017.ips (pre-fix); simulator screenshots of the fixed build on iOS 27.0 and 18.4
+
+Next: Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build.
+
+### 396. apple.local-release — waiting_user
+
+2026-10-14T13:07:09+00:00 · observed · agent
+
+Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used.
+
+- build/ios-release/28/summary.json: ipa SHA-256 9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f, source 975aff8 plus this change (dirty tree)
+
+Next: Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.
+
+### 397. google.build — done
+
+2026-10-15T15:46:06+00:00 · observed · agent
+
+Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet.
+
+- store/builds/ledger.md#2026-10
+- AAB sha256 4022cc8c5a043ea6b3e700d3fb31f606255617878be9100a49ed94f634a3d25f
+
+Next: Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks.
+
+### 398. google.native — in_progress
+
+2026-10-15T15:46:06+00:00 · observed · agent
+
+Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet.
+
+Next: Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.
+
+### 399. google.device — waiting_user
+
+2026-10-15T15:46:07+00:00 · observed · user
+
+Owner reports a physical Android phone on 2026-10-15. Play Console device verification and contact-phone verification not yet confirmed done.
+
+Next: Owner opens the Play Console app on the phone, signs into the AstroJams developer account and completes device verification, then contact-phone verification in Account details.
+
+### 400. google.app — waiting_user
+
+2026-10-15T16:06:49+00:00 · observed · user
+
+2026-10-15, built-in browser signed in as the owner: Play Console home for AstroJams (personal account) shows both tasks Action required, 'Verify that you have access to an Android mobile device' and 'Verify your contact phone number'; the Create app button is disabled.
+
+Next: Owner completes device verification in the Play Console mobile app on the new phone, then contact-phone verification; agent then creates the paid Newsworthy app.
+
+### 401. google.device — done
+
+2026-10-15T16:12:48+00:00 · observed · user
+
+2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser).
+
+Next: —
+
+### 402. google.phone — waiting_user
+
+2026-10-15T16:12:48+00:00 · observed · user
+
+2026-10-15, after device verification: home page still lists 'Verify your contact phone number' as Action required; Account details shows the contact phone without the verified check that both email addresses carry. Create app remains disabled.
+
+Next: Owner opens Developer account > Account details > Contact details on the web, selects Verify beside the contact phone, and enters the SMS or voice code there; agent then rechecks Create app.
+
+### 403. google.phone — done
+
+2026-10-15T16:14:06+00:00 · observed · user
+
+2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'.
+
+Next: —
+
+### 404. google.app — todo
+
+2026-10-15T16:14:06+00:00 · observed · agent
+
+2026-10-15: Create app is enabled on the AstroJams Play Console home page (built-in browser, signed in as the owner). No app created yet.
+
+Next: With the owner's go-ahead: create Newsworthy (English US, App, Paid per the US$1 launch decision), accepting the Developer Program Policies and US export-law declarations; then app content, listing and a manual first upload of a bundle rebuilt from the merged commit to internal testing.
+
+### 405. google.app — done
+
+2026-10-15T16:17:29+00:00 · observed · agent
+
+2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered.
+
+Next: —
+
+### 406. google.listing — in_progress
+
+2026-10-15T16:17:29+00:00 · observed · agent
+
+Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered.
+
+Next: Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists.
+
+### 407. google.closed-test — waiting_user
+
+2026-10-15T16:17:29+00:00 · observed · user
+
+Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application.
+
+Next: Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.
+
+### 408. google.play-api — in_progress
+
+2026-10-15T16:57:09+00:00 · observed · agent
+
+Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet.
+
+- store/builds/ledger.md#2026-10
+- docs/mobile-release.md#google-play
+
+Next: With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.
+
+### 409. ui.onboarding — waiting_verification
+
+2026-10-15T17:12:20+00:00 · observed · agent
+
+Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device.
+
+Next: In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged.
+
+### 410. story-age.native — todo
+
+2026-10-15T17:12:20+00:00 · observed · agent
+
+Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively.
+
+Next: On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.
+
+### 411. google.listing — in_progress
+
+2026-10-15T19:17:52+00:00 · observed · agent
+
+2026-10-15, Play Console (built-in browser, owner signed in): default store listing text saved as a draft from store/listing.json (googleName, shortDescription, new googleDescription with Android widget wording; counters 10/30, 56/80, 2085/4000; description SHA-256 matches the repo); category News & Magazines saved (pending in Publishing overview); store contact details published (astrojams1@gmail.com, newsworthy-indol.vercel.app). Graphics not uploaded: the repo's Play icon, feature graphic and phone screenshots date from 2026-09-16 and show the old mint palette and pre-timeline layout.
+
+Next: Make current Android artwork (512 icon from the Stone app icon, 1024x500 feature graphic, 2 to 8 phone screenshots from version 15) and upload it; then answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists.
+
+### 412. google.disclosures — waiting_user
+
+2026-10-15T19:17:53+00:00 · inferred · agent
+
+Proposed Play App content answers written to store/google-play-app-content.md (privacy policy, app access, ads and advertising ID, IARC content rating, target audience 18+, news app, data safety, government, financial, health), each with its evidence; version 15's manifest has no AD_ID permission. Not entered.
+
+Next: Owner approves or corrects the proposed declarations; agent enters them in Play Console and reads them back.
+
+### 413. google.disclosures — done
+
+2026-10-15T21:09:48+00:00 · inferred · agent
+
+Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.
+
+- store/google-play-app-content.md
+
+Next: Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.
+
+### 414. google.disclosures — done
+
+2026-10-15T21:37:51+00:00 · inferred · agent
+
+Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md.
+
+- store/google-play-app-content.md
+- https://newsworthy-indol.vercel.app/privacy#delete-your-data
+
+Next: Send the saved App content changes for review with the first closed-testing release.
+
+### 415. google.build — done
+
+2026-10-16T03:41:49+00:00 · observed · agent
+
+Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification.
+
+- store/builds/ledger.md#2026-10
+- AAB 14 sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5
+- AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a
+
+Next: —
+
+### 416. google.play-api — done
+
+2026-10-16T03:41:49+00:00 · observed · agent
+
+First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.
+
+Next: —
+
+### 417. google.native — in_progress
+
+2026-10-16T03:41:49+00:00 · observed · agent
+
+Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.
+
+Next: On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.
+
+### 418. google.artwork — done
+
+2026-10-16T03:47:27+00:00 · observed · agent
+
+2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption.
+
+- store/source/android-phone/provenance-v15.json
+- store/source/android-phone/widget-frames-v15.json
+- store/google-play-gallery-15.json
+
+### 419. google.listing — in_progress
+
+2026-10-16T03:47:27+00:00 · observed · agent
+
+2026-10-15: default store listing text saved from store/listing.json (googleName, shortDescription, googleDescription; description SHA-256 matches the repo), category News & Magazines, contact details published. Graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate).
+
+- store/google-play-artwork-15-upload.json
+
+Next: Answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists; send the listing for review with the first closed-testing release.
+
+### 420. google.build — done
+
+2026-10-16T04:05:31+00:00 · observed · agent
+
+Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload. 14 by hand (09:36 PDT), 15 (#216 fixes) and 16 (#222, unused permissions blocked) through the Play Developer API, all on internal testing, 2026-10-15; next-version-code returns 17. Package registered for Android developer verification.
+
+- store/builds/ledger.md#2026-10
+- AAB 16 sha256 c92582cb884964519744f867f4bce99aeab5a96a37b849a6d4bdc8cb63e6f212
+
+Next: —
+
+### 421. google.listing — in_progress
+
+2026-10-16T04:05:32+00:00 · observed · agent
+
+2026-10-15: default listing complete and saved (not as a draft): Android text from store/listing.json (description SHA-256 matches), the v15 artwork from #219, category News & Magazines, contact details published, AI asset declaration 'Don't label assets'. Not yet sent for review. The text had been lost once: an API edit commit replaced a console draft.
+
+Next: Send the saved listing and App content changes for review with the first closed-testing release, once the owner's merchant account and price exist.
+
+### 422. google.listing — done
+
+2026-10-16T13:32:26+00:00 · observed · agent
+
+Default store listing, category and contact details complete (setup task ticked); sent to Google for review with the first closed-testing release on 2026-10-16.
+
+Next: —
+
+### 423. google.pricing — done
+
+2026-10-16T13:32:26+00:00 · observed · agent
+
+2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00.
+
+Next: Owner may ask for an exact USD 1.00 US price; otherwise none.
+
+### 424. google.closed-test — in_progress
+
+2026-10-16T13:32:26+00:00 · observed · user
+
+2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in.
+
+Next: After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days.
+
+### 425. google.review — waiting_user
+
+2026-10-16T13:32:26+00:00 · observed · user
+
+2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Status: Changes in review, Play's quick checks running before hand-off; Google says reviews usually finish within 7 days.
+
+Next: Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.
+
+### 426. google.review — waiting_user
+
+2026-10-16T13:32:59+00:00 · observed · user
+
+2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days.
+
+Next: Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.
+
+### 427. google.news-policy — in_progress
+
+2026-10-19T15:42:35+00:00 · observed · agent
+
+2026-10-19: Google rejected closed-test version 16 under the News and Magazines policy (no publisher/author ownership information, no authors/editors page, no full dates); the app reads 'not available on Google Play'. Owner chose to add a Publisher page (Settings > Publisher: publisher and editor, readings are Newsworthy's own, contact email) and not to change dates. Implemented on claude/play-news-publisher-page; web checked at 390px only, native rendering unverified.
+
+- Play Console, Policy status, issue details, read 2026-10-19
+
+Next: Merge the PR, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page; confirm the named publisher and editor with the owner.
+
+### 428. google.news-policy — in_progress
+
+2026-10-19T15:43:32+00:00 · observed · agent
+
+Owner confirmed the publisher and editor wording (James Thompson, operating as AstroJams) on 2026-10-19; PR 225 open, not merged.
+
+Next: Merge PR 225, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page.
+
+### 429. google.news-policy — waiting_user
+
+2026-10-19T16:27:29+00:00 · observed · agent
+
+2026-10-19: version 17 (main 2796737, Settings > Publisher) built locally, uploaded to internal testing and promoted to Closed testing - Alpha via the Play API with changes held from review. Alpha reads 1.0.0 (17) 'Not yet sent for review', 173 countries, group newsworthy-testers@googlegroups.com; 16 still shows 'Update rejected'. Not sent for review; no appeal filed.
+
+- Play Console closed testing track and Publishing overview, read 2026-10-19
+
+Next: Owner sends changes for review in Publishing overview and decides whether to appeal citing Settings > Publisher.
+
+### 430. google.build — done
+
+2026-10-19T16:27:29+00:00 · observed · agent
+
+Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 15 and 16 through the Play API on internal testing (2026-10-15); 17 (2796737, Settings > Publisher) on 2026-10-19 to internal and promoted to Closed testing - Alpha, held from review. next-version-code returns 18.
+
+Next: —
+
+### 431. google.news-policy — waiting_provider
+
+2026-10-19T16:31:23+00:00 · observed · agent
+
+2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead.
+
+- Play Console Publishing overview, read after sending, 2026-10-19
+
+Next: Check Policy status and Publishing overview until Google approves or rejects version 17.
+
+### 432. google.review — waiting_provider
+
+2026-10-19T16:31:23+00:00 · observed · user
+
+2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'.
+
+Next: Check Publishing overview and Policy status until Google decides; act on any finding.
+
+### 433. apple.review — waiting_provider
+
+2026-10-20T15:18:25+00:00 · observed · provider
+
+2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27.
+
+- store/apple-review-resubmission-2026-10-20-build27.json
+
+Next: Await Apple's response.

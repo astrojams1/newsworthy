@@ -159,3 +159,35 @@ test('the notification carries the title the server sends', () => {
     assert.ok(all.some(n => n.type === 'Text' && n.props.children === 'Newsworthy · 8/10'), platform);
   }
 });
+
+// Reported 2026-10-15 on the owner's Android phone: the widget slide showed the
+// iOS widget. Each platform's picture is read against its own widget source.
+test('the widget slide draws each platform\'s own widget', async () => {
+  const tokens = (await import('../public/tokens.js')).default;
+  const xml = readFileSync(new URL('../apps/client/plugins/widget-android/res/layout/rating_widget_compact.xml', import.meta.url), 'utf8');
+  const dp = (pattern) => Number(xml.match(pattern)?.[1]);
+  const swift = readFileSync(new URL('../apps/client/targets/widget/NewsworthyWidget.swift', import.meta.url), 'utf8');
+  for (const dark of [false, true]) {
+    const colors = tokens.levels[2][dark ? 'dark' : 'light'];
+    const widgetOf = platform => nodes(renderIntroduction(platform, { score: 3, dark })).find(n => n.props?.testID === 'onboarding-widget');
+    const textStyle = (widget, label) => nodes(widget).find(n => n.type === 'Text' && [n.props.children].flat().join('') === label).props.style;
+    const timeStyle = widget => nodes(widget).filter(n => n.type === 'Text').at(-1).props.style;
+
+    const android = widgetOf('android');
+    assert.equal(android.props.style.padding, dp(/widget_root"[^>]*android:padding="(\d+)dp"/), 'Android: the root layout\'s padding');
+    assert.equal(android.props.style.borderRadius, 20, 'Android: widget_background\'s 20dp corners');
+    const name = textStyle(android, 'NEWSWORTHY');
+    assert.equal(name.color, colors.gradientMuted, 'Android: the wordmark is muted (RatingWidget.java)');
+    assert.equal(name.height, dp(/widget_name"[^>]*android:layout_height="(\d+)dp"/));
+    assert.equal(name.fontSize, 10);
+    assert.ok(Math.abs(name.letterSpacing - 10 * Number(xml.match(/widget_name"[^>]*android:letterSpacing="([\d.]+)"/)[1])) < 1e-9, 'Android: letterSpacing is in ems');
+    assert.equal(timeStyle(android).fontSize, 10, 'Android: "Checked at" is 10sp');
+    assert.ok(nodes(android).some(n => n.type === 'View' && n.props.style?.height === dp(/widget_updated"[^>]*android:layout_height="(\d+)dp"/)), 'Android: the time sits in its 32dp row');
+    assert.equal(textStyle(android, '3').fontWeight, undefined, 'Android: the numeral is regular monospace, as the XML sets it');
+
+    const ios = widgetOf('ios');
+    assert.equal(ios.props.style.padding, Number(swift.match(/content\.padding\((\d+)\)/)[1]), 'iOS: the widget\'s padding');
+    assert.equal(textStyle(ios, 'NEWSWORTHY').letterSpacing, Number(swift.match(/Text\("NEWSWORTHY"\)[^\n]*\.tracking\((\d+)\)/)[1]));
+    assert.equal(timeStyle(ios).fontSize, 11, 'iOS: an 11pt time');
+  }
+});

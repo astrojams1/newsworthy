@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-01T12:08:40+00:00",
+  "updated_at": "2026-10-20T15:18:25+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -181,12 +181,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Build 26 is WAITING_FOR_REVIEW after accepted resubmission on October 1; current timeline, Notifications root and native widget gallery are saved. Six-part Notes accurately identify the existing build-21 physical video.",
+      "summary": "2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27.",
       "evidence": [
-        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        "store/apple-review-resubmission-2026-10-20-build27.json"
       ],
-      "next_action": "Await Apple response; approval and public paid-sale readiness remain separate.",
-      "updated_at": "2026-10-01T11:40:49+00:00"
+      "next_action": "Await Apple's response.",
+      "updated_at": "2026-10-20T15:18:25+00:00"
     },
     "apple.release": {
       "state": "waiting_provider",
@@ -211,92 +211,79 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "google.device": {
-      "state": "waiting_user",
+      "state": "done",
       "owner": "user",
       "basis": "observed",
-      "summary": "Google still requires access to a real Android mobile device; page explicitly says only the account owner can do this.",
-      "evidence": [
-        "Live Play Console device-verification page on September 16: owner signs into current Play Console mobile app with developer-owner account and chooses AstroJams."
-      ],
-      "next_action": "Owner opens Play Console on real Android device, signs into developer-owner account, selects AstroJams and completes device verification.",
-      "updated_at": "2026-09-16T04:55:59+00:00"
+      "summary": "2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser).",
+      "evidence": [],
+      "next_action": "—",
+      "updated_at": "2026-10-15T16:12:48+00:00"
     },
     "google.phone": {
-      "state": "waiting_user",
+      "state": "done",
       "owner": "user",
       "basis": "observed",
-      "summary": "Phone-verification link disabled while earlier verification task remains.",
-      "evidence": [
-        "Live account phone-verification page"
-      ],
-      "next_action": "Complete owner real-device verification, then use Account details contact phone Verify and enter SMS/voice code directly in Google.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "summary": "2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'.",
+      "evidence": [],
+      "next_action": "—",
+      "updated_at": "2026-10-15T16:14:06+00:00"
     },
     "google.app": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "September24 Play Console still disables Create app. Real Android-device and contact-phone verification tasks remain. Device details explicitly require the account owner.",
-      "evidence": [
-        "Play Console account8388544157780149515 Home/device-details readback"
-      ],
-      "next_action": "Owner verifies a physical Android device using Play Console mobile app, then contact phone; agent creates the paid app once enabled.",
-      "updated_at": "2026-09-24T00:14:58+00:00"
+      "summary": "2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered.",
+      "evidence": [],
+      "next_action": "—",
+      "updated_at": "2026-10-15T16:17:29+00:00"
     },
     "google.build": {
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Android production AAB12 and matching preview APK12 finished from clean source 6c19cb9. Both artifacts downloaded and SHA-256/ZIP verified; APK installed as versionCode12 and native notification checks completed in emulator scope.",
-      "evidence": [
-        "store/android-notifications-12.json"
-      ],
-      "next_action": "Upload AAB12 when Google allows app creation; complete physical Android testing separately.",
-      "updated_at": "2026-09-24T05:28:12+00:00"
+      "summary": "Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 15 and 16 through the Play API on internal testing (2026-10-15); 17 (2796737, Settings > Publisher) on 2026-10-19 to internal and promoted to Closed testing - Alpha, held from review. next-version-code returns 18.",
+      "evidence": [],
+      "next_action": "—",
+      "updated_at": "2026-10-19T16:27:29+00:00"
     },
     "google.native": {
       "state": "in_progress",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Corrective previewAPK10 passed native API35 emulator checks for maximum-font compact labels and both background appearance changes. PriorAPK9 offline/online checks passed. Physical Android and score10 checks remain unverified.",
-      "evidence": [
-        "store/android-large-text-verification.json and native captures20-24. Original fontScale1.0 restored; no source-only test is counted as native evidence."
-      ],
-      "next_action": "Complete physical Android testing when a device is available, and verify remaining score10 case. ProductionAAB11 is already built; do not rebuild merely because this native-coverage gate remains open.",
-      "updated_at": "2026-09-17T04:35:03+00:00"
+      "summary": "Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.",
+      "evidence": [],
+      "next_action": "On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+      "updated_at": "2026-10-16T03:41:49+00:00"
     },
     "google.listing": {
-      "state": "in_progress",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Android native APK9 gallery is complete, including neutral compact/expanded widgets and light/dark readings. Account verification still prevents app creation/upload.",
-      "evidence": [
-        "store/assets/manifest.json; source/android-phone/provenance-v9.json and widget-frames.json; store/scripts/validate.mjs passed September17."
-      ],
-      "next_action": "Once Create app is enabled, create paid Newsworthy and upload prepared listing, US$1 pricing and assets.",
-      "updated_at": "2026-09-17T02:13:53+00:00"
+      "summary": "Default store listing, category and contact details complete (setup task ticked); sent to Google for review with the first closed-testing release on 2026-10-16.",
+      "evidence": [],
+      "next_action": "—",
+      "updated_at": "2026-10-16T13:32:26+00:00"
     },
     "google.disclosures": {
-      "state": "todo",
+      "state": "done",
       "owner": "agent",
       "basis": "inferred",
-      "summary": "Google app-content/privacy/rating questionnaires not yet available without app record.",
+      "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md.",
       "evidence": [
-        "store/disclosures.md contains implementation/hosting evidence"
+        "store/google-play-app-content.md",
+        "https://newsworthy-indol.vercel.app/privacy#delete-your-data"
       ],
-      "next_action": "After app creation, answer current questionnaires using code and actual service logging evidence.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "next_action": "Send the saved App content changes for review with the first closed-testing release.",
+      "updated_at": "2026-10-15T21:37:51+00:00"
     },
     "google.closed-test": {
-      "state": "waiting_user",
+      "state": "in_progress",
       "owner": "user",
       "basis": "observed",
-      "summary": "New personal account testing path needs genuine testers and elapsed testing time.",
-      "evidence": [
-        "Google requirements checked September 16, 2026; store/user-actions.md"
-      ],
-      "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "summary": "2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in.",
+      "evidence": [],
+      "next_action": "After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days.",
+      "updated_at": "2026-10-16T13:32:26+00:00"
     },
     "google.production-access": {
       "state": "todo",
@@ -310,15 +297,13 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "google.review": {
-      "state": "todo",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "user",
       "basis": "observed",
-      "summary": "No Google release submitted for review.",
-      "evidence": [
-        "No app record exists at last live check"
-      ],
-      "next_action": "Complete account, app, privacy/listing and testing gates; submit permitted release and record provider state.",
-      "updated_at": "2026-09-16T03:31:16+00:00"
+      "summary": "2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'.",
+      "evidence": [],
+      "next_action": "Check Publishing overview and Policy status until Google decides; act on any finding.",
+      "updated_at": "2026-10-19T16:31:23+00:00"
     },
     "google.release": {
       "state": "todo",
@@ -357,12 +342,14 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "APK9 real compact and expanded widget gallery complete on neutral canvas at common scale; no wallpaper or unrelated apps",
+      "summary": "2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption.",
       "evidence": [
-        "store/assets/google-play/phone/03-widget-sizes-v9.png; widget-frames.json; image validation and visual inspection"
+        "store/source/android-phone/provenance-v15.json",
+        "store/source/android-phone/widget-frames-v15.json",
+        "store/google-play-gallery-15.json"
       ],
       "next_action": "",
-      "updated_at": "2026-09-16T10:09:19+00:00"
+      "updated_at": "2026-10-16T03:47:27+00:00"
     },
     "design.reading-screen": {
       "state": "in_progress",
@@ -709,12 +696,10 @@
       "state": "todo",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner found four seconds too long: \"Checked 23m ago\" now holds for two seconds (on load, on returning to the app, after a tap) before crossfading to the story line. Web export verified in Chromium: story line at ~3.6s after navigation, Checked for ~2s after a tap. Native apps not built or run here.",
-      "evidence": [
-        "Branch claude/last-checked-time-display-h5nl72; npm test 370 passed; npm run test:design 105 passed"
-      ],
+      "summary": "Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively.",
+      "evidence": [],
       "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
-      "updated_at": "2026-09-29T08:53:41+00:00"
+      "updated_at": "2026-10-15T17:12:20+00:00"
     },
     "apple.testflight-15": {
       "state": "done",
@@ -952,12 +937,10 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "First slide draws the sentence as three abstract lines under the current score (owner request 2026-09-27), matching the notification slide; no literal news text appears in the introduction's pictures. Inspected on iOS and Android, light and dark, in Chromium with stand-in fonts. Not seen on a device.",
-      "evidence": [
-        "test/onboarding.test.js"
-      ],
-      "next_action": "On iOS and Android: fresh install opens the introduction once over the reading; Skip, Done and Android back return to it; Settings > Introduction replays it; swipe paging, titles at one height, bold New, large text.",
-      "updated_at": "2026-09-27T04:34:38+00:00"
+      "summary": "Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device.",
+      "evidence": [],
+      "next_action": "In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged.",
+      "updated_at": "2026-10-15T17:12:20+00:00"
     },
     "copy.no-ai-listing": {
       "state": "in_progress",
@@ -1168,6 +1151,79 @@
       ],
       "next_action": "Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.",
       "updated_at": "2026-10-01T12:08:40+00:00"
+    },
+    "ui.timeline-default": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27.",
+      "evidence": [
+        "store/apple-review-resubmission-2026-10-12-build27.json"
+      ],
+      "next_action": "Check a fresh install and an upgraded TestFlight install of build 27 on a device.",
+      "updated_at": "2026-10-12T06:02:58+00:00"
+    },
+    "widget.sentence-fit": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown.",
+      "evidence": [
+        "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/ios27-iphone17e-medium.png"
+      ],
+      "next_action": "Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.",
+      "updated_at": "2026-10-12T05:43:37+00:00"
+    },
+    "apple.uiscene-ios27": {
+      "state": "waiting_verification",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed.",
+      "evidence": [
+        "Crash report Newsworthy-2026-10-14-054017.ips (pre-fix); simulator screenshots of the fixed build on iOS 27.0 and 18.4"
+      ],
+      "next_action": "Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build.",
+      "updated_at": "2026-10-14T13:07:09+00:00"
+    },
+    "apple.local-release": {
+      "state": "waiting_user",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used.",
+      "evidence": [
+        "build/ios-release/28/summary.json: ipa SHA-256 9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f, source 975aff8 plus this change (dirty tree)"
+      ],
+      "next_action": "Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.",
+      "updated_at": "2026-10-14T13:07:09+00:00"
+    },
+    "google.play-api": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.",
+      "evidence": [],
+      "next_action": "—",
+      "updated_at": "2026-10-16T03:41:49+00:00"
+    },
+    "google.pricing": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00.",
+      "evidence": [],
+      "next_action": "Owner may ask for an exact USD 1.00 US price; otherwise none.",
+      "updated_at": "2026-10-16T13:32:26+00:00"
+    },
+    "google.news-policy": {
+      "state": "waiting_provider",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead.",
+      "evidence": [
+        "Play Console Publishing overview, read after sending, 2026-10-19"
+      ],
+      "next_action": "Check Policy status and Publishing overview until Google approves or rejects version 17.",
+      "updated_at": "2026-10-19T16:31:23+00:00"
     }
   },
   "events": [
@@ -7410,6 +7466,668 @@
         ],
         "next_action": "Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build.",
         "updated_at": "2026-10-01T12:08:40+00:00"
+      }
+    },
+    {
+      "sequence": 390,
+      "at": "2026-10-12T05:16:25+00:00",
+      "gate": "ui.timeline-default",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner decision 2026-10-11 after Apple rejected build 26 (the third Guideline 4.2 finding, with the timeline off by default): the timeline is on by default. Stored as showTimeline; the old timeline key, false in every existing install from its first save, is no longer read, so TestFlight installs see it on after updating. Listing description and Review Notes updated in store/listing.json (not yet pushed to App Store Connect). Unit and render tests only; no native build yet.",
+        "evidence": [
+          "apps/client/lib/preferences.js; test/preferences.test.js; store/listing.json"
+        ],
+        "next_action": "Include in the next iOS production build; verify a fresh install and an upgraded TestFlight install show the timeline; push the listing and Review Notes; resubmit.",
+        "updated_at": "2026-10-12T05:16:25+00:00"
+      }
+    },
+    {
+      "sequence": 391,
+      "at": "2026-10-12T05:35:01+00:00",
+      "gate": "widget.sentence-fit",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Two causes: the line limit Int(height / 20) left a 155 to 157 point widget 3 lines with room for 4, and a 140-character sentence needs a fifth 14-point line on a 338 x 158 widget with the app name shown. Lines now count the missing spacing, and the sentence steps down to 13.5, 13 or 12.5 points on the same 20-point rhythm before truncating. A macOS SwiftUI render of the production source with the live 140-character reading truncated in 6 of 10 layouts before the change and 1 of 10 after (321 x 148 with app name). Not yet compiled for iOS; no WidgetKit or device check.",
+        "evidence": [
+          "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/macos-before.png; store/source/widget-sentence-fit/macos-after.png"
+        ],
+        "next_action": "Compile for iOS and check both medium sizes with and without the app name, a 140-character sentence and larger Dynamic Type, in the next native build.",
+        "updated_at": "2026-10-12T05:35:01+00:00"
+      }
+    },
+    {
+      "sequence": 392,
+      "at": "2026-10-12T05:43:37+00:00",
+      "gate": "widget.sentence-fit",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown.",
+        "evidence": [
+          "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/ios27-iphone17e-medium.png"
+        ],
+        "next_action": "Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.",
+        "updated_at": "2026-10-12T05:43:37+00:00"
+      }
+    },
+    {
+      "sequence": 393,
+      "at": "2026-10-12T06:02:58+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Build 27 resubmitted 2026-10-12 06:02 UTC after Apple rejected build 26 under Guideline 4.2; Apple reports version 1.0.0 and review submission WAITING_FOR_REVIEW with build 27 selected. Timeline on by default, whole widget sentences.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-12-build27.json"
+        ],
+        "next_action": "Await Apple's response.",
+        "updated_at": "2026-10-12T06:02:58+00:00"
+      }
+    },
+    {
+      "sequence": 394,
+      "at": "2026-10-12T06:02:58+00:00",
+      "gate": "ui.timeline-default",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-12-build27.json"
+        ],
+        "next_action": "Check a fresh install and an upgraded TestFlight install of build 27 on a device.",
+        "updated_at": "2026-10-12T06:02:58+00:00"
+      }
+    },
+    {
+      "sequence": 395,
+      "at": "2026-10-14T13:07:09+00:00",
+      "gate": "apple.uiscene-ios27",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "The UIScene launch crash reproduced on 2026-10-14: Xcode 27 (27A266a) Release simulator build from 975aff8 trapped in _UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption on iPhone 18 Pro iOS 27.0. plugins/with-scene-lifecycle.js now adopts UIScene through Expo's ExpoAppSceneDelegate. The rebuilt app launched on iOS 27.0 (onboarding, live reading, cold-start newsworthy://settings/appearance deep link, Dark override) and on a temporary iPhone 16 Pro iOS 18.4 device, with no crash report. Xcode 26.6 EAS pin removed.",
+        "evidence": [
+          "Crash report Newsworthy-2026-10-14-054017.ips (pre-fix); simulator screenshots of the fixed build on iOS 27.0 and 18.4"
+        ],
+        "next_action": "Not yet checked on the UIScene build: widgets on iOS 27, notification permission/registration and tap routing, share sheet, a physical iPhone (TestFlight). Check them on the first uploaded local build.",
+        "updated_at": "2026-10-14T13:07:09+00:00"
+      }
+    },
+    {
+      "sequence": 396,
+      "at": "2026-10-14T13:07:09+00:00",
+      "gate": "apple.local-release",
+      "result": {
+        "state": "waiting_user",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Local iOS release path (apps/client/script/ios-release.mjs) replaces EAS Build for iOS. Next build number read from App Store Connect: 28 (highest 27). Build 28 archived and exported with Xcode 27 (27A266a, iphoneos27.0) and Apple-managed signing via -allowProvisioningUpdates and the vault API key: Apple Distribution CWQ9AWJF8T, Xcode-managed iOS Team Store profiles for app and widget; build number, App Group and production aps-environment checked. altool --validate-app: VERIFY SUCCEEDED. Not uploaded. No EAS credits or sandbox minutes used.",
+        "evidence": [
+          "build/ios-release/28/summary.json: ipa SHA-256 9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f, source 975aff8 plus this change (dirty tree)"
+        ],
+        "next_action": "Owner to confirm the first upload; archive it from the merged commit, run upload and testers, and record the TestFlight result.",
+        "updated_at": "2026-10-14T13:07:09+00:00"
+      }
+    },
+    {
+      "sequence": 397,
+      "at": "2026-10-15T15:46:06+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Local Android release replaces EAS: apps/client/script/android-release.mjs built versionCode 13 from 099cd5e plus the local-release change with Gradle on the owner's Mac, signed with a new Play upload key. Verified before upload: package com.astrojams.newsworthy, versionCode 13, target SDK 36, release JavaScript, google_app_id, upload-key signature; universal APK from the same bundle has the same signer. Nothing uploaded; no device run yet.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "AAB sha256 4022cc8c5a043ea6b3e700d3fb31f606255617878be9100a49ed94f634a3d25f"
+        ],
+        "next_action": "Owner adds the Newsworthy Android vault item; rebuild from the merged commit and upload to Play internal testing by hand once Create app is enabled; install the universal APK on the owner's phone for physical checks.",
+        "updated_at": "2026-10-15T15:46:06+00:00"
+      }
+    },
+    {
+      "sequence": 398,
+      "at": "2026-10-15T15:46:06+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Unchanged emulator scope (APK10/APK12). The owner now has a physical Android phone; a locally built, upload-key-signed universal APK (versionCode 13) is ready for adb install -r once USB debugging is on. No physical run yet.",
+        "evidence": [],
+        "next_action": "Install versionCode 13 on the owner's phone and check launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+        "updated_at": "2026-10-15T15:46:06+00:00"
+      }
+    },
+    {
+      "sequence": 399,
+      "at": "2026-10-15T15:46:07+00:00",
+      "gate": "google.device",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Owner reports a physical Android phone on 2026-10-15. Play Console device verification and contact-phone verification not yet confirmed done.",
+        "evidence": [],
+        "next_action": "Owner opens the Play Console app on the phone, signs into the AstroJams developer account and completes device verification, then contact-phone verification in Account details.",
+        "updated_at": "2026-10-15T15:46:07+00:00"
+      }
+    },
+    {
+      "sequence": 400,
+      "at": "2026-10-15T16:06:49+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-15, built-in browser signed in as the owner: Play Console home for AstroJams (personal account) shows both tasks Action required, 'Verify that you have access to an Android mobile device' and 'Verify your contact phone number'; the Create app button is disabled.",
+        "evidence": [],
+        "next_action": "Owner completes device verification in the Play Console mobile app on the new phone, then contact-phone verification; agent then creates the paid Newsworthy app.",
+        "updated_at": "2026-10-15T16:06:49+00:00"
+      }
+    },
+    {
+      "sequence": 401,
+      "at": "2026-10-15T16:12:48+00:00",
+      "gate": "google.device",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser).",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-15T16:12:48+00:00"
+      }
+    },
+    {
+      "sequence": 402,
+      "at": "2026-10-15T16:12:48+00:00",
+      "gate": "google.phone",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-15, after device verification: home page still lists 'Verify your contact phone number' as Action required; Account details shows the contact phone without the verified check that both email addresses carry. Create app remains disabled.",
+        "evidence": [],
+        "next_action": "Owner opens Developer account > Account details > Contact details on the web, selects Verify beside the contact phone, and enters the SMS or voice code there; agent then rechecks Create app.",
+        "updated_at": "2026-10-15T16:12:48+00:00"
+      }
+    },
+    {
+      "sequence": 403,
+      "at": "2026-10-15T16:14:06+00:00",
+      "gate": "google.phone",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-15T16:14:06+00:00"
+      }
+    },
+    {
+      "sequence": 404,
+      "at": "2026-10-15T16:14:06+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: Create app is enabled on the AstroJams Play Console home page (built-in browser, signed in as the owner). No app created yet.",
+        "evidence": [],
+        "next_action": "With the owner's go-ahead: create Newsworthy (English US, App, Paid per the US$1 launch decision), accepting the Developer Program Policies and US export-law declarations; then app content, listing and a manual first upload of a bundle rebuilt from the merged commit to internal testing.",
+        "updated_at": "2026-10-15T16:14:06+00:00"
+      }
+    },
+    {
+      "sequence": 405,
+      "at": "2026-10-15T16:17:29+00:00",
+      "gate": "google.app",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15, with the owner's approval: created Newsworthy in Play Console (app ID 4974473553901574528), package com.astrojams.newsworthy (reported available), default language English (US), App, Paid; accepted the Developer Program Policies, Play App Signing Terms of Service and US export laws declarations. App list reads back Newsworthy / com.astrojams.newsworthy / Draft. Choosing Paid turned on Play's automatic protection (installer check), left on. Android developer verification lists the package as not registered.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-15T16:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 406,
+      "at": "2026-10-15T16:17:29+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Play app record exists (Draft, Paid, no price set: a paid price needs the owner's payments profile). Store listing, graphics and app content not yet entered.",
+        "evidence": [],
+        "next_action": "Enter the listing from store/listing.json and the prepared Android assets, answer the app-content questionnaires, and set the US$1 price once the owner's payments profile exists.",
+        "updated_at": "2026-10-15T16:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 407,
+      "at": "2026-10-15T16:17:29+00:00",
+      "gate": "google.closed-test",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Play dashboard for Newsworthy (2026-10-15): production access requires publishing a closed testing release, at least 12 opted-in testers (0 now) and 14 days of testing, then an application.",
+        "evidence": [],
+        "next_action": "Owner recruits at least 12 eligible real testers; agent configures closed track and opt-in flow once account setup permits. Verify 14 continuous days before access application.",
+        "updated_at": "2026-10-15T16:17:29+00:00"
+      }
+    },
+    {
+      "sequence": 408,
+      "at": "2026-10-15T16:57:09+00:00",
+      "gate": "google.play-api",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Play Developer API route added to android-release.mjs (next-version-code, upload, release --track). Google Cloud project newsworthy-cad27: androidpublisher API enabled; service account play-release@newsworthy-cad27.iam.gserviceaccount.com, no project roles. Play Console: that account Active on Newsworthy only, with Release apps to testing tracks and read-only View app information. The owner attached its JSON key to op://API Tokens/Newsworthy Android as play-service-account.json. next-version-code read Play live and returned 15 (internal testing holds 14). No upload made through the API yet.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "docs/mobile-release.md#google-play"
+        ],
+        "next_action": "With the owner's approval, build and upload versionCode 15 with node script/android-release.mjs release --track internal; read the track back.",
+        "updated_at": "2026-10-15T16:57:09+00:00"
+      }
+    },
+    {
+      "sequence": 409,
+      "at": "2026-10-15T17:12:20+00:00",
+      "gate": "ui.onboarding",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner, Play internal build 14 on their Android phone (2026-10-15): the widget slide showed the iOS widget. Android now draws its own from rating_widget_compact.xml (12dp padding, 20dp corners, muted 10sp wordmark at 0.18em in an 18dp row, centred regular-weight numeral, 10sp Checked at in a 32dp bottom row); a test reads both platforms' widget sources. Not yet seen on a device.",
+        "evidence": [],
+        "next_action": "In the next Android build, compare the widget slide with a real 2x2 Newsworthy widget on the owner's phone, light and dark; check iOS is unchanged.",
+        "updated_at": "2026-10-15T17:12:20+00:00"
+      }
+    },
+    {
+      "sequence": 410,
+      "at": "2026-10-15T17:12:20+00:00",
+      "gate": "story-age.native",
+      "result": {
+        "state": "todo",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner, Play internal build 14 on Android (2026-10-15): the medium widget's sentence first line looked indented. Cause: ageLayer built the muted layer with new SpannableString(sentence), copying the ink layer's transparent age, so '5h ago:' showed in neither layer. Fixed to build from sentence.toString(); widget Java compiles (npm run check:android-widget). Not yet seen on a device. The owner's earlier request (Checked for two seconds, crossfade to the story) is still unverified natively.",
+        "evidence": [],
+        "next_action": "On iOS and Android: Checked at launch and on foregrounding, crossfading to the story after two seconds; a tap brings Checked back for two seconds.",
+        "updated_at": "2026-10-15T17:12:20+00:00"
+      }
+    },
+    {
+      "sequence": 411,
+      "at": "2026-10-15T19:17:52+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15, Play Console (built-in browser, owner signed in): default store listing text saved as a draft from store/listing.json (googleName, shortDescription, new googleDescription with Android widget wording; counters 10/30, 56/80, 2085/4000; description SHA-256 matches the repo); category News & Magazines saved (pending in Publishing overview); store contact details published (astrojams1@gmail.com, newsworthy-indol.vercel.app). Graphics not uploaded: the repo's Play icon, feature graphic and phone screenshots date from 2026-09-16 and show the old mint palette and pre-timeline layout.",
+        "evidence": [],
+        "next_action": "Make current Android artwork (512 icon from the Stone app icon, 1024x500 feature graphic, 2 to 8 phone screenshots from version 15) and upload it; then answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists.",
+        "updated_at": "2026-10-15T19:17:52+00:00"
+      }
+    },
+    {
+      "sequence": 412,
+      "at": "2026-10-15T19:17:53+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "waiting_user",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Proposed Play App content answers written to store/google-play-app-content.md (privacy policy, app access, ads and advertising ID, IARC content rating, target audience 18+, news app, data safety, government, financial, health), each with its evidence; version 15's manifest has no AD_ID permission. Not entered.",
+        "evidence": [],
+        "next_action": "Owner approves or corrects the proposed declarations; agent enters them in Play Console and reads them back.",
+        "updated_at": "2026-10-15T19:17:53+00:00"
+      }
+    },
+    {
+      "sequence": 413,
+      "at": "2026-10-15T21:09:48+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: App content shows 11 actioned declarations, none needing attention. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit. Differences from the proposal (IARC category, news-app details, diagnostics purposes, optional deletion URL left blank) are recorded in store/google-play-app-content.md.",
+        "evidence": [
+          "store/google-play-app-content.md"
+        ],
+        "next_action": "Add a 'Delete your data' section to the privacy page and answer Data safety's optional deletion question with its URL; send the saved changes for review with the first closed-testing release.",
+        "updated_at": "2026-10-15T21:09:48+00:00"
+      }
+    },
+    {
+      "sequence": 414,
+      "at": "2026-10-15T21:37:51+00:00",
+      "gate": "google.disclosures",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "inferred",
+        "summary": "Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md.",
+        "evidence": [
+          "store/google-play-app-content.md",
+          "https://newsworthy-indol.vercel.app/privacy#delete-your-data"
+        ],
+        "next_action": "Send the saved App content changes for review with the first closed-testing release.",
+        "updated_at": "2026-10-15T21:37:51+00:00"
+      }
+    },
+    {
+      "sequence": 415,
+      "at": "2026-10-16T03:41:49+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload (target SDK 36, release JS, google_app_id, upload-key signer). 14 from 9ad04fb uploaded by hand and published to internal testing 2026-10-15 09:36 PDT; 15 from 254686f (onboarding widget picture and widget age fix, #216) uploaded through the Play Developer API, internal testing, released 10:45 AM. Package registered for Android developer verification.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "AAB 14 sha256 ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5",
+          "AAB 15 sha256 e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a"
+        ],
+        "next_action": "—",
+        "updated_at": "2026-10-16T03:41:49+00:00"
+      }
+    },
+    {
+      "sequence": 416,
+      "at": "2026-10-16T03:41:49+00:00",
+      "gate": "google.play-api",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-16T03:41:49+00:00"
+      }
+    },
+    {
+      "sequence": 417,
+      "at": "2026-10-16T03:41:49+00:00",
+      "gate": "google.native",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone.",
+        "evidence": [],
+        "next_action": "On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation.",
+        "updated_at": "2026-10-16T03:41:49+00:00"
+      }
+    },
+    {
+      "sequence": 418,
+      "at": "2026-10-16T03:47:27+00:00",
+      "gate": "google.artwork",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: September APK9 gallery (mint palette, pre-timeline reading) retired. Five 1080x1920 screenshots (timeline, widget 2x2 light/dark + 4x3, reading light, reading dark, Settings), a 1024x500 feature graphic and the 512 px Stone icon rendered by store/scripts/render-google-play.mjs from 11 hash-checked captures of Play internal versionCode 15 (254686f, universal APK sha256 25c6cb8e...) on an API 35 Pixel 7 emulator. Emulator only; live readings of 15 October; no AI mention in any frame or caption.",
+        "evidence": [
+          "store/source/android-phone/provenance-v15.json",
+          "store/source/android-phone/widget-frames-v15.json",
+          "store/google-play-gallery-15.json"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-16T03:47:27+00:00"
+      }
+    },
+    {
+      "sequence": 419,
+      "at": "2026-10-16T03:47:27+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: default store listing text saved from store/listing.json (googleName, shortDescription, googleDescription; description SHA-256 matches the repo), category News & Magazines, contact details published. Graphics replaced through the Play API (edit 05311212070885845694 committed): icon 1, feature graphic 1, phone screenshots 5, each sha256 read back matching in order; Play Console shows them and the listing as Ready to send for review (not sent). Service account gained Manage store presence and Edit and delete draft apps with the owner's approval (store presence alone got 403 on validate).",
+        "evidence": [
+          "store/google-play-artwork-15-upload.json"
+        ],
+        "next_action": "Answer App content from store/google-play-app-content.md once the owner approves; set the price after the owner's merchant account exists; send the listing for review with the first closed-testing release.",
+        "updated_at": "2026-10-16T03:47:27+00:00"
+      }
+    },
+    {
+      "sequence": 420,
+      "at": "2026-10-16T04:05:31+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Built locally (no EAS) with apps/client/script/android-release.mjs and verified before upload. 14 by hand (09:36 PDT), 15 (#216 fixes) and 16 (#222, unused permissions blocked) through the Play Developer API, all on internal testing, 2026-10-15; next-version-code returns 17. Package registered for Android developer verification.",
+        "evidence": [
+          "store/builds/ledger.md#2026-10",
+          "AAB 16 sha256 c92582cb884964519744f867f4bce99aeab5a96a37b849a6d4bdc8cb63e6f212"
+        ],
+        "next_action": "—",
+        "updated_at": "2026-10-16T04:05:31+00:00"
+      }
+    },
+    {
+      "sequence": 421,
+      "at": "2026-10-16T04:05:32+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-15: default listing complete and saved (not as a draft): Android text from store/listing.json (description SHA-256 matches), the v15 artwork from #219, category News & Magazines, contact details published, AI asset declaration 'Don't label assets'. Not yet sent for review. The text had been lost once: an API edit commit replaced a console draft.",
+        "evidence": [],
+        "next_action": "Send the saved listing and App content changes for review with the first closed-testing release, once the owner's merchant account and price exist.",
+        "updated_at": "2026-10-16T04:05:32+00:00"
+      }
+    },
+    {
+      "sequence": 422,
+      "at": "2026-10-16T13:32:26+00:00",
+      "gate": "google.listing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Default store listing, category and contact details complete (setup task ticked); sent to Google for review with the first closed-testing release on 2026-10-16.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 423,
+      "at": "2026-10-16T13:32:26+00:00",
+      "gate": "google.pricing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00.",
+        "evidence": [],
+        "next_action": "Owner may ask for an exact USD 1.00 US price; otherwise none.",
+        "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 424,
+      "at": "2026-10-16T13:32:26+00:00",
+      "gate": "google.closed-test",
+      "result": {
+        "state": "in_progress",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in.",
+        "evidence": [],
+        "next_action": "After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days.",
+        "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 425,
+      "at": "2026-10-16T13:32:26+00:00",
+      "gate": "google.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Status: Changes in review, Play's quick checks running before hand-off; Google says reviews usually finish within 7 days.",
+        "evidence": [],
+        "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
+        "updated_at": "2026-10-16T13:32:26+00:00"
+      }
+    },
+    {
+      "sequence": 426,
+      "at": "2026-10-16T13:32:59+00:00",
+      "gate": "google.review",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-16: 14 changes submitted for review from Publishing overview (the owner clicked Send changes for review after auto mode blocked the agent): closed-testing release 16 with countries and testers, default store listing, category, content rating, target audience, privacy policy, ads, data safety and health declarations, plus sign-in, advertising ID, government, financial and news declarations. Play's quick checks passed; Publishing overview reads 'Your changes are now in review.' Google says reviews usually finish within 7 days.",
+        "evidence": [],
+        "next_action": "Check Publishing overview and Submission activity until Google approves or rejects; act on any policy finding.",
+        "updated_at": "2026-10-16T13:32:59+00:00"
+      }
+    },
+    {
+      "sequence": 427,
+      "at": "2026-10-19T15:42:35+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-19: Google rejected closed-test version 16 under the News and Magazines policy (no publisher/author ownership information, no authors/editors page, no full dates); the app reads 'not available on Google Play'. Owner chose to add a Publisher page (Settings > Publisher: publisher and editor, readings are Newsworthy's own, contact email) and not to change dates. Implemented on claude/play-news-publisher-page; web checked at 390px only, native rendering unverified.",
+        "evidence": [
+          "Play Console, Policy status, issue details, read 2026-10-19"
+        ],
+        "next_action": "Merge the PR, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page; confirm the named publisher and editor with the owner.",
+        "updated_at": "2026-10-19T15:42:35+00:00"
+      }
+    },
+    {
+      "sequence": 428,
+      "at": "2026-10-19T15:43:32+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner confirmed the publisher and editor wording (James Thompson, operating as AstroJams) on 2026-10-19; PR 225 open, not merged.",
+        "evidence": [],
+        "next_action": "Merge PR 225, build and upload version 17, promote it to closed testing, then appeal citing the Publisher page.",
+        "updated_at": "2026-10-19T15:43:32+00:00"
+      }
+    },
+    {
+      "sequence": 429,
+      "at": "2026-10-19T16:27:29+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "waiting_user",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-19: version 17 (main 2796737, Settings > Publisher) built locally, uploaded to internal testing and promoted to Closed testing - Alpha via the Play API with changes held from review. Alpha reads 1.0.0 (17) 'Not yet sent for review', 173 countries, group newsworthy-testers@googlegroups.com; 16 still shows 'Update rejected'. Not sent for review; no appeal filed.",
+        "evidence": [
+          "Play Console closed testing track and Publishing overview, read 2026-10-19"
+        ],
+        "next_action": "Owner sends changes for review in Publishing overview and decides whether to appeal citing Settings > Publisher.",
+        "updated_at": "2026-10-19T16:27:29+00:00"
+      }
+    },
+    {
+      "sequence": 430,
+      "at": "2026-10-19T16:27:29+00:00",
+      "gate": "google.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Built locally with apps/client/script/android-release.mjs (no EAS). 14 by hand, 15 and 16 through the Play API on internal testing (2026-10-15); 17 (2796737, Settings > Publisher) on 2026-10-19 to internal and promoted to Closed testing - Alpha, held from review. next-version-code returns 18.",
+        "evidence": [],
+        "next_action": "—",
+        "updated_at": "2026-10-19T16:27:29+00:00"
+      }
+    },
+    {
+      "sequence": 431,
+      "at": "2026-10-19T16:31:23+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead.",
+        "evidence": [
+          "Play Console Publishing overview, read after sending, 2026-10-19"
+        ],
+        "next_action": "Check Policy status and Publishing overview until Google approves or rejects version 17.",
+        "updated_at": "2026-10-19T16:31:23+00:00"
+      }
+    },
+    {
+      "sequence": 432,
+      "at": "2026-10-19T16:31:23+00:00",
+      "gate": "google.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'.",
+        "evidence": [],
+        "next_action": "Check Publishing overview and Policy status until Google decides; act on any finding.",
+        "updated_at": "2026-10-19T16:31:23+00:00"
+      }
+    },
+    {
+      "sequence": 433,
+      "at": "2026-10-20T15:18:25+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27.",
+        "evidence": [
+          "store/apple-review-resubmission-2026-10-20-build27.json"
+        ],
+        "next_action": "Await Apple's response.",
+        "updated_at": "2026-10-20T15:18:25+00:00"
       }
     }
   ],

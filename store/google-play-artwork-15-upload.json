@@ -1,0 +1,60 @@
+{
+  "uploadedAt": "2026-10-15",
+  "app": {
+    "developerId": "8388544157780149515",
+    "appId": "4974473553901574528",
+    "packageName": "com.astrojams.newsworthy"
+  },
+  "listing": "default, en-US",
+  "method": "Play Developer API edit (store/scripts/google-play-images.mjs upload): delete each image type, upload, read back Play's sha256, validate, commit. Edit 05311212070885845694 committed.",
+  "serviceAccount": "play-release@newsworthy-cad27.iam.gserviceaccount.com",
+  "permissionsAdded": [
+    "Manage store presence (owner approved 2026-10-15; Play also implies Manage policy declarations)",
+    "Edit and delete draft apps (owner approved 2026-10-15, after validate/commit returned 403 with store presence alone)"
+  ],
+  "attempts": [
+    "Two edits with Manage store presence only: all seven uploads succeeded and read back matching, then edits.validate returned 403 \"The caller does not have permission\"; both edits were deleted, nothing saved.",
+    "Third edit after adding Edit and delete draft apps: validated and committed."
+  ],
+  "readback": {
+    "api": "status after commit: icon 1, featureGraphic 1, phoneScreenshots 5, every sha256 matching the repository in order",
+    "console": "Default store listing (built-in browser): app icon 1/1, the feature graphic, five phone screenshots in order 01 to 05; listing status Ready to send for review; nothing sent for review."
+  },
+  "images": {
+    "icon": [
+      {
+        "file": "assets/google-play/icon.png",
+        "sha256": "62c28088a0d370c5436928354de6a37cac5b3c8bed92c731a73a5ffbb6201edf"
+      }
+    ],
+    "featureGraphic": [
+      {
+        "file": "assets/google-play/feature-graphic.png",
+        "sha256": "5dd483c06a861ea3caaf54cc8f0691027aa8275183d7eb1c1ceb21b7512693b5"
+      }
+    ],
+    "phoneScreenshots": [
+      {
+        "file": "assets/google-play/phone/01-timeline-v15.png",
+        "sha256": "e183b6b60b6931efa64554c7a034a2556ad095475a5f28f7e89621f4c0a39400"
+      },
+      {
+        "file": "assets/google-play/phone/02-widget-v15.png",
+        "sha256": "2179d9d6ef58228aa840a3ef5cc1a0c50f8c3af7c5f554674b06e925d924beda"
+      },
+      {
+        "file": "assets/google-play/phone/03-reading-v15.png",
+        "sha256": "8f80ad64970d4a5e306a1d5642397ffca62760a6ff46b19fa7b8dd04dcf4e7f5"
+      },
+      {
+        "file": "assets/google-play/phone/04-appearance-v15.png",
+        "sha256": "4db7bdf80fafdc8431b8eaa72801a294545648566582483bef2020ab3b880e62"
+      },
+      {
+        "file": "assets/google-play/phone/05-settings-v15.png",
+        "sha256": "2983001e28c51fedaa43d51b72ccdb4e553a048fb41586b78e6af61cd9c8d95c"
+      }
+    ]
+  },
+  "source": "source/android-phone/provenance-v15.json"
+}

@@ -50,6 +50,12 @@ then dated a day-old event “7h —” while the timeline placed the developmen
 before it two days back. An escalation restarts the number, not the sentence. The label still follows the
 newest reading's judgement, so a re-report carries none, as before.
 
+Since 2026-10-05, when a development has been reported under a newer prompt
+version than its first report, the page shows the first reading at the newest
+version instead, still dated from the first report. A version is bumped because
+the old one wrote badly (an outlet name, a market forecast), so the newer
+wording wins, and the event is no newer than it was.
+
 Since 2026-09-27 that age is back, as a quiet prefix. A development can hold the
 page for a day or more with the same sentence, and with nothing after “New:” an
 hour-old sentence and a day-old one looked the same. The owner chose the form
@@ -65,7 +71,7 @@ news was last checked, not when the sentence changed.
    later allow 135 characters for the body and reserve 5 for the label, so the
    budget does not depend on whether the development turns out to be new.
 3. Fetch `/api/developments`: the story names on record and the developments
-   recorded over 48 hours. It is read-only, and it is the only history the
+   recorded over 144 hours, as long as a development can lead the page. It is read-only, and it is the only history the
    caller sees.
 4. Answer the judge prompt, printed in the instructions after the rating prompt,
    about the reading against that record: `development_of` (a listed id, or null for a new
@@ -136,6 +142,9 @@ The age adds tests for its boundaries, budget, API field and rendered props (a
 muted age nested in the sentence) on all three platforms; the web export was
 checked in Chromium in light and dark (`store/source/story-age/web-sentence-age.png`).
 The Swift formatter cases were updated but not compiled here (no Swift toolchain).
-The Android widget sources compile and link, but the stacked age layer has not
-been seen on a device. Native visual parity and a replacement mobile release are
+The Android widget sources compile and link. On the owner's phone (Play
+internal build 14, 15 October 2026) the age showed in neither layer and the
+first line looked indented: the muted layer was built with
+`new SpannableString(sentence)`, which copies the ink layer's transparent age.
+It is now built from the plain text; the fix has not yet been seen on a device. Native visual parity and a replacement mobile release are
 not established by these checks; see `store/story-age-verification.json`.

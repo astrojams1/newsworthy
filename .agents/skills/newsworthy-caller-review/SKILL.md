@@ -40,7 +40,8 @@ a reading nor a report, and one timeline per hour that also shows each
 authenticated read of the instructions, prompt and record. Reads and
 rejections made with the admin token are marked — those are reviewers, not the
 caller; rejections recorded before the token was kept are marked as such. A sentence
-naming a listed news outlet is flagged. It prints facts
+naming a listed news outlet, predicting a market move or hiding its actor in a
+passive is flagged. It prints facts
 only. Read every run report in full.
 
 ## Check each run
@@ -56,6 +57,24 @@ only. Read every run report in full.
   flags names from `scripts/news-outlets.mjs`, but that list is not every
   outlet, so read every sentence. Record each case with its prompt version: on
   v19 or later it is a contract breach; before v19 it is expected, not a finding.
+- **No market forecast.** From prompt v21 the sentence never predicts a market
+  move ("…, which could lift oil prices"); a move that happened may be
+  reported. `scripts/market-forecast.mjs` flags a hedge and a market word in
+  one clause; read every sentence anyway. On v21 or later a forecast is a
+  contract breach; before v21 it is expected.
+- **Active voice.** From prompt v22 the sentence says who acted, or who claims
+  it when unconfirmed ("Iran's Revolutionary Guards said they hit two
+  tankers", not "two tankers were reportedly hit"). `scripts/passive-voice.mjs`
+  flags a passive with no actor; a state ("is expected", "is due") is fine.
+- **A preview says what it will settle.** From prompt v23 a sentence about a
+  scheduled release not yet out (a data report, a speech, minutes) says what
+  the release will settle ("will show whether…"), not only that it is due.
+  On v23 or later a bare announcement is a contract breach; before v23 it is
+  expected.
+- **Dates, not relative days.** From prompt v24 the sentence gives a date
+  ("due Oct 14"), never "today", "tonight", "tomorrow" or "yesterday": it is
+  shown for hours, under an age, in every time zone. On v24 or later a
+  relative day is a contract breach.
 - **Judgement sound.** `same` or `new` is defensible against the record the
   reading was judged with; a proposed `same_story` joins one story coined twice,
   never related stories. A doubtful merge is raised with the owner, who can undo

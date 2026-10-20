@@ -39,8 +39,8 @@ External copy stays framed around news by significance, by the owner's
 decision: the tagline, descriptions, store listing, help pages, `llms.txt` and
 metadata do not describe the score as market risk and do not mention markets,
 prices, trading or investing as what the number measures. The reading's own
-sentence may name what a development could mean for prices or savings; that is
-news, not a description of the scale. Internal work that changes the rating
+sentence may report a market move that happened; that is news, not a
+description of the scale. Since prompt v21 (2026-10-05) it never predicts one. Internal work that changes the rating
 does not by itself call for external copy changes.
 
 The sentence never names a news outlet (the owner's convention, 2026-09-27,
@@ -83,6 +83,7 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
   development, about the number the front page shows rather than a raw reading. Describe it as optional and quiet; never as an alert service,
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
+  So does Publisher (Settings → Publisher): who publishes and edits, that readings are Newsworthy's own and not republished articles, and a contact email. It never mentions how ratings are produced and never names outlets.
 - The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
   a few plain sentences: a score of consequence. Like all
   user-facing copy it does not mention AI. By the owner's choice it does not
@@ -102,13 +103,13 @@ https://newsworthy-indol.vercel.app/. Contact: astrojams1@gmail.com.
 
 The shared public UI uses Expo / React Native for web, iOS and Android. Admin
 remains web-only. Native widgets are integrated through Expo prebuild; they need
-custom-build verification. EAS account setup, signing and store setup are release
-gates. Do not claim store availability before release.
+custom-build verification. Signing, the local iOS and Android releases
+and store setup are release gates. Do not claim store availability before release.
 
 The Codex browser panel shows the web renderer. An installed iPhone simulator
 can run the native UI through Expo Go. Widgets and the complete package require
-a custom native build, either on a Mac with a supported Xcode/runtime or through
-EAS. Native and physical-device verification scopes must be recorded separately.
+a custom native build: iOS on a Mac with a supported Xcode/runtime, Android
+locally with Gradle. Native and physical-device verification scopes must be recorded separately.
 
 ## Where copy lives
 

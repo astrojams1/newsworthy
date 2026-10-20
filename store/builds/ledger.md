@@ -1,8 +1,9 @@
 # Build and sandbox ledger
 
-Every EAS cloud build, EAS sandbox and TestFlight or Play submission, what it
-was for, what it cost against the Expo free plan's monthly caps, and what came
-of it. Use the [app release skill](../../.agents/skills/newsworthy-app-release/SKILL.md)
+Every EAS cloud build, local iOS store archive, EAS sandbox and TestFlight or
+Play submission, what it was for, what it cost against the Expo free plan's
+monthly caps, and what came of it. Since 14 October iOS store builds are local
+and cost no credits; the caps now bound Android builds and sandboxes. Use the [app release skill](../../.agents/skills/newsworthy-app-release/SKILL.md)
 before spending either cap. Entries are append-only, oldest first: a later
 entry that corrects an earlier one says so in its own words. Both caps reset on
 the 1st at 00:00 UTC, so the month's rows in the table are what is left to
@@ -14,7 +15,7 @@ record them there too. This file is about cost.
 | Month | Builds started (credits) | Sandbox minutes (of 60) | Wasted | Notes |
 |---|---|---|---|---|
 | [2026-09](#2026-09) | 36 (19 iOS, 17 Android); refused from the 26th | about 87, cap reached on the 26th | 7 cancelled or errored builds; 3 duplicate Android builds; two sandboxes at once | Credits gone in ten days |
-| [2026-10](#2026-10) | 5 so far (iOS 22, 24, 25, 26; simulator-release 78c0ccc8 running) | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155 |
+| [2026-10](#2026-10) | 6 so far (iOS 22, 24, 25, 26, 27; simulator-release 78c0ccc8); none after 12 October | about 57.3 | Build 22 (stalled upload, 45-minute limit); build 25 (Swift needing iOS 26, skipped compile check) | TestFlight builds 24 and 26 of #155; build 27 resubmitted for review; iOS local from the 14th (build 28 archived, not uploaded); Android local from the 15th (13 built, not uploaded; 14 by hand, 15 and 16 through the Play API, all on internal testing) |
 
 ## Lessons
 
@@ -58,6 +59,50 @@ resulting rules; this is the evidence behind them.
   rather than spend about 10 sandbox minutes compiling first. Swift API
   availability is not checked by anything in the cloud container; a test now
   rejects that initializer.
+- **An iOS 27 SDK build of this app does not launch on iOS 27** (2026-10-11).
+  A local Xcode 27 Release simulator build crashed at launch in
+  `_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption` (UIScene
+  lifecycle not adopted) and ran on iOS 18.4; its widget extension worked on
+  iOS 27. Build 26 used EAS image `macos-tahoe-26.5-xcode-26.6`, now pinned
+  in `eas.json` so a changed EAS default cannot ship a build that crashes.
+- **EAS credits are shared** (2026-10-14). The account's 15 monthly build
+  credits also pay for Space Worms; 12 were used by the 14th. iOS store
+  builds moved to the owner's Mac (`apps/client/script/ios-release.mjs`).
+- **UIScene was the fix, not an older Xcode** (2026-10-14). The iOS 27 launch
+  crash reproduced with Xcode 27 (27A266a); adopting UIScene through Expo 57's
+  own `ExpoAppSceneDelegate` (a config plugin, no native code kept in Git)
+  made the same build launch on iOS 27.0 and 18.4, so the Xcode 26.6 pin went.
+- **Local archive and export take about seven minutes** (2026-10-14). With
+  pods already downloaded, `ios-release.mjs archive` (clean prebuild, pods,
+  archive, export, checks) finished build 28 in 6m57s. Xcode-managed signing
+  with the API key needed no Xcode account sign-in.
+- **Local Xcode verification is free** (2026-10-11). With Xcode 27 installed,
+  prebuild, `pod install` (with `LANG=en_US.UTF-8`) and a Release simulator
+  build took about 15 minutes and no credits or sandbox minutes.
+- **The group lookup broke without a code change** (2026-10-14).
+  `GET /v1/apps/{app}/betaGroups?filter[name]=` now answers 400
+  `PARAMETER_ERROR.ILLEGAL`, so `ios-release.mjs testers` would have failed
+  after the next upload. `GET /v1/betaGroups?filter[app]=…&filter[name]=…`
+  returns Release QA; the script uses it.
+- **Credits are counted per platform** (2026-10-15). `eas account:usage
+  astrojams1` reported iOS 13 of 15 and Android 0 of 15 for October: the
+  "15 shared credits" above were iOS's alone. Moot for this app, which now
+  builds both platforms locally.
+- **Android builds locally too** (2026-10-15). The owner stopped EAS builds;
+  `apps/client/script/android-release.mjs` builds and signs the `.aab` with
+  Gradle on the Mac, and `eas.json` and the EAS build workflow were removed.
+  EAS kept the old upload key and `google-services.json` (a secret readable
+  only inside EAS builds), so a new upload key was made (nothing had reached
+  Play) and the Firebase file was downloaded from the Firebase console.
+- **The vault service account is read-only** (2026-10-15). `op item create`
+  answered "You do not have permission"; the owner adds new vault items.
+- **A returned edit skipped the readback** (2026-10-15). `upload()` returned
+  its `withEdit(…)`, so the track readback after it never ran: versions 15
+  and 16 committed but logged nothing past "Uploading". It now awaits the
+  edit, and a test pins that.
+- **An API commit replaces console drafts** (2026-10-15). Listing text saved
+  in Play Console as a draft vanished when the artwork upload's API edit
+  committed; it was re-entered and saved with Save. The skill states the rule.
 
 ## 2026-09
 
@@ -195,3 +240,182 @@ The existing physical recording remains labeled historical build 21. Simulator
 captures do not claim physical build-26 certification or public availability.
 October usage is five cloud builds, about 57.3/60 sandbox minutes and MCP
 500/500 requests. No second capture sandbox or paid upgrade was started.
+
+**Build 27, 12 October.** iOS production `6913b8c7-2074-42ee-a603-1ce7a7dca59a`
+from `f9ffa29` (#199, #200, #202), image `macos-tahoe-26.5-xcode-26.6` (Xcode
+26.6, 17F113) as pinned; finished in about six minutes. Submitted with the
+temporary-profile key method (EAS submission `3881ec36`); Apple processed it
+VALID with `usesNonExemptEncryption` false, it was added to Release QA, selected
+for 1.0.0 and resubmitted: version and review submission WAITING_FOR_REVIEW.
+Before building, the widget was compiled and checked on a local Xcode 27
+simulator build at no cost. No sandbox minutes were used. The Expo MCP stayed
+at 500/500, so build state was read with EAS CLI instead.
+
+**Local iOS release, 14 October.** No EAS build, submission or sandbox. The
+UIScene launch crash reproduced with Xcode 27 (27A266a) on the iOS 27.0
+simulator; `plugins/with-scene-lifecycle.js` fixed it (launch checked on iOS
+27.0 and 18.4), and `ios.image` and every iOS profile and submission left
+`eas.json`. Build number 28 came from App Store Connect (highest 27). Local
+build 28: archived and exported from 975aff8 plus this change (dirty tree),
+Apple Distribution CWQ9AWJF8T with Xcode-managed store profiles for app and
+widget, `.ipa` SHA-256
+`9410b6c51e37bc4b1dfb61ca8ca028c37146578c0f60e56e8284258411b3bc5f`;
+`altool --validate-app` succeeded. Not uploaded: the first upload waits for
+the owner and should come from the merged commit. EAS credits used: none.
+
+**Local Android release, 15 October.** No EAS build, submission or sandbox:
+the owner stopped EAS builds, and `account:usage` showed October at iOS 13/15,
+Android 0/15. On the Mac, Homebrew `openjdk@17` (17.0.20.1), `bundletool`
+1.18.3 and `android-commandlinetools`; SDK platform 36, build-tools 36.0.0 and
+NDK 27.1.12297006 under `/Volumes/ssd/toolchains`, with Gradle's and Android's
+user caches there too. A new upload key (PKCS12, alias `upload`, certificate
+SHA-256 `EB:1E:5F:25:…:F4:33:E4`) was made because EAS's could only be
+downloaded from EAS, and `google-services.json` came from the Firebase console;
+both wait in a private folder for the owner to add to the vault (the service
+account cannot write). Version code 13 from 099cd5e plus this change (dirty
+tree): Gradle `bundleRelease` 12m04s on a cold cache, `.aab` SHA-256
+`4022cc8c5a043ea6b3e700d3fb31f606255617878be9100a49ed94f634a3d25f`,
+target SDK 36, release JavaScript, `google_app_id` and the upload signature
+checked; universal APK SHA-256
+`e8e1513a5cf7c265a0f9b5922889b8458eeb3adc0d9796a9e44ada3484f63839`, same
+signer. The first verify used `bundletool dump resources --resource=`, which
+answered nothing for a resource that is present; the script reads the full
+table. Not uploaded: Play Console still has no app, and the first upload should
+come from the merged commit. EAS credits used: none.
+
+**Vault item, 15 October.** The owner added `op://API Tokens/Newsworthy Android`
+(attachments `upload.jks` and `google-services.json`, field `keystore
+password`). Each matched the generated files byte for byte (compared by
+SHA-256, values not printed). `android-release.mjs verify --version-code 13`
+with no environment overrides read all three from the vault, confirmed the
+bundle's signer (`EB:1E:5F:25:…:F4:33:E4`) and removed its temporary copies.
+
+**Play app created, 15 October.** With the owner's approval, Newsworthy was
+created in Play Console (app ID 4974473553901574528, package
+`com.astrojams.newsworthy`, Paid, English US) after device and contact-phone
+verification. No bundle uploaded yet. Android developer verification lists the
+package as not registered; check again after the first upload.
+
+**Play internal testing, 15 October.** PR #212 merged as 9ad04fb (production
+`/healthz` reported it). Version code 14 built from clean 9ad04fb with the
+vault credentials in 5m55s on a warm Gradle cache: `.aab` SHA-256
+`ec503e03e9170a8e674259cf2b1252c0911d3dbc446b72804abd217143554aa5`, signer
+`EB:1E:5F:25:…:F4:33:E4`, target SDK 36; universal APK SHA-256
+`b1e80c0bce0a0b4e425c38860200d21a2956d368df31971de4393ca2c331ec14`. Uploaded
+by hand in Play Console (the owner dragged the file in: the console page cannot
+fetch a local file, and the first bundle cannot go through the API), release
+"14 (1.0.0)" saved and published to internal testing at 09:36 PDT: "Available
+to internal testers", 26.5 MB for new installs. Two warnings: no testers yet
+(track Inactive) and no deobfuscation file (R8 is off). After the upload,
+Android developer verification shows the package Registered with 3 keys. Version
+code 13 was never uploaded. EAS credits used: none.
+Afterwards, at the owner's request, an internal tester list "Owner" (their own
+Google account) was created and selected; the track became Active. Opt-in:
+https://play.google.com/apps/internaltest/4700283919647153170.
+
+**Play Developer API, 15 October.** Version code 14 went to internal testing
+by hand in Play Console, since Play takes a new app's first bundle only there.
+For later uploads `android-release.mjs` gained `next-version-code` and
+`upload`, and `release --track` uploads after building. In the built-in
+browser, with the owner's approval: the Google Play Android Developer API was
+enabled on Google Cloud project `newsworthy-cad27`; service account
+`play-release@newsworthy-cad27.iam.gserviceaccount.com` was created with no
+project roles; Play Console invited it to Newsworthy only, with Release apps to
+testing tracks and read-only View app information (Active at once). The owner
+created its JSON key and attached it to `op://API Tokens/Newsworthy Android` as
+`play-service-account.json`; it reads back as that service account (values
+not printed). `next-version-code` read Play live in 3.5 s and returned 15. No
+API upload yet. EAS credits used: none.
+
+**Version code 15 through the Play API, 15 October.** At the owner's request
+the Play uploads session stopped its own build of 15 (killed in Gradle, before
+any bundle or upload) so 15 would carry PR #216. #216 merged as 254686f
+(production `/healthz` reported it). `release --version-code 15 --track
+internal` from clean 254686f with the vault credentials took 24m18s in all,
+Gradle on a cache partly shared with the stopped build: `.aab` SHA-256
+`e35cfca85325b78967eb67f4472b5c9515a81ace9ab9d851e2550ef375982a5a`, signer
+`EB:1E:5F:25:…:F4:33:E4`, target SDK 36; universal APK SHA-256
+`25c6cb8eeb79e2a5a5e648c4b1357d92a8e7a948a4688806541e80325dfb9e4e`. The first
+upload through the API. Its log ends at "Uploading … to Play" without the
+script's "committed to internal" line (the run's output was cut short when the
+session ended), so it was checked afterwards: `next-version-code` returns 16,
+and Play Console shows the internal track Active, latest release 1.0.0,
+"Available to internal testers", 1 version code, released Oct 15 10:45 AM. The
+release takes the API's default name, 1.0.0, not "15 (1.0.0)". EAS credits
+used: none.
+
+**Play listing artwork, 15 October.** No build. The September Play gallery
+(mint palette, reading with Privacy/Support links, no timeline) was replaced
+from versionCode 15's universal APK (`254686f`, SHA-256 `25c6cb8e…`) on a
+new API 35 Pixel 7 emulator under `/Volumes/ssd/toolchains` (emulator and
+`google_apis` arm64 image installed there with `sdkmanager`). Eleven
+original captures and their hashes are in
+`store/source/android-phone/provenance-v15.json`; five screenshots, the
+feature graphic and the 512 px Stone icon were uploaded through the Play API
+by `store/scripts/google-play-images.mjs`. With the owner's approval the
+service account gained Manage store presence and, after two edits failed
+`validate` with 403 and were deleted, Edit and delete draft apps; the third
+edit committed. Receipt: `store/google-play-artwork-15-upload.json`. Another
+local session installed and launched its own app on the shared emulator
+during capture; none of its screens are in the captures. EAS credits used:
+none.
+
+**Version code 16, 15 October.** PR #222 blocks `SYSTEM_ALERT_WINDOW` and
+external storage (Expo template permissions the app never uses) and makes the
+release script refuse a bundle that still requests them. Built from clean
+122463c with the vault credentials and uploaded through the Play API to
+internal testing in 6m56s: `.aab` SHA-256
+`c92582cb884964519744f867f4bce99aeab5a96a37b849a6d4bdc8cb63e6f212`, signer
+`EB:1E:5F:25:…:F4:33:E4`, target SDK 36, no blocked permission in the merged
+manifest; universal APK SHA-256
+`b0c7476813562bd937fa715d106e6565f3bd7dacc3dbcbbfb9aacb88034615ae`. Like 15,
+its log stopped at "Uploading" (the readback bug above); `next-version-code`
+returning 17 confirms the commit. Listing text, found empty after the artwork
+commit, was re-entered from `store/listing.json` (description SHA-256
+matches) and saved; the review step's new AI asset declaration was answered
+"Don't label assets" (captures and rendered artwork, no AI-generated images).
+EAS credits used: none.
+
+**Closed test submitted, 16 October.** No build: version 16 (already on
+internal testing) was promoted to Closed testing - Alpha in Play Console as
+"16 (1.0.0)", for 173 countries / regions (Play disables China, Cuba, Iran,
+Sudan and Rest of World) and the tester group
+newsworthy-testers@googlegroups.com. The owner created the payments profile;
+the price was set from USD 1.00 for all 177 regions (Play's charm pricing: USD
+0.99 in the US). Publishing overview then listed 14 changes; the owner sent them
+for review (auto mode blocked the agent's click on the final confirmation) and
+Play's quick checks passed and it read "Your changes are now in review." EAS credits
+used: none.
+
+**Status check, 19 October.** No build, no EAS credits. Apple still reads
+version 1.0.0 and review submission WAITING_FOR_REVIEW (submitted 12 October)
+with build 27 selected, read through the vault API key; the built-in browser
+could not sign in to App Store Connect, so the key recipe is now in the
+newsworthy-app-release skill. Google Play rejected the closed test on 19 October
+under the News and Magazines policy (publisher/author ownership information).
+
+**Version 17, 19 October.** Built locally from main 2796737 (clean tree,
+openjdk 17.0.20.1, targetSdk 36, sha256 c1cf39e9…30b8d5) for the Play News
+policy rejection: it adds Settings > Publisher, whose copy was found in the
+Hermes bundle. The first build attempt stopped before starting because
+JAVA_HOME was unset; the documented SSD toolchain fixed it. Uploaded to internal
+testing and promoted to Closed testing - Alpha through the Play Developer API
+with changes held from review (`changesNotSentForReview=true`, after Play
+refused a plain validate and commit); 173 countries and the tester group were
+kept. Not sent for review, no appeal filed. EAS credits used: none.
+
+**Shared release skill, 19 October.** The release scripts moved to the shared
+app-release skill (v2.0.0, the `vendor/skills` submodule), which Space Worms
+runs too, configured by `app-release.config.json`: `ios-release.mjs`,
+`android-release.mjs` (every Play commit still held: `android.holdForReview`),
+`asc.mjs` (replacing `store/scripts/apple.mjs`), `play.mjs` (replacing
+`google-play-images.mjs`) and `ledger.mjs`. `store/listing.json` and
+`store/apple-age-rating.json` became `store/store.json`. Builds now go to
+`/Volumes/ssd/builds/{xcode,android}/newsworthy/` (builds made before this, under
+`apps/client/build/`, are not found by `upload` or `verify`: rebuild), and `ledger.mjs record`
+also appends to the owner's agent activity ledger. Read-only checks through
+the shared scripts: App Store Connect 1.0.0 WAITING_FOR_REVIEW in 4f28761f
+with build 27 selected, builds up to 28, next build 29; Play version code 17
+completed on internal and alpha, next 18; the Play listing text, icon, feature
+graphic and five phone screenshots match the repository byte for byte. No
+builds, uploads, sandboxes or EAS credits used.
