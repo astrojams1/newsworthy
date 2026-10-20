@@ -82,3 +82,20 @@ Pilot evidence and remaining gaps: [2026-09-22 pilot](../../../../docs/user-rese
 - Date operators and fresh crawl labels did not guarantee recent comments.
   Preserve unknown publication dates on readable support pages rather than
   dating them from linked stories or screenshots.
+
+## Lessons from run 03, 2026-10-01
+
+- If general search yields generic homepages or verification gates, record the
+  failed query and pivot to a source's supported public interface. HN's official
+  item API supplied original bodies and exact timestamps in
+  [run 03](../../../../docs/user-research/runs/2026-10-01-01.md#search-log);
+  Algolia search excerpts alone were not counted as verified accounts. Do not
+  bypass blocked Reddit or support access to satisfy a source-family quota.
+- Apple's public review RSS supplied the French bodies behind E-07/08, but its
+  `updated` field is not a proven first-publication date. Record the review ID,
+  title, storefront and update date. An empty US feed establishes no demand or
+  satisfaction; multiple storefronts remain one store-review source family.
+- Re-reading a known item can correct metadata without multiplying support:
+  the HN date for E-20260922-02-02 was recovered, while its evidence ID and
+  observation count were preserved. Missing review dates stay unknown rather
+  than inheriting the app's update date.
