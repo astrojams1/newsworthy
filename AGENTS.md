@@ -24,7 +24,10 @@ release status. Calm presentation must not change the rating calibration.
   claims against the change, and record the copy accuracy review in the PR
   description. Repeat affected checks if PR scope changes.
 - Branch off `main`, open a PR into `main`, and run `npm test` before pushing.
-  Do not push directly to `main`. Vercel preview builds are currently skipped.
+  Do not push directly to `main`.
+- Fix bugs and flaky tests as soon as you meet them, even when unrelated to
+  the task, in their own PR. Never merge past a failing check or dismiss a
+  failure as "known" or "flaky" instead of fixing it.
 - Keep extra development workspaces inside the primary Newsworthy checkout at
   `.worktrees/<task-name>/`. Do not create sibling `newsworthy-*` folders in
   `~/code` or elsewhere in the home directory. When already in a worktree, use
@@ -76,8 +79,7 @@ release status. Calm presentation must not change the rating calibration.
 - Every skill in `.agents/skills/` keeps an append-only ledger, linked from its
   SKILL.md, read before a run and updated after (`test/skill-ledgers.test.js`).
 - A push to `main` deploys to production. `main` is both the GitHub default
-  branch and Vercel's production branch. Preview builds are skipped by
-  `vercel.json`’s `ignoreCommand`; verify production after merge.
+  branch and Vercel's production branch. Verify production after merge.
 - `npm test` needs no cloud database — see Testing. `scripts/cloud-setup.sh`
   prepares cloud sessions; `npm run check:android-widget` compiles the widget.
 - The production admin token (`ADMIN_TOKEN`) is kept in the owner's 1Password
@@ -568,9 +570,8 @@ commit. Check it before debugging anything else.
 Branch Tracking**, not Settings → Git.
 
 **`vercel.json` takes no comments.** The schema sets `additionalProperties:
-false`, so a `"//"` key fails the deploy outright — `should NOT have additional
-property //` — before any build runs. Rationale for anything in that file
-belongs here instead.
+false`, so a `"//"` key fails the deploy before any build runs. Rationale for
+anything in that file belongs here instead.
 
 **Preview builds are skipped** via `ignoreCommand`: every branch preview failed
 in a second (`BUILD_FAILED`, "Resource provisioning failed", no logs) and
@@ -663,9 +664,9 @@ Native delivery needs credentials this repository cannot hold: an APNs key and
 an FCM service account uploaded to EAS. Until they are, the switch registers a
 token and nothing arrives — see `docs/mobile-release.md`.
 
-**Avoid native dependencies.** `better-sqlite3` broke the first deploy: npm
-skipped its install script, so the binding was missing and the import threw at
-cold start. Prefer pure-JS or HTTP-based drivers.
+**Avoid native dependencies.** `better-sqlite3` broke the first deploy (npm
+skipped its install script; the import threw at cold start). Prefer pure-JS or
+HTTP drivers.
 
 **v5 changed what is measured, not just the wording.** v1 through v4 asked
 whether the news was worth the reader's attention across money, career,
