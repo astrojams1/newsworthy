@@ -38,6 +38,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | Play upload readback, version 16 | 2026-10-15 | App release skill, build and release ledgers, store listing | Skill: save Play console listing edits with Save before an API commit | No user-facing copy changed; nothing public on Play |
 | Play closed test submitted | 2026-10-16 | Store listing, release notes, product messaging, README, llms.txt | Closed-test release notes kept neutral (an "open it daily" draft was dropped as an engagement prompt) | In Google's review; not available to anyone yet; no store availability claimed |
 | #226 | 2026-10-19 | README, AGENTS.md, caller trials, product messaging, llms.txt | README and AGENTS.md point to the new caller trial skill; caller trials' promotion steps now change the live Routine's model, as the skill does. No external copy names the caller's model | The skill's Routine steps are written from the October trials, not yet run as written |
+| Build 28 TestFlight record | 2026-10-20 | README, mobile release, store README, store listing and Review Notes, app release skill, build and release ledgers | Release and build ledgers: build 28 uploaded to TestFlight on 14 October (`IN_BETA_TESTING`), no longer "archived, not uploaded"; carried from #210, closed unmerged. Mobile release already says UIScene was checked on simulators only | Build 28 not yet seen on a physical iPhone; TestFlight state is as observed on 14 October, not re-read; build 27 stays the App Review build |
 
 ## Lessons
 
