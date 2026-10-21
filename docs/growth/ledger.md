@@ -186,3 +186,10 @@ file names in `store/assets/youtube/`: the video, a new cover from the same
 12.9 s, and the unchanged captions. Posting it is a new upload; the title,
 description and settings above still apply.
 
+**2026-10-21, restaged.** The owner found the re-frame shrunk rather than
+designed: a tiny phone under oversized headlines. The third cut makes the
+phone the subject, large and running off the bottom edge under YouTube's
+title, with one-line headlines; details in the
+[video ledger](../../store/video/ledger.md#2026-10-21-trailer-restage). Same
+files in `store/assets/youtube/`, with a new cover from 12.9 s.
+
