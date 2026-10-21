@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-20T16:44:12+00:00",
+  "updated_at": "2026-10-21T15:20:18+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -178,26 +178,26 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "waiting_provider",
+      "state": "done",
       "owner": "provider",
       "basis": "observed",
-      "summary": "2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27.",
+      "summary": "2026-10-21: build 27 approved after the Guideline 2.3 metadata fix; version 1.0.0 READY_FOR_DISTRIBUTION, review submission COMPLETE.",
       "evidence": [
-        "store/apple-review-resubmission-2026-10-20-build27.json"
+        "asc.mjs status 2026-10-21: version READY_FOR_DISTRIBUTION, submission 4f28761f COMPLETE, build 27 attached"
       ],
-      "next_action": "Await Apple's response.",
-      "updated_at": "2026-10-20T15:18:25+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-21T15:20:17+00:00"
     },
     "apple.release": {
-      "state": "waiting_provider",
+      "state": "waiting_user",
       "owner": "provider",
       "basis": "observed",
-      "summary": "Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates.",
+      "summary": "2026-10-21: version READY_FOR_DISTRIBUTION with AFTER_APPROVAL, but the public US App Store lookup returns no result. Likely blocker: the Paid Apps Agreement, last seen Pending User Info awaiting the owner's bank account (apple.agreement, apple.bank); not verified, agreements are not in the API. An accidental asc.mjs pricing run changed nothing (0 of 175 territories enabled).",
       "evidence": [
-        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        "itunes.apple.com lookup id=6812519450 country=us: resultCount 0, 2026-10-21"
       ],
-      "next_action": "Await approval, then verify paid-sale readiness and public availability.",
-      "updated_at": "2026-10-01T11:40:49+00:00"
+      "next_action": "Owner checks Business > Agreements and adds the bank account if still pending; then verify the public listing and price.",
+      "updated_at": "2026-10-21T15:20:17+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -280,10 +280,12 @@
       "state": "in_progress",
       "owner": "user",
       "basis": "observed",
-      "summary": "2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in.",
-      "evidence": [],
-      "next_action": "After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days.",
-      "updated_at": "2026-10-16T13:32:26+00:00"
+      "summary": "2026-10-21: Google approved the closed-testing release; Alpha Active with version 17 in 173 countries / regions, testers via newsworthy-testers@googlegroups.com. Tester count not read.",
+      "evidence": [
+        "Play Console closed testing track, 2026-10-21"
+      ],
+      "next_action": "Recruit at least 12 testers (PR 221) and keep them opted in for 14 continuous days.",
+      "updated_at": "2026-10-21T15:20:18+00:00"
     },
     "google.production-access": {
       "state": "todo",
@@ -1213,15 +1215,15 @@
       "updated_at": "2026-10-16T13:32:26+00:00"
     },
     "google.news-policy": {
-      "state": "waiting_provider",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead.",
+      "summary": "2026-10-21: Play Policy status reads 'No issues found'; closed testing Alpha Active with release 1.0.0 (version 17) in 173 countries / regions.",
       "evidence": [
-        "Play Console Publishing overview, read after sending, 2026-10-19"
+        "Play Console Policy status 'No issues found', 2026-10-21"
       ],
-      "next_action": "Check Policy status and Publishing overview until Google approves or rejects version 17.",
-      "updated_at": "2026-10-19T16:31:23+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-21T15:20:17+00:00"
     }
   },
   "events": [
@@ -8156,6 +8158,70 @@
         "evidence": [],
         "next_action": "Owner to install TestFlight build 28 on an iPhone: launch, widgets, notifications (permission, registration, tap), share sheet, deep link.",
         "updated_at": "2026-10-20T16:44:12+00:00"
+      }
+    },
+    {
+      "sequence": 436,
+      "at": "2026-10-21T15:20:17+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "done",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "2026-10-21: build 27 approved after the Guideline 2.3 metadata fix; version 1.0.0 READY_FOR_DISTRIBUTION, review submission COMPLETE.",
+        "evidence": [
+          "asc.mjs status 2026-10-21: version READY_FOR_DISTRIBUTION, submission 4f28761f COMPLETE, build 27 attached"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-21T15:20:17+00:00"
+      }
+    },
+    {
+      "sequence": 437,
+      "at": "2026-10-21T15:20:17+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "waiting_user",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "2026-10-21: version READY_FOR_DISTRIBUTION with AFTER_APPROVAL, but the public US App Store lookup returns no result. Likely blocker: the Paid Apps Agreement, last seen Pending User Info awaiting the owner's bank account (apple.agreement, apple.bank); not verified, agreements are not in the API. An accidental asc.mjs pricing run changed nothing (0 of 175 territories enabled).",
+        "evidence": [
+          "itunes.apple.com lookup id=6812519450 country=us: resultCount 0, 2026-10-21"
+        ],
+        "next_action": "Owner checks Business > Agreements and adds the bank account if still pending; then verify the public listing and price.",
+        "updated_at": "2026-10-21T15:20:17+00:00"
+      }
+    },
+    {
+      "sequence": 438,
+      "at": "2026-10-21T15:20:17+00:00",
+      "gate": "google.news-policy",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "2026-10-21: Play Policy status reads 'No issues found'; closed testing Alpha Active with release 1.0.0 (version 17) in 173 countries / regions.",
+        "evidence": [
+          "Play Console Policy status 'No issues found', 2026-10-21"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-21T15:20:17+00:00"
+      }
+    },
+    {
+      "sequence": 439,
+      "at": "2026-10-21T15:20:18+00:00",
+      "gate": "google.closed-test",
+      "result": {
+        "state": "in_progress",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-21: Google approved the closed-testing release; Alpha Active with version 17 in 173 countries / regions, testers via newsworthy-testers@googlegroups.com. Tester count not read.",
+        "evidence": [
+          "Play Console closed testing track, 2026-10-21"
+        ],
+        "next_action": "Recruit at least 12 testers (PR 221) and keep them opted in for 14 continuous days.",
+        "updated_at": "2026-10-21T15:20:18+00:00"
       }
     }
   ],

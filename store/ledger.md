@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-20T16:44:12+00:00
+Updated: 2026-10-21T15:20:18+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -27,8 +27,8 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | 2026-09-24 | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | 2026-10-20 | 2026-10-20: Apple rejected build 27 under Guideline 2.3 (iPad Air 11-inch M3): could not locate 'New and Ongoing', a description heading. Heading replaced with 'STORY AND AGE' (PR 230), Review Notes explain it; listing and notes saved and verified; build 27 resubmitted 15:18 UTC, version and submission WAITING_FOR_REVIEW. No Resolution Center reply (no API); no device check of build 27. | Await Apple's response. |
-| apple.release | waiting_provider | provider | observed | 2026-10-01 | Build 26 is Waiting for Review. Public release is not verified; September24 banking/Paid Apps Agreement and legal-address correction remain separate recorded gates. | Await approval, then verify paid-sale readiness and public availability. |
+| apple.review | done | provider | observed | 2026-10-21 | 2026-10-21: build 27 approved after the Guideline 2.3 metadata fix; version 1.0.0 READY_FOR_DISTRIBUTION, review submission COMPLETE. | — |
+| apple.release | waiting_user | provider | observed | 2026-10-21 | 2026-10-21: version READY_FOR_DISTRIBUTION with AFTER_APPROVAL, but the public US App Store lookup returns no result. Likely blocker: the Paid Apps Agreement, last seen Pending User Info awaiting the owner's bank account (apple.agreement, apple.bank); not verified, agreements are not in the API. An accidental asc.mjs pricing run changed nothing (0 of 175 territories enabled). | Owner checks Business > Agreements and adds the bank account if still pending; then verify the public listing and price. |
 | google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
 | google.phone | done | user | observed | 2026-10-15 | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
@@ -37,7 +37,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | google.native | in_progress | agent | observed | 2026-10-16 | Owner installed 14 from Play internal testing on their Android phone (2026-10-15) and reported two defects: the onboarding widget slide showed the iOS widget, and the widget sentence's first line looked indented. Both fixed in #216 and shipped in 15 (internal testing, opt-in https://play.google.com/apps/internaltest/4700283919647153170, tester list 'Owner'). 15 not yet checked on the phone. | On the owner's phone, update to 15 and check the onboarding widget slide against a real 2x2 widget and the medium widget's age prefix; then launch, reading, timeline, Settings, notifications (threshold, delivery, tap), both widgets in light and dark, large text and back navigation. |
 | google.listing | done | agent | observed | 2026-10-16 | Default store listing, category and contact details complete (setup task ticked); sent to Google for review with the first closed-testing release on 2026-10-16. | — |
 | google.disclosures | done | agent | inferred | 2026-10-15 | Owner-approved App content declarations entered in Play Console on 2026-10-15 and read back: 11 actioned declarations. IARC ratings: ESRB E10+, PEGI 3, USK 6+, ClassInd All ages, IARC 3+. Data safety preview: nothing shared; Diagnostics, Other actions, Device or other IDs collected; encrypted in transit; Data deletion answered Yes with https://newsworthy-indol.vercel.app/privacy#delete-your-data (PR #218), saved with the owner's approval and read back after a reload. Differences from the proposal are recorded in store/google-play-app-content.md. | Send the saved App content changes for review with the first closed-testing release. |
-| google.closed-test | in_progress | user | observed | 2026-10-16 | 2026-10-16: Closed testing - Alpha set up: version 16 (1.0.0) promoted from internal testing as release '16 (1.0.0)' (notes: first closed test, feedback to astrojams1@gmail.com), 173 countries / regions (Play disables China, Cuba, Iran, Sudan and Rest of World), testers managed by Google Group newsworthy-testers@googlegroups.com, feedback to astrojams1@gmail.com. 0 testers opted in. | After Google's review approves the release, recruit at least 12 testers (PR #221) and keep them opted in for 14 continuous days. |
+| google.closed-test | in_progress | user | observed | 2026-10-21 | 2026-10-21: Google approved the closed-testing release; Alpha Active with version 17 in 173 countries / regions, testers via newsworthy-testers@googlegroups.com. Tester count not read. | Recruit at least 12 testers (PR 221) and keep them opted in for 14 continuous days. |
 | google.production-access | todo | agent | inferred | 2026-09-16 | No production-access application submitted. | Complete required closed test, collect actual feedback and apply; approval is separate from elapsed time. |
 | google.review | waiting_provider | user | observed | 2026-10-19 | 2026-10-19: version 16 was rejected under the News and Magazines policy (see google.news-policy). Version 17 with Settings > Publisher was sent for review with the same 14 changes; Publishing overview reads 'Changes in review'. | Check Publishing overview and Policy status until Google decides; act on any finding. |
 | google.release | todo | agent | observed | 2026-09-16 | No public Android store release. | Release only after review/access approval and verify the public paid listing. |
@@ -99,7 +99,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.local-release | done | agent | observed | 2026-10-20 | First local iOS release: build 28 from clean 8c8fafb (#208), Xcode 27 27A266a, Apple-managed signing, uploaded with altool on 2026-10-14 (Apple build 2d2662e5-7386-4903-9164-d823ce46fb70), processed VALID and added to Release QA: IN_BETA_TESTING. The testers step needed two fixes (betaGroups lookup, #211; dropped-connection retry, now in the shared app-release skill). Recorded 2026-10-20 from #210. No EAS credits used. | — |
 | google.play-api | done | agent | observed | 2026-10-16 | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 | google.pricing | done | agent | observed | 2026-10-16 | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
-| google.news-policy | waiting_provider | agent | observed | 2026-10-19 | 2026-10-19: with the owner's approval the agent sent 14 changes for review in Publishing overview, including Closed testing - Alpha release 1.0.0 (version 17, Settings > Publisher). Publishing overview reads 'Changes in review' with quick checks running; Google says reviews usually finish within 7 days. No appeal filed: the issue was fixed and resubmitted instead. | Check Policy status and Publishing overview until Google approves or rejects version 17. |
+| google.news-policy | done | agent | observed | 2026-10-21 | 2026-10-21: Play Policy status reads 'No issues found'; closed testing Alpha Active with release 1.0.0 (version 17) in 173 countries / regions. | — |
 
 ## Product verification gates
 
@@ -4252,3 +4252,39 @@ First local iOS release: build 28 from clean 8c8fafb (#208), Xcode 27 27A266a, A
 UIScene build reached TestFlight as build 28 (IN_BETA_TESTING, 2026-10-14). Simulator checks from 14 October stand: launch on iOS 27.0 and 18.4, cold-start deep link, Dark override. Physical-device, widget-on-iOS-27, notification and share-sheet checks not yet made.
 
 Next: Owner to install TestFlight build 28 on an iPhone: launch, widgets, notifications (permission, registration, tap), share sheet, deep link.
+
+### 436. apple.review — done
+
+2026-10-21T15:20:17+00:00 · observed · provider
+
+2026-10-21: build 27 approved after the Guideline 2.3 metadata fix; version 1.0.0 READY_FOR_DISTRIBUTION, review submission COMPLETE.
+
+- asc.mjs status 2026-10-21: version READY_FOR_DISTRIBUTION, submission 4f28761f COMPLETE, build 27 attached
+
+### 437. apple.release — waiting_user
+
+2026-10-21T15:20:17+00:00 · observed · provider
+
+2026-10-21: version READY_FOR_DISTRIBUTION with AFTER_APPROVAL, but the public US App Store lookup returns no result. Likely blocker: the Paid Apps Agreement, last seen Pending User Info awaiting the owner's bank account (apple.agreement, apple.bank); not verified, agreements are not in the API. An accidental asc.mjs pricing run changed nothing (0 of 175 territories enabled).
+
+- itunes.apple.com lookup id=6812519450 country=us: resultCount 0, 2026-10-21
+
+Next: Owner checks Business > Agreements and adds the bank account if still pending; then verify the public listing and price.
+
+### 438. google.news-policy — done
+
+2026-10-21T15:20:17+00:00 · observed · agent
+
+2026-10-21: Play Policy status reads 'No issues found'; closed testing Alpha Active with release 1.0.0 (version 17) in 173 countries / regions.
+
+- Play Console Policy status 'No issues found', 2026-10-21
+
+### 439. google.closed-test — in_progress
+
+2026-10-21T15:20:18+00:00 · observed · user
+
+2026-10-21: Google approved the closed-testing release; Alpha Active with version 17 in 173 countries / regions, testers via newsworthy-testers@googlegroups.com. Tester count not read.
+
+- Play Console closed testing track, 2026-10-21
+
+Next: Recruit at least 12 testers (PR 221) and keep them opted in for 14 continuous days.
