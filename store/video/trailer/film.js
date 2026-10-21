@@ -68,6 +68,7 @@ export const FILM = [
   'store/video/trailer/composition.html', 'store/video/trailer/composition.js', 'store/video/trailer/timeline.js',
   'store/video/trailer/film.js', 'store/video/trailer/score.mjs', 'store/scripts/render-trailer.mjs', 'design/colors.js',
   'store/video/fonts/inter-latin-opsz-normal.woff2', 'store/video/fonts/roboto-mono-latin-300-normal.woff2',
+  'vendor/skills/skills/youtube-shorts/assets/zones.json',
 ];
 
 // Where each render records what it was made from.

@@ -11,9 +11,25 @@ import tokens from '../../../public/tokens.js';
 import { hexToOklab } from '../../../design/colors.js';
 import { CUES, DOWN, HUSH, PINGS, SETTLED, bezier, feedTravel, scoreAt, seeded, spring } from './timeline.js';
 import { say } from './film.js';
+import zones from '../../../vendor/skills/skills/youtube-shorts/assets/zones.json' with { type: 'json' };
 
 const W = innerWidth, H = innerHeight;
 const stage = document.getElementById('stage');
+
+// ---------------------------------------------------------------- the safe zone
+// On a phone YouTube draws its controls over a Short (status bar, back, search
+// and menu across the top, an action rail down the right, the channel and
+// title along the bottom) and the player crops the sides. Every word, number
+// and screen stays inside the box the youtube-shorts skill measured, which
+// test/trailer.test.js checks; backgrounds still fill the frame. The first cut
+// ignored it, and on the owner's phone its lines sat under YouTube's buttons.
+const ZS = W / zones.frame.width;
+const zone = z => ({ x: z.x * ZS, y: z.y * ZS, right: (z.x + z.width) * ZS, bottom: (z.y + z.height) * ZS });
+const SAFE = zone(zones.safe), UPPER = zone(zones.safeAboveRail);
+// The widest a line centred on x may be when it ends at `bottom`: above the
+// action rail the box runs further right. Laid out, a line runs a pixel or
+// two wider than the canvas measures it, so 4 px are held back.
+const room = (bottom, x = W / 2) => { const z = bottom <= UPPER.bottom ? UPPER : SAFE; return 2 * Math.min(x - z.x, z.right - x) - 4; };
 
 // ---------------------------------------------------------------- motion
 const clamp = (x, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, x));
@@ -190,10 +206,12 @@ const STATUS_ICONS = `<svg width="78" height="13" viewBox="0 0 78 13" style="pos
 // The app is drawn in its own points (an iPhone's 393 × 852) and the screen
 // scaled into a phone in the frame.
 const AW = 393, AH = 852;
-const PS = 0.63, BEZ = 8;
+// It fills the safe box below two lines of type, with room to float.
+const BEZ = 8, PHONE = { top: SAFE.y + 99, bottom: SAFE.bottom - 8 };
+const PS = (PHONE.bottom - PHONE.top - 2 * BEZ) / AH;
 const PH = { sw: AW * PS, sh: AH * PS, r: 55 };
 PH.bw = PH.sw + 2 * BEZ; PH.bh = PH.sh + 2 * BEZ;
-PH.x = W / 2 - PH.bw / 2; PH.y = H * 0.592 - PH.bh / 2;
+PH.x = W / 2 - PH.bw / 2; PH.y = PHONE.top;
 // A point on the screen, in the frame.
 const onScreen = (x, y) => ({ x: PH.x + BEZ + x * PS, y: PH.y + BEZ + y * PS });
 
@@ -300,9 +318,17 @@ function setNumeral(n, { x, align, base, size, tracking, denomSize, gap, value, 
 // way, upward. A line too wide for the frame is set smaller rather than broken.
 function kinetic(parent, key) {
   const line = el(parent, {});
-  return { line, words: say(key).split(' ').map(w => { const clip = el(line, { overflow: 'hidden' }); return { w, clip, inner: el(clip, {}, w) }; }) };
+  return { line, words: say(key).split(' ').map(w => {
+    const clip = el(line, { overflow: 'hidden' }), inner = el(clip, {}, w);
+    inner.dataset.safe = key;
+    return { w, clip, inner };
+  }) };
 }
-function setKinetic(k, t, { on, base, size, weight = 700, color, gradient, tracking = -0.028, stagger = 0.07, x = W / 2, align = 0.5, maxW = W - 56, cut = false, dur = 0.7, opacity = 1 }) {
+// Lines set together share one size: the largest at which each fits its room.
+function together(size, weight, lines) {
+  return Math.min(size, ...lines.map(([key, base]) => size * room(base + 0.3 * size) / textWidth(say(key), SANS, weight, size, -0.028 * size)));
+}
+function setKinetic(k, t, { on, base, size, weight = 700, color, gradient, tracking = -0.028, stagger = 0.07, x = W / 2, align = 0.5, maxW = room(base + 0.3 * size, x), cut = false, dur = 0.7, opacity = 1 }) {
   const [inT, outT] = on;
   if (t < inT - 0.001 || t >= outT) { show(k.line, 0); return; }
   show(k.line, opacity);
@@ -412,11 +438,13 @@ function build() {
   N.clock = el(stage, {});
   N.clockDigits = el(N.clock, {}, '7:00');
   N.clockAmPm = el(N.clock, {}, 'AM');
+  N.clockDigits.dataset.safe = N.clockAmPm.dataset.safe = 'clock';
 
   // ---- the one that breaks through
   N.bloom = el(stage, {});
   N.ring = el(stage, { borderRadius: '50%', borderStyle: 'solid' });
   N.hero = el(stage, { borderRadius: '18px' });
+  N.hero.dataset.safe = 'hero';
   N.heroCard = el(N.hero, { inset: '1.5px', borderRadius: '16.5px', overflow: 'hidden', background: '#141418' });
   N.heroThumb = el(N.heroCard, { left: '0', top: '0', overflow: 'hidden' });
   N.heroThumbGlow = el(N.heroThumb, { inset: '0' });
@@ -426,7 +454,7 @@ function build() {
 
   // ---- the phone
   N.phone = el(stage, { left: px(PH.x), top: px(PH.y), width: px(PH.bw), height: px(PH.bh), transformOrigin: '50% 50%' });
-  N.phone.dataset.part = 'phone';
+  N.phone.dataset.part = N.phone.dataset.safe = 'phone';
   // A soft shadow drawn as a gradient: a blur filter here doubled the cost of every frame.
   N.shadow = el(N.phone, { left: px(-PH.bw * 0.22), top: px(PH.bh * -0.04), width: px(PH.bw * 1.44), height: px(PH.bh * 1.16), background: 'radial-gradient(closest-side, rgba(0,0,0,0.42), rgba(0,0,0,0.2) 62%, rgba(0,0,0,0))' });
   for (const [x, y, h] of [[-1.6, 98, 22], [-1.6, 134, 40], [-1.6, 184, 40], [PH.bw - 1.4, 150, 62]]) el(N.phone, { left: px(x), top: px(y), width: '3px', height: px(h), borderRadius: '1.5px', background: 'linear-gradient(90deg, #2A2A2E, #4A4A50)' });
@@ -454,6 +482,7 @@ function build() {
   N.once = el(stage, {}, say('once'));
   // The scale's ten colours, a quiet signature under the price.
   N.strip = Array.from({ length: 10 }, () => el(stage, { borderRadius: '3px' }));
+  for (const e of [N.dollarText, N.once, ...N.strip]) e.dataset.safe = 'price';
 
   // ---- the end card
   N.icon = el(stage, { overflow: 'hidden' });
@@ -463,6 +492,7 @@ function build() {
   N.endTag = el(stage, {}, say('tagline'));
   N.endStoreCap = el(stage, { borderRadius: '999px' });
   N.endStore = el(stage, {}, say('store'));
+  for (const e of [N.icon, N.endWord, N.endTag, N.endStoreCap, N.endStore]) e.dataset.safe = 'end';
 
   // ---- words
   N.k = {};
@@ -960,11 +990,13 @@ function updatePrice(t) {
   });
 }
 
+// The end card's icon centre: the block sits mid-box, its tagline above the rail.
+const END = (SAFE.y + SAFE.bottom) / 2 - 90;
 function updateEnd(t) {
   const iconP = t < CUES.icon[0] ? 0 : sp(t, CUES.icon[0], 0.6, 11);
   show(N.icon, clamp(iconP * 3));
   if (iconP > 0) {
-    const s = 112, cx = W / 2, cy = H * 0.385;
+    const s = 112, cx = W / 2, cy = END;
     box(N.icon, cx - s / 2, cy - s / 2, s, s);
     N.icon.style.borderRadius = px(s * 0.225);
     N.icon.style.background = diagonal(BRAND, 0.45);
@@ -983,13 +1015,13 @@ function updateEnd(t) {
     }
   }
   const word = E.expo(seg(t, CUES.word));
-  const wordSize = 40, wordBase = H * 0.385 + 56 + 50;
+  const wordSize = 40, wordBase = END + 56 + 50;
   text(N.endWord, { x: W / 2, y: wordBase + 18 * (1 - word), size: wordSize, weight: 600, align: 0.5,
     tracking: lerp(0.02, -0.03, E.expo(seg(t, [CUES.word[0], CUES.word[1] + 0.4]))) * wordSize, color: BRAND.ink, opacity: clamp(word * 2) });
   const tag = E.cubic(seg(t, CUES.tagline));
   text(N.endTag, { x: W / 2, y: wordBase + 36 + 8 * (1 - tag), size: 17, align: 0.5, color: BRAND.muted, opacity: tag });
   const store = E.cubic(seg(t, CUES.store));
-  const storeSize = 14, storeW = textWidth(say('store'), SANS, 600, storeSize, 0.4), storeY = H * 0.705 + 6 * (1 - store);
+  const storeSize = 14, storeW = textWidth(say('store'), SANS, 600, storeSize, 0.4), storeY = wordBase + 118 + 6 * (1 - store);
   text(N.endStore, { x: W / 2, y: storeY, size: storeSize, weight: 600, align: 0.5, tracking: 0.4, color: BRAND.ink, opacity: store * 0.85 });
   box(N.endStoreCap, W / 2 - storeW / 2 - 18, storeY - 23, storeW + 36, 34);
   N.endStoreCap.style.boxShadow = `inset 0 0 0 1px ${css(BRAND.ink, 0.22)}`;
@@ -1003,28 +1035,36 @@ function updateWords(t) {
   // Over the level's canvas the words take its ink.
   const lt = theme(clamp(readingLevel(t), 1, 10));
   const k = N.k;
-  const mid = H * 0.43, top = H * 0.104;
-  setKinetic(k.everyDay, t, { on: CUES.everyDay, base: mid - 4, size: 44, color: white });
-  setKinetic(k.thousands, t, { on: CUES.thousands, base: mid + 46, size: 44, color: white });
+  // Supers start just below YouTube's top controls, over the phone.
+  const mid = H * 0.43, top = SAFE.y + 1.08 * 36, see = SAFE.y + 1.08 * 38 + 2, doom = H * 0.36;
+  const opening = together(44, 700, [['everyDay', mid - 4], ['thousands', mid + 46]]);
+  setKinetic(k.everyDay, t, { on: CUES.everyDay, base: mid - 4, size: opening, color: white });
+  setKinetic(k.thousands, t, { on: CUES.thousands, base: mid + 46, size: opening, color: white });
   setKinetic(k.comeAndGo, t, { on: CUES.comeAndGo, base: mid + 20, size: 50, color: white });
-  setKinetic(k.doomscroll, t, { on: CUES.doomscroll, base: H * 0.36, size: 42, color: white, cut: true });
-  setKinetic(k.allDay, t, { on: CUES.allDay, base: H * 0.36 + 50, size: 42, color: white, cut: true });
-  setKinetic(k.orSee, t, { on: CUES.orSee, base: H * 0.2, size: 38, color: white, weight: 600 });
-  setKinetic(k.breaks, t, { on: CUES.breaks, base: H * 0.2 + 46, size: 38, gradient: warm, weight: 700 });
-  setKinetic(k.worldNews, t, { on: CUES.worldNews, base: top, size: 36, color: lt.ink, weight: 700 });
-  setKinetic(k.rated, t, { on: CUES.rated, base: top + 44, size: 36, color: lt.ink, weight: 700 });
-  setKinetic(k.oneNumber, t, { on: CUES.oneNumber, base: top, size: 36, color: lt.ink });
-  setKinetic(k.oneSentence, t, { on: CUES.oneSentence, base: top + 44, size: 36, color: lt.ink });
+  const scroll = together(42, 700, [['doomscroll', doom], ['allDay', doom + 50]]);
+  setKinetic(k.doomscroll, t, { on: CUES.doomscroll, base: doom, size: scroll, color: white, cut: true });
+  setKinetic(k.allDay, t, { on: CUES.allDay, base: doom + 50, size: scroll, color: white, cut: true });
+  const breaks = together(38, 700, [['orSee', see], ['breaks', see + 46]]);
+  setKinetic(k.orSee, t, { on: CUES.orSee, base: see, size: breaks, color: white, weight: 600 });
+  setKinetic(k.breaks, t, { on: CUES.breaks, base: see + 46, size: breaks, gradient: warm, weight: 700 });
+  const rated = together(36, 700, [['worldNews', top], ['rated', top + 44]]);
+  setKinetic(k.worldNews, t, { on: CUES.worldNews, base: top, size: rated, color: lt.ink, weight: 700 });
+  setKinetic(k.rated, t, { on: CUES.rated, base: top + 44, size: rated, color: lt.ink, weight: 700 });
+  const one = together(36, 700, [['oneNumber', top], ['oneSentence', top + 44]]);
+  setKinetic(k.oneNumber, t, { on: CUES.oneNumber, base: top, size: one, color: lt.ink });
+  setKinetic(k.oneSentence, t, { on: CUES.oneSentence, base: top + 44, size: one, color: lt.ink });
   setKinetic(k.home, t, { on: CUES.homeLine, base: top + 20, size: 34, color: lt.ink, stagger: 0.06 });
   setKinetic(k.notify, t, { on: CUES.notifyLine, base: top, size: 34, color: white });
   setKinetic(k.choose, t, { on: CUES.scoreLine, base: top + 40, size: 27, weight: 500, color: [215, 212, 210] });
-  const list = H * 0.6;
-  setKinetic(k.noAds, t, { on: [CUES.noAds, CUES.priceOut[1]], base: list, size: 27, weight: 600, color: ink, stagger: 0.05 });
-  setKinetic(k.noSubscription, t, { on: [CUES.noSubscription, CUES.priceOut[1]], base: list + 42, size: 27, weight: 600, color: ink, stagger: 0.05 });
-  setKinetic(k.noPurchases, t, { on: [CUES.noPurchases, CUES.priceOut[1]], base: list + 84, size: 27, weight: 600, color: ink, stagger: 0.05 });
+  // Below the action rail's top the box is narrower, so the list shares the size its widest line fits.
+  const list = H * 0.6, listSize = together(27, 600, [['noAds', list], ['noSubscription', list + 42], ['noPurchases', list + 84]]);
+  setKinetic(k.noAds, t, { on: [CUES.noAds, CUES.priceOut[1]], base: list, size: listSize, weight: 600, color: ink, stagger: 0.05 });
+  setKinetic(k.noSubscription, t, { on: [CUES.noSubscription, CUES.priceOut[1]], base: list + 42, size: listSize, weight: 600, color: ink, stagger: 0.05 });
+  setKinetic(k.noPurchases, t, { on: [CUES.noPurchases, CUES.priceOut[1]], base: list + 84, size: listSize, weight: 600, color: ink, stagger: 0.05 });
   const deep = `linear-gradient(90deg, ${css(theme(7).primary)}, ${css(theme(10).primary)})`;
-  setKinetic(k.focus, t, { on: CUES.focus, base: H * 0.44, size: 44, color: ink });
-  setKinetic(k.matters, t, { on: CUES.matters, base: H * 0.44 + 52, size: 44, gradient: deep });
+  const focus = together(44, 700, [['focus', H * 0.44], ['matters', H * 0.44 + 52]]);
+  setKinetic(k.focus, t, { on: CUES.focus, base: H * 0.44, size: focus, color: ink });
+  setKinetic(k.matters, t, { on: CUES.matters, base: H * 0.44 + 52, size: focus, gradient: deep });
 }
 
 // ---------------------------------------------------------------- frame

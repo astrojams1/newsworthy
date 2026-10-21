@@ -83,6 +83,15 @@ twenty renders across a 180-degree shutter in linear light, as the reel does;
 `timeline.js` says where the fast moments are. The render writes its output's
 hash and every input's into `cut.json`.
 
+Every word, number and screen sits inside the Shorts safe zone, read from the
+shared [youtube-shorts skill](../../../vendor/skills/skills/youtube-shorts/SKILL.md)'s
+`zones.json`: on a phone YouTube's controls cover the top, the right edge and
+the bottom of the video, and a tall phone crops its sides. Supers start below
+the top controls, the phone ends above the title stack, and a line is set
+smaller rather than run under the action rail. `test/trailer.test.js` checks
+every placement through the film. Backgrounds still fill the frame. Check a
+render with the skill's `safe-zone.mjs` contact sheet before uploading.
+
 The phone is drawn as an iPhone because the app is approved only there; Google
 Play is in closed testing. The typefaces stand in for Apple's as in the reel:
 Inter for SF Pro and Roboto Mono Light for SF Mono.

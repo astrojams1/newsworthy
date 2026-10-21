@@ -69,14 +69,11 @@ test('the trailer renders vertical, at 1080 × 1920', () => {
   assert.equal(`${Math.round(TARGET.width * TARGET.scale)}x${Math.round(TARGET.height * TARGET.scale)}`, '1080x1920');
 });
 
-// When the widgets and the notification lift off the phone toward the viewer,
-// they are in front of everything on it. Reported 2026-10-21 from the first
-// cut: the enlarged medium widget slid under the Dynamic Island, and the
-// small widget, meant to lift with it, stayed dimmed with the screen.
+// The film is drawn in a browser, from code; these tests render single frames.
 const BROWSERS = [process.env.CHROME_PATH, '/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   '/usr/bin/google-chrome', '/usr/bin/chromium', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
 const executablePath = BROWSERS.find(path => existsSync(path));
-test('what lifts off the phone is drawn over the island and is not dimmed', async t => {
+async function withComposition(t, run) {
   if (!executablePath) { t.skip('no Chrome or Chromium on this machine; set CHROME_PATH to run it'); return; }
   const { createServer } = await import('node:http');
   const { extname, resolve, sep } = await import('node:path');
@@ -94,31 +91,90 @@ test('what lifts off the phone is drawn over the island and is not dimmed', asyn
     const page = await browser.newPage({ viewport: { width: TARGET.width, height: TARGET.height } });
     await page.goto(`http://127.0.0.1:${server.address().port}/store/video/trailer/composition.html`);
     await page.evaluate(() => window.NW.ready);
-    const lifted = [['medium', CUES.pushHome], ['small', CUES.pushHome], ['notification', CUES.pushNote]];
-    for (const [part, [from, to]] of lifted) {
-      for (let time = from + 0.1; time < to; time += 0.1) {
-        const found = await page.evaluate(({ part, time }) => {
-          window.NW.render(time);
-          const box = document.querySelector(`[data-box="${part}"]`).getBoundingClientRect();
-          const covered = [];
-          for (const other of ['island', 'status']) {
-            const o = document.querySelector(`[data-part="${other}"]`).getBoundingClientRect();
-            const left = Math.max(box.left, o.left), right = Math.min(box.right, o.right), top = Math.max(box.top, o.top), bottom = Math.min(box.bottom, o.bottom);
-            if (right - left < 1 || bottom - top < 1) continue;
-            // The topmost of the phone's own layers there; the frame's overlays are not the phone's.
-            const hit = document.elementsFromPoint((left + right) / 2, (top + bottom) / 2).find(e => e.closest('[data-part="phone"]'));
-            if (!hit?.closest(`[data-part="${part}"]`)) covered.push(other);
-          }
-          const dimmed = [];
-          for (let e = document.querySelector(`[data-box="${part}"]`); e; e = e.parentElement) if (getComputedStyle(e).filter.includes('brightness')) dimmed.push(e.tagName);
-          return { covered, dimmed: dimmed.length > 0 };
-        }, { part, time });
-        assert.deepEqual(found.covered, [], `at ${time.toFixed(1)} s the ${part} widget is drawn under the ${found.covered.join(' and ')}`);
-        assert.equal(found.dimmed, false, `at ${time.toFixed(1)} s the lifted ${part} is dimmed with the screen`);
-      }
-    }
+    await run(page);
   } finally {
     await browser.close();
     server.close();
   }
-});
+}
+
+// When the widgets and the notification lift off the phone toward the viewer,
+// they are in front of everything on it. Reported 2026-10-21 from the first
+// cut: the enlarged medium widget slid under the Dynamic Island, and the
+// small widget, meant to lift with it, stayed dimmed with the screen.
+test('what lifts off the phone is drawn over the island and is not dimmed', t => withComposition(t, async page => {
+  const lifted = [['medium', CUES.pushHome], ['small', CUES.pushHome], ['notification', CUES.pushNote]];
+  for (const [part, [from, to]] of lifted) {
+    for (let time = from + 0.1; time < to; time += 0.1) {
+      const found = await page.evaluate(({ part, time }) => {
+        window.NW.render(time);
+        const box = document.querySelector(`[data-box="${part}"]`).getBoundingClientRect();
+        const covered = [];
+        for (const other of ['island', 'status']) {
+          const o = document.querySelector(`[data-part="${other}"]`).getBoundingClientRect();
+          const left = Math.max(box.left, o.left), right = Math.min(box.right, o.right), top = Math.max(box.top, o.top), bottom = Math.min(box.bottom, o.bottom);
+          if (right - left < 1 || bottom - top < 1) continue;
+          // The topmost of the phone's own layers there; the frame's overlays are not the phone's.
+          const hit = document.elementsFromPoint((left + right) / 2, (top + bottom) / 2).find(e => e.closest('[data-part="phone"]'));
+          if (!hit?.closest(`[data-part="${part}"]`)) covered.push(other);
+        }
+        const dimmed = [];
+        for (let e = document.querySelector(`[data-box="${part}"]`); e; e = e.parentElement) if (getComputedStyle(e).filter.includes('brightness')) dimmed.push(e.tagName);
+        return { covered, dimmed: dimmed.length > 0 };
+      }, { part, time });
+      assert.deepEqual(found.covered, [], `at ${time.toFixed(1)} s the ${part} widget is drawn under the ${found.covered.join(' and ')}`);
+      assert.equal(found.dimmed, false, `at ${time.toFixed(1)} s the lifted ${part} is dimmed with the screen`);
+    }
+  }
+}));
+
+// A Short plays under YouTube's controls, and a tall phone crops its sides.
+// Reported 2026-10-21 from the posted first cut: its lines sat under back,
+// search and the menu, and the phone under the title stack. Every word,
+// number and screen the film shows stays inside the safe zone the shared
+// youtube-shorts skill measured, wherever it is in its motion; the phone is
+// exempt only once it leaves the frame at the end of its scene.
+const ZONES = 'vendor/skills/skills/youtube-shorts/assets/zones.json';
+test('every word, number and screen stays inside the Shorts safe zone', t => withComposition(t, async page => {
+  const zones = JSON.parse(readFileSync(ZONES, 'utf8'));
+  const k = TARGET.width / zones.frame.width;
+  const area = z => ({ left: z.x * k, top: z.y * k, right: (z.x + z.width) * k, bottom: (z.y + z.height) * k });
+  const safe = area(zones.safe), upper = area(zones.safeAboveRail);
+  const inside = (r, z) => r.left >= z.left - 0.5 && r.top >= z.top - 0.5 && r.right <= z.right + 0.5 && r.bottom <= z.bottom + 0.5;
+  const outside = [], seen = new Set();
+  for (let time = 0.1; time < DURATION; time += 0.2) {
+    const shown = await page.evaluate(({ time, phoneGone }) => {
+      window.NW.render(time);
+      const found = [];
+      for (const e of document.querySelectorAll('[data-safe], [data-box]')) {
+        if (phoneGone && e.closest('[data-part="phone"]')) continue;
+        let opacity = 1, r = e.getBoundingClientRect();
+        let rect = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+        for (let a = e; a && a.id !== 'stage'; a = a.parentElement) {
+          const style = getComputedStyle(a);
+          if (style.display === 'none') opacity = 0;
+          opacity *= Number(style.opacity);
+          // What a clipping parent hides is not on screen.
+          if (a !== e && style.overflow !== 'visible') {
+            const c = a.getBoundingClientRect();
+            rect = { left: Math.max(rect.left, c.left), top: Math.max(rect.top, c.top), right: Math.min(rect.right, c.right), bottom: Math.min(rect.bottom, c.bottom) };
+          }
+        }
+        if (opacity < 0.5 || rect.right - rect.left < 0.5 || rect.bottom - rect.top < 0.5) continue;
+        found.push({ name: e.dataset.safe || e.dataset.box, text: e.textContent.slice(0, 24), rect });
+      }
+      return found;
+    }, { time, phoneGone: time >= CUES.phoneOut[0] });
+    for (const { name, text, rect } of shown) {
+      seen.add(name);
+      if (!inside(rect, rect.bottom <= upper.bottom ? upper : safe)) {
+        outside.push(`${time.toFixed(1)} s ${name}${text ? ` "${text}"` : ''}: ${['left', 'top', 'right', 'bottom'].map(s => `${s} ${(rect[s] / k).toFixed(0)}`).join(', ')}`);
+      }
+    }
+  }
+  assert.deepEqual(outside.slice(0, 12), [], `${outside.length} placements outside the safe zone (frame pixels)`);
+  // Checked only if marked: a line or part that lost its marker would pass unseen.
+  const expected = ['everyDay', 'thousands', 'comeAndGo', 'doomscroll', 'allDay', 'orSee', 'breaks', 'worldNews', 'rated', 'oneNumber', 'oneSentence',
+    'home', 'notify', 'choose', 'noAds', 'noSubscription', 'noPurchases', 'focus', 'matters', 'clock', 'hero', 'phone', 'medium', 'small', 'notification', 'price', 'end'];
+  assert.deepEqual(expected.filter(name => !seen.has(name)), [], 'parts of the film the check never saw');
+}));
