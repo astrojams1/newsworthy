@@ -28,8 +28,8 @@ Open:
 
 - A free weekend (scheduled temporary price) for deal sites and communities.
 - Apple Ads: whether to spend, and a monthly cap.
-- The trailer Short: re-frame it to the safe zone and re-upload (a new video,
-  starting from zero views), or leave it as posted.
+- The trailer Short: replace the posted one with the re-framed cut (a new
+  video; the old one had 1 view), or leave it as posted.
 
 Decided:
 
@@ -176,4 +176,13 @@ the constraint is now the YouTube Shorts skill
 (`vendor/skills/skills/youtube-shorts/SKILL.md`), which every Short goes
 through before it is posted. Whether to re-frame and re-upload is open: a new
 upload starts from zero views.
+
+**2026-10-21, re-framed.** The owner asked for the fix. The second cut keeps
+every line, number and screen inside the safe zone (supers lower, phone
+smaller, long lines set smaller beside the rail) with the same script and
+sound; details in the
+[video ledger](../../store/video/ledger.md#2026-10-21-trailer-re-frame). Same
+file names in `store/assets/youtube/`: the video, a new cover from the same
+12.9 s, and the unchanged captions. Posting it is a new upload; the title,
+description and settings above still apply.
 

@@ -17,6 +17,7 @@ in the [release ledger](../ledger.md); record it there too.
 | [2026-10-21 trailer](#2026-10-21-trailer) | Owner request: a YouTube Shorts trailer after Apple's approval | A second film, `store/video/trailer`: seven scenes, 32 s, 1080×1920 | YouTube settings, decoded frames, loudness and a per-bus mix report | Listen; publish once the listing is live at $1 |
 | [2026-10-21 trailer fix](#2026-10-21-trailer-fix) | Owner report: the lifted widget slid under the Dynamic Island | 17–24 s only: what lifts off the phone is drawn in front of it; the small widget lifts undimmed | A browser test of what is drawn over what, stills before and after, `--verify` | As the trailer's first cut |
 | [2026-10-21 trailer framing](#2026-10-21-trailer-framing-decision-no-cut) | Owner report: on the phone, YouTube's controls cover the trailer | Nothing yet: a measurement, a new skill and the list of beats to move | The owner's screenshot fitted to the source frame; a safe-zone contact sheet of the whole cut | Re-frame and re-upload, or leave the posted Short |
+| [2026-10-21 trailer re-frame](#2026-10-21-trailer-re-frame) | Owner: "did you fix the video?" | Every line, number and screen inside the Shorts safe zone: supers lower, phone smaller, long lines set smaller, end card raised | A browser test of every placement through the film, the safe-zone contact sheet, `--verify`, frame-by-frame against the first cut | Replace the posted Short; check it on the phone |
 
 ## Lessons
 
@@ -399,4 +400,54 @@ lines inside x 96–864, and scale and raise the phone so its screen ends above
 y 1440, with `trailer.test.js` asserting the boxes against the skill's
 `zones.json`. A corrected upload is a new video: the posted Short's views,
 likes and comments do not carry over. The owner decides.
+
+## 2026-10-21 trailer re-frame
+
+**Why.** The owner asked whether the video was fixed after the framing
+finding above. It answers that entry's open decision: re-frame it.
+
+**What changed.** Layout only; the script, timing and sound are unchanged.
+The film reads the youtube-shorts skill's `zones.json` (now in `FILM` and
+`cut.json`) and places everything against it:
+
+- Supers start just below YouTube's top controls (y 288 at the earliest)
+  instead of at y 200.
+- The phone is scaled from 0.63 to 0.40 of the app's points so it sits
+  between the supers and y 1440, above the title stack; the lifted widgets
+  and notification scale with it and stay clear of the rail.
+- A line is set no wider than its room: the full safe width above the rail,
+  the narrower box below it. Lines set together share the size their widest
+  fits ("thousands of stories", "You could doomscroll", "what breaks
+  through.", "Also on your Home Screen").
+- The end card sits 40 px higher, so its tagline ends above the rail.
+
+The cover (`store/assets/youtube/trailer-cover-1080x1920.png`) is the new
+render's frame at 12.9 s, sha256 `5b2d4e6f…`. The sound-description captions
+are unchanged, as is the sound.
+
+**Outputs.** `store/assets/youtube/trailer-1080x1920.mp4`: 36.5 MB, sha256
+`1f67fd76fad3520cda54b0178e5acdef0ad1e72454c5e3d0f93a40f5e331deee`.
+
+**Verified.** `test/trailer.test.js` gains a browser test: every 0.2 s it
+renders the film and checks every marked word, number, phone and lifted
+widget against the zones, through its motion and clipped as drawn, and fails
+if a marked part goes unseen. On the first cut's layout it finds 394
+placements outside; on this one, none. It runs in CI, which now checks out
+`vendor/skills`. `--verify` passes (8.8 Mb/s, −14 LUFS, −1.5 dBTP). The
+skill's contact sheet, a frame a second, shows nothing readable outside the
+green box or the yellow room above the rail. Against the first cut, decoded frame by frame: 0.5–2.8 s,
+5.0–8.0 s, 8.5–9.8 s, 10.0–24.1 s and 29.6–32 s changed; the rest, the price
+scene included, is unchanged (above 48 dB). A preview built from the owner's
+screenshot (YouTube's controls lifted onto the new frame at 23.2 s) shows the
+headline below the search button and the phone above the title. `npm test`
+passed.
+
+**Not verified.** On a phone: the preview is a composite, not a capture. As
+the first cut: the sound by ear and YouTube's re-encode.
+
+**Cost.** 13 minutes on four browsers, 6,437 samples.
+
+**Open.** The posted Short still carries the first cut. Replacing it is a
+new upload (its 1 view, like and comment stay with the old one). After
+posting, a phone screenshot of a busy frame would confirm the zones.
 
