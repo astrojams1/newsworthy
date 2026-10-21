@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-21T15:20:18+00:00",
+  "updated_at": "2026-10-21T18:50:03+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -56,15 +56,15 @@
       "updated_at": "2026-09-24T00:14:58+00:00"
     },
     "apple.agreement": {
-      "state": "waiting_user",
+      "state": "done",
       "owner": "user",
       "basis": "observed",
-      "summary": "W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account.",
+      "summary": "2026-10-21: Paid Apps Agreement effective: the paid app went on sale once the owner added the payout bank account.",
       "evidence": [
-        "Live signed-in Apple Business page September 16: W-9 Active, no bank account, Paid Apps Agreement Pending User Info."
+        "All 175 territories moved from CANNOT_SELL to AVAILABLE on 2026-10-21 after the owner added the bank account"
       ],
-      "next_action": "Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward.",
-      "updated_at": "2026-09-16T05:39:49+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-21T18:50:03+00:00"
     },
     "apple.tax": {
       "state": "done",
@@ -189,15 +189,15 @@
       "updated_at": "2026-10-21T15:20:17+00:00"
     },
     "apple.release": {
-      "state": "waiting_user",
+      "state": "done",
       "owner": "provider",
       "basis": "observed",
-      "summary": "2026-10-21: version READY_FOR_DISTRIBUTION with AFTER_APPROVAL, but the public US App Store lookup returns no result. Likely blocker: the Paid Apps Agreement, last seen Pending User Info awaiting the owner's bank account (apple.agreement, apple.bank); not verified, agreements are not in the API. An accidental asc.mjs pricing run changed nothing (0 of 175 territories enabled).",
+      "summary": "2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live.",
       "evidence": [
-        "itunes.apple.com lookup id=6812519450 country=us: resultCount 0, 2026-10-21"
+        "ASC territoryAvailabilities 2026-10-21 18:49 UTC: 175 AVAILABLE, US releaseDate 2026-10-21; apps.apple.com/us/app/id6812519450 HTTP 200 'Newsworthy: Calm News App'; GB lookup 1.0.0 at GBP 1.00 (US lookup not yet propagated)"
       ],
-      "next_action": "Owner checks Business > Agreements and adds the bank account if still pending; then verify the public listing and price.",
-      "updated_at": "2026-10-21T15:20:17+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-21T18:50:03+00:00"
     },
     "google.identity": {
       "state": "done",
@@ -8222,6 +8222,38 @@
         ],
         "next_action": "Recruit at least 12 testers (PR 221) and keep them opted in for 14 continuous days.",
         "updated_at": "2026-10-21T15:20:18+00:00"
+      }
+    },
+    {
+      "sequence": 440,
+      "at": "2026-10-21T18:50:03+00:00",
+      "gate": "apple.release",
+      "result": {
+        "state": "done",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live.",
+        "evidence": [
+          "ASC territoryAvailabilities 2026-10-21 18:49 UTC: 175 AVAILABLE, US releaseDate 2026-10-21; apps.apple.com/us/app/id6812519450 HTTP 200 'Newsworthy: Calm News App'; GB lookup 1.0.0 at GBP 1.00 (US lookup not yet propagated)"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-21T18:50:03+00:00"
+      }
+    },
+    {
+      "sequence": 441,
+      "at": "2026-10-21T18:50:03+00:00",
+      "gate": "apple.agreement",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-21: Paid Apps Agreement effective: the paid app went on sale once the owner added the payout bank account.",
+        "evidence": [
+          "All 175 territories moved from CANNOT_SELL to AVAILABLE on 2026-10-21 after the owner added the bank account"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-21T18:50:03+00:00"
       }
     }
   ],

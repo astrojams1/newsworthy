@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-21T15:20:18+00:00
+Updated: 2026-10-21T18:50:03+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -16,7 +16,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | web.deploy | done | agent | observed | 2026-09-23 | PR127 merged as3a2f0e0; both GitHub checks passed. Vercel production alias now serves deploymentdpl_2d1c1kXXV4ej2Vp1r2znLRVW4DAT with receipt/retry fixes and updated privacy text. Home, Settings, current API, health and privacy return200. | — |
 | apple.membership | done | agent | observed | 2026-09-16 | Renewed individual developer membership is recognized by App Store Connect. | — |
 | apple.address | waiting_provider | provider | observed | 2026-09-24 | September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction. | Await address-review response and verify the corrected legal record in Business. |
-| apple.agreement | waiting_user | user | observed | 2026-09-16 | W-9 now Active; Paid Apps Agreement still Pending User Info and Business requests a bank account. | Owner adds payout bank account in Apple Business and completes verification; agent reads agreement status afterward. |
+| apple.agreement | done | user | observed | 2026-10-21 | 2026-10-21: Paid Apps Agreement effective: the paid app went on sale once the owner added the payout bank account. | — |
 | apple.tax | done | user | observed | 2026-09-16 | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
 | apple.bank | waiting_user | user | observed | 2026-09-24 | September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active. | Owner adds and verifies payout details in Apple Business; agent then reads back Active status. |
 | apple.dsa | done | user | observed | 2026-09-16 | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
@@ -28,7 +28,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.upload | done | agent | observed | 2026-09-24 | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
 | apple.review | done | provider | observed | 2026-10-21 | 2026-10-21: build 27 approved after the Guideline 2.3 metadata fix; version 1.0.0 READY_FOR_DISTRIBUTION, review submission COMPLETE. | — |
-| apple.release | waiting_user | provider | observed | 2026-10-21 | 2026-10-21: version READY_FOR_DISTRIBUTION with AFTER_APPROVAL, but the public US App Store lookup returns no result. Likely blocker: the Paid Apps Agreement, last seen Pending User Info awaiting the owner's bank account (apple.agreement, apple.bank); not verified, agreements are not in the API. An accidental asc.mjs pricing run changed nothing (0 of 175 territories enabled). | Owner checks Business > Agreements and adds the bank account if still pending; then verify the public listing and price. |
+| apple.release | done | provider | observed | 2026-10-21 | 2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live. | — |
 | google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
 | google.phone | done | user | observed | 2026-10-15 | 2026-10-15: owner verified the contact phone; the AstroJams home page no longer shows any verification task or 'Finish setting up your developer account'. | — |
@@ -4288,3 +4288,19 @@ Next: Owner checks Business > Agreements and adds the bank account if still pend
 - Play Console closed testing track, 2026-10-21
 
 Next: Recruit at least 12 testers (PR 221) and keep them opted in for 14 continuous days.
+
+### 440. apple.release — done
+
+2026-10-21T18:50:03+00:00 · observed · provider
+
+2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live.
+
+- ASC territoryAvailabilities 2026-10-21 18:49 UTC: 175 AVAILABLE, US releaseDate 2026-10-21; apps.apple.com/us/app/id6812519450 HTTP 200 'Newsworthy: Calm News App'; GB lookup 1.0.0 at GBP 1.00 (US lookup not yet propagated)
+
+### 441. apple.agreement — done
+
+2026-10-21T18:50:03+00:00 · observed · user
+
+2026-10-21: Paid Apps Agreement effective: the paid app went on sale once the owner added the payout bank account.
+
+- All 175 territories moved from CANNOT_SELL to AVAILABLE on 2026-10-21 after the owner added the bank account
