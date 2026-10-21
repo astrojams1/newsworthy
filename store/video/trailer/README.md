@@ -86,11 +86,16 @@ hash and every input's into `cut.json`.
 Every word, number and screen sits inside the Shorts safe zone, read from the
 shared [youtube-shorts skill](../../../vendor/skills/skills/youtube-shorts/SKILL.md)'s
 `zones.json`: on a phone YouTube's controls cover the top, the right edge and
-the bottom of the video, and a tall phone crops its sides. Supers start below
-the top controls, the phone ends above the title stack, and a line is set
-smaller rather than run under the action rail. `test/trailer.test.js` checks
-every placement through the film. Backgrounds still fill the frame. Check a
-render with the skill's `safe-zone.mjs` contact sheet before uploading.
+the bottom of the video, and a tall phone crops its sides. In the phone
+scenes the phone is the subject: large, a little left of centre to clear the
+action rail, its body running off the bottom of the frame under YouTube's
+title, with a one-line headline above it. What its screen shows sits in the
+safe box; the muted story line under the sentence sits just below it, above
+the title. Elsewhere a line starts below the top controls and is set smaller
+rather than run under the rail. `test/trailer.test.js` checks every placement
+through the film, and that the phone runs off the frame and clears the rail.
+Backgrounds still fill the frame. Check a render with the skill's
+`safe-zone.mjs` contact sheet before uploading.
 
 The phone is drawn as an iPhone because the app is approved only there; Google
 Play is in closed testing. The typefaces stand in for Apple's as in the reel:

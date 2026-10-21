@@ -130,10 +130,12 @@ test('what lifts off the phone is drawn over the island and is not dimmed', t =>
 
 // A Short plays under YouTube's controls, and a tall phone crops its sides.
 // Reported 2026-10-21 from the posted first cut: its lines sat under back,
-// search and the menu, and the phone under the title stack. Every word,
-// number and screen the film shows stays inside the safe zone the shared
-// youtube-shorts skill measured, wherever it is in its motion; the phone is
-// exempt only once it leaves the frame at the end of its scene.
+// search and the menu, and the phone under the title stack. Every word and
+// number the film shows, and everything the phone's screen shows, stays
+// inside the safe zone the shared youtube-shorts skill measured, wherever it
+// is in its motion. The phone's body may run off the frame; the card that
+// becomes its screen and the reading that fills it are checked as what they
+// show, not as the whole screen.
 const ZONES = 'vendor/skills/skills/youtube-shorts/assets/zones.json';
 test('every word, number and screen stays inside the Shorts safe zone', t => withComposition(t, async page => {
   const zones = JSON.parse(readFileSync(ZONES, 'utf8'));
@@ -167,6 +169,8 @@ test('every word, number and screen stays inside the Shorts safe zone', t => wit
     }, { time, phoneGone: time >= CUES.phoneOut[0] });
     for (const { name, text, rect } of shown) {
       seen.add(name);
+      if (name === 'hero' && time >= CUES.morph[0]) continue;
+      if (name === 'medium' && time < CUES.widget[1]) continue;
       if (!inside(rect, rect.bottom <= upper.bottom ? upper : safe)) {
         outside.push(`${time.toFixed(1)} s ${name}${text ? ` "${text}"` : ''}: ${['left', 'top', 'right', 'bottom'].map(s => `${s} ${(rect[s] / k).toFixed(0)}`).join(', ')}`);
       }
@@ -175,6 +179,27 @@ test('every word, number and screen stays inside the Shorts safe zone', t => wit
   assert.deepEqual(outside.slice(0, 12), [], `${outside.length} placements outside the safe zone (frame pixels)`);
   // Checked only if marked: a line or part that lost its marker would pass unseen.
   const expected = ['everyDay', 'thousands', 'comeAndGo', 'doomscroll', 'allDay', 'orSee', 'breaks', 'worldNews', 'rated', 'oneNumber', 'oneSentence',
-    'home', 'notify', 'choose', 'noAds', 'noSubscription', 'noPurchases', 'focus', 'matters', 'clock', 'hero', 'phone', 'medium', 'small', 'notification', 'price', 'end'];
+    'home', 'notify', 'choose', 'noAds', 'noSubscription', 'noPurchases', 'focus', 'matters', 'clock', 'hero', 'reading', 'lock', 'medium', 'small', 'notification', 'price', 'end'];
   assert.deepEqual(expected.filter(name => !seen.has(name)), [], 'parts of the film the check never saw');
 }));
+
+// The phone is large and runs off the bottom of the frame under YouTube's
+// title, so its lower edge is never seen there: the second cut shrank it to
+// end above the title and it read as a thumbnail (owner, 2026-10-21). Nor does
+// it pass under the action rail.
+test('the phone runs off the bottom of the frame and clears the action rail', t => withComposition(t, async page => {
+  const zones = JSON.parse(readFileSync(ZONES, 'utf8'));
+  const k = TARGET.width / zones.frame.width;
+  const rail = zones.keepOut.find(z => z.id === 'rail');
+  for (let time = CUES.drop + 0.6; time < CUES.phoneOut[0]; time += 0.25) {
+    const r = await page.evaluate(time => {
+      window.NW.render(time);
+      const { left, right, bottom, width } = document.querySelector('[data-part="phone"]').getBoundingClientRect();
+      return { left, right, bottom, width };
+    }, time);
+    assert.ok(r.bottom >= TARGET.height, `at ${time.toFixed(2)} s the phone ends at ${(r.bottom / k).toFixed(0)}, inside the frame`);
+    assert.ok(r.right <= rail.x * k, `at ${time.toFixed(2)} s the phone reaches ${(r.right / k).toFixed(0)}, under the rail`);
+    assert.ok(r.width >= TARGET.width * 0.6, `at ${time.toFixed(2)} s the phone is ${(r.width / k).toFixed(0)} wide, a thumbnail`);
+  }
+}));
+

@@ -206,12 +206,18 @@ const STATUS_ICONS = `<svg width="78" height="13" viewBox="0 0 78 13" style="pos
 // The app is drawn in its own points (an iPhone's 393 × 852) and the screen
 // scaled into a phone in the frame.
 const AW = 393, AH = 852;
-// It fills the safe box below two lines of type, with room to float.
-const BEZ = 8, PHONE = { top: SAFE.y + 99, bottom: SAFE.bottom - 8 };
-const PS = (PHONE.bottom - PHONE.top - 2 * BEZ) / AH;
+// The phone is the subject: large, under a one-line headline, its body running
+// off the bottom of the frame beneath YouTube's title, so its edge is never
+// seen there; only what its screen shows has to sit in the safe box. A whole
+// phone small enough to clear the title was a thumbnail under its headline.
+// Below the rail's top the frame loses its right edge, so the phone scenes
+// centre a little left of the frame's centre and clear the rail.
+const BEZ = 8, PS = 0.7, STAGE = { x: W / 2 - 8 };
 const PH = { sw: AW * PS, sh: AH * PS, r: 55 };
 PH.bw = PH.sw + 2 * BEZ; PH.bh = PH.sh + 2 * BEZ;
-PH.x = W / 2 - PH.bw / 2; PH.y = PHONE.top;
+PH.x = STAGE.x - PH.bw / 2; PH.y = SAFE.y + 49;
+// How far the phone settles lower on the lock screen, for a second line of type.
+const LOCK_DROP = 26;
 // A point on the screen, in the frame.
 const onScreen = (x, y) => ({ x: PH.x + BEZ + x * PS, y: PH.y + BEZ + y * PS });
 
@@ -323,6 +329,14 @@ function kinetic(parent, key) {
     inner.dataset.safe = key;
     return { w, clip, inner };
   }) };
+}
+// Two lines' words set on one line, each landing on its own cue.
+function sideBySide(t, [a, onA], [b, onB], { base, size, weight = 700, x = STAGE.x, ...style }) {
+  const width = (value, s) => textWidth(value, SANS, weight, s, -0.028 * s);
+  const s = Math.min(size, size * room(base + 0.3 * size, x) / width(`${say(a)} ${say(b)}`, size));
+  const left = x - width(`${say(a)} ${say(b)}`, s) / 2, second = left + width(`${say(a)} `, s);
+  setKinetic(N.k[a], t, { on: onA, base, size: s, weight, x: left, align: 0, maxW: Infinity, ...style });
+  setKinetic(N.k[b], t, { on: onB, base, size: s, weight, x: second, align: 0, maxW: Infinity, ...style });
 }
 // Lines set together share one size: the largest at which each fits its room.
 function together(size, weight, lines) {
@@ -453,8 +467,8 @@ function build() {
   N.heroBars = [0, 1, 2].map(() => el(N.heroCard, {}));
 
   // ---- the phone
-  N.phone = el(stage, { left: px(PH.x), top: px(PH.y), width: px(PH.bw), height: px(PH.bh), transformOrigin: '50% 50%' });
-  N.phone.dataset.part = N.phone.dataset.safe = 'phone';
+  N.phone = el(stage, { left: px(PH.x), top: px(PH.y), width: px(PH.bw), height: px(PH.bh), transformOrigin: '50% 100%' });
+  N.phone.dataset.part = 'phone';
   // A soft shadow drawn as a gradient: a blur filter here doubled the cost of every frame.
   N.shadow = el(N.phone, { left: px(-PH.bw * 0.22), top: px(PH.bh * -0.04), width: px(PH.bw * 1.44), height: px(PH.bh * 1.16), background: 'radial-gradient(closest-side, rgba(0,0,0,0.42), rgba(0,0,0,0.2) 62%, rgba(0,0,0,0))' });
   for (const [x, y, h] of [[-1.6, 98, 22], [-1.6, 134, 40], [-1.6, 184, 40], [PH.bw - 1.4, 150, 62]]) el(N.phone, { left: px(x), top: px(y), width: '3px', height: px(h), borderRadius: '1.5px', background: 'linear-gradient(90deg, #2A2A2E, #4A4A50)' });
@@ -545,6 +559,7 @@ function buildLock(parent) {
   N.lock = el(parent, { left: '0', top: '0', width: px(AW), height: px(AH) });
   N.lockWall = el(N.lock, { inset: '0' });
   N.lockTime = el(N.lock, {}, '9:41');
+  N.lockTime.dataset.safe = 'lock';
   N.lockButtons = [46, AW - 46].map(cx => el(N.lock, { left: px(cx - 25), top: '760px', width: '50px', height: '50px', borderRadius: '25px', background: 'rgba(255,255,255,0.14)', boxShadow: 'inset 0 0 0 0.75px rgba(255,255,255,0.18)' }));
   el(N.lock, { left: px((AW - 134) / 2), top: px(AH - 13), width: '134px', height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.85)' });
 }
@@ -563,6 +578,7 @@ function buildReading(parent) {
   N.widgetTime = el(N.content, {}, say('checked'));
   N.num = numeral(N.content, true);
   N.wordmark = el(N.content, {}, say('wordmark'));
+  for (const e of [N.num.tens.c, N.num.units.c, N.num.denom, ...N.bars, N.wordmark, N.widgetTime]) e.dataset.safe = 'reading';
   N.capsule = el(N.content, {});
   N.share = glyph(N.content, 'share', 24);
   N.gear = glyph(N.content, 'gear', 24);
@@ -782,7 +798,7 @@ function updatePhone(t) {
   const arrive = smooth(0.5, 0.98, m0);
   const life = t - CUES.drop, amp = smooth(0, 1.2, life);
   const ry = amp * 6.5 * Math.sin(TAU * life / 9), rx = amp * 3 * Math.sin(TAU * life / 7.3 + 0.6);
-  const ty = amp * 3.5 * Math.sin(TAU * life / 4.6) + 760 * exit;
+  const ty = amp * 3.5 * Math.sin(TAU * life / 4.6) + LOCK_DROP * E.inOut(seg(t, CUES.night)) + 760 * exit;
   const s = lerp(0.9, 1, E.cubic(arrive));
   N.phone.style.transform = `perspective(1500px) translateY(${px(ty)}) rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg) rotateZ(${(10 * exit).toFixed(3)}deg) scale(${s.toFixed(4)})`;
   for (const e of [N.body, N.shadow, N.clip, N.flt]) e.style.opacity = String(arrive);
@@ -934,17 +950,20 @@ function updateLock(t) {
   const p = NIGHT.primary;
   N.lockWall.style.background = `radial-gradient(110% 55% at 50% 105%, ${css(p, 0.55)}, ${css(p, 0)} 70%), radial-gradient(80% 40% at 15% 0%, rgba(120,140,170,0.22), transparent 70%), linear-gradient(170deg, #15171D, #0E0E12 60%, #1A1210)`;
   const clockIn = E.expo(seg(t, [CUES.night[0] + 0.2, CUES.night[0] + 0.8]));
-  text(N.lockTime, { x: AW / 2, y: 190 + 10 * (1 - clockIn), size: 96, weight: 600, align: 0.5, tracking: -3.5, color: [246, 246, 248], opacity: clockIn * 0.94 });
+  text(N.lockTime, { x: AW / 2, y: 168 + 10 * (1 - clockIn), size: 96, weight: 600, align: 0.5, tracking: -3.5, color: [246, 246, 248], opacity: clockIn * 0.94 });
   // The notification rises into place, then lifts toward us.
   const nIn = t < CUES.notification ? 0 : sp(t, CUES.notification, 0.74, 11);
   const pop = t >= CUES.pushNote[0] ? popAmount(t) : 0;
   show(N.note, clamp(nIn * 3));
   if (nIn <= 0) return;
-  const nw = AW - 32, nh = 76, nx = 16, ny = lerp(AH + 30, 600, nIn);
+  // A short rise into place, under the clock: a rise from the screen's foot
+  // would pass under YouTube's title on its way.
+  const nw = AW - 32, nh = 76, nx = 16, ny = lerp(360, 300, nIn);
   box(N.note, nx, ny, nw, nh);
   N.note.style.zIndex = pop > 0.001 ? '3' : 'auto';
   N.note.style.transformOrigin = '50% 50%';
-  N.note.style.transform = `translateY(${px(-44 * pop)}) scale(${(lerp(0.94, 1, clamp(nIn)) * (1 + 0.38 * pop)).toFixed(4)})`;
+  // It rises first and grows once it is clear of the rail's top.
+  N.note.style.transform = `translateY(${px(-92 * E.cubic(pop))}) scale(${(lerp(0.94, 1, clamp(nIn)) * (1 + 0.22 * smooth(0.5, 1, pop))).toFixed(4)})`;
   Object.assign(N.note.style, { background: `rgba(${Math.round(lerp(58, 72, pop))},${Math.round(lerp(54, 66, pop))},${Math.round(lerp(56, 66, pop))},0.94)`,
     boxShadow: `inset 0 0 0 0.75px rgba(255,255,255,0.14), 0 ${px(10 + 26 * pop)} ${px(30 + 40 * pop)} rgba(0,0,0,${(0.35 + 0.25 * pop).toFixed(3)})` });
   // The app's icon: the light brand mark.
@@ -1035,8 +1054,8 @@ function updateWords(t) {
   // Over the level's canvas the words take its ink.
   const lt = theme(clamp(readingLevel(t), 1, 10));
   const k = N.k;
-  // Supers start just below YouTube's top controls, over the phone.
-  const mid = H * 0.43, top = SAFE.y + 1.08 * 36, see = SAFE.y + 1.08 * 38 + 2, doom = H * 0.36;
+  // A line starts no higher than just below YouTube's top controls.
+  const mid = H * 0.43, see = SAFE.y + 1.08 * 38 + 2, doom = H * 0.36;
   const opening = together(44, 700, [['everyDay', mid - 4], ['thousands', mid + 46]]);
   setKinetic(k.everyDay, t, { on: CUES.everyDay, base: mid - 4, size: opening, color: white });
   setKinetic(k.thousands, t, { on: CUES.thousands, base: mid + 46, size: opening, color: white });
@@ -1047,15 +1066,14 @@ function updateWords(t) {
   const breaks = together(38, 700, [['orSee', see], ['breaks', see + 46]]);
   setKinetic(k.orSee, t, { on: CUES.orSee, base: see, size: breaks, color: white, weight: 600 });
   setKinetic(k.breaks, t, { on: CUES.breaks, base: see + 46, size: breaks, gradient: warm, weight: 700 });
-  const rated = together(36, 700, [['worldNews', top], ['rated', top + 44]]);
-  setKinetic(k.worldNews, t, { on: CUES.worldNews, base: top, size: rated, color: lt.ink, weight: 700 });
-  setKinetic(k.rated, t, { on: CUES.rated, base: top + 44, size: rated, color: lt.ink, weight: 700 });
-  const one = together(36, 700, [['oneNumber', top], ['oneSentence', top + 44]]);
-  setKinetic(k.oneNumber, t, { on: CUES.oneNumber, base: top, size: one, color: lt.ink });
-  setKinetic(k.oneSentence, t, { on: CUES.oneSentence, base: top + 44, size: one, color: lt.ink });
-  setKinetic(k.home, t, { on: CUES.homeLine, base: top + 20, size: 34, color: lt.ink, stagger: 0.06 });
-  setKinetic(k.notify, t, { on: CUES.notifyLine, base: top, size: 34, color: white });
-  setKinetic(k.choose, t, { on: CUES.scoreLine, base: top + 40, size: 27, weight: 500, color: [215, 212, 210] });
+  // Over the phone a headline is one line, a caption to the picture.
+  // A word's clip starts 1.08 em above its baseline, and it rises through it.
+  const head = SAFE.y + 31, lockHead = SAFE.y + 1.1 * 24;
+  sideBySide(t, ['worldNews', CUES.worldNews], ['rated', CUES.rated], { base: head, size: 24, color: lt.ink });
+  sideBySide(t, ['oneNumber', CUES.oneNumber], ['oneSentence', CUES.oneSentence], { base: head, size: 24, color: lt.ink });
+  setKinetic(k.home, t, { on: CUES.homeLine, base: head, size: 24, color: lt.ink, stagger: 0.06, x: STAGE.x });
+  setKinetic(k.notify, t, { on: CUES.notifyLine, base: lockHead, size: 24, color: white, x: STAGE.x });
+  setKinetic(k.choose, t, { on: CUES.scoreLine, base: lockHead + 25, size: 18, weight: 500, color: [215, 212, 210], x: STAGE.x });
   // Below the action rail's top the box is narrower, so the list shares the size its widest line fits.
   const list = H * 0.6, listSize = together(27, 600, [['noAds', list], ['noSubscription', list + 42], ['noPurchases', list + 84]]);
   setKinetic(k.noAds, t, { on: [CUES.noAds, CUES.priceOut[1]], base: list, size: listSize, weight: 600, color: ink, stagger: 0.05 });
