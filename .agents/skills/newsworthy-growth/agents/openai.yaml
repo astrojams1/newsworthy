@@ -1,0 +1,4 @@
+interface:
+  display_name: "Newsworthy growth"
+  short_description: "Grow downloads with every App Store surface and channel, logged in a ledger"
+  default_prompt: "Use $newsworthy-growth to pick, run and measure the next activity to grow Newsworthy's downloads, and update the growth ledger."
