@@ -22,14 +22,19 @@ Cumulative figures from App Store Connect, added at each measurement.
 | [2026-10-21](#2026-10-21-launch-audit) | Audit of what Apple offers against what is used | App Store | — | done | 10 surfaces unused, keywords half wasted, `llms.txt` stale; quick wins listed |
 | [2026-10-21](#2026-10-21-youtube-short-trailer) | Trailer as a YouTube Short, from the owner's personal channel | YouTube Shorts | `yt-trailer-202610` (channel link) | planned | Not yet posted |
 
-## Open owner decisions
+## Owner decisions
+
+Open:
 
 - A free weekend (scheduled temporary price) for deal sites and communities.
-- An in-app ratings prompt (StoreKit `requestReview`, at most three a year per
-  person), against the no-engagement constraint.
-- Live Activities for a big development, against the calm product.
-- An in-app event for a news moment the app covers (election night, a summit).
 - Apple Ads: whether to spend, and a monthly cap.
+
+Decided:
+
+- An in-app ratings prompt (StoreKit `requestReview`): no (owner, 2026-10-21).
+- Live Activities for a big development: no (owner, 2026-10-21).
+- An in-app event for a news moment the app covers, such as election night:
+  no (owner, 2026-10-21). In-app events stay for real app updates.
 
 ## Lessons
 
