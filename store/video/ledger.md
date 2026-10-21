@@ -14,6 +14,7 @@ in the [release ledger](../ledger.md); record it there too.
 |---|---|---|---|---|
 | [2026-09-27](#2026-09-27) | First cut, owner request | Everything: six scenes, iPhone 886×1920 and Play 1080×1920, 15.1 s | Store rules, decoded frames, loudness | Guideline 2.3.4; poster frame; YouTube upload |
 | [2026-09-28](#2026-09-28) | Re-render of unchanged source, testing the tooling | Nothing to the eye: capture, grain and render reporting | Repeat renders, store rules, the copy-change path, banding | Home screen from #171–#173; as the first cut |
+| [2026-10-21 trailer](#2026-10-21-trailer) | Owner request: a YouTube Shorts trailer after Apple's approval | A second film, `store/video/trailer`: seven scenes, 32 s, 1080×1920 | YouTube settings, decoded frames, loudness and a per-bus mix report | Listen; publish once the listing is live at $1 |
 
 ## Lessons
 
@@ -100,6 +101,18 @@ and add to it when a cut teaches something new; date each item.
   Android's 2.5× device scale, where the iPhone's is 2×, is the reason.
   `--segment 0,1.3 --platform android` shows it in half a minute: frames 35–38
   vary between runs.
+- **Capture cost** (2026-10-21, trailer). At 1080×1920 a PNG capture is most
+  of a sample's cost. A grain overlay drawn in the page added about 100 ms to
+  every capture (330 to 230 ms on the phone scenes without it; noise
+  compresses badly), and a `blur()` filter on the phone's shadow another 30 or
+  so. The trailer adds its grain in Node to the finished frame and draws soft
+  shadows as radial gradients. Profile a few captures before a full render.
+- **Mixing without ears** (2026-10-21, trailer). Loudness alone said the
+  first score was fine; a per-bus, per-scene report (`--audio`) showed the
+  notifications and the clock, the sounds the first act is about, 11 dB under
+  the pulse, and a "hush" only 6 dB below the groove. Measure the parts, not
+  only the whole. The first limiter also had a bug that raised peaks by 5 dB:
+  check true peak on every render.
 
 ## 2026-09-27
 
@@ -228,3 +241,72 @@ either an age alone ("4m ago") that becomes "Checked at 9:37" on the widget,
 or no line on the reading and the time on the widget only. Plus everything
 still open from 2026-09-28.
 
+
+## 2026-10-21 trailer
+
+**Why.** Apple approved version 1.0.0 (build 27). The owner asked for a trailer
+of about 30 seconds for YouTube Shorts that tells why the app exists: many
+stories come and go through the day, the app shows only what breaks through,
+so you can stay focused instead of doomscrolling; it is $1 with no ads,
+subscription or in-app purchases; show the widgets, the notifications and the
+colour gradients, with motion graphics, and treat the sound as storytelling.
+That brief, its script and the exception it makes to
+`docs/product-messaging.md` are in `store/video/trailer/README.md`.
+
+**What it shows.** A new film, `store/video/trailer`, with its own renderer,
+`store/scripts/render-trailer.mjs`. Sixteen bars at 120 BPM, 32 s:
+
+- 0–8 s: a tilted, endless wall of feed cards (placeholder bars and feed tags,
+  no headlines) scrolling ever faster while notifications from other apps
+  pile up. "Every day, thousands of stories come and go." "You could
+  doomscroll all day…" over a clock racing from 7 AM to 11:59 PM.
+- 8–10 s: a hard cut. The feed drains and sinks; one card stays, rises and
+  glows ember. "…or see only what breaks through."
+- 10–16 s: the card opens into an iPhone showing the reading. The number rolls
+  up the scale, a digit on each eighth note, the whole frame warming from Fog
+  to Ember, then springs down to a quiet 2. "World news, rated 1 to 10." "One
+  number. One sentence."
+- 16–20 s: the reading closes into the medium widget; icons and a dark small
+  widget join it, and both lift off the screen. "Also on your Home Screen".
+- 20–24 s: a 160° wipe to a dark lock screen warmed by an 8; "Newsworthy ·
+  8/10" arrives and lifts. "Optional notifications at the score you choose."
+- 24–28 s: the phone drops away and the light spreads. "$1 once", the ten
+  levels' colours, "No ads. No subscription. No in-app purchases."
+- 28–32 s: "Stay focused on what matters." over two slow lights, Fog and
+  Ember; then the icon, "Newsworthy", the core tagline and "On the App Store".
+
+The score: A minor for the noise (a clock ticking in quarters, eighths, then
+sixteenths; a pulse whose filter opens; a blip for every notification on
+screen; a snare roll and a riser), cut dead on the hush, a soft sub drop and
+one bell, then A major at the drop (half-time groove, sidechained pad and bass,
+one pentatonic note per digit as the number climbs and falls, the store reel's
+two-note chime, an impact and three rising stabs for the price, a breakdown
+and a strummed chord for the name).
+
+**Outputs.** `store/assets/youtube/trailer-1080x1920.mp4`: 35.4 MB, sha256
+`066dfa1744f36de4f59a103b34d6ab04edbe2b697c17bc48c6a46b5514cfff9f`; its
+inputs are in `store/video/trailer/cut.json`.
+
+**Verified.** `--verify` passes: 960 frames, 32.00 s, 1080×1920 at 30 fps,
+H.264 High at 8.5 Mb/s, AAC stereo 48 kHz 324 kb/s, −14 LUFS integrated,
+−1.5 dBTP. Stills of every scene, finished frames of the fastest moments (the
+feed's rush, the rolling digits, the phone's drop and the light), the frames
+either side of the cut at 8 s, and a contact sheet decoded from the MP4 were
+looked at. The mix report (`--audio`): the hush measures about 11 dB under the
+groove before its bell; the limiter takes at most about 6 dB, more than 3 dB on
+0.5% of samples; the groove's octave bands fall about 4 dB an octave above
+1 kHz. `test/trailer.test.js` and `npm test` passed.
+
+**Not verified.** The sound by ear. That a phone shows the app this way: the
+phone, its Home Screen and lock screen are reconstructions from the tokens and
+layout code, with Inter and Roboto Mono standing in for Apple's typefaces, not
+captures. YouTube's re-encode. That the App Store listing is public at $1:
+`apple.release` was still waiting on the Paid Apps Agreement.
+
+**Cost.** 6,437 samples, 12.1 minutes on four browsers in parallel; the encode
+about a minute and a quarter.
+
+**Open.** The owner listens, then uploads to YouTube Shorts once the listing
+is public at $1 (the end card says "On the App Store"). Pick 12.9 s, the
+reading at 10, as the thumbnail. Whether a narrated cut is wanted; none was
+recorded.

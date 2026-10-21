@@ -1,0 +1,35 @@
+{
+  "render": {
+    "file": "store/assets/youtube/trailer-1080x1920.mp4",
+    "bytes": 35429892,
+    "sha256": "066dfa1744f36de4f59a103b34d6ab04edbe2b697c17bc48c6a46b5514cfff9f",
+    "frames": 960,
+    "samples": 6437,
+    "minutes": 12.1,
+    "inputs": {
+      "apps/client/app/index.tsx": "c00829c6819a636b26c586a683423867c6a5fd75bfe663f785c044dd2db008c6",
+      "apps/client/components/brand-mark.tsx": "7878f3b61d25984dfef9fe8c8cfcbc624ab03aa056a08f6e051c63e6452c6138",
+      "apps/client/components/glyph.tsx": "2dbe9318c3f9e9a707c72e6351184e5d363fb38778dfa5c6a648a59f8fff7fa6",
+      "apps/client/lib/onboarding.js": "0639f96a1078988785061d0232a2435fd2911de8d9379d7dbd6002f66433250e",
+      "apps/client/lib/preferences.js": "a6b09fa418f89e68571134417b5730fdc8502dc45f0b130edb8d67ca44246b95",
+      "apps/client/targets/widget/NewsworthyWidget.swift": "bbaa3b7af48e77d2def27c8802393263fec97e89700e735337d62947703cedb1",
+      "design/colors.js": "b0941941f965ab616909bad7df02125fe0d6920e31bb70c2d98fce8a27ad227f",
+      "design/palette.json": "7cdc756e1e4841892ef42077c13e8edc0383682d0b78505237646e795269a8a6",
+      "docs/product-messaging.md": "cd0ac4de85eb229bdefc91a8bff1627bf36f845a485bbfc850a11a87015a3876",
+      "public/levels.css": "7f93f8bda8d18e8aff25c680679b2cff210199d7b89e92346c9d0583afeee6dc",
+      "public/tokens.js": "768b6bb0696020a4dd1eba167b3a3e9519c813a0893e843e11c78c5c56034724",
+      "scripts/generate-brand.mjs": "d626a9be31b674164cfc98b8f5ce80d05b21afc2b0f498bec018056dc70d5f24",
+      "src/push.js": "bf568fcd1ef7fb5492a52826f8125f5591c595a211a58a6041def04b97937570",
+      "store/scripts/render-trailer.mjs": "3a42e0d4a8828524dc92cca2ee44db0d05c1043aff10335574ac27f6d8a65908",
+      "store/store.json": "1a5eb061599a02b00ec3b73ba1edb7257d08ae3e0565010d475aa773318d65da",
+      "store/video/fonts/inter-latin-opsz-normal.woff2": "2c295d99e26dcf357d4d01bcf270fd6924b600c9a13dd8c363ef114f4c6976fa",
+      "store/video/fonts/roboto-mono-latin-300-normal.woff2": "54dae5e8ef1a5aad1b61d8fd6d9cb6d0576114388efa5f5d5bdbc0fe443c6711",
+      "store/video/trailer/README.md": "851015f4957fb73a786e3a15b3b45643ca226a6ea631356d77dce1233141a146",
+      "store/video/trailer/composition.html": "d0a6ccbdd6abdc3438350ff1b56288e17c7b1bc6577e2b1398077c15507380f5",
+      "store/video/trailer/composition.js": "0106c55f92c26cba4e7bcfa20a9debebaef7424b743de82185c6a03083ec017a",
+      "store/video/trailer/film.js": "aac61693277f2ac06fae691ebad1d872b71f3d1d450e9ca86c5c7d12534f4a59",
+      "store/video/trailer/score.mjs": "71c3ac448b843bd8eb5a103aeeeb7bfc65ac4ef45b7b83e4f8c00f2f03a46b59",
+      "store/video/trailer/timeline.js": "c33e83b55e9a3027cb8a0c8122010d4109190f383748c7f67b412b983831f0d3"
+    }
+  }
+}

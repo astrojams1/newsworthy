@@ -1,6 +1,6 @@
 ---
 name: newsworthy-preview-reel
-description: Remake, update or extend Newsworthy's 15-second store preview reel — the App Store app preview (886×1920) and Google Play promo video (1080×1920) rendered from code in store/video — and log the cut in store/video/ledger.md. Use whenever a shipped feature or a change to the reading screen, palette, widgets, settings, notifications, icon or approved copy may have left the store video out of date, and whenever someone asks for a new, refreshed, longer or platform-specific app preview, promo video, showreel or store video, even if they only say the store assets look old.
+description: Remake, update or extend Newsworthy's 15-second store preview reel — the App Store app preview (886×1920) and Google Play promo video (1080×1920) rendered from code in store/video — or its 32-second YouTube Shorts trailer (store/video/trailer), and log the cut in store/video/ledger.md. Use whenever a shipped feature or a change to the reading screen, palette, widgets, settings, notifications, icon or approved copy may have left the store video out of date, and whenever someone asks for a new, refreshed, longer or platform-specific app preview, promo video, showreel, trailer, YouTube Short or store video, even if they only say the store assets look old.
 ---
 
 # Newsworthy preview reel
@@ -149,6 +149,29 @@ owner to listen.
   slot; YouTube for Google Play, ads off, not age-restricted), setting the poster
   frame by hand at `POSTER_SECONDS`, the guideline 2.3.4 decision, and
   listening to the sound.
+
+## The trailer
+
+`store/video/trailer` is a second film on the same principles: a 32-second
+vertical trailer for YouTube Shorts that tells why the app exists, from the
+owner's brief in its [README](../../../store/video/trailer/README.md), which
+also holds its script. It has its own renderer,
+`store/scripts/render-trailer.mjs` (`--stills`, `--segment`, `--audio`,
+`--render`, `--encode`, `--verify`), renders one 1080×1920 cut at
+`store/assets/youtube/`, records itself in `store/video/trailer/cut.json`, and
+is held to YouTube's upload settings rather than Apple's. Its lines quote the
+script table, the app or the core copy; `test/trailer.test.js` checks them.
+
+- **Look first.** `--stills` with times across all seven scenes takes seconds.
+- **Sound by measurement.** `--audio` writes the score alone and reports each
+  bus's loudness per scene, the limiter's work and the groove's octave bands.
+  The film's own hush (bar 5) should measure well below the groove; the
+  notifications and the clock should not sink under the pulse in bar 1–4.
+- **Render once.** `--render` runs four browsers in parallel and keeps the
+  frames, so a change to the sound alone is an `--encode`.
+- **It is not a reading either.** The same rules hold: placeholder bars for
+  every sentence and headline, no AI, no rank. The price and "On the App
+  Store" are true only once the listing is live at that price.
 
 ## Ledger entry template
 

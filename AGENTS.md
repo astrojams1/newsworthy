@@ -71,7 +71,7 @@ release status. Calm presentation must not change the rating calibration.
   `.agents/skills/newsworthy-caller-review/SKILL.md`; findings go in
   `docs/caller-reviews/ledger.md`, observations kept apart from hypotheses.
   Trial a new caller model with `.agents/skills/newsworthy-caller-trial/SKILL.md`.
-- To remake the store preview videos, use
+- To remake the preview reel or trailer, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
 - Before any app build, store submission or EAS sandbox, use
