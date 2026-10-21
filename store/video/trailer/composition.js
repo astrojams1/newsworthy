@@ -426,6 +426,7 @@ function build() {
 
   // ---- the phone
   N.phone = el(stage, { left: px(PH.x), top: px(PH.y), width: px(PH.bw), height: px(PH.bh), transformOrigin: '50% 50%' });
+  N.phone.dataset.part = 'phone';
   // A soft shadow drawn as a gradient: a blur filter here doubled the cost of every frame.
   N.shadow = el(N.phone, { left: px(-PH.bw * 0.22), top: px(PH.bh * -0.04), width: px(PH.bw * 1.44), height: px(PH.bh * 1.16), background: 'radial-gradient(closest-side, rgba(0,0,0,0.42), rgba(0,0,0,0.2) 62%, rgba(0,0,0,0))' });
   for (const [x, y, h] of [[-1.6, 98, 22], [-1.6, 134, 40], [-1.6, 184, 40], [PH.bw - 1.4, 150, 62]]) el(N.phone, { left: px(x), top: px(y), width: '3px', height: px(h), borderRadius: '1.5px', background: 'linear-gradient(90deg, #2A2A2E, #4A4A50)' });
@@ -433,7 +434,7 @@ function build() {
   N.clip = el(N.phone, { left: px(BEZ), top: px(BEZ), width: px(PH.sw), height: px(PH.sh), borderRadius: px(PH.r * PS), overflow: 'hidden', background: '#000' });
   N.scr = el(N.clip, { left: '0', top: '0', width: px(AW), height: px(AH), transformOrigin: '0 0', transform: `scale(${PS})` });
   N.flt = el(N.phone, { left: px(BEZ), top: px(BEZ), width: px(AW), height: px(AH), transformOrigin: '0 0', transform: `scale(${PS})` });
-  buildHome(N.scr);
+  buildHome(N.scr, N.flt);
   buildLock(N.scr);
   buildReading(N.flt);
   buildNote(N.flt);
@@ -442,6 +443,9 @@ function build() {
   N.statusIcons = el(N.status, {});
   N.statusIcons.innerHTML = STATUS_ICONS;
   N.island = el(N.flt, { left: px((AW - 124) / 2), top: '11px', width: '124px', height: '36px', borderRadius: '18px', background: '#000' });
+  // Named for test/trailer.test.js, which checks what is drawn over what.
+  N.island.dataset.part = 'island';
+  N.status.dataset.part = 'status';
   N.glare = el(N.flt, { left: '0', top: '0', width: px(AW), height: px(AH), borderRadius: px(PH.r), background: 'linear-gradient(118deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 34%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.04))', pointerEvents: 'none' });
 
   // ---- the price
@@ -491,15 +495,18 @@ function appIcon(parent, x, y, i, label = true) {
   return e;
 }
 const WALL = 'radial-gradient(90% 55% at 10% 0%, rgba(150,178,205,0.55), transparent 70%), radial-gradient(100% 60% at 100% 100%, rgba(190,104,70,0.6), transparent 72%), linear-gradient(165deg, #2A3342, #2B2A33 50%, #3A2A26)';
-function buildHome(parent) {
+// The small widget sits with the reading's frame, above the screen, so it
+// can lift off the phone with the medium one rather than dim with the rest.
+function buildHome(parent, above) {
   N.home = el(parent, { left: '0', top: '0', width: px(AW), height: px(AH), background: WALL });
   N.icons = HOME_ICONS.map(([x, y], i) => appIcon(N.home, x, y, i));
   N.dock = el(N.home, { left: '12px', top: '748px', width: px(AW - 24), height: '96px', borderRadius: '36px', background: 'rgba(255,255,255,0.16)', boxShadow: 'inset 0 0 0 0.75px rgba(255,255,255,0.28)' });
   N.dockIcons = DOCK.map(([x, y], i) => appIcon(N.home, x, y, i + 8, false));
   N.homeBar = el(N.home, { left: px((AW - 134) / 2), top: px(AH - 13), width: '134px', height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.85)' });
   // The small widget, in its dark appearance (each widget chooses its own).
-  N.smallWrap = el(parent, { left: '0', top: '0', width: px(AW), height: px(AH) });
+  N.smallWrap = el(above, { left: '0', top: '0', width: px(AW), height: px(AH) });
   N.small = el(N.smallWrap, { borderRadius: px(WGT.radius), overflow: 'hidden' });
+  N.small.dataset.part = N.small.dataset.box = 'small';
   N.smallHead = el(N.small, {}, say('wordmark'));
   N.smallNum = numeral(N.small, false);
   N.smallTime = el(N.small, {}, say('checked'));
@@ -515,6 +522,8 @@ function buildReading(parent) {
   // The reading's frame becomes the medium widget.
   N.med = el(parent, { left: '0', top: '0', width: px(AW), height: px(AH) });
   N.frame = el(N.med, { overflow: 'hidden' });
+  N.med.dataset.part = 'medium';
+  N.frame.dataset.box = 'medium';
   N.frameReading = el(N.frame, { inset: '0' });
   N.frameWidget = el(N.frame, { inset: '0' });
   N.content = el(N.med, { left: '0', top: '0', width: px(AW), height: px(AH) });
@@ -531,6 +540,7 @@ function buildReading(parent) {
 }
 function buildNote(parent) {
   N.note = el(parent, { borderRadius: '24px', overflow: 'hidden' });
+  N.note.dataset.part = N.note.dataset.box = 'notification';
   N.noteIcon = el(N.note, { left: '14px', top: '17px', width: '38px', height: '38px', borderRadius: '9px', overflow: 'hidden' });
   N.noteDash = el(N.noteIcon, {});
   N.noteTitle = el(N.note, {}, say('notification'));
@@ -754,7 +764,9 @@ function updatePhone(t) {
   updateHome(t);
   updateLock(t);
 }
-// How far the widgets or the notification have lifted off the screen.
+// How far the widgets or the notification have lifted off the screen, and
+// how much the widgets grow when they have.
+const LIFT = 0.2;
 function popAmount(t) {
   const widgets = clamp(sp(t, CUES.pushHome[0], 0.7, 9)) * (1 - E.inOut(seg(t, [CUES.pushHome[1], CUES.night[0] + 0.1])));
   const note = clamp(sp(t, CUES.pushNote[0], 0.7, 9));
@@ -773,9 +785,13 @@ function updateReading(t) {
   mask(N.med, nightMask(t, true));
   const pop = t < CUES.night[0] && t >= CUES.pushHome[0] ? popAmount(t) : 0;
   show(N.med, 1 - goneAt);
-  const medScale = (1 + 0.24 * pop) * (1 - 0.08 * goneAt);
+  // Lifted toward the viewer it is in front of the whole phone, island and
+  // status bar included; it grows about its centre, so its top stays clear
+  // of the island and its bottom of the small widget's.
+  const medScale = (1 + LIFT * pop) * (1 - 0.08 * goneAt);
+  N.med.style.zIndex = pop > 0.001 ? '3' : 'auto';
   N.med.style.transformOrigin = `${px(MR.x + MR.w / 2)} ${px(MR.y + MR.h / 2)}`;
-  N.med.style.transform = `translateY(${px(-10 * pop)}) scale(${medScale.toFixed(4)})`;
+  N.med.style.transform = `scale(${medScale.toFixed(4)})`;
   const fx = lerp(0, MR.x, m), fy = lerp(0, MR.y, m), fw = lerp(AW, MR.w, m), fh = lerp(AH, MR.h, m);
   box(N.frame, fx, fy, fw, fh);
   const radius = lerp(PH.r, WGT.radius, smooth(0, 0.6, mc));
@@ -864,7 +880,8 @@ function updateHome(t) {
   if (p <= 0) return;
   box(N.small, S.x, S.y, S.w, S.h);
   N.small.style.transformOrigin = '50% 50%';
-  N.small.style.transform = `translate(${px(-6 * pop)}, ${px(6 * pop)}) scale(${(lerp(0.55, 1, p) * (1 + 0.24 * pop) * (1 - 0.08 * gone)).toFixed(4)})`;
+  N.smallWrap.style.zIndex = pop > 0.001 ? '3' : 'auto';
+  N.small.style.transform = `translate(${px(-6 * pop)}, ${px(10 * pop)}) scale(${(lerp(0.55, 1, p) * (1 + LIFT * pop) * (1 - 0.08 * gone)).toFixed(4)})`;
   Object.assign(N.small.style, { background: diagonal(dk), boxShadow: `0 ${px(14 + 20 * pop)} ${px(36 + 30 * pop)} rgba(0,0,0,${(0.4 + 0.15 * pop).toFixed(3)})`, outline: '1px solid rgba(255,255,255,0.07)', outlineOffset: '-1px' });
   const r = { x: 0, y: 0, w: S.w, h: S.h };
   text(N.smallHead, { x: WGT.pad, y: WG.headBase(r), size: WGT.head, tracking: WGT.headTracking, color: dk.gradientMuted });
@@ -895,6 +912,7 @@ function updateLock(t) {
   if (nIn <= 0) return;
   const nw = AW - 32, nh = 76, nx = 16, ny = lerp(AH + 30, 600, nIn);
   box(N.note, nx, ny, nw, nh);
+  N.note.style.zIndex = pop > 0.001 ? '3' : 'auto';
   N.note.style.transformOrigin = '50% 50%';
   N.note.style.transform = `translateY(${px(-44 * pop)}) scale(${(lerp(0.94, 1, clamp(nIn)) * (1 + 0.38 * pop)).toFixed(4)})`;
   Object.assign(N.note.style, { background: `rgba(${Math.round(lerp(58, 72, pop))},${Math.round(lerp(54, 66, pop))},${Math.round(lerp(56, 66, pop))},0.94)`,

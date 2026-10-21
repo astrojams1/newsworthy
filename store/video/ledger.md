@@ -15,6 +15,7 @@ in the [release ledger](../ledger.md); record it there too.
 | [2026-09-27](#2026-09-27) | First cut, owner request | Everything: six scenes, iPhone 886×1920 and Play 1080×1920, 15.1 s | Store rules, decoded frames, loudness | Guideline 2.3.4; poster frame; YouTube upload |
 | [2026-09-28](#2026-09-28) | Re-render of unchanged source, testing the tooling | Nothing to the eye: capture, grain and render reporting | Repeat renders, store rules, the copy-change path, banding | Home screen from #171–#173; as the first cut |
 | [2026-10-21 trailer](#2026-10-21-trailer) | Owner request: a YouTube Shorts trailer after Apple's approval | A second film, `store/video/trailer`: seven scenes, 32 s, 1080×1920 | YouTube settings, decoded frames, loudness and a per-bus mix report | Listen; publish once the listing is live at $1 |
+| [2026-10-21 trailer fix](#2026-10-21-trailer-fix) | Owner report: the lifted widget slid under the Dynamic Island | 17–24 s only: what lifts off the phone is drawn in front of it; the small widget lifts undimmed | A browser test of what is drawn over what, stills before and after, `--verify` | As the trailer's first cut |
 
 ## Lessons
 
@@ -113,6 +114,13 @@ and add to it when a cut teaches something new; date each item.
   the pulse, and a "hush" only 6 dB below the groove. Measure the parts, not
   only the whole. The first limiter also had a bug that raised peaks by 5 dB:
   check true peak on every render.
+- **Lifted layers** (2026-10-21, trailer fix). Anything shown lifting off the
+  phone toward the viewer must be drawn in front of the phone's own chrome
+  (island, status bar, glass) and outside whatever dims the screen; the first
+  cut drew the enlarged widget under the island and left the small one dimmed.
+  `test/trailer.test.js` hit-tests the lifted parts against the island and
+  status bar, among the phone's own layers only: the frame's vignette covers
+  everything and made the first version of that test fail for the wrong reason.
 
 ## 2026-09-27
 
@@ -310,3 +318,40 @@ about a minute and a quarter.
 is public at $1 (the end card says "On the App Store"). Pick 12.9 s, the
 reading at 10, as the thumbnail. Whether a narrated cut is wanted; none was
 recorded.
+
+## 2026-10-21 trailer fix
+
+**Why.** The owner watched the first cut: on the Home Screen, when the widgets
+lift off the phone, the enlarged medium widget slid under the Dynamic Island.
+Checking it showed a second fault in the same moment: the small widget, meant
+to lift with the medium one, sat in the screen's layer and was dimmed with it.
+
+**What changed.** Only the Home Screen and lock-screen scenes, and visibly
+only the lifts: the widgets' at 17.5–20 s and the notification's from 21.5 s.
+Whatever lifts toward the viewer is drawn in front of the phone's island,
+status bar and glass while it is lifted; the small widget moved out of the
+dimmed screen layer to lift with the medium one; both now grow by a fifth
+about their centres, rather than a quarter with the medium one rising, so the
+medium widget's top clears the island and the two widgets do not touch.
+Unchanged elsewhere, by stills before and after: 14 times across the film,
+7 identical and 7 changed, all of them in the widget and notification scenes.
+
+**Outputs.** `store/assets/youtube/trailer-1080x1920.mp4`: 35.4 MB, sha256
+`9896e699d784941569841290654843f07309205d0f81689a59784547f0b350d9`.
+
+**Verified.** `test/trailer.test.js` gains a browser test: at every tenth of a
+second of both lifts, each lifted part is the topmost of the phone's layers
+wherever it overlaps the island or status bar, and nothing above it dims it.
+It failed on the first cut's picture and passes on this one. `--verify` passes
+as before (8.5 Mb/s, −14 LUFS, −1.5 dBTP). Against the first cut, decoded frame
+by frame: 17.53–20.0 s changed, as intended (down to 23.5 dB PSNR while the
+widgets are lifted); 30 frames of the feed's rush at 5.3–8.0 s and one at 9.1 s
+differ at 46.5–48 dB, render-to-render variance in the most blurred frames,
+not a change; every other frame matches above 48 dB. `npm test` passed.
+
+**Not verified.** As the first cut: the sound by ear, a device, YouTube's
+re-encode, the listing being public at $1.
+
+**Cost.** 12.7 minutes on four browsers.
+
+**Open.** As the first cut.

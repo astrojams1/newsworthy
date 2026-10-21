@@ -68,3 +68,57 @@ test('no line mentions how ratings are made, or ranks or hurries', () => {
 test('the trailer renders vertical, at 1080 × 1920', () => {
   assert.equal(`${Math.round(TARGET.width * TARGET.scale)}x${Math.round(TARGET.height * TARGET.scale)}`, '1080x1920');
 });
+
+// When the widgets and the notification lift off the phone toward the viewer,
+// they are in front of everything on it. Reported 2026-10-21 from the first
+// cut: the enlarged medium widget slid under the Dynamic Island, and the
+// small widget, meant to lift with it, stayed dimmed with the screen.
+const BROWSERS = [process.env.CHROME_PATH, '/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  '/usr/bin/google-chrome', '/usr/bin/chromium', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
+const executablePath = BROWSERS.find(path => existsSync(path));
+test('what lifts off the phone is drawn over the island and is not dimmed', async t => {
+  if (!executablePath) { t.skip('no Chrome or Chromium on this machine; set CHROME_PATH to run it'); return; }
+  const { createServer } = await import('node:http');
+  const { extname, resolve, sep } = await import('node:path');
+  const { chromium } = await import('playwright-core');
+  const root = resolve('.');
+  const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.woff2': 'font/woff2' };
+  const server = createServer((req, res) => {
+    const path = resolve(root, '.' + decodeURIComponent(new URL(req.url, 'http://x').pathname));
+    if (!path.startsWith(root + sep) || !existsSync(path)) { res.writeHead(404).end(); return; }
+    res.writeHead(200, { 'content-type': types[extname(path)] ?? 'application/octet-stream' }).end(readFileSync(path));
+  });
+  await new Promise(done => server.listen(0, '127.0.0.1', done));
+  const browser = await chromium.launch({ executablePath });
+  try {
+    const page = await browser.newPage({ viewport: { width: TARGET.width, height: TARGET.height } });
+    await page.goto(`http://127.0.0.1:${server.address().port}/store/video/trailer/composition.html`);
+    await page.evaluate(() => window.NW.ready);
+    const lifted = [['medium', CUES.pushHome], ['small', CUES.pushHome], ['notification', CUES.pushNote]];
+    for (const [part, [from, to]] of lifted) {
+      for (let time = from + 0.1; time < to; time += 0.1) {
+        const found = await page.evaluate(({ part, time }) => {
+          window.NW.render(time);
+          const box = document.querySelector(`[data-box="${part}"]`).getBoundingClientRect();
+          const covered = [];
+          for (const other of ['island', 'status']) {
+            const o = document.querySelector(`[data-part="${other}"]`).getBoundingClientRect();
+            const left = Math.max(box.left, o.left), right = Math.min(box.right, o.right), top = Math.max(box.top, o.top), bottom = Math.min(box.bottom, o.bottom);
+            if (right - left < 1 || bottom - top < 1) continue;
+            // The topmost of the phone's own layers there; the frame's overlays are not the phone's.
+            const hit = document.elementsFromPoint((left + right) / 2, (top + bottom) / 2).find(e => e.closest('[data-part="phone"]'));
+            if (!hit?.closest(`[data-part="${part}"]`)) covered.push(other);
+          }
+          const dimmed = [];
+          for (let e = document.querySelector(`[data-box="${part}"]`); e; e = e.parentElement) if (getComputedStyle(e).filter.includes('brightness')) dimmed.push(e.tagName);
+          return { covered, dimmed: dimmed.length > 0 };
+        }, { part, time });
+        assert.deepEqual(found.covered, [], `at ${time.toFixed(1)} s the ${part} widget is drawn under the ${found.covered.join(' and ')}`);
+        assert.equal(found.dimmed, false, `at ${time.toFixed(1)} s the lifted ${part} is dimmed with the screen`);
+      }
+    }
+  } finally {
+    await browser.close();
+    server.close();
+  }
+});
