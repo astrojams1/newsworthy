@@ -1,0 +1,39 @@
+1
+00:00:00,000 --> 00:00:04,000
+[Clock ticking, notification sounds]
+
+2
+00:00:04,000 --> 00:00:08,000
+[Ticking speeds up, notifications pile up, music builds]
+
+3
+00:00:08,000 --> 00:00:08,500
+[Silence]
+
+4
+00:00:08,500 --> 00:00:10,000
+[A single bell]
+
+5
+00:00:10,000 --> 00:00:13,400
+[Upbeat music, a rising note for each number]
+
+6
+00:00:13,500 --> 00:00:14,400
+[Falling notes]
+
+7
+00:00:21,000 --> 00:00:22,600
+[Notification chime]
+
+8
+00:00:24,000 --> 00:00:26,600
+[Impact, then three hits]
+
+9
+00:00:28,000 --> 00:00:29,400
+[Music softens]
+
+10
+00:00:29,500 --> 00:00:32,000
+[Closing chord]

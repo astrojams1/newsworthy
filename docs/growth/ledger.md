@@ -139,3 +139,26 @@ afternoon, US time, with the first hour free to answer comments.
 **Next.** At +2 days read Viewed vs. swiped away and retention. Post the same
 file to TikTok and Instagram Reels with the link in each bio. The preview reel
 is the second Short, linked from this one as its Related video.
+
+**2026-10-21, later.** The owner found the description stiff. It is now:
+
+```
+You shouldn't have to scroll all day to find out if anything big happened.
+
+Newsworthy rates the world's news from 1 to 10 and tells you, in one sentence, what's on top. Glance at it and you know if the world is having a 2 or an 8.
+
+No feed. No ads. No subscription. No in-app purchases. $1, once.
+Home Screen widgets, plus an optional alert when the news hits the number you pick.
+
+I made this. Would love to hear what you think.
+
+Newsworthy: Calm News, on the App Store
+apps.apple.com/app/id6812519450
+
+#NewsApp #iPhoneApps #Doomscrolling
+```
+
+The post's files sit beside the video in `store/assets/youtube/`: the cover
+(`trailer-cover-1080x1920.png`, the frame at 12.9 s of the render with sha256
+`9896e699…`) and the sound-description captions (`trailer-sound.en.srt`, for
+Studio → Subtitles → Upload file → With timing).
