@@ -44,6 +44,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | YouTube Shorts framing | 2026-10-21 | README, AGENTS.md, product messaging, llms.txt, store listing, the trailer and its README, growth and reel skills | None needed: ledgers and agent guidance only. The trailer's copy is unchanged; what changed is where it is known to sit on a phone | The posted Short is framed badly until the owner decides on a re-framed upload; only the owner's iPhone view is measured |
 | Trailer re-frame | 2026-10-21 | The trailer's script and README, product messaging, store listing price, growth and reel skills, AGENTS.md | None needed: no line on screen changed, only where and how large it is set; the README now says the film keeps to the Shorts safe zone | The new cut is not yet posted or seen on a phone; the price and "On the App Store" stay true while the listing is public at $1 |
 | Trailer restage | 2026-10-21 | The trailer's script and README, product messaging, growth and reel skills | None needed: the same lines, now set as one-line headlines; the README describes the new staging | The new cut is not yet posted or seen on a phone |
+| Trailer thumbnail | 2026-10-21 | The trailer's script and README, product messaging, growth ledger's pinned comment | None needed: the thumbnail quotes the script's line; the pinned comment repeats the description's claims ($1, no ads, no subscription) | Shelf rendering at real size not seen |
 
 ## Lessons
 

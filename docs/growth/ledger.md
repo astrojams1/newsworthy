@@ -193,3 +193,13 @@ title, with one-line headlines; details in the
 [video ledger](../../store/video/ledger.md#2026-10-21-trailer-restage). Same
 files in `store/assets/youtube/`, with a new cover from 12.9 s.
 
+**2026-10-21, thumbnail.** A custom thumbnail,
+`store/assets/youtube/trailer-thumbnail-1080x1920.jpg`: the 10 reading with
+"World news, rated 1 to 10." set large enough to read in the shelf. Upload in
+Studio on desktop (custom Shorts thumbnails reach Partner Program channels
+first); without that option, pick the 12.9 s frame in the mobile app. Pinned
+comment for the new post: "I made this because I kept doomscrolling just to
+find out if anything big happened. Newsworthy gives the world's news one
+number and one sentence. $1, no ads, no subscription. Search "Newsworthy: Calm
+News" on the App Store."
+

@@ -77,6 +77,10 @@ export const CUT_RECORD = 'store/video/trailer/cut.json';
 // A frame to offer as the Shorts thumbnail: the reading at the top of the scale.
 export const POSTER_SECONDS = 12.9;
 
+// A custom thumbnail, for a channel YouTube lets upload one: the same reading,
+// its line set large enough to read at the size a thumbnail is shown.
+export const THUMBNAIL = { seconds: POSTER_SECONDS, out: 'store/assets/youtube/trailer-thumbnail-1080x1920.jpg', maxBytes: 2e6 };
+
 // YouTube Shorts: vertical 9:16. The phone is drawn as an iPhone, the only
 // platform where the app is approved; Google Play is still in closed testing.
 export const TARGET = { width: 432, height: 768, scale: 2.5, out: 'store/assets/youtube/trailer-1080x1920.mp4' };

@@ -10,7 +10,7 @@
 import tokens from '../../../public/tokens.js';
 import { hexToOklab } from '../../../design/colors.js';
 import { CUES, DOWN, HUSH, PINGS, SETTLED, bezier, feedTravel, scoreAt, seeded, spring } from './timeline.js';
-import { say } from './film.js';
+import { THUMBNAIL, say } from './film.js';
 import zones from '../../../vendor/skills/skills/youtube-shorts/assets/zones.json' with { type: 'json' };
 
 const W = innerWidth, H = innerHeight;
@@ -512,6 +512,9 @@ function build() {
   N.k = {};
   for (const key of ['everyDay', 'thousands', 'comeAndGo', 'doomscroll', 'allDay', 'orSee', 'breaks', 'worldNews', 'rated', 'oneNumber', 'oneSentence',
     'home', 'notify', 'choose', 'noAds', 'noSubscription', 'noPurchases', 'focus', 'matters']) N.k[key] = kinetic(stage, key);
+
+  // ---- the thumbnail's headline, shown only by thumbnail()
+  N.thumb = ['worldNews', 'rated'].map(key => { const e = el(stage, { display: 'none' }, say(key)); e.dataset.thumb = key; return e; });
 
   N.vignette = el(stage, { inset: '0', background: 'radial-gradient(130% 90% at 50% 45%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.62))' });
   N.flash = el(stage, { inset: '0', background: '#fff' });
@@ -1087,6 +1090,7 @@ function updateWords(t) {
 
 // ---------------------------------------------------------------- frame
 function render(t) {
+  N.thumb.forEach(e => show(e, 0));
   updateBackgrounds(t);
   updateFeed(t);
   updatePings(t);
@@ -1103,6 +1107,18 @@ function render(t) {
   show(N.flash, flash);
 }
 
+// The Shorts thumbnail. A thumbnail is seen small, in the Shorts shelf, search
+// and the channel's grid, under the title but without the player's controls,
+// so it is the film's reading at the top of the scale with its line set twice
+// as large, the phone centred and still, running off the bottom as in the film.
+function thumbnail() {
+  render(THUMBNAIL.seconds);
+  for (const key of ['worldNews', 'rated']) show(N.k[key].line, 0);
+  const ink = theme(clamp(readingLevel(THUMBNAIL.seconds), 1, 10)).ink, size = 46;
+  N.thumb.forEach((e, i) => text(e, { x: W / 2, y: 82 + i * 54, size, weight: 700, align: 0.5, tracking: -0.03 * size, color: ink }));
+  N.phone.style.transform = `translateX(${px(W / 2 - STAGE.x)})`;
+}
+
 window.NW = {
   ready: (async () => {
     await Promise.all(faces.map(f => f.load()));
@@ -1114,4 +1130,5 @@ window.NW = {
     return { W, H };
   })(),
   render,
+  thumbnail,
 };

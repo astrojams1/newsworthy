@@ -74,6 +74,7 @@ node store/scripts/render-trailer.mjs --audio                              # the
 node store/scripts/render-trailer.mjs --render                             # every frame in parallel, then the MP4
 node store/scripts/render-trailer.mjs --encode                             # re-encode the last frames with the current score
 node store/scripts/render-trailer.mjs --verify                             # the MP4 against YouTube's settings and cut.json
+node store/scripts/render-trailer.mjs --thumbnail                          # the custom thumbnail, a still JPEG
 ```
 
 `--render` splits the frames between four browser processes (`--workers N`)
@@ -108,5 +109,9 @@ Inter for SF Pro and Roboto Mono Light for SF Mono.
   (`apple.release` in the [release ledger](../../ledger.md)).
 - **Listen.** The sound is synthesised and was checked by loudness, peaks and
   spectrogram, not by ear.
-- **Thumbnail.** YouTube picks a Shorts thumbnail from the video; 12.9 s, the
-  reading at the top of the scale, is the suggested frame.
+- **Thumbnail.** `store/assets/youtube/trailer-thumbnail-1080x1920.jpg` is a
+  custom one (`--thumbnail`): the 12.9 s reading with its line set twice as
+  large, since a thumbnail is seen small in the Shorts shelf, search and the
+  channel's grid. Custom Shorts thumbnails upload in Studio on desktop, for
+  Partner Program channels first (rolling out since July 2026); without one,
+  pick the 12.9 s frame in the mobile app.

@@ -22,7 +22,7 @@ import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { CUTS, DURATION, FPS, samplesAt } from '../video/trailer/timeline.js';
-import { COPY, CUT_RECORD, FILM, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGET } from '../video/trailer/film.js';
+import { COPY, CUT_RECORD, FILM, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGET, THUMBNAIL } from '../video/trailer/film.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const artifacts = join(root, 'artifacts/trailer');
@@ -32,9 +32,9 @@ const FRAMES = Math.round(DURATION * FPS);
 // ---------------------------------------------------------------- arguments
 // Strict, so a mistyped option never falls through to the one mode that
 // overwrites the committed trailer.
-const MODES = ['stills', 'segment', 'audio', 'render', 'encode', 'verify', 'worker'];
-const OPTIONS = { stills: 'list', segment: 'list', audio: 'flag', render: 'flag', encode: 'flag', verify: 'flag', worker: 'value', workers: 'value', draft: 'flag' };
-const USAGE = 'Usage: node store/scripts/render-trailer.mjs --stills 2,9.2 | --segment 7.4,8.1 | --audio | --render [--workers 4] | --encode | --verify  [--draft]';
+const MODES = ['stills', 'segment', 'audio', 'render', 'encode', 'verify', 'thumbnail', 'worker'];
+const OPTIONS = { stills: 'list', segment: 'list', audio: 'flag', render: 'flag', encode: 'flag', verify: 'flag', thumbnail: 'flag', worker: 'value', workers: 'value', draft: 'flag' };
+const USAGE = 'Usage: node store/scripts/render-trailer.mjs --stills 2,9.2 | --segment 7.4,8.1 | --audio | --render [--workers 4] | --encode | --verify | --thumbnail  [--draft]';
 function parse(list) {
   const out = {};
   for (let i = 0; i < list.length; i++) {
@@ -341,6 +341,23 @@ function run(command, list) {
   return { child, done };
 }
 
+// ---------------------------------------------------------------- thumbnail
+// A still, drawn once: no shutter, no grain. JPEG, under YouTube's limit.
+async function renderThumbnail() {
+  const { page } = await open();
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setDeviceMetricsOverride', { width: TARGET.width, height: TARGET.height, deviceScaleFactor: TARGET.scale, mobile: false });
+  await page.evaluate(() => window.NW.thumbnail());
+  const { data } = await cdp.send('Page.captureScreenshot', { format: 'png' });
+  await page.close();
+  const jpeg = await sharp(Buffer.from(data, 'base64')).removeAlpha().jpeg({ quality: 92, chromaSubsampling: '4:4:4' }).toBuffer();
+  const meta = await sharp(jpeg).metadata();
+  if (`${meta.width}x${meta.height}` !== `${width}x${height}`) throw new Error(`thumbnail is ${meta.width}x${meta.height}, not ${width}x${height}`);
+  if (jpeg.length > THUMBNAIL.maxBytes) throw new Error(`thumbnail is ${(jpeg.length / 1e6).toFixed(2)} MB, over YouTube's ${THUMBNAIL.maxBytes / 1e6} MB`);
+  await writeFile(join(root, THUMBNAIL.out), jpeg);
+  console.log(`${THUMBNAIL.out}: ${meta.width}x${meta.height}, ${(jpeg.length / 1e6).toFixed(2)} MB, sha256 ${sha256(jpeg)}`);
+}
+
 // ---------------------------------------------------------------- verify
 async function verify() {
   preflight();
@@ -390,6 +407,7 @@ try {
   else if (args.mode === 'render') await render();
   else if (args.mode === 'encode') await encode();
   else if (args.mode === 'verify') await verify();
+  else if (args.mode === 'thumbnail') await renderThumbnail();
   else if (args.mode === 'worker') await worker();
 } catch (error) {
   console.error(error.message);

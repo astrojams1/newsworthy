@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { BAR, CUES, DURATION, FPS, PINGS, ROLL, samplesAt } from '../store/video/trailer/timeline.js';
-import { COPY, FILM, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGET } from '../store/video/trailer/film.js';
+import { COPY, FILM, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGET, THUMBNAIL } from '../store/video/trailer/film.js';
 
 // The YouTube trailer (store/video/trailer) is rendered rarely and slowly, so
 // the cheap facts it rests on are checked here, before a render rather than
@@ -201,5 +201,25 @@ test('the phone runs off the bottom of the frame and clears the action rail', t 
     assert.ok(r.right <= rail.x * k, `at ${time.toFixed(2)} s the phone reaches ${(r.right / k).toFixed(0)}, under the rail`);
     assert.ok(r.width >= TARGET.width * 0.6, `at ${time.toFixed(2)} s the phone is ${(r.width / k).toFixed(0)} wide, a thumbnail`);
   }
+}));
+
+// The thumbnail is seen small, so its line is set large, inside the frame
+// with a margin, over the phone running off the bottom; and the film itself
+// never shows the thumbnail's line.
+test('the thumbnail sets its line large over the phone, and only the thumbnail', t => withComposition(t, async page => {
+  const shown = await page.evaluate(() => {
+    window.NW.thumbnail();
+    const rect = e => { const r = e.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, height: r.height }; };
+    return { lines: [...document.querySelectorAll('[data-thumb]')].map(rect), phone: rect(document.querySelector('[data-part="phone"]')) };
+  });
+  assert.equal(shown.lines.length, 2);
+  for (const line of shown.lines) {
+    assert.ok(line.left >= 24 && line.right <= TARGET.width - 24 && line.top >= 24, `the thumbnail's line runs to ${JSON.stringify(line)}`);
+    assert.ok(line.height >= 55, 'the thumbnail\'s line is set small');
+    assert.ok(line.bottom <= shown.phone.top, 'the thumbnail\'s line runs onto the phone');
+  }
+  assert.ok(shown.phone.bottom >= TARGET.height, 'the phone ends inside the thumbnail');
+  const afterwards = await page.evaluate(t => { window.NW.render(t); return [...document.querySelectorAll('[data-thumb]')].map(e => getComputedStyle(e).display); }, THUMBNAIL.seconds);
+  assert.deepEqual(afterwards, ['none', 'none']);
 }));
 

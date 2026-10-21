@@ -19,6 +19,7 @@ in the [release ledger](../ledger.md); record it there too.
 | [2026-10-21 trailer framing](#2026-10-21-trailer-framing-decision-no-cut) | Owner report: on the phone, YouTube's controls cover the trailer | Nothing yet: a measurement, a new skill and the list of beats to move | The owner's screenshot fitted to the source frame; a safe-zone contact sheet of the whole cut | Re-frame and re-upload, or leave the posted Short |
 | [2026-10-21 trailer re-frame](#2026-10-21-trailer-re-frame) | Owner: "did you fix the video?" | Every line, number and screen inside the Shorts safe zone: supers lower, phone smaller, long lines set smaller, end card raised | A browser test of every placement through the film, the safe-zone contact sheet, `--verify`, frame-by-frame against the first cut | Replace the posted Short; check it on the phone |
 | [2026-10-21 trailer restage](#2026-10-21-trailer-restage) | Owner: the re-frame shrank everything; a tiny phone, headlines out of proportion | Phone scenes recomposed: a large phone running off the bottom edge, one-line headlines, the notification under the clock | Both browser tests, a new one for the phone's framing, `--verify`, the contact sheet, previews under YouTube's controls from the owner's screenshot | Replace the posted Short; check it on the phone |
+| [2026-10-21 trailer thumbnail](#2026-10-21-trailer-thumbnail) | Owner request: a custom thumbnail | A still, `--thumbnail`: the 12.9 s reading, its line at twice the size | A browser test, the JPEG's size and limit; stills of the film unchanged | Upload needs custom Shorts thumbnails on the channel |
 
 ## Lessons
 
@@ -504,4 +505,33 @@ and YouTube's re-encode.
 
 **Open.** As the re-frame: replace the posted Short, then a phone screenshot
 of a busy frame.
+
+## 2026-10-21 trailer thumbnail
+
+**Why.** The owner asked for a custom thumbnail for the Short.
+
+**What changed.** A thumbnail mode beside the film: `NW.thumbnail()` draws the
+reading at 12.9 s (the 10, on the warm end of the scale) with "World news,
+rated 1 to 10." as two lines of 115 px, twice the film's, and the phone
+centred and still, running off the bottom as in the film. A thumbnail is seen
+small, in the Shorts shelf, search and the channel's grid, under the title but
+without the player's controls, so the film's 60 px caption would not read
+there. `render-trailer.mjs --thumbnail` writes it as a JPEG.
+
+**Outputs.** `store/assets/youtube/trailer-thumbnail-1080x1920.jpg`: 1080×1920,
+0.15 MB (YouTube's limit is 2 MB), sha256
+`88f5f896aa35ea373c192ba5eb77ac644ac0e9471ac3cd9b685f103986c213d8`.
+
+**Verified.** A browser test: the line sits inside the frame with a 60 px
+margin, is set large, ends above the phone, the phone runs off the bottom,
+and rendering the film hides the line again. Stills of the film at 14 times
+across the phone scenes are identical to those rendered before the change,
+so the committed MP4 still matches its source. The line quotes `COPY`, which
+the tests already hold to its sources.
+
+**Not verified.** How it looks in the shelf at its real size, and whether the
+channel can upload a custom Shorts thumbnail.
+
+**Open.** Upload it in Studio on desktop if the channel has custom Shorts
+thumbnails; otherwise pick the 12.9 s frame in the mobile app.
 
