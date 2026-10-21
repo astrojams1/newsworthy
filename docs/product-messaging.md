@@ -18,6 +18,12 @@ off, breathing room or getting on with your day. Do not use â€œno doomscrollingâ
 or a list of absent features as a tagline. Subscription, purchase and advertising
 facts belong in relevant help and policy sections.
 
+One exception, by the owner's brief of 2026-10-21: the YouTube trailer
+(`store/video/trailer`) tells why the app exists, so it sets the endless feed
+against what breaks through, says "doomscroll", and names the $1 price with
+no ads, subscription or in-app purchases. It still ends on the core copy and
+follows every other rule here.
+
 Product constraints remain: no feed, subscriptions, in-app purchases, ads, or
 engagement, addiction or growth-hacking tactics.
 
@@ -136,6 +142,9 @@ locally with Gradle. Native and physical-device verification scopes must be reco
 - `store/video/reel.js`: every line of the store preview video, each naming the
   file above it quotes; `render-video.mjs --stale` reports a line that has
   drifted, and the preview-reel skill re-renders it.
+- `store/video/trailer/README.md`: the YouTube trailer's brief and script;
+  `store/video/trailer/film.js` quotes it and the app, checked by
+  `test/trailer.test.js`.
 
 If the production domain or release status changes, update all applicable
 surfaces above, plus `mobile.release.json`. Search engines and social platforms

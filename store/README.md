@@ -157,6 +157,7 @@ still blocks app creation. See the ledger for current gates and exact next actio
 | [disclosures.md](disclosures.md) | Evidence for privacy and content declarations |
 | [scripts/](scripts/) | Reproduce, validate, and upload the Apple listing |
 | [video/](video/) | The 15-second preview video's source; renders to `assets/apple/app-preview/` and `assets/google-play/video/` |
+| [video/trailer/](video/trailer/) | The 32-second YouTube Shorts trailer's source, brief and script; renders to `assets/youtube/` |
 
 ## Verified status
 
