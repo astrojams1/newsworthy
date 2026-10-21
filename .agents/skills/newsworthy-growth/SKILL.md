@@ -78,7 +78,10 @@ newest entry's Next list and any open owner decisions. Then check what changed:
   for Partner Program channels on desktop (everyone can pick a frame on
   mobile), and the owner's own app with "I made" stated is not a paid
   promotion. Check Viewed vs. swiped away after two days; the first second
-  decides it.
+  decides it. Frame and check every Short with the
+  [YouTube Shorts skill](../../../vendor/skills/skills/youtube-shorts/SKILL.md):
+  YouTube's controls cover the top, the right edge and the bottom of the
+  video, and the phone crops the sides.
 - **Communities.** Hacker News (Show HN): the engineering story in AGENTS.md
   is the hook, a rater measured for its own noise and stories that age. Reddit
   and Product Hunt: read each community's self-promotion rules first and post

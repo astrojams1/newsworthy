@@ -20,7 +20,7 @@ Cumulative figures from App Store Connect, added at each measurement.
 | Date | Activity | Channel | Campaign token | Status | Result |
 |---|---|---|---|---|---|
 | [2026-10-21](#2026-10-21-launch-audit) | Audit of what Apple offers against what is used | App Store | — | done | 10 surfaces unused, keywords half wasted, `llms.txt` stale; quick wins listed |
-| [2026-10-21](#2026-10-21-youtube-short-trailer) | Trailer as a YouTube Short, from the owner's personal channel | YouTube Shorts | `yt-trailer-202610` (channel link) | planned | Not yet posted |
+| [2026-10-21](#2026-10-21-youtube-short-trailer) | Trailer as a YouTube Short, from the owner's personal channel | YouTube Shorts | `yt-trailer-202610` (channel link) | live | Posted 2026-10-21; frames poorly under YouTube's controls (see entry) |
 
 ## Owner decisions
 
@@ -28,6 +28,8 @@ Open:
 
 - A free weekend (scheduled temporary price) for deal sites and communities.
 - Apple Ads: whether to spend, and a monthly cap.
+- The trailer Short: re-frame it to the safe zone and re-upload (a new video,
+  starting from zero views), or leave it as posted.
 
 Decided:
 
@@ -162,3 +164,16 @@ The post's files sit beside the video in `store/assets/youtube/`: the cover
 (`trailer-cover-1080x1920.png`, the frame at 12.9 s of the render with sha256
 `9896e699…`) and the sound-description captions (`trailer-sound.en.srt`, for
 Studio → Subtitles → Upload file → With timing).
+
+**2026-10-21, posted.** The owner posted it, titled "I made an app to stop
+doomscrolling news" (40 characters, one line on an iPhone 16 Pro). Their
+screenshot of it playing showed 1 view, 1 like and 1 comment, and showed the
+trailer framed badly: its supers under YouTube's back, search and menu, the
+notification card under the action rail, the phone under the title stack.
+Measured and listed scene by scene in the
+[video ledger](../../store/video/ledger.md#2026-10-21-trailer-framing-decision-no-cut);
+the constraint is now the YouTube Shorts skill
+(`vendor/skills/skills/youtube-shorts/SKILL.md`), which every Short goes
+through before it is posted. Whether to re-frame and re-upload is open: a new
+upload starts from zero views.
+

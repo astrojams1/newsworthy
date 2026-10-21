@@ -162,6 +162,13 @@ also holds its script. It has its own renderer,
 is held to YouTube's upload settings rather than Apple's. Its lines quote the
 script table, the app or the core copy; `test/trailer.test.js` checks them.
 
+- **Frame for the phone.** On YouTube the trailer plays under the status
+  bar, back, search and menu, the action rail and the title stack, and a tall
+  phone crops its sides. Follow the [YouTube Shorts skill](../../../vendor/skills/skills/youtube-shorts/SKILL.md):
+  every line, number and phone screen inside its safe box (x 96–864,
+  y 288–1440), checked with its `safe-zone.mjs` contact sheet before upload.
+  The first cut was framed to the whole frame and the owner found its supers
+  under YouTube's buttons (2026-10-21).
 - **Look first.** `--stills` with times across all seven scenes takes seconds.
 - **Sound by measurement.** `--audio` writes the score alone and reports each
   bus's loudness per scene, the limiter's work and the groove's octave bands.
