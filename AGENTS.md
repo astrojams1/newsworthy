@@ -28,10 +28,9 @@ release status. Calm presentation must not change the rating calibration.
 - Fix bugs and flaky tests as soon as you meet them, even when unrelated to
   the task, in their own PR. Never merge past a failing check or dismiss a
   failure as "known" or "flaky" instead of fixing it.
-- Keep extra development workspaces inside the primary Newsworthy checkout at
-  `.worktrees/<task-name>/`. Do not create sibling `newsworthy-*` folders in
-  `~/code` or elsewhere in the home directory. When already in a worktree, use
-  the primary checkout's `.worktrees` directory rather than nesting another one.
+- Keep extra development workspaces in the primary checkout's
+  `.worktrees/<task-name>/`, never in sibling `newsworthy-*` folders, and never
+  nest one worktree inside another.
 - Exclude `/.worktrees/` through the repository's local `.git/info/exclude`
   before creating workspaces; never commit or upload workspace copies. Use
   `git worktree add`, `move`, and `remove` to keep Git's records consistent.
@@ -74,6 +73,8 @@ release status. Calm presentation must not change the rating calibration.
 - To remake the preview reel or trailer, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
+- To grow downloads, use `.agents/skills/newsworthy-growth/SKILL.md`; log
+  every activity and its results in `docs/growth/ledger.md`.
 - Before any app build, store submission or EAS sandbox, use
   `.agents/skills/newsworthy-app-release/SKILL.md` (on `vendor/skills`).
 - Every skill in `.agents/skills/` keeps an append-only ledger, linked from its
