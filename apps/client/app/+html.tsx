@@ -5,6 +5,7 @@ export default function Html({ children }: PropsWithChildren) {
     <meta charSet="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="World news, rated by significance." />
+    <meta name="apple-itunes-app" content="app-id=6812519450" />
     <link rel="canonical" href="https://newsworthy-indol.vercel.app/" />
     <ScrollViewStyleReset />
     <link rel="stylesheet" href="/levels.css" />

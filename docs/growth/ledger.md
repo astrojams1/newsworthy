@@ -21,6 +21,7 @@ Cumulative figures from App Store Connect, added at each measurement.
 |---|---|---|---|---|---|
 | [2026-10-21](#2026-10-21-launch-audit) | Audit of what Apple offers against what is used | App Store | — | done | 10 surfaces unused, keywords half wasted, `llms.txt` stale; quick wins listed |
 | [2026-10-21](#2026-10-21-youtube-short-trailer) | Trailer as a YouTube Short, from the owner's personal channel | YouTube Shorts | `yt-trailer-202610` (channel link) | live | Posted 2026-10-21; frames poorly under YouTube's controls (see entry) |
+| [2026-10-22](#2026-10-21-launch-audit) | Website offers the iOS app: Smart App Banner, support page, `llms.txt` | Website | — | done | Copy says iOS is live at $1; no reading-screen badge (see the audit's addition) |
 
 ## Owner decisions
 
@@ -96,6 +97,13 @@ and the native widget's source, and against Apple's current offer
    then a featuring nomination (App Enhancements), an in-app event (Major
    Update) and a post.
 8. Promo codes for a press and creator round once the trailer is out.
+
+**Addition, 2026-10-22.** Quick win 1 done in its own PR, without the badge:
+the reading screen carries nothing but the reading, so the website offers the
+app through iOS Safari's Smart App Banner and a support-page paragraph.
+`llms.txt`, README and product messaging now say iOS is on the App Store at
+$1 and Android is in closed testing. The banner's meta tag carries no
+campaign token, so `web-banner-202610` stays unused.
 
 ## 2026-10-21: YouTube Short: trailer
 

@@ -90,18 +90,16 @@ push credentials on EAS; see the
 [mobile release guide](docs/mobile-release.md#push-notifications).
 
 See [Accessibility verification](docs/accessibility-verification.md) for checks
-performed and remaining device/assistive-technology release checks. Android upload-key
-and Apple-managed iOS signing are configured; store review and account
-requirements remain. This
-repository is not an App Store or Google Play release.
+performed and remaining device/assistive-technology release checks.
 
-iOS 1.0.0 (26) is Waiting for Review, confirmed on 1 October; the refreshed
-gallery includes the finite-week timeline, notifications and both widget sizes.
-
-The planned store release is a one-time US$1 download, with local store
-equivalents, to help offset running costs. The [store release hub](store/README.md)
-keeps listing copy, screenshots, editable sources, upload scripts, verified status,
-and account-owner instructions together.
+**Release status.** Newsworthy 1.0.0 (build 27) for iPhone and iPad has been
+[on the App Store](https://apps.apple.com/app/id6812519450) since 21 October
+2026, a one-time US$1 download with local store equivalents in all 175
+territories. Android is not public: version 17 is on Google Play closed testing,
+and production access has not been applied for. The
+[store release hub](store/README.md) keeps listing copy, screenshots, editable
+sources, upload scripts, verified status and account-owner instructions
+together; the [release ledger](store/ledger.md) holds each gate.
 
 ### Web
 

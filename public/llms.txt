@@ -15,16 +15,17 @@ score from 1 to 10, a brief explanation and an update time.
   emergency-alert service or a complete account of events.
 - The last reading is saved locally for connection failures, with its original
   update time. A saved reading is not necessarily current.
-- The web app is available now. iOS and Android apps and home-screen widgets
-  are in preparation; no app-store availability is claimed.
-- The planned mobile store release is a one-time US$1 download, with local store
-  equivalents, to help offset running costs. Store pricing is not yet confirmed.
+- The web app is free. The iPhone and iPad app, with home-screen widgets, is
+  on the App Store as a one-time US$1 download, with local store equivalents,
+  to help offset running costs.
+- An Android app is in testing and not yet publicly available.
 - The shared web and mobile interface uses Expo / React Native. Admin views are web-only.
 - Contact: astrojams1@gmail.com.
 
 ## Public links
 
 - [Web app](https://newsworthy-indol.vercel.app/): The latest displayed rating.
+- [App Store](https://apps.apple.com/app/id6812519450): Newsworthy for iPhone and iPad.
 - [Privacy](https://newsworthy-indol.vercel.app/privacy): Storage, technical information and support messages.
 - [Support](https://newsworthy-indol.vercel.app/support): Help and contact information.
 - [Current rating API](https://newsworthy-indol.vercel.app/api/current): Public read-only JSON.

@@ -78,10 +78,11 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
   label later than the app, depending on the operating system. Do not promise
   real-time updates.
 - The launcher icon is a white dash on near-black. The web favicon can show the
-  score; planned home-screen widgets carry a rating and update time.
-- The planned iOS and Android release is a one-time US$1 download to help offset
-  the cost of running the service, with local store equivalents. Pricing must be
-  configured and verified in each store before it is described as live.
+  score; home-screen widgets carry a rating and update time.
+- The iOS app is a one-time US$1 download on the App Store, with local store
+  equivalents, to help offset the cost of running the service. Android will be
+  the same once released; until Google Play pricing is configured and the app
+  is public there, do not describe Android as available or priced.
 - Settings offer an appearance choice (Follow device, Light, Dark; following the
   device by default)
   and, in the mobile apps only, an optional notification for readings at or
@@ -107,10 +108,23 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
 The web app, privacy policy and support page are live at
 https://newsworthy-indol.vercel.app/. Contact: astrojams1@gmail.com.
 
+The iOS app (iPhone and iPad, iOS 16.4 or later; widgets need iOS 17) has been
+on the App Store since 21 October 2026, in all 175 territories:
+https://apps.apple.com/app/id6812519450. Link to it with that country-neutral
+URL; the store localizes it.
+
+Android is not publicly available. Version 17 is on Google Play closed testing
+for invited testers; production access has not been applied for. Closed testing
+is not store availability: do not claim Android availability, a Play link or an
+Android price until the release ledger's `google.release` gate is done.
+
+Where the website offers the app, it does so plainly: iOS Safari's own Smart
+App Banner (`apple-itunes-app` in `apps/client/app/+html.tsx`) and one factual
+paragraph on the support page. The reading screen carries no badge or download
+prompt.
+
 The shared public UI uses Expo / React Native for web, iOS and Android. Admin
-remains web-only. Native widgets are integrated through Expo prebuild; they need
-custom-build verification. Signing, the local iOS and Android releases
-and store setup are release gates. Do not claim store availability before release.
+remains web-only. Native widgets are integrated through Expo prebuild.
 
 The Codex browser panel shows the web renderer. An installed iPhone simulator
 can run the native UI through Expo Go. Widgets and the complete package require
