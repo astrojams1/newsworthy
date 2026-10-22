@@ -72,3 +72,18 @@ test('the Google Play listing fits Play\'s limits and describes the Android widg
   // The expanded layout, with the sentence, is the one RatingWidget.java uses at larger sizes.
   assert.match(read('apps/client/plugins/widget-android/RatingWidget.java'), /boolean compact = width < 250 \|\| height < 150;/);
 });
+
+// iOS has been on the App Store since 2026-10-21; Android is only in closed
+// testing. Copy written before launch called both "in preparation" and the
+// price "not yet confirmed", and stayed that way after the release.
+test('public copy links the released iOS app and does not offer Android', () => {
+  const { ascAppId } = JSON.parse(read('app-release.config.json')).ios;
+  const appStore = `https://apps.apple.com/app/id${ascAppId}`;
+  assert.ok(read('apps/client/app/+html.tsx').includes(`<meta name="apple-itunes-app" content="app-id=${ascAppId}" />`), 'Smart App Banner names the app');
+  for (const path of ['public/llms.txt', 'public/support.html', 'README.md', 'docs/product-messaging.md']) {
+    const copy = read(path);
+    assert.ok(copy.includes(appStore), `${path} links the App Store listing`);
+    assert.doesNotMatch(copy, /in preparation|not yet confirmed|planned (iOS|mobile|store) release|Waiting for Review/, path);
+    assert.doesNotMatch(copy, /play\.google\.com\/store/, `${path} links no public Play listing`);
+  }
+});

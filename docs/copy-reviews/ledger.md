@@ -45,6 +45,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | Trailer re-frame | 2026-10-21 | The trailer's script and README, product messaging, store listing price, growth and reel skills, AGENTS.md | None needed: no line on screen changed, only where and how large it is set; the README now says the film keeps to the Shorts safe zone | The new cut is not yet posted or seen on a phone; the price and "On the App Store" stay true while the listing is public at $1 |
 | Trailer restage | 2026-10-21 | The trailer's script and README, product messaging, growth and reel skills | None needed: the same lines, now set as one-line headlines; the README describes the new staging | The new cut is not yet posted or seen on a phone |
 | Trailer thumbnail | 2026-10-21 | The trailer's script and README, product messaging, growth ledger's pinned comment | None needed: the thumbnail quotes the script's line; the pinned comment repeats the description's claims ($1, no ads, no subscription) | Shelf rendering at real size not seen |
+| iOS availability | 2026-10-22 | README, product messaging, llms.txt, support and privacy pages, web head, onboarding, store listing, store README, user actions, mobile release, store listing doc, release ledger, preview video, trailer | README, product messaging, llms.txt, support page, store README, user actions, mobile release and store listing doc: iOS is on the App Store at $1 since 21 October, no longer pending; Android stays closed testing only. Web gains an App Store link (Smart App Banner, support page, llms.txt); `apple.bank` closed. A test now holds these surfaces to it | Smart App Banner not yet seen in iOS Safari after deploy; preview video already stale from earlier source changes, no line changed; Apple Business not re-read for the bank gate |
 
 ## Lessons
 
@@ -58,6 +59,10 @@ Claims that were wrong once. Check for them again; date each item.
   old default; say whether upgraded installs see the change.
 - **Simulator is not device** (2026-10-01, #155). A widget verified on iOS
   simulators is described as such; claim a device only once one has shown it.
+- **A release does not update the copy written before it** (2026-10-22). On
+  launch day `llms.txt`, README and product messaging still called iOS
+  pending. When a store gate turns done, update every surface in product
+  messaging's "Where copy lives"; `test/copy.test.js` checks the main ones.
 
 ## Resubmission preparation, 1 October 2026
 

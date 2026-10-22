@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-21T18:50:03+00:00
+Updated: 2026-10-22T14:45:57+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -18,7 +18,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.address | waiting_provider | provider | observed | 2026-09-24 | September24 Business still displays the obsolete legal address. Apple requested address proof September18; a September20 developer email acknowledges requested documents and promises review, without naming the specific case/document. Do not duplicate uploads or claim correction. | Await address-review response and verify the corrected legal record in Business. |
 | apple.agreement | done | user | observed | 2026-10-21 | 2026-10-21: Paid Apps Agreement effective: the paid app went on sale once the owner added the payout bank account. | — |
 | apple.tax | done | user | observed | 2026-09-16 | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
-| apple.bank | waiting_user | user | observed | 2026-09-24 | September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active. | Owner adds and verifies payout details in Apple Business; agent then reads back Active status. |
+| apple.bank | done | user | observed | 2026-10-22 | 2026-10-22: superseded by apple.agreement and apple.release. The paid app is on sale, which needs an active Paid Apps Agreement with a payout account: Apple's public lookup for id 6812519450 reads formattedPrice $1.00, version 1.0.0, released 2026-10-21T10:58:45Z. Apple Business not re-read. | — |
 | apple.dsa | done | user | observed | 2026-09-16 | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | agent | observed | 2026-09-23 | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | 2026-09-16 | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
@@ -4304,3 +4304,11 @@ Next: Recruit at least 12 testers (PR 221) and keep them opted in for 14 continu
 2026-10-21: Paid Apps Agreement effective: the paid app went on sale once the owner added the payout bank account.
 
 - All 175 territories moved from CANNOT_SELL to AVAILABLE on 2026-10-21 after the owner added the bank account
+
+### 442. apple.bank — done
+
+2026-10-22T14:45:57+00:00 · observed · user
+
+2026-10-22: superseded by apple.agreement and apple.release. The paid app is on sale, which needs an active Paid Apps Agreement with a payout account: Apple's public lookup for id 6812519450 reads formattedPrice $1.00, version 1.0.0, released 2026-10-21T10:58:45Z. Apple Business not re-read.
+
+- https://itunes.apple.com/lookup?id=6812519450 (country=us via bundleId lookup), read 2026-10-22

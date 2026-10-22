@@ -4,9 +4,20 @@ One place for the mobile listings, artwork, evidence, and remaining work.
 Resume from [the release ledger](ledger.md) with the reusable
 [app-release skill](https://github.com/astrojams1/skills/tree/main/skills/app-release).
 
-## Current resubmission — 1 October 2026
+## Released — 21 October 2026
 
-PR #155 is merged. Its production **1.0.0 (26)** is selected, `VALID` and
+Newsworthy 1.0.0 (build 27) is on sale on the
+[App Store](https://apps.apple.com/app/id6812519450) in all 175 territories at
+US$1.00 with local equivalents; Apple's public lookup reports release at 10:58
+UTC. Apple approved build 27 after the Guideline 2.3 metadata fix, and it went
+on sale once the owner completed the Paid Apps Agreement's banking. Android is
+not public: version 17 is on Google Play closed testing (Alpha), and production
+access has not been applied for. Gates and evidence are in the
+[release ledger](ledger.md); the sections below are earlier records.
+
+## Historical resubmission — 1 October 2026
+
+PR #155 is merged. Its production **1.0.0 (26)** was selected, `VALID` and
 `IN_BETA_TESTING`. Apple confirms **Waiting for Review**, read back on
 1 October at 11:37 UTC. See [the submission receipt](apple-review-resubmission-2026-10-01-build26.json).
 Application source is `51826ed`; later commits change listing copy and records.
@@ -110,7 +121,8 @@ cold-start tap tests, with Expo/FCM receipts OK. Physical Android testing remain
 separate. See [Android build evidence](android-notifications-12.json). Google still disables app creation until
 physical-device and phone verification are complete (September 24 readback).
 
-Neither app is publicly released. Earlier submission/video evidence remains
+Neither app was publicly released at the time; iOS was released on 21 October
+(see the top of this page). Earlier submission/video evidence remains
 historical; the September 17 Waiting for Review result is superseded.
 
 The iPhone lead compares real small and medium widgets on a neutral canvas,
@@ -164,9 +176,9 @@ still blocks app creation. See the ledger for current gates and exact next actio
 - **Apple listing:** name `Newsworthy: Calm News`, English description,
   promotional text, subtitle, keywords, URLs, News category, and **eight screenshots** saved. Apple reports every current image `COMPLETE`: five
   6.9-inch iPhone images and three 13-inch iPad images, with timeline first.
-- **Apple pricing:** US$1.00 saved with local equivalents. Paid Apps Agreement
-  was **Pending User Info** at the last live check after owner acceptance.
-  Apple Business now confirms the W-9 is **Active**; banking remains outstanding. The address-correction request
+- **Apple pricing:** US$1.00 with local equivalents, live since 21 October. The
+  Paid Apps Agreement became effective once the owner added the payout bank
+  account; the W-9 is **Active**. The address-correction request
   has been sent and acknowledged by Apple,
   but the obsolete legal address still needs Apple approval/correction.
 - **Apple binary:** production **build 26** passed Apple validation, uploaded,
@@ -177,10 +189,11 @@ still blocks app creation. See the ledger for current gates and exact next actio
   Apple returned `SEVENTEEN_PLUS` in its legacy age-rating field and 18 in
   the France/Brazil fields; final localized ratings are store-calculated.
 - **Google account:** registration paid; identity, Android device and contact
-  phone verified. Newsworthy exists in Play Console (Draft, Paid, no price
-  set); versionCode 15 is on internal testing. The default listing's text and
-  graphics are saved, not sent for review; app content declarations, price and
-  production access remain. See the release ledger's `google.*` gates.
+  phone verified. Newsworthy exists in Play Console (Paid, no price set).
+  Version 17 is on closed testing (Alpha), approved by Google on 21 October with
+  the listing and app content declarations; it is not public. The 14-day
+  closed test with at least 12 testers, price and production access remain.
+  See the release ledger's `google.*` gates.
 - **Android binary (historical):** production AAB11 downloaded and SHA-256/ZIP-validated
   from clean PR94 source `8055d61`; it supersedes AAB10 but now requires replacement
   for Settings, notifications and later native changes. Preview APK8 verified the
@@ -193,8 +206,9 @@ still blocks app creation. See the ledger for current gates and exact next actio
   and review notes saved and verified. Private contact details are not in Git.
 - **Apple compliance:** the owner published App Privacy and completed the DSA
   declaration; the Business page reports DSA compliance **Active**.
-- **Apple review:** build 26 is Waiting for Review, confirmed 1 October at
-  11:37 UTC. See the [current receipt](apple-review-resubmission-2026-10-01-build26.json).
+- **Apple review:** build 27 approved and released on 21 October (see the
+  release ledger's `apple.review` and `apple.release`). Historical: build 26
+  was Waiting for Review, confirmed 1 October at 11:37 UTC. See the [current receipt](apple-review-resubmission-2026-10-01-build26.json).
   Build-21 and build-7 responses/receipts remain historical.
   Banking and Paid Apps Agreement activation remain separate public-sale gates.
 

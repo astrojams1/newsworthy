@@ -12,7 +12,8 @@ Keep copy, screenshots, source art, upload tooling and account steps together th
 ## Pricing
 
 The requested price is a one-time US$1 download, with local equivalents, to offset
-service costs. Apple's saved US price is $1.00; Google pricing is not configured.
+service costs. Apple's US price is $1.00, live since 21 October 2026; Google
+pricing is not configured and Android is not public.
 Complete each store's paid-app contract and banking/tax requirements before release.
 Create the Google app as **paid**: an app offered free cannot later become paid
 under the same package name. Keep exact prices out of localized descriptions;

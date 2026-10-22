@@ -7,7 +7,15 @@ separates things requiring the owner from technical work the release agent can
 perform. Do not put identity documents, addresses, bank/tax information, API
 keys, or verification codes in GitHub issues or this repository.
 
-## Current Android release — 15 October
+## Status — 21 October
+
+Newsworthy 1.0.0 (27) is on the App Store in all 175 territories at US$1.00,
+after the owner completed the Paid Apps Agreement banking. Android version 17
+is on Google Play closed testing; the remaining owner step there is recruiting
+testers for the 14-day closed test (section 6). The sections below are dated
+records.
+
+## Android release — 15 October
 
 Android now builds on the Mac like iOS (no EAS). Version code 13 is built,
 signed with a new Play upload key and verified, but not uploaded. Owner steps,
@@ -34,7 +42,7 @@ internal testing on 15 October; Play takes a new app's first bundle only
 there. Later uploads go through the Play Developer API
 (`android-release.mjs upload`), each confirmed with the owner first.
 
-## Current iOS resubmission — 12 October
+## iOS resubmission — 12 October (approved and released 21 October)
 
 Apple rejected build 26 under Guideline 4.2 again. Build **1.0.0 (27)** turns the
 timeline on by default and shows whole sentences in the medium widget. It was

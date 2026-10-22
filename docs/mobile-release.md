@@ -51,7 +51,14 @@ runtimes alone are not enough. Check the actual host and runtime inventory
 rather than assuming a cloud environment. Expo Go runs a precompiled
 host in the simulator; widgets require custom builds and cannot be tested in it.
 
-PR #155 is merged. Production **1.0.0 (26)** is selected and **Waiting for
+**Current status, 21 October 2026.** Version 1.0.0 (build 27) was approved and
+is on sale on the [App Store](https://apps.apple.com/app/id6812519450) in all 175
+territories at US$1.00 (released 10:58 UTC). Android is not public: version 17
+is on Google Play closed testing and production access has not been applied
+for. The release ledger (`store/ledger.md`) is the source for each gate; the
+paragraphs below are the build-26 record.
+
+Historical: PR #155 is merged. Production **1.0.0 (26)** was selected and **Waiting for
 Review**, confirmed through Apple's API on 1 October at 11:37 UTC. Listing and
 six-part Notes are saved. Eight current gallery images are COMPLETE, ordered
 and checksum-verified; timeline leads iPhone/iPad, and the iPhone Notifications
@@ -334,8 +341,8 @@ access. Internal testing alone does not meet this requirement. See
   Version 1.0.0 build 5 was submitted at 2026-09-16 04:53 UTC. Both the version
   and review submission then reported WAITING_FOR_REVIEW (historical; see the
   current build 26 selection above). All 175 territories are
-  enabled, with automatic release after approval. It is not publicly released;
-  commercial-account and final device checks remain separate.
+  enabled, with automatic release after approval. Build 27 was released this
+  way on 21 October 2026, once the Paid Apps Agreement was active.
 - Google Play developer registration and its fee are complete. Play Console
   disables app creation until account verification is complete. Identity is now
   verified successfully. Access to a real Android device through the Play Console

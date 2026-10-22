@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-21T18:50:03+00:00",
+  "updated_at": "2026-10-22T14:45:57+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -78,15 +78,15 @@
       "updated_at": "2026-09-16T05:26:39+00:00"
     },
     "apple.bank": {
-      "state": "waiting_user",
+      "state": "done",
       "owner": "user",
       "basis": "observed",
-      "summary": "September24 Business still requests Add Bank Account, lists no payout account, and shows Paid Apps Agreement Pending User Info. W-9 and DSA remain Active.",
+      "summary": "2026-10-22: superseded by apple.agreement and apple.release. The paid app is on sale, which needs an active Paid Apps Agreement with a payout account: Apple's public lookup for id 6812519450 reads formattedPrice $1.00, version 1.0.0, released 2026-10-21T10:58:45Z. Apple Business not re-read.",
       "evidence": [
-        "Signed-in Apple Business Agreements readback"
+        "https://itunes.apple.com/lookup?id=6812519450 (country=us via bundleId lookup), read 2026-10-22"
       ],
-      "next_action": "Owner adds and verifies payout details in Apple Business; agent then reads back Active status.",
-      "updated_at": "2026-09-24T00:14:58+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-22T14:45:57+00:00"
     },
     "apple.dsa": {
       "state": "done",
@@ -8254,6 +8254,22 @@
         ],
         "next_action": "",
         "updated_at": "2026-10-21T18:50:03+00:00"
+      }
+    },
+    {
+      "sequence": 442,
+      "at": "2026-10-22T14:45:57+00:00",
+      "gate": "apple.bank",
+      "result": {
+        "state": "done",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-10-22: superseded by apple.agreement and apple.release. The paid app is on sale, which needs an active Paid Apps Agreement with a payout account: Apple's public lookup for id 6812519450 reads formattedPrice $1.00, version 1.0.0, released 2026-10-21T10:58:45Z. Apple Business not re-read.",
+        "evidence": [
+          "https://itunes.apple.com/lookup?id=6812519450 (country=us via bundleId lookup), read 2026-10-22"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-22T14:45:57+00:00"
       }
     }
   ],
