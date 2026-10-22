@@ -16,6 +16,10 @@ in the [release ledger](../ledger.md); record it there too.
 | [2026-09-28](#2026-09-28) | Re-render of unchanged source, testing the tooling | Nothing to the eye: capture, grain and render reporting | Repeat renders, store rules, the copy-change path, banding | Home screen from #171–#173; as the first cut |
 | [2026-10-21 trailer](#2026-10-21-trailer) | Owner request: a YouTube Shorts trailer after Apple's approval | A second film, `store/video/trailer`: seven scenes, 32 s, 1080×1920 | YouTube settings, decoded frames, loudness and a per-bus mix report | Listen; publish once the listing is live at $1 |
 | [2026-10-21 trailer fix](#2026-10-21-trailer-fix) | Owner report: the lifted widget slid under the Dynamic Island | 17–24 s only: what lifts off the phone is drawn in front of it; the small widget lifts undimmed | A browser test of what is drawn over what, stills before and after, `--verify` | As the trailer's first cut |
+| [2026-10-21 trailer framing](#2026-10-21-trailer-framing-decision-no-cut) | Owner report: on the phone, YouTube's controls cover the trailer | Nothing yet: a measurement, a new skill and the list of beats to move | The owner's screenshot fitted to the source frame; a safe-zone contact sheet of the whole cut | Re-frame and re-upload, or leave the posted Short |
+| [2026-10-21 trailer re-frame](#2026-10-21-trailer-re-frame) | Owner: "did you fix the video?" | Every line, number and screen inside the Shorts safe zone: supers lower, phone smaller, long lines set smaller, end card raised | A browser test of every placement through the film, the safe-zone contact sheet, `--verify`, frame-by-frame against the first cut | Replace the posted Short; check it on the phone |
+| [2026-10-21 trailer restage](#2026-10-21-trailer-restage) | Owner: the re-frame shrank everything; a tiny phone, headlines out of proportion | Phone scenes recomposed: a large phone running off the bottom edge, one-line headlines, the notification under the clock | Both browser tests, a new one for the phone's framing, `--verify`, the contact sheet, previews under YouTube's controls from the owner's screenshot | Replace the posted Short; check it on the phone |
+| [2026-10-21 trailer thumbnail](#2026-10-21-trailer-thumbnail) | Owner request: a custom thumbnail | A still, `--thumbnail`: the 12.9 s reading, its line at twice the size | A browser test, the JPEG's size and limit; stills of the film unchanged | Upload needs custom Shorts thumbnails on the channel |
 
 ## Lessons
 
@@ -355,3 +359,179 @@ re-encode, the listing being public at $1.
 **Cost.** 12.7 minutes on four browsers.
 
 **Open.** As the first cut.
+
+## 2026-10-21 trailer framing (decision, no cut)
+
+**Why.** The owner posted the trailer as a Short and sent a screenshot of it
+playing in YouTube for iOS on an iPhone 16 Pro: "the video does not frame well
+when viewed with all the youtube chrome". "Optional notifications" sat under
+back, search and the menu; the notification card ran under Save; the phone's
+lower third sat under the channel row, title and "Share your video".
+
+**What was found.** Fitting the screenshot to the source frame at 23.2 s
+(scale 1.238, offset −66, −4, match 0.997) gives what the player hides on a
+1080×1920 frame: y < 245 (status bar, back, search, menu), x > 898 below
+y 1061 (the action rail), y > 1534 left of the rail (the title stack), and
+54 px off each side, which the player crops to fill the phone. The first cut
+was framed to the whole frame and the stills never showed the overlay. The
+safe box is x 96–864, y 288–1440, and above y 1020 it runs right to x 984.
+Every scene breaks it somewhere (`safe-zone.mjs --at`):
+
+- 1.8 s, 6.5 s, 9.5 s: "thousands of stories", "You could doomscroll" and
+  "what breaks through." run edge to edge, into the cropped sides.
+- 12.9 s, 15.5 s, 18.5 s, 23.4 s: every super ("World news, rated 1 to 10.",
+  "One number. One sentence.", "Also on your Home Screen", "Optional
+  notifications…") sits in the top band.
+- 12–26 s: the phone's lower third, home-screen dock and lock-screen buttons
+  sit under the title stack and the rail. At 23.4 s the notification card
+  ends at x 926, under the rail.
+- 28.9 s, 31 s: "on what matters." and "World news, rated by significance."
+  reach the cropped right edge.
+
+**What changed.** No cut. The constraint is now a skill in the vendored skills
+repository, `vendor/skills/skills/youtube-shorts/SKILL.md`: the zones as data,
+a contact-sheet checker (`scripts/safe-zone.mjs`) and the screenshot fit
+(`scripts/fit-screenshot.py`). The trailer section of this repository's skill
+points to it.
+
+**Not verified.** A viewer's view, Android, and whether captions or a Related
+video row move the stack.
+
+**Open.** A re-framed cut would bring the supers down below y 288, keep the
+lines inside x 96–864, and scale and raise the phone so its screen ends above
+y 1440, with `trailer.test.js` asserting the boxes against the skill's
+`zones.json`. A corrected upload is a new video: the posted Short's views,
+likes and comments do not carry over. The owner decides.
+
+## 2026-10-21 trailer re-frame
+
+**Why.** The owner asked whether the video was fixed after the framing
+finding above. It answers that entry's open decision: re-frame it.
+
+**What changed.** Layout only; the script, timing and sound are unchanged.
+The film reads the youtube-shorts skill's `zones.json` (now in `FILM` and
+`cut.json`) and places everything against it:
+
+- Supers start just below YouTube's top controls (y 288 at the earliest)
+  instead of at y 200.
+- The phone is scaled from 0.63 to 0.40 of the app's points so it sits
+  between the supers and y 1440, above the title stack; the lifted widgets
+  and notification scale with it and stay clear of the rail.
+- A line is set no wider than its room: the full safe width above the rail,
+  the narrower box below it. Lines set together share the size their widest
+  fits ("thousands of stories", "You could doomscroll", "what breaks
+  through.", "Also on your Home Screen").
+- The end card sits 40 px higher, so its tagline ends above the rail.
+
+The cover (`store/assets/youtube/trailer-cover-1080x1920.png`) is the new
+render's frame at 12.9 s, sha256 `5b2d4e6f…`. The sound-description captions
+are unchanged, as is the sound.
+
+**Outputs.** `store/assets/youtube/trailer-1080x1920.mp4`: 36.5 MB, sha256
+`1f67fd76fad3520cda54b0178e5acdef0ad1e72454c5e3d0f93a40f5e331deee`.
+
+**Verified.** `test/trailer.test.js` gains a browser test: every 0.2 s it
+renders the film and checks every marked word, number, phone and lifted
+widget against the zones, through its motion and clipped as drawn, and fails
+if a marked part goes unseen. On the first cut's layout it finds 394
+placements outside; on this one, none. It runs in CI, which now checks out
+`vendor/skills`. `--verify` passes (8.8 Mb/s, −14 LUFS, −1.5 dBTP). The
+skill's contact sheet, a frame a second, shows nothing readable outside the
+green box or the yellow room above the rail. Against the first cut, decoded frame by frame: 0.5–2.8 s,
+5.0–8.0 s, 8.5–9.8 s, 10.0–24.1 s and 29.6–32 s changed; the rest, the price
+scene included, is unchanged (above 48 dB). A preview built from the owner's
+screenshot (YouTube's controls lifted onto the new frame at 23.2 s) shows the
+headline below the search button and the phone above the title. `npm test`
+passed.
+
+**Not verified.** On a phone: the preview is a composite, not a capture. As
+the first cut: the sound by ear and YouTube's re-encode.
+
+**Cost.** 13 minutes on four browsers, 6,437 samples.
+
+**Open.** The posted Short still carries the first cut. Replacing it is a
+new upload (its 1 view, like and comment stay with the old one). After
+posting, a phone screenshot of a busy frame would confirm the zones.
+
+## 2026-10-21 trailer restage
+
+**Why.** The owner on the re-framed cut: "you shrunk everything to fit but the
+video needs some deeper rethinking not just shrinking. it looks weird to have
+tiny phone and ratio of headlines to content feels off. look at it yourself."
+Seen through YouTube's controls, it was so: at 0.40 the phone was a thumbnail,
+its score, widgets and notification small, and the 90 px headlines were the
+heaviest thing in every phone scene. The type-only scenes held up.
+
+**What changed.** The phone scenes (10–24 s) only; the script, timing, sound
+and the other scenes are the second cut's.
+
+- The phone is the subject: scaled 0.70 (the first cut's was 0.63), centred
+  at x 520 so its edge clears the action rail at 898, its body running off
+  the bottom of the frame under YouTube's title, so its lower edge is never
+  seen there. Its screen's content sits in the safe box; the score's digits are
+  about 210 px tall. The muted story line under the sentence sits just below the
+  box, above the title.
+- Headlines are one line of 60 px above the phone: "World news, rated 1 to
+  10." and "One number. One sentence." each set as one line, their words
+  still landing on their own beats.
+- On the lock screen the phone settles 65 px lower during the wipe for a
+  second line of type, the clock sits higher, and the notification rests
+  under it, rises a short way into place, and lifts up and out (rising before
+  it grows, so it clears the rail).
+- Arriving, the phone scales about its bottom edge, so that edge never rises
+  into view.
+
+The cover is the new frame at 12.9 s (sha256 `3490976b…`); the captions are
+unchanged.
+
+**Outputs.** `store/assets/youtube/trailer-1080x1920.mp4`: 35.6 MB, sha256
+`2a7b2b5e7ad7fe571596a5dda46062576957d0ec6fcc1040f897f8fad8975472`.
+
+**Verified.** The safe-zone test now checks what the screen shows (the score's
+cells, the sentence, the wordmark, the lock clock, the widgets and the
+notification) rather than the phone's body, and passes. A new test fails if
+the phone stops running off the frame, reaches under the rail or shrinks
+below 60% of the frame's width. `--verify` passes (8.6 Mb/s, −14 LUFS,
+−1.5 dBTP). The contact sheet shows nothing readable outside the safe areas.
+Frames were looked at under YouTube's controls lifted from the owner's
+screenshot, before and after the render. `npm test` passed.
+
+**Not verified.** On a phone; the previews are composites. In the light
+scenes YouTube's white channel and title text sits over a light background;
+how far YouTube darkens it there is not measured. As before: the sound by ear
+and YouTube's re-encode.
+
+**Cost.** 14.9 minutes on four browsers, 6,437 samples.
+
+**Open.** As the re-frame: replace the posted Short, then a phone screenshot
+of a busy frame.
+
+## 2026-10-21 trailer thumbnail
+
+**Why.** The owner asked for a custom thumbnail for the Short.
+
+**What changed.** A thumbnail mode beside the film: `NW.thumbnail()` draws the
+reading at 12.9 s (the 10, on the warm end of the scale) with "World news,
+rated 1 to 10." as two lines of 115 px, twice the film's, and the phone
+centred and still, running off the bottom as in the film. A thumbnail is seen
+small, in the Shorts shelf, search and the channel's grid, under the title but
+without the player's controls, so the film's 60 px caption would not read
+there. `render-trailer.mjs --thumbnail` writes it as a JPEG.
+
+**Outputs.** `store/assets/youtube/trailer-thumbnail-1080x1920.jpg`: 1080×1920,
+0.15 MB (YouTube's limit is 2 MB), sha256
+`88f5f896aa35ea373c192ba5eb77ac644ac0e9471ac3cd9b685f103986c213d8`.
+
+**Verified.** A browser test: the line sits inside the frame with a 60 px
+margin, is set large, ends above the phone, the phone runs off the bottom,
+and rendering the film hides the line again. Stills of the film at 14 times
+across the phone scenes are identical to those rendered before the change,
+so the committed MP4 still matches its source. The line quotes `COPY`, which
+the tests already hold to its sources.
+
+**Not verified.** How it looks in the shelf at its real size, and whether the
+channel can upload a custom Shorts thumbnail.
+
+**Open.** Upload it in Studio on desktop if the channel has custom Shorts
+thumbnails; otherwise pick the 12.9 s frame in the mobile app.
+

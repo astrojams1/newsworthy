@@ -1,11 +1,11 @@
 {
   "render": {
     "file": "store/assets/youtube/trailer-1080x1920.mp4",
-    "bytes": 35436771,
-    "sha256": "9896e699d784941569841290654843f07309205d0f81689a59784547f0b350d9",
+    "bytes": 35557048,
+    "sha256": "2a7b2b5e7ad7fe571596a5dda46062576957d0ec6fcc1040f897f8fad8975472",
     "frames": 960,
     "samples": 6437,
-    "minutes": 12.7,
+    "minutes": 14.9,
     "inputs": {
       "apps/client/app/index.tsx": "c00829c6819a636b26c586a683423867c6a5fd75bfe663f785c044dd2db008c6",
       "apps/client/components/brand-mark.tsx": "7878f3b61d25984dfef9fe8c8cfcbc624ab03aa056a08f6e051c63e6452c6138",
@@ -24,12 +24,13 @@
       "store/store.json": "1a5eb061599a02b00ec3b73ba1edb7257d08ae3e0565010d475aa773318d65da",
       "store/video/fonts/inter-latin-opsz-normal.woff2": "2c295d99e26dcf357d4d01bcf270fd6924b600c9a13dd8c363ef114f4c6976fa",
       "store/video/fonts/roboto-mono-latin-300-normal.woff2": "54dae5e8ef1a5aad1b61d8fd6d9cb6d0576114388efa5f5d5bdbc0fe443c6711",
-      "store/video/trailer/README.md": "851015f4957fb73a786e3a15b3b45643ca226a6ea631356d77dce1233141a146",
+      "store/video/trailer/README.md": "1fc7ac0d5c6dfd8d0c823b4ee7c026bc554c379e7f126c83a43c24370e26806f",
       "store/video/trailer/composition.html": "d0a6ccbdd6abdc3438350ff1b56288e17c7b1bc6577e2b1398077c15507380f5",
-      "store/video/trailer/composition.js": "f0754480f2c80950b11572f189d3d37577ebc0c9fcb8e3cd3959ab413703f069",
-      "store/video/trailer/film.js": "aac61693277f2ac06fae691ebad1d872b71f3d1d450e9ca86c5c7d12534f4a59",
+      "store/video/trailer/composition.js": "16f71b0ebe05079c7eeefbe58b024e20b52a0c32e2259afa81aa4da7963353fd",
+      "store/video/trailer/film.js": "65b2e12ac8865d4d9733d7c60c3c06cc44cc8c109654e1860111bbfedb062d9b",
       "store/video/trailer/score.mjs": "71c3ac448b843bd8eb5a103aeeeb7bfc65ac4ef45b7b83e4f8c00f2f03a46b59",
-      "store/video/trailer/timeline.js": "c33e83b55e9a3027cb8a0c8122010d4109190f383748c7f67b412b983831f0d3"
+      "store/video/trailer/timeline.js": "c33e83b55e9a3027cb8a0c8122010d4109190f383748c7f67b412b983831f0d3",
+      "vendor/skills/skills/youtube-shorts/assets/zones.json": "6a561a9e72c356fbbd079b642d0b9b4d1dcec44b2d7bff1e52f3a98f9a8e898e"
     }
   }
 }

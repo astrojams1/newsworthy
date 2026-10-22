@@ -8,6 +8,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # vendor/skills: the shared skills, whose data the trailer's layout and tests read.
+          submodules: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22

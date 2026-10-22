@@ -74,6 +74,7 @@ node store/scripts/render-trailer.mjs --audio                              # the
 node store/scripts/render-trailer.mjs --render                             # every frame in parallel, then the MP4
 node store/scripts/render-trailer.mjs --encode                             # re-encode the last frames with the current score
 node store/scripts/render-trailer.mjs --verify                             # the MP4 against YouTube's settings and cut.json
+node store/scripts/render-trailer.mjs --thumbnail                          # the custom thumbnail, a still JPEG
 ```
 
 `--render` splits the frames between four browser processes (`--workers N`)
@@ -82,6 +83,20 @@ needs only `--encode`, seconds rather than minutes. Each frame averages up to
 twenty renders across a 180-degree shutter in linear light, as the reel does;
 `timeline.js` says where the fast moments are. The render writes its output's
 hash and every input's into `cut.json`.
+
+Every word, number and screen sits inside the Shorts safe zone, read from the
+shared [youtube-shorts skill](../../../vendor/skills/skills/youtube-shorts/SKILL.md)'s
+`zones.json`: on a phone YouTube's controls cover the top, the right edge and
+the bottom of the video, and a tall phone crops its sides. In the phone
+scenes the phone is the subject: large, a little left of centre to clear the
+action rail, its body running off the bottom of the frame under YouTube's
+title, with a one-line headline above it. What its screen shows sits in the
+safe box; the muted story line under the sentence sits just below it, above
+the title. Elsewhere a line starts below the top controls and is set smaller
+rather than run under the rail. `test/trailer.test.js` checks every placement
+through the film, and that the phone runs off the frame and clears the rail.
+Backgrounds still fill the frame. Check a render with the skill's
+`safe-zone.mjs` contact sheet before uploading.
 
 The phone is drawn as an iPhone because the app is approved only there; Google
 Play is in closed testing. The typefaces stand in for Apple's as in the reel:
@@ -94,5 +109,9 @@ Inter for SF Pro and Roboto Mono Light for SF Mono.
   (`apple.release` in the [release ledger](../../ledger.md)).
 - **Listen.** The sound is synthesised and was checked by loudness, peaks and
   spectrogram, not by ear.
-- **Thumbnail.** YouTube picks a Shorts thumbnail from the video; 12.9 s, the
-  reading at the top of the scale, is the suggested frame.
+- **Thumbnail.** `store/assets/youtube/trailer-thumbnail-1080x1920.jpg` is a
+  custom one (`--thumbnail`): the 12.9 s reading with its line set twice as
+  large, since a thumbnail is seen small in the Shorts shelf, search and the
+  channel's grid. Custom Shorts thumbnails upload in Studio on desktop, for
+  Partner Program channels first (rolling out since July 2026); without one,
+  pick the 12.9 s frame in the mobile app.

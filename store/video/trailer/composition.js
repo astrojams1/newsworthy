@@ -10,10 +10,26 @@
 import tokens from '../../../public/tokens.js';
 import { hexToOklab } from '../../../design/colors.js';
 import { CUES, DOWN, HUSH, PINGS, SETTLED, bezier, feedTravel, scoreAt, seeded, spring } from './timeline.js';
-import { say } from './film.js';
+import { THUMBNAIL, say } from './film.js';
+import zones from '../../../vendor/skills/skills/youtube-shorts/assets/zones.json' with { type: 'json' };
 
 const W = innerWidth, H = innerHeight;
 const stage = document.getElementById('stage');
+
+// ---------------------------------------------------------------- the safe zone
+// On a phone YouTube draws its controls over a Short (status bar, back, search
+// and menu across the top, an action rail down the right, the channel and
+// title along the bottom) and the player crops the sides. Every word, number
+// and screen stays inside the box the youtube-shorts skill measured, which
+// test/trailer.test.js checks; backgrounds still fill the frame. The first cut
+// ignored it, and on the owner's phone its lines sat under YouTube's buttons.
+const ZS = W / zones.frame.width;
+const zone = z => ({ x: z.x * ZS, y: z.y * ZS, right: (z.x + z.width) * ZS, bottom: (z.y + z.height) * ZS });
+const SAFE = zone(zones.safe), UPPER = zone(zones.safeAboveRail);
+// The widest a line centred on x may be when it ends at `bottom`: above the
+// action rail the box runs further right. Laid out, a line runs a pixel or
+// two wider than the canvas measures it, so 4 px are held back.
+const room = (bottom, x = W / 2) => { const z = bottom <= UPPER.bottom ? UPPER : SAFE; return 2 * Math.min(x - z.x, z.right - x) - 4; };
 
 // ---------------------------------------------------------------- motion
 const clamp = (x, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, x));
@@ -190,10 +206,18 @@ const STATUS_ICONS = `<svg width="78" height="13" viewBox="0 0 78 13" style="pos
 // The app is drawn in its own points (an iPhone's 393 × 852) and the screen
 // scaled into a phone in the frame.
 const AW = 393, AH = 852;
-const PS = 0.63, BEZ = 8;
+// The phone is the subject: large, under a one-line headline, its body running
+// off the bottom of the frame beneath YouTube's title, so its edge is never
+// seen there; only what its screen shows has to sit in the safe box. A whole
+// phone small enough to clear the title was a thumbnail under its headline.
+// Below the rail's top the frame loses its right edge, so the phone scenes
+// centre a little left of the frame's centre and clear the rail.
+const BEZ = 8, PS = 0.7, STAGE = { x: W / 2 - 8 };
 const PH = { sw: AW * PS, sh: AH * PS, r: 55 };
 PH.bw = PH.sw + 2 * BEZ; PH.bh = PH.sh + 2 * BEZ;
-PH.x = W / 2 - PH.bw / 2; PH.y = H * 0.592 - PH.bh / 2;
+PH.x = STAGE.x - PH.bw / 2; PH.y = SAFE.y + 49;
+// How far the phone settles lower on the lock screen, for a second line of type.
+const LOCK_DROP = 26;
 // A point on the screen, in the frame.
 const onScreen = (x, y) => ({ x: PH.x + BEZ + x * PS, y: PH.y + BEZ + y * PS });
 
@@ -300,9 +324,25 @@ function setNumeral(n, { x, align, base, size, tracking, denomSize, gap, value, 
 // way, upward. A line too wide for the frame is set smaller rather than broken.
 function kinetic(parent, key) {
   const line = el(parent, {});
-  return { line, words: say(key).split(' ').map(w => { const clip = el(line, { overflow: 'hidden' }); return { w, clip, inner: el(clip, {}, w) }; }) };
+  return { line, words: say(key).split(' ').map(w => {
+    const clip = el(line, { overflow: 'hidden' }), inner = el(clip, {}, w);
+    inner.dataset.safe = key;
+    return { w, clip, inner };
+  }) };
 }
-function setKinetic(k, t, { on, base, size, weight = 700, color, gradient, tracking = -0.028, stagger = 0.07, x = W / 2, align = 0.5, maxW = W - 56, cut = false, dur = 0.7, opacity = 1 }) {
+// Two lines' words set on one line, each landing on its own cue.
+function sideBySide(t, [a, onA], [b, onB], { base, size, weight = 700, x = STAGE.x, ...style }) {
+  const width = (value, s) => textWidth(value, SANS, weight, s, -0.028 * s);
+  const s = Math.min(size, size * room(base + 0.3 * size, x) / width(`${say(a)} ${say(b)}`, size));
+  const left = x - width(`${say(a)} ${say(b)}`, s) / 2, second = left + width(`${say(a)} `, s);
+  setKinetic(N.k[a], t, { on: onA, base, size: s, weight, x: left, align: 0, maxW: Infinity, ...style });
+  setKinetic(N.k[b], t, { on: onB, base, size: s, weight, x: second, align: 0, maxW: Infinity, ...style });
+}
+// Lines set together share one size: the largest at which each fits its room.
+function together(size, weight, lines) {
+  return Math.min(size, ...lines.map(([key, base]) => size * room(base + 0.3 * size) / textWidth(say(key), SANS, weight, size, -0.028 * size)));
+}
+function setKinetic(k, t, { on, base, size, weight = 700, color, gradient, tracking = -0.028, stagger = 0.07, x = W / 2, align = 0.5, maxW = room(base + 0.3 * size, x), cut = false, dur = 0.7, opacity = 1 }) {
   const [inT, outT] = on;
   if (t < inT - 0.001 || t >= outT) { show(k.line, 0); return; }
   show(k.line, opacity);
@@ -412,11 +452,13 @@ function build() {
   N.clock = el(stage, {});
   N.clockDigits = el(N.clock, {}, '7:00');
   N.clockAmPm = el(N.clock, {}, 'AM');
+  N.clockDigits.dataset.safe = N.clockAmPm.dataset.safe = 'clock';
 
   // ---- the one that breaks through
   N.bloom = el(stage, {});
   N.ring = el(stage, { borderRadius: '50%', borderStyle: 'solid' });
   N.hero = el(stage, { borderRadius: '18px' });
+  N.hero.dataset.safe = 'hero';
   N.heroCard = el(N.hero, { inset: '1.5px', borderRadius: '16.5px', overflow: 'hidden', background: '#141418' });
   N.heroThumb = el(N.heroCard, { left: '0', top: '0', overflow: 'hidden' });
   N.heroThumbGlow = el(N.heroThumb, { inset: '0' });
@@ -425,7 +467,7 @@ function build() {
   N.heroBars = [0, 1, 2].map(() => el(N.heroCard, {}));
 
   // ---- the phone
-  N.phone = el(stage, { left: px(PH.x), top: px(PH.y), width: px(PH.bw), height: px(PH.bh), transformOrigin: '50% 50%' });
+  N.phone = el(stage, { left: px(PH.x), top: px(PH.y), width: px(PH.bw), height: px(PH.bh), transformOrigin: '50% 100%' });
   N.phone.dataset.part = 'phone';
   // A soft shadow drawn as a gradient: a blur filter here doubled the cost of every frame.
   N.shadow = el(N.phone, { left: px(-PH.bw * 0.22), top: px(PH.bh * -0.04), width: px(PH.bw * 1.44), height: px(PH.bh * 1.16), background: 'radial-gradient(closest-side, rgba(0,0,0,0.42), rgba(0,0,0,0.2) 62%, rgba(0,0,0,0))' });
@@ -454,6 +496,7 @@ function build() {
   N.once = el(stage, {}, say('once'));
   // The scale's ten colours, a quiet signature under the price.
   N.strip = Array.from({ length: 10 }, () => el(stage, { borderRadius: '3px' }));
+  for (const e of [N.dollarText, N.once, ...N.strip]) e.dataset.safe = 'price';
 
   // ---- the end card
   N.icon = el(stage, { overflow: 'hidden' });
@@ -463,11 +506,15 @@ function build() {
   N.endTag = el(stage, {}, say('tagline'));
   N.endStoreCap = el(stage, { borderRadius: '999px' });
   N.endStore = el(stage, {}, say('store'));
+  for (const e of [N.icon, N.endWord, N.endTag, N.endStoreCap, N.endStore]) e.dataset.safe = 'end';
 
   // ---- words
   N.k = {};
   for (const key of ['everyDay', 'thousands', 'comeAndGo', 'doomscroll', 'allDay', 'orSee', 'breaks', 'worldNews', 'rated', 'oneNumber', 'oneSentence',
     'home', 'notify', 'choose', 'noAds', 'noSubscription', 'noPurchases', 'focus', 'matters']) N.k[key] = kinetic(stage, key);
+
+  // ---- the thumbnail's headline, shown only by thumbnail()
+  N.thumb = ['worldNews', 'rated'].map(key => { const e = el(stage, { display: 'none' }, say(key)); e.dataset.thumb = key; return e; });
 
   N.vignette = el(stage, { inset: '0', background: 'radial-gradient(130% 90% at 50% 45%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.62))' });
   N.flash = el(stage, { inset: '0', background: '#fff' });
@@ -515,6 +562,7 @@ function buildLock(parent) {
   N.lock = el(parent, { left: '0', top: '0', width: px(AW), height: px(AH) });
   N.lockWall = el(N.lock, { inset: '0' });
   N.lockTime = el(N.lock, {}, '9:41');
+  N.lockTime.dataset.safe = 'lock';
   N.lockButtons = [46, AW - 46].map(cx => el(N.lock, { left: px(cx - 25), top: '760px', width: '50px', height: '50px', borderRadius: '25px', background: 'rgba(255,255,255,0.14)', boxShadow: 'inset 0 0 0 0.75px rgba(255,255,255,0.18)' }));
   el(N.lock, { left: px((AW - 134) / 2), top: px(AH - 13), width: '134px', height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.85)' });
 }
@@ -533,6 +581,7 @@ function buildReading(parent) {
   N.widgetTime = el(N.content, {}, say('checked'));
   N.num = numeral(N.content, true);
   N.wordmark = el(N.content, {}, say('wordmark'));
+  for (const e of [N.num.tens.c, N.num.units.c, N.num.denom, ...N.bars, N.wordmark, N.widgetTime]) e.dataset.safe = 'reading';
   N.capsule = el(N.content, {});
   N.share = glyph(N.content, 'share', 24);
   N.gear = glyph(N.content, 'gear', 24);
@@ -752,7 +801,7 @@ function updatePhone(t) {
   const arrive = smooth(0.5, 0.98, m0);
   const life = t - CUES.drop, amp = smooth(0, 1.2, life);
   const ry = amp * 6.5 * Math.sin(TAU * life / 9), rx = amp * 3 * Math.sin(TAU * life / 7.3 + 0.6);
-  const ty = amp * 3.5 * Math.sin(TAU * life / 4.6) + 760 * exit;
+  const ty = amp * 3.5 * Math.sin(TAU * life / 4.6) + LOCK_DROP * E.inOut(seg(t, CUES.night)) + 760 * exit;
   const s = lerp(0.9, 1, E.cubic(arrive));
   N.phone.style.transform = `perspective(1500px) translateY(${px(ty)}) rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg) rotateZ(${(10 * exit).toFixed(3)}deg) scale(${s.toFixed(4)})`;
   for (const e of [N.body, N.shadow, N.clip, N.flt]) e.style.opacity = String(arrive);
@@ -904,17 +953,20 @@ function updateLock(t) {
   const p = NIGHT.primary;
   N.lockWall.style.background = `radial-gradient(110% 55% at 50% 105%, ${css(p, 0.55)}, ${css(p, 0)} 70%), radial-gradient(80% 40% at 15% 0%, rgba(120,140,170,0.22), transparent 70%), linear-gradient(170deg, #15171D, #0E0E12 60%, #1A1210)`;
   const clockIn = E.expo(seg(t, [CUES.night[0] + 0.2, CUES.night[0] + 0.8]));
-  text(N.lockTime, { x: AW / 2, y: 190 + 10 * (1 - clockIn), size: 96, weight: 600, align: 0.5, tracking: -3.5, color: [246, 246, 248], opacity: clockIn * 0.94 });
+  text(N.lockTime, { x: AW / 2, y: 168 + 10 * (1 - clockIn), size: 96, weight: 600, align: 0.5, tracking: -3.5, color: [246, 246, 248], opacity: clockIn * 0.94 });
   // The notification rises into place, then lifts toward us.
   const nIn = t < CUES.notification ? 0 : sp(t, CUES.notification, 0.74, 11);
   const pop = t >= CUES.pushNote[0] ? popAmount(t) : 0;
   show(N.note, clamp(nIn * 3));
   if (nIn <= 0) return;
-  const nw = AW - 32, nh = 76, nx = 16, ny = lerp(AH + 30, 600, nIn);
+  // A short rise into place, under the clock: a rise from the screen's foot
+  // would pass under YouTube's title on its way.
+  const nw = AW - 32, nh = 76, nx = 16, ny = lerp(360, 300, nIn);
   box(N.note, nx, ny, nw, nh);
   N.note.style.zIndex = pop > 0.001 ? '3' : 'auto';
   N.note.style.transformOrigin = '50% 50%';
-  N.note.style.transform = `translateY(${px(-44 * pop)}) scale(${(lerp(0.94, 1, clamp(nIn)) * (1 + 0.38 * pop)).toFixed(4)})`;
+  // It rises first and grows once it is clear of the rail's top.
+  N.note.style.transform = `translateY(${px(-92 * E.cubic(pop))}) scale(${(lerp(0.94, 1, clamp(nIn)) * (1 + 0.22 * smooth(0.5, 1, pop))).toFixed(4)})`;
   Object.assign(N.note.style, { background: `rgba(${Math.round(lerp(58, 72, pop))},${Math.round(lerp(54, 66, pop))},${Math.round(lerp(56, 66, pop))},0.94)`,
     boxShadow: `inset 0 0 0 0.75px rgba(255,255,255,0.14), 0 ${px(10 + 26 * pop)} ${px(30 + 40 * pop)} rgba(0,0,0,${(0.35 + 0.25 * pop).toFixed(3)})` });
   // The app's icon: the light brand mark.
@@ -960,11 +1012,13 @@ function updatePrice(t) {
   });
 }
 
+// The end card's icon centre: the block sits mid-box, its tagline above the rail.
+const END = (SAFE.y + SAFE.bottom) / 2 - 90;
 function updateEnd(t) {
   const iconP = t < CUES.icon[0] ? 0 : sp(t, CUES.icon[0], 0.6, 11);
   show(N.icon, clamp(iconP * 3));
   if (iconP > 0) {
-    const s = 112, cx = W / 2, cy = H * 0.385;
+    const s = 112, cx = W / 2, cy = END;
     box(N.icon, cx - s / 2, cy - s / 2, s, s);
     N.icon.style.borderRadius = px(s * 0.225);
     N.icon.style.background = diagonal(BRAND, 0.45);
@@ -983,13 +1037,13 @@ function updateEnd(t) {
     }
   }
   const word = E.expo(seg(t, CUES.word));
-  const wordSize = 40, wordBase = H * 0.385 + 56 + 50;
+  const wordSize = 40, wordBase = END + 56 + 50;
   text(N.endWord, { x: W / 2, y: wordBase + 18 * (1 - word), size: wordSize, weight: 600, align: 0.5,
     tracking: lerp(0.02, -0.03, E.expo(seg(t, [CUES.word[0], CUES.word[1] + 0.4]))) * wordSize, color: BRAND.ink, opacity: clamp(word * 2) });
   const tag = E.cubic(seg(t, CUES.tagline));
   text(N.endTag, { x: W / 2, y: wordBase + 36 + 8 * (1 - tag), size: 17, align: 0.5, color: BRAND.muted, opacity: tag });
   const store = E.cubic(seg(t, CUES.store));
-  const storeSize = 14, storeW = textWidth(say('store'), SANS, 600, storeSize, 0.4), storeY = H * 0.705 + 6 * (1 - store);
+  const storeSize = 14, storeW = textWidth(say('store'), SANS, 600, storeSize, 0.4), storeY = wordBase + 118 + 6 * (1 - store);
   text(N.endStore, { x: W / 2, y: storeY, size: storeSize, weight: 600, align: 0.5, tracking: 0.4, color: BRAND.ink, opacity: store * 0.85 });
   box(N.endStoreCap, W / 2 - storeW / 2 - 18, storeY - 23, storeW + 36, 34);
   N.endStoreCap.style.boxShadow = `inset 0 0 0 1px ${css(BRAND.ink, 0.22)}`;
@@ -1003,32 +1057,40 @@ function updateWords(t) {
   // Over the level's canvas the words take its ink.
   const lt = theme(clamp(readingLevel(t), 1, 10));
   const k = N.k;
-  const mid = H * 0.43, top = H * 0.104;
-  setKinetic(k.everyDay, t, { on: CUES.everyDay, base: mid - 4, size: 44, color: white });
-  setKinetic(k.thousands, t, { on: CUES.thousands, base: mid + 46, size: 44, color: white });
+  // A line starts no higher than just below YouTube's top controls.
+  const mid = H * 0.43, see = SAFE.y + 1.08 * 38 + 2, doom = H * 0.36;
+  const opening = together(44, 700, [['everyDay', mid - 4], ['thousands', mid + 46]]);
+  setKinetic(k.everyDay, t, { on: CUES.everyDay, base: mid - 4, size: opening, color: white });
+  setKinetic(k.thousands, t, { on: CUES.thousands, base: mid + 46, size: opening, color: white });
   setKinetic(k.comeAndGo, t, { on: CUES.comeAndGo, base: mid + 20, size: 50, color: white });
-  setKinetic(k.doomscroll, t, { on: CUES.doomscroll, base: H * 0.36, size: 42, color: white, cut: true });
-  setKinetic(k.allDay, t, { on: CUES.allDay, base: H * 0.36 + 50, size: 42, color: white, cut: true });
-  setKinetic(k.orSee, t, { on: CUES.orSee, base: H * 0.2, size: 38, color: white, weight: 600 });
-  setKinetic(k.breaks, t, { on: CUES.breaks, base: H * 0.2 + 46, size: 38, gradient: warm, weight: 700 });
-  setKinetic(k.worldNews, t, { on: CUES.worldNews, base: top, size: 36, color: lt.ink, weight: 700 });
-  setKinetic(k.rated, t, { on: CUES.rated, base: top + 44, size: 36, color: lt.ink, weight: 700 });
-  setKinetic(k.oneNumber, t, { on: CUES.oneNumber, base: top, size: 36, color: lt.ink });
-  setKinetic(k.oneSentence, t, { on: CUES.oneSentence, base: top + 44, size: 36, color: lt.ink });
-  setKinetic(k.home, t, { on: CUES.homeLine, base: top + 20, size: 34, color: lt.ink, stagger: 0.06 });
-  setKinetic(k.notify, t, { on: CUES.notifyLine, base: top, size: 34, color: white });
-  setKinetic(k.choose, t, { on: CUES.scoreLine, base: top + 40, size: 27, weight: 500, color: [215, 212, 210] });
-  const list = H * 0.6;
-  setKinetic(k.noAds, t, { on: [CUES.noAds, CUES.priceOut[1]], base: list, size: 27, weight: 600, color: ink, stagger: 0.05 });
-  setKinetic(k.noSubscription, t, { on: [CUES.noSubscription, CUES.priceOut[1]], base: list + 42, size: 27, weight: 600, color: ink, stagger: 0.05 });
-  setKinetic(k.noPurchases, t, { on: [CUES.noPurchases, CUES.priceOut[1]], base: list + 84, size: 27, weight: 600, color: ink, stagger: 0.05 });
+  const scroll = together(42, 700, [['doomscroll', doom], ['allDay', doom + 50]]);
+  setKinetic(k.doomscroll, t, { on: CUES.doomscroll, base: doom, size: scroll, color: white, cut: true });
+  setKinetic(k.allDay, t, { on: CUES.allDay, base: doom + 50, size: scroll, color: white, cut: true });
+  const breaks = together(38, 700, [['orSee', see], ['breaks', see + 46]]);
+  setKinetic(k.orSee, t, { on: CUES.orSee, base: see, size: breaks, color: white, weight: 600 });
+  setKinetic(k.breaks, t, { on: CUES.breaks, base: see + 46, size: breaks, gradient: warm, weight: 700 });
+  // Over the phone a headline is one line, a caption to the picture.
+  // A word's clip starts 1.08 em above its baseline, and it rises through it.
+  const head = SAFE.y + 31, lockHead = SAFE.y + 1.1 * 24;
+  sideBySide(t, ['worldNews', CUES.worldNews], ['rated', CUES.rated], { base: head, size: 24, color: lt.ink });
+  sideBySide(t, ['oneNumber', CUES.oneNumber], ['oneSentence', CUES.oneSentence], { base: head, size: 24, color: lt.ink });
+  setKinetic(k.home, t, { on: CUES.homeLine, base: head, size: 24, color: lt.ink, stagger: 0.06, x: STAGE.x });
+  setKinetic(k.notify, t, { on: CUES.notifyLine, base: lockHead, size: 24, color: white, x: STAGE.x });
+  setKinetic(k.choose, t, { on: CUES.scoreLine, base: lockHead + 25, size: 18, weight: 500, color: [215, 212, 210], x: STAGE.x });
+  // Below the action rail's top the box is narrower, so the list shares the size its widest line fits.
+  const list = H * 0.6, listSize = together(27, 600, [['noAds', list], ['noSubscription', list + 42], ['noPurchases', list + 84]]);
+  setKinetic(k.noAds, t, { on: [CUES.noAds, CUES.priceOut[1]], base: list, size: listSize, weight: 600, color: ink, stagger: 0.05 });
+  setKinetic(k.noSubscription, t, { on: [CUES.noSubscription, CUES.priceOut[1]], base: list + 42, size: listSize, weight: 600, color: ink, stagger: 0.05 });
+  setKinetic(k.noPurchases, t, { on: [CUES.noPurchases, CUES.priceOut[1]], base: list + 84, size: listSize, weight: 600, color: ink, stagger: 0.05 });
   const deep = `linear-gradient(90deg, ${css(theme(7).primary)}, ${css(theme(10).primary)})`;
-  setKinetic(k.focus, t, { on: CUES.focus, base: H * 0.44, size: 44, color: ink });
-  setKinetic(k.matters, t, { on: CUES.matters, base: H * 0.44 + 52, size: 44, gradient: deep });
+  const focus = together(44, 700, [['focus', H * 0.44], ['matters', H * 0.44 + 52]]);
+  setKinetic(k.focus, t, { on: CUES.focus, base: H * 0.44, size: focus, color: ink });
+  setKinetic(k.matters, t, { on: CUES.matters, base: H * 0.44 + 52, size: focus, gradient: deep });
 }
 
 // ---------------------------------------------------------------- frame
 function render(t) {
+  N.thumb.forEach(e => show(e, 0));
   updateBackgrounds(t);
   updateFeed(t);
   updatePings(t);
@@ -1045,6 +1107,18 @@ function render(t) {
   show(N.flash, flash);
 }
 
+// The Shorts thumbnail. A thumbnail is seen small, in the Shorts shelf, search
+// and the channel's grid, under the title but without the player's controls,
+// so it is the film's reading at the top of the scale with its line set twice
+// as large, the phone centred and still, running off the bottom as in the film.
+function thumbnail() {
+  render(THUMBNAIL.seconds);
+  for (const key of ['worldNews', 'rated']) show(N.k[key].line, 0);
+  const ink = theme(clamp(readingLevel(THUMBNAIL.seconds), 1, 10)).ink, size = 46;
+  N.thumb.forEach((e, i) => text(e, { x: W / 2, y: 82 + i * 54, size, weight: 700, align: 0.5, tracking: -0.03 * size, color: ink }));
+  N.phone.style.transform = `translateX(${px(W / 2 - STAGE.x)})`;
+}
+
 window.NW = {
   ready: (async () => {
     await Promise.all(faces.map(f => f.load()));
@@ -1056,4 +1130,5 @@ window.NW = {
     return { W, H };
   })(),
   render,
+  thumbnail,
 };
