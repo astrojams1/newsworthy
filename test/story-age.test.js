@@ -159,6 +159,7 @@ test('the story and its age sit below the sentence and Checked moves to Settings
   assert.equal(storyLine({ ...reading, explanation_story: undefined }, now), '5h ago', 'unjudged: the age alone');
   assert.equal(storyLine({ ...reading, explanation_at: undefined }, now), 'US Iran War', 'an older server: the story alone');
   assert.equal(storyLine({ ...reading, explanation_at: '2026-09-27T07:00:00Z' }, now), 'US Iran War  ·  2d ago');
+  assert.equal(storyLine({ ...reading, explanation_story: 'php-flaw', explanation_text: 'PHP developers rushed out fixes.' }, now), 'PHP Flaw  ·  5h ago', 'casing from the sentence');
   assert.equal(checkedAgo(reading, now), '18m ago');
   const aged = { ...fresh, explanation_new: false, explanation_at: start, explanation_story: 'us-iran-war' };
   for (const platform of ['web','ios','android']) {

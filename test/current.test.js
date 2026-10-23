@@ -843,11 +843,11 @@ test('tag lines say only what changed from the entry above', () => {
     entry('nepal-glacier-flood', '2026-09-23T06:00:00Z'),
     entry('eu-ai-act', '2026-09-22T20:00:00Z'),
   ], now), [
-    { story: 'Fed Rates', age: '5h ago' },
-    { story: 'US Iran War', age: '11h ago' },
-    { story: null, age: '1d ago' },
-    { story: 'Nepal Glacier Flood', age: null },
-    { story: 'EU AI Act', age: null },
+    { name: 'Fed Rates', story: 'Fed Rates', age: '5h ago' },
+    { name: 'US Iran War', story: 'US Iran War', age: '11h ago' },
+    { name: 'US Iran War', story: null, age: '1d ago' },
+    { name: 'Nepal Glacier Flood', story: 'Nepal Glacier Flood', age: null },
+    { name: 'EU AI Act', story: 'EU AI Act', age: null },
   ]);
 });
 
@@ -855,6 +855,18 @@ test('story slugs read as tags, and timeline ages are coarse', () => {
   assert.equal(storyLabel('us-iran-war'), 'US Iran War');
   assert.equal(storyLabel('eu-ai-act'), 'EU AI Act');
   assert.equal(storyLabel(null), null);
+  // A word the sentence writes in capitals keeps them; plain title case otherwise.
+  assert.equal(storyLabel('php-flaw', 'PHP developers rushed out fixes for flaws in code behind about 70% of websites.'), 'PHP Flaw');
+  assert.equal(storyLabel('openai-release', 'OpenAI released a model.'), 'OpenAI Release');
+  assert.equal(storyLabel('php-flaw', 'Fixes shipped.'), 'Php Flaw');
+  assert.equal(storyLabel('us-iran-war', 'The talks let us see the Flaw.'), 'US Iran War');
+  const named = timelineLabels([
+    { story: 'php-flaw', explanation: 'Attacks spread.', since: '2026-09-24T11:00:00Z' },
+    { story: 'php-flaw', explanation: 'PHP shipped fixes.', since: '2026-09-24T10:00:00Z' },
+  ], Date.parse('2026-09-24T12:00:00Z'));
+  assert.equal(named[0].story, 'PHP Flaw');
+  assert.equal(named[1].story, null);
+  assert.equal(named[1].name, 'PHP Flaw');
   const now = Date.parse('2026-09-24T12:00:00Z');
   assert.equal(timelineAge('2026-09-24T11:59:30Z', now), 'just now');
   assert.equal(timelineAge('2026-09-24T11:10:00Z', now), '50m ago');
