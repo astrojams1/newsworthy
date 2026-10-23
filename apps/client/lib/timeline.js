@@ -23,15 +23,24 @@ export async function fetchTimeline(apiBaseUrl, fetcher = fetch) {
   }
 }
 
-// Story slugs are the judge's kebab-case names ("us-iran-war"). Short tokens
+// Story slugs are the judge's kebab-case names ("us-iran-war"). A word the
+// story's own sentences write with a capital past its first letter takes that
+// casing ("php-flaw" beside "PHP developers…" reads "PHP Flaw"); short tokens
 // that read as initialisms are capitalised; everything else is title case,
 // because a slug cannot say which of its words are proper nouns.
 const INITIALISMS = new Set(['us', 'uk', 'eu', 'un', 'ai', 'nato', 'imf', 'ecb', 'opec', 'who', 'gdp', 'drc']);
-export function storyLabel(slug) {
+function casingIn(word, text) {
+  if (word.length < 2) return null;
+  return text.split(/[^A-Za-z0-9]+/)
+    .find((token) => token.toLowerCase() === word && /[A-Z]/.test(token.slice(1))) ?? null;
+}
+export function storyLabel(slug, ...sentences) {
   if (typeof slug !== 'string' || !slug.trim()) return null;
+  const text = sentences.filter((sentence) => typeof sentence === 'string').join('\n');
   return slug.trim().split(/[-_\s]+/).map((word) => {
     const lower = word.toLowerCase();
-    return INITIALISMS.has(lower) ? lower.toUpperCase() : lower.charAt(0).toUpperCase() + lower.slice(1);
+    return casingIn(lower, text)
+      ?? (INITIALISMS.has(lower) ? lower.toUpperCase() : lower.charAt(0).toUpperCase() + lower.slice(1));
   }).join(' ');
 }
 
@@ -51,13 +60,16 @@ export const timelineAge = shortAge;
 // Each entry's tag line says only what changed from the entry above: a run of
 // one story is tagged once, and "1d ago" is said once however many
 // developments broke yesterday. An entry with nothing new gets no tag line.
+// A story is named alike on every entry, from all of its sentences together.
 export function timelineLabels(developments, now = Date.now()) {
   let story = null;
   let age = null;
   return developments.map((development, index) => {
-    const nextStory = storyLabel(development.story);
+    const nextStory = storyLabel(development.story, ...developments
+      .filter((other) => other.story === development.story).map((other) => other.explanation));
     const nextAge = timelineAge(development.since, now);
     const label = {
+      name: nextStory,
       story: index === 0 || nextStory !== story ? nextStory : null,
       age: index === 0 || nextAge !== age ? nextAge : null,
     };

@@ -81,7 +81,7 @@ export function storyLine(reading, now = Date.now()) {
   if (!reading || typeof reading.explanation_text !== 'string') return '';
   const at = typeof reading.explanation_at === 'string' && Number.isFinite(Date.parse(reading.explanation_at))
     ? shortAge(reading.explanation_at, now) : null;
-  return [storyLabel(reading.explanation_story), at].filter(Boolean).join('  ·  ');
+  return [storyLabel(reading.explanation_story, reading.explanation_text), at].filter(Boolean).join('  ·  ');
 }
 
 /**

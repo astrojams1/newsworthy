@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Animated, Text, View } from 'react-native';
 import type { Development } from '@/lib/use-timeline';
-import { storyLabel, timelineAge, timelineLabels } from '@/lib/timeline';
+import { timelineAge, timelineLabels } from '@/lib/timeline';
 
 type Theme = { ink: string; muted: string };
 
@@ -47,7 +47,7 @@ export function Timeline({ developments, opacity, theme, now, scrollY, offset, f
   let entryTop: number | undefined = 0;
   return <Animated.View testID="timeline" accessibilityLabel="Earlier developments" style={{ width: '100%', opacity }}>
     {developments.map((development, index) => {
-      const label = storyLabel(development.story);
+      const label = labels[index].name;
       const age = timelineAge(development.since, now);
       const tagKey = `t${development.root}`;
       const hasTag = Boolean(labels[index].story || labels[index].age);
