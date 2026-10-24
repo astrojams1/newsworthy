@@ -72,8 +72,8 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
   reported (“US Iran War · 5h ago”). On opening, and when tapped, that line
   first says when Newsworthy last checked (“Checked 23m ago”), as Settings does
   (“Last checked 18m ago”). The widgets lead the sentence with the age (“5h
-  ago:”) and give the clock time of the check (“Checked at 10:21”). The
-  140-character display budget includes either prefix.
+  ago:”) and give the clock time of the check (“Checked at 10:21”). Behind
+  either prefix the sentence keeps its full 135-character budget.
 - A saved reading keeps its original update timestamp. Widgets can drop the
   label later than the app, depending on the operating system. Do not promise
   real-time updates.

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-22T14:45:57+00:00",
+  "updated_at": "2026-10-24T23:32:32+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1169,12 +1169,10 @@
       "state": "waiting_verification",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown.",
-      "evidence": [
-        "store/widget-sentence-fit-verification.json; store/source/widget-sentence-fit/ios27-iphone17e-medium.png"
-      ],
-      "next_action": "Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build.",
-      "updated_at": "2026-10-12T05:43:37+00:00"
+      "summary": "Owner's iPhone medium widget cut a 134-character sentence to 'since…' behind '1d ago:' with room for 'May.': the shared 140-character guard charged the age prefix to the body. The guard now keeps 135 for the body behind either prefix (JS, Swift, Java); unit tests and the Android compile pass. Not verified on a device.",
+      "evidence": [],
+      "next_action": "In the next iOS and Android builds, check a 135-character body behind '23h ago:' on the medium widget at 338 and 364 points and on Android: shown whole, or stepped down, ellipsized only when it cannot fit. Then app name off, 321 x 148 and larger Dynamic Type.",
+      "updated_at": "2026-10-24T23:32:32+00:00"
     },
     "apple.uiscene-ios27": {
       "state": "waiting_verification",
@@ -8270,6 +8268,20 @@
         ],
         "next_action": "",
         "updated_at": "2026-10-22T14:45:57+00:00"
+      }
+    },
+    {
+      "sequence": 443,
+      "at": "2026-10-24T23:32:32+00:00",
+      "gate": "widget.sentence-fit",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Owner's iPhone medium widget cut a 134-character sentence to 'since…' behind '1d ago:' with room for 'May.': the shared 140-character guard charged the age prefix to the body. The guard now keeps 135 for the body behind either prefix (JS, Swift, Java); unit tests and the Android compile pass. Not verified on a device.",
+        "evidence": [],
+        "next_action": "In the next iOS and Android builds, check a 135-character body behind '23h ago:' on the medium widget at 338 and 364 points and on Android: shown whole, or stepped down, ellipsized only when it cannot fit. Then app name off, 321 x 148 and larger Dynamic Type.",
+        "updated_at": "2026-10-24T23:32:32+00:00"
       }
     }
   ],

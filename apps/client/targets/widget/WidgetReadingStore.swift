@@ -36,13 +36,15 @@ struct Reading: Codable, Equatable, Sendable {
         return hours < 24 ? "\(hours)h\u{00A0}ago:" : "\(hours / 24)d\u{00A0}ago:"
     }
 
-    /// The label ("New:" or empty), the age ("5h ·" or empty) and the body, fitted together within 140 characters.
+    /// The label ("New:" or empty), the age ("5h ago:" or empty) and the body. The body is fitted to 140
+    /// characters alone, or to the prompt's 135 behind either prefix, so an age never cuts a sentence the
+    /// prompt allows; the layout steps the text down and truncates only what still does not fit.
     func explanationParts(at now: Date) -> (label: String, age: String, body: String) {
         let label = newLabelExpiry.map { now < $0 } == true ? "New:" : ""
         let age = label.isEmpty ? sentenceAge(at: now) : ""
         let prefix = label.isEmpty ? age : label
         let body = explanation_text ?? explanation
-        let limit = 140 - (prefix.isEmpty ? 0 : prefix.unicodeScalars.count + 1)
+        let limit = prefix.isEmpty ? 140 : 135
         if body.unicodeScalars.count <= limit { return (label, age, body) }
         var cut = String(String.UnicodeScalarView(body.unicodeScalars.prefix(limit - 1)))
         if let space = cut.lastIndex(of: " "), cut[..<space].unicodeScalars.count > limit / 2 {
