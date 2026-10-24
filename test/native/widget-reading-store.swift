@@ -41,6 +41,17 @@ struct StoreTests {
         precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(5 * 3600 + 59 * 60)) == "5h\u{00A0}ago: The Fed raised rates a quarter point.")
         precondition(rereport.explanationParts(at: origin.addingTimeInterval(23 * 3600)).age == "23h\u{00A0}ago:")
         precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(26 * 3600)) == "1d\u{00A0}ago: The Fed raised rates a quarter point.")
+        // Reported 2026-10-24: a 134-character body lost "May." behind "1d ago:" on a widget with room for it.
+        let reported = "President Trump said at a rally the US may launch another military operation against Iran, as oil rose to its highest price since May."
+        rereport.explanation_text = reported
+        precondition(rereport.displayedExplanation(at: origin.addingTimeInterval(26 * 3600)) == "1d\u{00A0}ago: \(reported)")
+        rereport.explanation_text = String(repeating: "a", count: 135)
+        precondition(rereport.explanationParts(at: origin.addingTimeInterval(23 * 3600)).body == rereport.explanation_text,
+                     "the age never cuts a body the prompt allows")
+        rereport.explanation_text = String(repeating: "a ", count: 100)
+        let overlong = rereport.explanationParts(at: origin.addingTimeInterval(23 * 3600)).body
+        precondition(overlong.unicodeScalars.count <= 135 && overlong.hasSuffix("…"))
+        rereport.explanation_text = "The Fed raised rates a quarter point."
         var aging = fresh
         aging.explanation_at = "2026-09-16T18:05:00.000Z"
         precondition(aging.explanationParts(at: origin.addingTimeInterval(119 * 60)).age == "", "New: wins while it is on")

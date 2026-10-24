@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-22T14:45:57+00:00
+Updated: 2026-10-24T23:32:32+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -128,7 +128,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | ui.header-icon-size | waiting_verification | user | observed | 2026-10-01 | TestFlight: iOS 1.0.0 build 26 (EAS 6df1f5b0, commit 51826ed) with native bar buttons for Share, Settings and the Settings X, and the iOS wordmark at its own width, built and uploaded on 2026-10-01 (submission 949246a0) and added to Release QA. Not yet seen on a device. | Owner installs build 26 and checks the header after closing Settings and after foregrounding, the X's circle, and the icons against a system app. |
 | widget.unpadded-hour | waiting_verification | agent | observed | 2026-10-01 | Widget checked times now use an unpadded hour and two-digit minutes: Checked at 7:04. iOS retains its locale hour cycle and removes a leading zero only from a two-digit localized hour; Android uses H:mm/h:mm; the shared preview formatter agrees. Native compilation and visual checks were not performed in this Linux environment. The change requires a replacement native build; existing store build 26 and captures are unchanged. | Verify both widget sizes on iOS and Android in 12- and 24-hour modes: morning 7:04, midnight and afternoon. Include in the next native build. |
 | ui.timeline-default | waiting_verification | agent | observed | 2026-10-12 | On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27. | Check a fresh install and an upgraded TestFlight install of build 27 on a device. |
-| widget.sentence-fit | waiting_verification | agent | observed | 2026-10-12 | Owner report: the iOS medium widget ended sentences in an ellipsis too soon. Causes: the line limit Int(height / 20) left 155 to 157 point widgets 3 lines with room for 4, and a 140-character sentence needed a fifth 14-point line on 338 x 158. Lines now count the spacing; the sentence steps down to 13.5, 13 or 12.5 points on the same rhythm before truncating. macOS render: 6 of 10 layouts truncated before, 1 of 10 after. Native: local Xcode 27 Release simulator build on iPhone 17e iOS 27.0 showed the live 140-character reading whole in 4 lines with the app name shown. | Check app name off, 321 x 148 and larger Dynamic Type; confirm on a device with the EAS production build. |
+| widget.sentence-fit | waiting_verification | agent | observed | 2026-10-24 | Owner's iPhone medium widget cut a 134-character sentence to 'since…' behind '1d ago:' with room for 'May.': the shared 140-character guard charged the age prefix to the body. The guard now keeps 135 for the body behind either prefix (JS, Swift, Java); unit tests and the Android compile pass. Not verified on a device. | In the next iOS and Android builds, check a 135-character body behind '23h ago:' on the medium widget at 338 and 364 points and on Android: shown whole, or stepped down, ellipsized only when it cannot fit. Then app name off, 321 x 148 and larger Dynamic Type. |
 
 ## Evidence and history
 
@@ -4312,3 +4312,11 @@ Next: Recruit at least 12 testers (PR 221) and keep them opted in for 14 continu
 2026-10-22: superseded by apple.agreement and apple.release. The paid app is on sale, which needs an active Paid Apps Agreement with a payout account: Apple's public lookup for id 6812519450 reads formattedPrice $1.00, version 1.0.0, released 2026-10-21T10:58:45Z. Apple Business not re-read.
 
 - https://itunes.apple.com/lookup?id=6812519450 (country=us via bundleId lookup), read 2026-10-22
+
+### 443. widget.sentence-fit — waiting_verification
+
+2026-10-24T23:32:32+00:00 · observed · agent
+
+Owner's iPhone medium widget cut a 134-character sentence to 'since…' behind '1d ago:' with room for 'May.': the shared 140-character guard charged the age prefix to the body. The guard now keeps 135 for the body behind either prefix (JS, Swift, Java); unit tests and the Android compile pass. Not verified on a device.
+
+Next: In the next iOS and Android builds, check a 135-character body behind '23h ago:' on the medium widget at 338 and 364 points and on Android: shown whole, or stepped down, ellipsized only when it cannot fit. Then app name off, 321 x 148 and larger Dynamic Type.

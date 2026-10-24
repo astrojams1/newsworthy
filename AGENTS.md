@@ -922,7 +922,6 @@ surface. Below it the app shows story and age, muted, from `explanation_story`
 and `explanation_at` (not `since`), after "Checked 23m ago" on opening,
 foregrounding or a tap; Settings has "Last checked 18m ago". Widgets lead with
 "5h ago:" (Android stacks a muted layer; colour spans go stale on a theme
-switch) and "Checked at 10:21", a clock time needing no redraw. The 140 budget
-includes either prefix; prompts v16 and later reserve 5 for "New: " and ask for
-a body of at most 135. See `docs/story-age.md` for the caller sequence,
+switch) and "Checked at 10:21", a clock time needing no redraw. Prompts v16+
+ask for a body of at most 135, kept whole behind either prefix. See `docs/story-age.md` for the caller sequence,
 compatibility and verification limits.

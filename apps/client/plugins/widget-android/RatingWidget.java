@@ -209,8 +209,10 @@ public class RatingWidget extends AppWidgetProvider {
     }
 
     /**
-     * "New:" in bold, or the age, before the sentence; the body fitted so both
-     * stay within 140 characters. The age is drawn muted by a second TextView
+     * "New:" in bold, or the age, before the sentence. The body is fitted to 140
+     * characters alone, or to the prompt's 135 behind either prefix, so an age
+     * never cuts a sentence the prompt allows; maxLines and ellipsize truncate
+     * only what still does not fit. The age is drawn muted by a second TextView
      * stacked on this one (see ageLayer), so here it is hidden rather than tinted.
      */
     static CharSequence displayedExplanation(JSONObject reading, long now) {
@@ -219,7 +221,7 @@ public class RatingWidget extends AppWidgetProvider {
         String age = label.isEmpty() ? sentenceAge(reading, now) : "";
         String prefix = label.isEmpty() ? age : label;
         String body = reading.optString(hasBody ? "explanation_text" : "explanation", "");
-        int limit = 140 - (prefix.isEmpty() ? 0 : prefix.length() + 1);
+        int limit = prefix.isEmpty() ? 140 : 135;
         if (body.codePointCount(0, body.length()) > limit) {
             String cut = body.substring(0, body.offsetByCodePoints(0, limit - 1));
             int space = cut.lastIndexOf(' ');

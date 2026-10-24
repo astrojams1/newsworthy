@@ -50,8 +50,12 @@ export function fitExplanation(text, limit) {
 
 /**
  * The bold label (empty when not new), the muted age (empty when new or under
- * an hour) and the body, fitted together within 140 characters. `age: false`
- * leaves the age out, and its room with it, for a surface that shows it apart.
+ * an hour) and the body. The body is fitted to 140 characters alone, or to the
+ * prompt's 135 behind either prefix: "23h ago: " is four over the label's
+ * reserve, and charging it to the body cut the last word of sentences the
+ * prompt allows, on widgets with room to spare (owner, 2026-10-24). The
+ * layouts ellipsize anything that still does not fit. `age: false` leaves the
+ * age out for a surface that shows it apart.
  */
 export function explanationParts(reading, now = Date.now(), { age: withAge = true } = {}) {
   if (!reading) return { label: '', age: '', body: '' };
@@ -60,7 +64,7 @@ export function explanationParts(reading, now = Date.now(), { age: withAge = tru
   const prefix = label || age;
   // Missing metadata means an old client/cache: its explanation is shown as stored.
   const body = typeof reading.explanation_text === 'string' ? reading.explanation_text : reading.explanation;
-  return { label, age, body: fitExplanation(body ?? '', DISPLAY_CHARACTER_LIMIT - (prefix ? Array.from(prefix).length + 1 : 0)) };
+  return { label, age, body: fitExplanation(body ?? '', prefix ? EXPLANATION_CHARACTER_LIMIT : DISPLAY_CHARACTER_LIMIT) };
 }
 
 /** Plain text, for sharing and any surface that cannot style the prefix. */

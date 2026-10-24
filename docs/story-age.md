@@ -114,10 +114,13 @@ nothing under an hour, where “Checked” says as much, then “1h ·” to “
 Only the label’s weight changes: it keeps the sentence’s colour and size, so it
 reads as part of the sentence rather than a badge. The age changes only colour,
 to the muted text colour the timestamp uses. Share text carries either as plain
-text. Overlong legacy sentences are shortened with an ellipsis only for display,
-within 140 characters including the prefix; storage is unchanged. On the widgets
-and in share text “23h ago: ” is nine characters, four over the five prompts
-reserve, so a body over 131 characters loses its last word to an ellipsis there.
+text. Overlong legacy sentences are shortened with an ellipsis only for display;
+storage is unchanged. The body is fitted to 140 characters alone, or to the
+prompt's 135 behind either prefix. “23h ago: ” is nine characters, four over the
+five prompts reserve, so the whole line can reach 144: until 2026-10-24 that
+excess was charged to the body, and the widgets cut the last word of a
+134-character sentence (“since May.”) with a line to spare. The widget layouts
+step the text down and ellipsize only what still does not fit.
 
 Android cannot tint part of a widget sentence with a colour span: the span keeps
 the old theme's colour after a theme switch. It stacks a second TextView,

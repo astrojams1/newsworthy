@@ -47,6 +47,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | Trailer restage | 2026-10-21 | The trailer's script and README, product messaging, growth and reel skills | None needed: the same lines, now set as one-line headlines; the README describes the new staging | The new cut is not yet posted or seen on a phone |
 | Trailer thumbnail | 2026-10-21 | The trailer's script and README, product messaging, growth ledger's pinned comment | None needed: the thumbnail quotes the script's line; the pinned comment repeats the description's claims ($1, no ads, no subscription) | Shelf rendering at real size not seen |
 | iOS availability | 2026-10-22 | README, product messaging, llms.txt, support and privacy pages, web head, onboarding, store listing, store README, user actions, mobile release, store listing doc, release ledger, preview video, trailer | README, product messaging, llms.txt, support page, store README, user actions, mobile release and store listing doc: iOS is on the App Store at $1 since 21 October, no longer pending; Android stays closed testing only. Web gains an App Store link (Smart App Banner, support page, llms.txt); `apple.bank` closed. A test now holds these surfaces to it | Smart App Banner not yet seen in iOS Safari after deploy; preview video already stale from earlier source changes, no line changed; Apple Business not re-read for the bank gate |
+| Widget sentence behind its age | 2026-10-24 | README, AGENTS.md, product messaging, story age, design README, store listing, support page, llms.txt, preview video | Product messaging, story age and AGENTS.md: the age prefix no longer counts against the sentence's 135 characters. Design README's "truncates only below that" was false whenever an age showed, and is now true for prompt-length sentences | Not seen on a device; reaches phones only with the next iOS and Android builds; preview video already stale, no line changed |
 
 ## Lessons
 
@@ -64,6 +65,10 @@ Claims that were wrong once. Check for them again; date each item.
   launch day `llms.txt`, README and product messaging still called iOS
   pending. When a store gate turns done, update every surface in product
   messaging's "Where copy lives"; `test/copy.test.js` checks the main ones.
+- **A character guard can cut before the layout does** (2026-10-24). The
+  design README said the iOS sentence truncates only below 12.5 pt, while the
+  shared 140-character guard had already cut it whenever an age prefix showed.
+  A claim about layout truncation holds only if no text guard runs first.
 
 ## Resubmission preparation, 1 October 2026
 

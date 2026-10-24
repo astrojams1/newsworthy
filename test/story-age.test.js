@@ -45,9 +45,16 @@ test('once "New:" is off, the sentence leads with how long ago it was first repo
   assert.equal(sentenceAge({ ...rereport, explanation_at: 'nonsense' }, origin + 5 * hour), '');
   assert.equal(sentenceAge({ score: 7, explanation: text, explanation_at: start, created_at: start }, origin + 5 * hour), '',
     'an old cache without the unlabelled body keeps its stored sentence');
-  const long = 'a'.repeat(135);
-  const fitted = displayExplanation({ ...rereport, explanation_text: long }, origin + 12 * hour);
-  assert.ok(fitted.startsWith('12h\u00A0ago: ') && Array.from(fitted).length <= 140 && fitted.endsWith('…'), 'the age counts toward 140');
+  // Reported 2026-10-24: a 134-character body lost "May." behind "1d ago:" on a widget with room for it.
+  const reported = 'President Trump said at a rally the US may launch another military operation against Iran, as oil rose to its highest price since May.';
+  assert.equal(displayExplanation({ ...rereport, explanation_text: reported }, origin + 26 * hour), `1d\u00A0ago: ${reported}`);
+  for (const hours of [1, 12, 23, 26]) {
+    const full = 'a'.repeat(135);
+    assert.equal(explanationParts({ ...rereport, explanation_text: full }, origin + hours * hour).body, full,
+      `${hours}h: the age never cuts a body the prompt allows`);
+    const fitted = explanationParts({ ...rereport, explanation_text: 'a '.repeat(100) }, origin + hours * hour).body;
+    assert.ok(Array.from(fitted).length <= 135 && fitted.endsWith('…'), `${hours}h: an overlong body still ends in an ellipsis`);
+  }
 });
 
 test('the 140-character display budget includes the label and counts Unicode code points', () => {
@@ -243,5 +250,5 @@ test('the app sentence spends no budget on an age it shows on its own line', () 
       .find(n=>n.props.testID === 'rating-explanation');
     assert.equal([sentence.props.children].flat().join(''), body, `${platform}: a 135-character body is shown whole`);
   }
-  assert.ok(explanationParts(reading, origin + 5 * hour).body.endsWith('…'), 'the widgets and share text still fit the age in');
+  assert.equal(explanationParts(reading, origin + 5 * hour).body, body, 'nor do the widgets and share text, beside the age');
 });
