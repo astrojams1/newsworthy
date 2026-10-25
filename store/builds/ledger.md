@@ -435,3 +435,12 @@ with build 27 selected, builds up to 28, next build 29; Play version code 17
 completed on internal and alpha, next 18; the Play listing text, icon, feature
 graphic and five phone screenshots match the repository byte for byte. No
 builds, uploads, sandboxes or EAS credits used.
+
+
+## 2026-10-25 — shared app-release 2.5.2 propagation (UTC)
+
+This consumer PR pins `vendor/skills` to merged [skills#98](https://github.com/astrojams1/skills/pull/98), commit `413fac5f62fcfac44bcaaadba7f81e07256bc383`, from a fresh SSD worktree based on `origin/main` `b47d22a`. It adopts the optional authenticated App Privacy CLI guidance and the intervening shared-tool fixes. Newsworthy's repository-owned release skill continues to read the source directly from `vendor/skills`; no shared discovery mirrors are introduced. App code, configuration, store data, pricing and provider state are unchanged.
+
+Read-only `ledger.mjs status`, `check` and `validate` pass with the existing inferred-evidence warning for `google.disclosures`; no provider evidence is refreshed by this maintenance run. The exact shared source passes its release-tool tests. README, product messaging and the release boundary remain accurate. The preview stale command cannot start in this dependency-free worktree because `sharp` is absent; its inputs are unchanged and no fresh video/native verification is claimed. No builds, uploads or provider writes occurred. Next: review and merge this consumer PR before relying on version 2.5.2.
+
+Bug-fix table: no Newsworthy application defect or application fix in this run.
