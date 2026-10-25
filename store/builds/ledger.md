@@ -444,3 +444,11 @@ This consumer PR pins `vendor/skills` to merged [skills#98](https://github.com/a
 Read-only `ledger.mjs status`, `check` and `validate` pass with the existing inferred-evidence warning for `google.disclosures`; no provider evidence is refreshed by this maintenance run. The exact shared source passes its release-tool tests. README, product messaging and the release boundary remain accurate. The preview stale command cannot start in this dependency-free worktree because `sharp` is absent; its inputs are unchanged and no fresh video/native verification is claimed. No builds, uploads or provider writes occurred. Next: review and merge this consumer PR before relying on version 2.5.2.
 
 Bug-fix table: no Newsworthy application defect or application fix in this run.
+
+## 2026-10-25 — shared app-release 2.6.1 follow-up (UTC)
+
+PR #243 now pins `vendor/skills` to [skills#101](https://github.com/astrojams1/skills/pull/101), merged commit `516cc11e0c7f441349823920087bba3cf8cdc115`. This carries Apple launcher identity/entitlement preflight, supported native-QA recovery, parent-bound IAP review screenshot upload/readback and the guard that keeps image-only review submissions from sending unrelated app or purchase versions. The repository release skill still reads the shared source directly; no shared mirrors or hooks are rewritten.
+
+Node 22 `ledger.mjs status`, `check`, `validate`, the pinned shared release-tool suite and `npm test` pass. The npm suite's opt-in native Swift widget-store case also passes separately with `NEWSWORTHY_NATIVE_TESTS=1`. The existing inferred-evidence warning for `google.disclosures` is preserved. The preview stale command runs: earlier input drift remains, while every on-screen line still matches its source. This tooling update changes no preview input, application behavior, rating/caller contract, listing copy, configuration or store availability. No build upload, provider mutation, fresh native UI or physical-device verification is claimed.
+
+Copy accuracy: reviewed README, AGENTS.md, product messaging, repository release guidance, public/caller and store boundaries, and the preview stale report. No public-copy correction is needed because the optional shared IAP tools add no Newsworthy purchases or runtime behavior. Bug-fix table: no Newsworthy application fix in this run.
