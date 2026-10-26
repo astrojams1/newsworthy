@@ -466,3 +466,5 @@ This follow-up pins `vendor/skills` to shared app-release `344aa0f9028c87f6e0056
 No additional unexpected failure was observed. Final read-only compatibility, issue closure and tests are recorded in the PR description. Public copy and caller/release boundaries remain accurate; no new native UI, notification delivery, device or store-readiness claim is made, and no provider mutation occurs.
 
 Validation: final Node 22 status/check/validate/issues and shared release-tool suite pass. The required application suite and separately enabled native widget-store check pass; the preview staleness check confirms no changed on-screen line. Independent review is clean.
+
+Inherited preview limit: the staleness report names nine render inputs changed before this tooling follow-up. Every on-screen line still matches its source, and this diff changes none of those inputs. The preview source manifest remains out of date; the film was not rerendered or freshly checked for visual parity in this maintenance run. This qualification does not change any release gate or claim the film is current.
