@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-25T23:57:47+00:00
+Updated: 2026-10-26T03:18:20+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -107,6 +107,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 |---|---|---|---|---|---|---|
 | issue.legacy-push-signing | done | agent | observed | 2026-10-25 | Verified recovery from stored observed evidence: Apple capability/profile repair was read back byte-for-byte, replacement18 from the same application source finished, uploaded and processed VALID. Only obsolete16/17 requirements were explicitly superseded; their failed/canceled attempt history is intact. Current external release, privacy and device gates are unchanged. | — |
 | issue.completed-worktree-cleanup | done | agent | observed | 2026-10-25 | Verified cleanup: after clean-tree, merged-branch, ignored-generated-files and no-active-cwd checks, supported forced removal completed. Git worktree inventory no longer lists that task tree; branch ad86371605f2ced2a218bdbcb0eff5637277dd61 and external validation evidence are preserved. Canonical checkout and other worktrees are unchanged. | — |
+| issue.consumer-command-cwd | done | agent | observed | 2026-10-26 | Canonical empty submodule state and original clean source restored; corrected isolated initialization and app-root metadata read verified. | — |
 
 ## Product verification gates
 
@@ -4383,3 +4384,22 @@ Verified cleanup: after clean-tree, merged-branch, ignored-generated-files and n
 
 - /Volumes/ssd/builds/app-release-260/consumer-delivery.json: recorded completed cleanup and preserved source/evidence
 - Git canonical status remained clean; branch retained; worktree inventory verified after removal
+
+### 450. issue.consumer-command-cwd — failed
+
+2026-10-26T03:18:20+00:00 · observed · agent
+
+Consumer setup and one metadata read used an incorrect cwd: submodule init populated canonical vendor/skills; package metadata read targeted shared source.
+
+- Canonical HEAD stayed 87b2d3f09cd2a850eab8de318887d54a0ce86f2f and tracked status stayed clean; metadata command reported absent package.json before mutation.
+
+Next: Restore empty canonical submodule working directory, verify unchanged source, initialize isolated worktree, and repeat metadata read from app root.
+
+### 451. issue.consumer-command-cwd — done
+
+2026-10-26T03:18:20+00:00 · observed · agent
+
+Canonical empty submodule state and original clean source restored; corrected isolated initialization and app-root metadata read verified.
+
+- Canonical HEAD 87b2d3f09cd2a850eab8de318887d54a0ce86f2f remains clean and vendor/skills is uninitialized; new worktree source is 92a88f7 with vendor/skills exactly ec8729401fdfad46d15a20ebde2a79e96f36f2b9; app package/README read succeeds from correct root.
+- Newly initialized clean canonical clone preserved on SSD at /Volumes/ssd/builds/app-release-271/newsworthy/canonical-init-recovery; preexisting submodule configuration and clone objects retained.

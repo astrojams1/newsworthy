@@ -468,3 +468,18 @@ No additional unexpected failure was observed. Final read-only compatibility, is
 Validation: final Node 22 status/check/validate/issues and shared release-tool suite pass. The required application suite and separately enabled native widget-store check pass; the preview staleness check confirms no changed on-screen line. Independent review is clean.
 
 Inherited preview limit: the staleness report names nine render inputs changed before this tooling follow-up. Every on-screen line still matches its source, and this diff changes none of those inputs. The preview source manifest remains out of date; the film was not rerendered or freshly checked for visual parity in this maintenance run. This qualification does not change any release gate or claim the film is current.
+
+
+### 2026-10-26: shared app-release 2.7.1 session continuity
+
+This maintenance update pins `vendor/skills` to `ec8729401fdfad46d15a20ebde2a79e96f36f2b9` ([skills#103](https://github.com/astrojams1/skills/pull/103)). Shared guidance now carries the known working app/profile/tab across release turns, distinguishes connector, authentication and account state, and records a precise dependency before requesting owner involvement. Newsworthy continues reading shared source directly; app-owned thin skills and hooks are preserved.
+
+| Issue | Symptom and root cause | Correction | Observed verification and final state |
+| --- | --- | --- | --- |
+| `issue.consumer-command-cwd` | A chained setup command initialized the clean submodule working directory in canonical instead of the newly created worktree; a metadata read likewise used shared-source cwd. Canonical app source and HEAD were never changed. | Retained the newly initialized clean clone on SSD as a rollback artifact, restored canonical's empty submodule directory without changing preexisting config, then initialized the isolated submodule and repeated metadata reads in the app root. | Canonical HEAD `87b2d3f` and clean tracked source are preserved, its submodule is uninitialized, and the isolated worktree is pinned to exact `ec87294`. Corrected metadata read passes. Verified closed; both failure and recovery events remain. |
+
+The existing inferred-evidence warning for `google.disclosures` and current release, privacy, device and provider gates retain their original evidence. No app source, configuration, listing, rating/caller contract or provider state changes. No native build, upload or device claim is made. Compatibility, source tests and required application tests are recorded in the PR description and external delivery record.
+
+Copy accuracy: reviewed README, AGENTS.md, product messaging, app-release guidance, release records and the preview staleness report. This integration-only change reaches no public copy or preview input. The inherited preview source manifest is out of date for nine earlier inputs; every on-screen line still matches source. The film was not rerendered or freshly checked for visual parity. Current availability and native verification boundaries are preserved.
+
+Validation: Node 22 `ledger.mjs status`, `validate`, `check`, `issues` and the exact pinned shared release-tool suite pass. The repository-required `npm test` passes after an exact locked dependency install; the opt-in native case remains skipped in this integration-only run. Preview staleness readback confirms the inherited qualification above.
