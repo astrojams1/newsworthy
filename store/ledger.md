@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-26T03:18:20+00:00
+Updated: 2026-10-26T03:23:12+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -108,6 +108,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | issue.legacy-push-signing | done | agent | observed | 2026-10-25 | Verified recovery from stored observed evidence: Apple capability/profile repair was read back byte-for-byte, replacement18 from the same application source finished, uploaded and processed VALID. Only obsolete16/17 requirements were explicitly superseded; their failed/canceled attempt history is intact. Current external release, privacy and device gates are unchanged. | — |
 | issue.completed-worktree-cleanup | done | agent | observed | 2026-10-25 | Verified cleanup: after clean-tree, merged-branch, ignored-generated-files and no-active-cwd checks, supported forced removal completed. Git worktree inventory no longer lists that task tree; branch ad86371605f2ced2a218bdbcb0eff5637277dd61 and external validation evidence are preserved. Canonical checkout and other worktrees are unchanged. | — |
 | issue.consumer-command-cwd | done | agent | observed | 2026-10-26 | Canonical empty submodule state and original clean source restored; corrected isolated initialization and app-root metadata read verified. | — |
+| issue.copy-review-table | done | agent | observed | 2026-10-26 | Separating blank line removed before committed head; independent current-head readback confirms the new row is contiguous with its Markdown table. | — |
 
 ## Product verification gates
 
@@ -4403,3 +4404,21 @@ Canonical empty submodule state and original clean source restored; corrected is
 
 - Canonical HEAD 87b2d3f09cd2a850eab8de318887d54a0ce86f2f remains clean and vendor/skills is uninitialized; new worktree source is 92a88f7 with vendor/skills exactly ec8729401fdfad46d15a20ebde2a79e96f36f2b9; app package/README read succeeds from correct root.
 - Newly initialized clean canonical clone preserved on SSD at /Volumes/ssd/builds/app-release-271/newsworthy/canonical-init-recovery; preexisting submodule configuration and clone objects retained.
+
+### 452. issue.copy-review-table — failed
+
+2026-10-26T03:23:11+00:00 · observed · agent
+
+Independent review identified a blank line that detached the new copy-review ledger row from its Markdown table in an intermediate working diff.
+
+- Independent review of docs/copy-reviews/ledger.md line54 found the detached row; no application source or public copy was affected.
+
+Next: Remove the separating blank line and independently verify current committed table continuity.
+
+### 453. issue.copy-review-table — done
+
+2026-10-26T03:23:12+00:00 · observed · agent
+
+Separating blank line removed before committed head; independent current-head readback confirms the new row is contiguous with its Markdown table.
+
+- Independent reviewer verified cb71d0d18fbac6a35b633c2fdfa94cd0547f197e clean with the formatting finding resolved. A direct continuity assertion also passes on the current file.

@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-26T03:18:20+00:00",
+  "updated_at": "2026-10-26T03:23:12+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -1260,6 +1260,17 @@
       ],
       "next_action": "",
       "updated_at": "2026-10-26T03:18:20+00:00"
+    },
+    "issue.copy-review-table": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Separating blank line removed before committed head; independent current-head readback confirms the new row is contiguous with its Markdown table.",
+      "evidence": [
+        "Independent reviewer verified cb71d0d18fbac6a35b633c2fdfa94cd0547f197e clean with the formatting finding resolved. A direct continuity assertion also passes on the current file."
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-26T03:23:12+00:00"
     }
   },
   "events": [
@@ -8453,6 +8464,38 @@
         ],
         "next_action": "",
         "updated_at": "2026-10-26T03:18:20+00:00"
+      }
+    },
+    {
+      "sequence": 452,
+      "at": "2026-10-26T03:23:11+00:00",
+      "gate": "issue.copy-review-table",
+      "result": {
+        "state": "failed",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Independent review identified a blank line that detached the new copy-review ledger row from its Markdown table in an intermediate working diff.",
+        "evidence": [
+          "Independent review of docs/copy-reviews/ledger.md line54 found the detached row; no application source or public copy was affected."
+        ],
+        "next_action": "Remove the separating blank line and independently verify current committed table continuity.",
+        "updated_at": "2026-10-26T03:23:11+00:00"
+      }
+    },
+    {
+      "sequence": 453,
+      "at": "2026-10-26T03:23:12+00:00",
+      "gate": "issue.copy-review-table",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Separating blank line removed before committed head; independent current-head readback confirms the new row is contiguous with its Markdown table.",
+        "evidence": [
+          "Independent reviewer verified cb71d0d18fbac6a35b633c2fdfa94cd0547f197e clean with the formatting finding resolved. A direct continuity assertion also passes on the current file."
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-26T03:23:12+00:00"
       }
     }
   ],
