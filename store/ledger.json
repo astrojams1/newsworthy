@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-10-24T23:32:32+00:00",
+  "updated_at": "2026-10-25T23:57:47+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -737,26 +737,28 @@
       "updated_at": "2026-09-22T12:06:00+00:00"
     },
     "apple.testflight-16": {
-      "state": "failed",
+      "state": "not_applicable",
       "owner": "agent",
       "basis": "observed",
-      "summary": "EAS build 16 failed: existing app provisioning profile lacks Push Notifications capability and aps-environment entitlement required by the merged expo-notifications feature.",
+      "summary": "Superseded attempt requirement: build16 itself failed because its profile lacked Push Notifications and aps-environment. Observed apple.push-signing repair and replacement build18 with the same application source supersede this failed attempt; its original failure event and EAS ID remain in history.",
       "evidence": [
-        "EAS fdf9d5e5-54fd-4579-97fb-0a990c159ee3 XCODE_BUILD_ERROR; application source 8bfea2d."
+        "store/testflight-18.json: source8bfea2de2f4ff583d17edb7b1a63077c92cd0947, signingRepair.easProfileBytesVerified=true, production apsEnvironment, FINISHED build, UPLOAD_SUCCEEDED and Apple VALID",
+        "store/ledger.json: observed apple.push-signing repair, exact profile bytes verified"
       ],
-      "next_action": "Enable required app capability and refresh existing signing profile, then rebuild and verify the replacement. EAS APNs delivery key is separately absent.",
-      "updated_at": "2026-09-22T16:29:22+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-25T23:57:46+00:00"
     },
     "apple.testflight-17": {
-      "state": "failed",
+      "state": "not_applicable",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Canceled retry build 17 because installed EAS skipped Apple authentication in non-interactive mode and reused the same profile. Cancellation confirmed.",
+      "summary": "Superseded retry requirement: build17 was canceled after reusing the deficient profile; it did not succeed or upload. The verified signing repair and successful replacement18 supersede the canceled retry while preserving the cancellation event and EAS ID.",
       "evidence": [
-        "EAS 9fb326e4-37aa-4375-83a0-0e67548c790c cancellation succeeded; no upload."
+        "store/testflight-18.json: verified production signing repair and successful replacement upload/processing",
+        "store/ledger.json: apple.push-signing and apple.testflight-18-build/upload records"
       ],
-      "next_action": "Complete explicit credential configuration using the existing ASC key, verify push capability and profile entitlements, then rebuild.",
-      "updated_at": "2026-09-22T16:31:32+00:00"
+      "next_action": "",
+      "updated_at": "2026-10-25T23:57:46+00:00"
     },
     "apple.push-signing": {
       "state": "done",
@@ -1222,6 +1224,30 @@
       ],
       "next_action": "",
       "updated_at": "2026-10-21T15:20:17+00:00"
+    },
+    "issue.legacy-push-signing": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Verified recovery from stored observed evidence: Apple capability/profile repair was read back byte-for-byte, replacement18 from the same application source finished, uploaded and processed VALID. Only obsolete16/17 requirements were explicitly superseded; their failed/canceled attempt history is intact. Current external release, privacy and device gates are unchanged.",
+      "evidence": [
+        "store/testflight-18.json: signingRepair, sourceCommit, buildStatus, uploadState and appleProcessingState",
+        "store/ledger.json: observed apple.push-signing and replacement18 history"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-25T23:57:47+00:00"
+    },
+    "issue.completed-worktree-cleanup": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Verified cleanup: after clean-tree, merged-branch, ignored-generated-files and no-active-cwd checks, supported forced removal completed. Git worktree inventory no longer lists that task tree; branch ad86371605f2ced2a218bdbcb0eff5637277dd61 and external validation evidence are preserved. Canonical checkout and other worktrees are unchanged.",
+      "evidence": [
+        "/Volumes/ssd/builds/app-release-260/consumer-delivery.json: recorded completed cleanup and preserved source/evidence",
+        "Git canonical status remained clean; branch retained; worktree inventory verified after removal"
+      ],
+      "next_action": "",
+      "updated_at": "2026-10-25T23:57:47+00:00"
     }
   },
   "events": [
@@ -8282,6 +8308,106 @@
         "evidence": [],
         "next_action": "In the next iOS and Android builds, check a 135-character body behind '23h ago:' on the medium widget at 338 and 364 points and on Android: shown whole, or stepped down, ellipsized only when it cannot fit. Then app name off, 321 x 148 and larger Dynamic Type.",
         "updated_at": "2026-10-24T23:32:32+00:00"
+      }
+    },
+    {
+      "sequence": 444,
+      "at": "2026-10-25T23:57:46+00:00",
+      "gate": "issue.legacy-push-signing",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "The2.7 closure check exposed historical failed build16 and canceled retry17 attempt requirements. Their original events and EAS IDs are retained; recovery evidence must be reconciled without claiming those attempts succeeded.",
+        "evidence": [
+          "store/ledger.json: original apple.testflight-16 and apple.testflight-17 events; initial2.7 ledger issues output"
+        ],
+        "next_action": "Verify the stored signing repair and replacement18 provenance, then explicitly supersede only the obsolete attempt requirements.",
+        "updated_at": "2026-10-25T23:57:46+00:00"
+      }
+    },
+    {
+      "sequence": 445,
+      "at": "2026-10-25T23:57:46+00:00",
+      "gate": "apple.testflight-16",
+      "result": {
+        "state": "not_applicable",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Superseded attempt requirement: build16 itself failed because its profile lacked Push Notifications and aps-environment. Observed apple.push-signing repair and replacement build18 with the same application source supersede this failed attempt; its original failure event and EAS ID remain in history.",
+        "evidence": [
+          "store/testflight-18.json: source8bfea2de2f4ff583d17edb7b1a63077c92cd0947, signingRepair.easProfileBytesVerified=true, production apsEnvironment, FINISHED build, UPLOAD_SUCCEEDED and Apple VALID",
+          "store/ledger.json: observed apple.push-signing repair, exact profile bytes verified"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-25T23:57:46+00:00"
+      }
+    },
+    {
+      "sequence": 446,
+      "at": "2026-10-25T23:57:46+00:00",
+      "gate": "apple.testflight-17",
+      "result": {
+        "state": "not_applicable",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Superseded retry requirement: build17 was canceled after reusing the deficient profile; it did not succeed or upload. The verified signing repair and successful replacement18 supersede the canceled retry while preserving the cancellation event and EAS ID.",
+        "evidence": [
+          "store/testflight-18.json: verified production signing repair and successful replacement upload/processing",
+          "store/ledger.json: apple.push-signing and apple.testflight-18-build/upload records"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-25T23:57:46+00:00"
+      }
+    },
+    {
+      "sequence": 447,
+      "at": "2026-10-25T23:57:47+00:00",
+      "gate": "issue.legacy-push-signing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Verified recovery from stored observed evidence: Apple capability/profile repair was read back byte-for-byte, replacement18 from the same application source finished, uploaded and processed VALID. Only obsolete16/17 requirements were explicitly superseded; their failed/canceled attempt history is intact. Current external release, privacy and device gates are unchanged.",
+        "evidence": [
+          "store/testflight-18.json: signingRepair, sourceCommit, buildStatus, uploadState and appleProcessingState",
+          "store/ledger.json: observed apple.push-signing and replacement18 history"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-25T23:57:47+00:00"
+      }
+    },
+    {
+      "sequence": 448,
+      "at": "2026-10-25T23:57:47+00:00",
+      "gate": "issue.completed-worktree-cleanup",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Backfill: ordinary removal of the completed2.6.1 task worktree refused because it contained a submodule. No files were removed by that refusal.",
+        "evidence": [
+          "Git worktree removal returned: working trees containing submodules cannot be moved or removed; completed PR243 source already merged as ec8c8d687a2d2e4c4bb08669c94796288bd5d708"
+        ],
+        "next_action": "Verify the task worktree has no unmerged commits, uncommitted work, active cwd users or useful local-only artifacts before supported forced removal.",
+        "updated_at": "2026-10-25T23:57:47+00:00"
+      }
+    },
+    {
+      "sequence": 449,
+      "at": "2026-10-25T23:57:47+00:00",
+      "gate": "issue.completed-worktree-cleanup",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Verified cleanup: after clean-tree, merged-branch, ignored-generated-files and no-active-cwd checks, supported forced removal completed. Git worktree inventory no longer lists that task tree; branch ad86371605f2ced2a218bdbcb0eff5637277dd61 and external validation evidence are preserved. Canonical checkout and other worktrees are unchanged.",
+        "evidence": [
+          "/Volumes/ssd/builds/app-release-260/consumer-delivery.json: recorded completed cleanup and preserved source/evidence",
+          "Git canonical status remained clean; branch retained; worktree inventory verified after removal"
+        ],
+        "next_action": "",
+        "updated_at": "2026-10-25T23:57:47+00:00"
       }
     }
   ],

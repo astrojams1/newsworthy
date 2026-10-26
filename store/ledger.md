@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-10-24T23:32:32+00:00
+Updated: 2026-10-25T23:57:47+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -66,8 +66,8 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.testflight-15 | done | agent | observed | 2026-09-22 | iOS1.0.0 build15 processed VALID and is IN_BETA_TESTING. Existing Release QA group contains it and beta notes are saved and verified. Physical-device installation and new native visual states remain unverified. | — |
 | apple.testflight-15-build | done | agent | observed | 2026-09-22 | EAS finished signed iOS1.0.0 build15 at2026-09-22T11:57:52Z from merged main65cafc3. | — |
 | apple.testflight-15-upload | done | agent | observed | 2026-09-22 | EAS submission12c4aa47 completed FINISHED with no error. Parallel Apple preflight validation found build15 already uploaded and returned redundant-binary409; no direct upload or second submission was attempted. | — |
-| apple.testflight-16 | failed | agent | observed | 2026-09-22 | EAS build 16 failed: existing app provisioning profile lacks Push Notifications capability and aps-environment entitlement required by the merged expo-notifications feature. | Enable required app capability and refresh existing signing profile, then rebuild and verify the replacement. EAS APNs delivery key is separately absent. |
-| apple.testflight-17 | failed | agent | observed | 2026-09-22 | Canceled retry build 17 because installed EAS skipped Apple authentication in non-interactive mode and reused the same profile. Cancellation confirmed. | Complete explicit credential configuration using the existing ASC key, verify push capability and profile entitlements, then rebuild. |
+| apple.testflight-16 | not_applicable | agent | observed | 2026-10-25 | Superseded attempt requirement: build16 itself failed because its profile lacked Push Notifications and aps-environment. Observed apple.push-signing repair and replacement build18 with the same application source supersede this failed attempt; its original failure event and EAS ID remain in history. | — |
+| apple.testflight-17 | not_applicable | agent | observed | 2026-10-25 | Superseded retry requirement: build17 was canceled after reusing the deficient profile; it did not succeed or upload. The verified signing repair and successful replacement18 supersede the canceled retry while preserving the cancellation event and EAS ID. | — |
 | apple.push-signing | done | agent | observed | 2026-09-22 | Direct Apple API enabled PUSH_NOTIFICATIONS after EAS reported a non-persisted capability change. Replacement profile G6W87MV6Y4 includes production aps-environment and the existing widgets App Group; exact profile bytes assigned and read back from EAS. Existing distribution certificate reused. | — |
 | apple.testflight-18 | done | agent | observed | 2026-09-22 | iOS 1.0.0 build 18 is VALID and IN_BETA_TESTING in existing Release QA with one tester. Beta notes saved and verified. APNs delivery key remains absent and physical-device verification is pending. | — |
 | apple.testflight-18-build | done | agent | observed | 2026-09-22 | EAS finished iOS 1.0.0 build 18 successfully after the signing repair. | — |
@@ -100,6 +100,13 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | google.play-api | done | agent | observed | 2026-10-16 | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 | google.pricing | done | agent | observed | 2026-10-16 | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
 | google.news-policy | done | agent | observed | 2026-10-21 | 2026-10-21: Play Policy status reads 'No issues found'; closed testing Alpha Active with release 1.0.0 (version 17) in 173 countries / regions. | — |
+
+## Run issues
+
+| Gate | State | Owner | Evidence basis | Updated | Result | Next action |
+|---|---|---|---|---|---|---|
+| issue.legacy-push-signing | done | agent | observed | 2026-10-25 | Verified recovery from stored observed evidence: Apple capability/profile repair was read back byte-for-byte, replacement18 from the same application source finished, uploaded and processed VALID. Only obsolete16/17 requirements were explicitly superseded; their failed/canceled attempt history is intact. Current external release, privacy and device gates are unchanged. | — |
+| issue.completed-worktree-cleanup | done | agent | observed | 2026-10-25 | Verified cleanup: after clean-tree, merged-branch, ignored-generated-files and no-active-cwd checks, supported forced removal completed. Git worktree inventory no longer lists that task tree; branch ad86371605f2ced2a218bdbcb0eff5637277dd61 and external validation evidence are preserved. Canonical checkout and other worktrees are unchanged. | — |
 
 ## Product verification gates
 
@@ -4320,3 +4327,59 @@ Next: Recruit at least 12 testers (PR 221) and keep them opted in for 14 continu
 Owner's iPhone medium widget cut a 134-character sentence to 'since…' behind '1d ago:' with room for 'May.': the shared 140-character guard charged the age prefix to the body. The guard now keeps 135 for the body behind either prefix (JS, Swift, Java); unit tests and the Android compile pass. Not verified on a device.
 
 Next: In the next iOS and Android builds, check a 135-character body behind '23h ago:' on the medium widget at 338 and 364 points and on Android: shown whole, or stepped down, ellipsized only when it cannot fit. Then app name off, 321 x 148 and larger Dynamic Type.
+
+### 444. issue.legacy-push-signing — in_progress
+
+2026-10-25T23:57:46+00:00 · observed · agent
+
+The2.7 closure check exposed historical failed build16 and canceled retry17 attempt requirements. Their original events and EAS IDs are retained; recovery evidence must be reconciled without claiming those attempts succeeded.
+
+- store/ledger.json: original apple.testflight-16 and apple.testflight-17 events; initial2.7 ledger issues output
+
+Next: Verify the stored signing repair and replacement18 provenance, then explicitly supersede only the obsolete attempt requirements.
+
+### 445. apple.testflight-16 — not_applicable
+
+2026-10-25T23:57:46+00:00 · observed · agent
+
+Superseded attempt requirement: build16 itself failed because its profile lacked Push Notifications and aps-environment. Observed apple.push-signing repair and replacement build18 with the same application source supersede this failed attempt; its original failure event and EAS ID remain in history.
+
+- store/testflight-18.json: source8bfea2de2f4ff583d17edb7b1a63077c92cd0947, signingRepair.easProfileBytesVerified=true, production apsEnvironment, FINISHED build, UPLOAD_SUCCEEDED and Apple VALID
+- store/ledger.json: observed apple.push-signing repair, exact profile bytes verified
+
+### 446. apple.testflight-17 — not_applicable
+
+2026-10-25T23:57:46+00:00 · observed · agent
+
+Superseded retry requirement: build17 was canceled after reusing the deficient profile; it did not succeed or upload. The verified signing repair and successful replacement18 supersede the canceled retry while preserving the cancellation event and EAS ID.
+
+- store/testflight-18.json: verified production signing repair and successful replacement upload/processing
+- store/ledger.json: apple.push-signing and apple.testflight-18-build/upload records
+
+### 447. issue.legacy-push-signing — done
+
+2026-10-25T23:57:47+00:00 · observed · agent
+
+Verified recovery from stored observed evidence: Apple capability/profile repair was read back byte-for-byte, replacement18 from the same application source finished, uploaded and processed VALID. Only obsolete16/17 requirements were explicitly superseded; their failed/canceled attempt history is intact. Current external release, privacy and device gates are unchanged.
+
+- store/testflight-18.json: signingRepair, sourceCommit, buildStatus, uploadState and appleProcessingState
+- store/ledger.json: observed apple.push-signing and replacement18 history
+
+### 448. issue.completed-worktree-cleanup — in_progress
+
+2026-10-25T23:57:47+00:00 · observed · agent
+
+Backfill: ordinary removal of the completed2.6.1 task worktree refused because it contained a submodule. No files were removed by that refusal.
+
+- Git worktree removal returned: working trees containing submodules cannot be moved or removed; completed PR243 source already merged as ec8c8d687a2d2e4c4bb08669c94796288bd5d708
+
+Next: Verify the task worktree has no unmerged commits, uncommitted work, active cwd users or useful local-only artifacts before supported forced removal.
+
+### 449. issue.completed-worktree-cleanup — done
+
+2026-10-25T23:57:47+00:00 · observed · agent
+
+Verified cleanup: after clean-tree, merged-branch, ignored-generated-files and no-active-cwd checks, supported forced removal completed. Git worktree inventory no longer lists that task tree; branch ad86371605f2ced2a218bdbcb0eff5637277dd61 and external validation evidence are preserved. Canonical checkout and other worktrees are unchanged.
+
+- /Volumes/ssd/builds/app-release-260/consumer-delivery.json: recorded completed cleanup and preserved source/evidence
+- Git canonical status remained clean; branch retained; worktree inventory verified after removal

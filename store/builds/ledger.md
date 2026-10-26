@@ -452,3 +452,17 @@ PR #243 now pins `vendor/skills` to [skills#101](https://github.com/astrojams1/s
 Node 22 `ledger.mjs status`, `check`, `validate`, the pinned shared release-tool suite and `npm test` pass. The npm suite's opt-in native Swift widget-store case also passes separately with `NEWSWORTHY_NATIVE_TESTS=1`. The existing inferred-evidence warning for `google.disclosures` is preserved. The preview stale command runs: earlier input drift remains, while every on-screen line still matches its source. This tooling update changes no preview input, application behavior, rating/caller contract, listing copy, configuration or store availability. No build upload, provider mutation, fresh native UI or physical-device verification is claimed.
 
 Copy accuracy: reviewed README, AGENTS.md, product messaging, repository release guidance, public/caller and store boundaries, and the preview stale report. No public-copy correction is needed because the optional shared IAP tools add no Newsworthy purchases or runtime behavior. Bug-fix table: no Newsworthy application fix in this run.
+
+
+### 2026-10-25: shared app-release 2.7.0 issue reconciliation
+
+This follow-up pins `vendor/skills` to shared app-release `344aa0f9028c87f6e00567e45d5dfa08235f4ec2` ([skills#102](https://github.com/astrojams1/skills/pull/102)). It adds the read-only `ledger.mjs issues` completion check with the existing schema/default commands, preserving Newsworthy's direct source integration. App source, config, copy, listing data and current privacy/device/provider gates are unchanged.
+
+| Issue | Original result and cause | Recovery / observed verification | Final state |
+| --- | --- | --- | --- |
+| `issue.legacy-push-signing` | The new closure check exposed historical failed build 16 and canceled retry 17 requirements; the profile lacked Push Notifications and production `aps-environment`. | Existing observed `apple.push-signing` records verify exact replacement profile bytes. `store/testflight-18.json` ties the same application source to production signing, a finished replacement build, successful upload and Apple `VALID`. The original failed/canceled events and EAS IDs remain; only the obsolete attempt requirements are explicitly superseded. | Verified closed; neither 16 nor 17 is claimed successful. Current external gates are preserved. |
+| `issue.completed-worktree-cleanup` | Ordinary removal of the completed prior task worktree refused because it contained a submodule. | After checking merged/clean source, generated-only ignored files and no active cwd users, supported forced removal completed. The task branch, merged source and useful external validation evidence remain, and the worktree inventory confirms cleanup. | Verified closed; canonical checkout and other worktrees preserved. |
+
+No additional unexpected failure was observed. Final read-only compatibility, issue closure and tests are recorded in the PR description. Public copy and caller/release boundaries remain accurate; no new native UI, notification delivery, device or store-readiness claim is made, and no provider mutation occurs.
+
+Validation: final Node 22 status/check/validate/issues and shared release-tool suite pass. The required application suite and separately enabled native widget-store check pass; the preview staleness check confirms no changed on-screen line. Independent review is clean.
