@@ -1,0 +1,31 @@
+{
+  "name": "newsworthy-three-films",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "node scripts/render.mjs",
+    "stills": "node scripts/render.mjs --stills",
+    "typecheck": "tsc --noEmit",
+    "verify": "python scripts/verify.py",
+    "hooks:stills": "node scripts/render-b-hooks.mjs --stills",
+    "hooks:render": "node scripts/render-b-hooks.mjs --render",
+    "hooks:verify": "python scripts/verify-b-hooks.py"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.484",
+    "@remotion/renderer": "4.0.484",
+    "@remotion/bundler": "4.0.484",
+    "@remotion/player": "4.0.484",
+    "remotion": "4.0.484",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "@types/react": "19.2.14",
+    "@types/node": "22.19.15",
+    "playwright-core": "1.56.1"
+  }
+}

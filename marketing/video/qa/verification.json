@@ -1,0 +1,101 @@
+{
+  "delivery": {
+    "A-AntiFeed": {
+      "file": "output/A-AntiFeed-1080x1920.mp4",
+      "bytes": 2035180,
+      "sha256": "da72e7dde9f18fac4138e9227a4cf72c0940e42e733181aa1120fe943dace66a",
+      "duration": 22.058667,
+      "width": 1080,
+      "height": 1920,
+      "fps": "30/1",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "profile": "High",
+      "color_space": "bt709",
+      "audio": {
+        "codec": "aac",
+        "sample_rate": "48000",
+        "channels": 2,
+        "integrated_lufs": "-17.08",
+        "true_peak_dbtp": "-5.00",
+        "loudness_range_lu": "8.40"
+      },
+      "full_decode": "passed"
+    },
+    "B-OneDollar": {
+      "file": "output/B-OneDollar-1080x1920.mp4",
+      "bytes": 1742373,
+      "sha256": "b60152ba577b030d75360f571deff2ec3b47e421794e915c686409b183de5e56",
+      "duration": 22.058667,
+      "width": 1080,
+      "height": 1920,
+      "fps": "30/1",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "profile": "High",
+      "color_space": "bt709",
+      "audio": {
+        "codec": "aac",
+        "sample_rate": "48000",
+        "channels": 2,
+        "integrated_lufs": "-17.06",
+        "true_peak_dbtp": "-6.77",
+        "loudness_range_lu": "13.50"
+      },
+      "full_decode": "passed"
+    },
+    "C-FullStop": {
+      "file": "output/C-FullStop-1080x1920.mp4",
+      "bytes": 2881068,
+      "sha256": "f859551059d9839994f3b40f2f140497adc51951ed1a77b3ae7c7f4e61e1fbd1",
+      "duration": 24.042667,
+      "width": 1080,
+      "height": 1920,
+      "fps": "30/1",
+      "codec": "h264",
+      "pixel_format": "yuv420p",
+      "profile": "High",
+      "color_space": "bt709",
+      "audio": {
+        "codec": "aac",
+        "sample_rate": "48000",
+        "channels": 2,
+        "integrated_lufs": "-16.98",
+        "true_peak_dbtp": "-3.92",
+        "loudness_range_lu": "7.40"
+      },
+      "full_decode": "passed"
+    }
+  },
+  "inputs": {
+    "src/Films.tsx": "2a6df91f3135ff299a839bf3fae9d76ea97c9e25553b222404f74e759b33db4d",
+    "src/Root.tsx": "a69604738660bc637c82b50178ea6ffa7285375d2efe3c9a967bb98469c7ac36",
+    "src/design.tsx": "2515b743703f364eba71d476fc7c81b00216ddf9dca04297099537aaf92c62dd",
+    "src/index.ts": "2e0e358282a1b998a65387c653b97c2bb2eb7aae94cf200fc0b8d919f7be73a6",
+    "public/audio/A.wav": "42e65a32bc95cc365735bd78527b1d148e99181fbd743f0c155957bbc06206d5",
+    "public/audio/B.wav": "78bdbb204718fce27c0d7c92982957fb92c849a50b6956c5b792264cdef294f0",
+    "public/audio/C.wav": "84f92789368536e598e1a84eb54480ef23312473dcb36ee80d59dc8d98320f48",
+    "public/audio/sound-design.md": "5ee892d415f0ac8d51ac27655b32b05f9645862b413c7e4e715a2c9cdcb1cd07",
+    "public/fonts/Inter-OFL.txt": "3b0a5fca3d17942cde889069889dedbbbd075e9b599968c82a95f4d944e9b345",
+    "public/fonts/RobotoMono-OFL.txt": "b489132782690f2cc1ed23ab56d7057bbb08c42573603e8e704ae2e2ea9c8216",
+    "public/fonts/inter-latin-opsz-normal.woff2": "2c295d99e26dcf357d4d01bcf270fd6924b600c9a13dd8c363ef114f4c6976fa",
+    "public/fonts/roboto-mono-latin-300-normal.woff2": "54dae5e8ef1a5aad1b61d8fd6d9cb6d0576114388efa5f5d5bdbc0fe443c6711",
+    "public/ui/reading-dark.png": "d1e231561178a5d041a54e10cccb114404ef0eda6d4fbee998c8083dd2c7b367",
+    "public/ui/reading-light.png": "eef9102617d91fed175f7e635d924e23557d737172c78820ab1ba815d6cd810f",
+    "public/ui/timeline.png": "68b3f08cf6d685a7b8ccdb99b8717ae78628b5dd057bb9bb4b0588cc04961918",
+    "scripts/audio.py": "2cc14b5e0ca0fbb7b36dc6baeb0f2c4b80a7a371f617befe852b319785e8eb27",
+    "scripts/layout-check.mjs": "7f2ead0fae9ae3b9c14c08f6ed6d7f27d9e9930aefaf4b0789bed7acfe038a44",
+    "scripts/motion-sheets.py": "097c1845e65863525b3c70d485746677d4b972c5cd22e2e12e9bca0f9ea86fbe",
+    "scripts/playback-check.mjs": "4d81b2c536e126c941704982925a4ff8f9a7bf294fba4dca847f6bdbd8e1894f",
+    "scripts/render.mjs": "3bb26ab7f325098a6045425d9f6f8a01c3daa84f6ecc3733218e7f3c0ce9a63b",
+    "scripts/review-page.mjs": "2ff3d5d34f00efacecf58d907184e145aaba92f2b141168452f26b29d4816d3e",
+    "scripts/verify.py": "e44006d1cddb5b4e3e3bf0fe618baeedde26db3da0866b1315a4bdb0e1f4d73a",
+    "package.json": "8f2fa2f5fdf9d1baa08e2d0a05ac79a5b84169384a70b813eb35b247ab67e33f",
+    "package-lock.json": "58143c226eed142f7d8e03d1f7aa04487a91c6fec5e6fcb7d46f0495c5f9f6d4"
+  },
+  "limitations": [
+    "Native screenshots are historical captures, not a fresh iOS verification.",
+    "Audio measured objectively; not auditioned by ear.",
+    "Desktop safe-zone checks do not establish each social app overlay on every phone."
+  ]
+}

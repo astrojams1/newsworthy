@@ -1,0 +1,28 @@
+{
+  "control": "output/B-OneDollar-1080x1920.mp4",
+  "controlSha256": "b60152ba577b030d75360f571deff2ec3b47e421794e915c686409b183de5e56",
+  "method": "Remotion frames 0–89 + stream-copy of control video from keyframe 3s; full control AAC track copied unchanged",
+  "variants": [
+    {
+      "id": "B1-App",
+      "angle": "Category clarity",
+      "headline": "A news app. For one dollar.",
+      "output": "output/b-hooks/B1-App-1080x1920.mp4",
+      "sha256": "00fc13b1ac53cc3769bacf10deec917b3da99e155f1d79f71b0faae538b47d25"
+    },
+    {
+      "id": "B2-Once",
+      "angle": "Purchase certainty",
+      "headline": "One dollar. No monthly bill.",
+      "output": "output/b-hooks/B2-Once-1080x1920.mp4",
+      "sha256": "6161854fec46c2702311db36c221dca55a56f5f80949311187c817db23f81923"
+    },
+    {
+      "id": "B3-Attention",
+      "angle": "Attention",
+      "headline": "Buy the app. Keep your attention.",
+      "output": "output/b-hooks/B3-Attention-1080x1920.mp4",
+      "sha256": "6c372cd63d2ca78af681aebbd4ff41d292bca7fab186a2969ff3176647d390a7"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "frame": { "width": 1080, "height": 1920 },
+  "measured": {
+    "date": "2026-10-21",
+    "app": "YouTube for iOS",
+    "device": "iPhone 16 Pro, screenshot 1206 x 2622",
+    "view": "owner, own Short",
+    "method": "scripts/fit-screenshot.py against the source frame: scale 1.238, offset -66,-4, match 0.997",
+    "player": "Aspect-fill above the tab bar: the full height shows, 54 px of each side is cropped"
+  },
+  "keepOut": [
+    { "id": "crop-left", "x": 0, "y": 0, "width": 54, "height": 1920, "what": "Cropped off by the player on a 19.5:9 phone" },
+    { "id": "crop-right", "x": 1026, "y": 0, "width": 54, "height": 1920, "what": "Cropped off by the player on a 19.5:9 phone" },
+    { "id": "top", "x": 0, "y": 0, "width": 1080, "height": 245, "what": "Status bar, then back, search and menu" },
+    { "id": "rail", "x": 898, "y": 1061, "width": 182, "height": 859, "what": "Like, comment, save, share, remix and the sound thumbnail" },
+    { "id": "stack", "x": 0, "y": 1534, "width": 898, "height": 386, "what": "Channel and subscribe or Analytics, title, views, Share your video, progress bar" }
+  ],
+  "safe": { "x": 96, "y": 288, "width": 768, "height": 1152, "what": "Every word, number, face, product screen and call to action" },
+  "safeAboveRail": { "x": 96, "y": 288, "width": 888, "height": 732, "what": "Above the rail, content may run right to x 984" },
+  "margin": 32
+}

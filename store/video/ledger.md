@@ -535,3 +535,29 @@ channel can upload a custom Shorts thumbnail.
 **Open.** Upload it in Studio on desktop if the channel has custom Shorts
 thumbnails; otherwise pick the 12.9 s frame in the mobile app.
 
+
+## 2026-10-28 three social advertisements
+
+**Why.** The owner commissioned three original 15–30-second vertical ads: an anti-feed concept, a $1 proposition, and an original direction. The brief explicitly authorizes new anti-doomscrolling copy, a price/CTA, authentic product screens, and parallel creative review.
+
+**What changed.** New isolated `marketing/video/` workspace with Remotion/React/TypeScript compositions: A “More. More. Enough.” (22s), B “Pay with a dollar.” (22s), C “News. Full stop.” (24s). Existing preview/trailer cuts and production app behavior are preserved. Uses unchanged October 1 native captures, labeled outside the device; C explains the real one-week timeline in a separate editorial diagram rather than fabricating an end-of-list screen. Original sound synthesis, licensed local fonts, exact scripts, a review page, and render/verification tools accompany the files.
+
+**Outputs.** Three 1080×1920/30fps H.264/AAC MP4s in `marketing/video/output/`. Final sizes, hashes, stream properties, audio levels and input hashes are generated in `marketing/video/qa/verification.json`.
+
+**Review.** Complete draft renders, full-size stills, independent product/copy and visual review, revised native framing/date labels, proper vector CTA glyph, and stronger differentiated B/C execution. Final decoded frame sheets and safe-zone boards are under `marketing/video/previews/` and `marketing/video/qa/`; `qa/REVIEW.md` records the precise checks and their scope.
+
+**Not verified.** Audio by ear, current native builds, physical-phone social overlays, or audience performance. These are social advertisements, not submitted App Store previews. No upload or publication occurred; the existing store-preview release gate is unaffected.
+
+**Next.** Use the local review page; lead with A and compare B/C using actual purchase conversion. The owner controls publication. No permission is needed to finish these local deliverables, and no publication was requested.
+
+## Follow-up: B opening-copy variants
+
+**Why.** After the owner reported B was the strongest performer, they asked for the proposed opening-copy variations.
+
+**What changed.** Three additional full-length B cuts, changing only the first three seconds' headline. `marketing/video/src/b-hooks.json` defines the copy; Remotion exposes B1-App, B2-Once and B3-Attention. The dedicated renderer checks the original B's hash and 3-second keyframe, renders only the new opening, then stream-copies the original remaining video and complete audio.
+
+**Outputs.** `marketing/video/output/b-hooks/{B1-App,B2-Once,B3-Attention}-1080x1920.mp4`, with preview frames, a comparison viewer, scripts and `B-HOOKS.md`. Each is 22 seconds of video at 1080×1920/30fps, H.264/BT.709 with the control's stereo AAC. Input/output hashes and checks are in `marketing/video/qa/b-hooks/verification.json`.
+
+**Review.** Full-resolution opening/boundary stills, independent claim/copy review, final decoded contact sheets, TypeScript checking, headline wrapping/safe-zone checks and browser playback. Verification compares all 570 post-opening video frames and the full audio with the control, rather than relying on a claim that only the opening changed.
+
+**Scope.** The original A/B/C files and production application are preserved. Existing historical native capture and audio-audition limitations remain. No publishing, upload, spend or new performance result is implied.

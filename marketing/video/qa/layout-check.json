@@ -1,0 +1,5 @@
+{
+  "sampleIntervalFrames": 6,
+  "scope": "Visible editorial text bounds; native screenshot content visually reviewed separately",
+  "failures": []
+}

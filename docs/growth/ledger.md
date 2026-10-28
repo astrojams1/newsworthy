@@ -211,3 +211,38 @@ find out if anything big happened. Newsworthy gives the world's news one
 number and one sentence. $1, no ads, no subscription. Search "Newsworthy: Calm
 News" on the App Store."
 
+
+## 2026-10-28: three social advertising films
+
+**What and why.** Owner-commissioned three distinct finished vertical ads, intended to explain the finite news product and its one-time US$1 purchase. The current brief expressly authorizes anti-doomscrolling positioning, original campaign copy and a purchase CTA. Product claims were checked against source and released App Store evidence.
+
+**Assets.** `marketing/video/`: three 1080×1920 MP4s (22/22/24s), complete Remotion source, original synthesized soundtracks, native historical captures with dates, exact copy/timelines, preview frames, rendering instructions and a local viewing page. See its `README.md`, `PRODUCT-EVIDENCE.md` and `qa/REVIEW.md`.
+
+**Status.** Produced locally; not posted, uploaded, or used in paid campaigns. No messages sent and no advertising spend. A is the recommended launch creative; B tests purchase clarity, C tests the finite-week idea. No campaign provider token was invented.
+
+**Results.** No audience results yet. Verification is production QA, not conversion evidence.
+
+**Next.** On publication, use real campaign links where clickable and the on-screen search name elsewhere. Compare purchase conversion with comparable audiences/placements; collect +2, +7 and +28-day results. Publishing remains outside this production request.
+
+
+## Follow-up: B reported as the strongest performer
+
+**Evidence.** After delivery of the three social advertisements, the owner reported: “B performed best by far.” This is an owner-reported result. The metric, numerical results, channel, audience, spend and comparison conditions were not supplied; it is not recorded as a quantified purchase-conversion result.
+
+**Decision.** B, “Pay with a dollar,” replaces A as the recommended lead creative and becomes the control for future comparisons. Updated `marketing/video/README.md` and `marketing/video/TIMELINES.md`; the original rendered videos and their production evidence remain unchanged.
+
+**Interpretation.** The price-led concept warrants further testing. The comparison does not isolate the contribution of the $1 hook, one-time purchase framing, receipt, dark product shot or pacing.
+
+**Next proposed test.** Compare an opening-copy variant against the original B while retaining its offer, product reveal and CTA. No variant was rendered or published in this follow-up.
+
+## Follow-up: three B opening-copy variants produced
+
+**Why.** The owner asked to create the opening variations proposed after reporting that B performed best by far.
+
+**Assets.** Three finished 22-second films in `marketing/video/output/b-hooks/`: B1 “A news app. For one dollar.”, B2 “One dollar. No monthly bill.”, B3 “Buy the app. Keep your attention.” The comparison page is `marketing/video/b-hooks.html`; exact copy, test notes and rendering commands are in `marketing/video/B-HOOKS.md`.
+
+**Controlled change.** Only the headline during 0–3 seconds changes. The large $1, supporting line, typography and timing are preserved. Each film reuses the winning B's encoded video from its 3-second keyframe onward and its complete AAC soundtrack. Verification requires all 570 subsequent decoded frames, the full decoded audio and AAC payload to match the control. The original MP4s are unchanged.
+
+**Status.** Produced and checked locally; not published and no advertising spend. The new hooks have no performance results. The reported win for the original B remains the reason for using it as the control; no metric or numerical lift was supplied.
+
+**Next.** Compare each new opening with the original B under comparable audiences, placement, copy, destination and attribution. Evaluate purchases for the purchase objective, with retention/click-through as supporting measures. Keep the original winner available throughout the test.
