@@ -1,0 +1,587 @@
+{
+  "failures": [],
+  "samples": [
+    {
+      "id": "B1-App",
+      "frame": 0,
+      "boxes": [
+        {
+          "text": "A news app. For one dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 580.171875,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B1-App",
+      "frame": 9,
+      "boxes": [
+        {
+          "text": "A news app. For one dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 580.171875,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B1-App",
+      "frame": 30,
+      "boxes": [
+        {
+          "text": "A news app. For one dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 580.171875,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B1-App",
+      "frame": 60,
+      "boxes": [
+        {
+          "text": "A news app. For one dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 580.171875,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B1-App",
+      "frame": 89,
+      "boxes": [
+        {
+          "text": "A news app. For one dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 580.171875,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B1-App",
+      "frame": 90,
+      "boxes": [
+        {
+          "text": "One-time purchase",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 400.25,
+          "bottom": 367
+        },
+        {
+          "text": "Once.",
+          "opacity": 1,
+          "x": 120,
+          "y": 659,
+          "right": 544.5,
+          "bottom": 881
+        }
+      ]
+    },
+    {
+      "id": "B1-App",
+      "frame": 99,
+      "boxes": [
+        {
+          "text": "One-time purchase",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 400.25,
+          "bottom": 367
+        },
+        {
+          "text": "Once.",
+          "opacity": 1,
+          "x": 120,
+          "y": 659,
+          "right": 544.5,
+          "bottom": 881
+        }
+      ]
+    },
+    {
+      "id": "B2-Once",
+      "frame": 0,
+      "boxes": [
+        {
+          "text": "One dollar. No monthly bill.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 598.078125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B2-Once",
+      "frame": 9,
+      "boxes": [
+        {
+          "text": "One dollar. No monthly bill.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 598.078125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B2-Once",
+      "frame": 30,
+      "boxes": [
+        {
+          "text": "One dollar. No monthly bill.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 598.078125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B2-Once",
+      "frame": 60,
+      "boxes": [
+        {
+          "text": "One dollar. No monthly bill.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 598.078125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B2-Once",
+      "frame": 89,
+      "boxes": [
+        {
+          "text": "One dollar. No monthly bill.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 598.078125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B2-Once",
+      "frame": 90,
+      "boxes": [
+        {
+          "text": "One-time purchase",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 400.25,
+          "bottom": 367
+        },
+        {
+          "text": "Once.",
+          "opacity": 1,
+          "x": 120,
+          "y": 659,
+          "right": 544.5,
+          "bottom": 881
+        }
+      ]
+    },
+    {
+      "id": "B2-Once",
+      "frame": 99,
+      "boxes": [
+        {
+          "text": "One-time purchase",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 400.25,
+          "bottom": 367
+        },
+        {
+          "text": "Once.",
+          "opacity": 1,
+          "x": 120,
+          "y": 659,
+          "right": 544.5,
+          "bottom": 881
+        }
+      ]
+    },
+    {
+      "id": "B3-Attention",
+      "frame": 0,
+      "boxes": [
+        {
+          "text": "Buy the app. Keep your attention.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 676.53125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B3-Attention",
+      "frame": 9,
+      "boxes": [
+        {
+          "text": "Buy the app. Keep your attention.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 676.53125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B3-Attention",
+      "frame": 30,
+      "boxes": [
+        {
+          "text": "Buy the app. Keep your attention.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 676.53125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B3-Attention",
+      "frame": 60,
+      "boxes": [
+        {
+          "text": "Buy the app. Keep your attention.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 676.53125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B3-Attention",
+      "frame": 89,
+      "boxes": [
+        {
+          "text": "Buy the app. Keep your attention.",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 676.53125,
+          "bottom": 375
+        },
+        {
+          "text": "$1.",
+          "opacity": 1,
+          "x": 120,
+          "y": 457,
+          "right": 571.4375,
+          "bottom": 1062
+        },
+        {
+          "text": "Pay with a dollar.",
+          "opacity": 1,
+          "x": 120,
+          "y": 1095,
+          "right": 484.984375,
+          "bottom": 1161
+        }
+      ]
+    },
+    {
+      "id": "B3-Attention",
+      "frame": 90,
+      "boxes": [
+        {
+          "text": "One-time purchase",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 400.25,
+          "bottom": 367
+        },
+        {
+          "text": "Once.",
+          "opacity": 1,
+          "x": 120,
+          "y": 659,
+          "right": 544.5,
+          "bottom": 881
+        }
+      ]
+    },
+    {
+      "id": "B3-Attention",
+      "frame": 99,
+      "boxes": [
+        {
+          "text": "One-time purchase",
+          "opacity": 1,
+          "x": 120,
+          "y": 341,
+          "right": 400.25,
+          "bottom": 367
+        },
+        {
+          "text": "Once.",
+          "opacity": 1,
+          "x": 120,
+          "y": 659,
+          "right": 544.5,
+          "bottom": 881
+        }
+      ]
+    }
+  ]
+}

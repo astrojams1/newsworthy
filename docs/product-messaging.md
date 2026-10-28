@@ -18,11 +18,18 @@ off, breathing room or getting on with your day. Do not use â€œno doomscrollingâ
 or a list of absent features as a tagline. Subscription, purchase and advertising
 facts belong in relevant help and policy sections.
 
-One exception, by the owner's brief of 2026-10-21: the YouTube trailer
+An exception, by the owner's brief of 2026-10-21: the YouTube trailer
 (`store/video/trailer`) tells why the app exists, so it sets the endless feed
 against what breaks through, says "doomscroll", and names the $1 price with
 no ads, subscription or in-app purchases. It still ends on the core copy and
 follows every other rule here.
+
+The owner's social-advertising brief of 2026-10-28 also authorizes the
+`marketing/video` campaign to contrast the endless feed with Newsworthy, use
+attention and anti-doomscrolling positioning, and show the one-time US$1 price
+and purchase CTA. This includes the three films and their opening-copy variants.
+It authorizes no health-outcome, guaranteed time-saving or complete-coverage
+claims, and changes no application behavior or rating calibration.
 
 Product constraints remain: no feed, subscriptions, in-app purchases, ads, or
 engagement, addiction or growth-hacking tactics.
@@ -159,6 +166,9 @@ locally with Gradle. Native and physical-device verification scopes must be reco
 - `store/video/trailer/README.md`: the YouTube trailer's brief and script;
   `store/video/trailer/film.js` quotes it and the app, checked by
   `test/trailer.test.js`.
+- `marketing/video/TIMELINES.md` and `marketing/video/B-HOOKS.md`: social-ad
+  scripts and opening tests; `PRODUCT-EVIDENCE.md` there records price, claim
+  boundaries and historical native-capture provenance.
 
 If the production domain or release status changes, update all applicable
 surfaces above, plus `mobile.release.json`. Search engines and social platforms

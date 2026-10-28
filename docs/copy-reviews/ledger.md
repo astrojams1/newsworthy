@@ -236,3 +236,31 @@ Merged with main on 20 October 2026. Support keeps main's Settings sentence
 (timeline on by default, Publisher) and takes this entry's notification and
 widget "Checked at" sentences, which still match main's formatters. Nothing on
 main since claims or denies TestFlight delivery.
+
+## Social advertisements and B opening tests — 28 October 2026
+
+PR branch: `codex/newsworthy-three-films`. Reviewed README, AGENTS.md, product
+messaging, store pricing/release records, historical native-capture provenance,
+the campaign's exact scripts, product evidence, delivery notes and growth/video
+ledgers against `origin/main`. The change adds six finished social-ad MP4s and
+their production workspace; it changes no app, caller, prompt, API, settings,
+purchase model or release status. The score/sentence, finite week-long timeline,
+one-time US$1 download, no ads and no subscription claims match repository
+evidence. The films label their retained native screenshots as recorded on
+1 October 2026; they do not present them as current news or a newly tested build.
+
+Product messaging now records the owner's explicit campaign exception for
+attention/anti-doomscrolling and price positioning. B is the lead based on the
+owner's reported result; no metric, numerical lift or outcome for its three new
+hooks is inferred. AGENTS.md records the owner's standing instruction to commit
+and merge finished video work through the normal checked PR workflow.
+
+Open limits: no new live App Store query, native capture or physical-device
+verification; audio measured but not auditioned by ear. The existing store
+preview remains out of date: its stale-input report identifies nine changed
+inputs, while every on-screen line still matches its source. It is not one of
+these six social ads and was not re-rendered. Repository delivery is distinct
+from posting to social channels or buying advertising; neither is claimed here.
+
+**Lesson:** record an owner-authorized campaign exception in the shared copy
+guide as well as campaign notes, so later reviews retain its exact scope.

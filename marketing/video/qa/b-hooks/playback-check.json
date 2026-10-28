@@ -1,0 +1,59 @@
+{
+  "method": "Sequential muted real-time Chromium playback of finished MP4s; no audio audition",
+  "videos": [
+    {
+      "id": "B1-App",
+      "duration": 22.058667,
+      "ended": true,
+      "events": [
+        {
+          "event": "playing",
+          "time": 0
+        },
+        {
+          "event": "ended",
+          "time": 22.058667
+        }
+      ],
+      "frameCallbacks": 658,
+      "totalVideoFrames": 660,
+      "droppedVideoFrames": 2
+    },
+    {
+      "id": "B2-Once",
+      "duration": 22.058667,
+      "ended": true,
+      "events": [
+        {
+          "event": "playing",
+          "time": 0
+        },
+        {
+          "event": "ended",
+          "time": 22.058667
+        }
+      ],
+      "frameCallbacks": 660,
+      "totalVideoFrames": 660,
+      "droppedVideoFrames": 0
+    },
+    {
+      "id": "B3-Attention",
+      "duration": 22.058667,
+      "ended": true,
+      "events": [
+        {
+          "event": "playing",
+          "time": 0
+        },
+        {
+          "event": "ended",
+          "time": 22.058667
+        }
+      ],
+      "frameCallbacks": 660,
+      "totalVideoFrames": 660,
+      "droppedVideoFrames": 1
+    }
+  ]
+}

@@ -16,9 +16,8 @@ release status. Calm presentation must not change the rating calibration.
 - Keep coding-agent guidance in `AGENTS.md`. Do not create `CLAUDE.md` in
   repository source, in any case; `test/agents-md.test.js` checks tracked
   and untracked files.
-- Before starting any new feature, run `git fetch origin` and inspect the latest
-  target branch. Start from the fetched `origin/main`, preserving existing local
-  work; never assume the local `main` is current.
+- Before a new feature, run `git fetch origin` and inspect `origin/main`.
+  Start from that fetched branch, preserving existing local work.
 - Before creating every PR, use `.agents/skills/newsworthy-pr-copy-review/SKILL.md`
   to check README, product/marketing copy, help, caller contracts and release
   claims against the change, and record the copy accuracy review in the PR
@@ -39,8 +38,6 @@ release status. Calm presentation must not change the rating calibration.
   (including ignored files); preserve unfinished work and useful artifacts first.
   Do not move or remove a workspace that an active task or process is using.
 - Preserve the calm indicator: a number out of 10 and one sentence explaining why.
-  No doomscrolling, subscriptions, in-app purchases, ads, or engagement,
-  addiction or growth-hacking tactics.
 - Colors: edit `design/palette.json` (OKLCH scale anchors, `brand.level`) and follow
   "Changing colors" in `design/README.md`; never hand-edit generated tokens or assets.
 - Widget settings live in `design/widget-settings.json`; iOS Edit Widget and Android
@@ -73,6 +70,8 @@ release status. Calm presentation must not change the rating calibration.
 - To remake the preview reel or trailer, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
+- For finished video work, commit MP4s, source, assets and review evidence, then
+  merge the PR after checks pass. The owner authorizes this by default.
 - To grow downloads, use `.agents/skills/newsworthy-growth/SKILL.md`; log
   every activity and its results in `docs/growth/ledger.md`.
 - Before any app build, store submission or EAS sandbox, use
