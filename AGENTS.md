@@ -280,6 +280,13 @@ Houthi strikes on Riyadh's airport had been filed under a 6 October one. The
 record also shows a root older than its window by its own first report
 (`priorRoots()`), not its earliest re-report.
 
+**v6: a slug is reused only for what it names.** v5 plus one paragraph:
+related, a shared cause or a shared market move is not the story.
+`korea-stocks`, coined for a fall in Seoul, took three weeks of AI-spending news
+and labelled an Amazon sentence "Korea Stocks" ([record](docs/prompt-evaluations/judge-v6.md)).
+A name that outgrows its story is renamed at `/admin`: a row like a merge,
+covering readings stored before it, so the old name is free afterwards.
+
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
 caller fetches `/api/developments` — story names and developments, data only —
@@ -697,9 +704,8 @@ v7's rungs untouched and adding a paragraph to Summary explaining that scores
 should be lower, which is the wrong half of the job: prose about a scale does
 not move a scale.
 
-v8 was live for seventeen minutes and produced **no readings at all** —
-readings run v2, v3, v4, v7, v9, v10, v11 and skip it entirely. The objection
-to it stands on reading the diff, not on evidence.
+v8 was live for seventeen minutes and produced **no readings**; the objection
+to it rests on the diff, not on evidence.
 
 v9 rewrote the rungs so a normal day sits at 3, and added **Examples**: the
 author's own scored readings, each headlined in eight words or fewer. Whether v9
@@ -747,12 +753,10 @@ caller asked for the digest itself to be published as a field instead; that
 would make the check vacuous, since echoing a published value proves nothing
 about what was read. Publishing the bytes is safe, publishing the answer is not.
 
-The first wording ("the bytes to hash come from `/api/prompt`", qualifier
-trailing) read as "hash the response body", and a caller did, storing a reading
-flagged `prompt_verified: false`. The check worked, but the false flag looked
-like a delivery failure. The definition now leads with the field's decoded
-value, names both wrong inputs (the body, the escaped form) and what a false
-flag means; a test pins it and keeps the old opening out.
+The first wording read as "hash the response body", and a caller did; the
+false flag looked like a delivery failure. The definition now leads with the
+field's decoded value and names both wrong inputs and what a false flag means;
+a test pins it.
 
 The 16-character hash printed in the instructions is deliberately a *prefix* of
 the 64-character digest. A caller that echoes the printed value, or any prefix,
@@ -778,10 +782,9 @@ story, verified, at the same score, as "Glacier collapse floods on the
 Nepal-Tibet border killed more than 500 people, with roughly 1,500 still
 missing as searches continue." No clause.
 
-Three verified readings is not a result, and two of them are six minutes apart
-on the same news. But the direction is the opposite of what four prompt
-versions assumed, and it is the first evidence in the series that separates a
-scale that rates wrongly from a scale the rater never received.
+Three verified readings, two of them six minutes apart, is not a result, but
+it is the first evidence separating a scale that rates wrongly from one the
+rater never received.
 
 **v10 and v11 were written against evidence that has not survived.** Both
 answered the trailing clause ("distant from US readers") with a theory about

@@ -44,7 +44,8 @@ submission. Success means the API confirms that the reading was stored.
 4. Only then fetch `/api/developments` and answer the judge prompt from the
    instructions about your reading against that record: `development_of` (an id
    the record lists, or null for a new development), `story` (reuse a listed
-   name verbatim when the story is on record), `note`, and the judge prompt's
+   name verbatim when the reading is about what it names, never for a merely
+   related story), `note`, and the judge prompt's
    `judge_version`. When two listed names are one story coined twice, add
    `same_story` with both — never for merely related stories. Newsworthy calls
    no model for this.

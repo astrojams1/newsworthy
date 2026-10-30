@@ -144,6 +144,7 @@ actually wired up. Start there when a deploy misbehaves.
 | `/api/admin/trials?hours=168` | Each trial's readings, paired with the live caller's reading nearest in time, with agreement figures and run reports; `&cohort=` picks one trial ([caller trials](docs/caller-trials.md)) |
 | `/api/admin/settings` | `GET` the model, cadence, development half-life, story half-life and judge model with the priced options; `POST` to change them |
 | `/api/admin/merges` | `POST {stories: [a, b]}` records that two story names are one story (the name with more readings is kept); `POST /api/admin/merges/:id/undo` undoes one with a new row. Listed as `merges` in `/api/admin/history` and on `/admin` |
+| `/api/admin/renames` | `POST {story, name}` gives a story an unused new name, for one that has outgrown its name; it covers the readings stored before it, so the old name is free afterwards. Undone like a merge, and listed with them (`kind: 'rename'`) |
 | `/api/admin/judgements/next` | The oldest unjudged reading and the record as it stood when it arrived; `POST /api/admin/judgements` stores an answer for it, checked like a caller's and stamped `backfill`. Strictly oldest first |
 | `/api/admin/judge` | `POST` to judge stored readings that carry no judgement, oldest first, in batches — for history from before the judge existed. Idempotent; `remaining` says whether to call again |
 | `/api/admin/readings/:id/void` | `POST` to retire a reading — status becomes `error`, the slot is released, and `?reason=` is recorded |

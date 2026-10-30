@@ -44,6 +44,7 @@ export const PORTS = {
   // server could start before the first released the port (CI, 2026-10-05).
   storyBackfill: 8867,
   trialCaller: 8869,
+  storyRenames: 8871,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall

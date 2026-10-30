@@ -196,12 +196,34 @@ place or a kind of event still report different developments when they describe
 different occurrences, and anything that happened after a recorded development
 was first seen is a later occurrence, not added detail on it.`;
 
+/**
+ * v6 says a slug is reused only for what it names, and nothing else changes:
+ * v5 is kept byte-identical and one paragraph is appended.
+ *
+ * v2 made a name on record sticky and v3 said two related stories are not one,
+ * but nothing said which readings a name may take. So a story grew by
+ * association. `korea-stocks` was coined on 12 October for a 4% fall in Seoul;
+ * by 30 October 123 readings sat under it — Tokyo stocks, CoreWeave's debt,
+ * Musk on a SpaceX-Tesla merger, then Alphabet's, Amazon's and Intel's
+ * results — each linked to the one before by the AI-spending worry, and the
+ * page labelled an Amazon sentence "Korea Stocks". The rule is v3's limit on a
+ * merge applied to filing: related, a shared cause or a shared market move is
+ * not the story. A name that has outgrown its story is the admin's to rename
+ * (src/merges.js), not the judge's.
+ */
+const V6 = `${V5}
+
+A slug on record is taken back only by a reading about what it names,
+never by one that is merely related to it, shares its cause or moves with it:
+a company's results are not news about another country's stocks.`;
+
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
   2: { label: 'story-vocabulary-v2', added: '2026-09-04', text: V2 },
   3: { label: 'same-story-merge-v3', added: '2026-09-25', text: V3 },
   4: { label: 'market-levels-v4', added: '2026-09-28', text: V4 },
   5: { label: 'one-occurrence-v5', added: '2026-10-11', text: V5 },
+  6: { label: 'slug-names-story-v6', added: '2026-10-30', text: V6 },
 };
 
 export function judgeVersion() {

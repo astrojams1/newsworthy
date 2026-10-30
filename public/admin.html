@@ -178,7 +178,9 @@
   .merges .undone { color: var(--ink-faint); text-decoration: line-through; }
   .merges button, .merge-form button { font: inherit; font-size: 0.75rem; padding: 0.15rem 0.6rem; margin-left: 0.5rem; }
   .merge-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.75rem; }
-  .merge-form { flex-wrap: nowrap; }
+  /* The status goes under the fields: inline, it squeezed them to a few letters. */
+  .merge-form .note { flex-basis: 100%; }
+  .merge-form .note:empty { display: none; }
   .merge-form input { font: inherit; font-size: 0.8125rem; padding: 0.3rem 0.5rem; border: 1px solid var(--rule); border-radius: 7px; background: var(--surface); color: var(--ink); flex: 1; min-width: 0; max-width: 12rem; }
   .merge-form span { color: var(--ink-faint); }
   .merge-form button { margin-left: 0; }
@@ -241,7 +243,7 @@
   <h2>Live stories</h2>
   <div class="stories" id="stories"></div>
 
-  <h2>Merges</h2>
+  <h2>Merges and renames</h2>
   <div id="merges"></div>
   <form class="merge-form" id="merge-form">
     <input name="a" placeholder="alias" aria-label="Story to merge" autocomplete="off" autocapitalize="off">
@@ -249,6 +251,13 @@
     <input name="b" placeholder="story" aria-label="Story to keep" autocomplete="off" autocapitalize="off">
     <button type="submit">Merge</button>
     <span class="note" id="merge-status"></span>
+  </form>
+  <form class="merge-form" id="rename-form">
+    <input name="story" placeholder="story" aria-label="Story to rename" autocomplete="off" autocapitalize="off">
+    <span aria-hidden="true">→</span>
+    <input name="to" placeholder="new name" aria-label="New name" autocomplete="off" autocapitalize="off">
+    <button type="submit">Rename</button>
+    <span class="note" id="rename-status"></span>
   </form>
 
   <h2>Runs</h2>
@@ -703,18 +712,18 @@
     ).join('') || `<tr><td colspan="${columns.length}" class="empty">Nothing logged yet.</td></tr>`;
   }
 
-  /** Every merge, newest first: in force with an undo, or struck through once
-   *  undone. Undo rows themselves are folded into the merge they undo. */
+  /** Every merge and rename, newest first: in force with an undo, or struck
+   *  through once undone. Undo rows themselves are folded into the row they undo. */
   function renderMerges(merges = []) {
     const undone = new Set(merges.filter((m) => m.undoes != null).map((m) => m.undoes));
     const rows = merges.filter((m) => m.undoes == null);
     $('merges').innerHTML = rows.length ? `<ul class="merges">${rows.map((m) => {
       const who = m.source === 'caller' && m.reading_id != null ? `caller, reading ${m.reading_id}` : m.source;
-      const text = `${escapeHtml(m.alias)} → ${escapeHtml(m.canonical)} · ${escapeHtml(who)} · ${escapeHtml(fmtTime.format(new Date(m.created_at)))}${m.note ? ` · ${escapeHtml(m.note)}` : ''}`;
+      const text = `${escapeHtml(m.alias)} → ${escapeHtml(m.canonical)}${m.kind === 'rename' ? ' · renamed' : ''} · ${escapeHtml(who)} · ${escapeHtml(fmtTime.format(new Date(m.created_at)))}${m.note ? ` · ${escapeHtml(m.note)}` : ''}`;
       return m.active
         ? `<li>${text}<button type="button" data-undo="${m.id}">Undo</button></li>`
         : `<li class="undone">${text}${undone.has(m.id) ? ' · undone' : ''}</li>`;
-    }).join('')}</ul>` : '<p class="empty">No merges.</p>';
+    }).join('')}</ul>` : '<p class="empty">No merges or renames.</p>';
   }
 
   const post = (path, body) => fetch(path, {
@@ -738,6 +747,15 @@
     const res = await post('/api/admin/merges', { stories: [form.a.value, form.b.value] });
     const body = await res.json().catch(() => ({}));
     $('merge-status').textContent = res.ok ? `${body.merge.alias} → ${body.merge.canonical}` : (body.error ?? res.statusText);
+    if (res.ok) { form.reset(); load(); }
+  });
+
+  $('rename-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const res = await post('/api/admin/renames', { story: form.story.value, name: form.to.value });
+    const body = await res.json().catch(() => ({}));
+    $('rename-status').textContent = res.ok ? `${body.rename.alias} → ${body.rename.canonical}` : (body.error ?? res.statusText);
     if (res.ok) { form.reset(); load(); }
   });
 
