@@ -68,6 +68,34 @@ test('a rename covers the readings stored before it and leaves the old name free
   }, 'readings count under the name each goes by');
 });
 
+test('renames and merges resolve every reading of one story to one name, whatever their order', () => {
+  // Codex review on #247: renamed korea-stocks -> ai-stocks, then a later Seoul
+  // story under korea-stocks merged with ai-stocks, and the readings from
+  // before the rename came back round to korea-stocks, were taken for a cycle,
+  // and stayed apart under ai-stocks.
+  const t = (day) => Date.parse(`2026-${day}T00:00:00Z`);
+  const renamed = { alias: 'korea-stocks', canonical: 'ai-stocks', kind: 'rename', created_at: '2026-10-30T12:00:00Z' };
+  const names = (map) => ['korea-stocks@10-20', 'ai-stocks@11-01', 'korea-stocks@11-05'].map((r) => {
+    const [story, day] = r.split('@');
+    return canonicalStory(map, story, t(day));
+  });
+  const intoOld = aliasMap([renamed, { alias: 'ai-stocks', canonical: 'korea-stocks', kind: 'merge', created_at: '2026-11-10T12:00:00Z' }]);
+  assert.deepEqual(names(intoOld), ['korea-stocks', 'korea-stocks', 'korea-stocks'], 'merged into the reused name');
+  const intoNew = aliasMap([renamed, { alias: 'korea-stocks', canonical: 'ai-stocks', kind: 'merge', created_at: '2026-11-10T12:00:00Z' }]);
+  assert.deepEqual(names(intoNew), ['ai-stocks', 'ai-stocks', 'ai-stocks'], 'merged into the new name');
+
+  // A rename reaches what was merged in before it, not what was merged in after.
+  const map = aliasMap([
+    { alias: 'hormuz-conflict', canonical: 'iran-war', kind: 'merge', created_at: '2026-10-01T00:00:00Z' },
+    { alias: 'iran-war', canonical: 'us-iran-war', kind: 'rename', created_at: '2026-10-15T00:00:00Z' },
+    { alias: 'gulf-shipping', canonical: 'iran-war', kind: 'merge', created_at: '2026-10-20T00:00:00Z' },
+  ]);
+  assert.equal(canonicalStory(map, 'hormuz-conflict', t('09-20')), 'us-iran-war', 'merged in before the rename');
+  assert.equal(canonicalStory(map, 'iran-war', t('10-10')), 'us-iran-war');
+  assert.equal(canonicalStory(map, 'iran-war', t('10-18')), 'iran-war', 'the name reused after the rename');
+  assert.equal(canonicalStory(map, 'gulf-shipping', t('10-10')), 'iran-war', 'merged in after the rename');
+});
+
 test('a rename needs a story on record and a name nothing uses', () => {
   const map = aliasMap([{ alias: 'hormuz-conflict', canonical: 'iran-war' }]);
   const context = { map, known: new Set(['iran-war', 'korea-stocks']), used: new Set(['iran-war', 'hormuz-conflict', 'korea-stocks']) };

@@ -25,8 +25,8 @@
 /**
  * Alias → what it resolves to, from the merges and renames in force, oldest
  * first. A later row can send a name on into another, so resolution follows
- * the chain. Each entry carries the alias's merge, if any, and its renames,
- * each holding until the moment it was made.
+ * the chain. Each entry carries the alias's merge, if any, from the moment it
+ * was made, and its renames, each holding until the moment it was made.
  *
  * @param {Array<{alias: string, canonical: string, kind?: string, created_at?: string}>} merges
  */
@@ -35,35 +35,46 @@ export function aliasMap(merges = []) {
   for (const { alias, canonical, kind, created_at } of merges) {
     if (!alias || !canonical || alias === canonical) continue;
     const entry = map.get(alias) ?? { merge: null, renames: [] };
-    if (kind === 'rename') entry.renames.push({ canonical, until: Date.parse(created_at) });
-    else entry.merge = canonical;
+    const made = Date.parse(created_at);
+    if (kind === 'rename') entry.renames.push({ canonical, until: made });
+    else entry.merge = { canonical, since: Number.isNaN(made) ? -Infinity : made };
     map.set(alias, entry);
   }
   return map;
 }
 
-/** One step along the chain for a reading stored at `at`: the first rename
- *  made after it, else the name's merge. */
+/**
+ * One step along the chain for a reading that has held `name` since `at`: the
+ * first rename made after that, else the name's merge. A merge carries the
+ * reading on from the moment it was made, so a rename older than the merge
+ * does not reach it: renamed `korea-stocks` → `ai-stocks`, then a later
+ * `korea-stocks` merged with `ai-stocks`, every reading of either lands on the
+ * one name the merge kept.
+ */
 function step(map, name, at) {
   const entry = map.get(name);
   if (!entry) return null;
-  return entry.renames.find((r) => at < r.until)?.canonical ?? entry.merge;
+  const rename = entry.renames.find((r) => at < r.until);
+  if (rename) return { name: rename.canonical, at };
+  return entry.merge ? { name: entry.merge.canonical, at: Math.max(at, entry.merge.since) } : null;
 }
 
 /** The name a story goes by, for a reading stored at `at` (ms). Without `at`
  *  the name is read as it is used now, so a rename does not apply to it. A
- *  cycle — which mergeProblem refuses to create — stops at the first repeat
- *  rather than looping. */
+ *  name can come round again later, as `korea-stocks` does above; a cycle —
+ *  which mergeProblem refuses to create — repeats a name at the same moment,
+ *  and stops there rather than looping. */
 export function canonicalStory(map, story, at = Infinity) {
   if (!story || !map?.size) return story ?? null;
-  const seen = new Set([story]);
-  let name = story;
-  for (let next = step(map, name, at); next != null; next = step(map, name, at)) {
-    if (seen.has(next)) break;
-    seen.add(next);
-    name = next;
+  const seen = new Set([`${story}@${at}`]);
+  let hop = { name: story, at };
+  for (let next = step(map, hop.name, hop.at); next != null; next = step(map, hop.name, hop.at)) {
+    const key = `${next.name}@${next.at}`;
+    if (seen.has(key)) break;
+    seen.add(key);
+    hop = next;
   }
-  return name;
+  return hop.name;
 }
 
 /**
