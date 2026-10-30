@@ -5,11 +5,11 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyNameStats, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialCohorts, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyFilings, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialCohorts, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { pairTrials, summarizeTrial } from './trial.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries, frontPageSpans } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
-import { aliasMap, canonicalStory, mergeProblem, slug, survivor } from './merges.js';
+import { aliasMap, canonicalStory, mergeProblem, renameProblem, slug, storyStats, survivor, usedNames } from './merges.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
@@ -127,13 +127,7 @@ async function mergesForAdmin() {
  */
 async function proposeMerge(pair, { source, reading_id = null, note = null }) {
   const map = aliasMap(await activeMerges());
-  const names = await storyNameStats();
-  const stats = new Map();
-  for (const { story, readings, first } of names) {
-    const name = canonicalStory(map, story);
-    const held = stats.get(name) ?? { readings: 0, first };
-    stats.set(name, { readings: held.readings + readings, first: String(first) < String(held.first) ? first : held.first });
-  }
+  const stats = storyStats(await storyFilings(), map);
   const known = source === 'caller'
     ? new Set((await recentStories()).map((s) => s.story))
     : new Set(stats.keys());
@@ -144,6 +138,26 @@ async function proposeMerge(pair, { source, reading_id = null, note = null }) {
   const merge = await addMerge({ alias: canonical === a ? b : a, canonical, source, reading_id, note });
   console.log(`story merge by ${source}: ${merge.alias} -> ${merge.canonical}`);
   return { merge };
+}
+
+/**
+ * Give a story a new name, or say why not: the admin's fix for a name that has
+ * outgrown its story, which a merge cannot make because a merge keeps the name
+ * more readings used. A row like a merge, undone the same way; it covers the
+ * readings stored before it, and the page, the board and the judge's list read
+ * the new name at once.
+ */
+async function renameStory(story, name, { note = null } = {}) {
+  const merges = await activeMerges();
+  const map = aliasMap(merges);
+  const filings = await storyFilings();
+  const problem = renameProblem(story, name, {
+    map, known: new Set(storyStats(filings, map).keys()), used: usedNames(filings, await allMerges()),
+  });
+  if (problem) return { refused: problem };
+  const rename = await addMerge({ alias: canonicalStory(map, slug(story)), canonical: slug(name), kind: 'rename', source: 'admin', note });
+  console.log(`story renamed by admin: ${rename.alias} -> ${rename.canonical}`);
+  return { rename };
 }
 
 function secretMatches(supplied, expected) {
@@ -874,12 +888,17 @@ const server = createServer(async (req, res) => {
      * the developments the ones before it established — running it newest first
      * would ask the judge to match against a future it has not seen.
      */
-    // Story merges by hand: the safety valve over the caller's. An undo is a row
-    // naming the merge it undoes, never a deletion.
+    // Story merges and renames by hand: the safety valve over the caller's. An
+    // undo is a row naming the merge or rename it undoes, never a deletion.
     if (path === '/api/admin/merges' && req.method === 'POST') {
       const body = await readJsonBody(req).catch(() => ({}));
       const out = await proposeMerge(body?.stories, { source: 'admin', note: body?.note ?? null });
       return json(res, out.merge ? 201 : 422, out.merge ? { merge: out.merge } : { error: out.refused });
+    }
+    if (path === '/api/admin/renames' && req.method === 'POST') {
+      const body = await readJsonBody(req).catch(() => ({}));
+      const out = await renameStory(body?.story, body?.name, { note: body?.note ?? null });
+      return json(res, out.rename ? 201 : 422, out.rename ? { rename: out.rename } : { error: out.refused });
     }
     const undo = path.match(/^\/api\/admin\/merges\/(\d+)\/undo$/);
     if (undo && req.method === 'POST') {
@@ -889,7 +908,7 @@ const server = createServer(async (req, res) => {
         return json(res, 422, { error: `no merge ${undo[1]} in force` });
       }
       const body = await readJsonBody(req).catch(() => ({}));
-      const row = await addMerge({ alias: target.alias, canonical: target.canonical, source: 'admin',
+      const row = await addMerge({ alias: target.alias, canonical: target.canonical, kind: target.kind ?? 'merge', source: 'admin',
         note: body?.note ?? null, undoes: target.id });
       console.log(`story merge ${target.id} undone: ${target.alias} is its own story again`);
       return json(res, 201, { undo: row });

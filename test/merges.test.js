@@ -1,6 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { aliasMap, canonicalStory, mergeProblem, survivor } from '../src/merges.js';
+import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { chromium } from 'playwright-core';
+import { aliasMap, canonicalStory, mergeProblem, renameProblem, storyStats, survivor, usedNames } from '../src/merges.js';
 import { ADMIN_TOKEN, CALLER_TOKEN, PORTS, caller, withServer } from './with-server.js';
 
 test('a name resolves through the merges in force, following a chain and stopping on a cycle', () => {
@@ -34,6 +37,47 @@ test('the name kept is the one more readings were filed under, the older on a ti
   ]);
   assert.equal(survivor('hormuz-threat', 'iran-war', stats), 'iran-war', 'established, not merely older');
   assert.equal(survivor('a', 'b', stats), 'b');
+});
+
+test('a rename covers the readings stored before it and leaves the old name free after', () => {
+  // korea-stocks was coined for a fall in Seoul and held three weeks of
+  // AI-spending news. Renamed, those readings read as the new name; a Seoul
+  // story coined under the old name afterwards is a story of its own.
+  const at = Date.parse('2026-10-30T12:00:00Z');
+  const map = aliasMap([{ alias: 'korea-stocks', canonical: 'ai-stocks', kind: 'rename', created_at: '2026-10-30T12:00:00Z' }]);
+  assert.equal(canonicalStory(map, 'korea-stocks', at - 1), 'ai-stocks', 'a reading filed before the rename');
+  assert.equal(canonicalStory(map, 'korea-stocks', at + 1), 'korea-stocks', 'a story coined under the old name later');
+  assert.equal(canonicalStory(map, 'korea-stocks'), 'korea-stocks', 'the name as it is used now');
+
+  const chain = aliasMap([
+    { alias: 'korea-stocks', canonical: 'ai-stocks', kind: 'rename', created_at: '2026-10-30T12:00:00Z' },
+    { alias: 'korea-stocks', canonical: 'seoul-tariffs', kind: 'rename', created_at: '2026-11-05T12:00:00Z' },
+    { alias: 'ai-stocks', canonical: 'tech-selloff' },
+  ]);
+  assert.equal(canonicalStory(chain, 'korea-stocks', at - 1), 'tech-selloff', 'the first rename after it, then on through a merge');
+  assert.equal(canonicalStory(chain, 'korea-stocks', at + 1), 'seoul-tariffs', 'a second coinage takes the second rename');
+
+  const stats = storyStats([
+    { story: 'korea-stocks', created_at: '2026-10-12T10:00:00.000Z' },
+    { story: 'korea-stocks', created_at: '2026-10-29T10:00:00.000Z' },
+    { story: 'korea-stocks', created_at: '2026-10-31T10:00:00.000Z' },
+  ], map);
+  assert.deepEqual(Object.fromEntries(stats), {
+    'ai-stocks': { readings: 2, first: '2026-10-12T10:00:00.000Z' },
+    'korea-stocks': { readings: 1, first: '2026-10-31T10:00:00.000Z' },
+  }, 'readings count under the name each goes by');
+});
+
+test('a rename needs a story on record and a name nothing uses', () => {
+  const map = aliasMap([{ alias: 'hormuz-conflict', canonical: 'iran-war' }]);
+  const context = { map, known: new Set(['iran-war', 'korea-stocks']), used: new Set(['iran-war', 'hormuz-conflict', 'korea-stocks']) };
+  assert.equal(renameProblem('Korea Stocks', 'AI stocks', context), null, 'names are compared as stored slugs');
+  assert.equal(renameProblem('hormuz-conflict', 'gulf-war', context), null, 'a merged-away name names the story it joined');
+  assert.match(renameProblem('volcano', 'eruption', context), /volcano is not a story on record/);
+  assert.match(renameProblem('korea-stocks', 'Korea stocks', context), /already its name/);
+  assert.match(renameProblem('korea-stocks', 'hormuz-conflict', context), /already a name on record: merge the two instead/);
+  assert.match(renameProblem('korea-stocks', ' ', context), /needs a story and its new name/);
+  assert.deepEqual(usedNames([{ story: 'a' }], [{ alias: 'b', canonical: 'c' }]), new Set(['a', 'b', 'c']));
 });
 
 test('a caller merges two names, the page and the record read one story, and an undo restores both', async () => {
@@ -124,4 +168,83 @@ test('the backfill judges unjudged readings oldest first, against the record as 
     assert.equal(row.judge_version, next.body.judge_version);
     assert.equal((await admin('/api/admin/judgements/next')).body.reading.id, second.id);
   });
+});
+
+test('the admin renames a story: the page and the record read the new name, and an undo restores it', async () => {
+  await withServer({ port: PORTS.storyRenames, env: { ADMIN_TOKEN, NEWSWORTHY_NO_SCHEDULER: '1' } }, async (base) => {
+    const submit = caller(base);
+    const admin = (path, init = {}) => fetch(`${base}${path}`, {
+      ...init, headers: { 'content-type': 'application/json', 'x-admin-token': ADMIN_TOKEN, ...init.headers },
+    }).then(async (r) => ({ status: r.status, body: await r.json() }));
+    const record = async () => (await (await fetch(`${base}/api/developments`, { headers: { 'x-newsworthy-token': CALLER_TOKEN } })).json()).record;
+    const current = async () => (await fetch(`${base}/api/current`)).json();
+    const rename = (body) => admin('/api/admin/renames', { method: 'POST', body: JSON.stringify(body) });
+
+    await submit(4, 'Iran struck a tanker near Hormuz.', { story: 'iran-war' });
+    await submit(5, "South Korea's main stock index fell 4%.", { story: 'korea-stocks' });
+    await submit(5, 'Amazon missed sales forecasts and its shares fell 8%.', { story: 'korea-stocks' });
+    assert.equal((await current()).explanation_story, 'korea-stocks', 'the outgrown name, as the page showed it');
+
+    assert.match((await rename({ story: 'volcano', name: 'eruption' })).body.error, /not a story on record/);
+    assert.match((await rename({ story: 'korea-stocks', name: 'iran-war' })).body.error, /merge the two instead/);
+
+    const made = await rename({ story: 'korea-stocks', name: 'AI stocks', note: 'outgrew its name' });
+    assert.equal(made.status, 201);
+    assert.deepEqual([made.body.rename.alias, made.body.rename.canonical, made.body.rename.kind], ['korea-stocks', 'ai-stocks', 'rename']);
+    assert.equal((await current()).explanation_story, 'ai-stocks', 'the page reads the new name at once');
+    const renamed = await record();
+    assert.match(renamed, /^ {2}ai-stocks · 2 readings/m, 'and so does the judge\'s list');
+    assert.doesNotMatch(renamed, /korea-stocks/, 'the old name is no longer offered');
+
+    const history = await admin('/api/admin/history?hours=24');
+    const [row] = history.body.merges;
+    assert.deepEqual([row.kind, row.active], ['rename', true]);
+    assert.deepEqual(history.body.attempts.filter((r) => /Amazon|Korea/.test(r.explanation)).map((r) => r.story),
+      ['korea-stocks', 'korea-stocks'], 'readings keep the name they were judged with');
+    assert.deepEqual(history.body.stories.map((s) => s.story).sort(), ['ai-stocks', 'iran-war'], 'the board reads the new name');
+
+    // The old name is free again: a Seoul story coined under it later is its own.
+    await submit(6, "South Korea's index fell 5% after a tariff threat.", { story: 'korea-stocks' });
+    const later = await record();
+    assert.match(later, /^ {2}korea-stocks · 1 reading,/m);
+    assert.match(later, /^ {2}ai-stocks · 2 readings/m);
+
+    const undone = await admin(`/api/admin/merges/${row.id}/undo`, { method: 'POST', body: '{}' });
+    assert.equal(undone.status, 201);
+    assert.equal(undone.body.undo.kind, 'rename');
+    const restored = await record();
+    assert.match(restored, /^ {2}korea-stocks · 3 readings/m, 'undone, every reading is under its own name again');
+    assert.doesNotMatch(restored, /ai-stocks/);
+  });
+});
+
+test('a merge or rename status sits under its fields on a phone, not beside them', { timeout: 60_000 }, async (t) => {
+  // The form did not wrap, so a status beside the fields took their room: on
+  // 2026-10-30, "volcano is not a story on record" left each field 33px wide.
+  const executablePath = [process.env.CHROME_PATH, '/opt/pw-browsers/chromium', '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean).find((path) => existsSync(path));
+  if (!executablePath) {
+    assert.ok(!process.env.CI, 'no Chrome or Chromium found; set CHROME_PATH');
+    t.skip('no Chrome or Chromium on this machine; set CHROME_PATH to run it');
+    return;
+  }
+  const browser = await chromium.launch({ executablePath });
+  try {
+    // The source page with its scripts off: the layout is the CSS's alone.
+    const page = await browser.newPage({ viewport: { width: 390, height: 800 }, javaScriptEnabled: false });
+    await page.setContent(await readFile(new URL('../public/admin.html', import.meta.url), 'utf8'));
+    for (const form of ['merge', 'rename']) {
+      const box = await page.evaluate((form) => {
+        const status = document.getElementById(`${form}-status`);
+        status.textContent = 'volcano is not a story on record';
+        const field = document.querySelector(`#${form}-form input`).getBoundingClientRect();
+        return { field: field.width, below: status.getBoundingClientRect().top >= field.bottom };
+      }, form);
+      assert.ok(box.field > 100, `${form} field is ${box.field}px wide with a status showing`);
+      assert.ok(box.below, `${form} status sits under the fields`);
+    }
+  } finally {
+    await browser.close();
+  }
 });

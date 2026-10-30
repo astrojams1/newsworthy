@@ -118,6 +118,9 @@ export function ensureSchema() {
         note        TEXT,
         undoes      BIGINT                 -- set on an undo row: the merge it undoes
       )`;
+    // 'merge' or 'rename' (src/merges.js); null on rows from before renames,
+    // all of them merges.
+    await sql`ALTER TABLE story_merges ADD COLUMN IF NOT EXISTS kind TEXT`;
     // Whose token a refused request carried: 'caller' or 'admin', never its
     // value. Null on rows from before it was recorded.
     await sql`ALTER TABLE rejections ADD COLUMN IF NOT EXISTS token TEXT`;
@@ -421,7 +424,7 @@ export async function recentStories({ days = 14, limit = 20, before = new Date()
 export async function activeMerges() {
   await ensureSchema();
   const rows = await sql`
-    SELECT m.id, m.created_at, m.alias, m.canonical, m.source, m.reading_id, m.note
+    SELECT m.id, m.created_at, m.alias, m.canonical, m.kind, m.source, m.reading_id, m.note
       FROM story_merges m
      WHERE m.undoes IS NULL
        AND NOT EXISTS (SELECT 1 FROM story_merges u WHERE u.undoes = m.id)
@@ -433,17 +436,17 @@ export async function activeMerges() {
 export async function allMerges({ limit = 200 } = {}) {
   await ensureSchema();
   const rows = await sql`
-    SELECT id, created_at, alias, canonical, source, reading_id, note, undoes
+    SELECT id, created_at, alias, canonical, kind, source, reading_id, note, undoes
       FROM story_merges ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
   return rows.map(shape);
 }
 
-export async function addMerge({ alias, canonical, source, reading_id = null, note = null, undoes = null }) {
+export async function addMerge({ alias, canonical, kind = 'merge', source, reading_id = null, note = null, undoes = null }) {
   await ensureSchema();
   const rows = await sql`
-    INSERT INTO story_merges (alias, canonical, source, reading_id, note, undoes)
-    VALUES (${alias}, ${canonical}, ${source}, ${reading_id}, ${note}, ${undoes})
-    RETURNING id, created_at, alias, canonical, source, reading_id, note, undoes`;
+    INSERT INTO story_merges (alias, canonical, kind, source, reading_id, note, undoes)
+    VALUES (${alias}, ${canonical}, ${kind}, ${source}, ${reading_id}, ${note}, ${undoes})
+    RETURNING id, created_at, alias, canonical, kind, source, reading_id, note, undoes`;
   return shape(rows[0]);
 }
 
@@ -454,13 +457,15 @@ export async function mergeById(id) {
   return rows[0] ? shape(rows[0]) : null;
 }
 
-/** Readings filed under each stored name, and when each was first used. */
-export async function storyNameStats() {
+/** Every stored reading's own story name and when it was stored, for
+ *  counting readings by the name each story goes by (storyStats() in
+ *  merges.js). Per reading rather than per name, because a rename covers only
+ *  the readings stored before it. */
+export async function storyFilings() {
   await ensureSchema();
   const rows = await sql`
-    SELECT story, COUNT(*) AS readings, MIN(created_at) AS first
-      FROM ratings WHERE status = 'ok' AND story IS NOT NULL GROUP BY story`;
-  return rows.map((r) => ({ story: r.story, readings: num(r.readings) ?? 0, first: iso(r.first) }));
+    SELECT story, created_at FROM ratings WHERE status = 'ok' AND story IS NOT NULL`;
+  return rows.map((r) => ({ story: r.story, created_at: iso(r.created_at) }));
 }
 
 /** Rows with `story` resolved to the name it goes by. The row's own stored
@@ -469,7 +474,7 @@ async function withStoryNames(rows) {
   if (!rows.some((r) => r.story)) return rows;
   const map = aliasMap(await activeMerges());
   if (map.size === 0) return rows;
-  return rows.map((r) => (r.story ? { ...r, story: canonicalStory(map, r.story) } : r));
+  return rows.map((r) => (r.story ? { ...r, story: canonicalStory(map, r.story, new Date(r.created_at).getTime()) } : r));
 }
 
 /**
