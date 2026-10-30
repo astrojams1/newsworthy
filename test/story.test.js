@@ -73,7 +73,7 @@ test('the judge prompt is a specification, not a set of orders', () => {
 test('judge prompts are append-only, pinned by hash', () => {
   // A stored judgement names the version that produced it. Editing a published
   // version would reinterpret readings already recorded, silently.
-  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '2aa2059729dcee6f' };
+  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '2aa2059729dcee6f', 6: '283696c11d9ccac2' };
   const prompts = allJudgePrompts();
   assert.deepEqual(prompts.map((p) => p.version), Object.keys(pins).map(Number),
     'every published version is pinned here');
@@ -170,7 +170,21 @@ test('v5 says a development is one occurrence and keeps v4 whole', () => {
   assert.match(added, /share a subject, a party, a\nplace or a kind of event still report different developments/, 'a shared subject is not identity');
   assert.match(added, /happened after a recorded development\nwas first seen is a later occurrence, not added detail on it/, 'timing separates occurrences');
   assert.doesNotMatch(added, /strike|attack|airport|Houthi/i, 'a rule, not the case that prompted it');
-  assert.equal(judgeVersion(), 5, 'and v5 is what new readings are judged by');
+});
+
+test('v6 says a slug is taken back only for what it names and keeps v5 whole', () => {
+  // korea-stocks, coined for a fall in Seoul, took three weeks of AI-spending
+  // news by association, and the page labelled an Amazon sentence "Korea
+  // Stocks". v6 applies v3's limit on a merge to filing. v5 is kept byte for
+  // byte and one paragraph added.
+  const [, , , , v5, v6] = allJudgePrompts();
+  assert.ok(v6.text.startsWith(v5.text), 'v5 verbatim, then one paragraph');
+  const added = v6.text.slice(v5.text.length);
+  assert.match(added, /^\n\nA slug on record is taken back only by a reading about what it names,/, 'the rule, stated first');
+  assert.match(added, /never by one that is merely related to it, shares its cause or moves with it/,
+    'related is not the story, as v3 says of a merge');
+  assert.doesNotMatch(added, /korea|amazon|seoul|\bAI\b/i, 'a rule and a general example, not the case that prompted it');
+  assert.equal(judgeVersion(), 6, 'and v6 is what new readings are judged by');
 });
 
 test('a development whose first report has left the window is shown as first reported', () => {

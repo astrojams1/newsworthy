@@ -52,6 +52,7 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | #243 scope update — shared app-release 2.6.1 | 2026-10-25 | README, AGENTS.md, product messaging, repository/shared release guidance, public/caller and store boundaries, build/release ledgers and preview stale report | None needed: the shared native-QA, IAP review screenshot and image-only submission guards change tooling only; no Newsworthy purchases or runtime behavior are added | Earlier preview input drift remains, with displayed lines matching source; provider state and native UI are not re-verified. npm suite and the separate opt-in Swift widget-store test pass |
 | This PR — shared app-release 2.7.0 | 2026-10-25 | README, product messaging, caller/release boundaries, store records and preview staleness | No public copy change: additive issue-closure tooling; historical 16/17 attempts explicitly superseded by observed replacement18 recovery | Preview source manifest remains out of date for nine inherited inputs; this tooling diff changes none. On-screen text matches, but film visual parity was not freshly verified. Current external gates are preserved. |
 | This PR — shared app-release 2.7.1 | 2026-10-26 | README, AGENTS.md, product messaging, app-release guidance, release records and preview staleness report | None needed: session-continuity wording and gitlink change no public behavior, contract or availability | Inherited preview manifest is out of date for nine inputs; on-screen lines match source; no rerender, fresh visual parity or native/device claim |
+| Judge v6 and story renames | 2026-10-30 | README, AGENTS.md, product messaging, llms.txt, caller instructions, rating skill, story age, story timeline, preview video | README documents `POST /api/admin/renames`; the rating skill's naming step now says a listed name is reused only for a reading about what it names, as v6 does. Caller instructions embed v6 themselves | Rename not yet applied in production; v6 adoption awaits judged readings stamped 6; preview video already stale, nothing on screen changed |
 
 ## Lessons
 
@@ -73,6 +74,10 @@ Claims that were wrong once. Check for them again; date each item.
   design README said the iOS sentence truncates only below 12.5 pt, while the
   shared 140-character guard had already cut it whenever an age prefix showed.
   A claim about layout truncation holds only if no text guard runs first.
+- **A paraphrase of a prompt goes stale with it** (2026-10-30). The rating
+  skill restated judge v2's reuse rule in its own words, which v6 narrowed.
+  When a judge or rating prompt changes, reread every caller-facing summary of
+  it, not only the text that embeds it.
 
 ## Resubmission preparation, 1 October 2026
 
