@@ -50,3 +50,8 @@ What earlier versions cost to learn; each is told in full in `AGENTS.md`.
   (v24, 2026-10-14). Given an explicit current time, v23 and v24 alike wrote
   dates; only the live caller, dating its own research, wrote "today". Test
   time-relative wording live.
+- **A requested change is finished when it is merged and verified in
+  production** (2026-11-05). Judge v7 stopped at an open PR because this
+  skill said only an explicit request to merge authorized one. The owner's
+  standing instruction, now in `AGENTS.md`: a request for a change covers the
+  PR, the merge once checks pass and the production check.
