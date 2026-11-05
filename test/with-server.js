@@ -45,6 +45,7 @@ export const PORTS = {
   storyBackfill: 8867,
   trialCaller: 8869,
   storyRenames: 8871,
+  developmentSplits: 8873,
 };
 
 /** Wait for the server, and say why if it never answers — the poll used to fall

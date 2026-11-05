@@ -180,9 +180,6 @@ removed from both caller-facing endpoints. The full history stays at
 `/api/admin/prompts`, behind the admin token, where reading an old version
 cannot be confused with rating against one.
 
-Note the two effects compound: external readings suppress the cron by being
-recent, so a prompt change reaches nothing until a caller picks it up.
-
 **The front page shows a development's level, aged.** Two rules, in order.
 
 The level rule is unchanged and answers "how newsworthy is it". Measured over
@@ -289,6 +286,8 @@ covering readings stored before it, so the old name is free afterwards.
 bounded by market and trading session. Under v6 "US chip stocks fell 11%" was
 filed under a Seoul pause eleven hours old, and the page showed 4 while readings
 said 8 ([record](docs/prompt-evaluations/judge-v7.md)). The cap is now 3,200.
+The judge carries a misfiling forward, so a re-report that was new is split
+off at `/admin`: a row moving the later readings filed with it (`src/splits.js`).
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the

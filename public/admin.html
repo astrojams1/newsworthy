@@ -174,9 +174,9 @@
   /* The board behind the front page: one block per live story, its
      developments beneath it, newest first. */
   .stories { display: grid; gap: 0.75rem; }
-  .merges { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; font-size: 0.8125rem; }
-  .merges .undone { color: var(--ink-faint); text-decoration: line-through; }
-  .merges button, .merge-form button { font: inherit; font-size: 0.75rem; padding: 0.15rem 0.6rem; margin-left: 0.5rem; }
+  .merges, .splits { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; font-size: 0.8125rem; }
+  .merges .undone, .splits .undone { color: var(--ink-faint); text-decoration: line-through; }
+  .merges button, .splits button, .merge-form button { font: inherit; font-size: 0.75rem; padding: 0.15rem 0.6rem; margin-left: 0.5rem; }
   .merge-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.75rem; }
   /* The status goes under the fields: inline, it squeezed them to a few letters. */
   .merge-form .note { flex-basis: 100%; }
@@ -258,6 +258,15 @@
     <input name="to" placeholder="new name" aria-label="New name" autocomplete="off" autocapitalize="off">
     <button type="submit">Rename</button>
     <span class="note" id="rename-status"></span>
+  </form>
+
+  <h2>Splits</h2>
+  <p class="note">A reading filed as a re-report of an earlier development that was a new one. It opens its own, and the readings filed after it under the same one follow it.</p>
+  <div id="splits"></div>
+  <form class="merge-form" id="split-form">
+    <input name="reading" placeholder="reading id" aria-label="Reading that opens its own development" inputmode="numeric" autocomplete="off">
+    <button type="submit">Split</button>
+    <span class="note" id="split-status"></span>
   </form>
 
   <h2>Runs</h2>
@@ -741,6 +750,37 @@
     else event.target.disabled = false;
   });
 
+  /** Every split, newest first: in force with an undo, or struck through once
+   *  undone, as merges are. */
+  function renderSplits(splits = []) {
+    const undone = new Set(splits.filter((s) => s.undoes != null).map((s) => s.undoes));
+    const rows = splits.filter((s) => s.undoes == null);
+    $('splits').innerHTML = rows.length ? `<ul class="splits">${rows.map((s) => {
+      const text = `reading ${s.reading_id} out of ${s.from_root} · ${escapeHtml(fmtTime.format(new Date(s.created_at)))}${s.note ? ` · ${escapeHtml(s.note)}` : ''}`;
+      return s.active
+        ? `<li>${text}<button type="button" data-undo="${s.id}">Undo</button></li>`
+        : `<li class="undone">${text}${undone.has(s.id) ? ' · undone' : ''}</li>`;
+    }).join('')}</ul>` : '<p class="empty">No splits.</p>';
+  }
+
+  $('splits').addEventListener('click', async (event) => {
+    const id = event.target?.dataset?.undo;
+    if (!id) return;
+    event.target.disabled = true;
+    const res = await post(`/api/admin/splits/${id}/undo`);
+    if (res.ok) load();
+    else event.target.disabled = false;
+  });
+
+  $('split-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const res = await post('/api/admin/splits', { reading: Number(form.reading.value) });
+    const body = await res.json().catch(() => ({}));
+    $('split-status').textContent = res.ok ? `reading ${body.split.reading_id} opens its own development` : (body.error ?? res.statusText);
+    if (res.ok) { form.reset(); load(); }
+  });
+
   $('merge-form').addEventListener('submit', async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -865,6 +905,7 @@
     renderRuns(data.attempts);
     renderCallerRuns(data.caller_runs);
     renderMerges(data.merges);
+    renderSplits(data.splits);
     // Same badge as the front page, which means the displayed value rather
     // than the newest reading — those differ on about 60% of hours.
     applyLevel(points.length ? points.at(-1).displayed ?? points.at(-1).score : null);
