@@ -56,6 +56,8 @@ Reviews before 2026-10-01 were recorded only in their PR descriptions.
 | Judge v7 (`claude/funny-hypatia-bz4gdi`) | 2026-11-05 | README, AGENTS.md, product messaging, llms.txt, caller instructions, rating skill, story age | None needed: the caller instructions embed the judge prompt from the registry, and no surface quotes v4's restating sentence or names a judge version. AGENTS.md records v7 | v7 adoption awaits judged readings stamped 7; caller notifications still report the raw score, not the page's number |
 | Merge authority (`claude/funny-hypatia-bz4gdi`) | 2026-11-05 | AGENTS.md, prompt-update skill, copy-review skill, the other repository skills, README | AGENTS.md and the prompt-update skill now say a change request covers merging once checks pass and verifying production; the video-only authorization folded into it. No product copy describes this workflow | None |
 
+| Shared app-release 2.17.1 (this PR) | 2026-11-05 | README, product messaging, support, caller contract, mobile release guide, store records and preview staleness report | The pin updates release procedure. Product copy, shipped behavior and Play’s explicit approval hold remain accurate. | The preview has nine inherited changed inputs. Its on-screen wording still matches the source. |
+
 ## Lessons
 
 Claims that were wrong once. Check for them again; date each item.
