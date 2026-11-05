@@ -37,6 +37,16 @@ test('a split covers only readings stored before it, and splits apply in order',
   assert.deepEqual(resolveSplits(rows, []), rows, 'no splits, no change');
 });
 
+test('an undone split sends readings filed under it back, leaving no phantom development', () => {
+  const made = new Date(Date.UTC(2026, 10, 5, 0, 35)).toISOString();
+  const rows = [row(1, 0, null), row(2, 10, 1), row(3, 20, 1), row(4, 40, 2)];
+  const split = { reading_id: 2, reading_at: rows[1].created_at, from_root: 1, created_at: made };
+  const undone = new Map(resolveSplits(rows, [{ ...split, undone: true }]).map((r) => [r.id, r.development_of]));
+  assert.equal(undone.get(2), 1, 'the split reading rejoins its development');
+  assert.equal(undone.get(3), 1);
+  assert.equal(undone.get(4), 1, 'a reading judged against the split development follows it back');
+});
+
 test('only a judged re-report can be split off', () => {
   assert.match(splitProblem(undefined, 9), /no reading 9/);
   assert.match(splitProblem({ id: 1, status: 'error' }), /not a stored reading/);
@@ -80,10 +90,14 @@ test('the admin splits a misfiled development: the page, the record and the boar
     const developments = history.body.stories.flatMap((s) => s.developments);
     assert.ok(developments.some((d) => d.root === us.body.id && d.leading), 'the board lists it, leading');
 
+    // A reading judged against the split development while it stands.
+    await submit(8, 'The Nasdaq closed down 5%.', { answer: us.body.id, story: 'ai-stocks' });
+
     const undone = await admin(`/api/admin/splits/${split.id}/undo`, { method: 'POST', body: '{}' });
     assert.equal(undone.status, 201);
     assert.equal(undone.body.undo.undoes, split.id);
     assert.match((await current()).explanation, /South Korea/, 'an undo restores what was shown');
+    assert.doesNotMatch(await record(), new RegExp(`^\\[${us.body.id}\\]`, 'm'), 'and leaves no phantom development');
     assert.equal((await admin(`/api/admin/splits/${split.id}/undo`, { method: 'POST' })).status, 422, 'an undo is made once');
   });
 });

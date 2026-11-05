@@ -18,7 +18,9 @@
  * reading filed under R's development before the split was made. Readings
  * stored after the split were judged against the corrected record and keep
  * their answer, as a rename covers only the readings stored before it. An undo
- * is another row, so undoing a split restores exactly what was shown before it.
+ * is another row, so undoing a split restores what was shown before it: a
+ * reading judged against the split development while it stood is sent back to
+ * the development the split was cut from, rather than left to open a phantom.
  *
  * Pure; the rows come from db.js.
  */
@@ -33,15 +35,17 @@ function after(row, split) {
 }
 
 /**
- * Rows with `development_of` resolved through the splits in force, oldest
- * first. A later split can cut a development an earlier one made, so they
- * apply in order. Unjudged rows are left alone: the replay inherits them into
- * the development before them, which is already resolved.
+ * Rows with `development_of` resolved through the splits, oldest first. A
+ * later split can cut a development an earlier one made, so they apply in
+ * order. An undone split (`undone: true`) leaves its reading where it was
+ * judged and sends any reading filed under it while it stood back to the
+ * development it was cut from. Unjudged rows are left alone: the replay
+ * inherits them into the development before them, which is already resolved.
  *
  * @param {Array<{id: number, created_at: string, judge_version?: number|null,
  *   development_of?: number|null}>} rows
  * @param {Array<{reading_id: number, reading_at: string, from_root: number,
- *   created_at: string}>} splits
+ *   created_at: string, undone?: boolean}>} splits every split, undone or not
  */
 export function resolveSplits(rows, splits = []) {
   if (!splits.length || !rows.some((r) => 'development_of' in r)) return rows;
@@ -50,6 +54,11 @@ export function resolveSplits(rows, splits = []) {
     const made = Date.parse(split.created_at);
     out = out.map((row) => {
       if (row.judge_version == null || !('development_of' in row)) return row;
+      if (split.undone) {
+        return row.development_of === split.reading_id && at(row) >= made
+          ? { ...row, development_of: split.from_root }
+          : row;
+      }
       if (row.id === split.reading_id) return { ...row, development_of: null };
       if (row.development_of === split.from_root && after(row, split) && at(row) < made) {
         return { ...row, development_of: split.reading_id };

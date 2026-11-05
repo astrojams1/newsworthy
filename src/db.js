@@ -487,7 +487,7 @@ export async function storyFilings() {
  *  through the splits in force. The row's own stored judgement is what the
  *  runs table shows; everything that groups reads this. */
 async function withStoryNames(rows) {
-  rows = resolveSplits(rows, await activeSplits());
+  rows = resolveSplits(rows, await everySplit());
   if (!rows.some((r) => r.story)) return rows;
   const map = aliasMap(await activeMerges());
   if (map.size === 0) return rows;
@@ -504,6 +504,19 @@ export async function activeSplits() {
       FROM development_splits s
      WHERE s.undoes IS NULL
        AND NOT EXISTS (SELECT 1 FROM development_splits u WHERE u.undoes = s.id)
+     ORDER BY s.created_at ASC, s.id ASC`;
+  return rows.map(shape);
+}
+
+/** Every split, undone or not, oldest first, each marked `undone`: what
+ *  resolveSplits() replays. Undo rows themselves are folded into `undone`. */
+export async function everySplit() {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT s.id, s.created_at, s.reading_id, s.reading_at, s.from_root,
+           EXISTS (SELECT 1 FROM development_splits u WHERE u.undoes = s.id) AS undone
+      FROM development_splits s
+     WHERE s.undoes IS NULL
      ORDER BY s.created_at ASC, s.id ASC`;
   return rows.map(shape);
 }
@@ -533,7 +546,7 @@ export async function readingForSplit(id) {
   const rows = await sql`
     SELECT id, created_at, status, score, explanation, story, development_of, judge_version
       FROM ratings WHERE id = ${id}`;
-  const [row] = resolveSplits(rows.map(shape), await activeSplits());
+  const [row] = resolveSplits(rows.map(shape), await everySplit());
   return row ?? null;
 }
 
