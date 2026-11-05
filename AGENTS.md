@@ -24,6 +24,10 @@ release status. Calm presentation must not change the rating calibration.
   description. Repeat affected checks if PR scope changes.
 - Branch off `main`, open a PR into `main`, and run `npm test` before pushing.
   Do not push directly to `main`.
+- A request to change this repository authorizes finishing it: PR, review
+  comments answered, merge once checks pass, production verified. Do not stop
+  at an open PR to ask; ask first only for a decision the request left open,
+  or when only a proposal was asked for.
 - Fix bugs and flaky tests as soon as you meet them, even when unrelated to
   the task, in their own PR. Never merge past a failing check or dismiss a
   failure as "known" or "flaky" instead of fixing it.
@@ -70,8 +74,7 @@ release status. Calm presentation must not change the rating calibration.
 - To remake the preview reel or trailer, use
   `.agents/skills/newsworthy-preview-reel/SKILL.md`; cuts are logged in
   `store/video/ledger.md`.
-- For finished video work, commit MP4s, source, assets and review evidence, then
-  merge the PR after checks pass. The owner authorizes this by default.
+- Finished video work commits MP4s, source, assets and review evidence.
 - To grow downloads, use `.agents/skills/newsworthy-growth/SKILL.md`; log
   every activity and its results in `docs/growth/ledger.md`.
 - Before any app build, store submission or EAS sandbox, use
@@ -485,12 +488,11 @@ query did not ask for, so `judge_version` was absent rather than null, and the
 cell read it as "not judged".
 
 **The admin page is designed for a phone first.** Charts are drawn at their
-shown width so axis text stays legible, and a runs column no row in view fills
-is left out. Below 720px each run is a wrapping flex row: timestamp and score,
-the explanation, then the small fields as one dotted line. Absent values leave
-that line (every cell carries a class and an `absent` marker). The separator is
-a `::before` on each field but source, which opens the line and is never absent,
-so a hidden field takes its separator with it.
+shown width so axis text stays legible; a runs column no row in view fills is
+left out. Below 720px each run wraps: timestamp and score, the explanation, then
+the small fields as one dotted line, absent ones dropped (each cell has a class
+and an `absent` marker). Each field but source, which opens the line, carries
+its separator as `::before`, so a hidden field takes it along.
 
 **A rejection is a status code with the reason in the body.**
 
@@ -514,10 +516,9 @@ built for. No test here can see that: a long-lived local server always drains
 an in-flight insert, so both versions pass identically, and it is asserted
 against the source the way `max_uses` already is.
 
-The 401 is deliberately not recorded. It is raised before the token is checked,
-so it is the one refusal an unauthenticated request can provoke, and a row for
-it would turn a public URL into an unbounded database write. All four rules are
-raised after auth has passed, so nothing the table exists for is lost.
+The 401 is deliberately not recorded: it is the one refusal an unauthenticated
+request can provoke, and a row for it would make a public URL an unbounded
+database write. All four rules are raised after auth has passed.
 
 **A sentence always ends in punctuation.** The prompt asks for one complete
 sentence and most arrive as one, but a caller trimming to the character budget
@@ -782,9 +783,8 @@ story, verified, at the same score, as "Glacier collapse floods on the
 Nepal-Tibet border killed more than 500 people, with roughly 1,500 still
 missing as searches continue." No clause.
 
-Three verified readings, two of them six minutes apart, is not a result, but
-it is the first evidence separating a scale that rates wrongly from one the
-rater never received.
+Three verified readings is not a result, but they first separated a scale
+that rates wrongly from one the rater never received.
 
 **v10 and v11 were written against evidence that has not survived.** Both
 answered the trailing clause ("distant from US readers") with a theory about

@@ -8,8 +8,9 @@ description: Update and evaluate Newsworthy's versioned rating prompt, synchroni
 Work from the repository root. Read
 [AGENTS.md](../../../AGENTS.md), [PROMPT-RULES.md](../../../PROMPT-RULES.md),
 and [product messaging](../../../docs/product-messaging.md) first.
-This skill supports the user's requested scope: a proposal does not authorize
-publication; an explicit request to merge already authorizes the merge.
+A request to make a prompt change authorizes publishing it: merge once checks
+pass, then verify production, as AGENTS.md says. Only a request for a proposal
+or an evaluation alone stops before the merge.
 
 ## Establish the change
 
@@ -91,9 +92,9 @@ wording requirements or calibration examples.
 - Run `npm test` before pushing. For actual UI changes also follow the design and
   native verification requirements in AGENTS.md; prompt-only work is not a native
   build verification. Review the diff for credentials and unrelated artifacts.
-- Open a PR into `main`; never push directly to it. Merge when authorized by the
-  user and required checks pass. Preview builds are skipped, so an absent preview
-  is not production verification.
+- Open a PR into `main`; never push directly to it. Merge once required checks
+  pass and review comments are answered; do not stop at the open PR to ask.
+  Preview builds are skipped, so an absent preview is not production verification.
 - After merge, check the production deployment and fetch `/api/prompt` and
   `/api/instructions` with curl and the caller token header. Compare the
   decoded prompt text, version and computed digest with the merged registry.
