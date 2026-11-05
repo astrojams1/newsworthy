@@ -5,10 +5,11 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { activeMerges, addMerge, allMerges, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyFilings, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialCohorts, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, activeSplits, addMerge, addSplit, allMerges, allSplits, readingForSplit, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyFilings, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialCohorts, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { pairTrials, summarizeTrial } from './trial.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries, frontPageSpans } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
+import { splitProblem } from './splits.js';
 import { aliasMap, canonicalStory, mergeProblem, renameProblem, slug, storyStats, survivor, usedNames } from './merges.js';
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, validateSubmission } from './ingest.js';
@@ -115,6 +116,27 @@ async function rejection(res, url, status, message, { req, method, record = true
 async function mergesForAdmin() {
   const active = new Set((await activeMerges()).map((m) => m.id));
   return (await allMerges()).map((m) => ({ ...m, active: m.undoes == null && active.has(m.id) }));
+}
+
+/** Every split and undo, newest first, each split marked by whether it is in
+ *  force, for the admin page. */
+async function splitsForAdmin() {
+  const active = new Set((await activeSplits()).map((s) => s.id));
+  return (await allSplits()).map((s) => ({ ...s, active: s.undoes == null && active.has(s.id) }));
+}
+
+/**
+ * Record that a reading opened a development of its own, or say why not: the
+ * admin's fix for a misfiling the judge then carried forward (src/splits.js).
+ * The development it leaves is the one it is filed under now, splits applied.
+ */
+async function splitDevelopment(id, { note = null } = {}) {
+  const reading = Number.isInteger(id) ? await readingForSplit(id) : null;
+  const problem = splitProblem(reading, id);
+  if (problem) return { refused: problem };
+  const split = await addSplit({ reading_id: reading.id, reading_at: reading.created_at, from_root: reading.development_of, note });
+  console.log(`development split by admin: reading ${split.reading_id} leaves ${split.from_root}`);
+  return { split };
 }
 
 /**
@@ -763,6 +785,8 @@ const server = createServer(async (req, res) => {
         caller_fetches: fetches,
         // Every merge and undo, newest first; the in-force ones carry `active`.
         merges: await mergesForAdmin(),
+        // Every split and undo, newest first; the in-force ones carry `active`.
+        splits: await splitsForAdmin(),
         prompts: allPrompts().map(({ text, ...rest }) => ({ ...rest, chars: text.length })),
       });
     }
@@ -899,6 +923,24 @@ const server = createServer(async (req, res) => {
       const body = await readJsonBody(req).catch(() => ({}));
       const out = await renameStory(body?.story, body?.name, { note: body?.note ?? null });
       return json(res, out.rename ? 201 : 422, out.rename ? { rename: out.rename } : { error: out.refused });
+    }
+    // A development split by hand: the reading named opens its own, and the
+    // readings filed after it under the same one before now follow it. An
+    // undo is a row naming the split, never a deletion.
+    if (path === '/api/admin/splits' && req.method === 'POST') {
+      const body = await readJsonBody(req).catch(() => ({}));
+      const out = await splitDevelopment(Number(body?.reading), { note: body?.note ?? null });
+      return json(res, out.split ? 201 : 422, out.split ? { split: out.split } : { error: out.refused });
+    }
+    const splitUndo = path.match(/^\/api\/admin\/splits\/(\d+)\/undo$/);
+    if (splitUndo && req.method === 'POST') {
+      const inForce = (await activeSplits()).find((s) => s.id === Number(splitUndo[1]));
+      if (!inForce) return json(res, 422, { error: `no split ${splitUndo[1]} in force` });
+      const body = await readJsonBody(req).catch(() => ({}));
+      const row = await addSplit({ reading_id: inForce.reading_id, reading_at: inForce.reading_at, from_root: inForce.from_root,
+        note: body?.note ?? null, undoes: inForce.id });
+      console.log(`development split ${inForce.id} undone: reading ${inForce.reading_id} rejoins ${inForce.from_root}`);
+      return json(res, 201, { undo: row });
     }
     const undo = path.match(/^\/api\/admin\/merges\/(\d+)\/undo$/);
     if (undo && req.method === 'POST') {

@@ -1,5 +1,6 @@
 import { postgresEnvKeys, sql } from './sql.js';
 import { aliasMap, canonicalStory } from './merges.js';
+import { resolveSplits } from './splits.js';
 
 /**
  * Schema creation is idempotent and cached per process, so a cold-started
@@ -121,6 +122,20 @@ export function ensureSchema() {
     // 'merge' or 'rename' (src/merges.js); null on rows from before renames,
     // all of them merges.
     await sql`ALTER TABLE story_merges ADD COLUMN IF NOT EXISTS kind TEXT`;
+    // A reading the judge filed under an earlier development that was a new
+    // one, split off with the later readings that followed it. Rows only, like
+    // merges: an undo names the split it undoes, and stored judgements are
+    // never rewritten. Resolved where readings are read. See src/splits.js.
+    await sql`
+      CREATE TABLE IF NOT EXISTS development_splits (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reading_id  BIGINT      NOT NULL,  -- the reading that opens its own development
+        reading_at  TIMESTAMPTZ NOT NULL,  -- when it was stored: the cut
+        from_root   BIGINT      NOT NULL,  -- the development it was filed under
+        note        TEXT,
+        undoes      BIGINT                 -- set on an undo row: the split it undoes
+      )`;
     // Whose token a refused request carried: 'caller' or 'admin', never its
     // value. Null on rows from before it was recorded.
     await sql`ALTER TABLE rejections ADD COLUMN IF NOT EXISTS token TEXT`;
@@ -230,7 +245,7 @@ const num = (value) => (value === null || value === undefined ? null : Number(va
 const NUMERIC = [
   'id', 'score', 'prompt_version', 'latency_ms', 'input_tokens', 'output_tokens',
   'cache_read_tokens', 'cache_write_tokens', 'web_search_requests', 'cost_usd',
-  'development_of', 'judge_version', 'judge_cost_usd', 'reading_id', 'undoes',
+  'development_of', 'judge_version', 'judge_cost_usd', 'reading_id', 'undoes', 'from_root',
 ];
 
 /**
@@ -247,7 +262,7 @@ function shape(row) {
   if (!row) return undefined;
   const out = { ...row };
   for (const key of NUMERIC) if (key in row) out[key] = num(row[key]);
-  for (const key of ['created_at', 'slot']) if (key in row) out[key] = iso(row[key]);
+  for (const key of ['created_at', 'slot', 'reading_at']) if (key in row) out[key] = iso(row[key]);
   if ('caller_meta' in row) {
     out.caller_meta =
       typeof row.caller_meta === 'string' ? JSON.parse(row.caller_meta) : row.caller_meta;
@@ -468,13 +483,71 @@ export async function storyFilings() {
   return rows.map((r) => ({ story: r.story, created_at: iso(r.created_at) }));
 }
 
-/** Rows with `story` resolved to the name it goes by. The row's own stored
- *  name is what the runs table shows; everything that groups reads this. */
+/** Rows with `story` resolved to the name it goes by and `development_of`
+ *  through the splits in force. The row's own stored judgement is what the
+ *  runs table shows; everything that groups reads this. */
 async function withStoryNames(rows) {
+  rows = resolveSplits(rows, await everySplit());
   if (!rows.some((r) => r.story)) return rows;
   const map = aliasMap(await activeMerges());
   if (map.size === 0) return rows;
   return rows.map((r) => (r.story ? { ...r, story: canonicalStory(map, r.story, new Date(r.created_at).getTime()) } : r));
+}
+
+// ---- development splits ----------------------------------------------------
+
+/** The splits in force, oldest first: every split no undo row points at. */
+export async function activeSplits() {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT s.id, s.created_at, s.reading_id, s.reading_at, s.from_root, s.note
+      FROM development_splits s
+     WHERE s.undoes IS NULL
+       AND NOT EXISTS (SELECT 1 FROM development_splits u WHERE u.undoes = s.id)
+     ORDER BY s.created_at ASC, s.id ASC`;
+  return rows.map(shape);
+}
+
+/** Every split, undone or not, oldest first, each marked `undone`: what
+ *  resolveSplits() replays. Undo rows themselves are folded into `undone`. */
+export async function everySplit() {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT s.id, s.created_at, s.reading_id, s.reading_at, s.from_root,
+           EXISTS (SELECT 1 FROM development_splits u WHERE u.undoes = s.id) AS undone
+      FROM development_splits s
+     WHERE s.undoes IS NULL
+     ORDER BY s.created_at ASC, s.id ASC`;
+  return rows.map(shape);
+}
+
+/** Every split and undo, newest first, for the admin page. */
+export async function allSplits({ limit = 200 } = {}) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT id, created_at, reading_id, reading_at, from_root, note, undoes
+      FROM development_splits ORDER BY created_at DESC, id DESC LIMIT ${limit}`;
+  return rows.map(shape);
+}
+
+export async function addSplit({ reading_id, reading_at, from_root, note = null, undoes = null }) {
+  await ensureSchema();
+  const rows = await sql`
+    INSERT INTO development_splits (reading_id, reading_at, from_root, note, undoes)
+    VALUES (${reading_id}, ${reading_at}, ${from_root}, ${note}, ${undoes})
+    RETURNING id, created_at, reading_id, reading_at, from_root, note, undoes`;
+  return shape(rows[0]);
+}
+
+/** One reading with its judgement resolved through the splits in force, for
+ *  deciding whether it can be split off. */
+export async function readingForSplit(id) {
+  await ensureSchema();
+  const rows = await sql`
+    SELECT id, created_at, status, score, explanation, story, development_of, judge_version
+      FROM ratings WHERE id = ${id}`;
+  const [row] = resolveSplits(rows.map(shape), await everySplit());
+  return row ?? null;
 }
 
 /**
