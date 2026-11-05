@@ -217,6 +217,34 @@ A slug on record is taken back only by a reading about what it names,
 never by one that is merely related to it, shares its cause or moves with it:
 a company's results are not news about another country's stocks.`;
 
+/**
+ * v7 says a market move is one market in one trading session, and nothing else
+ * changes: v6 is kept byte-identical but for v4's last sentence, which is
+ * extended rather than followed by a new paragraph, because that sentence is
+ * where the failure came from.
+ *
+ * v4 gave "oil up 3% then 4%" as a restatement, and v5 said anything after a
+ * development was first seen is a later occurrence. On 2026-11-05 the caller
+ * settled that conflict v4's way: a chip selloff that briefly halted trading in
+ * Seoul at 05:04 UTC (reading 1740) took every later reading of the selloff,
+ * including "US chip stocks fell 11%" at 16:04 (1751) and "US stocks down 4%"
+ * at 18:04 (1753), judged "the same selloff deepening". The app's push
+ * notification never fired and the front page showed 4 beside the Seoul
+ * sentence while the rater was scoring 8.
+ *
+ * Splitting by market and session does not make the page jumpy: a story's
+ * routine developments still open discounted by its age (`fatigued()` in
+ * current.js), and only a score two clear of the story's routine level opens
+ * whole.
+ */
+const V7 = V6.replace(
+  `A figure already reported moving again short of such a
+level, oil up 3% then 4%, restates its development.`,
+  `A figure already reported moving again short of such a
+level, oil up 3% then 4%, restates its development only within one market and
+trading session. The same move in another market, or in a later session, is a
+later occurrence: a selloff in London and then in New York is two developments.`);
+
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
   2: { label: 'story-vocabulary-v2', added: '2026-09-04', text: V2 },
@@ -224,6 +252,7 @@ const REGISTRY = {
   4: { label: 'market-levels-v4', added: '2026-09-28', text: V4 },
   5: { label: 'one-occurrence-v5', added: '2026-10-11', text: V5 },
   6: { label: 'slug-names-story-v6', added: '2026-10-30', text: V6 },
+  7: { label: 'market-session-v7', added: '2026-11-05', text: V7 },
 };
 
 export function judgeVersion() {

@@ -244,20 +244,15 @@ history cannot re-interpret it.
 **One story, one name — v2.** The judge names the story as free text, and v1
 let that drift: across 231 readings it coined four names for the US-Iran war —
 `hormuz-threat` (40 readings), `iran-war` (87), `iran-nuclear`, then
-`hormuz-conflict`. The reading that coined the second had `hormuz-threat`
-developments in front of it at the time, so a name seen in passing beside a
-development is demonstrably not enough to get it reused.
+`hormuz-conflict`. The reading that coined the second had `hormuz-threat` in
+front of it: a name seen in passing is not enough to get it reused.
 
 Developments group by **id**; fatigue and the board group by name.
 
-v2 lifts the names out into a "Stories on record" list of their own, drawn from
-fourteen days rather than the developments' 48 hours — a story quiet for two
-days should keep its name when it returns rather than be renamed on the way back
-in — and states the reuse rule where the list is. Everything above that in the
-prompt is byte-identical to v1, so which development a reading reports is judged
-by the same text and the two versions stay comparable; a test pins that.
-
-History was not re-judged: a stored judgement is never recomputed.
+v2 lifts the names into a "Stories on record" list drawn from fourteen days,
+not the developments' 48 hours, so a story quiet for two days keeps its name on
+return, and states the reuse rule there. Above that the prompt is v1's byte for
+byte, so development judgements stay comparable; a test pins that.
 
 **v3 lets a split be mended.** Under v2 two names for one story stayed two,
 and a dormant one could return (`hormuz-conflict`, 18 September). v3 is v2 plus
@@ -286,6 +281,11 @@ related, a shared cause or a shared market move is not the story.
 and labelled an Amazon sentence "Korea Stocks" ([record](docs/prompt-evaluations/judge-v6.md)).
 A name that outgrows its story is renamed at `/admin`: a row like a merge,
 covering readings stored before it, so the old name is free afterwards.
+
+**v7: one market, one session.** v6 but for v4's restating sentence, now
+bounded by market and trading session. Under v6 "US chip stocks fell 11%" was
+filed under a Seoul pause eleven hours old, and the page showed 4 while readings
+said 8 ([record](docs/prompt-evaluations/judge-v7.md)). The cap is now 3,200.
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the
