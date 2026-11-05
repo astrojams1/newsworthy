@@ -65,15 +65,17 @@ test('the judge prompt is a specification, not a set of orders', () => {
   const { text } = renderJudgePrompt();
   assert.doesNotMatch(text, /\byou (must|should|will|need)\b/i);
   // Each version appends one paragraph to the last; v5 took it past the 2,500
-  // this once was. A cap still keeps growth a decision rather than a drift.
-  assert.ok(text.length < 3000, `judge prompt is ${text.length} characters`);
+  // this once was, and v7 past 3,000 (its sentence could not fit the 18 left,
+  // and tightening wording v1 to v6 share would cost their comparability).
+  // A cap still keeps growth a decision rather than a drift.
+  assert.ok(text.length < 3200, `judge prompt is ${text.length} characters`);
   assert.match(text, /development_of/, 'and it names the field it wants back');
 });
 
 test('judge prompts are append-only, pinned by hash', () => {
   // A stored judgement names the version that produced it. Editing a published
   // version would reinterpret readings already recorded, silently.
-  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '2aa2059729dcee6f', 6: '283696c11d9ccac2' };
+  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '2aa2059729dcee6f', 6: '283696c11d9ccac2', 7: '36f0717d02bc13b7' };
   const prompts = allJudgePrompts();
   assert.deepEqual(prompts.map((p) => p.version), Object.keys(pins).map(Number),
     'every published version is pinned here');
@@ -184,7 +186,26 @@ test('v6 says a slug is taken back only for what it names and keeps v5 whole', (
   assert.match(added, /never by one that is merely related to it, shares its cause or moves with it/,
     'related is not the story, as v3 says of a merge');
   assert.doesNotMatch(added, /korea|amazon|seoul|\bAI\b/i, 'a rule and a general example, not the case that prompted it');
-  assert.equal(judgeVersion(), 6, 'and v6 is what new readings are judged by');
+});
+
+test('v7 makes a market move one market in one session and keeps v6 otherwise whole', () => {
+  // v4's "oil up 3% then 4%" let the caller file "US chip stocks fell 11%"
+  // under a selloff that had paused trading in Seoul eleven hours earlier,
+  // "the same selloff deepening", and the page showed 4 while readings said 8.
+  // v7 extends that one sentence in place rather than appending a paragraph
+  // that would contradict it; every other byte of v6 is kept.
+  const v6 = renderJudgePrompt(6).text;
+  const v7 = renderJudgePrompt(7).text;
+  const old = 'oil up 3% then 4%, restates its development.';
+  const at = v6.indexOf(old);
+  assert.ok(at > 0 && v7.startsWith(v6.slice(0, at + old.length - 1)), 'v6 verbatim up to the sentence it extends');
+  const tail = v6.slice(at + old.length);
+  assert.ok(v7.endsWith(tail), 'and verbatim after it');
+  const added = v7.slice(at + old.length - 1, v7.length - tail.length);
+  assert.match(added, /^ only within one market and\ntrading session\./, 'a restatement is bounded by market and session');
+  assert.match(added, /another market, or in a later session, is a\nlater occurrence/, 'beyond them it is a later occurrence');
+  assert.doesNotMatch(added, /korea|seoul|wall street|chip|\bAI\b/i, 'a rule and a general example, not the case that prompted it');
+  assert.equal(judgeVersion(), 7, 'and v7 is what new readings are judged by');
 });
 
 test('a development whose first report has left the window is shown as first reported', () => {
