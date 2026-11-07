@@ -182,6 +182,25 @@ script table, the app or the core copy; `test/trailer.test.js` checks them.
   every sentence and headline, no AI, no rank. The price and "On the App
   Store" are true only once the listing is live at that price.
 
+## The day's Short
+
+`store/video/today` is a third film, 14 seconds, made to be remade daily: the
+day's real front page (`node store/scripts/today-reading.mjs` snapshots
+`/api/current` into `reading.json`), then the same reading in the widgets,
+then the name and the price. It renders with the trailer's renderer and
+`--film today` (about two minutes for every frame), records itself in
+`store/video/today/cut.json`, and `test/today.test.js` checks its quotes,
+first frame and framing. Its README holds why it replaced the trailer as the
+Short to post.
+
+- **It is a reading, on purpose.** The reel and trailer rule ("no frame is a
+  reading") keeps store videos from dating; a day's Short is meant to be
+  dated. The reading is never written or edited for the film, and is posted
+  the day it was fetched.
+- **A long sentence can reach the safe box's bottom.** The reading block is
+  centred, so a fifth line moves the last one lower; the safe-zone test fails
+  rather than letting it pass under YouTube's title. Re-run it after each fetch.
+
 ## Ledger entry template
 
 ```

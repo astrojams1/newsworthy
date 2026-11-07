@@ -20,6 +20,7 @@ in the [release ledger](../ledger.md); record it there too.
 | [2026-10-21 trailer re-frame](#2026-10-21-trailer-re-frame) | Owner: "did you fix the video?" | Every line, number and screen inside the Shorts safe zone: supers lower, phone smaller, long lines set smaller, end card raised | A browser test of every placement through the film, the safe-zone contact sheet, `--verify`, frame-by-frame against the first cut | Replace the posted Short; check it on the phone |
 | [2026-10-21 trailer restage](#2026-10-21-trailer-restage) | Owner: the re-frame shrank everything; a tiny phone, headlines out of proportion | Phone scenes recomposed: a large phone running off the bottom edge, one-line headlines, the notification under the clock | Both browser tests, a new one for the phone's framing, `--verify`, the contact sheet, previews under YouTube's controls from the owner's screenshot | Replace the posted Short; check it on the phone |
 | [2026-10-21 trailer thumbnail](#2026-10-21-trailer-thumbnail) | Owner request: a custom thumbnail | A still, `--thumbnail`: the 12.9 s reading, its line at twice the size | A browser test, the JPEG's size and limit; stills of the film unchanged | Upload needs custom Shorts thumbnails on the channel |
+| [2026-10-22 today](#2026-10-22-today) | Owner: the trailer Short failed (24 views, no downloads); a new submission | A third film, `store/video/today`: the day's real reading, 14 s, loops; `render-trailer.mjs --film` | Its tests (quotes, first frame, safe zone, phone framing), `--verify`, the safe-zone sheet, decoded frames, loudness | Post it today; read viewed vs. swiped at +2 days; listen |
 
 ## Lessons
 
@@ -125,6 +126,16 @@ and add to it when a cut teaches something new; date each item.
   `test/trailer.test.js` hit-tests the lifted parts against the island and
   status bar, among the phone's own layers only: the frame's vignette covers
   everything and made the first version of that test fail for the wrong reason.
+
+- **The renderer on macOS** (2026-10-22). With Google Chrome on macOS a
+  `--render` worker finished its frames and then hung: its browser took
+  minutes to close and the process never exited, so the encode never ran. A
+  worker now waits five seconds for its browser and exits. Captures there are
+  not bit-exact between runs either: two renders of the same source differed
+  by 52 dB on average, 47.9 dB at worst, which cannot be seen.
+- **A still picture encodes thin** (2026-10-22). The "today" film is mostly
+  still, and at the trailer's CRF 18 it came out at 7.4 Mb/s, under YouTube's
+  recommended 8. Each film can set `TARGET.crf`; "today" uses 14.
 
 ## 2026-09-27
 
@@ -535,6 +546,82 @@ channel can upload a custom Shorts thumbnail.
 **Open.** Upload it in Studio on desktop if the channel has custom Shorts
 thumbnails; otherwise pick the 12.9 s frame in the mobile app.
 
+
+## 2026-10-22 today
+
+**Why.** The owner: the trailer Short posted on 2026-10-21 failed, with no
+downloads and 24 views in its first day (29 impressions, 0.1 hours watched,
+views flat after three hours), and asked for a new submission that learns
+from it. The diagnosis and the post are in the
+[growth ledger](../../docs/growth/ledger.md#2026-10-22-youtube-short-todays-number);
+in short, the trailer opened on five seconds of blank cards, showed nothing
+real to read, ran 32 seconds and was watched for about 15.
+
+**What changed.** A third film, `store/video/today`, rather than a fourth cut
+of the trailer, which is unchanged:
+
+- 0–7 s: the phone from the first frame, on the day's reading at its level's
+  colour, under "How big is today's news?"; the number is there at frame 0
+  with a hit; the sentence is set word by word by 1.5 s, the story line
+  ("Iran War · 9h ago") by 1.9 s; "One number. One sentence." at 4 s.
+- 7–10 s: the app shrinks home, revealing the same reading in a light medium
+  widget (with "9h ago" leading its sentence, muted, as the widget does) and a
+  dark small one; "Also on your Home Screen".
+- 10–14 s: the phone drops away into the brand's light; the icon,
+  "Newsworthy", the core copy and a "$1 on the App Store" pill; the last
+  half-second fades back toward the opening's colour, so it loops.
+- Sound: an A major pad, bass and a half-time groove from frame 0, ticks as
+  the sentence is set, a pluck per caption, air and a thump into the Home
+  Screen, a chord and two bells on the end card.
+
+The reading is real: `store/scripts/today-reading.mjs` snapshotted
+`/api/current` at 14:48 UTC (5/10, "The US and Israel reportedly plan new
+strikes on Iran after the US midterms, as the US prepares to pull some staff
+from Gulf embassies."), and `film.js` quotes it from `reading.json`. This
+departs from the reel and trailer rule that no frame is a reading, on purpose
+and for this film only: that rule keeps store videos from dating, and a day's
+Short is meant to be dated. Clocks are Pacific: the status bar shows the
+snapshot's 7:48, the widgets "Checked at 7:08", the reading's own save time.
+
+The renderer takes `--film trailer|today` (trailer by default, so every
+existing command is unchanged), a per-film `TARGET.crf`, and the macOS worker
+fix in Lessons.
+
+**Outputs.** `store/assets/youtube/today-1080x1920.mp4`: 22.5 MB, sha256
+`cf1cb785deafbf9ce1b19d9131948ffb4e225856674e97484f0b0cd1d7c8d54c`.
+`store/assets/youtube/today-thumbnail-1080x1920.jpg`: 0.19 MB, sha256
+`6159da1e44e9f1803868afa21161958101d0cc5437702bda76ddb315f93f3e36`, the
+reading at 2.5 s under the question set at 44 px. Inputs in
+`store/video/today/cut.json`.
+
+**Verified.** `test/today.test.js`: every line still in its source, the
+question and number on screen from frame 0, the snapshot a valid reading, no
+banned words in what the film adds, every marked word, number and widget
+inside the youtube-shorts safe box every 0.2 s (the muted story line excepted,
+as in the trailer, and checked to stay above the title stack), and the phone
+running off the bottom, clear of the rail and at least 60% of the width.
+`--verify` passes: 14.00 s, 1080×1920 at 30 fps, H.264 High at 12.5 Mb/s, AAC
+stereo 48 kHz, −14 LUFS, −1.6 dBTP. The skill's `safe-zone.mjs` sheet at
+one-second steps shows nothing readable outside the box. Decoded frames
+(`mp4-sheet.png`) and stills at 0, 2.5, 4.6, 5.6, 7.05–7.35 and 9.9 s looked
+at. `npm test` passed.
+
+**Not verified.** On a phone under YouTube's controls (the
+`fit-screenshot.py --preview` step needs the owner's screenshot, which is not
+kept in the repository); the sound by ear; YouTube's re-encode. The
+thumbnail's two lines sit left-aligned under a centred block.
+`docs/product-messaging.md` was edited after the render (the price exception
+now names this film); nothing the film quotes from it changed.
+
+**Cost.** 420 frames, 1,813 samples, 2.9 minutes on four browsers on the
+owner's Mac, plus three earlier renders while fixing the worker hang and the
+bitrate.
+
+**Open.** Post it today, with the package in the growth ledger. Listen. At +2
+days compare viewed versus swiped away with the trailer's. A later day is
+`today-reading.mjs`, then `--film today --render`, `--verify` and
+`--thumbnail`; re-run `test/today.test.js` after each fetch, since a longer
+sentence can push the last line out of the safe box.
 
 ## 2026-10-28 three social advertisements
 

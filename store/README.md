@@ -170,6 +170,7 @@ still blocks app creation. See the ledger for current gates and exact next actio
 | [scripts/](scripts/) | Reproduce, validate, and upload the Apple listing |
 | [video/](video/) | The 15-second preview video's source; renders to `assets/apple/app-preview/` and `assets/google-play/video/` |
 | [video/trailer/](video/trailer/) | The 32-second YouTube Shorts trailer's source, brief and script; renders to `assets/youtube/` |
+| [video/today/](video/today/) | The 14-second "today" Short: the day's live reading, snapshotted by `scripts/today-reading.mjs`; renders to `assets/youtube/` |
 
 ## Verified status
 
