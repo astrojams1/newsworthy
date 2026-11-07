@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-11-07T17:45:12+00:00",
+  "updated_at": "2026-11-07T18:03:46+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -178,15 +178,15 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "done",
+      "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "2026-10-21: build 27 approved after the Guideline 2.3 metadata fix; version 1.0.0 READY_FOR_DISTRIBUTION, review submission COMPLETE.",
+      "summary": "1.0.1 build 29 from 2c3641d is WAITING_FOR_REVIEW, submission d983c20a, AFTER_APPROVAL. Unattended daily run.",
       "evidence": [
-        "asc.mjs status 2026-10-21: version READY_FOR_DISTRIBUTION, submission 4f28761f COMPLETE, build 27 attached"
+        "/Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261107T170559Z-newsworthy-post-submit.json"
       ],
-      "next_action": "",
-      "updated_at": "2026-10-21T15:20:17+00:00"
+      "next_action": "Apple reviews; it publishes on approval.",
+      "updated_at": "2026-11-07T18:03:46+00:00"
     },
     "apple.release": {
       "state": "done",
@@ -8538,6 +8538,22 @@
         ],
         "next_action": "Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.",
         "updated_at": "2026-11-07T17:45:12+00:00"
+      }
+    },
+    {
+      "sequence": 456,
+      "at": "2026-11-07T18:03:46+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "1.0.1 build 29 from 2c3641d is WAITING_FOR_REVIEW, submission d983c20a, AFTER_APPROVAL. Unattended daily run.",
+        "evidence": [
+          "/Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261107T170559Z-newsworthy-post-submit.json"
+        ],
+        "next_action": "Apple reviews; it publishes on approval.",
+        "updated_at": "2026-11-07T18:03:46+00:00"
       }
     }
   ],

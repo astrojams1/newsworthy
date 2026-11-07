@@ -484,3 +484,13 @@ The existing inferred-evidence warning for `google.disclosures` and current rele
 Copy accuracy: reviewed README, AGENTS.md, product messaging, app-release guidance, release records and the preview staleness report. This integration-only change reaches no public copy or preview input. The inherited preview source manifest is out of date for nine earlier inputs; every on-screen line still matches source. The film was not rerendered or freshly checked for visual parity. Current availability and native verification boundaries are preserved.
 
 Validation: Node 22 `ledger.mjs status`, `validate`, `check`, `issues` and the exact pinned shared release-tool suite pass. The repository-required `npm test` passes after an exact locked dependency install; the opt-in native case remains skipped in this integration-only run. Preview staleness readback confirms the inherited qualification above.
+
+## 2026-11-07: build 29, version 1.0.1 (daily review run app-review-daily-20261107T170559Z)
+
+Local Xcode archive from clean merge commit `2c3641daa9ba52062725cd2bb3147b7215053861`, Xcode 27A9275, iphoneos27.1,
+`.ipa` SHA-256 `eceed69bd85bf81715adf3b56a647349fd155484232bba9106033d1b0478490c`. Validated, uploaded, VALID, in
+Release QA. Submitted to App Review as d983c20a, AFTER_APPROVAL; WAITING_FOR_REVIEW read back on version and submission.
+Screenshots rechecked and kept. No cloud build. The nomination was not sent; its wording needs the owner's approval.
+
+Lesson: store data with `screenshots.manifest` crashes `asc.mjs status` and the submit gate in `promotionReport`, so
+the groups are listed inline for now. The shared fix belongs in the skills repository.

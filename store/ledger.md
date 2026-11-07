@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-11-07T17:45:12+00:00
+Updated: 2026-11-07T18:03:46+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -27,7 +27,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | 2026-09-24 | Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate. | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | done | provider | observed | 2026-10-21 | 2026-10-21: build 27 approved after the Guideline 2.3 metadata fix; version 1.0.0 READY_FOR_DISTRIBUTION, review submission COMPLETE. | — |
+| apple.review | waiting_provider | provider | observed | 2026-11-07 | 1.0.1 build 29 from 2c3641d is WAITING_FOR_REVIEW, submission d983c20a, AFTER_APPROVAL. Unattended daily run. | Apple reviews; it publishes on approval. |
 | apple.release | done | provider | observed | 2026-10-21 | 2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live. | — |
 | google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
@@ -4444,3 +4444,13 @@ Owner removed preview approval on 2026-11-07. 1.0.1 ships real-footage iPhone an
 - store/source/preview-1.0.1.json
 
 Next: Owner reviews both cuts. Before uploading, remake them for the home screen changes from #171-#173. Decide whether to submit the iPhone cut as an app preview despite guideline 2.3.4, or pair its titles with a device screen recording; set the poster frame explicitly. Upload the 1080×1920 cut to YouTube, ads off and not age-restricted, once the Google app exists.
+
+### 456. apple.review — waiting_provider
+
+2026-11-07T18:03:46+00:00 · observed · provider
+
+1.0.1 build 29 from 2c3641d is WAITING_FOR_REVIEW, submission d983c20a, AFTER_APPROVAL. Unattended daily run.
+
+- /Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261107T170559Z-newsworthy-post-submit.json
+
+Next: Apple reviews; it publishes on approval.
