@@ -20,8 +20,9 @@ Cumulative figures from App Store Connect, added at each measurement.
 | Date | Activity | Channel | Campaign token | Status | Result |
 |---|---|---|---|---|---|
 | [2026-10-21](#2026-10-21-launch-audit) | Audit of what Apple offers against what is used | App Store | — | done | 10 surfaces unused, keywords half wasted, `llms.txt` stale; quick wins listed |
-| [2026-10-21](#2026-10-21-youtube-short-trailer) | Trailer as a YouTube Short, from the owner's personal channel | YouTube Shorts | `yt-trailer-202610` (channel link) | live | Posted 2026-10-21; frames poorly under YouTube's controls (see entry) |
+| [2026-10-21](#2026-10-21-youtube-short-trailer) | Trailer as a YouTube Short, from the owner's personal channel | YouTube Shorts | `yt-trailer-202610` (channel link) | done | +1 day: 29 impressions, 24 views (all in the first ~3 h), 0.1 h watched, 1 subscriber, no downloads. Stalled |
 | [2026-10-22](#2026-10-21-launch-audit) | Website offers the iOS app: Smart App Banner, support page, `llms.txt` | Website | — | done | Copy says iOS is live at $1; no reading-screen badge (see the audit's addition) |
+| [2026-10-22](#2026-10-22-youtube-short-todays-number) | "Today's number": the day's real reading as a 14 s Short, a repeatable format | YouTube Shorts | `yt-trailer-202610` (same channel link) | live | Published 2026-10-22, [9HA3NuvkzTU](https://youtube.com/shorts/9HA3NuvkzTU). 4 h: 20 views, 28.6% stayed. Missed the bar |
 
 ## Owner decisions
 
@@ -29,8 +30,13 @@ Open:
 
 - A free weekend (scheduled temporary price) for deal sites and communities.
 - Apple Ads: whether to spend, and a monthly cap.
-- The trailer Short: replace the posted one with the re-framed cut (a new
-  video; the old one had 1 view), or leave it as posted.
+- The trailer Short: superseded by the "today" format (2026-10-22). Leave the
+  posted trailer up; do not re-upload the re-framed cut unless the format
+  also stalls.
+- Showing the day's real reading in a Short (2026-10-22): the trailer's rule
+  was placeholder bars. The "today" Short shows `/api/current` word for word.
+  Proposed as the format; the owner can veto before posting.
+- Cadence for "today" Shorts: daily, or only on days the number moves.
 
 Decided:
 
@@ -49,6 +55,25 @@ What a past activity cost to learn. Read before planning; date each item.
 - **Stating the connection is the disclosure** (2026-10-21). YouTube's
   paid-promotion box is for paid placements, sponsorships and endorsements; an
   owner presenting their own app, with "I made" in the title, is none of them.
+
+- **The same 30% on three openings** (2026-10-22). The trailer's two uploads
+  and the "today" Short opened very differently and each kept 28–33% of
+  viewers, then stalled at 20–66 views. When a creative change does not move
+  the share that stays, test the audience (a channel or platform whose
+  viewers care about the subject) before polishing the creative again.
+- **One upload is one sample** (2026-10-22). The trailer's first Short got
+  29 impressions and 24 views, nearly all in its first three hours, then
+  nothing: YouTube tried it on a small seed audience and stopped. That says
+  the opening did not hold strangers, and little else; 24 views cannot test a
+  hook. A cheap, repeatable format gets many tries where a polished film gets one.
+- **The first second lost seven in ten** (2026-10-22). Studio's "How viewers
+  engaged": the trailer's two uploads kept 27.6% and 33.3% of viewers and lost
+  the rest to a swipe. The trailer opened on blank feed cards with no words.
+  Those who stayed watched it more than twice (222.9% average viewed on the
+  second upload), so the film held people and the opening did not. An earlier
+  estimate in this ledger, about 15 seconds a view from 0.1 hours over 24
+  views, was wrong: read "How viewers engaged" and average percentage viewed,
+  not watch time.
 
 ## 2026-10-21: launch audit
 
@@ -211,6 +236,114 @@ find out if anything big happened. Newsworthy gives the world's news one
 number and one sentence. $1, no ads, no subscription. Search "Newsworthy: Calm
 News" on the App Store."
 
+
+**2026-10-22, +1 day.** The owner's YouTube Studio screenshot (Views by
+Content, first 24 hours): 29 thumbnail impressions, 3.5% thumbnail
+click-through, 24 views, 0.1 hours of watch time, 1 subscriber. Views climbed
+to 20 within the first hour, reached 24 at about three hours and stayed there
+to fifteen hours. No downloads that the owner could attribute. 0.1 hours over
+24 views is roughly 15 seconds a view of a 32-second film, with rounding
+anywhere from 8 to 22 seconds. Read by the agent in Studio on 2026-10-22: the
+24-view upload (`54ZNifKYxtk`, title with hashtags) kept 33.3% and lost 66.7%
+to a swipe, 222.9% average viewed, 2 likes; an earlier upload of the trailer
+(`LhHSl8K5IyM`, "I made an app to stop doomscrolling news") has 66 views,
+27.6% kept, 72.4% swiped, 3 likes, 0 subscribers. Retention by second: "not
+enough data" on both. Read as: YouTube showed each to a small seed audience,
+seven in ten swiped at the opening, and it stopped showing them. What did not hold them is in the next
+entry; the follow-up is the "today" format rather than a re-upload of the
+trailer.
+
+## 2026-10-22: YouTube Short: today's number
+
+**What and why.** The owner called the trailer Short a failure (above) and
+asked for a new submission that learns from it. What the trailer did, and
+what this one does instead:
+
+| The trailer (posted 2026-10-21) | Today's number |
+|---|---|
+| Opens on five seconds of blank, dark feed cards; the first words arrive at 1 s, the app at 10 s | The question, the phone and the day's number are in the first frame, with a hit on the downbeat |
+| Every sentence a placeholder bar: nothing to read, learn or comment on | The day's real front page, `/api/current`, word for word: something worth stopping for, and to argue with |
+| 32 s; about 15 s watched a view | 14 s, built to finish and loop |
+| An advert for the app, which a Shorts viewer swipes | The day's news, with the app as the way it is shown |
+| One film, one try with the algorithm | A format: `today-reading.mjs` and one render (about two minutes) make the next |
+| A generic title ("I made an app to stop doomscrolling news") | A dated, searchable one with the day's number in it |
+
+What stays: the safe-zone framing (every word and widget inside the measured
+box, phone large and running off the bottom), the founder voice in the
+description and comment, the search phrase in the description, and the
+campaign link in the channel's links.
+
+**Assets.** In `store/assets/youtube/`: `today-1080x1920.mp4` and
+`today-thumbnail-1080x1920.jpg`, from the reading fetched at 14:48 UTC on
+2026-10-22 (5/10, Iran War, 9h old). Source and cut record in
+`store/video/today/`; the cut in the
+[video ledger](../../store/video/ledger.md#2026-10-22-today).
+
+- Title (34 characters): `Today's world news: 5/10 (Oct 22)`
+- Description:
+
+  ```
+  How big was the world's news on October 22? Newsworthy's reading: 5 out of 10.
+
+  "The US and Israel reportedly plan new strikes on Iran after the US midterms, as the US prepares to pull some staff from Gulf embassies."
+
+  I made Newsworthy: one number and one sentence for the world's news, checked through the day, also on your Home Screen. $1 once, no ads, no subscription.
+
+  Newsworthy: Calm News, on the App Store
+  apps.apple.com/app/id6812519450
+
+  #news #worldnews #iPhone
+  ```
+
+- Pinned comment: "Would you have rated today higher or lower than a 5? I
+  made Newsworthy and post the day's number here."
+- Cover: the frame at 2.5 s, or the custom thumbnail where the channel can
+  upload one.
+- Settings as the trailer: not made for kids; altered or synthetic content,
+  no; paid promotion, no (the owner's own app, stated in the description);
+  News & Politics this time, since the video is the day's news; English;
+  comments on. Related video: none.
+- Post on the day it was fetched: its story line says "9h ago" as of the
+  snapshot, and the title carries the date. A later day is a new fetch and a
+  new render (`store/video/today/README.md`).
+
+**Status.** Uploaded 2026-10-22 by the agent through the owner's Chrome, as a
+private draft with the title, description, custom thumbnail, News & Politics,
+not made for kids, no paid promotion, AI use no (code-drawn picture,
+synthesised music: none of YouTube's four cases). Uploaded file:
+`artifacts/today/upload.mp4`, 9.0 MB, sha256 `d67cf438…`, re-encoded at
+4.8 Mb/s from the same frames because the browser upload tool takes at most
+10 MB (48 dB PSNR against the 22.5 MB master). Published on the owner's
+"publish and pin" at about 15:50 UTC, 2026-10-22:
+https://youtube.com/shorts/9HA3NuvkzTU. The comment above was posted from
+@astrojames and pinned.
+
+**Success bar** (owner, 2026-10-22). The trailer got all its views within
+about four hours, so this one has to do at least as well within four hours of
+publishing (by about 19:50 UTC): at least 24 views, the screenshotted upload's
+total, and a higher share stayed to watch than its 33.3%. The other trailer
+upload's 66 views are the stretch mark; its first-four-hour count is to be
+read alongside.
+
+**Results.** +4 hours (read by the agent in Studio, 19:47 UTC): 20 views,
+28.6% stayed to watch, 71.4% swiped away, 0 likes, 0 subscribers; 90% of views
+from the Shorts feed, 5% direct, 5% YouTube search ("world news"); retention
+by second "not enough data". **Missed the bar** on both counts: fewer views
+than 24 and a lower share stayed than 33.3%.
+
+Read as: three different openings (two trailer uploads and this) all kept
+28–33% and all stalled near the same view count. Changing the creative did not
+move the number, which points at least as much at who YouTube shows a new
+Short to as at the Short. This channel's history is personal clips and
+unrelated tests, so its seed audience has no reason to care about a news app.
+That is a hypothesis, not established: one more sample on the same channel
+cannot separate the two.
+
+**Next.** At +2 days read viewed versus swiped away and average percentage
+viewed, and compare with the trailer's. If it holds better, post one a day for
+a week with the same title pattern, then judge the format on seven samples,
+not one. If it holds no better, the next variable is the first frame (a bigger
+number, a contrast with a louder headline), not the length.
 
 ## 2026-10-28: three social advertising films
 

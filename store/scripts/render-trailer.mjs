@@ -1,4 +1,6 @@
-// Renders, checks and reviews the YouTube Shorts trailer (store/video/trailer).
+// Renders, checks and reviews the YouTube Shorts films: the trailer
+// (store/video/trailer, the default) and, with --film today, the day's
+// reading (store/video/today). Every mode below takes --film.
 //
 //   node store/scripts/render-trailer.mjs --stills 2,9.2,12.8    single renders, a contact sheet, and what changed since the last --stills run
 //   node store/scripts/render-trailer.mjs --segment 7.4,8.1      finished, motion-blurred frames of a span as PNGs
@@ -21,11 +23,18 @@ import { once } from 'node:events';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { CUTS, DURATION, FPS, samplesAt } from '../video/trailer/timeline.js';
-import { COPY, CUT_RECORD, FILM, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGET, THUMBNAIL } from '../video/trailer/film.js';
+
+// Which film: read before the rest of the arguments, since it decides what
+// the others are checked against.
+const FILMS = ['trailer', 'today'];
+const filmAt = process.argv.findIndex(a => a === '--film' || a.startsWith('--film='));
+const FILM_NAME = filmAt < 0 ? 'trailer' : (process.argv[filmAt].split('=')[1] ?? process.argv[filmAt + 1]);
+if (!FILMS.includes(FILM_NAME)) { console.error(`--film takes one of ${FILMS.join(', ')}`); process.exit(1); }
+const { CUTS, DURATION, FPS, samplesAt } = await import(`../video/${FILM_NAME}/timeline.js`);
+const { COPY, CUT_RECORD, FILM, POSTER_SECONDS, REQUIREMENTS, SCENES, TARGET, THUMBNAIL } = await import(`../video/${FILM_NAME}/film.js`);
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const artifacts = join(root, 'artifacts/trailer');
+const artifacts = join(root, `artifacts/${FILM_NAME}`);
 const framesDir = join(artifacts, 'frames');
 const FRAMES = Math.round(DURATION * FPS);
 
@@ -33,8 +42,8 @@ const FRAMES = Math.round(DURATION * FPS);
 // Strict, so a mistyped option never falls through to the one mode that
 // overwrites the committed trailer.
 const MODES = ['stills', 'segment', 'audio', 'render', 'encode', 'verify', 'thumbnail', 'worker'];
-const OPTIONS = { stills: 'list', segment: 'list', audio: 'flag', render: 'flag', encode: 'flag', verify: 'flag', thumbnail: 'flag', worker: 'value', workers: 'value', draft: 'flag' };
-const USAGE = 'Usage: node store/scripts/render-trailer.mjs --stills 2,9.2 | --segment 7.4,8.1 | --audio | --render [--workers 4] | --encode | --verify | --thumbnail  [--draft]';
+const OPTIONS = { stills: 'list', segment: 'list', audio: 'flag', render: 'flag', encode: 'flag', verify: 'flag', thumbnail: 'flag', worker: 'value', workers: 'value', draft: 'flag', film: 'value' };
+const USAGE = 'Usage: node store/scripts/render-trailer.mjs [--film trailer|today] --stills 2,9.2 | --segment 7.4,8.1 | --audio | --render [--workers 4] | --encode | --verify | --thumbnail  [--draft]';
 function parse(list) {
   const out = {};
   for (let i = 0; i < list.length; i++) {
@@ -113,7 +122,7 @@ async function open() {
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   page.on('requestfailed', request => errors.push(`failed to load ${request.url()}`));
-  await page.goto(`${origin}/store/video/trailer/composition.html`);
+  await page.goto(`${origin}/store/video/${FILM_NAME}/composition.html`);
   await page.evaluate(() => window.NW.ready);
   if (errors.length) throw new Error(errors.join('\n'));
   const cdp = await page.context().newCDPSession(page);
@@ -246,7 +255,7 @@ async function render() {
   const made = recordNow();
   const progress = Array(args.workers).fill(0), samples = Array(args.workers).fill(0);
   await Promise.all(Array.from({ length: args.workers }, (_, w) => new Promise((ok, fail) => {
-    const child = spawn(process.execPath, [fileURLToPath(import.meta.url), '--worker', `${w}/${args.workers}`, ...(args.draft ? ['--draft'] : [])], { stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [fileURLToPath(import.meta.url), '--worker', `${w}/${args.workers}`, '--film', FILM_NAME, ...(args.draft ? ['--draft'] : [])], { stdio: ['ignore', 'pipe', 'pipe'] });
     let log = '';
     child.stdout.on('data', chunk => {
       for (const line of String(chunk).split('\n')) {
@@ -268,7 +277,7 @@ async function render() {
 // ---------------------------------------------------------------- sound
 let mixReport;
 async function writeScore() {
-  const score = await import('../video/trailer/score.mjs');
+  const score = await import(`../video/${FILM_NAME}/score.mjs`);
   await mkdir(artifacts, { recursive: true });
   const file = join(artifacts, 'score.wav');
   await writeFile(file, score.wav(score.renderScore()));
@@ -314,7 +323,7 @@ async function encode(made) {
     '-y', '-framerate', String(FPS), '-i', join(framesDir, 'frame-%04d.png'), '-i', score,
     '-vf', 'scale=in_range=pc:out_range=tv:out_color_matrix=bt709,format=yuv420p', '-frames:v', String(FRAMES),
     // YouTube: H.264 High, progressive, closed GOPs of half the frame rate, 2 B-frames.
-    '-c:v', 'libx264', '-profile:v', 'high', '-level:v', '4.1', '-preset', 'slow', '-crf', '18', '-maxrate', '16M', '-bufsize', '32M',
+    '-c:v', 'libx264', '-profile:v', 'high', '-level:v', '4.1', '-preset', 'slow', '-crf', String(TARGET.crf ?? 18), '-maxrate', '16M', '-bufsize', '32M',
     '-x264-params', 'aq-mode=3:open-gop=0', '-g', String(FPS / 2), '-bf', '2', '-pix_fmt', 'yuv420p',
     '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
     // YouTube: AAC-LC stereo at 48 kHz, 384 kbps recommended for stereo; 320 is ample here.
@@ -326,7 +335,7 @@ async function encode(made) {
   const data = await readFile(out);
   // An --encode reuses the last render's frames, so only the score is new.
   const previous = existsSync(join(root, CUT_RECORD)) ? JSON.parse(readFileSync(join(root, CUT_RECORD), 'utf8')).render : null;
-  const SCORE = 'store/video/trailer/score.mjs';
+  const SCORE = `store/video/${FILM_NAME}/score.mjs`;
   const entry = { file: TARGET.out, bytes: data.length, sha256: sha256(data), frames: FRAMES,
     samples: made?.samples ?? previous?.samples, minutes: made?.minutes ?? previous?.minutes,
     inputs: made?.inputs ?? { ...previous?.inputs, [SCORE]: hashOf(SCORE) } };
@@ -395,7 +404,7 @@ async function verify() {
   const poster = join(artifacts, 'poster.jpg');
   probe(['-y', '-loglevel', 'error', '-ss', String(POSTER_SECONDS), '-i', file, '-frames:v', '1', '-q:v', '2', poster]);
   console.log(`        sheet          ${contact}\n        poster         ${poster} (${POSTER_SECONDS} s)`);
-  if (failed) { console.log('\nThe trailer breaks a rule or its render record.'); process.exitCode = 1; }
+  if (failed) { console.log(`\nThe ${FILM_NAME} film breaks a rule or its render record.`); process.exitCode = 1; }
 }
 
 // ---------------------------------------------------------------- main
@@ -413,6 +422,13 @@ try {
   console.error(error.message);
   process.exitCode = 1;
 } finally {
-  await browser?.close();
+  // A worker's job ends with its last frame. On macOS with Google Chrome a
+  // finished worker's browser took minutes to close, and the worker then
+  // stayed alive (2026-10-22), so the render never reached the encode: a
+  // worker waits a few seconds for its browser, then exits.
+  const worker = args?.mode === 'worker';
+  await (worker ? Promise.race([browser?.close(), new Promise(done => setTimeout(done, 5000))]) : browser?.close());
+  server?.closeAllConnections?.();
   server?.close();
+  if (worker) process.exit(process.exitCode ?? 0);
 }

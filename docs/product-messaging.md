@@ -22,7 +22,9 @@ An exception, by the owner's brief of 2026-10-21: the YouTube trailer
 (`store/video/trailer`) tells why the app exists, so it sets the endless feed
 against what breaks through, says "doomscroll", and names the $1 price with
 no ads, subscription or in-app purchases. It still ends on the core copy and
-follows every other rule here.
+follows every other rule here. The "today" Short (`store/video/today`, 2026-10-22),
+which replaced it as the Short to post, uses the same price exception, shows
+the day's real reading word for word, and ends on the core copy.
 
 The owner's social-advertising brief of 2026-10-28 also authorizes the
 `marketing/video` campaign to contrast the endless feed with Newsworthy, use
@@ -169,6 +171,9 @@ locally with Gradle. Native and physical-device verification scopes must be reco
 - `marketing/video/TIMELINES.md` and `marketing/video/B-HOOKS.md`: social-ad
   scripts and opening tests; `PRODUCT-EVIDENCE.md` there records price, claim
   boundaries and historical native-capture provenance.
+- `store/video/today/README.md`: the "today" Short's script; its `film.js`
+  quotes it, the app and the day's reading snapshot, checked by
+  `test/today.test.js`.
 
 If the production domain or release status changes, update all applicable
 surfaces above, plus `mobile.release.json`. Search engines and social platforms
