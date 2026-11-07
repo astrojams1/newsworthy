@@ -97,7 +97,7 @@
   },
   "assetLibrary": [
     {
-      "file": "/Volumes/ssd/builds/newsworthy/qa-1.0.1/newsworthy-1.0.1-iphone.mov",
+      "file": "store/assets/apple/app-preview/newsworthy-1.0.1-iphone.mov",
       "sha256": "88070fa296c53f80c2b8b0f6c17d5c8a7b01435b4b5eca3ae9666d743408f306",
       "source": "store/source/preview-1.0.1.json",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
@@ -106,7 +106,7 @@
       "previewFrame": "00:00:07:00"
     },
     {
-      "file": "/Volumes/ssd/builds/newsworthy/qa-1.0.1/newsworthy-1.0.1-ipad.mov",
+      "file": "store/assets/apple/app-preview/newsworthy-1.0.1-ipad.mov",
       "sha256": "aecafba2a17345107ed7ae877119472b30b4764c547c080237fc728f78f61a5e",
       "source": "store/source/preview-1.0.1.json",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
