@@ -12,12 +12,14 @@ import { RowContent, Section, SettingsPage, Trailing, rowStyle } from '@/compone
 import { Toggle } from '@/components/toggle';
 import { useCurrentReading } from '@/components/reading-provider';
 import { checkedAgo } from '@/lib/story-age';
+import { openFeedback } from '@/lib/send-feedback';
 
 const ABOUT_LINKS = [['Privacy', privacyUrl, 'privacy'], ['Support', supportUrl, 'support']] as const;
 // The Publisher row follows the two links (the web test measures their arrows at
-// fixed positions); the introduction opens over Settings and closing it returns
-// here. The phone apps only: the website has no introduction.
-const INTRODUCTION_INDEX = ABOUT_LINKS.length + 1;
+// fixed positions); Send Feedback and the introduction, which opens over Settings
+// and returns here on closing, are the phone apps' only.
+const FEEDBACK_INDEX = ABOUT_LINKS.length + 1;
+const INTRODUCTION_INDEX = FEEDBACK_INDEX + 1;
 
 export default function Settings() {
   const theme = useTheme();
@@ -80,6 +82,9 @@ export default function Settings() {
             <RowContent index={ABOUT_LINKS.length} icon="publisher" label="Publisher" trailing={<Trailing to="page" />} />
           </Pressable>
         </Link>
+        {process.env.EXPO_OS !== 'web' && <Pressable testID="feedback-row" accessibilityRole="button" accessibilityLabel="Send Feedback" accessibilityHint="Opens an email to Newsworthy" onPress={() => { void openFeedback(); }} style={rowStyle()}>
+          <RowContent index={FEEDBACK_INDEX} icon="feedback" label="Send Feedback" trailing={<Trailing to="external" />} />
+        </Pressable>}
         {process.env.EXPO_OS !== 'web' && <Link href="/onboarding" asChild>
           <Pressable testID="introduction-row" accessibilityRole="button" accessibilityLabel="Introduction" accessibilityHint="Replays the introduction" style={rowStyle()}>
             <RowContent index={INTRODUCTION_INDEX} icon="introduction" label="Introduction" trailing={<Trailing to="page" />} />

@@ -37,6 +37,13 @@ test('the chosen appearance wins and System follows the device', () => {
 
 const text = tree => tree.filter(n => n.type === 'Text').map(n => [n.props.children].flat(Infinity).filter(v => v != null && v !== false).join(''));
 
+test('Send Feedback is a phone-app row in Settings, and the website does not show it', () => {
+  const row = platform => nodes(renderSettings({ platform }).tree).find(n => n.props?.testID === 'feedback-row');
+  assert.equal(row('ios').props.accessibilityLabel, 'Send Feedback');
+  assert.ok(row('android'));
+  assert.equal(row('web'), undefined);
+});
+
 test('the Publisher page names the publisher and editor and offers a contact address, without AI or outlet claims', () => {
   for (const platform of ['web', 'ios', 'android']) {
     const page = nodes(renderSettings({ platform, screen: 'publisher' }).tree);

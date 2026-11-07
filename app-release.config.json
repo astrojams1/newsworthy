@@ -7,6 +7,7 @@
   "storeData": "store/store.json",
   "buildRoot": "/Volumes/ssd/builds",
   "buildShaEnv": "EXPO_PUBLIC_BUILD_SHA",
+  "feedback": { "email": "astrojams1@gmail.com" },
   "ledger": { "gates": "store/ledger.json", "view": "store/ledger.md", "runs": "store/builds/ledger.md" },
   "activityLog": "~/Library/Application Support/AgentActivityLedger/events.jsonl",
   "ios": {
