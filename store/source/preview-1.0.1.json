@@ -1,0 +1,65 @@
+{
+  "iphone": {
+    "output": "newsworthy-1.0.1-iphone.mov",
+    "size": [
+      886,
+      1920
+    ],
+    "fps": 30,
+    "bitrate": 10000000,
+    "background": "#FFFFFF",
+    "crossfade": 0.3,
+    "clips": [
+      {
+        "file": "iphone-take.mov",
+        "from": 24,
+        "to": 38,
+        "speed": 1
+      },
+      {
+        "file": "iphone-take.mov",
+        "from": 50.5,
+        "to": 55.5,
+        "speed": 1
+      },
+      {
+        "file": "iphone-take.mov",
+        "from": 71,
+        "to": 75,
+        "speed": 1
+      }
+    ]
+  },
+  "ipad": {
+    "output": "newsworthy-1.0.1-ipad.mov",
+    "size": [
+      1200,
+      1600
+    ],
+    "fps": 30,
+    "bitrate": 10000000,
+    "background": "#101014",
+    "crossfade": 0.3,
+    "clips": [
+      {
+        "file": "ipad-take.mov",
+        "from": 27,
+        "to": 42,
+        "speed": 1
+      },
+      {
+        "file": "ipad-take.mov",
+        "from": 56,
+        "to": 61,
+        "speed": 1
+      },
+      {
+        "file": "ipad-take.mov",
+        "from": 76,
+        "to": 80,
+        "speed": 1
+      }
+    ]
+  },
+  "source": "Unedited Release simulator footage of 1.0.1, iOS 27.0, iPhone 16 Pro Max and iPad Pro 13. Clips avoid the reading screen because that day's sentence made an unverified claim about a named person."
+}
