@@ -118,13 +118,15 @@
       "file": "store/assets/apple/creative/header-temperature.png",
       "category": "CREATIVE_ASSETS",
       "placementType": "PRODUCT_PAGE_HEADER_ASSET",
-      "placementGroup": "DEFAULT_PROFILE"
+      "placementGroup": "DEFAULT_PROFILE",
+      "cropChecked": "b96e499f7421"
     },
     {
       "file": "store/assets/apple/creative/search-temperature.png",
       "category": "CREATIVE_ASSETS",
       "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
-      "placementGroup": "DEFAULT_PROFILE"
+      "placementGroup": "DEFAULT_PROFILE",
+      "cropChecked": "8b39ab4c9a6b"
     }
   ],
   "promotion": {
