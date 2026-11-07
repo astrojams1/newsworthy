@@ -79,6 +79,7 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
     }) },
     '@/lib/push': { pushSupported },
     '@/lib/publisher': publisher,
+    '@/lib/send-feedback': { openFeedback: () => {} },
     '@/lib/config': { privacyUrl: '/privacy', supportUrl: '/support' },
   };
   mocks['@/components/settings-list'] = load(listOverride ?? read('components/settings-list.tsx'), mocks, platform);
