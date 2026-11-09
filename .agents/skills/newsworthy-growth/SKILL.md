@@ -22,6 +22,11 @@ Work from the repository root on a branch from a freshly fetched `origin/main`.
 
 ## Start from the ledger
 
+New activity since 2026-11-05 is logged by the app-marketing skill in
+[astrojams1/app-sites](https://github.com/astrojams1/app-sites) `marketing/` (`ledger.jsonl`,
+`apps/newsworthy.json`, generated `LEDGER.md`): read and log there. The ledger below holds the
+earlier history and its Lessons.
+
 Read [the growth ledger](../../../docs/growth/ledger.md): the Scoreboard, the
 newest entry's Next list and any open owner decisions. Then check what changed:
 

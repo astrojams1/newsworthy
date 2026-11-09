@@ -275,3 +275,9 @@ from posting to social channels or buying advertising; neither is claimed here.
 
 **Lesson:** record an owner-authorized campaign exception in the shared copy
 guide as well as campaign notes, so later reviews retain its exact scope.
+
+## Growth ledger pointer — 9 November 2026, marketing/growth-ledger-pointer
+
+| PR | Date | Surfaces reviewed | Corrected | Open limits |
+|---|---|---|---|---|
+| Growth ledger pointer (`marketing/growth-ledger-pointer`) | 2026-11-09 | `docs/growth/ledger.md`, `.agents/skills/newsworthy-growth/SKILL.md`, README, `docs/product-messaging.md` | None needed: internal process notes only, no user-visible, store, help or release copy changed | None |
