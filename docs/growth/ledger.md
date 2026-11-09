@@ -7,6 +7,11 @@ that overturns an earlier one says so in its own words, and results arrive as
 dated additions to the entry they measure. The newest entry's Next list and the
 open owner decisions are where a run starts.
 
+**Since 2026-11-05, new growth activity is logged in the app-marketing ledger** in
+[astrojams1/app-sites](https://github.com/astrojams1/app-sites) under `marketing/`
+(`ledger.jsonl`, `metrics.jsonl`, the `apps/newsworthy.json` profile, and the generated
+`LEDGER.md`). This file keeps the history up to then and its Lessons.
+
 ## Scoreboard
 
 Cumulative figures from App Store Connect, added at each measurement.
