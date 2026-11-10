@@ -17,9 +17,9 @@ and date filter; search engine publication labels are not reliable event dates.
 | Disconfirmation | `"prefer" "full articles" "news app"`, `"news summaries" "too short"`, `"news notifications" "useful"` | Reasons minimalism or silence could fail |
 
 Combine these with `site:reddit.com/r/...`, store domains or forum domains.
-Try both named apps and generic phrases: Apple News, Google News/Discover,
+Try both named apps and generic phrases. Apple News, Google News/Discover,
 SmartNews, Flipboard, Ground News, Inshorts, publisher apps, RSS and briefings
-are possible starting points, not a fixed competitive set. Verify current names
+are possible starting points. They are not a fixed competitive set. Verify current names
 and availability before describing them as current alternatives.
 
 Search Reddit app/platform communities alongside r/nosurf, r/minimalism,
@@ -30,8 +30,8 @@ record the actual locale/language, never infer a person's location or diagnosis.
 Beyond Reddit, use dated App Store/Google Play reviews, Apple/Google support
 communities, independent discussion boards and Hacker News comments. A store
 review in one country or app version is not a global product fact. Complaints
-about politics or a publisher's stance can reveal distrust but do not establish
-that a source is objectively biased or that Newsworthy would be unbiased.
+about politics or a publisher's stance can reveal distrust. They do not establish
+that a source is objectively biased, or that Newsworthy would be unbiased.
 
 ## Follow a clue instead of repeating a broad query
 

@@ -9,60 +9,61 @@ Newsworthy is a calm global status indicator: a number out of 10 and one sentenc
 No doomscrolling. No subscription. No in-app purchases. No ads. No engagement, addiction or growth-hacking tactics.
 Calm presentation does not change the published rating scale.
 
-Fetch the instructions and follow them. They include the current rating prompt
-inline, so this is the only thing you need to know:
+**Fetch the instructions and follow them.** They include the current rating prompt inline, so this is the only thing
+you need to know:
 
 ```bash
 curl -s -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" "$NEWSWORTHY_URL/api/instructions"
 ```
 
-Every request to the API is made with `curl` and that header, never with a
-web-fetch tool: one that passes pages through a model paraphrases and cuts
-what it returns.
+Done means: the API confirms the reading was stored, and the run report is posted. A run that submits nothing still
+posts its report.
+
+## Where things are
 
 | | |
 |---|---|
 | `NEWSWORTHY_URL` | e.g. `https://newsworthy-indol.vercel.app` |
 | `NEWSWORTHY_TOKEN` | the caller token (`CALLER_TOKEN` on the app) |
 
-The origin generates instructions from the live prompt registry. Fetch them
-afresh each run; do not cache them between runs. A complete submission includes `score`,
-`explanation` and `prompt_sha256`, computed with a code tool from the exact
-received prompt as described in the instructions. A failed search produces no
-submission. Success means the API confirms that the reading was stored.
+The service supplies the recent history at `/api/developments`. The caller needs no admin credentials and no full
+archive.
 
-## Order of work
+## A run
 
-1. Fetch the current instructions and exact prompt;
-   calculate its SHA-256 with a code tool as specified there.
-2. Research current news, choose the development and score it using the published
-   scale. No successful search means no submission.
-3. Write the final sentence before sending anything. The total is 140 characters
-   INCLUDING the app's "New: " label; reserve 5 for it, leaving 135 for the
-   explanation whether or not the development turns out to be new. Count with a
-   code tool. Do not add a label or timestamp to the submitted explanation.
-4. Only then fetch `/api/developments` and answer the judge prompt from the
-   instructions about your reading against that record: `development_of` (an id
-   the record lists, or null for a new development), `story` (reuse a listed
-   name verbatim when the reading is about what it names, never for a merely
-   related story), `note`, and the judge prompt's
-   `judge_version`. When two listed names are one story coined twice, add
-   `same_story` with both — never for merely related stories. Newsworthy calls
-   no model for this.
-5. Submit score, explanation, prompt_sha256 and that `judgement` to
-   `/api/readings`. Confirm the API stored it. If it says `"development":
-   "unjudged"`, `judge_note` says why; the reading is still stored.
-6. End every run with one report to `/api/runs`, including a run that submitted
-   nothing: the searches and sources, the stories weighed, why the score and
-   the judgement, and anything that failed.
+1. **Fetch** the current instructions and the exact prompt. Calculate its SHA-256 with a code tool, as the
+   instructions specify.
+2. **Research** current news, choose the development and score it on the published scale. No successful search means
+   no submission.
+3. **Write the final sentence** before you send anything. The total is 140 characters INCLUDING the app's "New: "
+   label. Reserve 5 for it, leaving 135 for the explanation, whether or not the development turns out to be new.
+   Count with a code tool. Don't add a label or timestamp to the submitted explanation.
+4. **Judge.** Only then fetch `/api/developments`. Answer the judge prompt from the instructions about your reading
+   against that record:
+   - `development_of`: an id the record lists, or null for a new development;
+   - `story`: reuse a listed name verbatim when the reading is about what it names, never for a merely related story;
+   - `note`;
+   - the judge prompt's `judge_version`.
 
-The service supplies the recent history at `/api/developments`; the caller does not need
-admin credentials or the full archive. The app labels a sentence that opened a new
-development "New:" for two hours after it is stored; any other sentence, and one
-the service could not match, has no label.
+   When two listed names are one story coined twice, add `same_story` with both. Never do it for merely related
+   stories. Newsworthy calls no model for this.
+5. **Submit** score, explanation, prompt_sha256 and that `judgement` to `/api/readings`. Confirm the API stored it. If
+   it says `"development": "unjudged"`, `judge_note` says why. The reading is still stored.
+6. **Report.** End every run with one report to `/api/runs`, including a run that submitted nothing. Give the searches
+   and sources, the stories weighed, why the score and the judgement, and anything that failed.
 
-## Why this exists
+## Rules
 
-The rating costs real money and the work is not specific to that app. A reading
-submitted here is one Newsworthy does not pay for — its scheduled run only fires
-when nothing has arrived within the configured interval.
+- **Use `curl` for every request**, with the token header. Never use a web-fetch tool: one that passes pages through a
+  model paraphrases and cuts what it returns.
+- **Fetch the instructions afresh each run.** The origin builds them from the live prompt registry. Don't cache them
+  between runs.
+- **A complete submission** includes `score`, `explanation` and `prompt_sha256`. Compute the hash with a code tool
+  from the exact received prompt, as the instructions describe.
+- **A failed search produces no submission.**
+- **Success means the API confirms the reading was stored.**
+
+## How the app shows it
+
+The app labels a sentence that opened a new development "New:" for two hours after it is stored. Any other sentence,
+and one the service couldn't match, has no label.
