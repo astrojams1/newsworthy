@@ -174,6 +174,8 @@ locally with Gradle. Native and physical-device verification scopes must be reco
 - `store/video/today/README.md`: the "today" Short's script; its `film.js`
   quotes it, the app and the day's reading snapshot, checked by
   `test/today.test.js`.
+- `store/source/shorts/<episode>/upload-notes.md`: a YouTube Short's title, description and on-screen captions, each
+  checked against the recorded take; `record-timeline-take.mjs` beside them films the take from the live web app.
 
 If the production domain or release status changes, update all applicable
 surfaces above, plus `mobile.release.json`. Search engines and social platforms

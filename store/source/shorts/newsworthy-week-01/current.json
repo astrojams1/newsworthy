@@ -1,0 +1,19 @@
+{
+ "fetched_at": "2026-11-10T15:24:08.661Z",
+ "body": {
+  "score": 6,
+  "explanation": "US prices excluding food and energy rose 0.3% in Oct, the level Fed governor Waller said could justify a larger Dec rate hike.",
+  "explanation_text": "US prices excluding food and energy rose 0.3% in Oct, the level Fed governor Waller said could justify a larger Dec rate hike.",
+  "explanation_new": false,
+  "explanation_at": "2026-11-10T14:07:53.396Z",
+  "explanation_story": "fed-rates",
+  "created_at": "2026-11-10T15:06:01.098Z",
+  "source": "external",
+  "basis": "aged",
+  "level": 6,
+  "story": "fed-rates",
+  "since": "2026-11-10T14:07:53.396Z",
+  "fatigue": 0.9696509744892787,
+  "window": 6
+ }
+}

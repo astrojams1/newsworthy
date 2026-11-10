@@ -1,0 +1,21 @@
+{
+  "video": "work/silent.mp4",
+  "output": "newsworthy-week-01.mp4",
+  "music": { "seed": "newsworthy-week-01-it-ends", "gain": 0.16, "from": 0 },
+  "cues": [
+    { "at": 0.05, "sound": "whoosh", "gain": 0.4 },
+    { "at": 0.5, "sound": "pop", "gain": 0.4 },
+    { "at": 2.12, "sound": "pop", "gain": 0.6 },
+    { "at": 4.03, "sound": "tap", "gain": 0.7 },
+    { "at": 4.15, "sound": "whoosh", "gain": 0.5 },
+    { "at": 6.05, "sound": "whoosh", "gain": 0.5 },
+    { "at": 7.2, "sound": "whoosh", "gain": 0.35 },
+    { "at": 8.3, "sound": "whoosh", "gain": 0.35 },
+    { "at": 9.97, "sound": "pop", "gain": 0.9 },
+    { "at": 10.0, "sound": "ding", "gain": 0.8 },
+    { "at": 12.43, "sound": "tap", "gain": 0.7 },
+    { "at": 12.55, "sound": "whoosh", "gain": 0.5 },
+    { "at": 13.3, "sound": "pop", "gain": 0.5 },
+    { "at": 13.6, "sound": "pop", "gain": 0.5 }
+  ]
+}

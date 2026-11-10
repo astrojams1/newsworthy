@@ -1,0 +1,277 @@
+{
+ "fetched_at": "2026-11-10T15:24:08.912Z",
+ "body": {
+  "developments": [
+   {
+    "root": 1865,
+    "story": "fed-rates",
+    "since": "2026-11-10T10:03:59.891Z",
+    "score": 6,
+    "displayed": 5,
+    "leading": false,
+    "explanation": "US October inflation data, due Nov 10, will settle whether Fed Governor Waller backs a half-point rate hike in Dec."
+   },
+   {
+    "root": 1851,
+    "story": "iran-war",
+    "since": "2026-11-09T20:04:00.975Z",
+    "score": 6,
+    "displayed": 4,
+    "leading": false,
+    "explanation": "The US and Iran are reportedly nearing an early nuclear deal that would reopen the Strait of Hormuz, a key route for oil tankers."
+   },
+   {
+    "root": 1831,
+    "story": "iran-war",
+    "since": "2026-11-09T00:04:02.159Z",
+    "score": 6,
+    "displayed": 3,
+    "leading": false,
+    "explanation": "Iran's foreign minister said peace talks with the US have stalled since the midterms, as President Trump weighs resuming major strikes."
+   },
+   {
+    "root": 1829,
+    "story": "nvidia-spy",
+    "since": "2026-11-08T22:03:47.791Z",
+    "score": 6,
+    "displayed": 3,
+    "leading": false,
+    "explanation": "Nvidia's board opened an independent investigation after reports that its CEO Jensen Huang was targeted by Chinese intelligence."
+   },
+   {
+    "root": 1820,
+    "story": "iran-war",
+    "since": "2026-11-08T13:07:34.013Z",
+    "score": 6,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "Iran said 3 tankers caught fire after hitting mines in the Strait of Hormuz, a key oil route, as traders were betting on a US-Iran deal."
+   },
+   {
+    "root": 1815,
+    "story": "iran-war",
+    "since": "2026-11-08T08:03:54.355Z",
+    "score": 6,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "Yemen's Houthi rebels fired missiles at Saudi Arabia's capital, and one reportedly hit an Aramco building in its financial district."
+   },
+   {
+    "root": 1812,
+    "story": "iran-war",
+    "since": "2026-11-08T05:04:48.392Z",
+    "score": 6,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "Yemen's Houthi rebels said they fired missiles and drones at Saudi oil sites and the Riyadh airport, a new threat to Gulf oil supplies."
+   },
+   {
+    "root": 1809,
+    "story": "iran-war",
+    "since": "2026-11-08T02:04:10.237Z",
+    "score": 5,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "The US expanded its blockade of Iran to target land trade routes and disabled a cargo ship that tried to slip past its navy."
+   },
+   {
+    "root": 1807,
+    "story": "iran-war",
+    "since": "2026-11-08T00:05:02.687Z",
+    "score": 6,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "Iran's Revolutionary Guard said it lifted its limit on missile range after the US carried out new strikes near the Strait of Hormuz."
+   },
+   {
+    "root": 1800,
+    "story": "nvidia-spy",
+    "since": "2026-11-07T17:04:47.448Z",
+    "score": 6,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "US officials reportedly believe Nvidia's chief had a romantic tie to a suspected Chinese spy, and Congress has asked him for answers."
+   },
+   {
+    "root": 1799,
+    "story": "fed-rates",
+    "since": "2026-11-07T16:05:21.020Z",
+    "score": 5,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "The US releases October consumer price data on Nov 10, which should help settle whether the Fed raises interest rates in December."
+   },
+   {
+    "root": 1795,
+    "story": "ai-stocks",
+    "since": "2026-11-07T12:04:06.315Z",
+    "score": 6,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "Investors sold AI stocks on fears Democrats' midterm sweep brings tighter rules, giving Japan's main index its worst week since 2020."
+   },
+   {
+    "root": 1784,
+    "story": "iran-war",
+    "since": "2026-11-07T01:05:01.493Z",
+    "score": 6,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "Iranian media said 2 missiles struck Qeshm Island in the Strait of Hormuz, as Trump reportedly weighs new strikes on Iran."
+   },
+   {
+    "root": 1781,
+    "story": "iran-war",
+    "since": "2026-11-06T22:04:16.153Z",
+    "score": 6,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "President Trump is reportedly weighing renewed strikes on Iran as early as Nov 9, even as US and Iranian negotiators report progress."
+   },
+   {
+    "root": 1779,
+    "story": "ai-stocks",
+    "since": "2026-11-06T20:05:37.922Z",
+    "score": 6,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "Chip stocks bounced back after their worst drop since 2020, set off by Democratic midterm wins that threaten AI data center growth."
+   },
+   {
+    "root": 1773,
+    "story": "fed-rates",
+    "since": "2026-11-06T14:05:32.594Z",
+    "score": 7,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "The US added 165,000 jobs in Oct, far above forecasts, strengthening the case for the Fed to raise interest rates in Dec."
+   },
+   {
+    "root": 1768,
+    "story": "ai-stocks",
+    "since": "2026-11-06T09:04:19.925Z",
+    "score": 8,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "Stocks across Asia and Europe fell after US chip shares plunged on fears that Democrats in Congress will curb data center building."
+   },
+   {
+    "root": 1765,
+    "story": "ai-stocks",
+    "since": "2026-11-06T06:03:33.475Z",
+    "score": 8,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "Taiwan stocks had their steepest fall ever and South Korea briefly halted trading as investors sold AI chipmakers after US midterms."
+   },
+   {
+    "root": 1760,
+    "story": "ai-stocks",
+    "since": "2026-11-06T01:03:32.495Z",
+    "score": 8,
+    "displayed": 2,
+    "leading": false,
+    "explanation": "Stocks in Japan and South Korea are falling sharply, extending a US selloff in AI companies after Democrats won the midterm elections."
+   },
+   {
+    "root": 1751,
+    "story": "ai-stocks",
+    "since": "2026-11-05T16:04:51.217Z",
+    "score": 8,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "US chip stocks fell 11% as investors weighed whether the incoming Democratic Congress could slow construction of AI data centers."
+   },
+   {
+    "root": 1749,
+    "story": "uk-rates",
+    "since": "2026-11-05T14:05:12.423Z",
+    "score": 4,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "The Bank of England raised interest rates for the first time since 2023, saying the Iran war is pushing up UK inflation."
+   },
+   {
+    "root": 1741,
+    "story": "iran-war",
+    "since": "2026-11-05T06:04:40.658Z",
+    "score": 5,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "Iran's Guards said 2 oil tankers caught fire in the Strait of Hormuz, a key oil route, as Trump weighs a deal or new strikes on Iran."
+   },
+   {
+    "root": 1740,
+    "story": "ai-stocks",
+    "since": "2026-11-05T05:04:50.922Z",
+    "score": 5,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "South Korea's stock market briefly paused trading as chipmaker shares fell sharply on AI spending fears after the US midterms."
+   },
+   {
+    "root": 1738,
+    "story": "iran-war",
+    "since": "2026-11-05T03:05:57.760Z",
+    "score": 6,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "Democrats won control of Congress, and Trump said the Iran war angered voters, raising hopes the US will seek a deal to end it."
+   },
+   {
+    "root": 1733,
+    "story": "iran-war",
+    "since": "2026-11-04T22:04:29.712Z",
+    "score": 7,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "Vice President Vance said anger over the Iran war cost Republicans Congress, and oil fell 9% on hopes the war will end soon."
+   },
+   {
+    "root": 1731,
+    "story": "iran-war",
+    "since": "2026-11-04T20:06:37.171Z",
+    "score": 6,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "After Democrats won Congress, Trump said Iran wants a deal to end the war and it could happen, and oil prices fell about 8%."
+   },
+   {
+    "root": 1724,
+    "story": "us-midterms",
+    "since": "2026-11-04T13:06:22.210Z",
+    "score": 5,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "President Trump accepted midterm results giving Democrats control of Congress, which could bring tougher rules on AI and crypto."
+   },
+   {
+    "root": 1716,
+    "story": "us-midterms",
+    "since": "2026-11-04T05:03:53.867Z",
+    "score": 6,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "Democrats won control of both the House and Senate in the midterms, US networks projected, splitting power with President Trump."
+   },
+   {
+    "root": 1715,
+    "story": "us-midterms",
+    "since": "2026-11-04T04:03:00.483Z",
+    "score": 6,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "Democrats won control of the US House and flipped 3 Republican Senate seats, leaving them one seat short of a Senate majority."
+   },
+   {
+    "root": 1713,
+    "story": "us-midterms",
+    "since": "2026-11-04T02:05:05.545Z",
+    "score": 5,
+    "displayed": 1,
+    "leading": false,
+    "explanation": "US midterm results will settle who controls Congress, and Democrats flipped a Senate seat in North Carolina, networks projected."
+   }
+  ]
+ }
+}
