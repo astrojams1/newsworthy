@@ -1,0 +1,159 @@
+{
+ "output": "work/silent.mp4",
+ "size": [
+  1080,
+  1920
+ ],
+ "fps": 30,
+ "bitrate": 12000000,
+ "background": "#EDE7E0",
+ "crossfade": 0.12,
+ "move": 0.5,
+ "caption": {
+  "size": 56,
+  "lineHeight": 84,
+  "baseline": 380,
+  "centerX": 480,
+  "color": "#FFFFFF",
+  "accent": "#F2B77C",
+  "tracking": -0.5
+ },
+ "screen": {
+  "x": 100,
+  "y": 440,
+  "width": 760,
+  "height": 1645,
+  "radius": 64,
+  "bezel": 14,
+  "bezelColor": "#16161A",
+  "shadow": 0.22
+ },
+ "clips": [
+  {
+   "file": "work/takes/t4/take.mov",
+   "from": 0.2,
+   "to": 1.7,
+   "speed": 0.75,
+   "shift": -140
+  },
+  {
+   "file": "work/takes/t4/take.mov",
+   "from": 1.7,
+   "to": 3.0,
+   "speed": 0.65,
+   "shift": -140,
+   "zoom": 1.06,
+   "focus": [
+    0.5,
+    0.6
+   ],
+   "move": 0.35
+  },
+  {
+   "file": "work/takes/t4/take.mov",
+   "from": 3.0,
+   "to": 5.0,
+   "move": 0.4
+  },
+  {
+   "file": "work/takes/t4/take.mov",
+   "from": 5.0,
+   "to": 25.4,
+   "speed": 6
+  },
+  {
+   "file": "work/takes/t4/take.mov",
+   "from": 25.4,
+   "to": 28.4,
+   "shift": -576,
+   "zoom": 0.84,
+   "focus": [
+    0.5,
+    1.0
+   ],
+   "move": 0.6
+  },
+  {
+   "file": "work/takes/t4/take.mov",
+   "from": 29.0,
+   "to": 31.7,
+   "shift": -140,
+   "move": 0.6
+  }
+ ],
+ "captions": [
+  {
+   "from": -1,
+   "to": 1.95,
+   "lines": [
+    "A news app",
+    "that [ends]?"
+   ],
+   "box": "#16161A",
+   "size": 88,
+   "lineHeight": 118,
+   "baseline": 590
+  },
+  {
+   "from": 2.1,
+   "to": 3.95,
+   "lines": [
+    "Nov 10, 2026: rated [6/10]"
+   ],
+   "box": "#16161A",
+   "pop": true,
+   "size": 60,
+   "baseline": 650
+  },
+  {
+   "from": 4.35,
+   "to": 5.95,
+   "lines": [
+    "Below: [one week] of stories"
+   ],
+   "box": "#16161A"
+  },
+  {
+   "from": 6.1,
+   "to": 9.3,
+   "lines": [
+    "Keep scrolling…"
+   ],
+   "box": "#16161A"
+  },
+  {
+   "from": 9.95,
+   "to": 12.35,
+   "lines": [
+    "That’s it. It [ends]."
+   ],
+   "box": "#16161A",
+   "pop": true,
+   "size": 80,
+   "baseline": 388
+  },
+  {
+   "from": 13.3,
+   "to": 17.1,
+   "lines": [
+    "Would you read news this way?"
+   ],
+   "box": "#16161A",
+   "size": 44,
+   "lineHeight": 70,
+   "baseline": 560
+  },
+  {
+   "from": 13.6,
+   "to": 17.1,
+   "lines": [
+    "Search ‘Newsworthy: Calm News’",
+    "on the [App Store]"
+   ],
+   "box": "#16161A",
+   "size": 44,
+   "lineHeight": 74,
+   "baseline": 672
+  }
+ ]
+}

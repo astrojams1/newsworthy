@@ -281,3 +281,10 @@ guide as well as campaign notes, so later reviews retain its exact scope.
 | PR | Date | Surfaces reviewed | Corrected | Open limits |
 |---|---|---|---|---|
 | Growth ledger pointer (`marketing/growth-ledger-pointer`) | 2026-11-09 | `docs/growth/ledger.md`, `.agents/skills/newsworthy-growth/SKILL.md`, README, `docs/product-messaging.md` | None needed: internal process notes only, no user-visible, store, help or release copy changed | None |
+
+## Short "This news app has an ending" — 10 November 2026, shorts/newsworthy-week-01
+
+| PR | Date | Surfaces reviewed | Corrected | Open limits |
+|---|---|---|---|---|
+| Short newsworthy-week-01 (`shorts/newsworthy-week-01`) | 2026-11-10 | The Short's captions, title, description and pinned comment (`store/source/shorts/newsworthy-week-01/upload-notes.md`) against the take's `state.jsonl`, `docs/product-messaging.md`, `docs/story-timeline.md` and README | None needed in existing copy; added the Shorts folder to "Where copy lives". The Short says no AI, rank, coverage, health or time-saving claim, uses the full store name in its search prompt, and names the US$1 price only in the description under the video price exception | Recorded from the web version in headless Chromium, and the description says so: it is not native iPhone footage and claims no native verification. The phone frame is drawn by the renderer. The reading shown is dated Nov 10, 2026 on screen. Not posted by this PR |
+
