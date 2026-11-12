@@ -289,3 +289,9 @@ guide as well as campaign notes, so later reviews retain its exact scope.
 |---|---|---|---|---|
 | Short newsworthy-week-01 (`shorts/newsworthy-week-01`) | 2026-11-10 | The Short's captions, title, description and pinned comment (`store/source/shorts/newsworthy-week-01/upload-notes.md`) against the take's `state.jsonl`, `docs/product-messaging.md`, `docs/story-timeline.md` and README | None needed in existing copy; added the Shorts folder to "Where copy lives". The Short says no AI, rank, coverage, health or time-saving claim, uses the full store name in its search prompt, and names the US$1 price only in the description under the video price exception | Recorded from the web version in headless Chromium, and the description says so: it is not native iPhone footage and claims no native verification. The phone frame is drawn by the renderer. The reading shown is dated Nov 10, 2026 on screen. Not posted by this PR |
 
+
+## 1.0.2 metadata-only version — 12 November 2026, release/1.0.2-subtitle
+
+| PR | Date | Surfaces reviewed | Corrected | Open limits |
+|---|---|---|---|---|
+| 1.0.2 subtitle release (`release/1.0.2-subtitle`) | 2026-11-12 | `store/store.json` (version, What's New, review notes), `apps/client/app.config.js` version, README release status, `docs/product-messaging.md`, preview video staleness report | What's New and the review notes' opening now say 1.0.2 is a metadata update (new subtitle) with the same app code and features as 1.0.1, instead of repeating 1.0.1's notes | The preview film's inherited staleness (nine render inputs changed before 1.0.1) is unchanged; the app code is the live 1.0.1 build's, so the film shows the same app. README keeps saying 1.0.1 is live until Apple approves 1.0.2 |

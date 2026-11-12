@@ -1,7 +1,7 @@
 const release = require('../../mobile.release.json');
 const design = require('./assets/design.json');
 module.exports = {
-  name: 'Newsworthy', slug: 'newsworthy', owner: 'astrojams1', version: '1.0.1', scheme: 'newsworthy',
+  name: 'Newsworthy', slug: 'newsworthy', owner: 'astrojams1', version: '1.0.2', scheme: 'newsworthy',
   orientation: 'default', userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   ios: { icon: { light: './assets/icon.png', dark: './assets/icon-dark.png' }, supportsTablet: true, bundleIdentifier: release.appId,
