@@ -140,6 +140,26 @@ can run the native UI through Expo Go. Widgets and the complete package require
 a custom native build: iOS on a Mac with a supported Xcode/runtime, Android
 locally with Gradle. Native and physical-device verification scopes must be recorded separately.
 
+## The public today page
+
+`/today` ("How big is the news today?"), a page per day at `/day/YYYY-MM-DD`,
+the `/badge.svg` badge, the `/embed` card and the `/today.json` and
+`/today.rss` feeds are the citable, embeddable form of the web reader
+(owner's brief, 2026-11-12). All are rendered by `src/today.js` from the
+front page's own replay, so a day's figure is the highest number the front
+page showed that day (midnight to midnight US Eastern), with the sentence of
+the development behind it, word for word.
+
+What is public and why: the web reader already shows today's number, its
+sentence, its update time and the past week's developments for free, so the
+day's high and its sentence add no paid feature. The Home Screen widgets and
+the iPhone and iPad app remain the purchase; the page names the App Store,
+the one-time $1 price and the search phrase "Newsworthy Calm News" in one
+plain line. The data is CC BY 4.0 with a request to link to `/today`. The
+embeds run no script on the host page; the server logs only the embedding
+site's host, never anything about its readers. The method note follows the
+rules above: no AI, no markets, and it says what the number is not.
+
 ## Where copy lives
 
 - `apps/client/targets/widget/NewsworthyWidget.swift` (`.description`) and
@@ -150,7 +170,8 @@ locally with Gradle. Native and physical-device verification scopes must be reco
 - `public/privacy.html`, `public/support.html`: policy and help; each has its own metadata.
 - `scripts/generate-brand.mjs`: evergreen share-art source; generates
   `public/social-card.svg`, `public/social-card.png` and `public/brand/share.png`.
-- `public/robots.txt`, `public/sitemap.xml`: crawler access and public page discovery.
+- `public/robots.txt`, `public/sitemap.xml`: crawler access and public page discovery; `/sitemap-days.xml` lists the day pages.
+- `src/today.js`: the today page, day pages, badge, embed card, feeds and their method note.
 - `public/llms.txt`: public facts for AI readers; a voluntary reference, not a
   guaranteed discovery or ranking mechanism.
 - `src/caller.js`, `skills/newsworthy-rating/SKILL.md`: authorized

@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://newsworthy-indol.vercel.app/sitemap.xml
+Sitemap: https://newsworthy-indol.vercel.app/sitemap-days.xml

@@ -14,6 +14,7 @@ import { aliasMap, canonicalStory, mergeProblem, renameProblem, slug, storyStats
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
+import { HISTORY_DAYS, dailyHighs, dayOf, daysSitemap, feedJson, feedRss, isDay, renderBadge, renderDayPage, renderEmbed, renderTodayPage, safeTimeZone } from './today.js';
 import { CRON_TICK_MINUTES, CRON_TICK_OFFSET_MINUTES, INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
 import { isRunning, start, tick } from './scheduler.js';
@@ -290,6 +291,172 @@ async function serveStatic(res, name) {
   res.end('Not found');
 }
 
+/** What /api/current serves, also behind the public today page and badge. */
+async function currentReadingBody() {
+  // Four weeks of readings, not the six-hour level window: a development is
+  // weighed against how long its story has been running and what it has
+  // routinely scored, so the replay has to reach back as far as a story is
+  // remembered. Developments themselves still only compete for six days,
+  // and the level rule still runs on the six-hour window inside it.
+  const { halfLifeHours, storyHalfLifeDays } = await effectiveConfig();
+  const rows = await history({ hours: STORY_MEMORY_HOURS });
+  const fallback = rows.length ? null : await latestRating();
+  if (!rows.length && !fallback) {
+    const attempt = await latestAttempt();
+    return { status: 503, body: {
+      error: attempt ? 'no successful rating yet' : 'no rating yet',
+      detail: attempt?.error ?? null,
+    } };
+  }
+  const ascending = (rows.length ? rows : [fallback])
+    .map((r) => ({ ...r, t: Date.parse(r.created_at) }));
+  const current = currentDisplay(ascending, {
+    now: Date.now(),
+    halfLifeHours,
+    storyHalfLifeDays,
+    roots: await rootTimes(ascending),
+  });
+  // No countdown: an external caller can post a reading at any moment, so
+  // the next update is genuinely not predictable. The page states when the
+  // current reading arrived and nothing more.
+  // The number is smoothed and aged; the sentence is neither. The number
+  // answers "how newsworthy is it", which is a level that goes stale
+  // slowly; the sentence answers "what happened", which is a fact about
+  // right now — so a story still on top this evening is still named this
+  // evening, with a smaller number beside it.
+  // A re-report shows its development's existing sentence rather than a
+  // rewording of it; see sentenceFor() in src/current.js. `created_at` is
+  // still the newest reading's: the sentence was confirmed then.
+  const newest = current.newest;
+  const sentence = current.sentence;
+  // Rows are stored with an end already; rows from before that rule get
+  // one here, so every client, native widgets included, receives a
+  // finished sentence without a rebuild. `explanation_new` marks a sentence
+  // that opened its own development; clients show a bold "New:" before it
+  // for two hours from `created_at`. `explanation` stays unlabelled so an
+  // installed build that shows it as-is never keeps a stale "New:".
+  // `explanation_at` is when the shown sentence was saved — for a re-report,
+  // its development's first report, even when a newer prompt version's
+  // wording is shown (see sentenceFor()) — and clients lead the sentence with
+  // its age ("5h ·") once "New:" is off. It is not `since`, which dates the
+  // development the number is about, and not the removed
+  // `explanation_since`, which old builds still print as "31 hours ago:".
+  const explanationFields = {
+    explanation_text: completeSentence(sentence.explanation),
+    explanation_new: opensDevelopment(newest),
+    explanation_at: new Date(current.sentenceAt ?? sentence.t ?? sentence.created_at).toISOString(),
+  };
+  // The story the shown sentence belongs to, from the row that sentence is
+  // — for a re-report, its development's first report, whatever slug the
+  // re-report itself arrived with — not `story`, which is the development
+  // the number is about.
+  const explanationStory = sentence.story ?? newest.story ?? undefined;
+  return { status: 200, body: {
+    score: current.score,
+    explanation: explanationFields.explanation_text,
+    ...explanationFields,
+    explanation_story: explanationStory,
+    created_at: newest.created_at,
+    source: newest.source ?? 'cron',
+    // None of the rest is displayed; it is what makes a surprising number
+    // answerable. `basis` is which rule produced it, `level` what the rater
+    // just said, `story` and `since` the development the number is about
+    // and when it broke. There is no `score_from`: the number comes from a
+    // development rather than from a row, and `since` already dates it.
+    basis: current.basis,
+    level: current.level,
+    story: current.story ?? undefined,
+    since: new Date(current.since).toISOString(),
+    // How much of its score a routine development in this story keeps. 1 is
+    // a fresh story or a breakthrough; the number falls with the story's age.
+    fatigue: current.fatigue,
+    window: current.window,
+  } };
+}
+
+/**
+ * Each day's high on the front page, oldest first, for the public today page,
+ * its day pages and feeds. Replayed with the story memory in front of the
+ * range, as the admin chart is, so the first day is weighed as the front page
+ * weighed it.
+ */
+async function dailyRecords({ days = HISTORY_DAYS, now = Date.now() } = {}) {
+  const { halfLifeHours, storyHalfLifeDays } = await effectiveConfig();
+  const rows = await history({ hours: (days + 1) * 24 + STORY_MEMORY_HOURS, limit: 50_000 });
+  if (!rows.length) return [];
+  const ascending = rows.map((r) => ({ ...r, t: Date.parse(r.created_at) }));
+  const byId = new Map(ascending.map((r) => [r.id, r]));
+  const series = displayedSeries(ascending, { halfLifeHours, storyHalfLifeDays, roots: await rootTimes(ascending) });
+  // The sentence of the development the number is about; a development opened
+  // before the rows begin falls back to the reading's own sentence.
+  const sentence = (point) => completeSentence((byId.get(point.root) ?? point).explanation);
+  return dailyHighs(series, { sentence, from: now - (days + 1) * 86_400_000 }).slice(-days);
+}
+
+// scripts/generate-brand.mjs versions the share card by a digest of its artwork.
+let cardVersionCache;
+async function cardVersion() {
+  if (!cardVersionCache) {
+    const { createHash } = await import('node:crypto');
+    const art = await readFile(join(ROOT_DIR, 'public/social-card.svg'), 'utf8');
+    cardVersionCache = createHash('sha256').update(art).digest('hex').slice(0, 8);
+  }
+  return cardVersionCache;
+}
+
+/** The host of the page that embedded the badge or card, and nothing about its reader. */
+function logEmbed(req, kind) {
+  let host = null;
+  try { host = new URL(req.headers.referer).host; } catch { /* no referrer sent */ }
+  if (host && host === req.headers.host) return;
+  console.log(JSON.stringify({ event: 'embed', kind, host }));
+}
+
+const PUBLIC_CACHE = { 'cache-control': 'public, max-age=300, s-maxage=600, stale-while-revalidate=3600' };
+const PAST_DAY_CACHE = { 'cache-control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800' };
+// Short at the edge, so requests still reach the function and the embed log
+// sees which sites carry the badge.
+const EMBED_CACHE = { 'cache-control': 'public, max-age=600, s-maxage=120, stale-while-revalidate=600' };
+
+function send(res, status, type, body, headers = {}) {
+  res.writeHead(status, { 'content-type': type, ...headers });
+  res.end(body);
+}
+
+async function publicToday(req, res, url, path) {
+  const html = 'text/html; charset=utf-8';
+  if (path === '/badge.svg' || path === '/embed') {
+    const { status, body } = await currentReadingBody();
+    const current = status === 200 ? body : null;
+    const theme = url.searchParams.get('theme');
+    logEmbed(req, path === '/badge.svg' ? 'badge' : 'card');
+    if (path === '/badge.svg') {
+      return send(res, 200, 'image/svg+xml; charset=utf-8', renderBadge({ current, theme, timeZone: safeTimeZone(url.searchParams.get('tz')) }), EMBED_CACHE);
+    }
+    return send(res, 200, html, renderEmbed({ current, theme }), { ...EMBED_CACHE, 'x-robots-tag': 'noindex' });
+  }
+  if (path.startsWith('/day/')) {
+    const date = path.slice('/day/'.length);
+    const now = Date.now();
+    const today = dayOf(now);
+    if (!isDay(date) || date > today) return send(res, 404, 'text/plain; charset=utf-8', 'Not found');
+    const back = Math.ceil((now - Date.parse(`${date}T00:00:00Z`)) / 86_400_000) + 2;
+    const days = await dailyRecords({ days: Math.min(Math.max(back, 3), 800), now });
+    const index = days.findIndex((d) => d.date === date);
+    if (index < 0) return send(res, 404, 'text/plain; charset=utf-8', 'Not found');
+    const page = renderDayPage({ day: days[index], previous: days[index - 1], next: days[index + 1], cardVersion: await cardVersion(), isToday: date === today });
+    return send(res, 200, html, page, date === today ? PUBLIC_CACHE : PAST_DAY_CACHE);
+  }
+  const [{ status, body }, days] = await Promise.all([currentReadingBody(), dailyRecords()]);
+  const current = status === 200 ? body : null;
+  if (path === '/today.json') {
+    return send(res, 200, 'application/json; charset=utf-8', JSON.stringify(feedJson({ current, days })), { ...PUBLIC_CACHE, 'access-control-allow-origin': '*' });
+  }
+  if (path === '/today.rss') return send(res, 200, 'application/rss+xml; charset=utf-8', feedRss({ current, days }), PUBLIC_CACHE);
+  if (path === '/sitemap-days.xml') return send(res, 200, 'application/xml; charset=utf-8', daysSitemap({ days }), PUBLIC_CACHE);
+  return send(res, 200, html, renderTodayPage({ current, days, cardVersion: await cardVersion() }), PUBLIC_CACHE);
+}
+
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
   const path = url.pathname.replace(/\/+$/, '') || '/';
@@ -305,6 +472,9 @@ const server = createServer(async (req, res) => {
     if (path === '/about' && req.method === 'GET') return serveStatic(res, 'about.html');
     if (path === '/privacy' && req.method === 'GET') return serveStatic(res, 'privacy.html');
     if (path === '/support' && req.method === 'GET') return serveStatic(res, 'support.html');
+    if (req.method === 'GET' && (['/today', '/today.json', '/today.rss', '/badge.svg', '/embed', '/sitemap-days.xml'].includes(path) || path.startsWith('/day/'))) {
+      return publicToday(req, res, url, path);
+    }
 
     // Local Expo web development may read the public API. Native networking
     // does not require browser CORS. Admin and writes remain same-origin.
@@ -321,85 +491,8 @@ const server = createServer(async (req, res) => {
     }
 
     if (path === '/api/current' && req.method === 'GET') {
-      // Four weeks of readings, not the six-hour level window: a development is
-      // weighed against how long its story has been running and what it has
-      // routinely scored, so the replay has to reach back as far as a story is
-      // remembered. Developments themselves still only compete for six days,
-      // and the level rule still runs on the six-hour window inside it.
-      const { halfLifeHours, storyHalfLifeDays } = await effectiveConfig();
-      const rows = await history({ hours: STORY_MEMORY_HOURS });
-      const fallback = rows.length ? null : await latestRating();
-      if (!rows.length && !fallback) {
-        const attempt = await latestAttempt();
-        return json(res, 503, {
-          error: attempt ? 'no successful rating yet' : 'no rating yet',
-          detail: attempt?.error ?? null,
-        });
-      }
-      const ascending = (rows.length ? rows : [fallback])
-        .map((r) => ({ ...r, t: Date.parse(r.created_at) }));
-      const current = currentDisplay(ascending, {
-        now: Date.now(),
-        halfLifeHours,
-        storyHalfLifeDays,
-        roots: await rootTimes(ascending),
-      });
-      // No countdown: an external caller can post a reading at any moment, so
-      // the next update is genuinely not predictable. The page states when the
-      // current reading arrived and nothing more.
-      // The number is smoothed and aged; the sentence is neither. The number
-      // answers "how newsworthy is it", which is a level that goes stale
-      // slowly; the sentence answers "what happened", which is a fact about
-      // right now — so a story still on top this evening is still named this
-      // evening, with a smaller number beside it.
-      // A re-report shows its development's existing sentence rather than a
-      // rewording of it; see sentenceFor() in src/current.js. `created_at` is
-      // still the newest reading's: the sentence was confirmed then.
-      const newest = current.newest;
-      const sentence = current.sentence;
-      // Rows are stored with an end already; rows from before that rule get
-      // one here, so every client, native widgets included, receives a
-      // finished sentence without a rebuild. `explanation_new` marks a sentence
-      // that opened its own development; clients show a bold "New:" before it
-      // for two hours from `created_at`. `explanation` stays unlabelled so an
-      // installed build that shows it as-is never keeps a stale "New:".
-      // `explanation_at` is when the shown sentence was saved — for a re-report,
-      // its development's first report, even when a newer prompt version's
-      // wording is shown (see sentenceFor()) — and clients lead the sentence with
-      // its age ("5h ·") once "New:" is off. It is not `since`, which dates the
-      // development the number is about, and not the removed
-      // `explanation_since`, which old builds still print as "31 hours ago:".
-      const explanationFields = {
-        explanation_text: completeSentence(sentence.explanation),
-        explanation_new: opensDevelopment(newest),
-        explanation_at: new Date(current.sentenceAt ?? sentence.t ?? sentence.created_at).toISOString(),
-      };
-      // The story the shown sentence belongs to, from the row that sentence is
-      // — for a re-report, its development's first report, whatever slug the
-      // re-report itself arrived with — not `story`, which is the development
-      // the number is about.
-      const explanationStory = sentence.story ?? newest.story ?? undefined;
-      return json(res, 200, {
-        score: current.score,
-        explanation: explanationFields.explanation_text,
-        ...explanationFields,
-        explanation_story: explanationStory,
-        created_at: newest.created_at,
-        source: newest.source ?? 'cron',
-        // None of the rest is displayed; it is what makes a surprising number
-        // answerable. `basis` is which rule produced it, `level` what the rater
-        // just said, `story` and `since` the development the number is about
-        // and when it broke. There is no `score_from`: the number comes from a
-        // development rather than from a row, and `since` already dates it.
-        basis: current.basis,
-        level: current.level,
-        story: current.story ?? undefined,
-        since: new Date(current.since).toISOString(),
-        // How much of its score a routine development in this story keeps. 1 is
-        // a fresh story or a breakthrough; the number falls with the story's age.
-        fatigue: current.fatigue,
-        window: current.window,
-      });
+      const { status, body } = await currentReadingBody();
+      return json(res, status, body);
     }
 
     // Prototype: the developments behind the front page, newest first, each
