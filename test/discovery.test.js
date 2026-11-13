@@ -14,7 +14,7 @@ test('public discovery links resolve, metadata parses, and operational routes op
     assert.equal(sitemap.status, 200);
     assert.match(sitemap.headers.get('content-type'), /application\/xml/);
     const locations = [...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-    assert.deepEqual(locations, [site + '/', site + '/privacy', site + '/support']);
+    assert.deepEqual(locations, [site + '/', site + '/today', site + '/privacy', site + '/support']);
 
     for (const location of locations) {
       const response = await fetch(base + new URL(location).pathname);

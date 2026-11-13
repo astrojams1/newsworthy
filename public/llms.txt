@@ -26,6 +26,8 @@ score from 1 to 10, a brief explanation and an update time.
 
 - [Web app](https://newsworthy-indol.vercel.app/): The latest displayed rating.
 - [App Store](https://apps.apple.com/app/id6812519450): Newsworthy for iPhone and iPad.
+- [How big is the news today?](https://newsworthy-indol.vercel.app/today): Today's rating, each day's high with its sentence, and a page per day at /day/YYYY-MM-DD.
+- [Daily rating data](https://newsworthy-indol.vercel.app/today.json): Each day's high as JSON, also as RSS at /today.rss. CC BY 4.0; please link to /today.
 - [Privacy](https://newsworthy-indol.vercel.app/privacy): Storage, technical information and support messages.
 - [Support](https://newsworthy-indol.vercel.app/support): Help and contact information.
 - [Current rating API](https://newsworthy-indol.vercel.app/api/current): Public read-only JSON.
