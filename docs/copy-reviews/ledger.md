@@ -295,3 +295,9 @@ guide as well as campaign notes, so later reviews retain its exact scope.
 | PR | Date | Surfaces reviewed | Corrected | Open limits |
 |---|---|---|---|---|
 | 1.0.2 subtitle release (`release/1.0.2-subtitle`) | 2026-11-12 | `store/store.json` (version, What's New, review notes), `apps/client/app.config.js` version, README release status, `docs/product-messaging.md`, preview video staleness report | What's New and the review notes' opening now say 1.0.2 is a metadata update (new subtitle) with the same app code and features as 1.0.1, instead of repeating 1.0.1's notes | The preview film's inherited staleness (nine render inputs changed before 1.0.1) is unchanged; the app code is the live 1.0.1 build's, so the film shows the same app. README keeps saying 1.0.1 is live until Apple approves 1.0.2 |
+
+## 1.0.2 submission record — 12 November 2026, ledger/1.0.2-submission
+
+| PR | Date | Surfaces reviewed | Corrected | Open limits |
+|---|---|---|---|---|
+| 1.0.2 submission record (`ledger/1.0.2-submission`) | 2026-11-12 | `store/builds/ledger.md`, `store/ledger.json`/`.md`, README release status | None needed: ledger records only; README keeps 1.0.1 as live until Apple approves 1.0.2 | None |
