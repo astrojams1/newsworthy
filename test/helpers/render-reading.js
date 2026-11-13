@@ -53,7 +53,7 @@ export function renderReading({ platform, width, height, fontScale = 1, score = 
     '@/lib/use-timeline': { useTimeline: (enabled) => (enabled ? timeline : []) },
     '@/components/preferences-provider': { usePreferences: () => ({ preferences: { showTimeline: timelineOn } }) },
     '@/lib/window-size': { useWindowSize: () => ({ width, height, fontScale }) },
-    '@/lib/config': { website: 'https://example.test', privacyUrl: '/privacy', supportUrl: '/support' },
+    '@/lib/config': { appStoreUrl: 'https://apps.apple.com/app/id6812519450', website: 'https://example.test', privacyUrl: '/privacy', supportUrl: '/support' },
   };
   const exports = {};
   vm.runInNewContext(sourceOverride ? compile(sourceOverride) : compiled, {

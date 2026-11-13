@@ -225,12 +225,21 @@ function inspectHeader({ platform = 'ios', score = 3, sourceOverride, timeline =
     // It reaches across the header to Share and Settings, not just the word.
     // Not on iOS: stretched to an estimate there, it crowded Share and Settings
     // into iOS 26's "…" overflow (iPhone, 2026-10-01); a status-bar tap scrolls back.
-    assert.equal(left.props.style({ pressed: false }).width, platform === 'ios' ? undefined : 390 - 96 - (platform === 'web' ? 12 : 40), 'iOS wordmark keeps its own width');
+    assert.equal(left.props.style({ pressed: false }).width, platform === 'ios' ? undefined : 390 - 96 - (platform === 'web' ? 12 + 84 : 40), 'iOS wordmark keeps its own width');
     assert.equal(left.props.children.type, 'BrandMark');
   } else assert.equal(left.type, 'BrandMark', 'with nowhere to return from, the wordmark is not a button');
-  // The right side is share (when there is a reading) then settings, always.
+  // The right side is, on the web only, the App Store link, then share (when
+  // there is a reading) then settings, always.
   assert.equal(rightGroup.props.style.flexDirection, 'row');
-  const [share, settings] = rightGroup.props.children;
+  const [appStore, share, settings] = rightGroup.props.children;
+  if (platform === 'web') {
+    assert.equal(appStore.type, 'Link');
+    assert.equal(appStore.props.href, 'https://apps.apple.com/app/id6812519450', 'the web links to the App Store listing');
+    const link = appStore.props.children;
+    assert.equal(link.props.accessibilityRole, 'link');
+    assert.ok(link.props.style.minHeight >= contract.header.minimumTouchTarget);
+    assert.equal(nodes(link).find(n => n.type === 'Text').props.children, 'App Store');
+  } else assert.equal(appStore, null, `${platform} is the app; it has no App Store link`);
   assert.equal(settings.props.accessibilityLabel, 'Settings');
   const gear = nodes(settings).find(n => n.type === 'Glyph');
   assert.equal(gear?.props.name, 'settings');
@@ -630,7 +639,7 @@ test('the first reading arrives in reading order, number then sentence then time
     assert.equal(new Set(values).size, 3, 'number, sentence and time each fade on their own value');
     for (const value of values) assert.equal(value.value, 1, 'a reading already at hand is shown at once');
     assert.equal(shown.gradient, shown.number, 'the gradient arrives with the number');
-    const share = shown.list.find(n => n.type === 'Screen').props.options.headerRight().props.children[0];
+    const share = shown.list.find(n => n.type === 'Screen').props.options.headerRight().props.children[1];
     assert.equal(nodes(share).find(n => n.type === 'AppIcon').parent.props.style.opacity, shown.number, 'Share arrives with the number');
   }
 });

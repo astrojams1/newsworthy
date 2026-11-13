@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, AppState, Pressable, Text, View, Share } from 'react-native';
 import { useWindowSize } from '@/lib/window-size';
-import { Stack, useRouter } from 'expo-router';
+import { Link, Stack, useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import { AppIcon } from '@/components/app-icon';
 import { GLYPHS, Glyph, HEADER_ICON_SIZE, barButton } from '@/components/glyph';
@@ -12,7 +12,7 @@ import { useCurrentReading } from '@/components/reading-provider';
 import { ReadingGradient } from '@/components/reading-gradient';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { checkedLine, displayExplanation, explanationParts, storyLine } from '@/lib/story-age';
-import { website, privacyUrl, supportUrl } from '@/lib/config';
+import { appStoreUrl, website, privacyUrl, supportUrl } from '@/lib/config';
 import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
@@ -31,6 +31,8 @@ const WIDE_COLUMN = 414;
 // How long the small line says when the news was checked, on opening, on
 // returning to the app and after a tap, before it gives way to the story.
 const CHECKED_MS = 2000;
+// The web header's App Store link: its text and a little room either side.
+const APP_STORE_LINK_WIDTH = 84;
 
 export default function Home() {
   const theme = useTheme();
@@ -192,7 +194,7 @@ export default function Home() {
   // iOS 26 too little room for Share and Settings, and the bar folded them into
   // a "…" that did nothing. A status-bar tap already scrolls back on iOS.
   const headerTapWidth = process.env.EXPO_OS === 'ios' ? undefined
-    : Math.max(120, width - (reading ? 96 : 48) - (process.env.EXPO_OS === 'web' ? 12 : 40));
+    : Math.max(120, width - (reading ? 96 : 48) - (process.env.EXPO_OS === 'web' ? 12 + APP_STORE_LINK_WIDTH : 40));
   const brand = hasTimeline ? <Pressable accessibilityRole="button" accessibilityLabel="Newsworthy, back to the reading" onPress={toReading}
     style={({ pressed }) => ({ width: headerTapWidth, minHeight: 48, justifyContent: 'center', alignItems: 'flex-start', opacity: pressed ? 0.6 : 1 })}>
     <BrandMark />
@@ -203,7 +205,15 @@ export default function Home() {
   const settingsButton = <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={{ minWidth: 48, minHeight: 48, marginRight: process.env.EXPO_OS === 'web' ? 12 : 0, alignItems: 'center', justifyContent: 'center' }}>
     <Glyph name="settings" color={theme.accent} size={HEADER_ICON_SIZE} />
   </Pressable>;
-  const headerRight = <View style={{ flexDirection: 'row', alignItems: 'center' }}>{shareButton}{settingsButton}</View>;
+  // The web is where someone meets Newsworthy without the app, so its header
+  // links to the App Store listing. The apps have no use for it.
+  const appStoreLink = process.env.EXPO_OS === 'web' ? <Link href={appStoreUrl} asChild>
+    <Pressable accessibilityRole="link" accessibilityLabel="Newsworthy on the App Store" testID="app-store-link"
+      style={{ width: APP_STORE_LINK_WIDTH, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
+      <Text numberOfLines={1} maxFontSizeMultiplier={1.2} style={{ color: theme.accent, fontSize: 14 }}>App Store</Text>
+    </Pressable>
+  </Link> : null;
+  const headerRight = <View style={{ flexDirection: 'row', alignItems: 'center' }}>{appStoreLink}{shareButton}{settingsButton}</View>;
   return <>
     {process.env.EXPO_OS === 'web' && <Head>
       <title>Newsworthy</title>

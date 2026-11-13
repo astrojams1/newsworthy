@@ -301,3 +301,9 @@ guide as well as campaign notes, so later reviews retain its exact scope.
 | PR | Date | Surfaces reviewed | Corrected | Open limits |
 |---|---|---|---|---|
 | 1.0.2 submission record (`ledger/1.0.2-submission`) | 2026-11-12 | `store/builds/ledger.md`, `store/ledger.json`/`.md`, README release status | None needed: ledger records only; README keeps 1.0.1 as live until Apple approves 1.0.2 | None |
+
+## Web App Store link — 13 November 2026, web-app-store-link
+
+| PR | Date | Surfaces reviewed | Corrected | Open limits |
+|---|---|---|---|---|
+| Web header App Store link (`web-app-store-link`) | 2026-11-13 | README routes table, `docs/product-messaging.md`, `public/llms.txt`, `public/support.html`, `AGENTS.md` settings note | README `/` row now names the web-only App Store link; the link text is "App Store" with no tagline or price, so no messaging rule applies | Native apps unchanged (link is web-only); no native verification needed |
