@@ -494,3 +494,14 @@ Screenshots rechecked and kept. No cloud build. The nomination was not sent; its
 
 Lesson: store data with `screenshots.manifest` crashes `asc.mjs status` and the submit gate in `promotionReport`, so
 the groups are listed inline for now. The shared fix belongs in the skills repository.
+
+## 2026-11-12: build 30, version 1.0.2 (daily review run app-review-daily-20261112T222445Z)
+
+Metadata-only version: ships the merged subtitle "World news, scored 1 to 10" (#263), which Apple takes only with a new
+version. Version raised to 1.0.2 in #264; app code identical to build 29. Local Xcode archive from clean merge commit
+`d21a359c1e2264409a1006b7fc927b563e62bd95`, Xcode 27A9275, iphoneos27.1, `.ipa` SHA-256
+`f27d4ac1dc31b2dc81bd688d0a91056adba5f97560f2535f7f12b843c9e3e5ea`. Validated, uploaded, VALID, in Release QA.
+Listing (subtitle, What's New "Updated App Store subtitle. No changes to the app.") and review notes saved and read
+back. Screenshots, previews, header and search creative kept: the build is the live app's code. Submitted to App Review
+as f81c3a0d, AFTER_APPROVAL; WAITING_FOR_REVIEW read back on version and submission. Nomination still waived (it is a
+message to Apple's editors, outside the unattended run). No cloud build, no spend.
