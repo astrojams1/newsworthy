@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-11-14T09:59:06+00:00
+Updated: 2026-11-14T17:27:33+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -27,7 +27,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | 2026-11-14 | 1.0.3 (33) uploaded from aea5a9b; processed VALID | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | done | provider | observed | 2026-11-14 | Apple approved 1.0.2 (build 30) and released it: READY_FOR_DISTRIBUTION | Apple reviews; it publishes on approval. |
+| apple.review | waiting_provider | provider | observed | 2026-11-14 | 1.0.3 build 33 (from aea5a9b; main 17d017b has the same app source) submitted as 784b3986, AFTER_APPROVAL; version and submission read WAITING_FOR_REVIEW 2026-11-14T17:27Z, attached build 33 VALID. Unattended daily run. | Apple reviews; it publishes on approval. |
 | apple.release | done | provider | observed | 2026-10-21 | 2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live. | — |
 | google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
@@ -109,6 +109,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | issue.completed-worktree-cleanup | done | agent | observed | 2026-10-25 | Verified cleanup: after clean-tree, merged-branch, ignored-generated-files and no-active-cwd checks, supported forced removal completed. Git worktree inventory no longer lists that task tree; branch ad86371605f2ced2a218bdbcb0eff5637277dd61 and external validation evidence are preserved. Canonical checkout and other worktrees are unchanged. | — |
 | issue.consumer-command-cwd | done | agent | observed | 2026-10-26 | Canonical empty submodule state and original clean source restored; corrected isolated initialization and app-root metadata read verified. | — |
 | issue.copy-review-table | done | agent | observed | 2026-10-26 | Separating blank line removed before committed head; independent current-head readback confirms the new row is contiguous with its Markdown table. | — |
+| issue.review-notes-length | done | agent | observed | 2026-11-14 | 1.0.3 Review Notes were 4,216 characters; App Store Connect refused review-details with 409 TOO_LONG (limit 4,000) before any write. Cut to 3,893 with no claim changed, and npm test now runs store/scripts/validate.mjs (#276). review-details then saved and read back. | — |
 
 ## Product verification gates
 
@@ -139,7 +140,8 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | ui.timeline-default | waiting_verification | agent | observed | 2026-10-12 | On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27. | Check a fresh install and an upgraded TestFlight install of build 27 on a device. |
 | widget.sentence-fit | waiting_verification | agent | observed | 2026-10-24 | Owner's iPhone medium widget cut a 134-character sentence to 'since…' behind '1d ago:' with room for 'May.': the shared 140-character guard charged the age prefix to the body. The guard now keeps 135 for the body behind either prefix (JS, Swift, Java); unit tests and the Android compile pass. Not verified on a device. | In the next iOS and Android builds, check a 135-character body behind '23h ago:' on the medium widget at 338 and 364 points and on Android: shown whole, or stepped down, ellipsized only when it cannot fit. Then app name off, 321 x 148 and larger Dynamic Type. |
 | ui.send-feedback | waiting_verification | agent | observed | 2026-11-07 | Send Feedback added to Settings on iOS and Android. Release simulator, iOS 27.0, iPhone 16 Pro Max and iPad Pro 13: UI test taps the row and sees the address with Copy. | Not exercised: the mail composer itself (simulator has no account) and Android. |
-| story-updates.native | waiting_verification | user | observed | 2026-11-14 | Story updates (story order, update set apart below the sentence) and the Update: label are in TestFlight 1.0.3 (33); verified on web and locally only | Owner installs TestFlight 1.0.3 (33) on an iPhone: timeline in story order; an update below its sentence, indented behind a thin rule with an 'Update · 3h ago' caption; Update: on a reading that opens a development in a known story, on the home screen and both widget sizes for two hours. Android needs its next build. |
+| story-updates.native | waiting_verification | agent | observed | 2026-11-14 | Release simulator build of 17d017b (app source identical to build 33's aea5a9b), iPhone 17 Pro Max iOS 27.0: XCUITest tour passed; the FAA Outage entry showed its update below the rated sentence behind a thin rule with an 'Update · 16h ago' caption, accessibility label 'Updated 16h ago: …'; reading and Settings (Send Feedback) present. Simulator evidence, not device. | Not exercised natively: Update: label on the reading and widgets (needs a live new development in a known story); Android needs its next build. |
+| media.update-recheck | done | agent | observed | 2026-11-14 | 1.0.3 media recheck: screenshots (v26), the 1.0.1 iPhone and iPad previews, header and search creative kept. Build 33's timeline adds an optional update block below an entry and an optional Update: label; entries without an update and the reading render as in the captures, so nothing shown is gone or changed. Listing copy (description with story updates, What's New) saved and read back on 1.0.3; the preview and creative placements carried to 1.0.3 (assets place found none missing). | Optional: a timeline screenshot showing an update block, from the native capture in /Volumes/ssd/builds/newsworthy/qa-1.0.3-review-20261114/shots, with the next gallery refresh. |
 
 ## Evidence and history
 
@@ -4556,3 +4558,46 @@ Story updates (story order, update set apart below the sentence) and the Update:
 - docs/story-updates/qa/2026-11-14-timeline-web-update-block-dark.png
 
 Next: Owner installs TestFlight 1.0.3 (33) on an iPhone: timeline in story order; an update below its sentence, indented behind a thin rule with an 'Update · 3h ago' caption; Update: on a reading that opens a development in a known story, on the home screen and both widget sizes for two hours. Android needs its next build.
+
+### 468. issue.review-notes-length — done
+
+2026-11-14T17:27:32+00:00 · observed · agent
+
+1.0.3 Review Notes were 4,216 characters; App Store Connect refused review-details with 409 TOO_LONG (limit 4,000) before any write. Cut to 3,893 with no claim changed, and npm test now runs store/scripts/validate.mjs (#276). review-details then saved and read back.
+
+- /Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-review-details.txt
+- /Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-review-details-2.txt
+- https://github.com/astrojams1/newsworthy/pull/276
+
+### 469. story-updates.native — waiting_verification
+
+2026-11-14T17:27:32+00:00 · observed · agent
+
+Release simulator build of 17d017b (app source identical to build 33's aea5a9b), iPhone 17 Pro Max iOS 27.0: XCUITest tour passed; the FAA Outage entry showed its update below the rated sentence behind a thin rule with an 'Update · 16h ago' caption, accessibility label 'Updated 16h ago: …'; reading and Settings (Send Feedback) present. Simulator evidence, not device.
+
+- /Volumes/ssd/builds/newsworthy/qa-1.0.3-review-20261114/tour-iphone.xcresult
+- /Volumes/ssd/builds/newsworthy/qa-1.0.3-review-20261114/shots/1E0D2497-8F4F-49BB-9012-4742488E4751.png sha256 92d32154…2a27
+
+Next: Not exercised natively: Update: label on the reading and widgets (needs a live new development in a known story); Android needs its next build.
+
+### 470. media.update-recheck — done
+
+2026-11-14T17:27:32+00:00 · observed · agent
+
+1.0.3 media recheck: screenshots (v26), the 1.0.1 iPhone and iPad previews, header and search creative kept. Build 33's timeline adds an optional update block below an entry and an optional Update: label; entries without an update and the reading render as in the captures, so nothing shown is gone or changed. Listing copy (description with story updates, What's New) saved and read back on 1.0.3; the preview and creative placements carried to 1.0.3 (assets place found none missing).
+
+- /Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-listing.log
+- /Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-assets.txt
+
+Next: Optional: a timeline screenshot showing an update block, from the native capture in /Volumes/ssd/builds/newsworthy/qa-1.0.3-review-20261114/shots, with the next gallery refresh.
+
+### 471. apple.review — waiting_provider
+
+2026-11-14T17:27:33+00:00 · observed · provider
+
+1.0.3 build 33 (from aea5a9b; main 17d017b has the same app source) submitted as 784b3986, AFTER_APPROVAL; version and submission read WAITING_FOR_REVIEW 2026-11-14T17:27Z, attached build 33 VALID. Unattended daily run.
+
+- /Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-post-submit-readback.json
+- /Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-submit.txt
+
+Next: Apple reviews; it publishes on approval.

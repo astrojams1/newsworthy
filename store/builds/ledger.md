@@ -536,3 +536,25 @@ commit `aea5a9b19d4e88d4973a2460ac88cee7b5794407`, Xcode 27A9275, iphoneos27.1, 
 `db1653a0feafb8756f6754d368f169435b1b9930a03f9bc81e5b24b4b3a8401b`. Validated, uploaded, processed VALID; in Release
 QA, internal `IN_BETA_TESTING`, one tester. It supersedes builds 31 and 32 for testing. Not attached to a version or
 submitted for review. No cloud build, no spend.
+
+## 2026-11-14: version 1.0.3, build 33 to App Review (daily review run app-review-daily-20261114T170544Z)
+
+The live 1.0.2 build was 30, from d21a359c. Story updates and the "Update:" label (#268, #272, #274) change the installed
+app, so the change is material. No hold in this repository kept 1.0.3 at TestFlight only. The owner removed device checks
+before release on 2026-11-07. Build 33 was reused, not rebuilt: its `summary.json` gives clean commit `aea5a9b`, `.ipa`
+SHA-256 `db1653a0…401b`. The commits after it change no app source; #276 changed only store data and a test. Version
+1.0.3 was created with the listing (description, What's New) and read back. Screenshots, both 1.0.1 previews, header
+and search creative carried over and were kept: nothing they show changed. Review Notes went over Apple's 4,000
+characters (4,216; 409 refusal, nothing written); #276 cut them to 3,893 and made `npm test` run the store validator.
+Before submitting, a Release simulator build of 17d017b on iPhone 17 Pro Max iOS 27.0 passed an XCUITest tour: the
+FAA Outage entry showed its update below the sentence with the "Update · 16h ago" caption
+(`/Volumes/ssd/builds/newsworthy/qa-1.0.3-review-20261114/`). Build 33 was attached and submitted as `784b3986`,
+AFTER_APPROVAL. WAITING_FOR_REVIEW was read back on the version and the submission. No cloud build, sandbox or spend.
+
+| Issue | Symptom and cause | Fix | Verified |
+| --- | --- | --- | --- |
+| `issue.review-notes-length` | `review-details` got 409 TOO_LONG: the 1.0.3 notes were 4,216 characters. `store/scripts/validate.mjs` checks the limit, but nothing ran it | #276: notes cut to 3,893; `test/store-validate.test.js` runs the validator in `npm test` (it fails on the old notes) | CI passed on #276; `review-details` saved and read back |
+
+Not run: `npm run check:android-widget`, which needs the cloud toolchain (`/opt/newsworthy-tools`) that this Mac does
+not have; it covers Android only. Lesson: run `node store/scripts/validate.mjs` (now part of `npm test`) before any
+`asc.mjs review-details`.
