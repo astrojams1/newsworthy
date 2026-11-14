@@ -39,7 +39,6 @@ test('labels, updates and the timeline agree from first report to the story movi
     let faa = entries.find((d) => d.story === 'faa-outage');
     assert.equal(faa.root, halt.body.id);
     assert.equal(faa.update, null);
-    assert.equal(faa.activity, faa.since, 'an entry without an update is active from when it opened');
 
     // The update check finds the lift.
     await sleep(20);
@@ -71,7 +70,9 @@ test('labels, updates and the timeline agree from first report to the story movi
     entries = await timeline();
     faa = entries.find((d) => d.story === 'faa-outage');
     assert.deepEqual(faa.update, { explanation: `${lift.explanation}.`, at, kind: 'resolution' });
-    assert.equal(faa.activity, at, 'the entry is active from its update');
+    assert.equal('activity' in faa, false, 'an update never moves its entry');
+    const order = (await timeline()).map((d) => d.since);
+    assert.deepEqual(order, [...order].sort().reverse(), 'still newest first by first coverage');
     assert.equal(faa.explanation, 'The FAA halted all US flight departures after a communication failure.',
       'the rated sentence is untouched');
     assert.equal(faa.score, 6, 'and so is its score');
@@ -103,7 +104,6 @@ test('labels, updates and the timeline agree from first report to the story movi
     assert.equal(now.explanation_label, 'Update', 'faa-outage was on record');
     faa = (await timeline()).find((d) => d.root === halt.body.id);
     assert.equal(faa.update, null, 'a newer development in the story replaces the update');
-    assert.equal(faa.activity, faa.since);
     await refused({ ...lift, explanation: 'Another sentence' }, /not the newest in "faa-outage"; updates follow/);
 
     // A re-report carries no label at all.

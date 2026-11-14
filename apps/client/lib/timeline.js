@@ -16,23 +16,6 @@ export function validUpdate(value) {
     && value.explanation.length <= 2000 && typeof value.at === 'string' && Number.isFinite(Date.parse(value.at)));
 }
 
-/** When an entry last moved: its newest update, else when it opened. */
-export function activityOf(development) {
-  return development.update?.at ?? development.since;
-}
-
-/**
- * Newest activity first (owner, 2026-11-14): a development with an update
- * moves up to when its story last moved. The server lists by opening time,
- * which installed builds expect, so the order is the app's.
- */
-export function byActivity(developments) {
-  return developments
-    .map((development, index) => ({ development, index }))
-    .sort((a, b) => (Date.parse(activityOf(b.development)) - Date.parse(activityOf(a.development))) || a.index - b.index)
-    .map(({ development }) => development);
-}
-
 export async function fetchTimeline(apiBaseUrl, fetcher = fetch) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15_000);
@@ -43,12 +26,14 @@ export async function fetchTimeline(apiBaseUrl, fetcher = fetch) {
     if (!response.ok) throw new Error(`Timeline unavailable (${response.status})`);
     const data = await response.json();
     if (!Array.isArray(data?.developments)) return [];
-    return byActivity(data.developments.filter(validDevelopment).map((development) => ({
+    // In the server's order, by when each development was first covered
+    // (owner, 2026-11-14): an update never moves its entry.
+    return data.developments.filter(validDevelopment).map((development) => ({
       ...development,
       update: validUpdate(development.update)
         ? { explanation: development.update.explanation, at: development.update.at, kind: development.update.kind ?? null }
         : null,
-    })));
+    }));
   } finally {
     clearTimeout(timeout);
   }
@@ -92,28 +77,23 @@ export const timelineAge = shortAge;
 // one story is tagged once, and "1d ago" is said once however many
 // developments broke yesterday. An entry with nothing new gets no tag line.
 // A story is named alike on every entry, from all of its sentences together.
-// An entry with an update always says so and when ("updated 3h ago"): its
-// place comes from the update, and its rated sentence carries its own age.
+// An entry with an update always adds when it was updated ("updated 3h ago"),
+// since the update is drawn below its sentence and its place stays its own.
 export function timelineLabels(developments, now = Date.now()) {
   let story = null;
   let age = null;
   return developments.map((development, index) => {
     const nextStory = storyLabel(development.story, ...developments
       .filter((other) => other.story === development.story).map((other) => other.explanation));
-    const updated = validUpdate(development.update);
-    const nextAge = timelineAge(updated ? development.update.at : development.since, now);
+    const nextAge = timelineAge(development.since, now);
     const label = {
       name: nextStory,
       story: index === 0 || nextStory !== story ? nextStory : null,
-      age: updated ? `updated ${nextAge}` : index === 0 || nextAge !== age ? nextAge : null,
+      age: index === 0 || nextAge !== age ? nextAge : null,
+      updated: validUpdate(development.update) ? `updated ${timelineAge(development.update.at, now)}` : null,
     };
     story = nextStory;
-    age = updated ? null : nextAge;
+    age = nextAge;
     return label;
   });
-}
-
-/** The muted line under an update: when the rated sentence was rated. */
-export function ratedPrefix(development, now = Date.now()) {
-  return `Rated ${timelineAge(development.since, now)}:`;
 }

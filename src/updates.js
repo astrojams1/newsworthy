@@ -110,10 +110,9 @@ export function checkStoryUpdate(body, stories, { now = Date.now() } = {}) {
  * often by reporting the very event the update did — and showing both would
  * say it twice. Updates found after that follow the newer development.
  *
- * Every entry also gets `activity`, the time of its newest update or else of
- * the development itself. The app orders the timeline by it, so an updated
- * story moves up to when it last moved; the list itself keeps the order
- * installed builds expect, by when each development opened.
+ * The list keeps its order, by when each development opened: an update
+ * never moves its entry (owner, 2026-11-14). The app draws it below the
+ * development's own sentence.
  *
  * @param timeline `developmentTimeline()` entries
  * @param stories `activeStories()`, the same replay, for every development
@@ -139,7 +138,6 @@ export function attachUpdates(timeline, stories, updates) {
     return {
       ...entry,
       update: shown ? { explanation: completeSentence(shown.explanation), at: shown.at, kind: shown.kind } : null,
-      activity: shown ? shown.at : entry.since,
     };
   });
 }

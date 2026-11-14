@@ -3,7 +3,7 @@ import { apiOrigin } from './config';
 import { fetchTimeline } from './timeline';
 
 export type StoryUpdate = { explanation: string; at: string; kind: string | null };
-export type Development = { root: number; story: string | null; since: string; score: number; displayed: number; leading: boolean; explanation: string; update?: StoryUpdate | null; activity?: string };
+export type Development = { root: number; story: string | null; since: string; score: number; displayed: number; leading: boolean; explanation: string; update?: StoryUpdate | null };
 
 /**
  * Refetches whenever the reading changes: a new reading can open a development.

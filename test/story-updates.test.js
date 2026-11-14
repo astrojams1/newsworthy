@@ -109,9 +109,7 @@ test('each entry shows its newest update until a newer development takes the sto
   let rows = attachUpdates([halt, chips].map(entry), storiesOf(halt, chips), updates);
   assert.deepEqual(rows[0].update, { explanation: 'Tie, later id.', at: new Date(T0 + 3 * H).toISOString(), kind: 'continuation' },
     'the newest update wins, the later id on a tie, finished like every sentence');
-  assert.equal(rows[0].activity, new Date(T0 + 3 * H).toISOString());
   assert.equal(rows[1].update, null);
-  assert.equal(rows[1].activity, rows[1].since);
   assert.equal(rows[0].explanation, 'sentence 1', 'the rated sentence is kept');
 
   // A reading opens a newer development in the story after the updates: it takes over.
@@ -139,9 +137,9 @@ test('a development is "New" in a new story and "Update" in a known one', () => 
 });
 
 // ---- the app's timeline (apps/client/lib/timeline.js) -------------------------
-import { activityOf, byActivity, fetchTimeline, ratedPrefix, timelineLabels, validUpdate } from '../apps/client/lib/timeline.js';
+import { fetchTimeline, timelineLabels, validUpdate } from '../apps/client/lib/timeline.js';
 
-test('the app orders the timeline by latest activity and drops a malformed update, not its entry', async () => {
+test('the app keeps the timeline by first coverage and drops a malformed update, not its entry', async () => {
   const at = (h) => new Date(T0 - h * H).toISOString();
   const base = { score: 5, displayed: 5, leading: false };
   const served = { developments: [
@@ -150,32 +148,33 @@ test('the app orders the timeline by latest activity and drops a malformed updat
     { ...base, root: 2, story: 'bond-selloff', since: at(8), explanation: 'Yields topped 5%.', update: null },
     { ...base, root: 3, story: 'iran-war', since: at(19), explanation: 'Iran claimed a strike.',
       update: { explanation: 'The US denied it.', at: at(14), kind: 'denial' } },
+    { ...base, root: 5, story: 'nvidia-spy', since: at(20), explanation: 'Huang resigned.', update: { explanation: '', at: 'soon' } },
     { ...base, root: 4, story: 'ai-stocks', since: at(56), explanation: 'CoreWeave lifted AI stocks.',
       update: { explanation: 'AI stocks fell again.', at: at(7), kind: 'reversal' } },
-    { ...base, root: 5, story: 'nvidia-spy', since: at(17), explanation: 'Huang resigned.', update: { explanation: '', at: 'soon' } },
     { ...base, root: 6, story: 'bad', since: at(1), explanation: 'Malformed.', score: 11 },
   ] };
   const list = await fetchTimeline('', async () => ({ ok: true, json: async () => served }));
-  assert.deepEqual(list.map((d) => d.root), [1, 4, 2, 3, 5], 'newest activity first; the malformed entry dropped');
+  assert.deepEqual(list.map((d) => d.root), [1, 2, 3, 5, 4], 'the server\'s order: an update never moves its entry');
   assert.equal(list.find((d) => d.root === 5).update, null, 'a malformed update is dropped, its entry kept');
-  assert.equal(activityOf(list[1]), at(7));
   assert.equal(validUpdate({ explanation: 'x', at: 'nope' }), false);
-  assert.deepEqual(byActivity([{ since: at(2) }, { since: at(1) }, { since: at(1) }]).map((d) => d.since), [at(1), at(1), at(2)]);
 
   const labels = timelineLabels(list, T0);
-  assert.deepEqual(labels.map((l) => [l.story, l.age]), [
-    ['FAA Outage', 'updated 3h ago'],
-    ['AI Stocks', 'updated 7h ago'],
-    ['Bond Selloff', '8h ago'],
-    ['Iran War', 'updated 14h ago'],
-    ['Nvidia Spy', '17h ago'],
-  ], 'an update always says when; the entry after it says its own age');
-  assert.equal(ratedPrefix(list[1], T0), 'Rated 2d ago:', 'the rated sentence is dated on its own');
+  assert.deepEqual(labels.map((l) => [l.story, l.age, l.updated]), [
+    ['FAA Outage', '6h ago', 'updated 3h ago'],
+    ['Bond Selloff', '8h ago', null],
+    ['Iran War', '19h ago', 'updated 14h ago'],
+    ['Nvidia Spy', '20h ago', null],
+    ['AI Stocks', '2d ago', 'updated 7h ago'],
+  ], 'the entry keeps its own age; an update adds when it came');
 });
 
-test('the timeline draws an update as "Update:" in bold over its rated sentence', () => {
+test('the timeline draws an update below its sentence, "Update:" in bold, a size smaller', () => {
   const source = readFileSync('apps/client/components/timeline.tsx', 'utf8');
+  const sentence = source.indexOf('{development.explanation}</Text>');
+  const update = source.indexOf('testID="timeline-update"');
+  assert.ok(sentence > 0 && update > sentence, 'the rated sentence comes first');
+  assert.match(source, /testID="timeline-update" style=\{\{ color: theme\.ink, fontSize: 15, lineHeight: 23, marginTop: 10 \}\}/);
   assert.match(source, /testID="timeline-update-label" style=\{\{ fontWeight: '700' \}\}>Update:<\/Text>/);
-  assert.match(source, /testID="timeline-rated" style=\{\{ color: theme\.muted, fontSize: 14, lineHeight: 21/);
-  assert.match(source, /ratedPrefix\(development, now\)/);
+  assert.match(source, /labels\[index\]\.updated\]\.filter\(Boolean\)/);
+  assert.doesNotMatch(source, /Rated /);
 });

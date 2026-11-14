@@ -8,7 +8,7 @@ description: Run Newsworthy's story update check by hand, outside the hourly cal
 Newsworthy records one reading an hour: the single biggest development at that moment. A story keeps moving after it
 stops being the biggest. When a halt is lifted, a strike ends or a claim is denied while another story leads, no
 reading reports it. The hourly caller therefore checks every other recent story after it submits and posts what it
-finds to `POST /api/updates`. The app shows the update on the timeline, above the sentence the development was rated
+finds to `POST /api/updates`. The app shows the update on the timeline, below the sentence the development was rated
 for. An update carries no score and never touches the number.
 
 This skill runs that same check by hand: to backfill after an outage, to audit what the caller posts, or to test a

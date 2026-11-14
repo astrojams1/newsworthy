@@ -72,5 +72,4 @@ archive.
 
 The app labels a sentence that opened a development for two hours after it is stored: "New:" when its story had
 nothing on record, "Update:" when it did. Any other sentence, and one the service couldn't match, has no label. Story
-updates appear only on the app's timeline, under the development they follow, with that development's rated sentence
-beneath.
+updates appear only on the app's timeline, below the rated sentence of the development they follow.
