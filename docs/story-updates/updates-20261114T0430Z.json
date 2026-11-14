@@ -1,0 +1,161 @@
+{
+  "checked_at": "2026-11-14T04:30:00Z",
+  "prompt_version": 24,
+  "stories": [
+    {
+      "story": "faa-outage",
+      "last_recorded": {
+        "root": 1949,
+        "since": "2026-11-13T22:06:06.040Z",
+        "score": 5,
+        "explanation": "The FAA halted all US flight departures after a communication problem hit every regional air traffic control center, officials said."
+      },
+      "update": {
+        "explanation": "The FAA lifted its halt on all US departures after more than four hours, and officials blamed overloaded network equipment.",
+        "chars": 123,
+        "at": "2026-11-14T01:15:00Z",
+        "at_basis": "event",
+        "kind": "resolution",
+        "note": "Ground stop lifted 8:15 p.m. ET; cause named at press conference",
+        "sources": [
+          {
+            "url": "https://www.cnbc.com/2026/11/13/faa-ground-stop.html",
+            "published": "2026-11-13T21:01:17Z",
+            "modified": "2026-11-14T02:33:48Z"
+          },
+          {
+            "url": "https://theaircurrent.com/feed/dispatches/u-s-halts-flight-departures-nationwide-on-air-traffic-communications-outage/",
+            "published": "2026-11-13T22:56:24Z",
+            "modified": "2026-11-14T03:20:38Z"
+          },
+          {
+            "url": "https://www.yahoo.com/news/us/article/faa-issues-nationwide-ground-stop-on-all-departing-flights-citing-communication-issue-213136811.html",
+            "published": "2026-11-14T02:36:33Z"
+          }
+        ]
+      },
+      "searches": 3
+    },
+    {
+      "story": "bitcoin-slide",
+      "last_recorded": {
+        "root": 1932,
+        "since": "2026-11-13T05:04:31.083Z",
+        "score": 5,
+        "explanation": "Bitcoin fell below $70,000 for the first time since August as US borrowing costs rose and Nvidia's chief executive resigned."
+      },
+      "update": null,
+      "note": "Only a deeper drop of the same slide (below $67,000, still lowest since August); revised figure, not a new event",
+      "searches": 5
+    },
+    {
+      "story": "bond-selloff",
+      "last_recorded": {
+        "root": 1947,
+        "since": "2026-11-13T20:05:08.007Z",
+        "score": 5,
+        "explanation": "US long-term borrowing costs topped 5% again as traders bet the Fed will raise rates in Dec, in the worst bond week since April 2025."
+      },
+      "update": null,
+      "note": "no development after since; Friday close only restates the recorded week",
+      "searches": 4,
+      "sources_read": [
+        {
+          "url": "https://mlq.ai/news/wall-street-closes-mixed-as-nvidia-and-amd-sink-nasdaq-still-posts-its-best-week-since-august/",
+          "published": "2026-11-14T02:39:47Z",
+          "why_not": "10-year peaked at 5.17%, highest since Oct: revised figure of recorded development"
+        },
+        {
+          "url": "http://www.kitco.com/news/off-the-wire/2026-11-13/fed-likely-need-raise-rates-amid-worsening-inflation-daly",
+          "published": "2026-11-13T19:18:01Z",
+          "why_not": "Daly's 'likely need to raise rates' published before since"
+        }
+      ]
+    },
+    {
+      "story": "ai-stocks",
+      "last_recorded": {
+        "root": 1899,
+        "since": "2026-11-11T20:04:06.605Z",
+        "score": 4,
+        "explanation": "CoreWeave, which rents out AI chips online, reported a smaller loss than expected and raised its sales outlook, lifting AI stocks."
+      },
+      "update": {
+        "explanation": "AI stocks fell again on worries over Nvidia's leadership and AI debts, and CoreWeave gave back most of the gain from its results.",
+        "chars": 129,
+        "at": "2026-11-13T21:00:00Z",
+        "at_basis": "event",
+        "kind": "reversal",
+        "note": "CoreWeave fell 2 sessions, erasing 63% of its results-day gain",
+        "sources": [
+          {
+            "url": "https://www.aol.com/articles/nebius-sinks-13-baird-bofa-160453000.html",
+            "published": "2026-11-13T16:07:23Z"
+          },
+          {
+            "url": "https://rallies.ai/news/neoclouds-ai-stocks-slide-again-as-nvidia-turmoil-rattles-sector-8f3040bdf9082a21",
+            "published": "2026-11-13T16:46:34"
+          },
+          {
+            "url": "https://mlq.ai/news/wall-street-closes-mixed-as-nvidia-and-amd-sink-nasdaq-still-posts-its-best-week-since-august/",
+            "published": "2026-11-14T02:39:47Z"
+          }
+        ],
+        "closing_data": "Alpha Vantage CRWV daily close: Nov 11 $60.77 (from $48.73 on Nov 10), Nov 12 $56.60, Nov 13 $53.13"
+      },
+      "searches": 3
+    },
+    {
+      "story": "nvidia-spy",
+      "last_recorded": {
+        "root": 1938,
+        "since": "2026-11-13T11:04:08.089Z",
+        "score": 6,
+        "explanation": "Nvidia CEO Jensen Huang resigned, and US lawmakers said support is building to tighten limits on AI chip sales to China."
+      },
+      "update": null,
+      "note": "no qualifying development after since; Haas approach only reported, board said no candidate engaged",
+      "searches": 7
+    },
+    {
+      "story": "iran-war",
+      "last_recorded": {
+        "root": 1936,
+        "since": "2026-11-13T09:04:08.038Z",
+        "score": 5,
+        "explanation": "Iran's Guards said they destroyed a US radar in Bahrain and warned companies helping the US ship oil through the Strait of Hormuz."
+      },
+      "update": {
+        "explanation": "The US military said it shot down 2 Iranian drones headed for Bahrain, denying Iran's claim that it destroyed a US radar there.",
+        "chars": 127,
+        "at": "2026-11-13T13:33:01Z",
+        "at_basis": "published",
+        "kind": "correction",
+        "note": "Official US denial of the Guards' radar claim on record",
+        "sources": [
+          {
+            "url": "https://www.foxnews.com/live-news/oil-prices-war-strikes-donald-trump-iran-11-13-26",
+            "published": "2026-11-13T13:33:01Z"
+          },
+          {
+            "url": "https://abcnews.com/International/live-updates/iran-live-updates-americans-tired-forever-wars-araghchi/?id=137967256",
+            "published": "2026-11-13T14:05:07Z"
+          },
+          {
+            "url": "https://www.al-monitor.com/originals/2026/11/us-denies-irans-claim-it-attacked-early-warning-radar-bahrain",
+            "published": "2026-11-13T14:04:00Z"
+          },
+          {
+            "url": "https://www.military.com/us-military-downs-2-iranian-attack-drones-as-iran-claims-a-strike-on-a-us-radar-in-bahrain",
+            "published": "2026-11-13T14:58:39Z"
+          },
+          {
+            "url": "https://www.rferl.org/a/iran-us-sirik-bahrain-war-nuclear-talks/33897951.html",
+            "published": "2026-11-13T11:47:07Z"
+          }
+        ]
+      },
+      "searches": 6
+    }
+  ]
+}

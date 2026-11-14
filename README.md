@@ -55,6 +55,12 @@ trial end to end with `scripts/trial-compare.mjs` and records it in the
 [caller trial ledger](docs/caller-trials/ledger.md); see also
 [caller trials](docs/caller-trials.md).
 
+A story can move on while another story leads, so no reading reports it. The
+prototype [story update skill](.agents/skills/newsworthy-story-updates/SKILL.md)
+finds the newest development in each recent story and writes it as an
+"Update:" sentence. It is run by hand, nothing stores or shows updates yet, and
+runs are recorded in the [story update ledger](docs/story-updates/runs.md).
+
 Before any app build, store submission or EAS sandbox, use the
 [app release skill](.agents/skills/newsworthy-app-release/SKILL.md). iOS store
 builds are archived and uploaded on a Mac with Xcode and Android bundles are
