@@ -55,3 +55,14 @@ All of these are now in SKILL.md:
   development with no score, under its own id. A later reading of the same event is filed under it, and a newer
   development replaces it. Two proposals remain for the owner: separate `New:` and `Update:` labels, and whether a
   resolved development should keep competing for the number.
+
+## 2026-11-14, owner decisions (no new run)
+
+- **Two labels:** `New:` for a development in a new story, `Update:` for a newer development in a known one (owner,
+  2026-11-14). `Update: ` is 8 characters, so readings must drop to 132 characters, which needs a new prompt version.
+- **The headline never has an update** (owner, 2026-11-14). Rating and update checks run in one hourly job, so the
+  reading is always its story's latest word: it can *be* an update but never *has* one. The home screen and widgets
+  therefore change only their label. The job checks the headline's own story before it submits, because a rater can
+  name a bigger but older development, such as a halt already lifted.
+- **Second and later updates:** every update is stored, but an entry shows only its newest. Each new update is
+  written to stand beside the rated sentence on its own.

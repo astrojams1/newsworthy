@@ -81,6 +81,8 @@ Stories are independent, so several workers can split them. They all write into 
    - No score, and nothing that reads as a score or a judgement of importance.
    - It reports the new event alone. The app shows the recorded sentence underneath, so don't retell it. A short
      clause naming what the update answers is fine ("denying Iran's claim that…").
+   - It replaces any earlier update on screen, so write it to stand beside the recorded sentence alone. If an earlier
+     update matters to make sense of it, fold that in ("…again after lifting the stop at 8:15 p.m.").
    - The cause stated by the people involved may be named in the same clause ("officials blamed…"). A cause that is
      another story is named briefly, as the reason, and is not reported.
    - Continuation words such as "again" or "further" are fine. Weekdays and relative days are not.
@@ -160,24 +162,32 @@ Proposed, not built:
    under the update, which then gets that reading's score. Without the id, the judge would file it under the
    development the update follows, as a re-report. The page would then show that older sentence word for word,
    because a re-report shows its development's first report.
-3. **An update is shown only while it is the newest development in its story.** Once a reading opens a newer
-   development in the story, the reading replaces the update, so nothing is said twice.
-4. **The app shows design B.** It shows `Update:` in bold with the update sentence. Underneath, muted, it shows
-   `Rated <age> ago:` with the sentence the score belongs to.
-   - The timeline sorts entries by their latest activity, so an updated entry moves up to its update's time.
-   - Labels: `New:` would mark a new story and `Update:` a newer development in a story already shown, whoever found
-     it. Today `New:` marks both, for two hours. This is a label change for the owner to decide.
-5. **Widgets show the same thing as the home screen**, on iOS and Android alike.
-   - `Update:` plus a sentence of 132 characters fills the same 140 characters as today.
-   - The rated age moves to the footer ("5 rated 6h ago").
-   - The widget's hourly age entries count from the update's time.
-6. **The hourly caller runs this check after it submits**, for stories whose last development is under 72 hours old.
-   The first run had six such stories and took 3 to 7 searches each.
-
-The home screen and widgets will rarely show an update. Their sentence comes from the newest hourly reading, and the
-rater re-picks the biggest development each hour. A headline story that escalates becomes the next reading itself. One
-that winds down usually gives way to another story, as the FAA halt did: it led at 22:06 and was no longer the
-headline when the halt was lifted at 01:15. Updates matter most on the timeline.
+3. **Updates attach to the rated development they follow.** A timeline entry is one rated development. Every update
+   to it is stored, but the entry shows only the newest. Each new update is written against the rated sentence shown
+   beneath it, not against the update it replaces, because only the rated sentence stays on screen. "The FAA halted
+   departures again after lifting the stop at 8:15 p.m." stands on its own beside "Rated 6h ago: The FAA halted…".
+   - Stored updates count as on record for the next check, so none is reported twice.
+   - When a reading reports a stored update's event, the update leaves the old entry and becomes the reading's own
+     entry. The old entry falls back to its previous update, or to none.
+   - Later updates follow the newest rated development in the story. An older entry keeps the last update it had,
+     as history.
+4. **One hourly job, and the headline never has an update.** The caller rates, judges, checks the headline's own
+   story for anything newer, and then checks the rest. If something newer exists in the headline's story, the
+   reading reports that instead. So the reading on the home screen and in widgets is always its story's latest word.
+   It can *be* an update, but it never *has* one. The first run showed why the check is needed: a rater can name a
+   bigger but older development in a story, such as a halt that has already been lifted.
+5. **The timeline shows design B.**
+   - An entry with an update shows `Update:` in bold and the update sentence. Underneath, muted, it shows
+     `Rated <age> ago:` and the sentence the score belongs to.
+   - Entries sort by latest activity, so an updated entry moves up to its newest update's time.
+6. **The home screen and widgets change only their label** (owner's choice, 2026-11-14). `New:` marks a development
+   in a new story. `Update:` marks a newer development in a story already shown. Both last two hours, as `New:` does
+   today.
+   - `Update: ` takes 8 characters, against 5 for `New: `. The rating prompt reserves only 5, so readings must shrink
+     to 132 characters. That is a new prompt version through `.agents/skills/newsworthy-prompt-update/SKILL.md`, and
+     a change to the caller instructions.
+7. **The hourly caller runs the rest of this check after it submits**, for stories whose last development is under 72
+   hours old. The first run had six such stories and took 3 to 7 searches each.
 
 One question is for the owner. The number belongs to the loudest live development, aged over 48 hours, so a resolved
 development can hold the number for a day. Should a `resolution` or `denial` stop that development from competing for
