@@ -527,3 +527,12 @@ the rated sentence (#272). Local Xcode archive from clean merge commit `742b7401
 Validated, uploaded, processed VALID; in Release QA, internal `IN_BETA_TESTING`, one tester. It replaces build 31,
 which shows the superseded design, for testing. Not attached to a version or submitted for review. No cloud build, no
 spend.
+
+## 2026-11-14: build 33, version 1.0.3 to TestFlight (run newsworthy-testflight-20261114-build33)
+
+The owner asked for visual hierarchy for the timeline's update (#274). It is now its own block below the rated
+sentence, indented behind a thin muted rule, with an "Update · 7h ago" caption. Local Xcode archive from clean merge
+commit `aea5a9b19d4e88d4973a2460ac88cee7b5794407`, Xcode 27A9275, iphoneos27.1, `.ipa` SHA-256
+`db1653a0feafb8756f6754d368f169435b1b9930a03f9bc81e5b24b4b3a8401b`. Validated, uploaded, processed VALID; in Release
+QA, internal `IN_BETA_TESTING`, one tester. It supersedes builds 31 and 32 for testing. Not attached to a version or
+submitted for review. No cloud build, no spend.

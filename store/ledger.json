@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-11-14T06:50:04+00:00",
+  "updated_at": "2026-11-14T09:59:06+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -158,12 +158,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "1.0.3 (32) uploaded from 742b740; processed VALID",
+      "summary": "1.0.3 (33) uploaded from aea5a9b; processed VALID",
       "evidence": [
-        "/Volumes/ssd/builds/xcode/newsworthy/release/32/summary.json sha256 dc51fdbd…1fde"
+        "/Volumes/ssd/builds/xcode/newsworthy/release/33/summary.json sha256 db1653a0…401b"
       ],
       "next_action": "",
-      "updated_at": "2026-11-14T06:50:04+00:00"
+      "updated_at": "2026-11-14T09:59:06+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -488,12 +488,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 32 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester; it supersedes 31's timeline design",
+      "summary": "Build 33 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester; supersedes 31 and 32",
       "evidence": [
-        "ios-release.mjs testers 32: Release QA, IN_BETA_TESTING"
+        "ios-release.mjs testers 33: Release QA, IN_BETA_TESTING"
       ],
       "next_action": "",
-      "updated_at": "2026-11-14T06:50:04+00:00"
+      "updated_at": "2026-11-14T09:59:06+00:00"
     },
     "google.large-text-build": {
       "state": "done",
@@ -1284,12 +1284,12 @@
       "state": "waiting_verification",
       "owner": "user",
       "basis": "observed",
-      "summary": "Story updates (in story order, update below) and the Update: label are in TestFlight 1.0.3 (32); verified on web production and locally only",
+      "summary": "Story updates (story order, update set apart below the sentence) and the Update: label are in TestFlight 1.0.3 (33); verified on web and locally only",
       "evidence": [
-        "docs/story-updates/qa/2026-11-14-timeline-web-update-below.png"
+        "docs/story-updates/qa/2026-11-14-timeline-web-update-block-dark.png"
       ],
-      "next_action": "Owner installs TestFlight 1.0.3 (32) on an iPhone: timeline in story order with Update: below the sentence and 'updated 3h ago' on the tag line; when a reading opens a development in a known story, Update: on the reading and both widget sizes for two hours. Android needs its next build.",
-      "updated_at": "2026-11-14T06:50:04+00:00"
+      "next_action": "Owner installs TestFlight 1.0.3 (33) on an iPhone: timeline in story order; an update below its sentence, indented behind a thin rule with an 'Update · 3h ago' caption; Update: on a reading that opens a development in a known story, on the home screen and both widget sizes for two hours. Android needs its next build.",
+      "updated_at": "2026-11-14T09:59:06+00:00"
     }
   },
   "events": [
@@ -8695,6 +8695,54 @@
         ],
         "next_action": "Owner installs TestFlight 1.0.3 (32) on an iPhone: timeline in story order with Update: below the sentence and 'updated 3h ago' on the tag line; when a reading opens a development in a known story, Update: on the reading and both widget sizes for two hours. Android needs its next build.",
         "updated_at": "2026-11-14T06:50:04+00:00"
+      }
+    },
+    {
+      "sequence": 465,
+      "at": "2026-11-14T09:59:06+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "1.0.3 (33) uploaded from aea5a9b; processed VALID",
+        "evidence": [
+          "/Volumes/ssd/builds/xcode/newsworthy/release/33/summary.json sha256 db1653a0…401b"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-14T09:59:06+00:00"
+      }
+    },
+    {
+      "sequence": 466,
+      "at": "2026-11-14T09:59:06+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 33 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester; supersedes 31 and 32",
+        "evidence": [
+          "ios-release.mjs testers 33: Release QA, IN_BETA_TESTING"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-14T09:59:06+00:00"
+      }
+    },
+    {
+      "sequence": 467,
+      "at": "2026-11-14T09:59:06+00:00",
+      "gate": "story-updates.native",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Story updates (story order, update set apart below the sentence) and the Update: label are in TestFlight 1.0.3 (33); verified on web and locally only",
+        "evidence": [
+          "docs/story-updates/qa/2026-11-14-timeline-web-update-block-dark.png"
+        ],
+        "next_action": "Owner installs TestFlight 1.0.3 (33) on an iPhone: timeline in story order; an update below its sentence, indented behind a thin rule with an 'Update · 3h ago' caption; Update: on a reading that opens a development in a known story, on the home screen and both widget sizes for two hours. Android needs its next build.",
+        "updated_at": "2026-11-14T09:59:06+00:00"
       }
     }
   ],
