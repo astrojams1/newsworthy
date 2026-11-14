@@ -79,7 +79,7 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
   development in a story Newsworthy was already covering. Either shows for two
   hours after the reading was saved. Neither is a verified event date.
 - In the timeline, a story that moved on while another led shows its latest
-  update (“Update: …”) below the sentence it was rated for, and keeps its
+  update, marked “Update · 3h ago”, below the sentence it was rated for, and keeps its
   place, by when Newsworthy first covered it. An update carries no score and
   never changes the number. Below the
   sentence, a fainter line names its story and says how long ago it was first

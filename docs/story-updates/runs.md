@@ -100,3 +100,10 @@ keeps its place by first coverage, and its rated sentence leads. The update foll
 longer sends `activity`, and the app no longer re-sorts. The first build's order and "Rated 6h ago:" line are gone. Its
 screenshot, `qa/2026-11-14-timeline-web.png`, shows the superseded design. The current one is
 `qa/2026-11-14-timeline-web-update-below.png`.
+
+## 2026-11-14, the update set apart (owner, no new run)
+
+The owner asked for "a bit of visual hierarchy" for the update. It is now its own block under the rated sentence: 16pt
+below, indented behind a thin muted rule, with a small caption ("Update · 7h ago") above the update's sentence at
+15/23. The update's age moved out of the tag line into the caption. Screenshots in both appearances:
+`qa/2026-11-14-timeline-web-update-block-dark.png` and `-light.png`.

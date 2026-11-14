@@ -12,6 +12,8 @@ const FADE_BELOW = 28;
 const FADE_ABOVE = 16;
 const ENTRY_GAP = 44;
 const TAG_GAP = 10;
+/** Between a sentence and its update: clearly apart, still one entry. */
+const UPDATE_GAP = 16;
 
 /**
  * The developments behind the front page, newest first by when each was
@@ -19,9 +21,11 @@ const TAG_GAP = 10;
  * sentence: order and space carry the timeline.
  *
  * A development with a story update keeps its place and its sentence, and
- * the update goes below it (owner, 2026-11-14): "Update:" in bold and the
- * update's sentence, a size smaller, with "updated 3h ago" on the tag line.
- * An update carries no score.
+ * the update goes below it (owner, 2026-11-14) as its own quieter block, so
+ * the two never read as one paragraph (owner: "a bit of visual hierarchy"):
+ * indented behind a thin muted rule, a small caption ("Update · 3h ago",
+ * the word in ink, its age muted), then the update's sentence a size smaller
+ * than the rated one. An update carries no score.
  *
  * `opacity` is driven by the scroll position: the timeline fades in as the
  * reading above it fades out. Scrolled further, each tag line and sentence
@@ -56,7 +60,7 @@ export function Timeline({ developments, opacity, theme, now, scrollY, offset, f
       const age = timelineAge(development.since, now);
       const update = development.update ?? null;
       const tagKey = `t${development.root}`;
-      const hasTag = Boolean(labels[index].story || labels[index].age || labels[index].updated);
+      const hasTag = Boolean(labels[index].story || labels[index].age);
       const entry = entryTop === undefined ? undefined : entryTop + (index === 0 ? 0 : ENTRY_GAP);
       const tagHeight = hasTag ? heights[tagKey] : 0;
       const tagTop = entry;
@@ -70,14 +74,21 @@ export function Timeline({ developments, opacity, theme, now, scrollY, offset, f
         style={{ marginTop: index === 0 ? 0 : ENTRY_GAP }}>
         {hasTag && <Animated.View onLayout={measure(tagKey)} style={{ opacity: fade(at(tagTop)), marginBottom: TAG_GAP }}>
           <Text maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: 13, lineHeight: 18 }}>
-            {[labels[index].story, labels[index].age, labels[index].updated].filter(Boolean).join('  ·  ')}
+            {[labels[index].story, labels[index].age].filter(Boolean).join('  ·  ')}
           </Text>
         </Animated.View>}
         <Animated.View style={{ opacity: fade(at(sentenceTop)) }}>
           <Text selectable style={{ color: theme.ink, fontSize: 17, lineHeight: 27 }}>{development.explanation}</Text>
-          {update && <Text selectable testID="timeline-update" style={{ color: theme.ink, fontSize: 15, lineHeight: 23, marginTop: 10 }}>
-            <Text testID="timeline-update-label" style={{ fontWeight: '700' }}>Update:</Text>{` ${update.explanation}`}
-          </Text>}
+          {update && <View testID="timeline-update" style={{ flexDirection: 'row', marginTop: UPDATE_GAP }}>
+            <View testID="timeline-update-rule" style={{ width: 2, borderRadius: 1, backgroundColor: theme.muted, opacity: 0.45 }} />
+            <View style={{ flex: 1, paddingLeft: 12 }}>
+              <Text maxFontSizeMultiplier={1.5} style={{ fontSize: 13, lineHeight: 18 }}>
+                <Text testID="timeline-update-label" style={{ color: theme.ink, fontWeight: '600' }}>Update</Text>
+                <Text style={{ color: theme.muted }}>{`  ·  ${timelineAge(update.at, now)}`}</Text>
+              </Text>
+              <Text selectable style={{ color: theme.ink, fontSize: 15, lineHeight: 23, marginTop: 4 }}>{update.explanation}</Text>
+            </View>
+          </View>}
         </Animated.View>
       </View>;
     })}
