@@ -42,3 +42,16 @@ All of these are now in SKILL.md:
   update's time?
 - **The current reading had no update,** so the home screen looked as it does today. B only changes the home screen
   when the story on screen has moved on.
+
+## 2026-11-14, design review of the first run (no new run)
+
+- **Timeline order:** the owner chose to sort by latest update. An updated entry moves up to its update's time and
+  shows the rated sentence beneath it as `Rated <age> ago:`. On the first run's data, AI Stocks moved from the bottom
+  (2d) to second (7h), and Iran from 19h to 14h.
+- **The home screen rarely has an update.** The FAA halt led at 22:06, but by 04:04 the sentence was back on Nvidia,
+  and the lift at 01:15 never became a reading. The hourly readings between those times weren't checked: no caller or
+  admin token was available to this run.
+- **"Where this goes" in the skill now covers what happens when an update becomes a reading.** An update is stored as a
+  development with no score, under its own id. A later reading of the same event is filed under it, and a newer
+  development replaces it. Two proposals remain for the owner: separate `New:` and `Update:` labels, and whether a
+  resolved development should keep competing for the number.

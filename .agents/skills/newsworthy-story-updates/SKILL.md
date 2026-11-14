@@ -153,10 +153,32 @@ End the run with a short report: each story, update or none, and why. Then add a
 
 Proposed, not built:
 
-1. `POST /api/updates` with the caller token takes `{story, follows: <root>, explanation, at, kind, sources}`. It is
-   stored against the development it follows and never touches readings or scores.
-2. `/api/timeline` and `/api/current` return the newest stored update on each development as `update`.
-3. The app shows design B: `Update:` in bold, the update sentence, and underneath, muted, `Rated <age> ago:` with the
-   original sentence. On the timeline the entry keeps its place, and its tag line adds `updated <age>`.
-4. After the rating run submits, the hourly caller runs this check for stories whose last development is under 72
-   hours old. The first run had six such stories and took 3 to 7 searches each.
+1. **An update is a development with no score yet.** `POST /api/updates` with the caller token takes `{story, follows:
+   <root>, explanation, at, kind, sources}`. It is stored as a development of the story, with its own id and its
+   event time, and no reading.
+2. **Updates go in the record the judge sees, with their ids.** A later reading that reports the same event is filed
+   under the update, which then gets that reading's score. Without the id, the judge would file it under the
+   development the update follows, as a re-report. The page would then show that older sentence word for word,
+   because a re-report shows its development's first report.
+3. **An update is shown only while it is the newest development in its story.** Once a reading opens a newer
+   development in the story, the reading replaces the update, so nothing is said twice.
+4. **The app shows design B.** It shows `Update:` in bold with the update sentence. Underneath, muted, it shows
+   `Rated <age> ago:` with the sentence the score belongs to.
+   - The timeline sorts entries by their latest activity, so an updated entry moves up to its update's time.
+   - Labels: `New:` would mark a new story and `Update:` a newer development in a story already shown, whoever found
+     it. Today `New:` marks both, for two hours. This is a label change for the owner to decide.
+5. **Widgets show the same thing as the home screen**, on iOS and Android alike.
+   - `Update:` plus a sentence of 132 characters fills the same 140 characters as today.
+   - The rated age moves to the footer ("5 rated 6h ago").
+   - The widget's hourly age entries count from the update's time.
+6. **The hourly caller runs this check after it submits**, for stories whose last development is under 72 hours old.
+   The first run had six such stories and took 3 to 7 searches each.
+
+The home screen and widgets will rarely show an update. Their sentence comes from the newest hourly reading, and the
+rater re-picks the biggest development each hour. A headline story that escalates becomes the next reading itself. One
+that winds down usually gives way to another story, as the FAA halt did: it led at 22:06 and was no longer the
+headline when the halt was lifted at 01:15. Updates matter most on the timeline.
+
+One question is for the owner. The number belongs to the loudest live development, aged over 48 hours, so a resolved
+development can hold the number for a day. Should a `resolution` or `denial` stop that development from competing for
+the number? That changes what the front page shows, though not any rating, so it isn't this skill's decision.
