@@ -92,6 +92,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [22, '8916247a26173fdf'],
     [23, '51dc90c54eed7bad'],
     [24, 'a9791807609fb232'],
+    [25, '8ad7f86da493eaea'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);

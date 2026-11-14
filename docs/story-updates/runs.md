@@ -68,3 +68,26 @@ All of these are now in SKILL.md:
   written to stand beside the rated sentence on its own.
 - **Updates never touch the number** (owner, 2026-11-14). A development whose update resolves or denies it, like the
   lifted FAA halt, keeps competing for the number and fades on the usual 48-hour half-life.
+
+## 2026-11-14, built end to end (no new run)
+
+The prototype is now the product. What was built, so the next run starts from it:
+
+- **The check runs every hour.** Caller instructions section 5 holds the rules, moved out of this skill so there is one
+  copy. The live caller reads them each run, and this skill now runs the same check by hand.
+- **Server.**
+  - `POST /api/updates` stores updates in `story_updates`, checked by `checkStoryUpdate()`.
+  - `/api/timeline` gives each entry `update` and `activity`.
+  - `/api/current` gives `explanation_label` (`New` or `Update`).
+- **Prompt v25.** Sentences are at most 132 characters, so "Update: " fits.
+- **App.**
+  - The timeline sorts by activity and shows design B.
+  - The home screen and both widgets show "Update:" where the story was already on record.
+- **Decided while building:** an update shows only while it is its story's newest word. Once a reading opens a later
+  development, the entry falls back to its rated sentence alone. The plan before this said an older entry keeps its
+  last update as history. Without asking the judge, the server can't tell whether that reading reports the update's
+  own event, and the timeline would say it twice when it does. Every update stays stored, so this can change later
+  without losing anything.
+- **Changed from the plan:** a reading that reports a stored update's event is not filed under the update. The judge
+  prompt is unchanged, so readings file as they always did, and the rule above keeps the timeline from repeating
+  itself.

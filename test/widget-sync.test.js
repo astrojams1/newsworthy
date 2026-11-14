@@ -74,6 +74,18 @@ test('widget handoff keeps public fields and timestamp; unavailable/failed nativ
   assert.deepEqual(received, [{ origin: 'https://example.test', payload: { reading, fetchedAt: 1234 } }]);
 });
 
+test('widget handoff carries the "Update" label to both widgets', async () => {
+  const received = [];
+  const { syncWidgets } = load('apps/client/lib/widget-sync.ts', {
+    expo: { requireOptionalNativeModule: () => ({ syncReading: async (origin, payload) => received.push(JSON.parse(payload)) }) },
+    './reading': { validReading, readingSnapshot, latestSnapshot },
+  });
+  const labelled = { ...reading, explanation_text: 'The FAA lifted its halt.', explanation_new: true, explanation_label: 'Update' };
+  await syncWidgets('https://example.test', labelled, 99);
+  assert.equal(received[0].reading.explanation_label, 'Update');
+  assert.equal(received[0].reading.explanation_new, true);
+});
+
 test('native handoff wiring preserves private transport, reload and stale-worker protection', () => {
   const android = read('apps/client/plugins/widget-android/RatingWidget.java');
   const worker = read('apps/client/plugins/widget-android/RatingWidgetWorker.java');

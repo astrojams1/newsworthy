@@ -33,6 +33,8 @@ export async function fetchReading(apiBaseUrl, fetcher = fetch) {
     return { score: data.score, explanation: data.explanation, created_at: data.created_at,
       ...(typeof data.explanation_text === 'string' && data.explanation_text.length <= 2000
         ? { explanation_text: data.explanation_text, explanation_new: data.explanation_new === true,
+          ...(data.explanation_label === 'New' || data.explanation_label === 'Update'
+            ? { explanation_label: data.explanation_label } : {}),
           ...(typeof data.explanation_at === 'string' && Number.isFinite(Date.parse(data.explanation_at))
             ? { explanation_at: data.explanation_at } : {}),
           ...(typeof data.explanation_story === 'string' && data.explanation_story.length <= 200

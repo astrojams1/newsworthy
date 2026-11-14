@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { callerInstructions } from '../src/caller.js';
 import { latestVersion, renderPrompt } from '../src/prompts.js';
 
@@ -191,4 +192,21 @@ test('the judge prompt is in the instructions, after the rating, and the history
   assert.match(text, new RegExp(`"judge_version": ${judge.version}`), 'the submission example carries its version');
   assert.match(text, /Once the score and sentence are final, and not before, the caller fetches\s+`GET https:\/\/example\.test\/api\/developments`/,
     'the history is fetched only after the reading is written');
+});
+
+test('the caller writes 132 characters for either label, checks its own story, and posts updates', () => {
+  const text = callerInstructions({ baseUrl: 'https://example.test', prompt: renderPrompt(latestVersion()) });
+  assert.match(text, /at most 132 characters/);
+  assert.doesNotMatch(text, /135/, 'no trace of the old budget');
+  assert.match(text, /`Update: ` takes the remaining 8 of a 140-character display/);
+  assert.match(text, /searches the story it is about to\nreport for anything newer/);
+  assert.match(text, /## 5\. Story updates/);
+  assert.match(text, /POST https:\/\/example\.test\/api\/updates/);
+  assert.match(text, /GET https:\/\/example\.test\/api\/timeline/);
+  for (const kind of ['resolution', 'reversal', 'escalation', 'decision', 'confirmation', 'denial', 'correction', 'continuation']) {
+    assert.match(text, new RegExp(kind));
+  }
+  const skill = readFileSync('skills/newsworthy-rating/SKILL.md', 'utf8');
+  assert.match(skill, /Reserve 8 for it, leaving 132/);
+  assert.match(skill, /\/api\/updates/);
 });

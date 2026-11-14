@@ -75,8 +75,13 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
 - Ratings update periodically and can be wrong. Higher means more consequential;
   the displayed score fades as developments age.
 - A bold “New:” before a sentence means that reading is Newsworthy’s first
-  coverage of the development, for two hours after it was saved. It is not a
-  verified event date or a claim that the broader story is new. Below the
+  coverage of the development and of its story; “Update:” means a newer
+  development in a story Newsworthy was already covering. Either shows for two
+  hours after the reading was saved. Neither is a verified event date.
+- In the timeline, a story that moved on while another led shows its latest
+  update first (“Update: …”), above the sentence it was rated for (“Rated 6h
+  ago: …”), and moves up to when it last moved. An update carries no score and
+  never changes the number. Below the
   sentence, a fainter line names its story and says how long ago it was first
   reported (“US Iran War · 5h ago”). On opening, and when tapped, that line
   first says when Newsworthy last checked (“Checked 23m ago”), as Settings does

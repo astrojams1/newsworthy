@@ -6,6 +6,8 @@ struct Reading: Codable, Equatable, Sendable {
     let created_at: String
     var explanation_text: String? = nil
     var explanation_new: Bool? = nil
+    /// "New" or "Update"; absent from older servers and caches, which read as "New".
+    var explanation_label: String? = nil
     var explanation_at: String? = nil
 
     private static func date(_ raw: String) -> Date? {
@@ -18,7 +20,8 @@ struct Reading: Codable, Equatable, Sendable {
 
     var updatedAt: Date? { Reading.date(created_at) }
 
-    /// When "New:" comes off a sentence that opened its own development: two hours after its reading was saved.
+    /// When "New:" or "Update:" comes off a sentence that opened its own development: two hours after its
+    /// reading was saved.
     var newLabelExpiry: Date? {
         guard explanation_new == true, explanation_text != nil else { return nil }
         return updatedAt?.addingTimeInterval(2 * 3600)
@@ -36,15 +39,17 @@ struct Reading: Codable, Equatable, Sendable {
         return hours < 24 ? "\(hours)h\u{00A0}ago:" : "\(hours / 24)d\u{00A0}ago:"
     }
 
-    /// The label ("New:" or empty), the age ("5h ago:" or empty) and the body. The body is fitted to 140
-    /// characters alone, or to the prompt's 135 behind either prefix, so an age never cuts a sentence the
-    /// prompt allows; the layout steps the text down and truncates only what still does not fit.
+    /// The label ("New:", "Update:" or empty), the age ("5h ago:" or empty) and the body. The body is fitted to
+    /// 140 characters alone, to 132 behind "Update:", whose 8 characters prompt v25 makes room for, or to the
+    /// prompt's 135 behind any other prefix, so an age never cuts a sentence the prompt allows; the layout steps
+    /// the text down and truncates only what still does not fit.
     func explanationParts(at now: Date) -> (label: String, age: String, body: String) {
-        let label = newLabelExpiry.map { now < $0 } == true ? "New:" : ""
+        let isNew = newLabelExpiry.map { now < $0 } == true
+        let label = isNew ? (explanation_label == "Update" ? "Update:" : "New:") : ""
         let age = label.isEmpty ? sentenceAge(at: now) : ""
         let prefix = label.isEmpty ? age : label
         let body = explanation_text ?? explanation
-        let limit = prefix.isEmpty ? 140 : 135
+        let limit = prefix.isEmpty ? 140 : (label == "Update:" ? 132 : 135)
         if body.unicodeScalars.count <= limit { return (label, age, body) }
         var cut = String(String.UnicodeScalarView(body.unicodeScalars.prefix(limit - 1)))
         if let space = cut.lastIndex(of: " "), cut[..<space].unicodeScalars.count > limit / 2 {

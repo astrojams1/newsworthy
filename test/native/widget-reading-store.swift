@@ -59,6 +59,24 @@ struct StoreTests {
         fresh.explanation_text = String(repeating: "😀 ", count: 200)
         let fitted = fresh.displayedExplanation(at: origin)
         precondition(fitted.hasPrefix("New: ") && fitted.unicodeScalars.count <= 140 && fitted.hasSuffix("…"))
+        // A newer development in a known story is "Update:", charged its own 8 characters (prompt v25: 132).
+        var update = Reading(score: 5, explanation: "Lifted.", created_at: "2026-09-16T18:05:00.000Z",
+                             explanation_text: "The FAA lifted its halt.", explanation_new: true, explanation_label: "Update")
+        precondition(update.displayedExplanation(at: origin.addingTimeInterval(60)) == "Update: The FAA lifted its halt.")
+        precondition(update.explanationParts(at: origin.addingTimeInterval(119 * 60)).label == "Update:")
+        precondition(update.displayedExplanation(at: origin.addingTimeInterval(2 * 3600)) == "The FAA lifted its halt.",
+                     "Update: comes off at two hours, as New: does")
+        update.explanation_text = String(repeating: "a", count: 132)
+        precondition(update.displayedExplanation(at: origin) == "Update: \(update.explanation_text!)", "a 132-character body fits")
+        update.explanation_text = String(repeating: "a ", count: 100)
+        let updateFit = update.displayedExplanation(at: origin)
+        precondition(updateFit.hasPrefix("Update: ") && updateFit.unicodeScalars.count <= 140 && updateFit.hasSuffix("…"))
+        var unknown = update
+        unknown.explanation_label = "Breaking"
+        unknown.explanation_text = "The FAA lifted its halt."
+        precondition(unknown.displayedExplanation(at: origin) == "New: The FAA lifted its halt.", "anything else reads as New:")
+        let served = try JSONDecoder().decode(Reading.self, from: Data(#"{"score":5,"explanation":"x.","created_at":"2026-09-16T18:05:00.000Z","explanation_text":"x.","explanation_new":true,"explanation_label":"Update"}"#.utf8))
+        precondition(served.explanationParts(at: origin).label == "Update:", "the label decodes from the server's JSON")
         let roundTrip = try JSONDecoder().decode(Reading.self, from: JSONEncoder().encode(fresh))
         precondition(roundTrip == fresh)
         // A build before this change cached explanation_since; it decodes and shows no label.

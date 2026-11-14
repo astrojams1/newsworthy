@@ -16,8 +16,8 @@ you need to know:
 curl -s -H "x-newsworthy-token: $NEWSWORTHY_TOKEN" "$NEWSWORTHY_URL/api/instructions"
 ```
 
-Done means: the API confirms the reading was stored, and the run report is posted. A run that submits nothing still
-posts its report.
+Done means: the API confirms the reading was stored, the other recent stories were checked for updates, and the run
+report is posted. A run that submits nothing still posts its report.
 
 ## Where things are
 
@@ -35,9 +35,10 @@ archive.
    instructions specify.
 2. **Research** current news, choose the development and score it on the published scale. No successful search means
    no submission.
-3. **Write the final sentence** before you send anything. The total is 140 characters INCLUDING the app's "New: "
-   label. Reserve 5 for it, leaving 135 for the explanation, whether or not the development turns out to be new.
-   Count with a code tool. Don't add a label or timestamp to the submitted explanation.
+3. **Write the final sentence** before you send anything. The total is 140 characters INCLUDING the app's label,
+   "New: " or "Update: ". Reserve 8 for it, leaving 132 for the explanation, whichever label it turns out to get.
+   Count with a code tool. Don't add a label or timestamp to the submitted explanation. First check the story you are
+   reporting for anything newer than the development you named, and report where it stands now.
 4. **Judge.** Only then fetch `/api/developments`. Answer the judge prompt from the instructions about your reading
    against that record:
    - `development_of`: an id the record lists, or null for a new development;
@@ -49,8 +50,12 @@ archive.
    stories. Newsworthy calls no model for this.
 5. **Submit** score, explanation, prompt_sha256 and that `judgement` to `/api/readings`. Confirm the API stored it. If
    it says `"development": "unjudged"`, `judge_note` says why. The reading is still stored.
-6. **Report.** End every run with one report to `/api/runs`, including a run that submitted nothing. Give the searches
-   and sources, the stories weighed, why the score and the judgement, and anything that failed.
+6. **Check the other stories for updates** (section 5 of the instructions). For each recent story on
+   `/api/timeline` other than the headline, look for a new event after its newest development and `POST` it to
+   `/api/updates`. Updates carry no score. Most stories have none, and that is a correct answer.
+7. **Report.** End every run with one report to `/api/runs`, including a run that submitted nothing. Give the searches
+   and sources, the stories weighed, why the score and the judgement, what the update check found, and anything that
+   failed.
 
 ## Rules
 
@@ -65,5 +70,7 @@ archive.
 
 ## How the app shows it
 
-The app labels a sentence that opened a new development "New:" for two hours after it is stored. Any other sentence,
-and one the service couldn't match, has no label.
+The app labels a sentence that opened a development for two hours after it is stored: "New:" when its story had
+nothing on record, "Update:" when it did. Any other sentence, and one the service couldn't match, has no label. Story
+updates appear only on the app's timeline, under the development they follow, with that development's rated sentence
+beneath.

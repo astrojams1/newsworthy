@@ -913,16 +913,15 @@ npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 Do not record test counts; they go stale.
 
 **The story timeline** is on by default (`showTimeline` in `preferences.js`), one
-entry per development ordered by `opened`, one week long. See
-`docs/story-timeline.md` before changing it.
+entry per development, by newest update else `opened`, one week long. Updates
+(`src/updates.js`) never touch the number. See `docs/story-timeline.md` first.
 
-**The “New:” label.** It marks the first coverage of the sentence’s development,
-for two hours from the reading’s `created_at`, not the score’s decay anchor or a
+**“New:”/“Update:”.** First coverage of a development, in a new story or one
+already on record (`explanation_label`), for two hours from the reading’s `created_at`, not the score’s decay anchor or a
 verified event date. It is bold, otherwise styled as the sentence, on every
 surface. Below it the app shows story and age, muted, from `explanation_story`
 and `explanation_at` (not `since`), after "Checked 23m ago" on opening,
 foregrounding or a tap; Settings has "Last checked 18m ago". Widgets lead with
 "5h ago:" (Android stacks a muted layer; colour spans go stale on a theme
-switch) and "Checked at 10:21", a clock time needing no redraw. Prompts v16+
-ask for a body of at most 135, kept whole behind either prefix. See `docs/story-age.md` for the caller sequence,
-compatibility and verification limits.
+switch) and "Checked at 10:21", a clock time needing no redraw. v25+ ask
+132 for "Update: "; other prefixes keep 135. See `docs/story-age.md`.

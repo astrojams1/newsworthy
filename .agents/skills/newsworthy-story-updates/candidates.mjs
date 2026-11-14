@@ -26,6 +26,8 @@ export function candidates(timeline, { maxAgeHours = 72, now = Date.now(), curre
       return {
         story,
         last_recorded: { root: latest.root, since: latest.since, score: latest.score, explanation: latest.explanation },
+        // An update already stored on it is on record too: the check looks past it.
+        stored_update: latest.update ?? null,
         earlier: earlier.map(({ since, explanation }) => ({ since, explanation })),
         ...(onScreen(current, story) ? { current_reading: onScreen(current, story) } : {}),
       };

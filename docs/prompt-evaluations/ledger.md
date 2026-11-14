@@ -23,6 +23,7 @@ no record file; their history is in `AGENTS.md`.
 | v22 | 2026-10-05 | | The sentence says who acted, in the active voice | [v22](v22.md) |
 | v23 | 2026-10-14 | | A preview says what the scheduled release will settle | [v23](v23.md) |
 | v24 | 2026-10-14 | | Dates, never relative days | [v24](v24.md) |
+| v25 | 2026-11-14 | #268 | 132-character sentence, room for an "Update: " label | [v25](v25.md) |
 
 ## Lessons
 

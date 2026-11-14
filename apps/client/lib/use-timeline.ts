@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiOrigin } from './config';
 import { fetchTimeline } from './timeline';
 
-export type Development = { root: number; story: string | null; since: string; score: number; displayed: number; leading: boolean; explanation: string };
+export type StoryUpdate = { explanation: string; at: string; kind: string | null };
+export type Development = { root: number; story: string | null; since: string; score: number; displayed: number; leading: boolean; explanation: string; update?: StoryUpdate | null; activity?: string };
 
 /**
  * Refetches whenever the reading changes: a new reading can open a development.

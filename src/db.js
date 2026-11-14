@@ -224,6 +224,25 @@ export function ensureSchema() {
     // slot, enforced by the database rather than by hoping it doesn't happen.
     // Manual runs carry slot = NULL, and Postgres allows many NULLs here.
     await sql`CREATE UNIQUE INDEX IF NOT EXISTS ratings_one_ok_per_slot ON ratings (slot) WHERE status = 'ok'`;
+    // Story updates: what happened in a story after its newest rated
+    // development, found by the caller's update check while another story
+    // led, so no reading reported it. An update has no score and never feeds
+    // the number; the timeline shows it under the development it follows.
+    // `at` is when the event happened, by its sources.
+    await sql`
+      CREATE TABLE IF NOT EXISTS story_updates (
+        id          BIGSERIAL   PRIMARY KEY,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        follows     BIGINT      NOT NULL,
+        story       TEXT        NOT NULL,
+        explanation TEXT        NOT NULL,
+        at          TIMESTAMPTZ NOT NULL,
+        kind        TEXT        NOT NULL,
+        sources     JSONB       NOT NULL DEFAULT '[]'::jsonb,
+        caller      TEXT
+      )`;
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS story_updates_once ON story_updates (follows, explanation)`;
+    await sql`CREATE INDEX IF NOT EXISTS story_updates_at ON story_updates (at DESC)`;
   })().catch((err) => {
     schemaPromise = undefined; // a failed migration must not be cached
     throw err;
@@ -1065,4 +1084,47 @@ export async function rootTimes(ascending) {
   )];
   const rows = await ratingsByIds(missing);
   return new Map(rows.map((r) => [r.id, { t: Date.parse(r.created_at), story: r.story }]));
+}
+
+// ---- story updates -----------------------------------------------------------
+
+function shapeUpdate(row) {
+  return {
+    id: Number(row.id),
+    created_at: iso(row.created_at),
+    follows: Number(row.follows),
+    story: row.story,
+    explanation: row.explanation,
+    at: iso(row.at),
+    kind: row.kind,
+    sources: typeof row.sources === 'string' ? JSON.parse(row.sources) : (row.sources ?? []),
+    caller: row.caller ?? null,
+  };
+}
+
+/**
+ * Store a story update. The same sentence for the same development is stored
+ * once: a caller that retries, or two runs that find the same event in the
+ * same words, get the existing row back with `created: false`.
+ */
+export async function insertStoryUpdate({ follows, story, explanation, at, kind, sources = [], caller = null }) {
+  await ensureSchema();
+  const inserted = await sql`
+    INSERT INTO story_updates (follows, story, explanation, at, kind, sources, caller)
+    VALUES (${follows}, ${story}, ${explanation}, ${at}, ${kind}, ${JSON.stringify(sources)}::jsonb, ${caller})
+    ON CONFLICT (follows, explanation) DO NOTHING
+    RETURNING *`;
+  if (inserted.length) return { update: shapeUpdate(inserted[0]), created: true };
+  const existing = await sql`
+    SELECT * FROM story_updates WHERE follows = ${follows} AND explanation = ${explanation}`;
+  return { update: shapeUpdate(existing[0]), created: false };
+}
+
+/** Updates whose event falls in the last `hours`, oldest first. */
+export async function storyUpdates({ hours = 24 * 7 } = {}) {
+  await ensureSchema();
+  const since = new Date(Date.now() - hours * 3600_000);
+  const rows = await sql`
+    SELECT * FROM story_updates WHERE at >= ${since} ORDER BY at ASC, id ASC`;
+  return rows.map(shapeUpdate);
 }
