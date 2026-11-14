@@ -76,6 +76,12 @@ test('the new-development flag survives API normalization and offline cache stor
   const input = { ...reading, explanation_text: 'The Fed raised rates.', explanation_new: true };
   const result = await fetchReading('', async () => ({ok:true,json:async()=>input}));
   assert.deepEqual(JSON.parse(JSON.stringify(result)),input);
+  for (const label of ['New', 'Update']) {
+    const labelled = { ...input, explanation_label: label };
+    assert.deepEqual(JSON.parse(JSON.stringify(await fetchReading('', async () => ({ok:true,json:async()=>labelled})))), labelled);
+  }
+  const odd = await fetchReading('', async () => ({ok:true,json:async()=>({ ...input, explanation_label: '<b>Hi</b>' })}));
+  assert.equal(odd.explanation_label, undefined, 'only the two labels are kept');
 });
 
 test('packaged privacy declarations include requested notifications and hosting diagnostics without tracking', async () => {

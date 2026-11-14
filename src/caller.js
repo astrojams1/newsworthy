@@ -57,12 +57,20 @@ that were current at the source. A site that refuses is skipped.
 
 ### The sentence
 
-The sentence is final before anything is sent: at most 135 characters,
+The sentence is final before anything is sent: at most 132 characters,
 including spaces and punctuation, counted with a code tool rather than
-estimated. The app may show it after the bold label \`New: \`, which takes the
-remaining 5 of a 140-character display. The label is the app's, so the
-submitted explanation carries no label or timestamp, and the budget is the same
-whether the development turns out to be new or not.
+estimated. The app may show it after a bold label, \`New: \` for a development
+in a new story or \`Update: \` for a newer development in a story already on
+record, and \`Update: \` takes the remaining 8 of a 140-character display. The
+label is the app's, so the submitted explanation carries no label or
+timestamp, and the budget is the same whichever label it turns out to get.
+
+Before the sentence is final, the caller searches the story it is about to
+report for anything newer than the development it names. A development can be
+overtaken inside its own story while it still looks like the biggest news: a
+halt since lifted, a claim since denied. The reading then reports where that
+story stands now. This is why the headline never has an update of its own
+(section 5): it is always its story's latest word.
 
 ### Judging the reading
 
@@ -83,7 +91,8 @@ answer at all stores the reading unjudged, never rejected; the response then
 says \`"development": "unjudged"\` and gives the reason in \`judge_note\`. The
 app treats an unjudged reading as continuing the one before it. A reading whose
 answer is \`development_of: null\` opens a development, and the app shows its
-sentence after the label \`New: \`.
+sentence after the label \`New: \`, or \`Update: \` when its story already had
+developments on record.
 
 When two names in the record are one story coined twice, the answer also
 carries \`same_story\` with both names, as the judge prompt describes. The
@@ -104,7 +113,7 @@ content-type: application/json
 
 {
   "score": <integer 1-10>,
-  "explanation": "<sentence body, at most 135 characters including spaces and punctuation>",
+  "explanation": "<sentence body, at most 132 characters including spaces and punctuation>",
   "prompt_sha256": "<64 lowercase hex characters, defined in section 3>",
   "judgement": {
     "judge_version": ${judge.version},
@@ -165,7 +174,8 @@ same authentication:
 The report is the caller's own account, in plain sentences: the searches run and
 the sources that answered or refused, the candidate stories weighed and why the
 chosen one led, why the score sits on its rung, which recorded development the
-judgement named and why, and anything that failed or was skipped. It is stored
+judgement named and why, each story the update check (section 5) looked at and
+what it found or why it found nothing, and anything that failed or was skipped. It is stored
 as written and never checked; it is not a reading and does not suppress the
 scheduled run. A \`reading\` id that matches nothing is stored unlinked, never
 refused.
@@ -227,6 +237,98 @@ caller's own.
 \`\`\`
 ${judge.text}
 \`\`\`
+
+## 5. Story updates
+
+A story keeps moving after another story takes the top reading, and no reading
+reports what happened next: a halt lifted, a claim denied, a strike called off.
+After the reading is submitted, and before the run report, the caller checks
+every other recent story for anything newer and posts what it finds. An update
+has no score. It never changes a rating, never feeds the number, and is shown
+only on the app's timeline, under the development it follows, until a newer
+development in its story takes over.
+
+### What is checked
+
+\`GET ${baseUrl}/api/timeline\` (no authentication) lists the developments
+behind the front page, each with \`root\`, \`story\`, \`since\`, \`explanation\`
+and \`update\`, the newest update already stored on it, or null. For each story,
+the entry with the newest \`since\` is the one checked; the story on the front
+page, absent from the timeline, is not. Everything listed under a story, and
+its stored update, is already on record.
+
+### What counts as an update
+
+An update is a new event in the same story after the checked development's
+\`since\`, done or said on the record:
+
+- a reversal, resolution or escalation;
+- a decision, a ruling or an official action;
+- a toll or figure crossing a threshold;
+- official confirmation or denial of what was only claimed or reported.
+
+These are not updates:
+
+- the recorded development restated, re-worded or with a revised figure;
+- analysis, reaction, commentary, or market moves about another story's event;
+- a fresh unconfirmed report that the subject answers as premature or denies;
+- something scheduled, or a deadline that has passed without a report of what
+  happened;
+- a related story;
+- an event from before \`since\` that the recorded sentence left out.
+
+A story that is itself a price move (a selloff, a slide, a rally) needs its own
+test. A further move in the same direction, including a new "lowest since", is
+a revised figure. A move counts when it reverses the recorded direction, or
+when an official acts in the story.
+
+When nothing qualifies, the story has no update. That is common and correct;
+it was the answer for half the stories on the first run.
+
+### Research
+
+At least two searches per story, naming the people and bodies involved rather
+than dates; dated queries tend to return last year's pages. Search summaries
+are leads, not evidence. Pages are read with \`curl\` and dated by what they
+say. A live blog or an updated article can carry a publish date older than the
+news it now reports, so the date that counts is the live entry's own
+timestamp, \`dateModified\`, or the earliest archived copy that contains the
+news. A page with no timezone, or an aggregator page with no named author, can
+support a source with its own timestamp but not stand alone.
+
+### The sentence
+
+The sentence follows the Output section of the prompt in section 3, at most
+132 characters, after the app's bold \`Update: \` label. It carries no score
+and nothing that reads as one. It reports the new event alone, because the
+app shows the rated sentence beneath it; a short clause naming what it answers
+is fine ("denying Iran's claim that…"), and so is the cause the people involved
+gave. It replaces any earlier update on screen, so it stands beside the rated
+sentence on its own; an earlier update that matters to make sense of it is
+folded in ("…again after lifting the stop at 8:15 p.m.").
+
+### Submission
+
+\`\`\`
+POST ${baseUrl}/api/updates
+content-type: application/json
+
+{
+  "follows": <the checked entry's root>,
+  "story": "<its story name, verbatim>",
+  "explanation": "<at most 132 characters>",
+  "at": "<UTC ISO-8601: when the event happened; else the earliest timestamped page carrying it>",
+  "kind": "<resolution | reversal | escalation | decision | confirmation | denial | correction | continuation>",
+  "sources": [{"url": "<page>", "published": "<its timestamp>", "modified": "<if updated>"}]
+}
+\`\`\`
+
+Same authentication as a reading. \`201\` means stored; \`200\` with
+\`"stored": false\` means that sentence was already stored for that
+development. \`422\` gives the reason in \`error\`: a development no longer
+live or no longer its story's newest, a story name that does not match, an
+\`at\` before the development or in the future, an unknown \`kind\`, or no
+http(s) source. One update per story per run, its newest.
 
 `;
 }

@@ -6,6 +6,16 @@ export const NEW_LABEL = 'New:';
 /** "New: " — the label and the space after it. */
 export const NEW_LABEL_RESERVE = Array.from(`${NEW_LABEL} `).length;
 export const EXPLANATION_CHARACTER_LIMIT = DISPLAY_CHARACTER_LIMIT - NEW_LABEL_RESERVE;
+/**
+ * Shown, bold, instead of "New:" before a sentence that opened a newer
+ * development in a story already on record (owner, 2026-11-14). The server
+ * says which in `explanation_label`; without it, as from an older server or
+ * cache, a new development is "New:" as it always was.
+ */
+export const UPDATE_LABEL = 'Update:';
+/** "Update: " — 8 of the 140, which is why prompt v25 asks for 132. */
+export const UPDATE_LABEL_RESERVE = Array.from(`${UPDATE_LABEL} `).length;
+export const UPDATE_EXPLANATION_CHARACTER_LIMIT = DISPLAY_CHARACTER_LIMIT - UPDATE_LABEL_RESERVE;
 /** How long after its reading was saved a new development is still labelled new. */
 export const NEW_LABEL_MS = 2 * 3600_000;
 
@@ -18,6 +28,12 @@ export function isNew(reading, now = Date.now()) {
   if (reading?.explanation_new !== true || typeof reading.explanation_text !== 'string') return false;
   const saved = Date.parse(reading.created_at);
   return Number.isFinite(saved) && Number.isFinite(now) && now - saved < NEW_LABEL_MS;
+}
+
+/** The bold label a new sentence carries: "Update:" or "New:", or none. */
+export function labelFor(reading, now = Date.now()) {
+  if (!isNew(reading, now)) return '';
+  return reading.explanation_label === 'Update' ? UPDATE_LABEL : NEW_LABEL;
 }
 
 /**
@@ -49,7 +65,7 @@ export function fitExplanation(text, limit) {
 }
 
 /**
- * The bold label (empty when not new), the muted age (empty when new or under
+ * The bold label ("New:" or "Update:", empty when not new), the muted age (empty when new or under
  * an hour) and the body. The body is fitted to 140 characters alone, or to the
  * prompt's 135 behind either prefix: "23h ago: " is four over the label's
  * reserve, and charging it to the body cut the last word of sentences the
@@ -59,12 +75,16 @@ export function fitExplanation(text, limit) {
  */
 export function explanationParts(reading, now = Date.now(), { age: withAge = true } = {}) {
   if (!reading) return { label: '', age: '', body: '' };
-  const label = isNew(reading, now) ? NEW_LABEL : '';
+  const label = labelFor(reading, now);
   const age = label || !withAge ? '' : sentenceAge(reading, now);
   const prefix = label || age;
   // Missing metadata means an old client/cache: its explanation is shown as stored.
   const body = typeof reading.explanation_text === 'string' ? reading.explanation_text : reading.explanation;
-  return { label, age, body: fitExplanation(body ?? '', prefix ? EXPLANATION_CHARACTER_LIMIT : DISPLAY_CHARACTER_LIMIT) };
+  // "Update:" is charged its own three extra characters; everything else keeps
+  // the 135 it always had, so no sentence already stored is cut shorter.
+  const limit = label === UPDATE_LABEL ? UPDATE_EXPLANATION_CHARACTER_LIMIT
+    : prefix ? EXPLANATION_CHARACTER_LIMIT : DISPLAY_CHARACTER_LIMIT;
+  return { label, age, body: fitExplanation(body ?? '', limit) };
 }
 
 /** Plain text, for sharing and any surface that cannot style the prefix. */

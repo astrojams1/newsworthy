@@ -2,6 +2,37 @@
 
 Moved from AGENTS.md, which is size-capped. On by default, behind a Settings switch.
 
+## Story updates (since 2026-11-14, owner)
+
+A story keeps moving after another takes the top reading, and no reading
+reports it: on 2026-11-13 the FAA halted every US departure at 22:06 UTC and
+lifted the halt at 01:15, while another story led. The hourly caller now checks
+each other recent story for anything newer than its newest development after it
+submits (caller instructions section 5) and posts it to `POST /api/updates`
+(`checkStoryUpdate()` in `src/updates.js`: the development must be live and its
+story's newest, `at` after it and not in the future, a known `kind`, and at
+least one http(s) source; the same sentence for the same development is stored
+once; a trial caller's update is checked and not stored). Updates live in
+`story_updates`.
+
+`/api/timeline` gives each entry `update` (its newest update, or null) and
+`activity` (the update's `at`, else `since`), through `attachUpdates()`. An
+update is shown only while it is its story's newest word: once a reading opens
+a development after it, that reading has taken the story on, often by reporting
+the very event, and showing both would say it twice. Every update is stored;
+an entry shows its newest, written to stand beside the rated sentence alone.
+
+The server keeps the list in opening order for installed builds; the app sorts
+by `activity` (`byActivity()` in `apps/client/lib/timeline.js`), so an updated
+story moves up to when it last moved. Such an entry (design B) leads with
+**Update:** in bold and the update's sentence, then, muted at 14/21, the
+sentence its score was given for, dated on its own (“Rated 6h ago: …”), since
+its place no longer says when it was rated. Its tag line always says
+“updated 3h ago”. An update has no score and never touches the number
+(owner, 2026-11-14): a resolved development keeps competing on its usual
+half-life. The prototype that shaped this, its first real run and the design
+canvas are recorded in `docs/story-updates/runs.md`.
+
 **One entry per development, never per reading.** **On by default** since 2026-10-11, when
 the owner turned it on after a third App Review rejection under Guideline 4.2 (minimum
 functionality) with the timeline behind a switch: `showTimeline` in

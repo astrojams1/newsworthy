@@ -185,7 +185,14 @@ public class RatingWidget extends AppWidgetProvider {
     }
 
     static final String NEW_LABEL = "New:";
+    /** A newer development in a story already on record (owner, 2026-11-14). */
+    static final String UPDATE_LABEL = "Update:";
     static final long NEW_LABEL_MS = 2 * 3_600_000L;
+
+    /** "Update:" when the server says so, else "New:", as older servers and caches always meant. */
+    static String newLabel(JSONObject reading) {
+        return "Update".equals(reading.optString("explanation_label", "")) ? UPDATE_LABEL : NEW_LABEL;
+    }
 
     /** A sentence that opened its own development is new for two hours after its reading was saved. */
     static boolean isNew(JSONObject reading, long now) {
@@ -209,19 +216,20 @@ public class RatingWidget extends AppWidgetProvider {
     }
 
     /**
-     * "New:" in bold, or the age, before the sentence. The body is fitted to 140
-     * characters alone, or to the prompt's 135 behind either prefix, so an age
-     * never cuts a sentence the prompt allows; maxLines and ellipsize truncate
+     * "New:" or "Update:" in bold, or the age, before the sentence. The body is
+     * fitted to 140 characters alone, to 132 behind "Update:", whose 8
+     * characters prompt v25 makes room for, or to the prompt's 135 behind any
+     * other prefix, so an age never cuts a sentence the prompt allows; maxLines and ellipsize truncate
      * only what still does not fit. The age is drawn muted by a second TextView
      * stacked on this one (see ageLayer), so here it is hidden rather than tinted.
      */
     static CharSequence displayedExplanation(JSONObject reading, long now) {
         boolean hasBody = reading.opt("explanation_text") instanceof String;
-        String label = isNew(reading, now) ? NEW_LABEL : "";
+        String label = isNew(reading, now) ? newLabel(reading) : "";
         String age = label.isEmpty() ? sentenceAge(reading, now) : "";
         String prefix = label.isEmpty() ? age : label;
         String body = reading.optString(hasBody ? "explanation_text" : "explanation", "");
-        int limit = prefix.isEmpty() ? 140 : 135;
+        int limit = prefix.isEmpty() ? 140 : (UPDATE_LABEL.equals(label) ? 132 : 135);
         if (body.codePointCount(0, body.length()) > limit) {
             String cut = body.substring(0, body.offsetByCodePoints(0, limit - 1));
             int space = cut.lastIndexOf(' ');
@@ -230,7 +238,7 @@ public class RatingWidget extends AppWidgetProvider {
         }
         if (prefix.isEmpty()) return body;
         SpannableString text = new SpannableString(prefix + " " + body);
-        // Weight only for "New:": a color span kept the old theme's color after a theme switch.
+        // Weight only for the label: a color span kept the old theme's color after a theme switch.
         if (!label.isEmpty()) text.setSpan(new StyleSpan(Typeface.BOLD), 0, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         else text.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, age.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return text;

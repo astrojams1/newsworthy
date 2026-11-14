@@ -1,4 +1,20 @@
-# The “New:” label
+# The “New:” and “Update:” labels
+
+**Since 2026-11-14 (owner).** A sentence that opened its own development is
+labelled **New:** when its story had nothing on record before it, and
+**Update:** when it did: a newer development in a story Newsworthy was already
+covering. The server decides (`explanationLabel()` in `src/updates.js`, sent as
+`explanation_label`, `"New"` or `"Update"`, beside `explanation_new`, which keeps
+its meaning for installed builds; they show “New:” on both). “On record” is the
+replay's four-week story memory, so a story quiet for a month comes back as new.
+Both labels are bold, last two hours and follow every rule below for “New:”.
+“Update: ” takes 8 of the 140 characters where “New: ” took 5, so prompt v25
+asks for 132-character sentences (docs/prompt-evaluations/v25.md); clients fit
+the body to 132 behind “Update:” only, and keep 135 behind every other prefix so
+no stored sentence is cut shorter. Before the sentence is final the caller
+checks its own story for anything newer, so the headline is always its story's
+latest word: it can be an update, but never has one. Story updates found for
+other stories are shown on the timeline only; see `docs/story-timeline.md`.
 
 **Since 2026-09-29 (owner).** The app no longer leads a sentence with its age.
 A muted line below the sentence, where “Checked” was, names its story and how

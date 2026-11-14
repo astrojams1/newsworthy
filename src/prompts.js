@@ -515,6 +515,16 @@ const V24_OUTPUT_CONTRACT = V23_OUTPUT_CONTRACT
   .replace('"New: " label. Submit no label.', '"New: " label. Omit it.')
   .replace('(no year if this one, no weekdays)', '(no year if this one, no weekdays or relative days)');
 
+// v25 makes room for a second label. The app now marks a development in a new
+// story "New:" and a newer development in a story already on record "Update:"
+// (owner, 2026-11-14), and "Update: " takes 8 characters of the 140-character
+// display where "New: " took 5. The sentence drops from 135 characters to 132,
+// and the label is no longer named, since the rater cannot know which one the
+// app will show. Everything else is v24's. See docs/prompt-evaluations/v25.md.
+const V25_OUTPUT_CONTRACT = V24_OUTPUT_CONTRACT
+  .replace('"<one sentence, at most 135 characters>"', '"<one sentence, at most 132 characters>"')
+  .replace('5 for the app\'s "New: " label. Omit it.', '8 for the app\'s label. Omit it.');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -683,6 +693,13 @@ const REGISTRY = {
     added: '2026-10-14',
     instructions: V20_INSTRUCTIONS,
     outputContract: V24_OUTPUT_CONTRACT,
+  },
+  25: {
+    version: 25,
+    label: 'update-label-v25',
+    added: '2026-11-14',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V25_OUTPUT_CONTRACT,
   },
 };
 

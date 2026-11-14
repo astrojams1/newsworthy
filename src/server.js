@@ -5,7 +5,7 @@ import { dirname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 
-import { activeMerges, activeSplits, addMerge, addSplit, allMerges, allSplits, readingForSplit, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyFilings, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, trialCohorts, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
+import { activeMerges, activeSplits, addMerge, addSplit, allMerges, allSplits, readingForSplit, correctUsage, failures, logCallerFetch, logCallerRun, logTrialRun, recentCallerFetches, mergeById, storyFilings, history, insertRating, insertTrialReading, latestAttempt, latestRating, logRejection, pingDatabase, postgresEnvKeys, recentAttempts, ratingsByIds, recentCallerRuns, recentRatings, recentRejections, recentStories, priorRoots, rootTimes, setJudgement, stats, insertStoryUpdate, storyUpdates, trialCohorts, trialReadings, trialRuns, unjudgedRatings, usageBaseline, voidRating } from './db.js';
 import { pairTrials, summarizeTrial } from './trial.js';
 import { HALF_LIFE_CHOICES, STORY_HALF_LIFE_CHOICES, STORY_MEMORY_HOURS, TIMELINE_HOURS, activeStories, currentDisplay, developmentTimeline, displayedSeries, frontPageSpans } from './current.js';
 import { PRIOR_HOURS, callerJudgement, judgeReading, judgeRecord, judgeVersion, opensDevelopment, priorsBefore, renderJudgePrompt } from './story.js';
@@ -14,6 +14,7 @@ import { aliasMap, canonicalStory, mergeProblem, renameProblem, slug, storyStats
 import { allPrompts, latestVersion, renderPrompt } from './prompts.js';
 import { SubmissionError, completeSentence, validateSubmission } from './ingest.js';
 import { callerInstructions } from './caller.js';
+import { attachUpdates, checkStoryUpdate, explanationLabel } from './updates.js';
 import { HISTORY_DAYS, dailyHighs, dayOf, daysSitemap, feedJson, feedRss, isDay, renderBadge, renderDayPage, renderEmbed, renderTodayPage, safeTimeZone } from './today.js';
 import { CRON_TICK_MINUTES, CRON_TICK_OFFSET_MINUTES, INTERVAL_CHOICES, effectiveConfig, halfLifeLabel, intervalLabel, storyHalfLifeLabel, updateConfig } from './config.js';
 import { estimateCostUsd, modelCatalogue, projectMonthlyUsd } from './pricing.js';
@@ -292,6 +293,21 @@ async function serveStatic(res, name) {
 }
 
 /** What /api/current serves, also behind the public today page and badge. */
+/** The replay behind the timeline: every live story and its developments,
+ *  over the story memory window, with the timeline's week as the live span. */
+async function liveStories() {
+  const { halfLifeHours, storyHalfLifeDays } = await effectiveConfig();
+  const rows = await history({ hours: STORY_MEMORY_HOURS });
+  const ascending = rows.map((r) => ({ ...r, t: Date.parse(r.created_at) }));
+  const now = Date.now();
+  // One week by first coverage; the rows reach four weeks, so every
+  // development opened inside the window has been replayed.
+  const stories = ascending.length ? activeStories(ascending, {
+    now, halfLifeHours, storyHalfLifeDays, roots: await rootTimes(ascending), liveHours: TIMELINE_HOURS,
+  }) : [];
+  return { stories, now };
+}
+
 async function currentReadingBody() {
   // Four weeks of readings, not the six-hour level window: a development is
   // weighed against how long its story has been running and what it has
@@ -344,6 +360,11 @@ async function currentReadingBody() {
   const explanationFields = {
     explanation_text: completeSentence(sentence.explanation),
     explanation_new: opensDevelopment(newest),
+    // Which label "new" means: "New" for a development in a story with
+    // nothing earlier on record, "Update" for a newer development in a story
+    // already on record (src/updates.js). Null with explanation_new false.
+    // Builds from before it read only explanation_new and show "New:".
+    explanation_label: explanationLabel(newest, ascending, opensDevelopment(newest)),
     explanation_at: new Date(current.sentenceAt ?? sentence.t ?? sentence.created_at).toISOString(),
   };
   // The story the shown sentence belongs to, from the row that sentence is
@@ -495,23 +516,43 @@ const server = createServer(async (req, res) => {
       return json(res, status, body);
     }
 
-    // Prototype: the developments behind the front page, newest first, each
-    // tagged with its story. The same replay as /api/current and the admin
-    // board, so none of the three can disagree about which development leads.
+    // The developments behind the front page, newest first, each tagged with
+    // its story and carrying its newest update (src/updates.js). The same
+    // replay as /api/current and the admin board, so none of the three can
+    // disagree about which development leads.
     if (path === '/api/timeline' && req.method === 'GET') {
-      const { halfLifeHours, storyHalfLifeDays } = await effectiveConfig();
-      const rows = await history({ hours: STORY_MEMORY_HOURS });
-      const ascending = rows.map((r) => ({ ...r, t: Date.parse(r.created_at) }));
-      const now = Date.now();
-      // One week by first coverage; the rows reach four weeks, so every
-      // development opened inside the window has been replayed.
-      const stories = ascending.length ? activeStories(ascending, {
-        now, halfLifeHours, storyHalfLifeDays, roots: await rootTimes(ascending), liveHours: TIMELINE_HOURS,
-      }) : [];
+      const { stories, now } = await liveStories();
+      const updates = stories.length ? await storyUpdates({ hours: TIMELINE_HOURS }) : [];
       return json(res, 200, {
-        developments: developmentTimeline(stories, { now })
+        developments: attachUpdates(developmentTimeline(stories, { now }), stories, updates)
           .map((d) => ({ ...d, explanation: completeSentence(d.explanation) })),
       });
+    }
+
+    // A story update from the caller's update check: what happened in a
+    // story after its newest development, while another story led. Checked
+    // against the same replay the timeline is built from. It carries no
+    // score and changes nothing the page's number is made from. A trial
+    // caller's update is checked and not stored, as its readings are kept
+    // apart.
+    if (path === '/api/updates' && req.method === 'POST') {
+      if (!callerAuthorized(url, req)) {
+        return rejection(res, url, 401, 'unauthorized', { req, method: req.method, record: false });
+      }
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (err) {
+        return rejection(res, url, 400, String(err?.message ?? err), { req, method: req.method });
+      }
+      const { stories } = await liveStories();
+      const checked = checkStoryUpdate(body, stories);
+      if (checked.error) return rejection(res, url, 422, checked.error, { req, method: req.method });
+      const cohort = trialCohort(url, req);
+      if (cohort) return json(res, 200, { stored: false, trial: true, cohort, update: checked.row });
+      const { update, created } = await insertStoryUpdate({ ...checked.row, caller: callerIdentity(url, req) });
+      console.log(`story update ${created ? 'stored' : 'already stored'}: ${update.story} after ${update.follows} (${update.kind})`);
+      return json(res, created ? 201 : 200, { stored: created, update });
     }
 
     if (path === '/healthz' && req.method === 'GET') {

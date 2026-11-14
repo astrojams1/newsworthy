@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { displayExplanation, explanationParts, isNew, sentenceAge, EXPLANATION_CHARACTER_LIMIT } from '../apps/client/lib/story-age.js';
+import { displayExplanation, explanationParts, isNew, labelFor, sentenceAge, EXPLANATION_CHARACTER_LIMIT, UPDATE_EXPLANATION_CHARACTER_LIMIT, UPDATE_LABEL_RESERVE } from '../apps/client/lib/story-age.js';
 import { opensDevelopment } from '../src/story.js';
 import { themeForLevel } from '../apps/client/lib/palette.js';
 import { withServer, PORTS, CALLER_TOKEN, caller } from './with-server.js';
@@ -251,4 +251,43 @@ test('the app sentence spends no budget on an age it shows on its own line', () 
     assert.equal([sentence.props.children].flat().join(''), body, `${platform}: a 135-character body is shown whole`);
   }
   assert.equal(explanationParts(reading, origin + 5 * hour).body, body, 'nor do the widgets and share text, beside the age');
+});
+
+test('"Update:" marks a newer development in a known story, with its own 132-character budget', () => {
+  const update = { ...fresh, explanation_label: 'Update' };
+  assert.equal(UPDATE_LABEL_RESERVE, 8);
+  assert.equal(UPDATE_EXPLANATION_CHARACTER_LIMIT, 132);
+  assert.equal(labelFor(update, origin + 60_000), 'Update:');
+  assert.equal(labelFor({ ...fresh, explanation_label: 'New' }, origin), 'New:');
+  assert.equal(labelFor({ ...fresh, explanation_label: 'Breaking' }, origin), 'New:', 'an unknown label reads as New:');
+  assert.equal(labelFor(fresh, origin), 'New:', 'an older server or cache without the field means New:');
+  assert.equal(labelFor(update, origin + 2 * hour), '', 'it comes off at two hours, as New: does');
+  assert.equal(labelFor({ ...update, explanation_new: false }, origin), '', 'a re-report has no label whatever the field says');
+  const full = 'a'.repeat(132);
+  assert.equal(displayExplanation({ ...update, explanation_text: full }, origin), `Update: ${full}`);
+  const over = displayExplanation({ ...update, explanation_text: 'One report with secondary details. '.repeat(10) }, origin);
+  assert.ok(over.startsWith('Update: ') && Array.from(over).length <= 140 && over.endsWith('…'));
+  // Everything else keeps the 135 it had, so no stored sentence is cut shorter.
+  const v24 = 'a'.repeat(135);
+  assert.equal(displayExplanation({ ...fresh, explanation_text: v24 }, origin), `New: ${v24}`);
+});
+
+test('every app surface shows "Update:" the way it shows "New:"', () => {
+  for (const platform of ['web','ios','android']) {
+    const shown = nodes(renderReading({ platform, width:390, height:844,
+      readingOverride:{ ...fresh, explanation_label:'Update' }, now:origin + 30 * 60000 }));
+    const label = shown.find(n=>n.props.testID === 'rating-new-label');
+    assert.equal(label.props.children, 'Update:');
+    assert.equal(label.props.style.fontWeight, '700');
+  }
+  const swift = readFileSync('apps/client/targets/widget/WidgetReadingStore.swift', 'utf8');
+  assert.match(swift, /var explanation_label: String\?/);
+  assert.match(swift, /explanation_label == "Update" \? "Update:" : "New:"/);
+  assert.match(swift, /label == "Update:" \? 132 : 135/);
+  const java = readFileSync('apps/client/plugins/widget-android/RatingWidget.java', 'utf8');
+  assert.match(java, /static final String UPDATE_LABEL = "Update:";/);
+  assert.match(java, /isNew\(reading, now\) \? newLabel\(reading\) : ""/);
+  assert.match(java, /UPDATE_LABEL\.equals\(label\) \? 132 : 135/);
+  const worker = readFileSync('apps/client/plugins/widget-android/RatingWidgetWorker.java', 'utf8');
+  assert.match(worker, /display\.put\("explanation_label", label\)/, 'the Android worker keeps the label it fetched');
 });
