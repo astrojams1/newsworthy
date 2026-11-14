@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-11-13T00:08:34+00:00",
+  "updated_at": "2026-11-14T06:13:14+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -158,13 +158,13 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build21 passed Apple validation/upload and processed VALID; it remains selected. The successful submission was subsequently rejected under Guideline2.1; see the separate current review gate.",
+      "summary": "1.0.3 (31) uploaded from 7315b51; App Store Connect processed it VALID",
       "evidence": [
-        "store/apple-review-build21.json",
-        "store/apple-review-build21-followup.md"
+        "/Volumes/ssd/builds/xcode/newsworthy/release/31/summary.json sha256 351c742a…b6a8",
+        "asc.mjs status: build 31 VALID 2026-11-13T22:10:18-08:00"
       ],
       "next_action": "",
-      "updated_at": "2026-09-24T05:30:32+00:00"
+      "updated_at": "2026-11-14T06:13:13+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -178,15 +178,15 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "waiting_provider",
+      "state": "done",
       "owner": "provider",
       "basis": "observed",
-      "summary": "1.0.2 build 30 (metadata-only: new subtitle) submitted as f81c3a0d, AFTER_APPROVAL; version and submission read WAITING_FOR_REVIEW 2026-11-13T00:07Z",
+      "summary": "Apple approved 1.0.2 (build 30) and released it: READY_FOR_DISTRIBUTION",
       "evidence": [
-        "asc.mjs status readback; run app-review-daily-20261112T222445Z"
+        "asc.mjs status 2026-11-14: version 1.0.2 READY_FOR_DISTRIBUTION; submission f81c3a0d COMPLETE"
       ],
       "next_action": "Apple reviews; it publishes on approval.",
-      "updated_at": "2026-11-13T00:08:34+00:00"
+      "updated_at": "2026-11-14T06:13:14+00:00"
     },
     "apple.release": {
       "state": "done",
@@ -489,12 +489,13 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Production build26 is VALID and IN_BETA_TESTING in ReleaseQA; selected for AppReview. Historical build21 physical tests are retained separately. No new invite required.",
+      "summary": "Build 31 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester",
       "evidence": [
-        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        "ios-release.mjs testers 31 read back group membership and IN_BETA_TESTING",
+        "asc.mjs status: TestFlight group Release QA internal has build 31"
       ],
       "next_action": "",
-      "updated_at": "2026-10-01T11:40:49+00:00"
+      "updated_at": "2026-11-14T06:13:14+00:00"
     },
     "google.large-text-build": {
       "state": "done",
@@ -1280,6 +1281,18 @@
       ],
       "next_action": "Not exercised: the mail composer itself (simulator has no account) and Android.",
       "updated_at": "2026-11-07T17:45:11+00:00"
+    },
+    "story-updates.native": {
+      "state": "waiting_verification",
+      "owner": "user",
+      "basis": "observed",
+      "summary": "Story updates and the Update: label are in TestFlight 1.0.3 (31); verified on web production and in Release simulator builds only",
+      "evidence": [
+        "docs/story-updates/qa/2026-11-14-timeline-ios-simulator.png",
+        "test/story-updates-api.test.js, NEWSWORTHY_NATIVE_TESTS Swift widget store test, check:android-widget"
+      ],
+      "next_action": "Owner installs TestFlight 1.0.3 (31) on an iPhone: timeline entries with Update: and Rated <age> ago: lines in order of their last update; when a reading opens a development in a known story, Update: on the reading and both widget sizes for two hours. Android needs its next build.",
+      "updated_at": "2026-11-14T06:13:14+00:00"
     }
   },
   "events": [
@@ -8570,6 +8583,73 @@
         ],
         "next_action": "Apple reviews; it publishes on approval.",
         "updated_at": "2026-11-13T00:08:34+00:00"
+      }
+    },
+    {
+      "sequence": 458,
+      "at": "2026-11-14T06:13:13+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "1.0.3 (31) uploaded from 7315b51; App Store Connect processed it VALID",
+        "evidence": [
+          "/Volumes/ssd/builds/xcode/newsworthy/release/31/summary.json sha256 351c742a…b6a8",
+          "asc.mjs status: build 31 VALID 2026-11-13T22:10:18-08:00"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-14T06:13:13+00:00"
+      }
+    },
+    {
+      "sequence": 459,
+      "at": "2026-11-14T06:13:14+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 31 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester",
+        "evidence": [
+          "ios-release.mjs testers 31 read back group membership and IN_BETA_TESTING",
+          "asc.mjs status: TestFlight group Release QA internal has build 31"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-14T06:13:14+00:00"
+      }
+    },
+    {
+      "sequence": 460,
+      "at": "2026-11-14T06:13:14+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "done",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "Apple approved 1.0.2 (build 30) and released it: READY_FOR_DISTRIBUTION",
+        "evidence": [
+          "asc.mjs status 2026-11-14: version 1.0.2 READY_FOR_DISTRIBUTION; submission f81c3a0d COMPLETE"
+        ],
+        "next_action": "Apple reviews; it publishes on approval.",
+        "updated_at": "2026-11-14T06:13:14+00:00"
+      }
+    },
+    {
+      "sequence": 461,
+      "at": "2026-11-14T06:13:14+00:00",
+      "gate": "story-updates.native",
+      "result": {
+        "state": "waiting_verification",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "Story updates and the Update: label are in TestFlight 1.0.3 (31); verified on web production and in Release simulator builds only",
+        "evidence": [
+          "docs/story-updates/qa/2026-11-14-timeline-ios-simulator.png",
+          "test/story-updates-api.test.js, NEWSWORTHY_NATIVE_TESTS Swift widget store test, check:android-widget"
+        ],
+        "next_action": "Owner installs TestFlight 1.0.3 (31) on an iPhone: timeline entries with Update: and Rated <age> ago: lines in order of their last update; when a reading opens a development in a known story, Update: on the reading and both widget sizes for two hours. Android needs its next build.",
+        "updated_at": "2026-11-14T06:13:14+00:00"
       }
     }
   ],
