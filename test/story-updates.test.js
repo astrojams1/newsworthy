@@ -159,22 +159,25 @@ test('the app keeps the timeline by first coverage and drops a malformed update,
   assert.equal(validUpdate({ explanation: 'x', at: 'nope' }), false);
 
   const labels = timelineLabels(list, T0);
-  assert.deepEqual(labels.map((l) => [l.story, l.age, l.updated]), [
-    ['FAA Outage', '6h ago', 'updated 3h ago'],
-    ['Bond Selloff', '8h ago', null],
-    ['Iran War', '19h ago', 'updated 14h ago'],
-    ['Nvidia Spy', '20h ago', null],
-    ['AI Stocks', '2d ago', 'updated 7h ago'],
-  ], 'the entry keeps its own age; an update adds when it came');
+  assert.deepEqual(labels.map((l) => [l.story, l.age]), [
+    ['FAA Outage', '6h ago'],
+    ['Bond Selloff', '8h ago'],
+    ['Iran War', '19h ago'],
+    ['Nvidia Spy', '20h ago'],
+    ['AI Stocks', '2d ago'],
+  ], 'the tag line is the entry\'s own; the update carries its age itself');
 });
 
-test('the timeline draws an update below its sentence, "Update:" in bold, a size smaller', () => {
+test('the timeline sets an update apart below its sentence: a rule, a caption, a smaller sentence', () => {
   const source = readFileSync('apps/client/components/timeline.tsx', 'utf8');
   const sentence = source.indexOf('{development.explanation}</Text>');
   const update = source.indexOf('testID="timeline-update"');
   assert.ok(sentence > 0 && update > sentence, 'the rated sentence comes first');
-  assert.match(source, /testID="timeline-update" style=\{\{ color: theme\.ink, fontSize: 15, lineHeight: 23, marginTop: 10 \}\}/);
-  assert.match(source, /testID="timeline-update-label" style=\{\{ fontWeight: '700' \}\}>Update:<\/Text>/);
-  assert.match(source, /labels\[index\]\.updated\]\.filter\(Boolean\)/);
-  assert.doesNotMatch(source, /Rated /);
+  assert.match(source, /const UPDATE_GAP = 16;/);
+  assert.match(source, /testID="timeline-update-rule" style=\{\{ width: 2, borderRadius: 1, backgroundColor: theme\.muted, opacity: 0\.45 \}\}/);
+  assert.match(source, /<View style=\{\{ flex: 1, paddingLeft: 12 \}\}>/);
+  assert.match(source, /testID="timeline-update-label" style=\{\{ color: theme\.ink, fontWeight: '600' \}\}>Update<\/Text>/);
+  assert.match(source, /`  ·  \$\{timelineAge\(update\.at, now\)\}`/);
+  assert.match(source, /color: theme\.ink, fontSize: 15, lineHeight: 23, marginTop: 4 \}\}>\{update\.explanation\}/);
+  assert.doesNotMatch(source, /labels\[index\]\.updated/, 'the tag line no longer carries the update\'s age');
 });

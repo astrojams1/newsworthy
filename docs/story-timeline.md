@@ -25,8 +25,11 @@ rated sentence alone.
 The timeline keeps its order by first coverage: an update never moves its
 entry (owner, 2026-11-14; a first build sorted by the update's time and led
 with it, and was changed the same day). The update is drawn below the
-entry's sentence, a size smaller (15/23), with **Update:** in bold, and the
-tag line adds when it was updated (“FAA Outage · 6h ago · updated 3h ago”).
+entry's sentence as its own quieter block (owner, 2026-11-14: “a bit of visual
+hierarchy”): 16pt below the sentence, indented 12pt behind a 2pt rule in the
+muted colour at 45%, a 13/18 caption (“**Update** · 3h ago”, the word in ink at
+600, its age muted), then the update's sentence at 15/23. The tag line is the
+entry's own (“FAA Outage · 6h ago”).
 An update has no score and never touches the number (owner, 2026-11-14): a
 resolved development keeps competing on its usual half-life. The prototype that shaped this, its first real run and the design
 canvas are recorded in `docs/story-updates/runs.md`.

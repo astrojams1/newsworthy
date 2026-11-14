@@ -77,8 +77,6 @@ export const timelineAge = shortAge;
 // one story is tagged once, and "1d ago" is said once however many
 // developments broke yesterday. An entry with nothing new gets no tag line.
 // A story is named alike on every entry, from all of its sentences together.
-// An entry with an update always adds when it was updated ("updated 3h ago"),
-// since the update is drawn below its sentence and its place stays its own.
 export function timelineLabels(developments, now = Date.now()) {
   let story = null;
   let age = null;
@@ -90,7 +88,6 @@ export function timelineLabels(developments, now = Date.now()) {
       name: nextStory,
       story: index === 0 || nextStory !== story ? nextStory : null,
       age: index === 0 || nextAge !== age ? nextAge : null,
-      updated: validUpdate(development.update) ? `updated ${timelineAge(development.update.at, now)}` : null,
     };
     story = nextStory;
     age = nextAge;
