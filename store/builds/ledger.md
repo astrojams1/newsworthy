@@ -505,3 +505,16 @@ Listing (subtitle, What's New "Updated App Store subtitle. No changes to the app
 back. Screenshots, previews, header and search creative kept: the build is the live app's code. Submitted to App Review
 as f81c3a0d, AFTER_APPROVAL; WAITING_FOR_REVIEW read back on version and submission. Nomination still waived (it is a
 message to Apple's editors, outside the unattended run). No cloud build, no spend.
+
+## 2026-11-14: build 31, version 1.0.3 to TestFlight (run newsworthy-testflight-20261114-story-updates)
+
+Story updates and the "Update:" label (#268). Apple had approved and released 1.0.2 (READY_FOR_DISTRIBUTION), which
+closed its train, so #269 raised the version to 1.0.3 with What's New and Review Notes for the feature. Local Xcode
+archive from clean merge commit `7315b51d598dcfd687041df8eeffff6d94d8ceb8`, Xcode 27A9275, iphoneos27.1, `.ipa`
+SHA-256 `351c742a0b937defaae59e19b75e2a655589dfe4f27bce0ffe6a84d7bc84b6a8`. Validated, then uploaded with altool; App
+Store Connect finished processing; VALID, `USESNONEXEMPTENCRYPTION` 0; in Release QA, internal `IN_BETA_TESTING`, one
+tester; `asc.mjs status` read back build 31 in the group. Not attached to a version or submitted for review: the
+request was a TestFlight build. `vendor/skills` moved to app-release 2.29.1 in #268 first. Before the archive, a
+Release simulator build of #268's code ran on iOS 27.0 and 27.1 simulators against production. It showed the
+reading and a timeline with the real FAA and AI Stocks updates in design B; that is simulator evidence, not device
+evidence. No cloud build, no spend.
