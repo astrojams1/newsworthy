@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-11-14T06:50:04+00:00
+Updated: 2026-11-14T09:59:06+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -25,7 +25,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.listing | done | agent | observed | 2026-10-01 | Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording. | — |
 | apple.build | done | agent | observed | 2026-09-23 | Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled. | — |
 | apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
-| apple.upload | done | agent | observed | 2026-11-14 | 1.0.3 (32) uploaded from 742b740; processed VALID | — |
+| apple.upload | done | agent | observed | 2026-11-14 | 1.0.3 (33) uploaded from aea5a9b; processed VALID | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
 | apple.review | done | provider | observed | 2026-11-14 | Apple approved 1.0.2 (build 30) and released it: READY_FOR_DISTRIBUTION | Apple reviews; it publishes on approval. |
 | apple.release | done | provider | observed | 2026-10-21 | 2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live. | — |
@@ -49,7 +49,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.review-access | done | agent | observed | 2026-09-17 | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | 2026-10-01 | Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo. | — |
 | apple.physical-recording | done | agent | observed | 2026-09-17 | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
-| apple.testflight | done | agent | observed | 2026-11-14 | Build 32 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester; it supersedes 31's timeline design | — |
+| apple.testflight | done | agent | observed | 2026-11-14 | Build 33 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester; supersedes 31 and 32 | — |
 | google.large-text-build | done | agent | observed | 2026-09-17 | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
 | google.offline | done | agent | observed | 2026-09-17 | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
 | apple.header-background | done | agent | observed | 2026-09-17 | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
@@ -139,7 +139,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | ui.timeline-default | waiting_verification | agent | observed | 2026-10-12 | On by default since build 27 (EAS 6913b8c7, f9ffa29), submitted for review. Production web verified 2026-10-12: a fresh browser and one holding the old stored timeline:false both show the timeline. No native check of build 27. | Check a fresh install and an upgraded TestFlight install of build 27 on a device. |
 | widget.sentence-fit | waiting_verification | agent | observed | 2026-10-24 | Owner's iPhone medium widget cut a 134-character sentence to 'since…' behind '1d ago:' with room for 'May.': the shared 140-character guard charged the age prefix to the body. The guard now keeps 135 for the body behind either prefix (JS, Swift, Java); unit tests and the Android compile pass. Not verified on a device. | In the next iOS and Android builds, check a 135-character body behind '23h ago:' on the medium widget at 338 and 364 points and on Android: shown whole, or stepped down, ellipsized only when it cannot fit. Then app name off, 321 x 148 and larger Dynamic Type. |
 | ui.send-feedback | waiting_verification | agent | observed | 2026-11-07 | Send Feedback added to Settings on iOS and Android. Release simulator, iOS 27.0, iPhone 16 Pro Max and iPad Pro 13: UI test taps the row and sees the address with Copy. | Not exercised: the mail composer itself (simulator has no account) and Android. |
-| story-updates.native | waiting_verification | user | observed | 2026-11-14 | Story updates (in story order, update below) and the Update: label are in TestFlight 1.0.3 (32); verified on web production and locally only | Owner installs TestFlight 1.0.3 (32) on an iPhone: timeline in story order with Update: below the sentence and 'updated 3h ago' on the tag line; when a reading opens a development in a known story, Update: on the reading and both widget sizes for two hours. Android needs its next build. |
+| story-updates.native | waiting_verification | user | observed | 2026-11-14 | Story updates (story order, update set apart below the sentence) and the Update: label are in TestFlight 1.0.3 (33); verified on web and locally only | Owner installs TestFlight 1.0.3 (33) on an iPhone: timeline in story order; an update below its sentence, indented behind a thin rule with an 'Update · 3h ago' caption; Update: on a reading that opens a development in a known story, on the home screen and both widget sizes for two hours. Android needs its next build. |
 
 ## Evidence and history
 
@@ -4530,3 +4530,29 @@ Story updates (in story order, update below) and the Update: label are in TestFl
 - docs/story-updates/qa/2026-11-14-timeline-web-update-below.png
 
 Next: Owner installs TestFlight 1.0.3 (32) on an iPhone: timeline in story order with Update: below the sentence and 'updated 3h ago' on the tag line; when a reading opens a development in a known story, Update: on the reading and both widget sizes for two hours. Android needs its next build.
+
+### 465. apple.upload — done
+
+2026-11-14T09:59:06+00:00 · observed · agent
+
+1.0.3 (33) uploaded from aea5a9b; processed VALID
+
+- /Volumes/ssd/builds/xcode/newsworthy/release/33/summary.json sha256 db1653a0…401b
+
+### 466. apple.testflight — done
+
+2026-11-14T09:59:06+00:00 · observed · agent
+
+Build 33 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester; supersedes 31 and 32
+
+- ios-release.mjs testers 33: Release QA, IN_BETA_TESTING
+
+### 467. story-updates.native — waiting_verification
+
+2026-11-14T09:59:06+00:00 · observed · user
+
+Story updates (story order, update set apart below the sentence) and the Update: label are in TestFlight 1.0.3 (33); verified on web and locally only
+
+- docs/story-updates/qa/2026-11-14-timeline-web-update-block-dark.png
+
+Next: Owner installs TestFlight 1.0.3 (33) on an iPhone: timeline in story order; an update below its sentence, indented behind a thin rule with an 'Update · 3h ago' caption; Update: on a reading that opens a development in a known story, on the home screen and both widget sizes for two hours. Android needs its next build.
