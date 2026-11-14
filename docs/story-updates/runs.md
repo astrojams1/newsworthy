@@ -66,3 +66,5 @@ All of these are now in SKILL.md:
   name a bigger but older development, such as a halt already lifted.
 - **Second and later updates:** every update is stored, but an entry shows only its newest. Each new update is
   written to stand beside the rated sentence on its own.
+- **Updates never touch the number** (owner, 2026-11-14). A development whose update resolves or denies it, like the
+  lifted FAA halt, keeps competing for the number and fades on the usual 48-hour half-life.

@@ -189,6 +189,6 @@ Proposed, not built:
 7. **The hourly caller runs the rest of this check after it submits**, for stories whose last development is under 72
    hours old. The first run had six such stories and took 3 to 7 searches each.
 
-One question is for the owner. The number belongs to the loudest live development, aged over 48 hours, so a resolved
-development can hold the number for a day. Should a `resolution` or `denial` stop that development from competing for
-the number? That changes what the front page shows, though not any rating, so it isn't this skill's decision.
+**Updates never touch the number** (owner, 2026-11-14). The number belongs to the loudest live development, aged over
+48 hours. A development whose update resolves or denies it keeps competing for the number like any other. An update
+changes what the app says about a story, never how loud it is.
