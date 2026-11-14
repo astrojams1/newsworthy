@@ -91,3 +91,12 @@ The prototype is now the product. What was built, so the next run starts from it
 - **Changed from the plan:** a reading that reports a stored update's event is not filed under the update. The judge
   prompt is unchanged, so readings file as they always did, and the rule above keeps the timeline from repeating
   itself.
+
+## 2026-11-14, timeline order and placement changed (owner, no new run)
+
+The owner asked for the timeline to stay sorted by the original story and for the update to go below. Each entry now
+keeps its place by first coverage, and its rated sentence leads. The update follows a size smaller (15/23), with
+**Update:** in bold, and the tag line adds when it came ("FAA Outage · 7h ago · updated 4h ago"). `/api/timeline` no
+longer sends `activity`, and the app no longer re-sorts. The first build's order and "Rated 6h ago:" line are gone. Its
+screenshot, `qa/2026-11-14-timeline-web.png`, shows the superseded design. The current one is
+`qa/2026-11-14-timeline-web-update-below.png`.

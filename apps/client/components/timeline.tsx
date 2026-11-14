@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Animated, Text, View } from 'react-native';
 import type { Development } from '@/lib/use-timeline';
-import { ratedPrefix, timelineAge, timelineLabels } from '@/lib/timeline';
+import { timelineAge, timelineLabels } from '@/lib/timeline';
 
 type Theme = { ink: string; muted: string };
 
@@ -14,14 +14,14 @@ const ENTRY_GAP = 44;
 const TAG_GAP = 10;
 
 /**
- * The developments behind the front page, newest activity first, each tagged
- * with its story. Left-aligned, and nothing but the tag, the age and the
+ * The developments behind the front page, newest first by when each was
+ * first covered, each tagged with its story. Left-aligned, and nothing but the tag, the age and the
  * sentence: order and space carry the timeline.
  *
- * A development with a story update leads with it (design B, owner
- * 2026-11-14): "Update:" in bold and the update's sentence, then, muted, the
- * sentence its score was given for, dated on its own ("Rated 6h ago:"), since
- * the entry's place now comes from the update. An update carries no score.
+ * A development with a story update keeps its place and its sentence, and
+ * the update goes below it (owner, 2026-11-14): "Update:" in bold and the
+ * update's sentence, a size smaller, with "updated 3h ago" on the tag line.
+ * An update carries no score.
  *
  * `opacity` is driven by the scroll position: the timeline fades in as the
  * reading above it fades out. Scrolled further, each tag line and sentence
@@ -55,9 +55,8 @@ export function Timeline({ developments, opacity, theme, now, scrollY, offset, f
       const label = labels[index].name;
       const age = timelineAge(development.since, now);
       const update = development.update ?? null;
-      const rated = update ? ratedPrefix(development, now) : '';
       const tagKey = `t${development.root}`;
-      const hasTag = Boolean(labels[index].story || labels[index].age);
+      const hasTag = Boolean(labels[index].story || labels[index].age || labels[index].updated);
       const entry = entryTop === undefined ? undefined : entryTop + (index === 0 ? 0 : ENTRY_GAP);
       const tagHeight = hasTag ? heights[tagKey] : 0;
       const tagTop = entry;
@@ -66,24 +65,19 @@ export function Timeline({ developments, opacity, theme, now, scrollY, offset, f
       entryTop = entry === undefined || entryHeight === undefined ? undefined : entry + entryHeight;
       const at = (top: number | undefined) => top === undefined ? undefined : offset + top;
       return <View key={development.root} accessible onLayout={measure(`e${development.root}`)}
-        accessibilityLabel={update
-          ? `${label ? `${label}, ` : ''}updated ${timelineAge(update.at, now)}. Update: ${update.explanation} ${rated} ${development.explanation}`
-          : `${age}${label ? `, ${label}` : ''}. ${development.explanation}`}
+        accessibilityLabel={`${age}${label ? `, ${label}` : ''}. ${development.explanation}${update
+          ? ` Updated ${timelineAge(update.at, now)}: ${update.explanation}` : ''}`}
         style={{ marginTop: index === 0 ? 0 : ENTRY_GAP }}>
         {hasTag && <Animated.View onLayout={measure(tagKey)} style={{ opacity: fade(at(tagTop)), marginBottom: TAG_GAP }}>
           <Text maxFontSizeMultiplier={1.5} style={{ color: theme.muted, fontSize: 13, lineHeight: 18 }}>
-            {[labels[index].story, labels[index].age].filter(Boolean).join('  ·  ')}
+            {[labels[index].story, labels[index].age, labels[index].updated].filter(Boolean).join('  ·  ')}
           </Text>
         </Animated.View>}
         <Animated.View style={{ opacity: fade(at(sentenceTop)) }}>
-          {update ? <>
-            <Text selectable testID="timeline-update" style={{ color: theme.ink, fontSize: 17, lineHeight: 27 }}>
-              <Text testID="timeline-update-label" style={{ fontWeight: '700' }}>Update:</Text>{` ${update.explanation}`}
-            </Text>
-            <Text selectable testID="timeline-rated" style={{ color: theme.muted, fontSize: 14, lineHeight: 21, marginTop: 10 }}>
-              {`${rated} ${development.explanation}`}
-            </Text>
-          </> : <Text selectable style={{ color: theme.ink, fontSize: 17, lineHeight: 27 }}>{development.explanation}</Text>}
+          <Text selectable style={{ color: theme.ink, fontSize: 17, lineHeight: 27 }}>{development.explanation}</Text>
+          {update && <Text selectable testID="timeline-update" style={{ color: theme.ink, fontSize: 15, lineHeight: 23, marginTop: 10 }}>
+            <Text testID="timeline-update-label" style={{ fontWeight: '700' }}>Update:</Text>{` ${update.explanation}`}
+          </Text>}
         </Animated.View>
       </View>;
     })}

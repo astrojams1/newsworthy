@@ -913,7 +913,7 @@ npm start       # needs DATABASE_URL; NEWSWORTHY_MOCK=1 avoids API calls
 Do not record test counts; they go stale.
 
 **The story timeline** is on by default (`showTimeline` in `preferences.js`), one
-entry per development, by newest update else `opened`, one week long. Updates
+entry per development by `opened`, update below, one week long. Updates
 (`src/updates.js`) never touch the number. See `docs/story-timeline.md` first.
 
 **“New:”/“Update:”.** First coverage of a development, in a new story or one

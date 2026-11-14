@@ -15,22 +15,20 @@ least one http(s) source; the same sentence for the same development is stored
 once; a trial caller's update is checked and not stored). Updates live in
 `story_updates`.
 
-`/api/timeline` gives each entry `update` (its newest update, or null) and
-`activity` (the update's `at`, else `since`), through `attachUpdates()`. An
-update is shown only while it is its story's newest word: once a reading opens
-a development after it, that reading has taken the story on, often by reporting
-the very event, and showing both would say it twice. Every update is stored;
-an entry shows its newest, written to stand beside the rated sentence alone.
+`/api/timeline` gives each entry `update`, its newest update or null, through
+`attachUpdates()`. An update is shown only while it is its story's newest word:
+once a reading opens a development after it, that reading has taken the story
+on, often by reporting the very event, and showing both would say it twice.
+Every update is stored; an entry shows its newest, written to stand beside the
+rated sentence alone.
 
-The server keeps the list in opening order for installed builds; the app sorts
-by `activity` (`byActivity()` in `apps/client/lib/timeline.js`), so an updated
-story moves up to when it last moved. Such an entry (design B) leads with
-**Update:** in bold and the update's sentence, then, muted at 14/21, the
-sentence its score was given for, dated on its own (“Rated 6h ago: …”), since
-its place no longer says when it was rated. Its tag line always says
-“updated 3h ago”. An update has no score and never touches the number
-(owner, 2026-11-14): a resolved development keeps competing on its usual
-half-life. The prototype that shaped this, its first real run and the design
+The timeline keeps its order by first coverage: an update never moves its
+entry (owner, 2026-11-14; a first build sorted by the update's time and led
+with it, and was changed the same day). The update is drawn below the
+entry's sentence, a size smaller (15/23), with **Update:** in bold, and the
+tag line adds when it was updated (“FAA Outage · 6h ago · updated 3h ago”).
+An update has no score and never touches the number (owner, 2026-11-14): a
+resolved development keeps competing on its usual half-life. The prototype that shaped this, its first real run and the design
 canvas are recorded in `docs/story-updates/runs.md`.
 
 **One entry per development, never per reading.** **On by default** since 2026-10-11, when

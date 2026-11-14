@@ -843,11 +843,11 @@ test('tag lines say only what changed from the entry above', () => {
     entry('nepal-glacier-flood', '2026-09-23T06:00:00Z'),
     entry('eu-ai-act', '2026-09-22T20:00:00Z'),
   ], now), [
-    { name: 'Fed Rates', story: 'Fed Rates', age: '5h ago' },
-    { name: 'US Iran War', story: 'US Iran War', age: '11h ago' },
-    { name: 'US Iran War', story: null, age: '1d ago' },
-    { name: 'Nepal Glacier Flood', story: 'Nepal Glacier Flood', age: null },
-    { name: 'EU AI Act', story: 'EU AI Act', age: null },
+    { name: 'Fed Rates', story: 'Fed Rates', age: '5h ago', updated: null },
+    { name: 'US Iran War', story: 'US Iran War', age: '11h ago', updated: null },
+    { name: 'US Iran War', story: null, age: '1d ago', updated: null },
+    { name: 'Nepal Glacier Flood', story: 'Nepal Glacier Flood', age: null, updated: null },
+    { name: 'EU AI Act', story: 'EU AI Act', age: null, updated: null },
   ]);
 });
 

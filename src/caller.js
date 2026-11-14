@@ -301,7 +301,7 @@ support a source with its own timestamp but not stand alone.
 The sentence follows the Output section of the prompt in section 3, at most
 132 characters, after the app's bold \`Update: \` label. It carries no score
 and nothing that reads as one. It reports the new event alone, because the
-app shows the rated sentence beneath it; a short clause naming what it answers
+app shows it beneath the rated sentence; a short clause naming what it answers
 is fine ("denying Iran's claim that…"), and so is the cause the people involved
 gave. It replaces any earlier update on screen, so it stands beside the rated
 sentence on its own; an earlier update that matters to make sense of it is
