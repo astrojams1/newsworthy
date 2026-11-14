@@ -518,3 +518,12 @@ request was a TestFlight build. `vendor/skills` moved to app-release 2.29.1 in #
 Release simulator build of #268's code ran on iOS 27.0 and 27.1 simulators against production. It showed the
 reading and a timeline with the real FAA and AI Stocks updates in design B; that is simulator evidence, not device
 evidence. No cloud build, no spend.
+
+## 2026-11-14: build 32, version 1.0.3 to TestFlight (run newsworthy-testflight-20261114-build32)
+
+The owner changed the timeline design after build 31: keep entries in order of first coverage and put the update below
+the rated sentence (#272). Local Xcode archive from clean merge commit `742b7401e38c71df7c1403ec5960806112db41db`, Xcode
+27A9275, iphoneos27.1, `.ipa` SHA-256 `dc51fdbd794e14a5fcf18e09a5a4c2351eaec7f0f2edab022c39a65e47961fde`.
+Validated, uploaded, processed VALID; in Release QA, internal `IN_BETA_TESTING`, one tester. It replaces build 31,
+which shows the superseded design, for testing. Not attached to a version or submitted for review. No cloud build, no
+spend.
