@@ -100,9 +100,10 @@ push credentials on EAS; see the
 See [Accessibility verification](docs/accessibility-verification.md) for checks
 performed and remaining device/assistive-technology release checks.
 
-**Release status.** Newsworthy 1.0.0 (build 27) for iPhone and iPad has been
+**Release status.** Newsworthy for iPhone and iPad has been
 [on the App Store](https://apps.apple.com/app/id6812519450) since 21 October
-2026, a one-time US$1 download with local store equivalents in all 175
+2026, at version 1.0.2 (build 30) by 14 November; 1.0.3, with story updates,
+goes to TestFlight first; a one-time US$1 download with local store equivalents in all 175
 territories. Android is not public: version 17 is on Google Play closed testing,
 and production access has not been applied for. The
 [store release hub](store/README.md) keeps listing copy, screenshots, editable
