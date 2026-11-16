@@ -24,6 +24,7 @@ no record file; their history is in `AGENTS.md`.
 | v23 | 2026-10-14 | | A preview says what the scheduled release will settle | [v23](v23.md) |
 | v24 | 2026-10-14 | | Dates, never relative days | [v24](v24.md) |
 | v25 | 2026-11-14 | #268 | 132-character sentence, room for an "Update: " label | [v25](v25.md) |
+| v26 | 2026-11-16 | | Scheduled news leads only within a day of it; earlier, what happened | [v26](v26.md) |
 
 ## Lessons
 
@@ -61,3 +62,7 @@ What earlier versions cost to learn; each is told in full in `AGENTS.md`.
   open discounted; in a five-day-old story they opened at 93%, and the timeline
   listed every split, so a results preview with a new "as" clause each hour
   read as the same headline again and again.
+- **An instruction about time needs a window** (v26, 2026-11-16). v23's
+  "Before scheduled news" had none, which was harmless while every preview
+  sat within a day of its release and led three days of readings once one
+  did not.

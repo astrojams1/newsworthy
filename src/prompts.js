@@ -525,6 +525,22 @@ const V25_OUTPUT_CONTRACT = V24_OUTPUT_CONTRACT
   .replace('"<one sentence, at most 135 characters>"', '"<one sentence, at most 132 characters>"')
   .replace('5 for the app\'s "New: " label. Omit it.', '8 for the app\'s label. Omit it.');
 
+// v26 bounds v23's preview lead to the day before scheduled news. v23 set no
+// window, so a story waiting days on a date led with its preview every hour:
+// "Nvidia reports results Nov 17" headed 42 readings from 13 to 16 November,
+// four days out, and what happened meanwhile (selloffs, draft chip limits,
+// Trump backing the CEO's return) was squeezed into "as" clauses after it.
+// Earlier, the sentence leads with what happened. Four phrases are tightened
+// to fit rule 7 without changing what they ask. Everything before Output is
+// v25's. See docs/prompt-evaluations/v26.md.
+const V26_OUTPUT_CONTRACT = V25_OUTPUT_CONTRACT
+  .replace('Before scheduled news, lead with what it will settle.',
+    'Within a day of scheduled news, lead with what it will settle; earlier, with what happened.')
+  .replace('Write calmly for a reader with no background:', 'Write calmly for a lay reader:')
+  .replace('At most one figure, in plain terms;', 'At most one figure, plainly;')
+  .replace('(no year if this one, no weekdays or relative days)', '(no current year, no weekdays or relative days)')
+  .replace('rating justification, advice.', 'score justification, advice.');
+
 const REGISTRY = {
   1: {
     version: 1,
@@ -700,6 +716,13 @@ const REGISTRY = {
     added: '2026-11-14',
     instructions: V20_INSTRUCTIONS,
     outputContract: V25_OUTPUT_CONTRACT,
+  },
+  26: {
+    version: 26,
+    label: 'scheduled-within-a-day-v26',
+    added: '2026-11-16',
+    instructions: V20_INSTRUCTIONS,
+    outputContract: V26_OUTPUT_CONTRACT,
   },
 };
 

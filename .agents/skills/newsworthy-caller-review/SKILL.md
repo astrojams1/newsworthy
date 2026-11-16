@@ -81,7 +81,8 @@ hides its actor in a passive is flagged.
 - **A preview says what it will settle.** From prompt v23 this covers a scheduled release not yet out (a data
   report, a speech, minutes). The sentence says what the release will settle ("will show whether…"), not only that
   it is due. On
-  v23 or later a bare announcement is a contract breach. Before v23 it is expected.
+  v23 or later a bare announcement is a contract breach. Before v23 it is expected. From v26 this applies only within
+  a day of the release; earlier, a sentence that leads with the preview is a breach, and it leads with what happened.
 - **Dates, not relative days.** From prompt v24 the sentence gives a date ("due Oct 14"). It never says "today",
   "tonight", "tomorrow" or "yesterday", because it is shown for hours, under an age, in every time zone. On v24 or
   later a relative day is a contract breach.
