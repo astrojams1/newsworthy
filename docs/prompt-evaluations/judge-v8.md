@@ -129,3 +129,29 @@ development half-life, 90-day story half-life), as stored and with 1997, 1998
   developments as stored. They leave the timeline as it ages past a week.
 - Not the production caller: the hourly Cowork run answers the judge after
   rating, with the rating instructions in its context.
+
+## Cause, found after merge
+
+A review of every PR merged from 1 November found two changes that together
+produced the repeats, set off by Monday's news; neither alone did.
+
+- **#268 (14 November, story updates)** told the caller to search its story for
+  anything newer before the sentence was final and "report where that story
+  stands now". With rating v23's "Before scheduled news, lead with what it will
+  settle", the caller kept the preview as its lead and added the newer item
+  after "as". The run reports for 1997, 2008 and 2009 each name a newer-in-story
+  check whose finding is the clause in the sentence; none of the 200 run
+  reports before #268 names such a check. Readings with an "as" clause went
+  from 27% to 43% after it.
+- **#252 (5 November, judge v7)**, with v5, made such a clause new: 2008's
+  judgement cites the market-and-session rule.
+
+v7 ran from 5 to 15 November with no repeated lead, and #268 ran through the
+weekend of 14 and 15 November without one; on Monday markets reopened and three
+clauses split in a day. #268 also labelled each split "Update:" on the front
+page, beside the same preview sentence.
+
+v8 makes the clause context. The caller instructions now also say the newer
+event is the sentence's lead and the one development it reports, never a clause
+added to an older development or a preview, so a newer event gets a reading of
+its own rather than a clause v8 ignores.

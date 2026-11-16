@@ -38,7 +38,8 @@ archive.
 3. **Write the final sentence** before you send anything. The total is 140 characters INCLUDING the app's label,
    "New: " or "Update: ". Reserve 8 for it, leaving 132 for the explanation, whichever label it turns out to get.
    Count with a code tool. Don't add a label or timestamp to the submitted explanation. First check the story you are
-   reporting for anything newer than the development you named, and report where it stands now.
+   reporting for anything newer than the development you named, and report where it stands now: the newer event leads
+   the sentence, never tacked on as an "as…" clause to the older one or to a preview.
 4. **Judge.** Only then fetch `/api/developments`. Answer the judge prompt from the instructions about your reading
    against that record:
    - `development_of`: an id the record lists, or null for a new development;
