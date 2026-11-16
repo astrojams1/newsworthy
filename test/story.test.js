@@ -66,16 +66,17 @@ test('the judge prompt is a specification, not a set of orders', () => {
   assert.doesNotMatch(text, /\byou (must|should|will|need)\b/i);
   // Each version appends one paragraph to the last; v5 took it past the 2,500
   // this once was, and v7 past 3,000 (its sentence could not fit the 18 left,
-  // and tightening wording v1 to v6 share would cost their comparability).
+  // and tightening wording v1 to v6 share would cost their comparability),
+  // and v8's paragraph past 3,200 for the same reason.
   // A cap still keeps growth a decision rather than a drift.
-  assert.ok(text.length < 3200, `judge prompt is ${text.length} characters`);
+  assert.ok(text.length < 3700, `judge prompt is ${text.length} characters`);
   assert.match(text, /development_of/, 'and it names the field it wants back');
 });
 
 test('judge prompts are append-only, pinned by hash', () => {
   // A stored judgement names the version that produced it. Editing a published
   // version would reinterpret readings already recorded, silently.
-  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '2aa2059729dcee6f', 6: '283696c11d9ccac2', 7: '36f0717d02bc13b7' };
+  const pins = { 1: '7b2971d31e2b3a2b', 2: '6b3fab61e669b659', 3: 'a58d75edcb5fa60c', 4: '8c5c784935a6da52', 5: '2aa2059729dcee6f', 6: '283696c11d9ccac2', 7: '36f0717d02bc13b7', 8: '62b58902a1dacd0b' };
   const prompts = allJudgePrompts();
   assert.deepEqual(prompts.map((p) => p.version), Object.keys(pins).map(Number),
     'every published version is pinned here');
@@ -205,7 +206,23 @@ test('v7 makes a market move one market in one session and keeps v6 otherwise wh
   assert.match(added, /^ only within one market and\ntrading session\./, 'a restatement is bounded by market and session');
   assert.match(added, /another market, or in a later session, is a\nlater occurrence/, 'beyond them it is a later occurrence');
   assert.doesNotMatch(added, /korea|seoul|wall street|chip|\bAI\b/i, 'a rule and a general example, not the case that prompted it');
-  assert.equal(judgeVersion(), 7, 'and v7 is what new readings are judged by');
+});
+
+test('v8 files a reading by the news it leads with and keeps v7 whole', () => {
+  // From 14 to 16 November nearly every reading led with one results preview
+  // and added an item after "as"; v5 and v7 made each item a later
+  // occurrence, so each opened a development and the timeline listed the
+  // same sentence again and again. v7 is kept byte for byte and one
+  // paragraph added.
+  const v7 = renderJudgePrompt(7).text;
+  const v8 = renderJudgePrompt(8).text;
+  assert.ok(v8.startsWith(v7), 'v7 verbatim, then one paragraph');
+  const added = v8.slice(v7.length);
+  assert.match(added, /^\n\nA reading is filed by the news its sentence leads with\./, 'the rule, stated first');
+  assert.match(added, /a\nclause added as context does not make a reading new/, 'a closing clause is context');
+  assert.match(added, /still to come is not an occurrence/, 'a preview is not an occurrence');
+  assert.doesNotMatch(added, /nvidia|huang|trump|chip|\bAI\b/i, 'a rule, not the case that prompted it');
+  assert.equal(judgeVersion(), 8, 'and v8 is what new readings are judged by');
 });
 
 test('a development whose first report has left the window is shown as first reported', () => {
