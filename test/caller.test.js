@@ -200,6 +200,10 @@ test('the caller writes 132 characters for either label, checks its own story, a
   assert.doesNotMatch(text, /135/, 'no trace of the old budget');
   assert.match(text, /`Update: ` takes the remaining 8 of a 140-character display/);
   assert.match(text, /searches the story it is about to\nreport for anything newer/);
+  // From 14 to 16 November the caller kept a results preview as the lead and
+  // tacked each hour's newer item on after "as", so the timeline repeated the
+  // preview; the newer event is the lead, never a closing clause.
+  assert.match(text, /the newer event is its lead and the one development it\nreports, not a clause added to the older development or to a preview of\nscheduled news/);
   assert.match(text, /## 5\. Story updates/);
   assert.match(text, /POST https:\/\/example\.test\/api\/updates/);
   assert.match(text, /GET https:\/\/example\.test\/api\/timeline/);
@@ -208,5 +212,6 @@ test('the caller writes 132 characters for either label, checks its own story, a
   }
   const skill = readFileSync('skills/newsworthy-rating/SKILL.md', 'utf8');
   assert.match(skill, /Reserve 8 for it, leaving 132/);
+  assert.match(skill, /the newer event leads\n   the sentence, never tacked on as an "as…" clause/);
   assert.match(skill, /\/api\/updates/);
 });

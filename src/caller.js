@@ -69,8 +69,12 @@ Before the sentence is final, the caller searches the story it is about to
 report for anything newer than the development it names. A development can be
 overtaken inside its own story while it still looks like the biggest news: a
 halt since lifted, a claim since denied. The reading then reports where that
-story stands now. This is why the headline never has an update of its own
-(section 5): it is always its story's latest word.
+story stands now: the newer event is its lead and the one development it
+reports, not a clause added to the older development or to a preview of
+scheduled news ("…, as X happened"). The older development is already on
+record, and a clause names no development of its own. This is why the headline
+never has an update of its own (section 5): it is always its story's latest
+word.
 
 ### Judging the reading
 
