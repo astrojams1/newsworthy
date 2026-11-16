@@ -89,7 +89,8 @@ about its own reading against that record — no model on this server answers it
 An id the record did not list, an answer to a retired \`judge_version\`, or no
 answer at all stores the reading unjudged, never rejected; the response then
 says \`"development": "unjudged"\` and gives the reason in \`judge_note\`. The
-app treats an unjudged reading as continuing the one before it. A reading whose
+app treats an unjudged reading as continuing a recent development its sentence
+matches, or as its own when none matches. A reading whose
 answer is \`development_of: null\` opens a development, and the app shows its
 sentence after the label \`New: \`, or \`Update: \` when its story already had
 developments on record.

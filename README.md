@@ -191,7 +191,7 @@ visible rather than silent. Each row carries:
 | `cost_usd` | Estimated cost, priced at write time from this run's own usage |
 | `cache_read_tokens`, `cache_write_tokens`, `web_search_requests` | The rest of the billable usage |
 | `story`, `development_of` | Which development the reading reports — a slug for the broader story, and the reading that first reported this development (null when this one did) |
-| `judge_version`, `judge_model`, `judge_note`, `judge_cost_usd` | How that was decided, and what it cost. All null when no judgement was made, which the front page reads as "inherit the reading before" |
+| `judge_version`, `judge_model`, `judge_note`, `judge_cost_usd` | How that was decided, and what it cost. All null when no judgement was made, which the front page reads as "inherit a recent development whose words it shares" |
 
 Storing the hash *and* the text means a historical reading stays traceable even if
 `src/prompts.js` is later edited by mistake.

@@ -100,8 +100,8 @@ news was last checked, not when the sentence changed.
 The id is checked against the developments on record when the reading arrives,
 and the version stamped is the server's own; an answer to a retired version is
 refused. A refused or missing answer stores the reading unjudged, with the
-reason in `judge_note`, which the page reads as continuing the reading before it
-— never as new. The four rejection rules and 400-character ingestion handling
+reason in `judge_note`, which the page reads as continuing a recent development
+its sentence matches — never as new, and never one it is not about. The four rejection rules and 400-character ingestion handling
 are unchanged. A stored sentence always ends in punctuation: one arriving
 without an end is finished with a full stop, which can take a 135-character body
 to 136.

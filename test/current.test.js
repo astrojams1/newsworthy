@@ -363,6 +363,27 @@ test('an unjudged reading inherits rather than starting a development', () => {
   assert.equal(withBreak.at(-1).root, 5, 'a level two clear still registers unjudged');
 });
 
+test('an unjudged reading inherits only a development it is about', () => {
+  // On 15 November reading 1985, Iran firing drones at a US radar site,
+  // arrived with no judgement after an Nvidia results preview and was counted
+  // as one more report of the preview. Its own story's development, a drone
+  // strike on the same radar site, was a few hours old.
+  const iran = 'Iran said it hit a US radar site in Bahrain with drones for a second time.';
+  const nvidia = 'Nvidia reports results Nov 17, its first since its CEO resigned, as investors urge his return.';
+  const series = [
+    { id: 1, t: 0, score: 6, judge_version: 8, development_of: null, explanation: iran },
+    { id: 2, t: HOUR, score: 6, judge_version: 8, development_of: null, explanation: nvidia },
+    { id: 3, t: 2 * HOUR, score: 5, explanation: 'Iran said it fired 6 drones at a US radar site in Bahrain, and Bahrain said it stopped the attack.' },
+    { id: 4, t: 3 * HOUR, score: 6, judge_version: 8, development_of: 2, explanation: nvidia },
+    { id: 5, t: 4 * HOUR, score: 5, explanation: 'Nvidia reports results on Nov 17, its first since its CEO resigned.' },
+    { id: 6, t: 5 * HOUR, score: 4, explanation: 'A magnitude 6 earthquake struck off the coast of Chile, officials said.' },
+  ];
+  const reports = Object.fromEntries(displayedSeries(series).map((p) => [p.id, p.reports]));
+  assert.equal(reports[3], 1, 'the Iran reading joins the Iran development, not the Nvidia one before it');
+  assert.equal(reports[5], 2, 'an unjudged re-report still inherits the development before it');
+  assert.equal(reports[6], 6, 'a reading about nothing on record starts its own');
+});
+
 test('the page ages while the caller is silent', () => {
   // Ten hours after an 8 is not an 8, whatever the last stored row says. The
   // window is empty by then, so the basis says stale — and the number has still
