@@ -56,3 +56,8 @@ What earlier versions cost to learn; each is told in full in `AGENTS.md`.
   skill said only an explicit request to merge authorized one. The owner's
   standing instruction, now in `AGENTS.md`: a request for a change covers the
   PR, the merge once checks pass and the production check.
+- **Splitting is free for the page, not for the timeline** (judge v8,
+  2026-11-16). v5 and v7 split developments on the grounds that routine ones
+  open discounted; in a five-day-old story they opened at 93%, and the timeline
+  listed every split, so a results preview with a new "as" clause each hour
+  read as the same headline again and again.

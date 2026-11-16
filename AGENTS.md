@@ -241,18 +241,13 @@ which one the new sentence reports, or none. The answer lands in `story`,
 recomputed, so the front page and the chart cannot disagree, and re-reading
 history cannot re-interpret it.
 
-**One story, one name — v2.** The judge names the story as free text, and v1
-let that drift: across 231 readings it coined four names for the US-Iran war —
-`hormuz-threat` (40 readings), `iran-war` (87), `iran-nuclear`, then
-`hormuz-conflict`. The reading that coined the second had `hormuz-threat` in
-front of it: a name seen in passing is not enough to get it reused.
+**One story, one name — v2.** v1 named stories as free text and coined four
+names for the US-Iran war (`hormuz-threat`, `iran-war`, `iran-nuclear`,
+`hormuz-conflict`), one with another in front of it. v2 lifts the names into a
+"Stories on record" list over fourteen days, with the reuse rule;
+above that it is v1 byte for byte, so judgements stay comparable (a test pins it).
 
 Developments group by **id**; fatigue and the board group by name.
-
-v2 lifts the names into a "Stories on record" list drawn from fourteen days,
-not the developments' 48 hours, so a story quiet for two days keeps its name on
-return, and states the reuse rule there. Above that the prompt is v1's byte for
-byte, so development judgements stay comparable; a test pins that.
 
 **v3 lets a split be mended.** Under v2 two names for one story stayed two,
 and a dormant one could return (`hormuz-conflict`, 18 September). v3 is v2 plus
@@ -285,9 +280,14 @@ covering readings stored before it, so the old name is free afterwards.
 **v7: one market, one session.** v6 but for v4's restating sentence, now
 bounded by market and trading session. Under v6 "US chip stocks fell 11%" was
 filed under a Seoul pause eleven hours old, and the page showed 4 while readings
-said 8 ([record](docs/prompt-evaluations/judge-v7.md)). The cap is now 3,200.
+said 8 ([record](docs/prompt-evaluations/judge-v7.md)).
 The judge carries a misfiling forward, so a re-report that was new is split
 off at `/admin`: a row moving the later readings filed with it (`src/splits.js`).
+
+**v8: a reading is filed by its lead.** v7 plus one paragraph: an item in a
+closing "as…" clause is context, and a result still to come is no occurrence.
+On 14–16 November each Nvidia results preview with a new "as" clause opened a
+development, and the timeline repeated it ([record](docs/prompt-evaluations/judge-v8.md)).
 
 **The caller is the judge for its own readings.** The judge prompt sits in the
 caller instructions after the rating prompt. After scoring and writing, the

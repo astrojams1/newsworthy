@@ -245,6 +245,31 @@ level, oil up 3% then 4%, restates its development only within one market and
 trading session. The same move in another market, or in a later session, is a
 later occurrence: a selloff in London and then in New York is two developments.`);
 
+/**
+ * v8 says a reading is filed by the news it leads with, and nothing else
+ * changes: v7 is kept byte-identical and one paragraph is appended.
+ *
+ * v5 and v7 made every later occurrence new, and the caller applied that to
+ * whatever a sentence named, including a closing clause. From 14 to 16
+ * November nearly every reading led "Nvidia reports results Nov 17, its first
+ * since its CEO quit/resigned" and added one item after "as": investors urging
+ * his return (1969), US draft chip limits for Southeast Asia (1997), the Nasdaq
+ * down 2% (2008), President Trump backing his return (2009). Each opened a
+ * development, so the timeline listed near-identical sentences one above the
+ * other, and each opened at 6 in a five-day-old story, which `fatigued()`
+ * barely discounts. The rater chose the lead; the judge files by it. A
+ * closing-clause item that is real news still moves the page: a level two
+ * clear of the development's usual one re-anchors it (`current.js`).
+ */
+const V8 = `${V7}
+
+A reading is filed by the news its sentence leads with. When the lead restates
+a recorded development, the reading reports that development even if a closing
+clause ("as…", "after…", "while…") names something that happened later: a
+clause added as context does not make a reading new. A result, vote or meeting
+still to come is not an occurrence, so a reading that leads with the same
+preview as a recorded development restates it.`;
+
 const REGISTRY = {
   1: { label: 'same-development-or-new-v1', added: '2026-09-04', text: V1 },
   2: { label: 'story-vocabulary-v2', added: '2026-09-04', text: V2 },
@@ -253,6 +278,7 @@ const REGISTRY = {
   5: { label: 'one-occurrence-v5', added: '2026-10-11', text: V5 },
   6: { label: 'slug-names-story-v6', added: '2026-10-30', text: V6 },
   7: { label: 'market-session-v7', added: '2026-11-05', text: V7 },
+  8: { label: 'lead-occurrence-v8', added: '2026-11-16', text: V8 },
 };
 
 export function judgeVersion() {
