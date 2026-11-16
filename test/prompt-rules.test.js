@@ -93,6 +93,7 @@ test('rule 6 — append-only: published versions are frozen', () => {
     [23, '51dc90c54eed7bad'],
     [24, 'a9791807609fb232'],
     [25, '8ad7f86da493eaea'],
+    [26, '1f0ae05c4d45e0ea'],
   ];
   for (const [version, hash] of pinned) {
     assert.equal(renderPrompt(version).hash, hash, `v${version} changed`);
@@ -154,8 +155,12 @@ test('rule 11 — before scheduled news, the sentence says what it will settle',
   // September consumer price figures today" eleven hours before the release and
   // stopped there: v21 had cut the forecast tail that used to carry the stake,
   // and nothing replaced it. A preview now leads with what the release settles.
+  // Since v26 only within a day of it: "Nvidia reports results Nov 17" led
+  // 42 readings from four days out, with what happened meanwhile in "as"
+  // clauses after it. Earlier, the sentence leads with what happened.
   const output = (t) => t.slice(t.indexOf('\nOutput\n'));
-  assert.match(output(renderPrompt(latestVersion()).text), /Before scheduled news, lead with what it will settle\./);
+  assert.match(output(renderPrompt(latestVersion()).text),
+    /Within a day of scheduled news, lead with what it will settle; earlier, with what happened\./);
 });
 
 test('rule 12 — dates, never relative days', () => {
@@ -523,4 +528,19 @@ test('v24 rules out relative days and changes nothing else that matters', async 
     .replace('(no year if this one, no weekdays)', '(no year if this one, no weekdays or relative days)'));
   const evaluation = await readFile('docs/prompt-evaluations/v24.md', 'utf8');
   assert.ok(evaluation.includes(v24.hash), 'the evaluation record names the shipped text');
+});
+
+test('v26 bounds the scheduled-news lead to a day and changes nothing else that matters', async () => {
+  // One clause changed; four phrases tightened to fit rule 7 without changing
+  // what they ask. Everything before Output is v25's.
+  const [v25, v26] = [25, 26].map(renderPrompt);
+  assert.equal(v26.text, v25.text
+    .replace('Before scheduled news, lead with what it will settle.',
+      'Within a day of scheduled news, lead with what it will settle; earlier, with what happened.')
+    .replace('Write calmly for a reader with no background:', 'Write calmly for a lay reader:')
+    .replace('At most one figure, in plain terms;', 'At most one figure, plainly;')
+    .replace('(no year if this one, no weekdays or relative days)', '(no current year, no weekdays or relative days)')
+    .replace('rating justification, advice.', 'score justification, advice.'));
+  const evaluation = await readFile('docs/prompt-evaluations/v26.md', 'utf8');
+  assert.ok(evaluation.includes(v26.hash), 'the evaluation record names the shipped text');
 });

@@ -872,11 +872,11 @@ on record. Output now asks who did what in active voice, or who claims it
 (rule 10); `scripts/passive-voice.mjs` flags agentless passives. See the
 [record](docs/prompt-evaluations/v22.md).
 
-**v23: a preview says what it will settle.** Reading 1209 announced the day's
-inflation report eleven hours early and stopped there: v21 had cut the forecast
-tail that carried a preview's stake. Output now asks scheduled news to lead with
-what it will settle (rule 11), tightened elsewhere to fit rule 7. See the
-[record](docs/prompt-evaluations/v23.md).
+**v23: a preview says what it will settle.** Reading 1209 announced an
+inflation report eleven hours early and stopped there; v21 had cut the tail
+carrying its stake. Output asks scheduled news to lead with what it will settle
+(rule 11; [record](docs/prompt-evaluations/v23.md)); v26 limits that to the
+last day ([record](docs/prompt-evaluations/v26.md)).
 
 **v24: dates, never relative days.** "10h ago: … due today" was written at
 9 p.m. Pacific the day before and read as overdue. The style line now rules
