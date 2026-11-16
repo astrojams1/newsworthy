@@ -380,11 +380,11 @@ The replay reads four weeks of rows for it, where it read three days before;
 developments themselves still compete for only `LOOKBACK_HOURS`.
 
 **A judge outage is "inherit", not "new".** A reading with `judge_version` null
-takes the previous reading's development rather than opening one, because an
-outage that reset the clock hourly would look exactly like a story that never
-ages. The score-only fallback still applies on top: a level two clear of the
-development's own level starts one. History from before the judge existed reads
-the same way until `/api/admin/judge` backfills it.
+takes a development rather than opening one (an hourly clock reset looks like a
+story that never ages), but only one it is about: the previous reading's if
+their words overlap (`INHERIT_MATCH`), else the closest within 48 hours, else
+its own. A level two clear of the development's starts one. Pre-judge history
+reads the same until `/api/admin/judge` backfills it.
 
 **The sentence comes from the newest reading.** When that reading opened a
 development of its own, the sentence leads with a bold **New:** for two hours

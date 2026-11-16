@@ -2,6 +2,9 @@ import { createHash } from 'node:crypto';
 import Anthropic from '@anthropic-ai/sdk';
 import { estimateCostUsd } from './pricing.js';
 import { effectiveConfig } from './config.js';
+import { contentWords, similarity } from './words.js';
+
+export { contentWords, similarity } from './words.js';
 
 /**
  * Which development a reading reports.
@@ -558,29 +561,6 @@ function normalizeJudgement(parsed) {
  * is exactly what makes it a good stand-in: the tests that matter drive the
  * grouping directly rather than relying on it.
  */
-const STOP = new Set(('the a an and or of to in on at for with after as by from into over under about '
-  + 'than that this these those its their his her is are was were be been has have had but not no more '
-  + 'most new still while amid across near').split(' '));
-
-export function contentWords(text) {
-  return new Set(
-    String(text ?? '')
-      .toLowerCase()
-      .replace(/[^a-z0-9$% ]+/g, ' ')
-      .split(/\s+/)
-      .filter((w) => w.length >= 3 && !STOP.has(w)),
-  );
-}
-
-export function similarity(a, b) {
-  const left = contentWords(a);
-  const right = contentWords(b);
-  let shared = 0;
-  for (const word of left) if (right.has(word)) shared += 1;
-  const union = left.size + right.size - shared;
-  return union === 0 ? 0 : shared / union;
-}
-
 const MOCK_THRESHOLD = 0.12;
 
 export function mockJudgement({ explanation, priors = [], stories = [] }) {

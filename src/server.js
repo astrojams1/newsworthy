@@ -736,8 +736,8 @@ const server = createServer(async (req, res) => {
           // was the text this server sent, rather than finding out never.
           prompt_verified: saved.prompt_verified ?? null,
           // What the reading was taken to report. 'unjudged' is its own answer:
-          // the reading is stored and displayed, the clock simply carries on
-          // from the reading before it; `judge_note` says why.
+          // the reading is stored and displayed, and the clock carries on from
+          // a recent development its sentence matches; `judge_note` says why.
           story: saved.story ?? null,
           development: saved.judge_version == null
             ? 'unjudged'

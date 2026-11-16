@@ -1,3 +1,5 @@
+import { similarity } from './words.js';
+
 /**
  * What the front page shows.
  *
@@ -155,18 +157,57 @@ export function agedScore(anchor, ageMs, halfLifeHours = DEFAULT_HALF_LIFE_HOURS
  *
  * A judged reading names it, or names itself by reporting a new one. An
  * unjudged reading — a judge outage, or history from before the judge existed —
- * inherits the previous reading's development rather than starting one, because
- * an outage that reset the clock every hour would look exactly like a story
- * that never ages. The score-only fallback still applies on top: a level two or
- * more above the development's own level is a break by the same margin the
- * shock rule uses, and starts a development.
+ * inherits a development rather than starting one, because an outage that
+ * reset the clock every hour would look exactly like a story that never ages.
+ * The score-only fallback still applies on top: a level two or more above the
+ * development's own level is a break by the same margin the shock rule uses,
+ * and starts a development.
+ *
+ * It inherits only a development it is about. Inheriting the previous
+ * reading's development blindly filed reading 1985, Iran firing drones at a US
+ * radar site on 15 November, under a run of Nvidia results previews, because
+ * an Nvidia reading came before it. So the reading's sentence has to share
+ * enough content words with the development's (`INHERIT_MATCH`): the previous
+ * reading's development first, as before; else the closest one seen within
+ * `INHERIT_HOURS`; else, matching nothing, it starts its own. Word overlap is
+ * too crude to judge with (story.js says why), but it is good enough to refuse
+ * a guess: over the 30 days to 16 November it kept 99% of judged re-reports
+ * with their development and passed 6% of readings from another story. A
+ * reading with no sentence to compare inherits as before.
  */
-function rootFor(point, previousRoot, level, anchor) {
+function rootFor(point, previousRoot, level, developments) {
   if (point.judge_version != null) return point.development_of ?? point.id;
   if (previousRoot == null) return point.id;
-  if (anchor != null && level - anchor >= SHOCK_MARGIN) return point.id;
-  return previousRoot;
+  const inherit = (root) => {
+    const anchor = developments.get(root)?.anchor;
+    return anchor != null && level - anchor >= SHOCK_MARGIN ? point.id : root;
+  };
+  if (!point.explanation) return inherit(previousRoot);
+
+  const match = (development) => Math.max(0,
+    ...(development?.sentences ?? []).map((sentence) => similarity(point.explanation, sentence)));
+  if (match(developments.get(previousRoot)) >= INHERIT_MATCH) return inherit(previousRoot);
+
+  let best = null;
+  let bestMatch = INHERIT_MATCH;
+  for (const [root, development] of developments) {
+    if (root === previousRoot || point.t - development.seen > INHERIT_HOURS * 3600_000) continue;
+    const m = match(development);
+    if (m >= bestMatch) [best, bestMatch] = [root, m];
+  }
+  return best == null ? point.id : inherit(best);
 }
+
+/** How much an unjudged reading's sentence must share with a development's to
+ *  inherit it: the overlap, in content words, of `similarity()` in words.js. */
+export const INHERIT_MATCH = 0.15;
+
+/** How far back an unjudged reading looks for a development it is about, when
+ *  the previous reading's is not one. The default development half-life. */
+const INHERIT_HOURS = 48;
+
+/** The sentences a development keeps to be matched against: its most recent. */
+const KEPT_SENTENCES = 24;
 
 /** How far back a development's usual level looks. Far inside the four weeks
  *  `/api/current` reads, so every caller of `replay()` holds the same levels
@@ -304,7 +345,7 @@ function replay(ascending, {
     const level = row.score;
 
     const id = point.id ?? i;
-    const root = rootFor({ ...point, id }, previousRoot, level, developments.get(previousRoot)?.anchor);
+    const root = rootFor({ ...point, id }, previousRoot, level, developments);
     previousRoot = root;
 
     let development = developments.get(root);
@@ -336,6 +377,10 @@ function replay(ascending, {
         // their recent median is what a later rise is measured against.
         levels: [{ t: point.t, level: opening }],
         story,
+        // What an unjudged reading is matched against before it inherits
+        // this development (see rootFor()), and when it was last reported.
+        sentences: [],
+        seen: point.t,
       };
       developments.set(root, development);
     } else if (levelBasis !== 'shock') {
@@ -388,6 +433,12 @@ function replay(ascending, {
       } else {
         development.levels.push({ t: point.t, level });
       }
+    }
+
+    development.seen = point.t;
+    if (point.explanation) {
+      development.sentences.push(point.explanation);
+      if (development.sentences.length > KEPT_SENTENCES) development.sentences.shift();
     }
 
     const loudest = loudestAt(developments, point.t, halfLifeHours);
