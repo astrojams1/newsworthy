@@ -16,6 +16,7 @@ import { appStoreUrl, website, privacyUrl, supportUrl } from '@/lib/config';
 import { Timeline } from '@/components/timeline';
 import { useTimeline } from '@/lib/use-timeline';
 import { usePreferences } from '@/components/preferences-provider';
+import { ratingAfterShare } from '@/lib/rating-moment';
 
 // The sentence and the timeline share one column, scaled with the text size:
 // 320pt on an upright phone; 360pt turned, a little wider so the text sits
@@ -176,7 +177,11 @@ export default function Home() {
         if (navigator.share) await navigator.share({ title: 'Newsworthy', text: message });
         else { await navigator.clipboard.writeText(message); setShareNotice('Reading copied.'); }
       }
-      else await Share.share({ title: 'Newsworthy', message });
+      else {
+        const result = await Share.share({ title: 'Newsworthy', message });
+        // A share that went through is the app's good moment for the store's rating prompt (lib/rating-moment.ts).
+        if (result.action === Share.sharedAction) void ratingAfterShare();
+      }
     } catch (error) {
       if (!(error instanceof Error && error.name === 'AbortError')) setShareNotice('Sharing is unavailable. Please try again.');
     }
