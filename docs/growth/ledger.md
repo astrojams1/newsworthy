@@ -45,7 +45,10 @@ Open:
 
 Decided:
 
-- An in-app ratings prompt (StoreKit `requestReview`): no (owner, 2026-10-21).
+- An in-app ratings prompt (StoreKit `requestReview`): yes, Apple's own prompt
+  after a completed share (owner, 2026-11-18: "Yes, every app"; shown his
+  2026-10-21 no the same day, he answered "Keep it in Newsworthy"). Shipped in
+  astrojams1/newsworthy#283.
 - Live Activities for a big development: no (owner, 2026-10-21).
 - An in-app event for a news moment the app covers, such as election night:
   no (owner, 2026-10-21). In-app events stay for real app updates.
@@ -104,7 +107,7 @@ and the native widget's source, and against Apple's current offer
 | Marketing tools (badge, QR, short link) | Not used: the website has no App Store link at all |
 | Smart App Banner | Missing from the web app's head (`apps/client/app/+html.tsx`) |
 | `public/llms.txt` | Stale: says the iOS app is "in preparation" and store pricing "not yet confirmed" |
-| Ratings and reviews | No in-app prompt (product decision); no reviews yet to reply to |
+| Ratings and reviews | Apple's own prompt after a completed share (owner, 2026-11-18), in the next build; no reviews yet to reply to |
 | Platform features | Home Screen widgets, small and medium. No Lock Screen widgets, Control Center control, App Intents or Siri, Apple Watch, or Live Activities |
 
 **Status.** Done.
