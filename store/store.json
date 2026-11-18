@@ -14,6 +14,7 @@
     "privacyPolicyUrl": "https://newsworthy-indol.vercel.app/privacy",
     "copyright": "2026 James Thompson",
     "primaryCategory": "NEWS",
+    "secondaryCategory": "LIFESTYLE",
     "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
     "releaseType": "AFTER_APPROVAL",
     "localizations": {
