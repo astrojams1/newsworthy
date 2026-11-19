@@ -328,5 +328,92 @@
     "waived": {
       "nomination": "Not sent: asc.mjs nominate --confirm needs the owner's approval of wording that goes to Apple's editors, and the unattended review schedule may not send messages."
     }
+  },
+  "appPrivacy": {
+    "collected": [
+      {
+        "type": "Device ID",
+        "purposes": [
+          "App Functionality"
+        ],
+        "linked": true,
+        "tracking": false,
+        "why": "declared in the privacy manifest and on the published label (2026-11-19)"
+      },
+      {
+        "type": "Other Data Types",
+        "purposes": [
+          "App Functionality"
+        ],
+        "linked": true,
+        "tracking": false,
+        "why": "declared in the privacy manifest and on the published label (2026-11-19)"
+      },
+      {
+        "type": "Performance Data",
+        "purposes": [
+          "App Functionality"
+        ],
+        "linked": true,
+        "tracking": false,
+        "why": "declared in the privacy manifest and on the published label (2026-11-19)"
+      },
+      {
+        "type": "Other Diagnostic Data",
+        "purposes": [
+          "App Functionality"
+        ],
+        "linked": true,
+        "tracking": false,
+        "why": "declared in the privacy manifest and on the published label (2026-11-19)"
+      },
+      {
+        "type": "Product Interaction",
+        "purposes": [
+          "Analytics"
+        ],
+        "linked": false,
+        "tracking": false,
+        "why": "first-launch: one anonymous first-open count (app, version, platform, channel) sent to astrojams-apps /api/launch"
+      }
+    ],
+    "published": {
+      "checked": "2026-11-19",
+      "url": "https://apps.apple.com/us/app/id6812519450",
+      "collected": [
+        {
+          "type": "Device ID",
+          "purposes": [
+            "App Functionality"
+          ],
+          "linked": true,
+          "tracking": false
+        },
+        {
+          "type": "Other Data Types",
+          "purposes": [
+            "App Functionality"
+          ],
+          "linked": true,
+          "tracking": false
+        },
+        {
+          "type": "Other Diagnostic Data",
+          "purposes": [
+            "App Functionality"
+          ],
+          "linked": true,
+          "tracking": false
+        },
+        {
+          "type": "Performance Data",
+          "purposes": [
+            "App Functionality"
+          ],
+          "linked": true,
+          "tracking": false
+        }
+      ]
+    }
   }
 }
