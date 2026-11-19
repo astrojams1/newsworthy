@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-11-14T17:27:33+00:00
+Updated: 2026-11-19T18:36:08+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -22,12 +22,12 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.dsa | done | user | observed | 2026-09-16 | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
 | apple.privacy | done | agent | observed | 2026-09-23 | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | 2026-09-16 | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
-| apple.listing | done | agent | observed | 2026-10-01 | Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording. | — |
-| apple.build | done | agent | observed | 2026-09-23 | Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled. | — |
+| apple.listing | done | agent | observed | 2026-11-19 | 1.0.4 listing saved and read back: en-US What's New names the rating prompt; 24 listing languages created (App Info and version localizations) with What's New for 1.0.4; review notes 3,933 chars saved; screenshots, previews, header and search creative carried over unchanged (no screen changed); secondary category Lifestyle | — |
+| apple.build | done | agent | observed | 2026-11-19 | 1.0.4 build 34 archived locally from clean merge commit 4c81e64b5f77fa4ac0fbdc9f434a57d9312d12d8 (Xcode 27A9275, iphoneos27.1); validate VERIFY SUCCEEDED | — |
 | apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
-| apple.upload | done | agent | observed | 2026-11-14 | 1.0.3 (33) uploaded from aea5a9b; processed VALID | — |
+| apple.upload | done | agent | observed | 2026-11-19 | Build 34 uploaded with altool; App Store Connect processed it VALID, USESNONEXEMPTENCRYPTION 0 | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | 2026-11-14 | 1.0.3 build 33 (from aea5a9b; main 17d017b has the same app source) submitted as 784b3986, AFTER_APPROVAL; version and submission read WAITING_FOR_REVIEW 2026-11-14T17:27Z, attached build 33 VALID. Unattended daily run. | Apple reviews; it publishes on approval. |
+| apple.review | waiting_provider | provider | observed | 2026-11-19 | 1.0.4 build 34 submitted as 13d98e06-7b11-49a1-b40a-1c77da90c672 at 2026-11-19T18:34:49Z; version and submission WAITING_FOR_REVIEW; releaseType AFTER_APPROVAL | Apple reviews; it publishes on approval. Read asc.mjs status until Apple decides. |
 | apple.release | done | provider | observed | 2026-10-21 | 2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live. | — |
 | google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
@@ -49,7 +49,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.review-access | done | agent | observed | 2026-09-17 | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | 2026-10-01 | Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo. | — |
 | apple.physical-recording | done | agent | observed | 2026-09-17 | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
-| apple.testflight | done | agent | observed | 2026-11-14 | Build 33 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester; supersedes 31 and 32 | — |
+| apple.testflight | done | agent | observed | 2026-11-19 | Build 34 in Release QA (internal), IN_BETA_TESTING, 1 tester. The app has no external TestFlight group, so no Beta App Review | — |
 | google.large-text-build | done | agent | observed | 2026-09-17 | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
 | google.offline | done | agent | observed | 2026-09-17 | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
 | apple.header-background | done | agent | observed | 2026-09-17 | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
@@ -110,6 +110,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | issue.consumer-command-cwd | done | agent | observed | 2026-10-26 | Canonical empty submodule state and original clean source restored; corrected isolated initialization and app-root metadata read verified. | — |
 | issue.copy-review-table | done | agent | observed | 2026-10-26 | Separating blank line removed before committed head; independent current-head readback confirms the new row is contiguous with its Markdown table. | — |
 | issue.review-notes-length | done | agent | observed | 2026-11-14 | 1.0.3 Review Notes were 4,216 characters; App Store Connect refused review-details with 409 TOO_LONG (limit 4,000) before any write. Cut to 3,893 with no claim changed, and npm test now runs store/scripts/validate.mjs (#276). review-details then saved and read back. | — |
+| issue.localized-whatsnew-1.0.4 | done | agent | observed | 2026-11-19 | The 24 listing languages' What's New drafts (2026-11-18) said the app had not changed, false for 1.0.4. #287 rewrote each to name the rating prompt and the new language page; listing saved and read back all 24 | — |
 
 ## Product verification gates
 
@@ -142,6 +143,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | ui.send-feedback | waiting_verification | agent | observed | 2026-11-07 | Send Feedback added to Settings on iOS and Android. Release simulator, iOS 27.0, iPhone 16 Pro Max and iPad Pro 13: UI test taps the row and sees the address with Copy. | Not exercised: the mail composer itself (simulator has no account) and Android. |
 | story-updates.native | waiting_verification | agent | observed | 2026-11-14 | Release simulator build of 17d017b (app source identical to build 33's aea5a9b), iPhone 17 Pro Max iOS 27.0: XCUITest tour passed; the FAA Outage entry showed its update below the rated sentence behind a thin rule with an 'Update · 16h ago' caption, accessibility label 'Updated 16h ago: …'; reading and Settings (Send Feedback) present. Simulator evidence, not device. | Not exercised natively: Update: label on the reading and widgets (needs a live new development in a known story); Android needs its next build. |
 | media.update-recheck | done | agent | observed | 2026-11-14 | 1.0.3 media recheck: screenshots (v26), the 1.0.1 iPhone and iPad previews, header and search creative kept. Build 33's timeline adds an optional update block below an entry and an optional Update: label; entries without an update and the reading render as in the captures, so nothing shown is gone or changed. Listing copy (description with story updates, What's New) saved and read back on 1.0.3; the preview and creative placements carried to 1.0.3 (assets place found none missing). | Optional: a timeline screenshot showing an update block, from the native capture in /Volumes/ssd/builds/newsworthy/qa-1.0.3-review-20261114/shots, with the next gallery refresh. |
+| rating.native | done | agent | observed | 2026-11-19 | Release simulator build of 4c81e64 (1.0.4) on iOS 27.0 iPhone clone, rating state seeded one share from due: completed share (Copy) showed the App Store's own 'Enjoying Newsworthy?' prompt once; a second share showed none; onboarding, reading and Settings > Send Feedback present. Simulator only; Apple decides whether the sheet appears in store builds | — |
 
 ## Evidence and history
 
@@ -4601,3 +4603,62 @@ Next: Optional: a timeline screenshot showing an update block, from the native c
 - /Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-submit.txt
 
 Next: Apple reviews; it publishes on approval.
+
+### 472. apple.build — done
+
+2026-11-19T18:35:49+00:00 · observed · agent
+
+1.0.4 build 34 archived locally from clean merge commit 4c81e64b5f77fa4ac0fbdc9f434a57d9312d12d8 (Xcode 27A9275, iphoneos27.1); validate VERIFY SUCCEEDED
+
+- /Volumes/ssd/builds/xcode/newsworthy/release/34/summary.json sha256 04e0175b6e0fccbe8ce634e6f78acc41bf3fbf2b07d4ce4ed427fd48d606246e
+
+### 473. apple.upload — done
+
+2026-11-19T18:35:49+00:00 · observed · agent
+
+Build 34 uploaded with altool; App Store Connect processed it VALID, USESNONEXEMPTENCRYPTION 0
+
+- asc.mjs status 2026-11-19: build 34 VALID
+
+### 474. apple.testflight — done
+
+2026-11-19T18:35:49+00:00 · observed · agent
+
+Build 34 in Release QA (internal), IN_BETA_TESTING, 1 tester. The app has no external TestFlight group, so no Beta App Review
+
+- ios-release.mjs testers 34 2026-11-19
+
+### 475. rating.native — done
+
+2026-11-19T18:35:49+00:00 · observed · agent
+
+Release simulator build of 4c81e64 (1.0.4) on iOS 27.0 iPhone clone, rating state seeded one share from due: completed share (Copy) showed the App Store's own 'Enjoying Newsworthy?' prompt once; a second share showed none; onboarding, reading and Settings > Send Feedback present. Simulator only; Apple decides whether the sheet appears in store builds
+
+- /Volumes/ssd/builds/newsworthy/qa-1.0.4-review-20261119/tour-iphone.xcresult
+
+### 476. apple.listing — done
+
+2026-11-19T18:35:50+00:00 · observed · agent
+
+1.0.4 listing saved and read back: en-US What's New names the rating prompt; 24 listing languages created (App Info and version localizations) with What's New for 1.0.4; review notes 3,933 chars saved; screenshots, previews, header and search creative carried over unchanged (no screen changed); secondary category Lifestyle
+
+- asc.mjs listing/review-details/status 2026-11-19: localizations 1.0.4 all 24 match store data
+
+### 477. apple.review — waiting_provider
+
+2026-11-19T18:35:50+00:00 · observed · provider
+
+1.0.4 build 34 submitted as 13d98e06-7b11-49a1-b40a-1c77da90c672 at 2026-11-19T18:34:49Z; version and submission WAITING_FOR_REVIEW; releaseType AFTER_APPROVAL
+
+- asc.mjs status and review-sweep sweep 2026-11-19 after submit
+
+Next: Apple reviews; it publishes on approval. Read asc.mjs status until Apple decides.
+
+### 478. issue.localized-whatsnew-1.0.4 — done
+
+2026-11-19T18:36:08+00:00 · observed · agent
+
+The 24 listing languages' What's New drafts (2026-11-18) said the app had not changed, false for 1.0.4. #287 rewrote each to name the rating prompt and the new language page; listing saved and read back all 24
+
+- https://github.com/astrojams1/newsworthy/pull/287
+- asc.mjs status 2026-11-19: localizations 1.0.4 all 24 match store data

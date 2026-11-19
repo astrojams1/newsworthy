@@ -102,8 +102,8 @@ performed and remaining device/assistive-technology release checks.
 
 **Release status.** Newsworthy for iPhone and iPad has been
 [on the App Store](https://apps.apple.com/app/id6812519450) since 21 October
-2026, at version 1.0.3 (build 33, story updates) by 19 November; 1.0.4, which may
-ask for a rating after a completed share, is being prepared for App Review; a one-time US$1 download with local store equivalents in all 175
+2026, at version 1.0.3 (build 33, story updates) by 19 November; 1.0.4 (build 34), which may
+ask for a rating after a completed share, has been waiting for App Review since 19 November; a one-time US$1 download with local store equivalents in all 175
 territories. Android is not public: version 17 is on Google Play closed testing,
 and production access has not been applied for. The
 [store release hub](store/README.md) keeps listing copy, screenshots, editable
