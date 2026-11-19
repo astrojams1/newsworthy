@@ -46,9 +46,10 @@ export type FirstLaunchPlatform = {
 
 export type FirstLaunchEvent = { app: string; version: string; platform: string; channel: FirstLaunchChannel };
 
-// The event, and the only data the request carries.
+// The event, and the only data the request carries. A forced send (checking the standard) is always `debug`, so it
+// never counts as an install, whatever build or device it came from.
 export function firstLaunchEvent(app: string, platform: FirstLaunchPlatform): FirstLaunchEvent {
-  return { app, version: platform.version, platform: platform.platform, channel: platform.channel };
+  return { app, version: platform.version, platform: platform.platform, channel: platform.force ? 'debug' : platform.channel };
 }
 
 // A status that settles it: taken (2xx) or refused for good (4xx other than 408 and 429). Anything else is tried again.
