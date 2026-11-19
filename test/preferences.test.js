@@ -81,7 +81,8 @@ test('the website shows the appearance choice and no notification setting', () =
 test('the overview is a list of pages, each with an icon, its current value and a chevron', () => {
   for (const platform of ['web', 'ios', 'android']) for (const [stored, value] of [[{}, 'Off'], [{ theme: 'dark', notifications: { enabled: true, threshold: 9, token: 'ExponentPushToken[x]' } }, '9 or higher']]) {
     const all = nodes(renderSettings({ platform, stored }).tree);
-    const links = all.filter(n => n.type === 'Link' && n.props.href.startsWith('/settings/') && !n.props.href.endsWith('/publisher'));
+    // Publisher and More apps open from About, not Preferences.
+    const links = all.filter(n => n.type === 'Link' && n.props.href.startsWith('/settings/') && !n.props.href.endsWith('/publisher') && !n.props.href.endsWith('/more-apps'));
     const expected = platform === 'web' ? ['/settings/appearance'] : ['/settings/appearance', '/settings/notifications'];
     assert.deepEqual(links.map(n => n.props.href), expected);
     const rows = links.map(n => nodes(n).find(c => c.type === 'Pressable'));

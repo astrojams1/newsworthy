@@ -27,6 +27,8 @@ export function renderLayout({ platform = 'ios', dark = false, score = 3 } = {})
     '../../../public/favicon': {},
     'expo-router': { useRouter: () => ({ replace() {} }), Stack: Object.assign(() => {}, { Screen: 'Screen' }), ThemeProvider: 'ThemeProvider', DefaultTheme: navigationTheme(false), DarkTheme: navigationTheme(true) },
     '@/lib/push': { onNotificationOpen: () => () => {} },
+    // The shared first-launch count runs from an effect, which these renders never run (lib/first-launch-start.ts).
+    '@/lib/first-launch-start': { startFirstLaunch() {} },
     'expo-status-bar': { StatusBar: 'StatusBar' },
     '@/lib/theme': { useTheme: () => theme },
     '@/lib/header-edges': headerEdges(platform),
