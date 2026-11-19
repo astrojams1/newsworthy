@@ -10,6 +10,13 @@ that every console questionnaire has been submitted.
 - A last-known reading is stored locally in AsyncStorage/native widget caches.
   It retains its timestamp and is not uploaded as a user activity history.
 - The source has no accounts, advertising SDK, tracking SDK, or app analytics SDK.
+- **First-launch count (owner, 2026-11-19: "Yes, every app"):** the iPhone/iPad app
+  sends one POST on its first open to astrojams-apps.vercel.app/api/launch with
+  app id, version, platform and channel, no identifier; the server keeps only a
+  daily count and stores no IP. App Privacy must add **Product Interaction**,
+  **Analytics**, **not linked**, **not tracking** (beside the four published
+  categories) before the first build carrying `lib/first-launch-start.ts` is
+  submitted; the privacy manifest in `app.config.js` already declares it.
 - **Live Vercel dashboard:** project overview offers “Enable Analytics”, so
   Vercel Web Analytics is not enabled. Observability Plus is also offered as an
   upgrade. Runtime logs are present for `/api/current` with timestamps,

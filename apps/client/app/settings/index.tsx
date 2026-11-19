@@ -13,13 +13,17 @@ import { Toggle } from '@/components/toggle';
 import { useCurrentReading } from '@/components/reading-provider';
 import { checkedAgo } from '@/lib/story-age';
 import { openFeedback } from '@/lib/send-feedback';
+import { MORE_APPS_TITLE, moreAppsFor } from '@/lib/moreApps';
 
 const ABOUT_LINKS = [['Privacy', privacyUrl, 'privacy'], ['Support', supportUrl, 'support']] as const;
 // The Publisher row follows the two links (the web test measures their arrows at
 // fixed positions); Send Feedback and the introduction, which opens over Settings
 // and returns here on closing, are the phone apps' only.
 const FEEDBACK_INDEX = ABOUT_LINKS.length + 1;
-const INTRODUCTION_INDEX = FEEDBACK_INDEX + 1;
+// The shared More apps row (app-release standards): the owner's other apps, iPhone and iPad only, after Send
+// Feedback; the introduction stays last.
+const MORE_APPS_INDEX = FEEDBACK_INDEX + 1;
+const INTRODUCTION_INDEX = MORE_APPS_INDEX + 1;
 
 export default function Settings() {
   const theme = useTheme();
@@ -85,6 +89,11 @@ export default function Settings() {
         {process.env.EXPO_OS !== 'web' && <Pressable testID="feedback-row" accessibilityRole="button" accessibilityLabel="Send Feedback" accessibilityHint="Opens an email to Newsworthy" onPress={() => { void openFeedback(); }} style={rowStyle()}>
           <RowContent index={FEEDBACK_INDEX} icon="feedback" label="Send Feedback" trailing={<Trailing to="external" />} />
         </Pressable>}
+        {moreAppsFor(process.env.EXPO_OS || '', 'com.astrojams.newsworthy').length > 0 && <Link href="/settings/more-apps" asChild>
+          <Pressable testID="more-apps" accessibilityRole="button" accessibilityLabel={MORE_APPS_TITLE} style={rowStyle()}>
+            <RowContent index={MORE_APPS_INDEX} icon="moreApps" label={MORE_APPS_TITLE} trailing={<Trailing to="page" />} />
+          </Pressable>
+        </Link>}
         {process.env.EXPO_OS !== 'web' && <Link href="/onboarding" asChild>
           <Pressable testID="introduction-row" accessibilityRole="button" accessibilityLabel="Introduction" accessibilityHint="Replays the introduction" style={rowStyle()}>
             <RowContent index={INTRODUCTION_INDEX} icon="introduction" label="Introduction" trailing={<Trailing to="page" />} />

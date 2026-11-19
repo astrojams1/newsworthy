@@ -105,6 +105,10 @@ from prompt v19). Copy must not promise sources or credit outlets in it.
   and never as available until a build carrying it has been verified.
 - The Privacy and Support links live in Settings, not on the reading screen.
   So does Publisher (Settings → Publisher): who publishes and edits, that readings are Newsworthy's own and not republished articles, and a contact email. It never mentions how ratings are produced and never names outlets.
+- Settings → More apps (iPhone and iPad app only) lists the developer's other live apps with their App Store links: the
+  shared app-release standard the owner approved for every app on 2026-11-19 ("Yes, every app"). It is a plain list,
+  not a promotion: never a badge, a pop-up or a prompt. The app also sends one anonymous first-open count (no
+  identifier); the privacy page describes it, and copy never says the app sends nothing.
 - The introduction (`apps/client/lib/onboarding.js`) restates the core copy in
   a few plain sentences: a score of consequence. Like all
   user-facing copy it does not mention AI. By the owner's choice it does not

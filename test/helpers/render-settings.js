@@ -82,6 +82,8 @@ export function renderSettings({ platform, screen = 'index', width = 390, height
     '@/lib/send-feedback': { openFeedback: () => {} },
     '@/lib/config': { privacyUrl: '/privacy', supportUrl: '/support' },
   };
+  // The shared More apps list runs as shipped, with its generated catalogue.
+  mocks['@/lib/moreApps'] = load(read('lib/moreApps.ts'), { './moreAppsCatalog': load(read('lib/moreAppsCatalog.ts'), {}, platform) }, platform);
   mocks['@/components/settings-list'] = load(listOverride ?? read('components/settings-list.tsx'), mocks, platform);
   mocks['@/components/alert-feedback'] = load(read('components/alert-feedback.tsx'), mocks, platform);
   const exports = load(sourceOverride ?? read(SETTINGS_SCREENS[screen]), mocks, platform);

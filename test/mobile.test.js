@@ -84,7 +84,7 @@ test('the new-development flag survives API normalization and offline cache stor
   assert.equal(odd.explanation_label, undefined, 'only the two labels are kept');
 });
 
-test('packaged privacy declarations include requested notifications and hosting diagnostics without tracking', async () => {
+test('packaged privacy declarations include requested notifications, hosting diagnostics and the first-open count without tracking', async () => {
   const { createRequire } = await import('node:module');
   const config = createRequire(import.meta.url)('../apps/client/app.config.js');
   const privacy = config.ios.privacyManifests;
@@ -92,8 +92,14 @@ test('packaged privacy declarations include requested notifications and hosting 
   assert.deepEqual(privacy.NSPrivacyCollectedDataTypes.map(d => d.NSPrivacyCollectedDataType).sort(), [
     'NSPrivacyCollectedDataTypeDeviceID', 'NSPrivacyCollectedDataTypeOtherDataTypes',
     'NSPrivacyCollectedDataTypeOtherDiagnosticData', 'NSPrivacyCollectedDataTypePerformanceData',
+    'NSPrivacyCollectedDataTypeProductInteraction',
   ]);
-  for (const data of privacy.NSPrivacyCollectedDataTypes) {
+  // The shared first-launch count: one anonymous event, so not linked, for analytics.
+  const firstOpen = privacy.NSPrivacyCollectedDataTypes.find(d => d.NSPrivacyCollectedDataType === 'NSPrivacyCollectedDataTypeProductInteraction');
+  assert.equal(firstOpen.NSPrivacyCollectedDataTypeLinked, false);
+  assert.equal(firstOpen.NSPrivacyCollectedDataTypeTracking, false);
+  assert.deepEqual(firstOpen.NSPrivacyCollectedDataTypePurposes, ['NSPrivacyCollectedDataTypePurposeAnalytics']);
+  for (const data of privacy.NSPrivacyCollectedDataTypes.filter(d => d !== firstOpen)) {
     assert.equal(data.NSPrivacyCollectedDataTypeLinked, true);
     assert.equal(data.NSPrivacyCollectedDataTypeTracking, false);
     assert.deepEqual(data.NSPrivacyCollectedDataTypePurposes, ['NSPrivacyCollectedDataTypePurposeAppFunctionality']);

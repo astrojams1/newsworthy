@@ -18,7 +18,12 @@ module.exports = {
         NSPrivacyCollectedDataType: `NSPrivacyCollectedDataType${type}`,
         NSPrivacyCollectedDataTypeLinked: true, NSPrivacyCollectedDataTypeTracking: false,
         NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-      })),
+      })).concat([{
+        // The shared first-launch count (lib/first-launch-start.ts): one anonymous event on first open, no identifier.
+        NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeProductInteraction',
+        NSPrivacyCollectedDataTypeLinked: false, NSPrivacyCollectedDataTypeTracking: false,
+        NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAnalytics'],
+      }]),
       NSPrivacyAccessedAPITypes: [{ NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults', NSPrivacyAccessedAPITypeReasons: ['CA92.1', '1C8F.1'] }] } },
   android: { package: release.appId,
     // The shared app-release skill's android-release.mjs sets the store version code, Play's highest

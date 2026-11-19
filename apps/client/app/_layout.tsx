@@ -8,11 +8,14 @@ import { onNotificationOpen } from '@/lib/push';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/lib/theme';
 import { headerEdges } from '@/lib/header-edges';
+import { startFirstLaunch } from '@/lib/first-launch-start';
 // A deep link or a cold start on /settings still gets the reading screen
 // underneath it, so the native back button exists rather than depending on
 // how the screen was reached.
 export const unstable_settings = { initialRouteName: 'index' };
 export default function Layout() {
+  // The shared first-launch count: one anonymous event, once per install, never awaited.
+  useEffect(() => { startFirstLaunch(); }, []);
   return <PreferencesProvider><ReadingProvider><ThemedLayout /></ReadingProvider></PreferencesProvider>;
 }
 function ThemedLayout() {
