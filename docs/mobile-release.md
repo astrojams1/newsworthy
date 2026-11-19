@@ -107,6 +107,7 @@ node vendor/skills/skills/app-release/scripts/ios-release.mjs archive           
 node vendor/skills/skills/app-release/scripts/ios-release.mjs validate <N>        # optional: Apple's checks, no upload
 node vendor/skills/skills/app-release/scripts/ios-release.mjs upload <N>          # altool upload, waits for processing
 node vendor/skills/skills/app-release/scripts/ios-release.mjs testers <N>         # add the VALID build to Release QA
+node vendor/skills/skills/app-release/scripts/ios-release.mjs beta-group <N> --group NAME --what-to-test FILE   # an external group
 node vendor/skills/skills/app-release/scripts/ios-release.mjs release             # archive, upload and testers in one run
 ```
 
@@ -137,9 +138,13 @@ node vendor/skills/skills/app-release/scripts/ios-release.mjs release           
   `.ipa` and `summary.json` (commit, dirty flag, Xcode build, SDK and the
   `.ipa`'s SHA-256) for the build ledger.
 
-An upload is outward-facing: confirm each one with the owner, and record it in
-`store/builds/ledger.md` and the release ledger. Selecting a build for App
-Review and resubmitting stay separate steps (see the app release skill).
+TestFlight never waits on the owner (James, 2026-11-19: "why is uploading to
+testflight waiting on me? it shouldnt be."). Once a build is archived and
+validated and its checks pass, upload it, add it to Release QA with `testers`
+and to any external group with `beta-group` (What to Test and Beta App
+Review), then report it and record it in `store/builds/ledger.md` and the
+release ledger. Selecting a build for App Review and resubmitting stay
+separate steps that keep their approval (see the app release skill).
 
 ## Local Android release
 
