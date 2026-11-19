@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-11-14T17:27:33+00:00",
+  "updated_at": "2026-11-19T18:36:08+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -125,23 +125,23 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Current description, promotional text, keywords, URLs and six-part Notes saved/read back. Eight screenshots COMPLETE; Notes cover timeline, notifications and per-widget settings and honestly label the historical physical recording.",
+      "summary": "1.0.4 listing saved and read back: en-US What's New names the rating prompt; 24 listing languages created (App Info and version localizations) with What's New for 1.0.4; review notes 3,933 chars saved; screenshots, previews, header and search creative carried over unchanged (no screen changed); secondary category Lifestyle",
       "evidence": [
-        "store/apple-review-resubmission-2026-10-01-build26.json; store/apple-gallery26-verification.json; store/source/ios-gallery-v26-provenance.json"
+        "asc.mjs listing/review-details/status 2026-11-19: localizations 1.0.4 all 24 match store data"
       ],
       "next_action": "",
-      "updated_at": "2026-10-01T11:40:49+00:00"
+      "updated_at": "2026-11-19T18:35:50+00:00"
     },
     "apple.build": {
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Production iOS build 21 finished from 2d7f56d, matching merged PR127 application source. App and widget versions, production push entitlement, provisioning profiles, App Groups, privacy manifest, ZIP integrity and code signatures verified. Build 20 is canceled.",
+      "summary": "1.0.4 build 34 archived locally from clean merge commit 4c81e64b5f77fa4ac0fbdc9f434a57d9312d12d8 (Xcode 27A9275, iphoneos27.1); validate VERIFY SUCCEEDED",
       "evidence": [
-        "store/testflight-21.json"
+        "/Volumes/ssd/builds/xcode/newsworthy/release/34/summary.json sha256 04e0175b6e0fccbe8ce634e6f78acc41bf3fbf2b07d4ce4ed427fd48d606246e"
       ],
       "next_action": "",
-      "updated_at": "2026-09-23T23:29:06+00:00"
+      "updated_at": "2026-11-19T18:35:49+00:00"
     },
     "apple.native": {
       "state": "done",
@@ -158,12 +158,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "1.0.3 (33) uploaded from aea5a9b; processed VALID",
+      "summary": "Build 34 uploaded with altool; App Store Connect processed it VALID, USESNONEXEMPTENCRYPTION 0",
       "evidence": [
-        "/Volumes/ssd/builds/xcode/newsworthy/release/33/summary.json sha256 db1653a0…401b"
+        "asc.mjs status 2026-11-19: build 34 VALID"
       ],
       "next_action": "",
-      "updated_at": "2026-11-14T09:59:06+00:00"
+      "updated_at": "2026-11-19T18:35:49+00:00"
     },
     "apple.availability": {
       "state": "done",
@@ -180,13 +180,12 @@
       "state": "waiting_provider",
       "owner": "provider",
       "basis": "observed",
-      "summary": "1.0.3 build 33 (from aea5a9b; main 17d017b has the same app source) submitted as 784b3986, AFTER_APPROVAL; version and submission read WAITING_FOR_REVIEW 2026-11-14T17:27Z, attached build 33 VALID. Unattended daily run.",
+      "summary": "1.0.4 build 34 submitted as 13d98e06-7b11-49a1-b40a-1c77da90c672 at 2026-11-19T18:34:49Z; version and submission WAITING_FOR_REVIEW; releaseType AFTER_APPROVAL",
       "evidence": [
-        "/Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-post-submit-readback.json",
-        "/Volumes/ssd/projects/app-release-daily/evidence/app-review-daily-20261114T170544Z-newsworthy-submit.txt"
+        "asc.mjs status and review-sweep sweep 2026-11-19 after submit"
       ],
-      "next_action": "Apple reviews; it publishes on approval.",
-      "updated_at": "2026-11-14T17:27:33+00:00"
+      "next_action": "Apple reviews; it publishes on approval. Read asc.mjs status until Apple decides.",
+      "updated_at": "2026-11-19T18:35:50+00:00"
     },
     "apple.release": {
       "state": "done",
@@ -489,12 +488,12 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 33 (1.0.3) is in Release QA, internal IN_BETA_TESTING, 1 tester; supersedes 31 and 32",
+      "summary": "Build 34 in Release QA (internal), IN_BETA_TESTING, 1 tester. The app has no external TestFlight group, so no Beta App Review",
       "evidence": [
-        "ios-release.mjs testers 33: Release QA, IN_BETA_TESTING"
+        "ios-release.mjs testers 34 2026-11-19"
       ],
       "next_action": "",
-      "updated_at": "2026-11-14T09:59:06+00:00"
+      "updated_at": "2026-11-19T18:35:49+00:00"
     },
     "google.large-text-build": {
       "state": "done",
@@ -1317,6 +1316,29 @@
       ],
       "next_action": "Optional: a timeline screenshot showing an update block, from the native capture in /Volumes/ssd/builds/newsworthy/qa-1.0.3-review-20261114/shots, with the next gallery refresh.",
       "updated_at": "2026-11-14T17:27:32+00:00"
+    },
+    "rating.native": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Release simulator build of 4c81e64 (1.0.4) on iOS 27.0 iPhone clone, rating state seeded one share from due: completed share (Copy) showed the App Store's own 'Enjoying Newsworthy?' prompt once; a second share showed none; onboarding, reading and Settings > Send Feedback present. Simulator only; Apple decides whether the sheet appears in store builds",
+      "evidence": [
+        "/Volumes/ssd/builds/newsworthy/qa-1.0.4-review-20261119/tour-iphone.xcresult"
+      ],
+      "next_action": "",
+      "updated_at": "2026-11-19T18:35:49+00:00"
+    },
+    "issue.localized-whatsnew-1.0.4": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "The 24 listing languages' What's New drafts (2026-11-18) said the app had not changed, false for 1.0.4. #287 rewrote each to name the rating prompt and the new language page; listing saved and read back all 24",
+      "evidence": [
+        "https://github.com/astrojams1/newsworthy/pull/287",
+        "asc.mjs status 2026-11-19: localizations 1.0.4 all 24 match store data"
+      ],
+      "next_action": "",
+      "updated_at": "2026-11-19T18:36:08+00:00"
     }
   },
   "events": [
@@ -8839,6 +8861,119 @@
         ],
         "next_action": "Apple reviews; it publishes on approval.",
         "updated_at": "2026-11-14T17:27:33+00:00"
+      }
+    },
+    {
+      "sequence": 472,
+      "at": "2026-11-19T18:35:49+00:00",
+      "gate": "apple.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "1.0.4 build 34 archived locally from clean merge commit 4c81e64b5f77fa4ac0fbdc9f434a57d9312d12d8 (Xcode 27A9275, iphoneos27.1); validate VERIFY SUCCEEDED",
+        "evidence": [
+          "/Volumes/ssd/builds/xcode/newsworthy/release/34/summary.json sha256 04e0175b6e0fccbe8ce634e6f78acc41bf3fbf2b07d4ce4ed427fd48d606246e"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-19T18:35:49+00:00"
+      }
+    },
+    {
+      "sequence": 473,
+      "at": "2026-11-19T18:35:49+00:00",
+      "gate": "apple.upload",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 34 uploaded with altool; App Store Connect processed it VALID, USESNONEXEMPTENCRYPTION 0",
+        "evidence": [
+          "asc.mjs status 2026-11-19: build 34 VALID"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-19T18:35:49+00:00"
+      }
+    },
+    {
+      "sequence": 474,
+      "at": "2026-11-19T18:35:49+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 34 in Release QA (internal), IN_BETA_TESTING, 1 tester. The app has no external TestFlight group, so no Beta App Review",
+        "evidence": [
+          "ios-release.mjs testers 34 2026-11-19"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-19T18:35:49+00:00"
+      }
+    },
+    {
+      "sequence": 475,
+      "at": "2026-11-19T18:35:49+00:00",
+      "gate": "rating.native",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Release simulator build of 4c81e64 (1.0.4) on iOS 27.0 iPhone clone, rating state seeded one share from due: completed share (Copy) showed the App Store's own 'Enjoying Newsworthy?' prompt once; a second share showed none; onboarding, reading and Settings > Send Feedback present. Simulator only; Apple decides whether the sheet appears in store builds",
+        "evidence": [
+          "/Volumes/ssd/builds/newsworthy/qa-1.0.4-review-20261119/tour-iphone.xcresult"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-19T18:35:49+00:00"
+      }
+    },
+    {
+      "sequence": 476,
+      "at": "2026-11-19T18:35:50+00:00",
+      "gate": "apple.listing",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "1.0.4 listing saved and read back: en-US What's New names the rating prompt; 24 listing languages created (App Info and version localizations) with What's New for 1.0.4; review notes 3,933 chars saved; screenshots, previews, header and search creative carried over unchanged (no screen changed); secondary category Lifestyle",
+        "evidence": [
+          "asc.mjs listing/review-details/status 2026-11-19: localizations 1.0.4 all 24 match store data"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-19T18:35:50+00:00"
+      }
+    },
+    {
+      "sequence": 477,
+      "at": "2026-11-19T18:35:50+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "1.0.4 build 34 submitted as 13d98e06-7b11-49a1-b40a-1c77da90c672 at 2026-11-19T18:34:49Z; version and submission WAITING_FOR_REVIEW; releaseType AFTER_APPROVAL",
+        "evidence": [
+          "asc.mjs status and review-sweep sweep 2026-11-19 after submit"
+        ],
+        "next_action": "Apple reviews; it publishes on approval. Read asc.mjs status until Apple decides.",
+        "updated_at": "2026-11-19T18:35:50+00:00"
+      }
+    },
+    {
+      "sequence": 478,
+      "at": "2026-11-19T18:36:08+00:00",
+      "gate": "issue.localized-whatsnew-1.0.4",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "The 24 listing languages' What's New drafts (2026-11-18) said the app had not changed, false for 1.0.4. #287 rewrote each to name the rating prompt and the new language page; listing saved and read back all 24",
+        "evidence": [
+          "https://github.com/astrojams1/newsworthy/pull/287",
+          "asc.mjs status 2026-11-19: localizations 1.0.4 all 24 match store data"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-19T18:36:08+00:00"
       }
     }
   ],

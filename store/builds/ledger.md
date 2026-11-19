@@ -558,3 +558,29 @@ AFTER_APPROVAL. WAITING_FOR_REVIEW was read back on the version and the submissi
 Not run: `npm run check:android-widget`, which needs the cloud toolchain (`/opt/newsworthy-tools`) that this Mac does
 not have; it covers Android only. Lesson: run `node store/scripts/validate.mjs` (now part of `npm test`) before any
 `asc.mjs review-details`.
+
+## 2026-11-19: version 1.0.4, build 34 to App Review (daily review run app-review-daily-20261119T170559Z)
+
+1.0.3 (build 33, from `aea5a9b`) is live. Since then #283 added the App Store's rating prompt after a completed share
+(iOS, `apps/client/lib/rating.ts`, `rating-moment.ts`, `expo-store-review`), which changes the installed app; the
+other changes were server, prompt, docs and ledgers. #287 raised the version to 1.0.4, set What's New in en-US and
+rewrote it in all 24 listing languages (their 2026-11-18 drafts said the app had not changed), and led the Review
+Notes with the rating prompt (3,933 characters). Local Xcode archive from clean merge commit
+`4c81e64b5f77fa4ac0fbdc9f434a57d9312d12d8`, Xcode 27A9275, iphoneos27.1, `.ipa` SHA-256
+`04e0175b6e0fccbe8ce634e6f78acc41bf3fbf2b07d4ce4ed427fd48d606246e`. Validated, uploaded, processed VALID; in Release
+QA, internal `IN_BETA_TESTING`, one tester. The app has no external TestFlight group. Before submitting, a Release
+simulator build of the same commit on an iOS 27.0 iPhone (a clone of the pool's phone-secondary, deleted after) passed
+an XCUITest tour with the rating state seeded one share from due: a completed share showed the App Store's own
+"Enjoying Newsworthy?" sheet once and a second share showed nothing
+(`/Volumes/ssd/builds/newsworthy/qa-1.0.4-review-20261119/`). `asc.mjs listing` created the 24 languages (App Info and
+version localizations) and read each back; screenshots, previews, header and search creative carried over unchanged.
+Build 34 attached and submitted as `13d98e06-7b11-49a1-b40a-1c77da90c672`, AFTER_APPROVAL; WAITING_FOR_REVIEW read back
+on the version and the submission, build 34 attached. Nomination still waived. No cloud build, sandbox or spend.
+
+| Issue | Symptom and cause | Fix | Verified |
+| --- | --- | --- | --- |
+| `issue.localized-whatsnew-1.0.4` | The 24 languages' What's New said the app had not changed, false for a version with the rating prompt | #287 rewrote each in its language | `listing` saved and read back all 24; `status` reads "all 24 match store data" |
+
+No unexpected command, test or provider failures in this run. The first `listing` with languages worked on the first try
+for all 24 locales.
+
