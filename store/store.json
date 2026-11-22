@@ -415,5 +415,20 @@
         }
       ]
     }
-  }
+  },
+  "nominations": [
+    {
+      "name": "Newsworthy 1.0.3: follow a developing story",
+      "description": "Newsworthy rates the significance of world news from 1 to 10. Version 1.0.3 shows how a story has developed since it was rated. The timeline puts the latest development below the original sentence. A bold “Update:” marks a new development in a story already covered, while “New:” marks a newly covered story.",
+      "type": "APP_ENHANCEMENTS",
+      "publishStartDate": "2026-11-23T00:00:00-08:00",
+      "deviceFamilies": [
+        "IPHONE",
+        "IPAD"
+      ],
+      "locales": [
+        "en-US"
+      ]
+    }
+  ]
 }
