@@ -51,10 +51,10 @@ runtimes alone are not enough. Check the actual host and runtime inventory
 rather than assuming a cloud environment. Expo Go runs a precompiled
 host in the simulator; widgets require custom builds and cannot be tested in it.
 
-**Current status, 19 November 2026.** Version 1.0.3 (build 33), with story updates
-and the "Update:" label, is the App Store release (App Store Connect:
-READY_FOR_DISTRIBUTION). 1.0.4 (build 34), which may show the App Store's rating prompt after a
-completed share, is WAITING_FOR_REVIEW (release on approval);
+**Current status, 24 November 2026.** Version 1.0.4 (build 34), which may show the App Store's
+rating prompt after a completed share, is the App Store release (App Store Connect:
+READY_FOR_DISTRIBUTION). 1.0.5, with the More apps row in Settings and the anonymous first-open
+count, is being prepared for App Review (release on approval);
 `store/ledger.md` has its gates. **21 October 2026:** version 1.0.0 (build 27) was approved and
 is on sale on the [App Store](https://apps.apple.com/app/id6812519450) in all 175
 territories at US$1.00 (released 10:58 UTC). Android is not public: version 17
