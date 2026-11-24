@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-11-19T18:36:08+00:00
+Updated: 2026-11-24T03:57:12+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -23,11 +23,11 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.privacy | done | agent | observed | 2026-09-23 | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
 | apple.review-contact | done | agent | observed | 2026-09-16 | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
 | apple.listing | done | agent | observed | 2026-11-19 | 1.0.4 listing saved and read back: en-US What's New names the rating prompt; 24 listing languages created (App Info and version localizations) with What's New for 1.0.4; review notes 3,933 chars saved; screenshots, previews, header and search creative carried over unchanged (no screen changed); secondary category Lifestyle | — |
-| apple.build | done | agent | observed | 2026-11-19 | 1.0.4 build 34 archived locally from clean merge commit 4c81e64b5f77fa4ac0fbdc9f434a57d9312d12d8 (Xcode 27A9275, iphoneos27.1); validate VERIFY SUCCEEDED | — |
+| apple.build | done | agent | observed | 2026-11-24 | Build 35, version 1.0.5, archived locally from clean merge commit ae5de53b6c59f8d8f86bf83a933f0295e362e196 (PR #295), Xcode 27A9275, iphoneos27.1, .ipa SHA-256 3e38846a4761c6a389e8abfc829cc15070cd5e365d17b1e658cdbe111f59970b; validated, uploaded, processed VALID. | — |
 | apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | 2026-11-19 | Build 34 uploaded with altool; App Store Connect processed it VALID, USESNONEXEMPTENCRYPTION 0 | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | waiting_provider | provider | observed | 2026-11-19 | 1.0.4 build 34 submitted as 13d98e06-7b11-49a1-b40a-1c77da90c672 at 2026-11-19T18:34:49Z; version and submission WAITING_FOR_REVIEW; releaseType AFTER_APPROVAL | Apple reviews; it publishes on approval. Read asc.mjs status until Apple decides. |
+| apple.review | in_progress | agent | observed | 2026-11-24 | 1.0.4 (build 34) is live. Version 1.0.5 created with the listing (en-US and 24 languages read back, all 24 match), review details saved, screenshots kept (all COMPLETE), build 35 attached; GET readback: PREPARE_FOR_SUBMISSION, releaseType AFTER_APPROVAL, build 35. Not submitted: waiting on the App Privacy label. | After App Privacy is published: asc.mjs status, then submit --confirm through the guard and read back WAITING_FOR_REVIEW. |
 | apple.release | done | provider | observed | 2026-10-21 | 2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live. | — |
 | google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
@@ -49,7 +49,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.review-access | done | agent | observed | 2026-09-17 | Mac UI access recovered; Android native checks can proceed, and signed-in Chrome review message was already read. | — |
 | apple.review-notes | done | agent | observed | 2026-10-01 | Six-part Notes describe build26 purpose/setup/services/regions/rights and reference existing physical build21 recording with scope limitations. Existing private phone preserved; no secret/private contact values stored in repo. | — |
 | apple.physical-recording | done | agent | observed | 2026-09-17 | Supplied physical build7 recording inspected, prepared and sent with the six-part App Review reply. Posted message and video Download control verified. | — |
-| apple.testflight | done | agent | observed | 2026-11-19 | Build 34 in Release QA (internal), IN_BETA_TESTING, 1 tester. The app has no external TestFlight group, so no Beta App Review | — |
+| apple.testflight | done | agent | observed | 2026-11-24 | Build 35 in Release QA (internal IN_BETA_TESTING, 1 tester), What to Test set. The app has no external TestFlight group (asc.mjs status lists every group: only Release QA). | — |
 | google.large-text-build | done | agent | observed | 2026-09-17 | Corrective APK10 passed maximum-font and appearance-resume checks; original font scale restored. PR94 merged and productionAAB11 built and verified from its source. | — |
 | google.offline | done | agent | observed | 2026-09-17 | Installed APK9 passed offline foreground reopen and online recovery at maximum fontScale2.0. Original timestamp retained; retry and saved labels appear offline and clear on recovery. | — |
 | apple.header-background | done | agent | observed | 2026-09-17 | Owner physical build7 recording confirms plain title and Share icon in light appearance, resolving the reported unwanted glass backgrounds. | — |
@@ -100,6 +100,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | google.play-api | done | agent | observed | 2026-10-16 | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 | google.pricing | done | agent | observed | 2026-10-16 | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
 | google.news-policy | done | agent | observed | 2026-10-21 | 2026-10-21: Play Policy status reads 'No issues found'; closed testing Alpha Active with release 1.0.0 (version 17) in 173 countries / regions. | — |
+| apple.privacy-label | waiting_provider | agent | observed | 2026-11-24 | privacy-label.mjs check FAIL: the App Store page lacks Usage Data > Product Interaction for Analytics (not linked, not tracking), which the manifest and appPrivacy.collected declare for the first-launch count. The parent run publishes App Privacy in App Store Connect. | Once App Privacy is published, privacy-label.mjs check (or confirm) passes; then submit --confirm. |
 
 ## Run issues
 
@@ -144,6 +145,9 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | story-updates.native | waiting_verification | agent | observed | 2026-11-14 | Release simulator build of 17d017b (app source identical to build 33's aea5a9b), iPhone 17 Pro Max iOS 27.0: XCUITest tour passed; the FAA Outage entry showed its update below the rated sentence behind a thin rule with an 'Update · 16h ago' caption, accessibility label 'Updated 16h ago: …'; reading and Settings (Send Feedback) present. Simulator evidence, not device. | Not exercised natively: Update: label on the reading and widgets (needs a live new development in a known story); Android needs its next build. |
 | media.update-recheck | done | agent | observed | 2026-11-14 | 1.0.3 media recheck: screenshots (v26), the 1.0.1 iPhone and iPad previews, header and search creative kept. Build 33's timeline adds an optional update block below an entry and an optional Update: label; entries without an update and the reading render as in the captures, so nothing shown is gone or changed. Listing copy (description with story updates, What's New) saved and read back on 1.0.3; the preview and creative placements carried to 1.0.3 (assets place found none missing). | Optional: a timeline screenshot showing an update block, from the native capture in /Volumes/ssd/builds/newsworthy/qa-1.0.3-review-20261114/shots, with the next gallery refresh. |
 | rating.native | done | agent | observed | 2026-11-19 | Release simulator build of 4c81e64 (1.0.4) on iOS 27.0 iPhone clone, rating state seeded one share from due: completed share (Copy) showed the App Store's own 'Enjoying Newsworthy?' prompt once; a second share showed none; onboarding, reading and Settings > Send Feedback present. Simulator only; Apple decides whether the sheet appears in store builds | — |
+| ui.more-apps | done | agent | observed | 2026-11-24 | Release simulator build of ae5de53 (1.0.5, 35) on iPhone 16 Pro iOS 27.0: Settings shows More apps after Send Feedback; the list shows Füd, Space Worms, Data Center, Hanzi Cards, Importron, LOB, Nametag, Plenty and Rhythm with icon, name and line, not Newsworthy; tapping Füd opened apps.apple.com/app/id6739075763 in Safari (no App Store app on the simulator). | Not exercised: iPad layout and a real App Store app on a device. |
+| ui.first-launch | done | agent | observed | 2026-11-24 | Same build launched with -firstLaunchSend 1: /api/launch counted one event (newsworthy 1.0.5 ios debug, n=1, day 2026-11-23 Pacific); a second launch with the flag sent nothing more (still n=1). A simulator run reports debug. | — |
+| listing.media-recheck | done | agent | observed | 2026-11-24 | 1.0.5 recheck against build 35: no screenshot shows the Settings overview (timeline, widgets, reading, Notifications, appearance), and render-video.mjs --stale finds every on-screen line of the preview still in its source; the changed inputs (app.config.js version and privacy manifest, a new Settings glyph) are not shown. Screenshots, previews, header and search creative kept. | — |
 
 ## Evidence and history
 
@@ -4662,3 +4666,69 @@ The 24 listing languages' What's New drafts (2026-11-18) said the app had not ch
 
 - https://github.com/astrojams1/newsworthy/pull/287
 - asc.mjs status 2026-11-19: localizations 1.0.4 all 24 match store data
+
+### 479. apple.build — done
+
+2026-11-24T03:57:04+00:00 · observed · agent
+
+Build 35, version 1.0.5, archived locally from clean merge commit ae5de53b6c59f8d8f86bf83a933f0295e362e196 (PR #295), Xcode 27A9275, iphoneos27.1, .ipa SHA-256 3e38846a4761c6a389e8abfc829cc15070cd5e365d17b1e658cdbe111f59970b; validated, uploaded, processed VALID.
+
+- /Volumes/ssd/builds/xcode/newsworthy/release/35/summary.json
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/upload.log
+
+### 480. apple.testflight — done
+
+2026-11-24T03:57:05+00:00 · observed · agent
+
+Build 35 in Release QA (internal IN_BETA_TESTING, 1 tester), What to Test set. The app has no external TestFlight group (asc.mjs status lists every group: only Release QA).
+
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/testers.log
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/beta-group-internal.log
+
+### 481. ui.more-apps — done
+
+2026-11-24T03:57:05+00:00 · observed · agent
+
+Release simulator build of ae5de53 (1.0.5, 35) on iPhone 16 Pro iOS 27.0: Settings shows More apps after Send Feedback; the list shows Füd, Space Worms, Data Center, Hanzi Cards, Importron, LOB, Nametag, Plenty and Rhythm with icon, name and line, not Newsworthy; tapping Füd opened apps.apple.com/app/id6739075763 in Safari (no App Store app on the simulator).
+
+- /Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/tour-iphone.xcresult
+- /Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/03-more-apps.png
+
+Next: Not exercised: iPad layout and a real App Store app on a device.
+
+### 482. ui.first-launch — done
+
+2026-11-24T03:57:05+00:00 · observed · agent
+
+Same build launched with -firstLaunchSend 1: /api/launch counted one event (newsworthy 1.0.5 ios debug, n=1, day 2026-11-23 Pacific); a second launch with the flag sent nothing more (still n=1). A simulator run reports debug.
+
+- /Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/01-first-open.png
+
+### 483. apple.privacy-label — waiting_provider
+
+2026-11-24T03:57:05+00:00 · observed · agent
+
+privacy-label.mjs check FAIL: the App Store page lacks Usage Data > Product Interaction for Analytics (not linked, not tracking), which the manifest and appPrivacy.collected declare for the first-launch count. The parent run publishes App Privacy in App Store Connect.
+
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/privacy-check-2.log
+
+Next: Once App Privacy is published, privacy-label.mjs check (or confirm) passes; then submit --confirm.
+
+### 484. apple.review — in_progress
+
+2026-11-24T03:57:05+00:00 · observed · agent
+
+1.0.4 (build 34) is live. Version 1.0.5 created with the listing (en-US and 24 languages read back, all 24 match), review details saved, screenshots kept (all COMPLETE), build 35 attached; GET readback: PREPARE_FOR_SUBMISSION, releaseType AFTER_APPROVAL, build 35. Not submitted: waiting on the App Privacy label.
+
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/readback-pre-submit.log
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/status-pre-submit.log
+
+Next: After App Privacy is published: asc.mjs status, then submit --confirm through the guard and read back WAITING_FOR_REVIEW.
+
+### 485. listing.media-recheck — done
+
+2026-11-24T03:57:12+00:00 · observed · agent
+
+1.0.5 recheck against build 35: no screenshot shows the Settings overview (timeline, widgets, reading, Notifications, appearance), and render-video.mjs --stale finds every on-screen line of the preview still in its source; the changed inputs (app.config.js version and privacy manifest, a new Settings glyph) are not shown. Screenshots, previews, header and search creative kept.
+
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/screenshots.log

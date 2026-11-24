@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-11-19T18:36:08+00:00",
+  "updated_at": "2026-11-24T03:57:12+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -136,12 +136,13 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "1.0.4 build 34 archived locally from clean merge commit 4c81e64b5f77fa4ac0fbdc9f434a57d9312d12d8 (Xcode 27A9275, iphoneos27.1); validate VERIFY SUCCEEDED",
+      "summary": "Build 35, version 1.0.5, archived locally from clean merge commit ae5de53b6c59f8d8f86bf83a933f0295e362e196 (PR #295), Xcode 27A9275, iphoneos27.1, .ipa SHA-256 3e38846a4761c6a389e8abfc829cc15070cd5e365d17b1e658cdbe111f59970b; validated, uploaded, processed VALID.",
       "evidence": [
-        "/Volumes/ssd/builds/xcode/newsworthy/release/34/summary.json sha256 04e0175b6e0fccbe8ce634e6f78acc41bf3fbf2b07d4ce4ed427fd48d606246e"
+        "/Volumes/ssd/builds/xcode/newsworthy/release/35/summary.json",
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/upload.log"
       ],
       "next_action": "",
-      "updated_at": "2026-11-19T18:35:49+00:00"
+      "updated_at": "2026-11-24T03:57:04+00:00"
     },
     "apple.native": {
       "state": "done",
@@ -177,15 +178,16 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "waiting_provider",
-      "owner": "provider",
+      "state": "in_progress",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "1.0.4 build 34 submitted as 13d98e06-7b11-49a1-b40a-1c77da90c672 at 2026-11-19T18:34:49Z; version and submission WAITING_FOR_REVIEW; releaseType AFTER_APPROVAL",
+      "summary": "1.0.4 (build 34) is live. Version 1.0.5 created with the listing (en-US and 24 languages read back, all 24 match), review details saved, screenshots kept (all COMPLETE), build 35 attached; GET readback: PREPARE_FOR_SUBMISSION, releaseType AFTER_APPROVAL, build 35. Not submitted: waiting on the App Privacy label.",
       "evidence": [
-        "asc.mjs status and review-sweep sweep 2026-11-19 after submit"
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/readback-pre-submit.log",
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/status-pre-submit.log"
       ],
-      "next_action": "Apple reviews; it publishes on approval. Read asc.mjs status until Apple decides.",
-      "updated_at": "2026-11-19T18:35:50+00:00"
+      "next_action": "After App Privacy is published: asc.mjs status, then submit --confirm through the guard and read back WAITING_FOR_REVIEW.",
+      "updated_at": "2026-11-24T03:57:05+00:00"
     },
     "apple.release": {
       "state": "done",
@@ -488,12 +490,13 @@
       "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "Build 34 in Release QA (internal), IN_BETA_TESTING, 1 tester. The app has no external TestFlight group, so no Beta App Review",
+      "summary": "Build 35 in Release QA (internal IN_BETA_TESTING, 1 tester), What to Test set. The app has no external TestFlight group (asc.mjs status lists every group: only Release QA).",
       "evidence": [
-        "ios-release.mjs testers 34 2026-11-19"
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/testers.log",
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/beta-group-internal.log"
       ],
       "next_action": "",
-      "updated_at": "2026-11-19T18:35:49+00:00"
+      "updated_at": "2026-11-24T03:57:05+00:00"
     },
     "google.large-text-build": {
       "state": "done",
@@ -1339,6 +1342,51 @@
       ],
       "next_action": "",
       "updated_at": "2026-11-19T18:36:08+00:00"
+    },
+    "ui.more-apps": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Release simulator build of ae5de53 (1.0.5, 35) on iPhone 16 Pro iOS 27.0: Settings shows More apps after Send Feedback; the list shows Füd, Space Worms, Data Center, Hanzi Cards, Importron, LOB, Nametag, Plenty and Rhythm with icon, name and line, not Newsworthy; tapping Füd opened apps.apple.com/app/id6739075763 in Safari (no App Store app on the simulator).",
+      "evidence": [
+        "/Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/tour-iphone.xcresult",
+        "/Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/03-more-apps.png"
+      ],
+      "next_action": "Not exercised: iPad layout and a real App Store app on a device.",
+      "updated_at": "2026-11-24T03:57:05+00:00"
+    },
+    "ui.first-launch": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Same build launched with -firstLaunchSend 1: /api/launch counted one event (newsworthy 1.0.5 ios debug, n=1, day 2026-11-23 Pacific); a second launch with the flag sent nothing more (still n=1). A simulator run reports debug.",
+      "evidence": [
+        "/Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/01-first-open.png"
+      ],
+      "next_action": "",
+      "updated_at": "2026-11-24T03:57:05+00:00"
+    },
+    "apple.privacy-label": {
+      "state": "waiting_provider",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "privacy-label.mjs check FAIL: the App Store page lacks Usage Data > Product Interaction for Analytics (not linked, not tracking), which the manifest and appPrivacy.collected declare for the first-launch count. The parent run publishes App Privacy in App Store Connect.",
+      "evidence": [
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/privacy-check-2.log"
+      ],
+      "next_action": "Once App Privacy is published, privacy-label.mjs check (or confirm) passes; then submit --confirm.",
+      "updated_at": "2026-11-24T03:57:05+00:00"
+    },
+    "listing.media-recheck": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "1.0.5 recheck against build 35: no screenshot shows the Settings overview (timeline, widgets, reading, Notifications, appearance), and render-video.mjs --stale finds every on-screen line of the preview still in its source; the changed inputs (app.config.js version and privacy manifest, a new Settings glyph) are not shown. Screenshots, previews, header and search creative kept.",
+      "evidence": [
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/screenshots.log"
+      ],
+      "next_action": "",
+      "updated_at": "2026-11-24T03:57:12+00:00"
     }
   },
   "events": [
@@ -8974,6 +9022,122 @@
         ],
         "next_action": "",
         "updated_at": "2026-11-19T18:36:08+00:00"
+      }
+    },
+    {
+      "sequence": 479,
+      "at": "2026-11-24T03:57:04+00:00",
+      "gate": "apple.build",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 35, version 1.0.5, archived locally from clean merge commit ae5de53b6c59f8d8f86bf83a933f0295e362e196 (PR #295), Xcode 27A9275, iphoneos27.1, .ipa SHA-256 3e38846a4761c6a389e8abfc829cc15070cd5e365d17b1e658cdbe111f59970b; validated, uploaded, processed VALID.",
+        "evidence": [
+          "/Volumes/ssd/builds/xcode/newsworthy/release/35/summary.json",
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/upload.log"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-24T03:57:04+00:00"
+      }
+    },
+    {
+      "sequence": 480,
+      "at": "2026-11-24T03:57:05+00:00",
+      "gate": "apple.testflight",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 35 in Release QA (internal IN_BETA_TESTING, 1 tester), What to Test set. The app has no external TestFlight group (asc.mjs status lists every group: only Release QA).",
+        "evidence": [
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/testers.log",
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/beta-group-internal.log"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-24T03:57:05+00:00"
+      }
+    },
+    {
+      "sequence": 481,
+      "at": "2026-11-24T03:57:05+00:00",
+      "gate": "ui.more-apps",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Release simulator build of ae5de53 (1.0.5, 35) on iPhone 16 Pro iOS 27.0: Settings shows More apps after Send Feedback; the list shows Füd, Space Worms, Data Center, Hanzi Cards, Importron, LOB, Nametag, Plenty and Rhythm with icon, name and line, not Newsworthy; tapping Füd opened apps.apple.com/app/id6739075763 in Safari (no App Store app on the simulator).",
+        "evidence": [
+          "/Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/tour-iphone.xcresult",
+          "/Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/03-more-apps.png"
+        ],
+        "next_action": "Not exercised: iPad layout and a real App Store app on a device.",
+        "updated_at": "2026-11-24T03:57:05+00:00"
+      }
+    },
+    {
+      "sequence": 482,
+      "at": "2026-11-24T03:57:05+00:00",
+      "gate": "ui.first-launch",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Same build launched with -firstLaunchSend 1: /api/launch counted one event (newsworthy 1.0.5 ios debug, n=1, day 2026-11-23 Pacific); a second launch with the flag sent nothing more (still n=1). A simulator run reports debug.",
+        "evidence": [
+          "/Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/01-first-open.png"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-24T03:57:05+00:00"
+      }
+    },
+    {
+      "sequence": 483,
+      "at": "2026-11-24T03:57:05+00:00",
+      "gate": "apple.privacy-label",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "privacy-label.mjs check FAIL: the App Store page lacks Usage Data > Product Interaction for Analytics (not linked, not tracking), which the manifest and appPrivacy.collected declare for the first-launch count. The parent run publishes App Privacy in App Store Connect.",
+        "evidence": [
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/privacy-check-2.log"
+        ],
+        "next_action": "Once App Privacy is published, privacy-label.mjs check (or confirm) passes; then submit --confirm.",
+        "updated_at": "2026-11-24T03:57:05+00:00"
+      }
+    },
+    {
+      "sequence": 484,
+      "at": "2026-11-24T03:57:05+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "in_progress",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "1.0.4 (build 34) is live. Version 1.0.5 created with the listing (en-US and 24 languages read back, all 24 match), review details saved, screenshots kept (all COMPLETE), build 35 attached; GET readback: PREPARE_FOR_SUBMISSION, releaseType AFTER_APPROVAL, build 35. Not submitted: waiting on the App Privacy label.",
+        "evidence": [
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/readback-pre-submit.log",
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/status-pre-submit.log"
+        ],
+        "next_action": "After App Privacy is published: asc.mjs status, then submit --confirm through the guard and read back WAITING_FOR_REVIEW.",
+        "updated_at": "2026-11-24T03:57:05+00:00"
+      }
+    },
+    {
+      "sequence": 485,
+      "at": "2026-11-24T03:57:12+00:00",
+      "gate": "listing.media-recheck",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "1.0.5 recheck against build 35: no screenshot shows the Settings overview (timeline, widgets, reading, Notifications, appearance), and render-video.mjs --stale finds every on-screen line of the preview still in its source; the changed inputs (app.config.js version and privacy manifest, a new Settings glyph) are not shown. Screenshots, previews, header and search creative kept.",
+        "evidence": [
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/screenshots.log"
+        ],
+        "next_action": "",
+        "updated_at": "2026-11-24T03:57:12+00:00"
       }
     }
   ],
