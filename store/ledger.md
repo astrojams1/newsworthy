@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-11-24T03:57:12+00:00
+Updated: 2026-11-24T03:58:34+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -112,6 +112,8 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | issue.copy-review-table | done | agent | observed | 2026-10-26 | Separating blank line removed before committed head; independent current-head readback confirms the new row is contiguous with its Markdown table. | — |
 | issue.review-notes-length | done | agent | observed | 2026-11-14 | 1.0.3 Review Notes were 4,216 characters; App Store Connect refused review-details with 409 TOO_LONG (limit 4,000) before any write. Cut to 3,893 with no claim changed, and npm test now runs store/scripts/validate.mjs (#276). review-details then saved and read back. | — |
 | issue.localized-whatsnew-1.0.4 | done | agent | observed | 2026-11-19 | The 24 listing languages' What's New drafts (2026-11-18) said the app had not changed, false for 1.0.4. #287 rewrote each to name the rating prompt and the new language page; listing saved and read back all 24 | — |
+| issue.privacy-copy-channel | done | agent | observed | 2026-11-24 | The privacy page said the first-open message tells whether the app came from the App Store; the Expo app sends only debug or unknown. Fixed in #295 and served in production (healthz ae5de53). | — |
+| issue.simctl-screenshot-path | done | agent | observed | 2026-11-24 | simctl io screenshot into the QA folder or scratchpad failed (Operation not permitted) under the session sandbox; writing into the device's data/tmp and moving the file worked, and the XCUITest tour's shots came from its xcresult. | — |
 
 ## Product verification gates
 
@@ -4732,3 +4734,20 @@ Next: After App Privacy is published: asc.mjs status, then submit --confirm thro
 1.0.5 recheck against build 35: no screenshot shows the Settings overview (timeline, widgets, reading, Notifications, appearance), and render-video.mjs --stale finds every on-screen line of the preview still in its source; the changed inputs (app.config.js version and privacy manifest, a new Settings glyph) are not shown. Screenshots, previews, header and search creative kept.
 
 - /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/screenshots.log
+
+### 486. issue.privacy-copy-channel — done
+
+2026-11-24T03:58:34+00:00 · observed · agent
+
+The privacy page said the first-open message tells whether the app came from the App Store; the Expo app sends only debug or unknown. Fixed in #295 and served in production (healthz ae5de53).
+
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/healthz-after-295.json
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/privacy-page-line.txt
+
+### 487. issue.simctl-screenshot-path — done
+
+2026-11-24T03:58:34+00:00 · observed · agent
+
+simctl io screenshot into the QA folder or scratchpad failed (Operation not permitted) under the session sandbox; writing into the device's data/tmp and moving the file worked, and the XCUITest tour's shots came from its xcresult.
+
+- /Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/01-first-open.png
