@@ -584,3 +584,29 @@ on the version and the submission, build 34 attached. Nomination still waived. N
 No unexpected command, test or provider failures in this run. The first `listing` with languages worked on the first try
 for all 24 locales.
 
+
+## 2026-11-24: version 1.0.5, build 35 prepared for App Review (daily review run app-review-daily-20261124T021053Z)
+
+1.0.4 (build 34, from `4c81e64`) is live. Since then #289 and #290 added the shared More apps row in Settings and
+the anonymous first-launch count, which change the installed app; #291 to #294 changed store data (App Privacy
+answers, keywords in every language, the English subtitle, a featuring nomination). #295 raised the version to 1.0.5,
+set What's New in en-US and all 24 listing languages to name the row and the count, led the Review Notes with both
+(3,977 characters) and corrected the privacy page's install-channel line. Local Xcode archive from clean merge commit
+`ae5de53b6c59f8d8f86bf83a933f0295e362e196`, Xcode 27A9275, iphoneos27.1, `.ipa` SHA-256
+`3e38846a4761c6a389e8abfc829cc15070cd5e365d17b1e658cdbe111f59970b`. Validated, uploaded, processed VALID; in Release QA,
+internal `IN_BETA_TESTING`, one tester, What to Test set; no external group exists. A Release simulator build of the
+same commit on the pool's phone-primary (iOS 27.0, lock taken and released, app uninstalled after) passed an XCUITest
+tour: More apps after Send Feedback, nine apps and not Newsworthy, a tap opening the Füd App Store page; a
+`-firstLaunchSend` launch was counted once as `debug` and not again
+(`/Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/`). `asc.mjs listing` created 1.0.5 and read back all 24
+languages; review details saved; screenshots kept; build 35 attached; GET readback PREPARE_FOR_SUBMISSION,
+AFTER_APPROVAL, build 35. Not submitted yet: `privacy-label.mjs check` fails until App Store Connect's App Privacy adds
+Usage Data > Product Interaction (Analytics, not linked, not tracking), which the parent run publishes. No cloud
+build, sandbox or spend.
+
+| Issue | Symptom and cause | Fix | Verified |
+| --- | --- | --- | --- |
+| `issue.privacy-copy-channel` | `public/privacy.html` said the first-open message tells whether the app "came from the App Store"; the Expo app sends only `debug` or `unknown` | #295: "whether it is a development copy" | Production served the new line after merge (`/healthz` `ae5de53`) |
+| `issue.simctl-screenshot-path` | `simctl io screenshot` to the QA folder or the scratchpad failed with "Operation not permitted" in this session's sandbox | Wrote into the device's own `data/tmp` and moved the file; the tour's shots came from its `.xcresult` | Screenshots saved in the QA folder |
+
+Not run: `npm run check:android-widget` (needs the cloud toolchain this Mac lacks; Android only).
