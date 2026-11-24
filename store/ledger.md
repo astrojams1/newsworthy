@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-11-24T03:58:34+00:00
+Updated: 2026-11-24T17:10:00+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -20,7 +20,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.tax | done | user | observed | 2026-09-16 | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
 | apple.bank | done | user | observed | 2026-10-22 | 2026-10-22: superseded by apple.agreement and apple.release. The paid app is on sale, which needs an active Paid Apps Agreement with a payout account: Apple's public lookup for id 6812519450 reads formattedPrice $1.00, version 1.0.0, released 2026-10-21T10:58:45Z. Apple Business not re-read. | — |
 | apple.dsa | done | user | observed | 2026-09-16 | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
-| apple.privacy | done | agent | observed | 2026-09-23 | Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories. | — |
+| apple.privacy | waiting_user | user | observed | 2026-11-24 | 2026-11-24 daily run app-review-daily-20261124T170541Z: published App Privacy label still lacks Usage Data > Product Interaction (Analytics, not linked, not tracking); privacy-label.mjs check FAIL. Not changed: Claude in Chrome has no connected browser (list_connected_browsers empty, as on 2026-11-24T02:14Z) and the built-in browser's App Store Connect session is signed out (login authResult=FAILED); no fastlane session. Next version stays PREPARE_FOR_SUBMISSION, AFTER_APPROVAL, build attached; not submitted. | Connect Claude in Chrome (extension signed in, App Store Connect profile) so the daily run publishes App Privacy with 1Password autofill; then privacy-label.mjs check, asc.mjs status, submit --confirm through the guard |
 | apple.review-contact | done | agent | observed | 2026-09-16 | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
 | apple.listing | done | agent | observed | 2026-11-19 | 1.0.4 listing saved and read back: en-US What's New names the rating prompt; 24 listing languages created (App Info and version localizations) with What's New for 1.0.4; review notes 3,933 chars saved; screenshots, previews, header and search creative carried over unchanged (no screen changed); secondary category Lifestyle | — |
 | apple.build | done | agent | observed | 2026-11-24 | Build 35, version 1.0.5, archived locally from clean merge commit ae5de53b6c59f8d8f86bf83a933f0295e362e196 (PR #295), Xcode 27A9275, iphoneos27.1, .ipa SHA-256 3e38846a4761c6a389e8abfc829cc15070cd5e365d17b1e658cdbe111f59970b; validated, uploaded, processed VALID. | — |
@@ -4751,3 +4751,14 @@ The privacy page said the first-open message tells whether the app came from the
 simctl io screenshot into the QA folder or scratchpad failed (Operation not permitted) under the session sandbox; writing into the device's data/tmp and moving the file worked, and the XCUITest tour's shots came from its xcresult.
 
 - /Volumes/ssd/builds/newsworthy/qa-1.0.5-review-20261124/01-first-open.png
+
+### 488. apple.privacy — waiting_user
+
+2026-11-24T17:10:00+00:00 · observed · user
+
+2026-11-24 daily run app-review-daily-20261124T170541Z: published App Privacy label still lacks Usage Data > Product Interaction (Analytics, not linked, not tracking); privacy-label.mjs check FAIL. Not changed: Claude in Chrome has no connected browser (list_connected_browsers empty, as on 2026-11-24T02:14Z) and the built-in browser's App Store Connect session is signed out (login authResult=FAILED); no fastlane session. Next version stays PREPARE_FOR_SUBMISSION, AFTER_APPROVAL, build attached; not submitted.
+
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-privacy.log
+- /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-status.log
+
+Next: Connect Claude in Chrome (extension signed in, App Store Connect profile) so the daily run publishes App Privacy with 1Password autofill; then privacy-label.mjs check, asc.mjs status, submit --confirm through the guard

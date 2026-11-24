@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-11-24T03:58:34+00:00",
+  "updated_at": "2026-11-24T17:10:00+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -100,15 +100,16 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "apple.privacy": {
-      "state": "done",
-      "owner": "agent",
+      "state": "waiting_user",
+      "owner": "user",
       "basis": "observed",
-      "summary": "Published notification disclosures: Device ID and Other Data Types for app functionality, linked to the user, not tracking. Existing Performance Data and Other Diagnostic Data remain. Apple readback shows all four published categories.",
+      "summary": "2026-11-24 daily run app-review-daily-20261124T170541Z: published App Privacy label still lacks Usage Data > Product Interaction (Analytics, not linked, not tracking); privacy-label.mjs check FAIL. Not changed: Claude in Chrome has no connected browser (list_connected_browsers empty, as on 2026-11-24T02:14Z) and the built-in browser's App Store Connect session is signed out (login authResult=FAILED); no fastlane session. Next version stays PREPARE_FOR_SUBMISSION, AFTER_APPROVAL, build attached; not submitted.",
       "evidence": [
-        "App Store Connect App Privacy page, September 24; store/disclosures.md"
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-privacy.log",
+        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-status.log"
       ],
-      "next_action": "",
-      "updated_at": "2026-09-23T23:11:46+00:00"
+      "next_action": "Connect Claude in Chrome (extension signed in, App Store Connect profile) so the daily run publishes App Privacy with 1Password autofill; then privacy-label.mjs check, asc.mjs status, submit --confirm through the guard",
+      "updated_at": "2026-11-24T17:10:00+00:00"
     },
     "apple.review-contact": {
       "state": "done",
@@ -9194,6 +9195,23 @@
         ],
         "next_action": "",
         "updated_at": "2026-11-24T03:58:34+00:00"
+      }
+    },
+    {
+      "sequence": 488,
+      "at": "2026-11-24T17:10:00+00:00",
+      "gate": "apple.privacy",
+      "result": {
+        "state": "waiting_user",
+        "owner": "user",
+        "basis": "observed",
+        "summary": "2026-11-24 daily run app-review-daily-20261124T170541Z: published App Privacy label still lacks Usage Data > Product Interaction (Analytics, not linked, not tracking); privacy-label.mjs check FAIL. Not changed: Claude in Chrome has no connected browser (list_connected_browsers empty, as on 2026-11-24T02:14Z) and the built-in browser's App Store Connect session is signed out (login authResult=FAILED); no fastlane session. Next version stays PREPARE_FOR_SUBMISSION, AFTER_APPROVAL, build attached; not submitted.",
+        "evidence": [
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-privacy.log",
+          "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-status.log"
+        ],
+        "next_action": "Connect Claude in Chrome (extension signed in, App Store Connect profile) so the daily run publishes App Privacy with 1Password autofill; then privacy-label.mjs check, asc.mjs status, submit --confirm through the guard",
+        "updated_at": "2026-11-24T17:10:00+00:00"
       }
     }
   ],
