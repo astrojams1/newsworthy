@@ -9,7 +9,7 @@
     "android"
   ],
   "created_at": "2026-09-16T03:31:16+00:00",
-  "updated_at": "2026-11-24T17:10:00+00:00",
+  "updated_at": "2026-11-26T18:40:34+00:00",
   "steps": {
     "scope": {
       "state": "done",
@@ -100,16 +100,15 @@
       "updated_at": "2026-09-16T03:31:16+00:00"
     },
     "apple.privacy": {
-      "state": "waiting_user",
-      "owner": "user",
+      "state": "done",
+      "owner": "agent",
       "basis": "observed",
-      "summary": "2026-11-24 daily run app-review-daily-20261124T170541Z: published App Privacy label still lacks Usage Data > Product Interaction (Analytics, not linked, not tracking); privacy-label.mjs check FAIL. Not changed: Claude in Chrome has no connected browser (list_connected_browsers empty, as on 2026-11-24T02:14Z) and the built-in browser's App Store Connect session is signed out (login authResult=FAILED); no fastlane session. Next version stays PREPARE_FOR_SUBMISSION, AFTER_APPROVAL, build attached; not submitted.",
+      "summary": "App Privacy published with Usage Data > Product Interaction (Analytics, not linked, not tracking)",
       "evidence": [
-        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-privacy.log",
-        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-status.log"
+        "2026-11-26 app-review-daily-20261126T170553Z: App Store Connect App Privacy read back 'Published a few seconds ago by James Thompson' (run parent); privacy-label.mjs check passes against the public App Store page (5 types)"
       ],
-      "next_action": "Connect Claude in Chrome (extension signed in, App Store Connect profile) so the daily run publishes App Privacy with 1Password autofill; then privacy-label.mjs check, asc.mjs status, submit --confirm through the guard",
-      "updated_at": "2026-11-24T17:10:00+00:00"
+      "next_action": "None",
+      "updated_at": "2026-11-26T18:36:45+00:00"
     },
     "apple.review-contact": {
       "state": "done",
@@ -179,16 +178,15 @@
       "updated_at": "2026-09-16T04:55:59+00:00"
     },
     "apple.review": {
-      "state": "in_progress",
-      "owner": "agent",
+      "state": "waiting_provider",
+      "owner": "provider",
       "basis": "observed",
-      "summary": "1.0.4 (build 34) is live. Version 1.0.5 created with the listing (en-US and 24 languages read back, all 24 match), review details saved, screenshots kept (all COMPLETE), build 35 attached; GET readback: PREPARE_FOR_SUBMISSION, releaseType AFTER_APPROVAL, build 35. Not submitted: waiting on the App Privacy label.",
+      "summary": "1.0.5 (build 36) WAITING_FOR_REVIEW, AFTER_APPROVAL",
       "evidence": [
-        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/readback-pre-submit.log",
-        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/status-pre-submit.log"
+        "2026-11-26 app-review-daily-20261126T170553Z: review-sweep read 1.0.5 WAITING_FOR_REVIEW AFTER_APPROVAL, submission 039b8432 WAITING_FOR_REVIEW (evidence/app-review-daily-20261126T170553Z-opus-readback.json)"
       ],
-      "next_action": "After App Privacy is published: asc.mjs status, then submit --confirm through the guard and read back WAITING_FOR_REVIEW.",
-      "updated_at": "2026-11-24T03:57:05+00:00"
+      "next_action": "Read Apple's review outcome for 1.0.5",
+      "updated_at": "2026-11-26T18:40:34+00:00"
     },
     "apple.release": {
       "state": "done",
@@ -1368,15 +1366,15 @@
       "updated_at": "2026-11-24T03:57:05+00:00"
     },
     "apple.privacy-label": {
-      "state": "waiting_provider",
+      "state": "done",
       "owner": "agent",
       "basis": "observed",
-      "summary": "privacy-label.mjs check FAIL: the App Store page lacks Usage Data > Product Interaction for Analytics (not linked, not tracking), which the manifest and appPrivacy.collected declare for the first-launch count. The parent run publishes App Privacy in App Store Connect.",
+      "summary": "privacy-label.mjs check passes; submit --confirm accepted",
       "evidence": [
-        "/Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T021053Z/privacy-check-2.log"
+        "2026-11-26 app-review-daily-20261126T170553Z: privacy-label.mjs check pass at 59702fb7"
       ],
-      "next_action": "Once App Privacy is published, privacy-label.mjs check (or confirm) passes; then submit --confirm.",
-      "updated_at": "2026-11-24T03:57:05+00:00"
+      "next_action": "None",
+      "updated_at": "2026-11-26T18:36:45+00:00"
     },
     "listing.media-recheck": {
       "state": "done",
@@ -1411,6 +1409,28 @@
       ],
       "next_action": "",
       "updated_at": "2026-11-24T03:58:34+00:00"
+    },
+    "issue.standard.more-apps": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "More apps list was missing Giraffe Stretch (Ouro, live 1.0); regenerated and shipped in build 36",
+      "evidence": [
+        "2026-11-26 app-review-daily-20261126T170553Z: standards.mjs audit MISSING more-apps (missing giraffe-stretch); PR #298 merged 59702fb7 (more-apps.mjs write --ts from app-sites 6efcd0f, 10 apps); audit passes at 59702fb7; build 36 main.jsbundle carries Giraffe Stretch, its line and id6828973581; production web deploy of 59702fb7 Vercel success, site 200"
+      ],
+      "next_action": "None",
+      "updated_at": "2026-11-26T18:36:46+00:00"
+    },
+    "apple.build-1.0.5": {
+      "state": "done",
+      "owner": "agent",
+      "basis": "observed",
+      "summary": "Build 36 (1.0.5) archived from 59702fb7, validated, uploaded, VALID, in Release QA",
+      "evidence": [
+        "2026-11-26 app-review-daily-20261126T170553Z: ios-release.mjs archive from clean 59702fb7123c (Xcode 27A9275, iphoneos27.1), IPA SHA-256 5adc313b682af3ff4ee9b240018f59b4d69bed20d3d31a930ab5bd907ee46465; validate and upload clean, processed VALID; Release QA internal IN_BETA_TESTING, 1 tester; What to Test set (292 characters); no external group"
+      ],
+      "next_action": "None",
+      "updated_at": "2026-11-26T18:36:46+00:00"
     }
   },
   "events": [
@@ -9212,6 +9232,102 @@
         ],
         "next_action": "Connect Claude in Chrome (extension signed in, App Store Connect profile) so the daily run publishes App Privacy with 1Password autofill; then privacy-label.mjs check, asc.mjs status, submit --confirm through the guard",
         "updated_at": "2026-11-24T17:10:00+00:00"
+      }
+    },
+    {
+      "sequence": 489,
+      "at": "2026-11-26T18:36:45+00:00",
+      "gate": "apple.privacy",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "App Privacy published with Usage Data > Product Interaction (Analytics, not linked, not tracking)",
+        "evidence": [
+          "2026-11-26 app-review-daily-20261126T170553Z: App Store Connect App Privacy read back 'Published a few seconds ago by James Thompson' (run parent); privacy-label.mjs check passes against the public App Store page (5 types)"
+        ],
+        "next_action": "None",
+        "updated_at": "2026-11-26T18:36:45+00:00"
+      }
+    },
+    {
+      "sequence": 490,
+      "at": "2026-11-26T18:36:45+00:00",
+      "gate": "apple.privacy-label",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "privacy-label.mjs check passes; submit --confirm accepted",
+        "evidence": [
+          "2026-11-26 app-review-daily-20261126T170553Z: privacy-label.mjs check pass at 59702fb7"
+        ],
+        "next_action": "None",
+        "updated_at": "2026-11-26T18:36:45+00:00"
+      }
+    },
+    {
+      "sequence": 491,
+      "at": "2026-11-26T18:36:46+00:00",
+      "gate": "issue.standard.more-apps",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "More apps list was missing Giraffe Stretch (Ouro, live 1.0); regenerated and shipped in build 36",
+        "evidence": [
+          "2026-11-26 app-review-daily-20261126T170553Z: standards.mjs audit MISSING more-apps (missing giraffe-stretch); PR #298 merged 59702fb7 (more-apps.mjs write --ts from app-sites 6efcd0f, 10 apps); audit passes at 59702fb7; build 36 main.jsbundle carries Giraffe Stretch, its line and id6828973581; production web deploy of 59702fb7 Vercel success, site 200"
+        ],
+        "next_action": "None",
+        "updated_at": "2026-11-26T18:36:46+00:00"
+      }
+    },
+    {
+      "sequence": 492,
+      "at": "2026-11-26T18:36:46+00:00",
+      "gate": "apple.build-1.0.5",
+      "result": {
+        "state": "done",
+        "owner": "agent",
+        "basis": "observed",
+        "summary": "Build 36 (1.0.5) archived from 59702fb7, validated, uploaded, VALID, in Release QA",
+        "evidence": [
+          "2026-11-26 app-review-daily-20261126T170553Z: ios-release.mjs archive from clean 59702fb7123c (Xcode 27A9275, iphoneos27.1), IPA SHA-256 5adc313b682af3ff4ee9b240018f59b4d69bed20d3d31a930ab5bd907ee46465; validate and upload clean, processed VALID; Release QA internal IN_BETA_TESTING, 1 tester; What to Test set (292 characters); no external group"
+        ],
+        "next_action": "None",
+        "updated_at": "2026-11-26T18:36:46+00:00"
+      }
+    },
+    {
+      "sequence": 493,
+      "at": "2026-11-26T18:36:46+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "1.0.5 (build 36) WAITING_FOR_REVIEW, AFTER_APPROVAL",
+        "evidence": [
+          "2026-11-26 app-review-daily-20261126T170553Z: attach-build 36 read back VALID; submit --confirm: submission 039b8432-72fa-4ca0-adaa-7ac11b23037a WAITING_FOR_REVIEW, version 92828934 WAITING_FOR_REVIEW, build 36"
+        ],
+        "next_action": "Read Apple's review outcome for 1.0.5",
+        "updated_at": "2026-11-26T18:36:46+00:00"
+      }
+    },
+    {
+      "sequence": 494,
+      "at": "2026-11-26T18:40:34+00:00",
+      "gate": "apple.review",
+      "result": {
+        "state": "waiting_provider",
+        "owner": "provider",
+        "basis": "observed",
+        "summary": "1.0.5 (build 36) WAITING_FOR_REVIEW, AFTER_APPROVAL",
+        "evidence": [
+          "2026-11-26 app-review-daily-20261126T170553Z: review-sweep read 1.0.5 WAITING_FOR_REVIEW AFTER_APPROVAL, submission 039b8432 WAITING_FOR_REVIEW (evidence/app-review-daily-20261126T170553Z-opus-readback.json)"
+        ],
+        "next_action": "Read Apple's review outcome for 1.0.5",
+        "updated_at": "2026-11-26T18:40:34+00:00"
       }
     }
   ],

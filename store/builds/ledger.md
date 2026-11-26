@@ -610,3 +610,28 @@ build, sandbox or spend.
 | `issue.simctl-screenshot-path` | `simctl io screenshot` to the QA folder or the scratchpad failed with "Operation not permitted" in this session's sandbox | Wrote into the device's own `data/tmp` and moved the file; the tour's shots came from its `.xcresult` | Screenshots saved in the QA folder |
 
 Not run: `npm run check:android-widget` (needs the cloud toolchain this Mac lacks; Android only).
+
+
+## 2026-11-26: version 1.0.5, build 36 to App Review (daily review run app-review-daily-20261126T170553Z)
+
+The run's parent published App Privacy (Usage Data > Product Interaction, Analytics, not linked, not tracking);
+`privacy-label.mjs check` then passed against the public page. `submit --confirm` and `standards.mjs audit` still
+refused on one gap: the bundled More apps list lacked Giraffe Stretch (Ouro, live 1.0). #298 regenerated
+`apps/client/lib/moreAppsCatalog.ts` with `more-apps.mjs write --ts` from astrojams1/app-sites `6efcd0f` (ten apps);
+`npm test` (498 tests), `npm run test:design` and `npm run check:app` passed locally and in CI; production served the
+merge commit (Vercel success, site 200). Local Xcode archive from clean merge commit
+`59702fb7123c2c6fe53f0b6fbdd111487c5a696e`, Xcode 27A9275, iphoneos27.1, `.ipa` SHA-256
+`5adc313b682af3ff4ee9b240018f59b4d69bed20d3d31a930ab5bd907ee46465`; its `main.jsbundle` carries Giraffe Stretch, its
+line and App Store id. Validated, uploaded, processed VALID; in Release QA, internal `IN_BETA_TESTING`, one tester,
+What to Test "Adds Giraffe Stretch to the More apps list." plus the 1.0.5 notes; no external group exists. Listing and
+all 24 languages unchanged since the draft and still matching; screenshots COMPLETE; no events in store data. Build 36
+attached in place of 35 and read back VALID. `submit --confirm`: submission `039b8432-72fa-4ca0-adaa-7ac11b23037a`;
+version and submission read `WAITING_FOR_REVIEW`, build 36, `AFTER_APPROVAL`. The row itself was not toured on a
+simulator again: the change is one more entry in the generated list, and 2026-11-24's XCUITest tour covered the row.
+No cloud build, sandbox or spend.
+
+| Issue | Symptom and cause | Fix | Verified |
+| --- | --- | --- | --- |
+| `issue.standard.more-apps` | `standards.mjs audit` and `submit --confirm` refused: the list lacked Giraffe Stretch, which went live on the Ouro team after build 35 | #298 regenerated the list | Audit passes at `59702fb`; build 36's bundle carries it |
+
+Not run: `npm run check:android-widget` (needs the cloud toolchain this Mac lacks; Android only).
