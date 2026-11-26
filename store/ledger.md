@@ -1,6 +1,6 @@
 # Newsworthy release ledger
 
-Updated: 2026-11-24T17:10:00+00:00
+Updated: 2026-11-26T18:40:34+00:00
 
 Repository: https://github.com/astrojams1/newsworthy
 
@@ -20,14 +20,14 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | apple.tax | done | user | observed | 2026-09-16 | Apple Business lists U.S. Form W-9 submitted September 16 with status Active. | — |
 | apple.bank | done | user | observed | 2026-10-22 | 2026-10-22: superseded by apple.agreement and apple.release. The paid app is on sale, which needs an active Paid Apps Agreement with a payout account: Apple's public lookup for id 6812519450 reads formattedPrice $1.00, version 1.0.0, released 2026-10-21T10:58:45Z. Apple Business not re-read. | — |
 | apple.dsa | done | user | observed | 2026-09-16 | Digital Services Act compliance Active; Apple says current regulatory requirements completed. | — |
-| apple.privacy | waiting_user | user | observed | 2026-11-24 | 2026-11-24 daily run app-review-daily-20261124T170541Z: published App Privacy label still lacks Usage Data > Product Interaction (Analytics, not linked, not tracking); privacy-label.mjs check FAIL. Not changed: Claude in Chrome has no connected browser (list_connected_browsers empty, as on 2026-11-24T02:14Z) and the built-in browser's App Store Connect session is signed out (login authResult=FAILED); no fastlane session. Next version stays PREPARE_FOR_SUBMISSION, AFTER_APPROVAL, build attached; not submitted. | Connect Claude in Chrome (extension signed in, App Store Connect profile) so the daily run publishes App Privacy with 1Password autofill; then privacy-label.mjs check, asc.mjs status, submit --confirm through the guard |
+| apple.privacy | done | agent | observed | 2026-11-26 | App Privacy published with Usage Data > Product Interaction (Analytics, not linked, not tracking) | None |
 | apple.review-contact | done | agent | observed | 2026-09-16 | Updated Apple review notes for the Privacy and Support footer and explicit no-login behavior; existing contact fields preserved. | — |
 | apple.listing | done | agent | observed | 2026-11-19 | 1.0.4 listing saved and read back: en-US What's New names the rating prompt; 24 listing languages created (App Info and version localizations) with What's New for 1.0.4; review notes 3,933 chars saved; screenshots, previews, header and search creative carried over unchanged (no screen changed); secondary category Lifestyle | — |
 | apple.build | done | agent | observed | 2026-11-24 | Build 35, version 1.0.5, archived locally from clean merge commit ae5de53b6c59f8d8f86bf83a933f0295e362e196 (PR #295), Xcode 27A9275, iphoneos27.1, .ipa SHA-256 3e38846a4761c6a389e8abfc829cc15070cd5e365d17b1e658cdbe111f59970b; validated, uploaded, processed VALID. | — |
 | apple.native | done | agent | observed | 2026-09-16 | Replacement native UI checked on iPhone 16 Pro Max and iPad Pro 13-inch iOS 18.3: light/dark, no About, footer links, iPad share popover, iPhone small/medium widgets and small tap-to-open. | — |
 | apple.upload | done | agent | observed | 2026-11-19 | Build 34 uploaded with altool; App Store Connect processed it VALID, USESNONEXEMPTENCRYPTION 0 | — |
 | apple.availability | done | agent | observed | 2026-09-16 | Created availability for all 175 Apple territories; all enabled, no preorder, new territories enabled. Automatic release after approval retained. | — |
-| apple.review | in_progress | agent | observed | 2026-11-24 | 1.0.4 (build 34) is live. Version 1.0.5 created with the listing (en-US and 24 languages read back, all 24 match), review details saved, screenshots kept (all COMPLETE), build 35 attached; GET readback: PREPARE_FOR_SUBMISSION, releaseType AFTER_APPROVAL, build 35. Not submitted: waiting on the App Privacy label. | After App Privacy is published: asc.mjs status, then submit --confirm through the guard and read back WAITING_FOR_REVIEW. |
+| apple.review | waiting_provider | provider | observed | 2026-11-26 | 1.0.5 (build 36) WAITING_FOR_REVIEW, AFTER_APPROVAL | Read Apple's review outcome for 1.0.5 |
 | apple.release | done | provider | observed | 2026-10-21 | 2026-10-21: Newsworthy 1.0.0 (build 27) is on sale in all 175 territories after the owner completed the Paid Apps Agreement banking; public US App Store page live. | — |
 | google.identity | done | user | observed | 2026-09-16 | Registration fee paid and Play Console reports identity successfully verified. | — |
 | google.device | done | user | observed | 2026-10-15 | 2026-10-15: after the owner verified the new phone in the Play Console mobile app, the 'Verify that you have access to an Android mobile device' task no longer appears on the AstroJams home page (checked in the built-in browser). | — |
@@ -100,7 +100,8 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | google.play-api | done | agent | observed | 2026-10-16 | First API upload: versionCode 15 via release --version-code 15 --track internal on 2026-10-15. Play Console reads back the internal track Active, release 1.0.0 available to internal testers, released 10:45 AM; next-version-code now returns 16. The run's log ended before the script's 'committed' line (session ended), so the commit was confirmed from Play instead. | — |
 | google.pricing | done | agent | observed | 2026-10-16 | 2026-10-16: owner created the Google payments profile (Create a merchant account ticked). Price set from USD 1.00 for all 177 countries / regions; Play's charm pricing gives USD 0.99 in the US, EUR 1.09 in Germany, GBP 0.89, JPY 170, INR 110; read back after reload with no region unpriced. Apple's US price is USD 1.00. | Owner may ask for an exact USD 1.00 US price; otherwise none. |
 | google.news-policy | done | agent | observed | 2026-10-21 | 2026-10-21: Play Policy status reads 'No issues found'; closed testing Alpha Active with release 1.0.0 (version 17) in 173 countries / regions. | — |
-| apple.privacy-label | waiting_provider | agent | observed | 2026-11-24 | privacy-label.mjs check FAIL: the App Store page lacks Usage Data > Product Interaction for Analytics (not linked, not tracking), which the manifest and appPrivacy.collected declare for the first-launch count. The parent run publishes App Privacy in App Store Connect. | Once App Privacy is published, privacy-label.mjs check (or confirm) passes; then submit --confirm. |
+| apple.privacy-label | done | agent | observed | 2026-11-26 | privacy-label.mjs check passes; submit --confirm accepted | None |
+| apple.build-1.0.5 | done | agent | observed | 2026-11-26 | Build 36 (1.0.5) archived from 59702fb7, validated, uploaded, VALID, in Release QA | None |
 
 ## Run issues
 
@@ -114,6 +115,7 @@ Generated from `ledger.json` by the app-release skill's `ledger.mjs`; never edit
 | issue.localized-whatsnew-1.0.4 | done | agent | observed | 2026-11-19 | The 24 listing languages' What's New drafts (2026-11-18) said the app had not changed, false for 1.0.4. #287 rewrote each to name the rating prompt and the new language page; listing saved and read back all 24 | — |
 | issue.privacy-copy-channel | done | agent | observed | 2026-11-24 | The privacy page said the first-open message tells whether the app came from the App Store; the Expo app sends only debug or unknown. Fixed in #295 and served in production (healthz ae5de53). | — |
 | issue.simctl-screenshot-path | done | agent | observed | 2026-11-24 | simctl io screenshot into the QA folder or scratchpad failed (Operation not permitted) under the session sandbox; writing into the device's data/tmp and moving the file worked, and the XCUITest tour's shots came from its xcresult. | — |
+| issue.standard.more-apps | done | agent | observed | 2026-11-26 | More apps list was missing Giraffe Stretch (Ouro, live 1.0); regenerated and shipped in build 36 | None |
 
 ## Product verification gates
 
@@ -4762,3 +4764,63 @@ simctl io screenshot into the QA folder or scratchpad failed (Operation not perm
 - /Volumes/ssd/projects/app-release-daily/evidence/newsworthy-app-review-daily-20261124T170541Z-status.log
 
 Next: Connect Claude in Chrome (extension signed in, App Store Connect profile) so the daily run publishes App Privacy with 1Password autofill; then privacy-label.mjs check, asc.mjs status, submit --confirm through the guard
+
+### 489. apple.privacy — done
+
+2026-11-26T18:36:45+00:00 · observed · agent
+
+App Privacy published with Usage Data > Product Interaction (Analytics, not linked, not tracking)
+
+- 2026-11-26 app-review-daily-20261126T170553Z: App Store Connect App Privacy read back 'Published a few seconds ago by James Thompson' (run parent); privacy-label.mjs check passes against the public App Store page (5 types)
+
+Next: None
+
+### 490. apple.privacy-label — done
+
+2026-11-26T18:36:45+00:00 · observed · agent
+
+privacy-label.mjs check passes; submit --confirm accepted
+
+- 2026-11-26 app-review-daily-20261126T170553Z: privacy-label.mjs check pass at 59702fb7
+
+Next: None
+
+### 491. issue.standard.more-apps — done
+
+2026-11-26T18:36:46+00:00 · observed · agent
+
+More apps list was missing Giraffe Stretch (Ouro, live 1.0); regenerated and shipped in build 36
+
+- 2026-11-26 app-review-daily-20261126T170553Z: standards.mjs audit MISSING more-apps (missing giraffe-stretch); PR #298 merged 59702fb7 (more-apps.mjs write --ts from app-sites 6efcd0f, 10 apps); audit passes at 59702fb7; build 36 main.jsbundle carries Giraffe Stretch, its line and id6828973581; production web deploy of 59702fb7 Vercel success, site 200
+
+Next: None
+
+### 492. apple.build-1.0.5 — done
+
+2026-11-26T18:36:46+00:00 · observed · agent
+
+Build 36 (1.0.5) archived from 59702fb7, validated, uploaded, VALID, in Release QA
+
+- 2026-11-26 app-review-daily-20261126T170553Z: ios-release.mjs archive from clean 59702fb7123c (Xcode 27A9275, iphoneos27.1), IPA SHA-256 5adc313b682af3ff4ee9b240018f59b4d69bed20d3d31a930ab5bd907ee46465; validate and upload clean, processed VALID; Release QA internal IN_BETA_TESTING, 1 tester; What to Test set (292 characters); no external group
+
+Next: None
+
+### 493. apple.review — waiting_provider
+
+2026-11-26T18:36:46+00:00 · observed · provider
+
+1.0.5 (build 36) WAITING_FOR_REVIEW, AFTER_APPROVAL
+
+- 2026-11-26 app-review-daily-20261126T170553Z: attach-build 36 read back VALID; submit --confirm: submission 039b8432-72fa-4ca0-adaa-7ac11b23037a WAITING_FOR_REVIEW, version 92828934 WAITING_FOR_REVIEW, build 36
+
+Next: Read Apple's review outcome for 1.0.5
+
+### 494. apple.review — waiting_provider
+
+2026-11-26T18:40:34+00:00 · observed · provider
+
+1.0.5 (build 36) WAITING_FOR_REVIEW, AFTER_APPROVAL
+
+- 2026-11-26 app-review-daily-20261126T170553Z: review-sweep read 1.0.5 WAITING_FOR_REVIEW AFTER_APPROVAL, submission 039b8432 WAITING_FOR_REVIEW (evidence/app-review-daily-20261126T170553Z-opus-readback.json)
+
+Next: Read Apple's review outcome for 1.0.5
